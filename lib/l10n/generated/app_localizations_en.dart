@@ -14526,10 +14526,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersSortSheetSubtitle =>
-      'Choose how customers are ordered.';
-
-  @override
   String get hostCustomersSortLastSeen => 'Last seen';
 
   @override
@@ -14539,7 +14535,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersSortName => 'Name';
 
   @override
-  String get hostCustomersMoreActions => 'More customer actions';
+  String get hostCustomersMoreActions => 'More audience actions';
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';
@@ -14711,14 +14707,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsImport => 'Import responses';
 
   @override
-  String get hostApplicationsSort => 'Sort applications';
-
-  @override
-  String get hostApplicationsImportTitle => 'Import applications';
+  String get hostApplicationsImportTitle => 'Import responses';
 
   @override
   String get hostApplicationsImportSubtitle =>
-      'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
+      'Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
 
   @override
   String get hostApplicationsImportReusableField => 'Reusable profile field';
@@ -14731,8 +14724,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count applications',
-      one: '1 application',
+      other: '$count responses',
+      one: '1 response',
     );
     return 'Import $_temp0';
   }
@@ -14764,8 +14757,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       created,
       locale: localeName,
-      other: 'Imported $created applications',
-      one: 'Imported 1 application',
+      other: 'Imported $created responses',
+      one: 'Imported 1 response',
     );
     String _temp1 = intl.Intl.pluralLogic(
       skipped,
@@ -14785,26 +14778,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The organizer may retain submitted answers for application review and customer history according to its stated policy.';
 
   @override
-  String get hostApplicationsSearch => 'Search by applicant name';
-
-  @override
-  String get hostApplicationsEmptyTitle => 'No applications yet';
-
-  @override
-  String get hostApplicationsEmptyBody =>
-      'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.';
-
-  @override
   String get hostApplicationsSortNewest => 'Newest first';
 
   @override
   String get hostApplicationsSortOldest => 'Oldest first';
-
-  @override
-  String get hostApplicationsSortName => 'Applicant name';
-
-  @override
-  String get hostApplicationsFilterAll => 'All';
 
   @override
   String get hostApplicationsReviewStatusFilter => 'Filter by review status';
@@ -14837,15 +14814,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsSourceConnector => 'Connected form';
 
   @override
-  String hostApplicationsSubmittedOn({required String date}) {
-    return 'Submitted $date';
-  }
-
-  @override
   String get hostApplicationsLoadMore => 'Load more applications';
-
-  @override
-  String get hostApplicationAnswersTitle => 'Answers';
 
   @override
   String get hostApplicationNotAnswered => 'Not answered';
@@ -14868,9 +14837,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostApplicationOutreachTitle => 'Contact applicant';
-
-  @override
   String get hostApplicationCall => 'Call';
 
   @override
@@ -14881,10 +14847,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationLinkedin => 'LinkedIn';
-
-  @override
-  String get hostApplicationNoOutreach =>
-      'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.';
 
   @override
   String get hostApplicationReviewNote => 'Private review note';
@@ -17054,9 +17016,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationOpenPerson => 'Open person';
 
   @override
-  String get hostApplicationOpenResponse => 'Open original response';
-
-  @override
   String get hostSavedAudienceEditRules => 'Edit rules';
 
   @override
@@ -17469,12 +17428,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceSubmissionDetails => 'Submission details';
 
   @override
-  String get hostAudienceReviewApplication => 'Review application';
-
-  @override
-  String get hostAudienceApplicationTitle => 'Application';
-
-  @override
   String get hostAudienceApplicationAccepted =>
       'Accepted into People. Event admission is handled separately.';
 
@@ -17483,29 +17436,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Accepting adds this person to People. Event admission is handled separately.';
 
   @override
-  String get hostAudienceApplicationsNew => 'New applications';
-
-  @override
-  String get hostAudienceApplicationsAll => 'All applications';
-
-  @override
   String get hostAudienceApplicationEvent => 'Event application';
 
   @override
   String get hostAudienceApplicationOrganizer => 'Organizer application';
 
   @override
-  String get hostAudienceApplicationActivity => 'Activity';
-
-  @override
   String get hostAudienceManualGroup => 'Selected people';
 
   @override
   String get hostAudienceAutomaticGroup => 'Automatic membership';
-
-  @override
-  String get hostAudienceGroupMembershipHelp =>
-      'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.';
 
   @override
   String hostAudienceGroupChecked({required String date}) {
@@ -20670,4 +20610,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String programsSnapshotBanner({required Object time}) {
     return 'Last synced at $time — your changes queue until you are back online.';
   }
+
+  @override
+  String get hostAudienceRecentlyUpdated => 'Recently updated';
+
+  @override
+  String get hostAudienceSelectedPerson => 'Selected person';
+
+  @override
+  String get hostResponseSaveReviewNote => 'Save review note';
+
+  @override
+  String get hostResponseStartReview => 'Start application review';
 }

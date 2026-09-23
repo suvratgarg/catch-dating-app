@@ -161,6 +161,40 @@ export const listOrganizerFormResponsesCallablePayloadSchema: Record<string, unk
       "type": "integer",
       "minimum": 1,
       "maximum": 100
+    },
+    "includeApplications": {
+      "type": "boolean",
+      "description": "Opt into the unified response and application review inbox."
+    },
+    "reviewStatus": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "inReview",
+            "approved",
+            "waitlisted",
+            "declined",
+            "withdrawn"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 } as const;

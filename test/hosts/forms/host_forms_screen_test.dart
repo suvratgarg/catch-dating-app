@@ -7,6 +7,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -29,47 +30,6 @@ import '../../test_pump_helpers.dart';
 void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
-
-  testWidgets('Responses opens application review for the selected form', (
-    tester,
-  ) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (_, _) => const Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                HostFormResponsesPanel(organizerId: 'org-1', formId: 'form-1'),
-              ],
-            ),
-          ),
-        ),
-        GoRoute(
-          path: '/applications',
-          name: Routes.hostApplicationsScreen.name,
-          builder: (_, state) => Text(
-            '${state.uri.queryParameters['organizerId']}/${state.uri.queryParameters['formId']}',
-          ),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          hostFormResponsesControllerProvider.overrideWith2(
-            (_) => _FixedHostFormResponsesController([]),
-          ),
-        ],
-        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Applications'));
-    await pumpFeatureUi(tester);
-    expect(find.text('org-1/form-1'), findsOneWidget);
-  });
 
   testWidgets('Responses empty state centers below controls and above nav', (
     tester,
@@ -105,7 +65,7 @@ void main() {
         .getRect(
           find
               .ancestor(
-                of: find.text('All statuses'),
+                of: find.text('Filters'),
                 matching: find.byType(CatchSection),
               )
               .first,
@@ -305,6 +265,8 @@ void main() {
         await pumpFeatureUi(tester);
         expect(formRequests.last.query, 'waiver');
         expect(responseRequests, isEmpty);
+        await tester.tap(find.text('Filters'));
+        await pumpFeatureUi(tester);
         await tester.tap(find.text('All purposes'));
         await pumpFeatureUi(tester);
         await tester.tap(find.text('Waiver'));
@@ -317,6 +279,8 @@ void main() {
         await tester.tap(find.text('All purposes'));
         await pumpFeatureUi(tester);
         expect(formRequests.last.purposes, isEmpty);
+        await tester.tap(find.text('Done'));
+        await pumpFeatureUi(tester);
 
         await tester.tap(find.text('Responses'));
         await pumpFeatureUiFor(tester, CatchMotion.base);
@@ -329,13 +293,24 @@ void main() {
               .placeholder,
           'Search responses',
         );
-        await tester.tap(find.text('All statuses'));
-        await pumpFeatureUi(tester);
+        expect(
+          find.byKey(const ValueKey('host-responses-import')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(CatchTopBar),
+            matching: find.byKey(const ValueKey('host-responses-import')),
+          ),
+          findsOneWidget,
+        );
         await tester.tap(find.text('Submitted'));
         await pumpFeatureUi(tester);
-        expect(responseRequests.last.statuses, {
-          HostFormResponseStatus.submitted,
-        });
+        expect(responseRequests.last.includeApplications, isTrue);
+        expect(
+          responseRequests.last.reviewStatus,
+          HostApplicationReviewStatus.submitted,
+        );
 
         await tester.enterText(
           find.descendant(

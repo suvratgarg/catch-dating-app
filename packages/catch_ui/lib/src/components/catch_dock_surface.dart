@@ -7,7 +7,7 @@ import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
 
-enum CatchDockSurfaceVariant { utility, primary, primaryContent }
+enum CatchDockSurfaceVariant { utility, primary, primaryContent, pageAction }
 
 typedef _PrimaryAction = ({
   String label,
@@ -73,6 +73,35 @@ class CatchDockSurface extends StatelessWidget {
          catchLine: catchLine,
          catchLineAccent: catchLineAccent,
          footnote: footnote,
+         bottomPadding: CatchSpacing.s3,
+       );
+
+  /// One persistent page action without a floating card or perimeter.
+  /// The scaffold reserves its actual height, including the safe area, and
+  /// positions snackbars above it so feedback never blocks the next action.
+  const CatchDockSurface.pageAction({
+    super.key,
+    required String label,
+    required VoidCallback? onPressed,
+    Key? buttonKey,
+    bool isLoading = false,
+  }) : variant = CatchDockSurfaceVariant.pageAction,
+       child = null,
+       padding = EdgeInsets.zero,
+       includeSafeArea = true,
+       backgroundColor = null,
+       dividerColor = null,
+       _primary = (
+         label: label,
+         onPressed: onPressed,
+         leading: null,
+         buttonKey: buttonKey,
+         isLoading: isLoading,
+         buttonAccentColor: null,
+         buttonMode: CatchButtonMode.pill,
+         catchLine: null,
+         catchLineAccent: null,
+         footnote: null,
          bottomPadding: CatchSpacing.s3,
        );
 
@@ -172,9 +201,13 @@ class CatchDockSurface extends StatelessWidget {
                 ),
               Padding(
                 padding: EdgeInsets.fromLTRB(
-                  CatchSpacing.s4,
+                  variant == CatchDockSurfaceVariant.pageAction
+                      ? CatchSpacing.screenPx
+                      : CatchSpacing.s4,
                   CatchSpacing.s3,
-                  CatchSpacing.s4,
+                  variant == CatchDockSurfaceVariant.pageAction
+                      ? CatchSpacing.screenPx
+                      : CatchSpacing.s4,
                   bottomPadding,
                 ),
                 child: Column(
@@ -220,6 +253,13 @@ class CatchDockSurface extends StatelessWidget {
           );
     if (variant == CatchDockSurfaceVariant.primaryContent) return body;
 
+    if (variant == CatchDockSurfaceVariant.pageAction) {
+      return ColoredBox(
+        key: const ValueKey('catch_bottom_action.page_action'),
+        color: t.bg,
+        child: SafeArea(top: false, child: body),
+      );
+    }
     final radius = floating ? BorderRadius.circular(CatchRadius.lg) : null;
     final dock = DecoratedBox(
       key: action == null

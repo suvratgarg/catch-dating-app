@@ -84,19 +84,9 @@
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
         {
-          "path": "lib/hosts/presentation/host_audience_view.dart",
-          "symbol": "HostAudienceStateScaffold",
-          "owner": "CatchRootScreenHeader.title"
-        },
-        {
-          "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "symbol": "_HostCustomersScreenState",
-          "owner": "CatchRootScreenHeader.title"
-        },
-        {
-          "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
-          "symbol": "_HostFormsScreenState",
-          "owner": "CatchRootScreenHeader.title"
+          "path": "lib/hosts/presentation/host_audience_header.dart",
+          "symbol": "HostAudienceHeader",
+          "owner": "CatchTopBar.primaryRail"
         }
       ]
     },
@@ -199,22 +189,6 @@
     },
     {
       "path": "lib/events/presentation/saved_events_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
-      "path": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
-      "path": "lib/hosts/presentation/applications/host_applications_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",

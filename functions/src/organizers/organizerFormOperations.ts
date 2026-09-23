@@ -27,6 +27,8 @@ import type {GetOrganizerFormAnalyticsCallableResponse} from
   "../shared/generated/getOrganizerFormAnalyticsCallableResponse";
 import type {
   OrganizerApplicationDocument,
+  OrganizerApplicationFormDocument,
+  OrganizerApplicationFormVersionDocument,
   OrganizerContactOriginDocument,
   OrganizerFormAggregateDocument,
   OrganizerFormAssetDocument,
@@ -49,6 +51,7 @@ import {
 } from
   "../shared/generated/validators/listOrganizerFormResponsesInput";
 
+import {listUnifiedResponses} from "./organizerUnifiedResponses";
 import {genericFormApplicationId} from "./organizerApplicationAccess";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 import {matchesAnswerFilters, responseFilterOptions, validateResponseFilters}
@@ -104,15 +107,43 @@ export async function listOrganizerFormResponsesHandler(
   const versions = new Map<string, OrganizerFormVersionDocument>();
   let answerFilterOptions: ReturnType<typeof responseFilterOptions> = [];
   if (data.formId) {
-    const form = requireOwnedForm(await db.collection("organizerForms")
-      .doc(data.formId).get(), data.organizerId);
-    const versionId = data.versionId ?? form.activeVersionId;
-    if (versionId) {
-      const version = requireOwnedVersion(await db
-        .collection("organizerFormVersions").doc(versionId).get(),
-      data.organizerId, data.formId);
-      versions.set(versionId, version);
-      answerFilterOptions = responseFilterOptions(version.definition);
+    const formSnap = await db.collection("organizerForms")
+      .doc(data.formId).get();
+    if (!formSnap.exists && data.includeApplications) {
+      const importedSnap = await db.collection("organizerApplicationForms")
+        .doc(data.formId).get();
+      if (!importedSnap.exists) {
+        throw new HttpsError("not-found", "Form not found.");
+      }
+      const imported = requireDoc<OrganizerApplicationFormDocument>(
+        importedSnap, "OrganizerApplicationFormDocument");
+      if (imported.organizerId !== data.organizerId) {
+        throw new HttpsError("not-found", "Form not found.");
+      }
+      if (data.versionId) {
+        const versionSnap = await db
+          .collection("organizerApplicationFormVersions")
+          .doc(data.versionId).get();
+        if (!versionSnap.exists) {
+          throw new HttpsError("not-found", "Form version not found.");
+        }
+        const version = requireDoc<OrganizerApplicationFormVersionDocument>(
+          versionSnap, "OrganizerApplicationFormVersionDocument");
+        if (version.organizerId !== data.organizerId ||
+            version.formId !== data.formId) {
+          throw new HttpsError("not-found", "Form version not found.");
+        }
+      }
+    } else {
+      const form = requireOwnedForm(formSnap, data.organizerId);
+      const versionId = data.versionId ?? form.activeVersionId;
+      if (versionId) {
+        const version = requireOwnedVersion(await db
+          .collection("organizerFormVersions").doc(versionId).get(),
+        data.organizerId, data.formId);
+        versions.set(versionId, version);
+        answerFilterOptions = responseFilterOptions(version.definition);
+      }
     }
   } else if (answerFilters.length > 0) {
     throw new HttpsError(
@@ -135,6 +166,28 @@ export async function listOrganizerFormResponsesHandler(
       questionId: filter.questionId, values: [...filter.values].sort(),
     })),
   });
+  if (data.includeApplications) {
+    return listUnifiedResponses({db, data, filterHash, answerFilterOptions,
+      project: (docs) => responseRows(db, docs),
+      matches: async (response) => {
+        if (!matchesResponse(response, data)) return false;
+        if (!answerFilters.length) return true;
+        let version = versions.get(response.versionId);
+        if (!version) {
+          version = requireOwnedVersion(await db
+            .collection("organizerFormVersions").doc(response.versionId)
+            .get(), data.organizerId, response.formId);
+          versions.set(response.versionId, version);
+        }
+        return matchesAnswerFilters(response, version.definition,
+          answerFilters);
+      },
+    });
+  }
+  if (data.reviewStatus || data.contactId) {
+    throw new HttpsError("invalid-argument",
+      "Application review filters require the unified response inbox.");
+  }
   const cursor = decodeResponseCursor(data.cursor, {
     organizerId: data.organizerId,
     filterHash,
@@ -676,6 +729,8 @@ function normalizeResponseListPayload(value: unknown): unknown {
       "formId",
       "versionId",
       "sourceLinkId",
+      "contactId",
+      "reviewStatus",
       "query",
       "cursor",
     ],

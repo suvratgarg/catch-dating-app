@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.30.0
-updated: 2026-09-21
+version: 1.31.1
+updated: 2026-09-23
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -503,7 +503,15 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   the top safe area and never shifts route content. Reduced motion skips entry;
   accessible navigation holds the card, and pointer/hover/focus interaction
   pauses auto-dismiss. Ordinary inline notices retain their existing controls.
-- Persistent control docking routes through `CatchDockSurface`. Its default
+- Review decisions use `CatchButtonVariant.dangerSecondary` when they need
+  destructive feedback without a filled danger CTA. Resting chrome is neutral
+  and outlined; hover, focus and press identify danger. Status belongs to the
+  record badge rather than an action's resting fill.
+- Persistent control docking routes through `CatchDockSurface`. `pageAction`
+  is the borderless page-background recipe for one detail action. The scaffold
+  reserves its measured height and positions snackbars above it. It owns the
+  page gutter and safe area; features do not wrap it in a card.
+- Other persistent control docking routes through `CatchDockSurface`. Its default
   constructor hosts utility content; `primary` owns floating Cupertino or
   anchored Material action chrome. `primaryContent` reuses the same action body
   when its caller already supplies a surface. `CatchBottomActionOverlay` owns
@@ -631,8 +639,20 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   global navigation rail is not an ordinary row. Those keep their own semantic
   primitive, with non-row section content supplied through `.content`.
 - `CatchSection.controls` owns the content gutter and both full content-width
-  rules around collection sort/filter controls. People and Responses pass only
-  their controls; neither can omit the upper boundary or add a mismatched
+  rules around collection sort/filter controls. Its semantic inputs own sorting
+  at the leading edge and Filters at the trailing edge; callers cannot supply
+  arbitrary widget slots or swap their roles. A fixed ordering has no dropdown
+  affordance. Active filters have one shared summary and Clear action. At narrow
+  widths or large text the controls wrap in reading order within the same rules.
+  All four Audience tabs use this recipe. They share `HostAudienceHeader` and
+  `HostAudienceTabRail` for title, primary creation action, overflow, search, and
+  peer navigation.
+  Their section-based page owner supplies top spacing once; quick-filter rails
+  use section content gutters without adding another page-padding wrapper.
+  Organizer-wide Automations belongs in the common overflow, not the Groups
+  result list. Omit repeated list titles when the selected tab supplies context.
+  Form purpose and submission status are filters, not sort orders. Neither a
+  feature nor a state branch may omit the upper boundary or add a mismatched
   lower rule. The rules are distinct from row sibling dividers, which start at
   the text lane.
 - `CatchSection.loadingRows` and `.sliverLoadingRows` render passive

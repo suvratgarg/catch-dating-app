@@ -22600,12 +22600,6 @@ abstract class AppLocalizations {
   /// **'Sort: {label}'**
   String hostCustomersSortControl({required String label});
 
-  /// Explains the Customers directory sort sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose how customers are ordered.'**
-  String get hostCustomersSortSheetSubtitle;
-
   /// Customers directory last-seen ordering.
   ///
   /// In en, this message translates to:
@@ -22627,7 +22621,7 @@ abstract class AppLocalizations {
   /// Accessible label for the Customers header overflow commands.
   ///
   /// In en, this message translates to:
-  /// **'More customer actions'**
+  /// **'More audience actions'**
   String get hostCustomersMoreActions;
 
   /// Host accountability sweep heading.
@@ -22885,22 +22879,16 @@ abstract class AppLocalizations {
   /// **'Import responses'**
   String get hostApplicationsImport;
 
-  /// Accessible label and compact sheet title for application ordering.
-  ///
-  /// In en, this message translates to:
-  /// **'Sort applications'**
-  String get hostApplicationsSort;
-
   /// Application spreadsheet import sheet title.
   ///
   /// In en, this message translates to:
-  /// **'Import applications'**
+  /// **'Import responses'**
   String get hostApplicationsImportTitle;
 
   /// Explains provider-neutral automatic field mapping.
   ///
   /// In en, this message translates to:
-  /// **'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.'**
+  /// **'Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.'**
   String get hostApplicationsImportSubtitle;
 
   /// Mapping label for a canonical participant intake field.
@@ -22918,7 +22906,7 @@ abstract class AppLocalizations {
   /// Confirms a bounded application spreadsheet import.
   ///
   /// In en, this message translates to:
-  /// **'Import {count, plural, =1{1 application} other{{count} applications}}'**
+  /// **'Import {count, plural, =1{1 response} other{{count} responses}}'**
   String hostApplicationsImportAction({required int count});
 
   /// Application import batch truncation explanation.
@@ -22942,7 +22930,7 @@ abstract class AppLocalizations {
   /// Application import result summary.
   ///
   /// In en, this message translates to:
-  /// **'{created, plural, =1{Imported 1 application} other{Imported {created} applications}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.'**
+  /// **'{created, plural, =1{Imported 1 response} other{Imported {created} responses}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.'**
   String hostApplicationsImportComplete({
     required int created,
     required int skipped,
@@ -22960,24 +22948,6 @@ abstract class AppLocalizations {
   /// **'The organizer may retain submitted answers for application review and customer history according to its stated policy.'**
   String get hostApplicationsRetentionCopy;
 
-  /// Application queue applicant-name search placeholder.
-  ///
-  /// In en, this message translates to:
-  /// **'Search by applicant name'**
-  String get hostApplicationsSearch;
-
-  /// Empty application queue title.
-  ///
-  /// In en, this message translates to:
-  /// **'No applications yet'**
-  String get hostApplicationsEmptyTitle;
-
-  /// Empty application queue guidance without favoring one form provider.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.'**
-  String get hostApplicationsEmptyBody;
-
   /// Application queue newest sort.
   ///
   /// In en, this message translates to:
@@ -22989,18 +22959,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Oldest first'**
   String get hostApplicationsSortOldest;
-
-  /// Application queue name sort.
-  ///
-  /// In en, this message translates to:
-  /// **'Applicant name'**
-  String get hostApplicationsSortName;
-
-  /// Application queue all-status filter.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get hostApplicationsFilterAll;
 
   /// Accessible title and tooltip for the application review-status filter.
   ///
@@ -23062,23 +23020,11 @@ abstract class AppLocalizations {
   /// **'Connected form'**
   String get hostApplicationsSourceConnector;
 
-  /// Application submitted date metadata.
-  ///
-  /// In en, this message translates to:
-  /// **'Submitted {date}'**
-  String hostApplicationsSubmittedOn({required String date});
-
   /// Application queue pagination action.
   ///
   /// In en, this message translates to:
   /// **'Load more applications'**
   String get hostApplicationsLoadMore;
-
-  /// Application detail answers section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Answers'**
-  String get hostApplicationAnswersTitle;
 
   /// Empty optional application answer value.
   ///
@@ -23104,12 +23050,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 file} other{{count} files}}'**
   String hostApplicationAnswerFiles({required int count});
 
-  /// Application detail validated outreach actions title.
-  ///
-  /// In en, this message translates to:
-  /// **'Contact applicant'**
-  String get hostApplicationOutreachTitle;
-
   /// Calls a validated E.164 application phone number.
   ///
   /// In en, this message translates to:
@@ -23133,12 +23073,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'LinkedIn'**
   String get hostApplicationLinkedin;
-
-  /// Application detail absence of validated outreach data.
-  ///
-  /// In en, this message translates to:
-  /// **'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.'**
-  String get hostApplicationNoOutreach;
 
   /// Organizer-only application review note label.
   ///
@@ -26894,12 +26828,6 @@ abstract class AppLocalizations {
   /// **'Open person'**
   String get hostApplicationOpenPerson;
 
-  /// Audience intake workflow label.
-  ///
-  /// In en, this message translates to:
-  /// **'Open original response'**
-  String get hostApplicationOpenResponse;
-
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
@@ -27593,18 +27521,6 @@ abstract class AppLocalizations {
   /// **'Submission details'**
   String get hostAudienceSubmissionDetails;
 
-  /// Review application
-  ///
-  /// In en, this message translates to:
-  /// **'Review application'**
-  String get hostAudienceReviewApplication;
-
-  /// Application
-  ///
-  /// In en, this message translates to:
-  /// **'Application'**
-  String get hostAudienceApplicationTitle;
-
   /// Accepted into People. Event admission is handled separately.
   ///
   /// In en, this message translates to:
@@ -27616,18 +27532,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accepting adds this person to People. Event admission is handled separately.'**
   String get hostAudienceApplicationAdmission;
-
-  /// New applications
-  ///
-  /// In en, this message translates to:
-  /// **'New applications'**
-  String get hostAudienceApplicationsNew;
-
-  /// All applications
-  ///
-  /// In en, this message translates to:
-  /// **'All applications'**
-  String get hostAudienceApplicationsAll;
 
   /// Event application
   ///
@@ -27641,12 +27545,6 @@ abstract class AppLocalizations {
   /// **'Organizer application'**
   String get hostAudienceApplicationOrganizer;
 
-  /// Activity
-  ///
-  /// In en, this message translates to:
-  /// **'Activity'**
-  String get hostAudienceApplicationActivity;
-
   /// Selected people
   ///
   /// In en, this message translates to:
@@ -27658,12 +27556,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Automatic membership'**
   String get hostAudienceAutomaticGroup;
-
-  /// Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.'**
-  String get hostAudienceGroupMembershipHelp;
 
   /// Checked {date}
   ///
@@ -32899,6 +32791,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last synced at {time} — your changes queue until you are back online.'**
   String programsSnapshotBanner({required Object time});
+
+  /// Fixed server ordering of the Forms directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently updated'**
+  String get hostAudienceRecentlyUpdated;
+
+  /// Active person filter on the unified responses list.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected person'**
+  String get hostAudienceSelectedPerson;
+
+  /// Explicit save for an application review note without changing its status.
+  ///
+  /// In en, this message translates to:
+  /// **'Save review note'**
+  String get hostResponseSaveReviewNote;
+
+  /// Create the review projection for a response on its existing detail page.
+  ///
+  /// In en, this message translates to:
+  /// **'Start application review'**
+  String get hostResponseStartReview;
 }
 
 class _AppLocalizationsDelegate

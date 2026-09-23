@@ -340,26 +340,31 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
         'CatchChoiceInput segmented value must be allowed by its contract.',
       );
       if (_segmented.variant == CatchChoiceInputVariant.summary) {
+        final choices = <Widget>[
+          for (final option in options)
+            CatchChoiceButton<T>(
+              option: option,
+              selected: option.value == _segmented.selected,
+              variant: _segmented.variant,
+              onTap: _segmented.onChanged == null || !option.enabled
+                  ? null
+                  : () => _pickValue(context, option.value, widget.selected),
+            ),
+          ?_segmented.trailing,
+        ];
         return Padding(
           padding: _segmented.contentPadding,
-          child: Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              for (final option in options)
-                CatchChoiceButton<T>(
-                  option: option,
-                  selected: option.value == _segmented.selected,
-                  variant: _segmented.variant,
-                  onTap: _segmented.onChanged == null || !option.enabled
-                      ? null
-                      : () =>
-                            _pickValue(context, option.value, widget.selected),
+          child: _segmented.scrollable
+              ? SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(spacing: CatchSpacing.s2, children: choices),
+                )
+              : Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: choices,
                 ),
-              ?_segmented.trailing,
-            ],
-          ),
         );
       }
       final selectedRule = _segmented.accent ?? t.ink;

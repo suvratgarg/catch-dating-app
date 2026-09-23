@@ -6,6 +6,8 @@ class HostCustomerDirectoryControls extends StatelessWidget {
     required this.sort,
     required this.onSortChanged,
     required this.onOpenFilters,
+    this.activeFilters,
+    this.onClear,
     this.shrinkWrap = false,
     this.condensed = false,
   });
@@ -13,37 +15,41 @@ class HostCustomerDirectoryControls extends StatelessWidget {
   final HostCustomerSort sort;
   final ValueChanged<HostCustomerSort> onSortChanged;
   final VoidCallback? onOpenFilters;
+  final String? activeFilters;
+  final VoidCallback? onClear;
   final bool shrinkWrap;
   final bool condensed;
 
   @override
   Widget build(BuildContext context) {
     return CatchSection.controls(
-      leading: CatchSelectionMenu<HostCustomerSort>.adaptive(
-        title: context.l10n.hostCustomersSort,
-        subtitle: context.l10n.hostCustomersSortSheetSubtitle,
-        value: sort,
-        items: [
-          for (final option in HostCustomerSort.values)
-            CatchSelectionMenuItem(
-              value: option,
-              label: _customerSortLabel(context, option),
-            ),
-        ],
-        onSelected: onSortChanged,
-        builder: (context, selected, open, toggle) => CatchButton.command(
-          key: const ValueKey('host-customers-sort'),
-          label: context.l10n.hostCustomersSortControl(label: selected.label),
-          trailing: Icon(CatchIcons.expandMoreRounded),
-          onPressed: toggle,
-        ),
+      sortKey: const ValueKey('host-customers-sort'),
+      sortLabel: context.l10n.hostCustomersSortControl(
+        label: _customerSortLabel(context, sort),
       ),
-      trailing: CatchButton.command(
-        key: const ValueKey('host-customers-filters'),
-        label: context.l10n.hostCustomersFilters,
-        leading: Icon(CatchIcons.tuneRounded),
-        onPressed: onOpenFilters,
-      ),
+      onSort: () async {
+        final selected = await showCatchSelectionSheet<HostCustomerSort>(
+          context: context,
+          title: context.l10n.hostCustomersSort,
+          value: sort,
+          items: [
+            for (final option in HostCustomerSort.values)
+              CatchSelectionMenuItem(
+                value: option,
+                label: _customerSortLabel(context, option),
+              ),
+          ],
+        );
+        if (selected != null) onSortChanged(selected);
+      },
+      filtersKey: const ValueKey('host-customers-filters'),
+      filtersLabel: context.l10n.hostCustomersFilters,
+      onFilters: onOpenFilters,
+      activeFilters: activeFilters,
+      clearLabel: activeFilters == null
+          ? null
+          : context.l10n.hostCustomersClearFilter,
+      onClear: onClear,
     );
   }
 }
