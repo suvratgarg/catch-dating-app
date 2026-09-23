@@ -187,6 +187,12 @@ options when specific functions need higher or lower limits.
 | `adminCreateMarketingContentDraft` | `src/admin/marketingOps.ts` | Admin editable marketing draft creation, no post publish |
 | `adminListOrganizerDetails` / `adminGetOrganizerDetails` / `adminUpdateOrganizerDetails` | `src/admin/clubDetails.ts` | Admin canonical organizer directory, detail, and audited safe patch surface |
 
+Event chat notification candidates are checked after a new message commits, but
+dispatch is disabled by default. The seam has no durable queue or production
+delivery provider. Its test sink rechecks admission, membership, room state,
+blocks and mutes at dispatch time, and fails closed above 100 candidate members.
+No private member answers enter notification previews.
+
 ### Firestore-triggered
 
 | Function | File | Trigger |

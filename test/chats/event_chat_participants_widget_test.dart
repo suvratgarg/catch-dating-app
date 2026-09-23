@@ -85,6 +85,31 @@ class RoomFixtureController extends EventChatController {
   void draftChanged(bool hasText) {}
 }
 
+class ScheduleFixtureController extends RoomFixtureController {
+  static final _actions = <EventChatAction>[];
+  static final _foregroundStates = <bool>[];
+
+  @override
+  void setForeground(bool value) => _foregroundStates.add(value);
+
+  @override
+  Future<bool> updateAccess(
+    EventChatAction action, {
+    required String reviewedUid,
+    DateTime? opensAt,
+    DateTime? closesAt,
+  }) async {
+    if (action == EventChatAction.schedule &&
+        opensAt != null &&
+        closesAt != null &&
+        closesAt.isAfter(opensAt)) {
+      _actions.add(action);
+      return true;
+    }
+    return false;
+  }
+}
+
 void main() {
   setUpAll(loadCatchTestFonts);
   for (final dark in [false, true]) {
@@ -233,6 +258,130 @@ void main() {
     expect(find.text('Sara RSVP Demo'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('schedule picker keeps room authority through modal and saves', (
+    tester,
+  ) async {
+    ScheduleFixtureController._actions.clear();
+    ScheduleFixtureController._foregroundStates.clear();
+    final router = GoRouter(
+      initialLocation: '/room',
+      routes: [
+        GoRoute(
+          path: '/room',
+          builder: (_, _) => EventChatScreen(
+            eventId: 'event',
+            pickSchedule: (context) async {
+              await showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('Fixture schedule picker'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: const Text('Use schedule'),
+                    ),
+                  ],
+                ),
+              );
+              final opensAt = DateTime.now().add(const Duration(days: 1));
+              return (
+                opensAt: opensAt,
+                closesAt: opensAt.add(const Duration(hours: 2)),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((_) => Stream.value('maya')),
+          eventChatControllerProvider('event').overrideWith(
+            ScheduleFixtureController.new,
+          ),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byTooltip('Event chat'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Schedule room hours'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Fixture schedule picker'), findsOneWidget);
+    expect(ScheduleFixtureController._foregroundStates, isNot(contains(false)));
+    await tester.tap(find.text('Use schedule'));
+    await pumpFeatureUi(tester);
+    expect(ScheduleFixtureController._actions, [EventChatAction.schedule]);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('manager sees removed member action without profile navigation', (
+    tester,
+  ) async {
+    final managed = <String>[];
+    final opened = <String>[];
+    final state = EventChatParticipantsState(
+      uid: 'maya',
+      access: const EventChatAccess(
+        eventId: 'event',
+        title: 'RSVP coffee afternoon',
+        organizerId: 'rsvp',
+        roomStatus: 'open',
+        roomRevision: 1,
+        membershipStatus: 'joined',
+        membershipRevision: 1,
+        canManage: true,
+        canJoin: true,
+        canReadMessages: true,
+        profileClaimRequired: false,
+        termsVersion: 'event-chat-v1',
+      ),
+      page: EventChatParticipantPage(
+        items: const [
+          EventChatParticipant(
+            uid: 'sara',
+            displayName: 'Sara RSVP Demo',
+            isHost: false,
+            membershipStatus: 'removed',
+            membershipRevision: 2,
+          ),
+        ],
+        nextCursor: null,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: EventChatParticipantsRowList(
+            state: state,
+            onOpen: opened.add,
+            onLoadMore: () {},
+            onManage: (person, action) => managed.add('${person.uid}/$action'),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.textContaining('Removed from room'), findsOneWidget);
+    await tester.tap(find.text('Sara RSVP Demo'));
+    expect(opened, isEmpty);
+    await tester.tap(find.byTooltip('Member actions'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Allow rejoin'));
+    expect(managed, ['sara/reinstate']);
+    expect(tester.takeException(), isNull);
   });
   testWidgets(
     'empty filtered page preserves continuation instead of declaring the room empty',

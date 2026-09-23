@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -17,6 +18,9 @@ EventChatState fixture({
   bool joined = true,
   bool host = false,
   bool claim = false,
+  String? roomStatus,
+  bool muted = false,
+  bool removed = false,
 }) {
   final now = DateTime.utc(2026, 9, 23, 12);
   return EventChatState(
@@ -25,17 +29,21 @@ EventChatState fixture({
       eventId: 'event',
       title: 'RSVP coffee afternoon',
       organizerId: 'rsvp',
-      roomStatus: host ? 'notCreated' : 'open',
+      roomStatus: roomStatus ?? (host ? 'notCreated' : 'open'),
       roomRevision: 0,
-      membershipStatus: joined ? 'joined' : 'notJoined',
+      membershipStatus: removed ? 'removed' : joined ? 'joined' : 'notJoined',
       membershipRevision: 0,
       canManage: host,
       canJoin: !host && !claim,
-      canReadMessages: joined,
+      canReadMessages: joined && !removed && roomStatus != 'scheduled',
+      canPostMessages: joined && !removed &&
+          !{'scheduled', 'paused', 'announcementsOnly'}
+              .contains(roomStatus),
+      notificationsMuted: muted,
       profileClaimRequired: claim,
       termsVersion: 'event-chat-v1',
     ),
-    messages: joined
+    messages: joined && !removed && roomStatus != 'scheduled'
         ? [
             EventChatMessage(
               messageId: 'reply',
@@ -148,6 +156,37 @@ void main() {
     expect(find.text('Join event chat'), findsNothing);
     await capture(tester, 'host-open-profile-review');
   });
+  for (final room in ['scheduled', 'paused', 'announcementsOnly', 'removed', 'muted']) {
+    testWidgets('fixture room state $room has appropriate access and capture', (
+      tester,
+    ) async {
+      final draft = TextEditingController();
+      final scroll = ScrollController();
+      addTearDown(draft.dispose);
+      addTearDown(scroll.dispose);
+      final state = fixture(
+        roomStatus: room == 'removed' || room == 'muted' ? 'open' : room,
+        removed: room == 'removed',
+        muted: room == 'muted',
+      );
+      await pumpRoom(tester, state, draft, scroll);
+      expect(tester.takeException(), isNull);
+      expect(
+        find.byType(ChatInputBar),
+        room == 'muted' ? findsOneWidget : findsNothing,
+      );
+      if (room == 'paused') {
+        expect(find.textContaining('Posting is paused'), findsOneWidget);
+      }
+      if (room == 'announcementsOnly') {
+        expect(find.textContaining('Only hosts can post'), findsOneWidget);
+      }
+      if (room == 'removed') {
+        expect(find.textContaining('membership is unavailable'), findsOneWidget);
+      }
+      await capture(tester, 'fixture-$room');
+    },
+  }
   for (final reactions in [false, true]) {
     testWidgets(
       'large text with keyboard and ${reactions ? 'reactions' : 'reply'}',

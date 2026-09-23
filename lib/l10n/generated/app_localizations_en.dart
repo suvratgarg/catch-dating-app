@@ -20499,6 +20499,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatClose => 'Close event chat';
 
   @override
+  String get eventChatSchedule => 'Schedule room hours';
+
+  @override
+  String get eventChatPause => 'Pause posting';
+
+  @override
+  String get eventChatAnnouncementsOnly => 'Announcements only';
+
+  @override
+  String get eventChatResume => 'Resume posting';
+
+  @override
+  String get eventChatArchive => 'Archive room';
+
+  @override
+  String get eventChatMute => 'Mute room notifications';
+
+  @override
+  String get eventChatUnmute => 'Unmute room notifications';
+
+  @override
+  String get eventChatAnnouncement => 'Announcement';
+
+  @override
+  String get eventChatInvalidSchedule =>
+      'Choose a future opening and a later closing time.';
+
+  @override
+  String get eventChatReadOnly =>
+      'Posting is paused. You can still read messages.';
+
+  @override
+  String get eventChatAnnouncementsReadOnly =>
+      'Only hosts can post announcements right now. You can still read messages.';
+
+  @override
+  String get eventChatRemoved =>
+      'Your room membership is unavailable. Contact the host if you need help.';
+
+  @override
+  String get eventChatRemoveMember => 'Remove from room';
+
+  @override
+  String get eventChatBanMember => 'Ban from room';
+
+  @override
+  String get eventChatReinstateMember => 'Allow rejoin';
+
+  @override
+  String get eventChatMemberRemoved => 'Removed from room';
+
+  @override
+  String get eventChatMemberBanned => 'Banned from room';
+
+  @override
+  String get eventChatMemberActions => 'Member actions';
+
+  @override
+  String get eventChatRemoveMemberDisclosure =>
+      'They will lose access to this room until a host allows them to rejoin. Their event booking is unchanged.';
+
+  @override
+  String get eventChatBanMemberDisclosure =>
+      'They cannot access or rejoin this room until a host allows them to rejoin. Their event booking is unchanged.';
+
+  @override
+  String get eventChatReinstateMemberDisclosure =>
+      'They can choose to join again if they still have event admission. This does not join them automatically.';
+
+  @override
   String get eventChatLeave => 'Leave chat';
 
   @override

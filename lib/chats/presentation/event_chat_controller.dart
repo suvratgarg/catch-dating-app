@@ -39,7 +39,7 @@ class EventChatState {
   final bool busy, active;
   final Object? error;
   bool get canSend =>
-      active && access.canReadMessages && !busy && error == null;
+      active && access.canPostMessages && !busy && error == null;
   List<EventChatTyping> typingAt(DateTime now) {
     final estimatedServerTime =
         serverTimeMillis + now.difference(receivedAt).inMilliseconds;
@@ -313,6 +313,8 @@ class EventChatController extends _$EventChatController {
   Future<bool> updateAccess(
     EventChatAction action, {
     required String reviewedUid,
+    DateTime? opensAt,
+    DateTime? closesAt,
   }) async {
     final current = state.asData?.value;
     if (current == null || current.uid != reviewedUid) return false;
@@ -323,9 +325,19 @@ class EventChatController extends _$EventChatController {
         action.name,
         access.revisionFor(action),
         access.termsVersion,
+        if (action == EventChatAction.schedule) ...[
+          opensAt?.millisecondsSinceEpoch,
+          closesAt?.millisecondsSinceEpoch,
+        ],
       ]),
-      (repository, requestId) =>
-          repository.updateAccess(current.uid, access, action, requestId),
+      (repository, requestId) => repository.updateAccess(
+        current.uid,
+        access,
+        action,
+        requestId,
+        opensAt: opensAt,
+        closesAt: closesAt,
+      ),
     );
   }
 
@@ -333,10 +345,13 @@ class EventChatController extends _$EventChatController {
     String text, {
     required String reviewedUid,
     String? replyToMessageId,
+    bool announcement = false,
   }) async {
     final current = state.asData?.value;
     if (current?.canSend != true ||
         current!.uid != reviewedUid ||
+        (announcement && !current.access.canManage) ||
+        (current.access.roomStatus == 'announcementsOnly' && !announcement) ||
         text.trim().isEmpty) {
       return false;
     }
@@ -349,14 +364,17 @@ class EventChatController extends _$EventChatController {
     }
     final normalized = text.trim();
     final sent = await _mutate(
-      jsonEncode(['send', normalized, replyToMessageId]),
-      (repository, requestId) => repository.send(
-        current.uid,
-        eventId,
+      jsonEncode([
+        'send',
         normalized,
         replyToMessageId,
-        requestId,
-      ),
+        if (announcement) true,
+      ]),
+      (repository, requestId) => announcement
+          ? repository.sendAnnouncement(current.uid, eventId, normalized,
+              replyToMessageId, requestId)
+          : repository.send(current.uid, eventId, normalized,
+              replyToMessageId, requestId),
     );
     if (sent) draftChanged(false);
     return sent;
@@ -369,7 +387,9 @@ class EventChatController extends _$EventChatController {
     EventChatReportReason? reason,
   }) async {
     final current = state.asData?.value;
-    if (current?.canSend != true || current!.uid != reviewedUid) return false;
+    if (current == null || !current.active || current.busy ||
+        !current.access.canReadMessages ||
+        current.uid != reviewedUid) return false;
     final message = current.messages
         .where((row) => row.messageId == reviewed.messageId)
         .firstOrNull;

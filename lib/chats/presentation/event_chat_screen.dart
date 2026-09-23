@@ -19,8 +19,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class EventChatScreen extends ConsumerStatefulWidget {
-  const EventChatScreen({super.key, required this.eventId});
+  const EventChatScreen({
+    super.key,
+    required this.eventId,
+    this.pickSchedule,
+  });
   final String eventId;
+  final Future<({DateTime opensAt, DateTime closesAt})?> Function(BuildContext)?
+      pickSchedule;
   @override
   ConsumerState<EventChatScreen> createState() => _EventChatScreenState();
 }
@@ -30,7 +36,10 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
   final _draft = TextEditingController();
   final _scroll = ScrollController();
   String? _replyId, _reactionId;
+  bool _announcement = false;
   bool _resumed = true;
+  bool _ownedPicker = false;
+  bool _pickerBackgrounded = false;
   bool? _active;
   Timer? _clock;
   @override
@@ -50,19 +59,30 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _resumed = state == AppLifecycleState.resumed;
-    if (mounted) setState(() {});
+    if (!_resumed && _ownedPicker) {
+      _pickerBackgrounded = true;
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _syncActive(bool active) {
-    if (_active == active) return;
+    if (_active == active) {
+      return;
+    }
     _active = active;
     _clock?.cancel();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _active != active) return;
+      if (!mounted || _active != active) {
+        return;
+      }
       _controller.setForeground(active);
       if (active) {
         _clock = Timer.periodic(EventChatTiming.presenceDisplayTick, (_) {
-          if (mounted) setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
         });
       }
     });
@@ -80,15 +100,23 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
 
   Future<void> _send(String reviewedUid) async {
     final uid = ref.read(uidProvider).asData?.value;
-    if (uid != reviewedUid) return;
+    if (uid != reviewedUid) {
+      return;
+    }
     final text = _draft.text.trim();
     final reply = _replyId;
+    final reviewed = ref.read(eventChatControllerProvider(widget.eventId))
+        .asData?.value;
     final sent = await _controller.send(
       text,
       reviewedUid: reviewedUid,
       replyToMessageId: reply,
+      announcement: _announcement ||
+          reviewed?.access.roomStatus == 'announcementsOnly',
     );
-    if (!mounted || ref.read(uidProvider).asData?.value != uid || !sent) return;
+    if (!mounted || ref.read(uidProvider).asData?.value != uid || !sent) {
+      return;
+    }
     if (_draft.text.trim() == text && _replyId == reply) {
       _draft.clear();
       setState(() => _replyId = null);
@@ -102,6 +130,91 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
         ),
       );
     }
+  }
+
+  Future<void> _handleAccessAction(
+    EventChatAction action,
+    String reviewedUid,
+  ) async {
+    if (action != EventChatAction.schedule) {
+      await _controller.updateAccess(action, reviewedUid: reviewedUid);
+      return;
+    }
+    final provider = eventChatControllerProvider(widget.eventId);
+    final reviewed = ref.read(provider).asData?.value;
+    if (reviewed == null ||
+        reviewed.uid != reviewedUid ||
+        !reviewed.access.canManage) {
+      return;
+    }
+    _ownedPicker = true;
+    _pickerBackgrounded = false;
+    try {
+      final window = await (widget.pickSchedule ?? _pickSchedule)(context);
+      if (!mounted || window == null) {
+        return;
+      }
+      if (!window.opensAt.isAfter(DateTime.now()) ||
+          !window.closesAt.isAfter(window.opensAt)) {
+        showCatchSnackBar(context, context.l10n.eventChatInvalidSchedule);
+        return;
+      }
+      final latest = ref.read(provider).asData?.value;
+      if (_pickerBackgrounded ||
+          !_resumed ||
+          ref.read(uidProvider).asData?.value != reviewedUid ||
+          latest == null ||
+          latest.uid != reviewedUid ||
+          latest.busy ||
+          latest.access.roomRevision != reviewed.access.roomRevision) {
+        return;
+      }
+      await _controller.updateAccess(
+        EventChatAction.schedule,
+        reviewedUid: reviewedUid,
+        opensAt: window.opensAt,
+        closesAt: window.closesAt,
+      );
+    } finally {
+      _ownedPicker = false;
+      if (mounted) {
+        _syncActive(_resumed && (ModalRoute.isCurrentOf(context) ?? true));
+      }
+    }
+  }
+
+  Future<({DateTime opensAt, DateTime closesAt})?> _pickSchedule(
+    BuildContext context,
+  ) async {
+    final now = DateTime.now();
+    final openDate = await showDatePicker(
+      context: context,
+      initialDate: now.add(const Duration(days: 1)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365)),
+    );
+    if (!mounted || openDate == null) return null;
+    final openTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(now),
+    );
+    if (!mounted || openTime == null) return null;
+    final closeDate = await showDatePicker(
+      context: context,
+      initialDate: openDate,
+      firstDate: openDate,
+      lastDate: now.add(const Duration(days: 365)),
+    );
+    if (!mounted || closeDate == null) return null;
+    final closeTime = await showTimePicker(
+      context: context,
+      initialTime: openTime,
+    );
+    if (!mounted || closeTime == null) return null;
+    return (opensAt: DateTime(openDate.year, openDate.month, openDate.day,
+      openTime.hour, openTime.minute),
+    closesAt: DateTime(closeDate.year, closeDate.month, closeDate.day,
+      closeTime.hour, closeTime.minute));
   }
 
   Future<void> _messageAction(
@@ -185,13 +298,15 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
     final value = ref.watch(provider);
     final display = catchAsyncStateFromAsyncValue(value);
     final current = display.isSettledData ? display.value : null;
-    _syncActive(_resumed && (ModalRoute.isCurrentOf(context) ?? true));
+    _syncActive(_resumed &&
+        ((ModalRoute.isCurrentOf(context) ?? true) || _ownedPicker));
     ref.listen(uidProvider, (before, after) {
       if (before?.asData?.value != after.asData?.value) {
         _draft.clear();
         setState(() {
           _replyId = null;
           _reactionId = null;
+          _announcement = false;
         });
       }
     });
@@ -228,30 +343,70 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
               child: Icon(CatchIcons.personOutlineRounded),
             ),
           if (current != null &&
-              (current.access.canManage ||
-                  current.access.hasJoined))
+              current.access.canManage &&
+              current.access.roomStatus != 'archived')
             CatchActionMenu<EventChatAction>(
               tooltip: context.l10n.eventChatTitle,
               enabled: !current.busy,
               items: [
-                if (current.access.canManage)
+                CatchActionMenuItem(
+                  value: current.access.isRoomOpen
+                      ? EventChatAction.close
+                      : EventChatAction.open,
+                  label: current.access.isRoomOpen
+                      ? context.l10n.eventChatClose
+                      : context.l10n.eventChatOpen,
+                ),
+                CatchActionMenuItem(
+                  value: EventChatAction.schedule,
+                  label: context.l10n.eventChatSchedule,
+                ),
+                if (current.access.roomStatus == 'open' ||
+                    current.access.roomStatus == 'announcementsOnly')
                   CatchActionMenuItem(
-                    value: current.access.isRoomOpen
-                        ? EventChatAction.close
-                        : EventChatAction.open,
-                    label: current.access.isRoomOpen
-                        ? context.l10n.eventChatClose
-                        : context.l10n.eventChatOpen,
+                    value: EventChatAction.pause,
+                    label: context.l10n.eventChatPause,
                   ),
-                if (current.access.hasJoined)
+                if (current.access.roomStatus == 'open' ||
+                    current.access.roomStatus == 'paused')
                   CatchActionMenuItem(
-                    value: EventChatAction.leave,
-                    label: context.l10n.eventChatLeave,
+                    value: EventChatAction.announcementsOnly,
+                    label: context.l10n.eventChatAnnouncementsOnly,
                   ),
+                if (current.access.roomStatus == 'paused' ||
+                    current.access.roomStatus == 'announcementsOnly')
+                  CatchActionMenuItem(
+                    value: EventChatAction.resume,
+                    label: context.l10n.eventChatResume,
+                  ),
+                CatchActionMenuItem(
+                  value: EventChatAction.archive,
+                  label: context.l10n.eventChatArchive,
+                ),
               ],
-              onSelected: (action) => unawaited(
-                _controller.updateAccess(action, reviewedUid: current.uid),
-              ),
+              onSelected: (action) =>
+                  unawaited(_handleAccessAction(action, current.uid)),
+            ),
+          if (current != null && current.access.hasJoined)
+            CatchActionMenu<EventChatAction>(
+              tooltip: context.l10n.eventChatMemberActions,
+              enabled: !current.busy,
+              items: [
+                CatchActionMenuItem(
+                  value: EventChatAction.leave,
+                  label: context.l10n.eventChatLeave,
+                ),
+                CatchActionMenuItem(
+                  value: current.access.notificationsMuted
+                      ? EventChatAction.unmute
+                      : EventChatAction.mute,
+                  label: current.access.notificationsMuted
+                      ? context.l10n.eventChatUnmute
+                      : context.l10n.eventChatMute,
+                ),
+              ],
+              onSelected: (action) =>
+                  unawaited(_handleAccessAction(action, current.uid)),
             ),
         ],
       ),
@@ -267,6 +422,9 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
             now: DateTime.now(),
             replyId: _replyId,
             reactionId: _reactionId,
+            announcement: _announcement,
+            onAnnouncementChanged: (value) =>
+                setState(() => _announcement = value),
             onSend: () => unawaited(_send(state.uid)),
             onMessageAction: (message, action) =>
                 unawaited(_messageAction(state, message, action)),
@@ -278,9 +436,8 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
               },
             ),
             onLoadEarlier: () => unawaited(_controller.loadEarlier()),
-            onAction: (action) => unawaited(
-              _controller.updateAccess(action, reviewedUid: state.uid),
-            ),
+            onAction: (action) =>
+                unawaited(_handleAccessAction(action, state.uid)),
             onReviewProfile: AppConfig.appRole.isHost
                 ? null
                 : () => context.pushNamed(Routes.formProfilesScreen.name),
@@ -314,6 +471,8 @@ class EventChatPageBody extends StatelessWidget {
     required this.now,
     required this.replyId,
     required this.reactionId,
+    this.announcement = false,
+    this.onAnnouncementChanged,
     required this.onSend,
     required this.onLoadEarlier,
     required this.onAction,
@@ -329,6 +488,8 @@ class EventChatPageBody extends StatelessWidget {
   final ScrollController scrollController;
   final DateTime now;
   final String? replyId, reactionId;
+  final bool announcement;
+  final ValueChanged<bool>? onAnnouncementChanged;
   final VoidCallback onSend, onLoadEarlier;
   final ValueChanged<String>? onViewProfile;
   final void Function(EventChatMessage, EventChatSafetyAction)? onMessageAction;
@@ -354,7 +515,10 @@ class EventChatPageBody extends StatelessWidget {
           children: [
             gapH24,
             Text(
-              !access.isRoomOpen
+              access.membershipStatus == 'removed' ||
+                      access.membershipStatus == 'banned'
+                  ? l.eventChatRemoved
+                  : !access.isRoomOpen
                   ? l.eventChatNotOpen
                   : l.eventChatJoinTitle,
               style: CatchTextStyles.headlineS(context),
@@ -369,7 +533,9 @@ class EventChatPageBody extends StatelessWidget {
               style: CatchTextStyles.recordBody(context),
             ),
             gapH24,
-            if (access.canManage && !access.isRoomOpen)
+            if (access.canManage &&
+                !access.isRoomOpen &&
+                access.roomStatus != 'archived')
               CatchButton(
                 label: l.eventChatOpen,
                 fullWidth: true,
@@ -465,6 +631,8 @@ class EventChatPageBody extends StatelessWidget {
                         message: message,
                         isMe: message.senderUid == state.uid,
                         enabled: state.canSend,
+                        safetyEnabled: state.active &&
+                            access.canReadMessages && !state.busy,
                         onReport:
                             onMessageAction != null &&
                                 message.senderUid != state.uid
@@ -510,13 +678,13 @@ class EventChatPageBody extends StatelessWidget {
               style: CatchTextStyles.supporting(context),
             ),
           ),
-        if (reacting != null)
+        if (reacting != null && state.canSend)
           EventChatReactionSection(
             selected: reacting.myReaction,
             onClose: () => onShowReactions(null),
             onSelected: (reaction) => onReaction(reacting, reaction),
           ),
-        if (replyId != null && reacting == null)
+        if (replyId != null && reacting == null && state.canSend)
           Padding(
             padding: CatchInsets.contentHorizontal,
             child: Row(
@@ -551,7 +719,26 @@ class EventChatPageBody extends StatelessWidget {
               ],
             ),
           ),
-        if (reacting == null)
+        if (!access.canPostMessages)
+          Padding(
+            padding: CatchInsets.contentHorizontal,
+            child: Text(
+              access.roomStatus == 'announcementsOnly'
+                  ? l.eventChatAnnouncementsReadOnly
+                  : l.eventChatReadOnly,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ),
+        if (reacting == null && access.canPostMessages && access.canManage &&
+            access.roomStatus == 'open')
+          CheckboxListTile(
+            title: Text(l.eventChatAnnouncement),
+            value: announcement,
+            onChanged: onAnnouncementChanged == null
+                ? null
+                : (value) => onAnnouncementChanged!(value ?? false),
+          ),
+        if (reacting == null && access.canPostMessages)
           ChatInputBar(
             controller: draft,
             sending: state.busy,
