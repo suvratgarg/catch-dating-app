@@ -59,12 +59,18 @@ void main() {
     await pumpFeatureUi(tester);
     expect(requests.last.versionId, 'form_v1');
     expect(requests.last.answerFilters, isEmpty);
+    await tester.tap(find.text('Reset all'));
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v2');
     final allVersions = find.byKey(const ValueKey('response-version-'));
     await tester.ensureVisible(allVersions);
     await tester.tap(allVersions);
     await pumpFeatureUi(tester);
     expect(requests.last.versionId, isNull);
     expect(requests.last.answerFilters, isEmpty);
+    await tester.tap(find.text('Reset all'));
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v2');
   });
   testWidgets(
     'city filters remain available during loading and empty scan pages',

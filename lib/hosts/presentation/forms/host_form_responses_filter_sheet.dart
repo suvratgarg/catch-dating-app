@@ -16,6 +16,10 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
             if (loaded != null) options = loaded.answerFilterOptions;
             final scope = loaded?.versionScope ??
                 (formId == widget.formId ? _versionScope : null);
+            final hasVersionOverride = formId == widget.formId &&
+                scope != null &&
+                _versionResolved &&
+                _versionId != scope.activeVersionId;
             void changeForm(String? value) {
               if (formId == value) return;
               updateSheet(() {
@@ -36,9 +40,13 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                 size: CatchButtonSize.sm,
                 onPressed:
                     _answerFilters.isEmpty &&
+                        !hasVersionOverride &&
                         (formId == null || widget.onFormChanged == null)
                     ? null
                     : () {
+                        if (hasVersionOverride) {
+                          _selectVersion(scope!.activeVersionId);
+                        }
                         _updateFilters(_answerFilters.clear);
                         if (widget.onFormChanged != null) changeForm(null);
                         updateSheet(() {});

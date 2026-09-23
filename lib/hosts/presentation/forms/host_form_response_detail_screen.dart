@@ -89,7 +89,7 @@ class _HostFormResponseDetailScreenState
   bool _saving = false;
   bool _navigating = false;
   int? _noteRevision;
-  bool get _busy => _saving || _converting != null;
+  bool get _busy => _saving || _converting != null || _navigating;
   HostResponseReviewKey get _key => (
     organizerId: widget.organizerId,
     responseId: widget.responseId,
