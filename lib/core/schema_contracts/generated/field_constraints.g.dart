@@ -73831,6 +73831,64 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const manageOrganizerFormDomainCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallablePayload.action',
+    required: true,
+  );
+
+  static const manageOrganizerFormDomainCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormDomainCallablePayloadHostname = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallablePayload.hostname',
+    maxLength: 253,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9.-]+\$',
+  );
+
+  static const manageOrganizerFormDomainCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormDomainCallableResponseExpectedCname = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallableResponse.expectedCname',
+    maxLength: 253,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormDomainCallableResponseHostname = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallableResponse.hostname',
+    maxLength: 253,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormDomainCallableResponseOwnershipChallenge = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallableResponse.ownershipChallenge',
+    valueTypes: <String>['string'],
+    pattern: '^catch-verification=[A-Za-z0-9_-]{32}\$',
+  );
+
+  static const manageOrganizerFormDomainCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormDomainCallableResponse.status',
+    required: true,
+    enumValues: <String>['pending', 'verified', 'revoked'],
+  );
+
   static const manageOrganizerFormPaymentConnectionCallablePayloadAction = CatchContractFieldConstraints(
     path: 'manageOrganizerFormPaymentConnectionCallablePayload.action',
     required: true,
@@ -84396,6 +84454,92 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormDomainDocumentCertificateStatus = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.certificateStatus',
+    required: true,
+    enumValues: <String>['pending', 'ready', 'failed'],
+  );
+
+  static const organizerFormDomainDocumentExpectedCname = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.expectedCname',
+    maxLength: 253,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDomainDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDomainDocumentGeneration = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.generation',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerFormDomainDocumentHostname = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.hostname',
+    maxLength: 253,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9.-]+\$',
+  );
+
+  static const organizerFormDomainDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDomainDocumentOwnershipChallenge = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.ownershipChallenge',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^catch-verification=[A-Za-z0-9_-]{32}\$',
+  );
+
+  static const organizerFormDomainDocumentPendingExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.pendingExpiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerFormDomainDocumentPublicFormId = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const organizerFormDomainDocumentReservedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.reservedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormDomainDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.status',
+    required: true,
+    enumValues: <String>['pending', 'verified', 'active', 'revoked'],
+  );
+
+  static const organizerFormDomainDocumentVerifiedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormDomainDocument.verifiedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const organizerFormDraftDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -123638,6 +123782,14 @@ abstract final class CatchContractConstraints {
     'listSuvbotDemoActionsCallableResponse.actions.items.requiresText': listSuvbotDemoActionsCallableResponseActionsItemsRequiresText,
     'listTransportVendorsCallablePayload.organizerId': listTransportVendorsCallablePayloadOrganizerId,
     'listTransportVendorsCallablePayload.programId': listTransportVendorsCallablePayloadProgramId,
+    'manageOrganizerFormDomainCallablePayload.action': manageOrganizerFormDomainCallablePayloadAction,
+    'manageOrganizerFormDomainCallablePayload.formId': manageOrganizerFormDomainCallablePayloadFormId,
+    'manageOrganizerFormDomainCallablePayload.hostname': manageOrganizerFormDomainCallablePayloadHostname,
+    'manageOrganizerFormDomainCallablePayload.organizerId': manageOrganizerFormDomainCallablePayloadOrganizerId,
+    'manageOrganizerFormDomainCallableResponse.expectedCname': manageOrganizerFormDomainCallableResponseExpectedCname,
+    'manageOrganizerFormDomainCallableResponse.hostname': manageOrganizerFormDomainCallableResponseHostname,
+    'manageOrganizerFormDomainCallableResponse.ownershipChallenge': manageOrganizerFormDomainCallableResponseOwnershipChallenge,
+    'manageOrganizerFormDomainCallableResponse.status': manageOrganizerFormDomainCallableResponseStatus,
     'manageOrganizerFormPaymentConnectionCallablePayload.action': manageOrganizerFormPaymentConnectionCallablePayloadAction,
     'manageOrganizerFormPaymentConnectionCallablePayload.connectionId': manageOrganizerFormPaymentConnectionCallablePayloadConnectionId,
     'manageOrganizerFormPaymentConnectionCallablePayload.organizerId': manageOrganizerFormPaymentConnectionCallablePayloadOrganizerId,
@@ -125097,6 +125249,18 @@ abstract final class CatchContractConstraints {
     'organizerFormDocument.title': organizerFormDocumentTitle,
     'organizerFormDocument.updatedAt._nanoseconds': organizerFormDocumentUpdatedAtNanoseconds,
     'organizerFormDocument.updatedAt._seconds': organizerFormDocumentUpdatedAtSeconds,
+    'organizerFormDomainDocument.certificateStatus': organizerFormDomainDocumentCertificateStatus,
+    'organizerFormDomainDocument.expectedCname': organizerFormDomainDocumentExpectedCname,
+    'organizerFormDomainDocument.formId': organizerFormDomainDocumentFormId,
+    'organizerFormDomainDocument.generation': organizerFormDomainDocumentGeneration,
+    'organizerFormDomainDocument.hostname': organizerFormDomainDocumentHostname,
+    'organizerFormDomainDocument.organizerId': organizerFormDomainDocumentOrganizerId,
+    'organizerFormDomainDocument.ownershipChallenge': organizerFormDomainDocumentOwnershipChallenge,
+    'organizerFormDomainDocument.pendingExpiresAtMillis': organizerFormDomainDocumentPendingExpiresAtMillis,
+    'organizerFormDomainDocument.publicFormId': organizerFormDomainDocumentPublicFormId,
+    'organizerFormDomainDocument.reservedAtMillis': organizerFormDomainDocumentReservedAtMillis,
+    'organizerFormDomainDocument.status': organizerFormDomainDocumentStatus,
+    'organizerFormDomainDocument.verifiedAtMillis': organizerFormDomainDocumentVerifiedAtMillis,
     'organizerFormDraftDocument.createdAt._nanoseconds': organizerFormDraftDocumentCreatedAtNanoseconds,
     'organizerFormDraftDocument.createdAt._seconds': organizerFormDraftDocumentCreatedAtSeconds,
     'organizerFormDraftDocument.definition.appearance.activityKind': organizerFormDraftDocumentDefinitionAppearanceActivityKind,

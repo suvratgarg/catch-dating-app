@@ -258,6 +258,7 @@ export {validateOrganizerProviderConnectionDocument} from "./validators/organize
 export {validateOrganizerApplicationFormDocument} from "./validators/organizerApplicationFormDocument";
 export {validateOrganizerApplicationFormVersionDocument} from "./validators/organizerApplicationFormVersionDocument";
 export {validateOrganizerFormDocument} from "./validators/organizerFormDocument";
+export {validateOrganizerFormDomainDocument} from "./validators/organizerFormDomainDocument";
 export {validateOrganizerPaymentConnectionDocument} from "./validators/organizerPaymentConnectionDocument";
 export {validateOrganizerPaymentOauthStateDocument} from "./validators/organizerPaymentOauthStateDocument";
 export {validateOrganizerFormPaymentDocument} from "./validators/organizerFormPaymentDocument";
@@ -617,6 +618,8 @@ export {validateGetEventRosterInsightsCallableResponse} from "./validators/getEv
 export {validateGetOrganizerCrmSummaryCallableResponse} from "./validators/getOrganizerCrmSummaryOutput";
 export {validateListOrganizerContactsCallablePayload} from "./validators/listOrganizerContactsInput";
 export {validateCreateOrganizerFormCallablePayload} from "./validators/createOrganizerFormInput";
+export {validateManageOrganizerFormDomainCallablePayload} from "./validators/manageOrganizerFormDomainInput";
+export {validateManageOrganizerFormDomainCallableResponse} from "./validators/manageOrganizerFormDomainOutput";
 export {validateCreateOrganizerFormCallableResponse} from "./validators/createOrganizerFormOutput";
 export {validateUpdateOrganizerFormDraftCallablePayload} from "./validators/updateOrganizerFormDraftInput";
 export {validateUpdateOrganizerFormDraftCallableResponse} from "./validators/updateOrganizerFormDraftOutput";

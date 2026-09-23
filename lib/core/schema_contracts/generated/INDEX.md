@@ -265,6 +265,7 @@ Do not edit it by hand.
 | OrganizerApplicationFormDocument | `firestore/organizer_application_forms.schema.json` | `functions/src/shared/generated/organizerApplicationFormDocument.ts` |
 | OrganizerApplicationFormVersionDocument | `firestore/organizer_application_form_versions.schema.json` | `functions/src/shared/generated/organizerApplicationFormVersionDocument.ts` |
 | OrganizerFormDocument | `firestore/organizer_forms.schema.json` | `functions/src/shared/generated/organizerFormDocument.ts` |
+| OrganizerFormDomainDocument | `firestore/organizer_form_domains.schema.json` | `functions/src/shared/generated/organizerFormDomainDocument.ts` |
 | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `functions/src/shared/generated/organizerPaymentConnectionDocument.ts` |
 | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `functions/src/shared/generated/organizerPaymentOauthStateDocument.ts` |
 | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `functions/src/shared/generated/organizerFormPaymentDocument.ts` |
@@ -624,6 +625,8 @@ Do not edit it by hand.
 | GetOrganizerCrmSummaryCallableResponse | `callable_responses/get_organizer_crm_summary_response.schema.json` | `functions/src/shared/generated/getOrganizerCrmSummaryCallableResponse.ts` |
 | ListOrganizerContactsCallablePayload | `callables/list_organizer_contacts_payload.schema.json` | `functions/src/shared/generated/listOrganizerContactsCallablePayload.ts` |
 | CreateOrganizerFormCallablePayload | `callables/create_organizer_form_payload.schema.json` | `functions/src/shared/generated/createOrganizerFormCallablePayload.ts` |
+| ManageOrganizerFormDomainCallablePayload | `callables/manage_organizer_form_domain_payload.schema.json` | `functions/src/shared/generated/manageOrganizerFormDomainCallablePayload.ts` |
+| ManageOrganizerFormDomainCallableResponse | `callable_responses/manage_organizer_form_domain_response.schema.json` | `functions/src/shared/generated/manageOrganizerFormDomainCallableResponse.ts` |
 | CreateOrganizerFormCallableResponse | `callable_responses/create_organizer_form_response.schema.json` | `functions/src/shared/generated/createOrganizerFormCallableResponse.ts` |
 | UpdateOrganizerFormDraftCallablePayload | `callables/update_organizer_form_draft_payload.schema.json` | `functions/src/shared/generated/updateOrganizerFormDraftCallablePayload.ts` |
 | UpdateOrganizerFormDraftCallableResponse | `callable_responses/update_organizer_form_draft_response.schema.json` | `functions/src/shared/generated/updateOrganizerFormDraftCallableResponse.ts` |
@@ -1083,6 +1086,7 @@ Do not edit it by hand.
 | `schemaOrganizerApplicationFormDocumentSchema` | OrganizerApplicationFormDocument | `firestore/organizer_application_forms.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_form_document.g.dart` |
 | `schemaOrganizerApplicationFormVersionDocumentSchema` | OrganizerApplicationFormVersionDocument | `firestore/organizer_application_form_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_form_version_document.g.dart` |
 | `schemaOrganizerFormDocumentSchema` | OrganizerFormDocument | `firestore/organizer_forms.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_document.g.dart` |
+| `schemaOrganizerFormDomainDocumentSchema` | OrganizerFormDomainDocument | `firestore/organizer_form_domains.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_domain_document.g.dart` |
 | `schemaOrganizerPaymentConnectionDocumentSchema` | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_connection_document.g.dart` |
 | `schemaOrganizerPaymentOauthStateDocumentSchema` | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_oauth_state_document.g.dart` |
 | `schemaOrganizerFormPaymentDocumentSchema` | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_document.g.dart` |
@@ -1442,6 +1446,8 @@ Do not edit it by hand.
 | `schemaGetOrganizerCrmSummaryCallableResponseSchema` | GetOrganizerCrmSummaryCallableResponse | `callable_responses/get_organizer_crm_summary_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_crm_summary_callable_response.g.dart` |
 | `schemaListOrganizerContactsCallablePayloadSchema` | ListOrganizerContactsCallablePayload | `callables/list_organizer_contacts_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_contacts_callable_payload.g.dart` |
 | `schemaCreateOrganizerFormCallablePayloadSchema` | CreateOrganizerFormCallablePayload | `callables/create_organizer_form_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_organizer_form_callable_payload.g.dart` |
+| `schemaManageOrganizerFormDomainCallablePayloadSchema` | ManageOrganizerFormDomainCallablePayload | `callables/manage_organizer_form_domain_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_organizer_form_domain_callable_payload.g.dart` |
+| `schemaManageOrganizerFormDomainCallableResponseSchema` | ManageOrganizerFormDomainCallableResponse | `callable_responses/manage_organizer_form_domain_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_organizer_form_domain_callable_response.g.dart` |
 | `schemaCreateOrganizerFormCallableResponseSchema` | CreateOrganizerFormCallableResponse | `callable_responses/create_organizer_form_response.schema.json` | `lib/core/schema_contracts/generated/schemas/create_organizer_form_callable_response.g.dart` |
 | `schemaUpdateOrganizerFormDraftCallablePayloadSchema` | UpdateOrganizerFormDraftCallablePayload | `callables/update_organizer_form_draft_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_form_draft_callable_payload.g.dart` |
 | `schemaUpdateOrganizerFormDraftCallableResponseSchema` | UpdateOrganizerFormDraftCallableResponse | `callable_responses/update_organizer_form_draft_response.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_form_draft_callable_response.g.dart` |
@@ -1977,6 +1983,7 @@ Do not edit it by hand.
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
 | UpsertOrganizerSavedAudienceCallablePayload | cannot map field "scope" (no type) |
 | PrepareOrganizerManualSendTaskCallablePayload | cannot map field "intent" (no type) |
+| ManageOrganizerFormDomainCallablePayload | not an object schema |
 | PrepareOrganizerFormPaymentCallablePayload | not an object schema |
 | RecordEventSuccessUnitOutcomesCallablePayload | cannot map field "entries" (type=array) |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |

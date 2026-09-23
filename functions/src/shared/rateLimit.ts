@@ -89,6 +89,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 60 * 1000,
   },
   createOrganizerForm: {maxRequests: 20, windowMs: 60 * 60 * 1000},
+  manageOrganizerFormDomain: {maxRequests: 10, windowMs: 60 * 60 * 1000},
+  reserveOrganizerFormDomain: {maxRequests: 3, windowMs: 24 * 60 * 60 * 1000},
   promoteFormCommunicationIntent: {
     maxRequests: 10, windowMs: 60 * 60 * 1000,
   },
