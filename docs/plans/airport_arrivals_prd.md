@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.5
+version: 0.3.6
 updated: 2026-09-23
 owner: product
 status: draft
@@ -622,7 +622,13 @@ across reads and dispatch sheets, rechecks wall time on app resume,
 discards retained rows during reload, and
 rejects responses that arrive after their deadline. Saved-operation review
 stops resolving guest names from a roster while it reloads. A dispatch sheet
-checks both its captured route deadline and the current roster before queuing.
+checks both its captured route deadline and the current roster before queuing. Live
+read responses also carry the cache's accepted authority generation through
+persistence: a concurrent revocation or narrower bootstrap discards an older
+response before display, without clearing the newer verified access. A
+bootstrap may advance its own generation; persistence failure alone does not
+turn a successful live read into an error. Mutation receipts retain their
+server outcome across a concurrent access change.
 Missing deadlines in legacy operational snapshots fail parsing; they are never
 interpreted as manager access.
 

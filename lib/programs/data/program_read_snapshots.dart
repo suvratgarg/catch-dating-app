@@ -24,7 +24,9 @@ class ProgramReadSnapshot {
 /// greeter who loses connectivity mid-shift still sees the last roster —
 /// always rendered with its capture timestamp, never presented as live.
 abstract interface class ProgramReadSnapshotStore {
-  Future<void> save(
+  /// Returns the accepted authority generation, or null for a stale response.
+  /// Persistence failure does not invalidate an otherwise current live read.
+  Future<int?> save(
     String accountId,
     String scope,
     Object? data, {
@@ -101,23 +103,24 @@ class SharedPreferencesProgramReadSnapshotStore
   }
 
   @override
-  Future<void> save(
+  Future<int?> save(
     String accountId,
     String scope,
     Object? data, {
     int? expectedGeneration,
   }) => _lock.run(accountId, () async {
-    if (data == null) return;
+    if (data == null) return null;
     final prefs = await _prefs;
     final key = '$_keyPrefix$accountId';
     final programId = _programId(scope);
     if (expectedGeneration != null &&
         expectedGeneration != generation(accountId, programId)) {
-      return;
+      return null;
     }
+    var acceptedGeneration = generation(accountId, programId);
     if (_blockedPrograms.contains('$accountId:$programId') &&
         scope != programSnapshotScope('work', programId)) {
-      return;
+      return acceptedGeneration;
     }
     final entries = _decode(prefs.getString(key));
     if (scope == programSnapshotScope('work', programId) &&
@@ -125,8 +128,8 @@ class SharedPreferencesProgramReadSnapshotStore
       // A fresh narrower bootstrap must never authorize an older broad roster.
       _blockedPrograms.add('$accountId:$programId');
       entries.removeWhere((key, _) => _programId(key) == programId);
-      _generations['$accountId:$programId'] =
-          generation(accountId, programId) + 1;
+      acceptedGeneration = generation(accountId, programId) + 1;
+      _generations['$accountId:$programId'] = acceptedGeneration;
     }
     final cutoff = DateTime.now().subtract(maxAge).millisecondsSinceEpoch;
     entries.removeWhere(
@@ -149,11 +152,15 @@ class SharedPreferencesProgramReadSnapshotStore
         entries.remove(ordered.removeAt(0).key);
       }
     }
-    if (await prefs.setString(key, jsonEncode(entries))) {
+    final saved = await prefs
+        .setString(key, jsonEncode(entries))
+        .onError<Object>((_, _) => false);
+    if (saved && acceptedGeneration == generation(accountId, programId)) {
       if (scope == programSnapshotScope('work', programId)) {
         _blockedPrograms.remove('$accountId:$programId');
       }
     }
+    return acceptedGeneration;
   });
 
   @override

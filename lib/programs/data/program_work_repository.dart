@@ -35,6 +35,7 @@ class ProgramWorkRepository {
     String? snapshotAccountId,
   }) => _call(
     name: 'getProgramWorkAccess',
+    authorityScopedRead: true,
     payload: ProgramIdCallableRequest(programId: programId).toJson(),
     action: 'load program access',
     parse: ProgramWorkAccess.fromCallableData,
@@ -60,6 +61,7 @@ class ProgramWorkRepository {
     String? snapshotAccountId,
   }) => _call(
     name: 'getProgramArrivalsRoster',
+    authorityScopedRead: true,
     payload: ProgramStationScopeCallableRequest(
       programId: programId,
       pickupPointId: pickupPointId,
@@ -76,6 +78,7 @@ class ProgramWorkRepository {
     String? snapshotAccountId,
   }) => _call(
     name: 'getProgramTransportPlan',
+    authorityScopedRead: true,
     payload: ProgramStationScopeCallableRequest(
       programId: programId,
       pickupPointId: pickupPointId,
@@ -238,6 +241,7 @@ class ProgramWorkRepository {
     required String hotelId,
   }) => _call(
     name: 'getProgramHotelInbound',
+    authorityScopedRead: true,
     payload: GetProgramHotelInboundCallableRequest(
       programId: programId,
       hotelId: hotelId,
@@ -248,6 +252,7 @@ class ProgramWorkRepository {
 
   Future<ProgramTripList> listTrips(String programId) => _call(
     name: 'listProgramTrips',
+    authorityScopedRead: true,
     payload: ProgramIdCallableRequest(programId: programId).toJson(),
     action: 'load the trip ledger',
     parse: ProgramTripList.fromCallableData,
@@ -260,6 +265,7 @@ class ProgramWorkRepository {
     required String programId,
   }) => _call(
     name: 'listTransportVendors',
+    authorityScopedRead: true,
     payload: ListTransportVendorsCallableRequest(
       organizerId: organizerId,
       programId: programId,
@@ -336,6 +342,7 @@ class ProgramWorkRepository {
     required T Function(Object?) parse,
     String? snapshotScope,
     String? snapshotAccountId,
+    bool authorityScopedRead = false,
   }) async {
     final accountId = _currentAccountId();
     if (accountId == null ||
@@ -357,19 +364,38 @@ class ProgramWorkRepository {
             throw SignInRequiredException(action);
           }
           final parsed = parse(result.data);
+          var acceptedGeneration = generation;
           if (snapshotScope != null && snapshotAccountId != null) {
             // Cache failure must not turn a successful server read into a retry.
-            await _snapshots
+            acceptedGeneration = await _snapshots
                 .save(
                   accountId,
                   snapshotScope,
                   result.data,
                   expectedGeneration: generation,
                 )
-                .onError<Object>((_, _) {});
+                .onError<Object>((_, _) => generation);
           }
           if (_currentAccountId() != accountId) {
             throw SignInRequiredException(action);
+          }
+          if (authorityScopedRead &&
+              programId != null &&
+              (acceptedGeneration == null ||
+                  acceptedGeneration !=
+                      _snapshots.generation(accountId, programId))) {
+            // A concurrent denial or narrower bootstrap superseded this read.
+            // This is not a new denial: preserve the newer authority and cache.
+            throw BackendOperationException(
+              code: 'program-access-changed',
+              message: 'Program access changed. Refresh to load current work.',
+              retryable: true,
+              context: BackendErrorContext(
+                service: BackendService.functions,
+                action: action,
+                resource: name,
+              ),
+            );
           }
           return parsed;
         },

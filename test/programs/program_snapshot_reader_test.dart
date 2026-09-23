@@ -423,7 +423,7 @@ class _PausedSnapshotStore implements ProgramReadSnapshotStore {
   Future<void> clearProgram(String accountId, String programId) =>
       delegate.clearProgram(accountId, programId);
   @override
-  Future<void> save(
+  Future<int?> save(
     String accountId,
     String scope,
     Object? data, {
