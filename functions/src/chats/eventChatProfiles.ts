@@ -157,6 +157,25 @@ function hasSelection(selection: Selection) {
     !!selection.card || !!selection.firstName || !!selection.introduction;
 }
 
+function normalizeSelection(selection: Selection): Selection {
+  return {
+    profileRevision: selection.profileRevision,
+    membershipRevision: selection.membershipRevision,
+    coreFieldIds: [...selection.coreFieldIds].sort(),
+    photoId: selection.photoId,
+    card: selection.card ? {
+      responseId: selection.card.responseId,
+      revision: selection.card.revision,
+      questionIds: [...selection.card.questionIds].sort(),
+    } : null,
+    ...(selection.firstName === undefined ? {} :
+      {firstName: selection.firstName.trim()}),
+    ...(selection.introduction === undefined ? {} :
+      {introduction: selection.introduction.trim()}),
+    termsVersion: selection.termsVersion,
+  };
+}
+
 async function projectProfile(
   db: FirebaseFirestore.Firestore,
   tx: FirebaseFirestore.Transaction,
@@ -245,7 +264,8 @@ export async function getEventChatProfileSharingHandler(
     } catch (error) {
       if (!isUnavailable(error)) throw error;
     }
-    const proposed = data.previewSelection ?? null;
+    const proposed = data.previewSelection ?
+      normalizeSelection(data.previewSelection) : null;
     let projected: Awaited<ReturnType<typeof projectProfile>> | null = null;
     if (proposed) {
       if (!access || !access.view.canJoin || !hasSelection(proposed) ||
@@ -299,23 +319,7 @@ export async function updateEventChatProfileSharingHandler(
   requireEventChatActor(uid, data.expectedUid);
   if (data.selection) requireVerifiedParticipant(request);
   const selection: Selection | null = data.selection ?
-    {
-      profileRevision: data.selection.profileRevision,
-      membershipRevision: data.selection.membershipRevision,
-      coreFieldIds: [...data.selection.coreFieldIds].sort(),
-      photoId: data.selection.photoId,
-      card: data.selection.card ?
-        {
-          responseId: data.selection.card.responseId,
-          revision: data.selection.card.revision,
-          questionIds: [...data.selection.card.questionIds].sort(),
-        } :
-        null,
-      firstName: data.selection.firstName?.trim(),
-      introduction: data.selection.introduction?.trim(),
-      termsVersion: data.selection.termsVersion,
-    } :
-    null;
+    normalizeSelection(data.selection) : null;
   if (selection && !hasSelection(selection)) {
     throw new HttpsError("invalid-argument", "Choose information to share.");
   }

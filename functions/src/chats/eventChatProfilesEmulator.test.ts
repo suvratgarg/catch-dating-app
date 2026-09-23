@@ -351,6 +351,8 @@ test(
             ).get()
           ).data()!;
           assert.equal(JSON.stringify(stored).includes("Tequila"), false);
+          assert.equal(Object.hasOwn(stored.selection, "firstName"), false);
+          assert.equal(Object.hasOwn(stored.selection, "introduction"), false);
           await save(null);
           assert.deepEqual((await read()).coreFields, []);
           await update(req, deps);
