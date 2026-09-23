@@ -30,6 +30,72 @@ export const withdrawParticipantMessagingPermissionCallableResponseSchema: Recor
             "optedOut"
           ]
         },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "receiptId": {
           "anyOf": [
             {

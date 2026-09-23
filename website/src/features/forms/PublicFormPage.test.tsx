@@ -199,6 +199,56 @@ describe("review messaging choices", () => {
     expect(updateMessagingChoice).toHaveBeenCalledWith("catchWhatsapp", true);
     expect(screen.getByText(/These choices do not affect your application or payment/u)).not.toBeNull();
   });
+
+  it("keeps all three v2 purposes separate and optional", () => {
+    const updateMessagingChoice = vi.fn();
+    usePublicFormController.mockReturnValue({stage: "review", answers: {},
+      form: {organizer: {name: "RSVP"}, messagingOffer: {
+        termsVersion: "form-whatsapp-v2", organizerWhatsapp: null,
+        catchWhatsapp: null, organizerOperationsWhatsapp: "Application updates",
+        organizerMarketingWhatsapp: "Organizer future events",
+        catchMarketingWhatsapp: "Catch future experiences",
+      }, definition: {title: "Application", appearance: {preset: "minimal"},
+        sections: [], consent: {retentionCopy: "Keep until withdrawal",
+          consentCopy: "Share answers"}}},
+      visibleSections: [], consentAccepted: true,
+      messagingChoices: {organizerOperationsWhatsapp: false,
+        organizerMarketingWhatsapp: false, catchMarketingWhatsapp: false},
+      messagingEndpointAvailable: true, updateMessagingChoice,
+      status: {message: "", tone: ""}, pending: false,
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    for (const name of ["Application updates", "Organizer future events",
+      "Catch future experiences"]) {
+      const checkbox = screen.getByRole("checkbox", {name}) as HTMLInputElement;
+      expect(checkbox.checked).toBe(false);
+      expect(checkbox.required).toBe(false);
+    }
+    fireEvent.click(screen.getByRole("checkbox", {name: "Application updates"}));
+    expect(updateMessagingChoice).toHaveBeenCalledWith(
+      "organizerOperationsWhatsapp", true);
+    expect(screen.getByText(/only after you verify the same mobile number/u))
+      .not.toBeNull();
+  });
+
+  it("explains and disables v2 choices when no WhatsApp number is captured", () => {
+    usePublicFormController.mockReturnValue({stage: "review", answers: {},
+      form: {organizer: {name: "RSVP"}, messagingOffer: {
+        termsVersion: "form-whatsapp-v2", organizerOperationsWhatsapp: "Application updates",
+      }, definition: {title: "Application", appearance: {preset: "minimal"},
+        sections: [], consent: {retentionCopy: "Keep until withdrawal",
+          consentCopy: "Share answers"}}},
+      visibleSections: [], consentAccepted: true,
+      messagingChoices: {organizerOperationsWhatsapp: false},
+      messagingEndpointAvailable: false, status: {message: "", tone: ""},
+      pending: false,
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    expect((screen.getByRole("checkbox", {name: "Application updates"}) as
+      HTMLInputElement).disabled).toBe(true);
+    expect(screen.getByText(/leave these boxes unchecked/u)).not.toBeNull();
+    expect(screen.getByRole("button", {name: "Submit response"})).not.toBeNull();
+  });
 });
 
 describe("profile review after submission", () => {
@@ -234,3 +284,38 @@ describe("profile review after submission", () => {
     expect(screen.queryByRole("link", {name: "Review my profile in Catch"})).toBeNull();
   });
 });
+
+it("offers same-number verification for a submitted v2 choice", () => {
+  const startConsentPromotion = vi.fn();
+  usePublicFormController.mockReturnValue({stage: "complete",
+    form: {organizer: {name: "RSVP"}, messagingOffer: {
+      termsVersion: "form-whatsapp-v2"}, definition: {
+      appearance: {preset: "minimal"}, sections: [],
+    }}, pending: false, pendingConsentResponseId: "response-id",
+    status: {message: "", tone: ""},
+    receipt: {responseId: "response-id", completion: {
+      title: "Received", message: "Thank you"}},
+    startConsentPromotion, withdraw: vi.fn(),
+  });
+  render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+  fireEvent.click(screen.getByRole("button", {
+    name: "Verify number for WhatsApp choices"}));
+  expect(startConsentPromotion).toHaveBeenCalledOnce();
+});
+
+it("does not prompt verification for unchecked or already promoted choices",
+  () => {
+    usePublicFormController.mockReturnValue({stage: "complete",
+      form: {organizer: {name: "RSVP"}, messagingOffer: {
+        termsVersion: "form-whatsapp-v2"}, definition: {
+        appearance: {preset: "minimal"}, sections: [],
+      }}, pending: false, pendingConsentResponseId: null,
+      status: {message: "", tone: ""}, receipt: {
+        responseId: "response-id", completion: {
+          title: "Received", message: "Thank you"}},
+      withdraw: vi.fn(),
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    expect(screen.queryByRole("button", {
+      name: "Verify number for WhatsApp choices"})).toBeNull();
+  });

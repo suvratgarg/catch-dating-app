@@ -1164,6 +1164,52 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/updateEventChatAccessCallableResponse.ts",
   },
   {
+    name: "ManageEventChatMemberCallablePayload",
+    source: "callables/manage_event_chat_member_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventChatMemberCallablePayload.ts",
+  },
+  {
+    name: "ManageEventChatMemberCallableResponse",
+    source: "callable_responses/manage_event_chat_member_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventChatMemberCallableResponse.ts",
+  },
+  {
+    name: "SetEventAssignmentFeatureConsentCallablePayload",
+    source: "callables/set_event_assignment_feature_consent_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "setEventAssignmentFeatureConsentCallablePayload.ts",
+  },
+  {
+    name: "SetEventAssignmentFeatureConsentCallableResponse",
+    source: "callable_responses/set_event_assignment_feature_consent_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "setEventAssignmentFeatureConsentCallableResponse.ts",
+  },
+  {
+    name: "ConfigureEventAssignmentFeaturesCallablePayload",
+    source: "callables/configure_event_assignment_features_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "configureEventAssignmentFeaturesCallablePayload.ts",
+  },
+  {
+    name: "ConfigureEventAssignmentFeaturesCallableResponse",
+    source: "callable_responses/configure_event_assignment_features_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "configureEventAssignmentFeaturesCallableResponse.ts",
+  },
+  {
+    name: "PreviewEventAssignmentFeaturesCallablePayload",
+    source: "callables/preview_event_assignment_features_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "previewEventAssignmentFeaturesCallablePayload.ts",
+  },
+  {
+    name: "PreviewEventAssignmentFeaturesCallableResponse",
+    source: "callable_responses/preview_event_assignment_features_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "previewEventAssignmentFeaturesCallableResponse.ts",
+  },
+  {
     name: "ListParticipantMessagingPreferencesCallablePayload",
     source: "callables/list_participant_messaging_preferences_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",
@@ -1182,6 +1228,21 @@ const schemaSpecs = [
     name: "WithdrawParticipantMessagingPermissionCallableResponse",
     source: "callable_responses/withdraw_participant_messaging_permission_response.schema.json",
     typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse.ts",
+  },
+  {
+    name: "PromoteFormCommunicationIntentCallablePayload",
+    source: "callables/promote_form_communication_intent_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/promoteFormCommunicationIntentCallablePayload.ts",
+  },
+  {
+    name: "PromoteFormCommunicationIntentCallableResponse",
+    source: "callable_responses/promote_form_communication_intent_response.schema.json",
+    typeOutput: "functions/src/shared/generated/promoteFormCommunicationIntentCallableResponse.ts",
+  },
+  {
+    name: "FormCommunicationConsentIntentDocument",
+    source: "firestore/form_communication_consent_intents.schema.json",
+    typeOutput: "functions/src/shared/generated/formCommunicationConsentIntentDocument.ts",
   },
   {
     name: "CatchCommunicationPreferenceDocument",
@@ -2178,6 +2239,12 @@ const schemaSpecs = [
     source: "firestore/event_success_plans.schema.json",
     typeOutput:
       "functions/src/shared/generated/eventSuccessPlanDocument.ts",
+  },
+  {
+    name: "EventAssignmentFeatureConsentDocument",
+    source: "firestore/event_assignment_feature_consents.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "eventAssignmentFeatureConsentDocument.ts",
   },
   {
     name: "EventSuccessConversationGraphDocument",

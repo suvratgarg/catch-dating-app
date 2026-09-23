@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/assignment_feature_common.schema.json",
+  "title": "Event assignment feature definitions",
+  "definitions": {
+    "featureRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "featureId",
+        "formId",
+        "versionId",
+        "questionId",
+        "transformVersion",
+        "kind",
+        "mode",
+        "weight"
+      ],
+      "properties": {
+        "featureId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "formId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "versionId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "questionId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "transformVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "kind": {
+          "enum": [
+            "category",
+            "set",
+            "number",
+            "ordinal"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "preferSimilar",
+            "preferDifferent",
+            "balanceAcrossGroups"
+          ]
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "optionIds": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          }
+        },
+        "scoreByOptionId": {
+          "type": "object",
+          "maxProperties": 40,
+          "propertyNames": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        }
+      }
+    },
+    "featureValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "optionId"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "category",
+                "ordinal"
+              ]
+            },
+            "optionId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "optionIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "set"
+            },
+            "optionIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "event_common.schema.json#/definitions/documentId"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "number"
+            },
+            "value": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "featureSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "organizerId",
+        "uid",
+        "featureId",
+        "formId",
+        "versionId",
+        "questionId",
+        "transformVersion",
+        "consentReceiptId",
+        "value"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "organizerId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "uid": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "featureId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "formId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "versionId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "questionId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "transformVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "consentReceiptId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "value": {
+          "$ref": "#/definitions/featureValue"
+        }
+      }
+    }
+  }
+}

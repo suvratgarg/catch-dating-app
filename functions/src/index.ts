@@ -371,6 +371,10 @@ export {
   generateEventSuccessRotations,
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
+export {configureEventAssignmentFeatures,
+  previewEventAssignmentFeatures,
+  setEventAssignmentFeatureConsent} from
+  "./eventSuccess/assignmentFeatureActions";
 export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
@@ -602,9 +606,12 @@ export {getEventRcsWithdrawal, withdrawEventRcs} from
 export {listParticipantMessagingPreferences,
   withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
+export {promoteFormCommunicationIntent} from
+  "./organizers/organizerFormConsentPromotion";
 
 export {getEventChatAccess, updateEventChatAccess}
   from "./chats/eventChatAccess";
+export {manageEventChatMember} from "./chats/manageEventChatMember";
 
 export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
   from "./chats/eventChatMessages";

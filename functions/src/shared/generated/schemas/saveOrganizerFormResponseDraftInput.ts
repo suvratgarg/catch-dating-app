@@ -27,13 +27,25 @@ export const saveOrganizerFormResponseDraftCallablePayloadSchema: Record<string,
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "form-whatsapp-v1",
+            "form-whatsapp-v2"
+          ]
         },
         "organizerWhatsapp": {
           "type": "boolean"
         },
         "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerOperationsWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerMarketingWhatsapp": {
+          "type": "boolean"
+        },
+        "catchMarketingWhatsapp": {
           "type": "boolean"
         }
       }

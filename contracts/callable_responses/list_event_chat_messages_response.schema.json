@@ -26,6 +26,7 @@
           "senderUid",
           "senderName",
           "available",
+          "kind",
           "text",
           "reply",
           "reactionCounts",
@@ -69,6 +70,9 @@
           },
           "available": {
             "type": "boolean"
+          },
+          "kind": {
+            "enum": ["text", "announcement"]
           },
           "text": {
             "anyOf": [

@@ -50,5 +50,12 @@ const schemaSendEventChatMessageCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'kind': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'text',
+        'announcement',
+      ],
+    },
   },
 };

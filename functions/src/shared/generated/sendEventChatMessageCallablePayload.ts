@@ -8,4 +8,5 @@ export interface SendEventChatMessageCallablePayload {
   text: string;
   replyToMessageId: string | null;
   expectedUid: string;
+  kind?: "text" | "announcement";
 }

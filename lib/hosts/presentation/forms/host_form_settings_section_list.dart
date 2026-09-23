@@ -98,39 +98,72 @@ class HostFormSettingsSectionList extends StatelessWidget {
       CatchSection.fieldRows(
         title: context.l10n.hostFormMessagingTitle,
         footer: Text(
-          definition.identityPolicy == HostFormIdentityPolicy.phoneVerified
+          definition.usesPurposeMessaging
+              ? context.l10n.hostFormMessagingPurposeHelp
+              : definition.identityPolicy == HostFormIdentityPolicy.phoneVerified
               ? context.l10n.hostFormMessagingHelp
               : context.l10n.hostFormMessagingPhoneRequired,
           style: CatchTextStyles.supporting(context),
         ),
         children: [
+          if (!definition.usesPurposeMessaging) ...[
+            CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostFormMessagingOrganizer,
+              value: definition.offersOrganizerWhatsapp,
+              contract: CatchContractConstraints
+                  .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerWhatsapp,
+              onChanged:
+                  definition.identityPolicy ==
+                          HostFormIdentityPolicy.phoneVerified ||
+                      definition.offersOrganizerWhatsapp
+                  ? (value) => notifier.updateMessagingConsent(
+                      organizerWhatsapp: value,
+                    )
+                  : null,
+            ),
+            CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostFormMessagingCatch,
+              value: definition.offersCatchWhatsapp,
+              contract: CatchContractConstraints
+                  .organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp,
+              onChanged:
+                  definition.identityPolicy ==
+                          HostFormIdentityPolicy.phoneVerified ||
+                      definition.offersCatchWhatsapp
+                  ? (value) => notifier.updateMessagingConsent(
+                      catchWhatsapp: value,
+                    )
+                  : null,
+            ),
+          ],
           CatchField.toggle(
             copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostFormMessagingOrganizer,
-            value: definition.offersOrganizerWhatsapp,
+            title: context.l10n.hostFormMessagingOperations,
+            value: definition.offersOrganizerOperationsWhatsapp,
             contract: CatchContractConstraints
-                .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerWhatsapp,
-            onChanged:
-                definition.identityPolicy ==
-                        HostFormIdentityPolicy.phoneVerified ||
-                    definition.offersOrganizerWhatsapp
-                ? (value) =>
-                      notifier.updateMessagingConsent(organizerWhatsapp: value)
-                : null,
+                .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerOperationsWhatsapp,
+            onChanged: (value) => notifier.updateMessagingConsent(
+              organizerOperationsWhatsapp: value),
           ),
           CatchField.toggle(
             copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostFormMessagingCatch,
-            value: definition.offersCatchWhatsapp,
+            title: context.l10n.hostFormMessagingFuture,
+            value: definition.offersOrganizerMarketingWhatsapp,
             contract: CatchContractConstraints
-                .organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp,
-            onChanged:
-                definition.identityPolicy ==
-                        HostFormIdentityPolicy.phoneVerified ||
-                    definition.offersCatchWhatsapp
-                ? (value) =>
-                      notifier.updateMessagingConsent(catchWhatsapp: value)
-                : null,
+                .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerMarketingWhatsapp,
+            onChanged: (value) => notifier.updateMessagingConsent(
+              organizerMarketingWhatsapp: value),
+          ),
+          CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostFormMessagingCatchFuture,
+            value: definition.offersCatchMarketingWhatsapp,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionMessagingConsentCatchMarketingWhatsapp,
+            onChanged: (value) => notifier.updateMessagingConsent(
+              catchMarketingWhatsapp: value),
           ),
         ],
       ),

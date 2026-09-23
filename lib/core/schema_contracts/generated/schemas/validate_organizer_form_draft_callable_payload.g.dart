@@ -766,6 +766,15 @@ const schemaValidateOrganizerFormDraftCallablePayloadSchema = <String, Object?>{
             'catchWhatsapp': <String, Object?>{
               'type': 'boolean',
             },
+            'organizerOperationsWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'organizerMarketingWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'catchMarketingWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
           },
         },
         'completion': <String, Object?>{

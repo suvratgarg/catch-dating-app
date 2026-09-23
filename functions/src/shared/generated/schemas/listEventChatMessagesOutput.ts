@@ -30,6 +30,7 @@ export const listEventChatMessagesCallableResponseSchema: Record<string, unknown
           "senderUid",
           "senderName",
           "available",
+          "kind",
           "text",
           "reply",
           "reactionCounts",
@@ -77,6 +78,12 @@ export const listEventChatMessagesCallableResponseSchema: Record<string, unknown
           },
           "available": {
             "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "announcement"
+            ]
           },
           "text": {
             "anyOf": [

@@ -13,6 +13,7 @@ export interface ListEventChatMessagesCallableResponse {
     senderUid: string | null;
     senderName: string | null;
     available: boolean;
+    kind: "text" | "announcement";
     text: string | null;
     reply: {
       messageId: string;

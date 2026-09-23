@@ -8,6 +8,16 @@
 export interface ListParticipantMessagingPreferencesCallableResponse {
   catchPreference: {
     status: "unknown" | "optedIn" | "optedOut";
+    purposes?: {
+      eventOperations?: {
+        status: "unknown" | "optedIn" | "optedOut";
+        receiptId: string | null;
+      };
+      marketing?: {
+        status: "unknown" | "optedIn" | "optedOut";
+        receiptId: string | null;
+      };
+    };
     receiptId: string | null;
   };
   /**
@@ -18,6 +28,16 @@ export interface ListParticipantMessagingPreferencesCallableResponse {
     organizerName: string | null;
     preference: {
       status: "unknown" | "optedIn" | "optedOut";
+      purposes?: {
+        eventOperations?: {
+          status: "unknown" | "optedIn" | "optedOut";
+          receiptId: string | null;
+        };
+        marketing?: {
+          status: "unknown" | "optedIn" | "optedOut";
+          receiptId: string | null;
+        };
+      };
       receiptId: string | null;
     };
   }[];

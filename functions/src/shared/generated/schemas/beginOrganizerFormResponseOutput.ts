@@ -846,6 +846,15 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                     },
                     "catchWhatsapp": {
                       "type": "boolean"
+                    },
+                    "organizerOperationsWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "organizerMarketingWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "catchMarketingWhatsapp": {
+                      "type": "boolean"
                     }
                   }
                 },
@@ -910,8 +919,11 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
               ],
               "properties": {
                 "termsVersion": {
-                  "const": "form-whatsapp-v1",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "form-whatsapp-v1",
+                    "form-whatsapp-v2"
+                  ]
                 },
                 "organizerWhatsapp": {
                   "type": [
@@ -921,6 +933,27 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                   "maxLength": 1000
                 },
                 "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchMarketingWhatsapp": {
                   "type": [
                     "string",
                     "null"
@@ -986,13 +1019,25 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
           ],
           "properties": {
             "termsVersion": {
-              "const": "form-whatsapp-v1",
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "form-whatsapp-v1",
+                "form-whatsapp-v2"
+              ]
             },
             "organizerWhatsapp": {
               "type": "boolean"
             },
             "catchWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
               "type": "boolean"
             }
           }

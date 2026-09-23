@@ -24,18 +24,23 @@ class MessagingPermissionRepository {
   Future<MessagingPermission> withdraw(
     MessagingPermission permission,
     String requestId,
+    {MessagingPermissionPurpose? purpose}
   ) async {
     final data = await _call(
       'withdrawParticipantMessagingPermission',
       WithdrawParticipantMessagingPermissionCallableRequest(
         scope: permission.scope,
         organizerId: permission.organizerId,
-        expectedReceiptId: permission.receiptId,
+        purpose: purpose?.name,
+        expectedReceiptId: purpose == null
+            ? permission.receiptId
+            : permission.purposes[purpose]?.receiptId,
         requestId: requestId,
       ).toJson(),
     );
+    final result = data['preference']! as Map;
     return MessagingPermission.fromMap(
-      data['preference']! as Map,
+      result,
       organizerId: permission.organizerId,
       organizerName: permission.organizerName,
     );

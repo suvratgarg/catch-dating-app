@@ -1,5 +1,6 @@
 import {formMessagingOffer, formMessagingChoices,
-  normalizeFormMessagingDecision, prepareFormMessagingGrants} from
+  prepareFormCommunicationIntent, normalizeFormMessagingDecision,
+  prepareFormMessagingGrants} from
   "./organizerFormMessagingConsent";
 import {createHash, randomBytes} from "crypto";
 import {organizerFormEmbedAssets} from "./organizerFormEmbed";
@@ -723,6 +724,10 @@ export async function persistOrganizerFormSubmission(params: {
   const writeMessagingGrants = await prepareFormMessagingGrants({
     tx, db, draft, definition: version.definition, responseId, now,
   });
+  const writeMessagingIntent = prepareFormCommunicationIntent({
+    tx, db, draft, definition: version.definition, responseId,
+    endpointE164: identity.phoneE164, now,
+  });
   const writeProfileProposal = await prepareFormProfileProposal({
     tx, db, draft, definition: version.definition,
     answers: submittedAnswers, responseId, now,
@@ -753,6 +758,7 @@ export async function persistOrganizerFormSubmission(params: {
     withdrawnAt: null,
   };
   writeMessagingGrants();
+  writeMessagingIntent();
   writeProfileProposal();
   tx.create(responseRef, response);
   for (const assetRef of submittedAssetRefs) {

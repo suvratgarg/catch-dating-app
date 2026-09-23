@@ -7,6 +7,7 @@ import {
   createOrganizerFormAssetIntent,
   finalizeOrganizerFormAsset,
   getPublicOrganizerForm,
+  promoteFormCommunicationIntent,
   saveOrganizerFormResponseDraft,
   sendPublicFormEmailSignInLink,
   submitOrganizerFormResponse,
@@ -38,6 +39,14 @@ export type PublicFormStage =
 type MessagingChoices = NonNullable<PublicOrganizerFormDraft["messagingChoices"]>;
 const uncheckedMessaging: MessagingChoices = {termsVersion: "form-whatsapp-v1",
   organizerWhatsapp: false, catchWhatsapp: false};
+function uncheckedMessagingFor(form: PublicOrganizerForm): MessagingChoices {
+  if (form.messagingOffer?.termsVersion === "form-whatsapp-v2") {
+    return {termsVersion: "form-whatsapp-v2", organizerWhatsapp: false,
+      catchWhatsapp: false, organizerOperationsWhatsapp: false,
+      organizerMarketingWhatsapp: false, catchMarketingWhatsapp: false};
+  }
+  return uncheckedMessaging;
+}
 
 export interface PublicFormUploadState {
   status: "uploading" | "ready" | "error";
@@ -51,6 +60,15 @@ export function usePublicFormController(publicFormId: string) {
   const [receipt, setReceipt] = useState<PublicOrganizerFormReceipt | null>(
     () => storedReceipt(publicFormId)
   );
+  const [pendingConsentResponseId, setPendingConsentResponseId] = useState<
+    string | null>(() => {
+      const cached = storedReceipt(publicFormId);
+      return cached && isPendingConsentResponse(publicFormId, cached) ?
+        cached.responseId : null;
+    });
+  const receiptRef = useRef<PublicOrganizerFormReceipt | null>(receipt);
+  const promotingConsentRef = useRef(false);
+  const [verifyingConsent, setVerifyingConsent] = useState(false);
   const [answers, setAnswers] = useState<PublicFormAnswers>({});
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [messagingChoices, setMessagingChoices] = useState<MessagingChoices>(uncheckedMessaging);
@@ -83,8 +101,12 @@ export function usePublicFormController(publicFormId: string) {
   const showPayment = useCallback(() => setStage("payment"), []);
   const acceptReceipt = useCallback((submitted: PublicOrganizerFormReceipt) => {
     if (formRef.current && submitted.formId !== formRef.current.formId) return;
+    receiptRef.current = submitted;
     setReceipt(submitted);
     persistReceipt(publicFormId, submitted, userRef.current?.uid ?? null);
+    const pending = submitted.status === "submitted" &&
+      bindPendingConsentResponse(publicFormId, submitted, draftRef.current);
+    setPendingConsentResponseId(pending ? submitted.responseId : null);
     setStage(submitted.status === "withdrawn" ? "withdrawn" : "complete");
     setStatus({message: "", tone: ""});
   }, [publicFormId]);
@@ -128,6 +150,9 @@ export function usePublicFormController(publicFormId: string) {
         if (!nextForm.definition.payment && savedReceipt?.formId === nextForm.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
+          receiptRef.current = savedReceipt;
+          setPendingConsentResponseId(isPendingConsentResponse(
+            publicFormId, savedReceipt) ? savedReceipt.responseId : null);
           setStage("complete");
           return;
         }
@@ -149,7 +174,8 @@ export function usePublicFormController(publicFormId: string) {
         setDraft(started);
         setAnswers({...started.answers});
         setConsentAccepted(started.consentAccepted);
-        messagingRef.current = started.messagingChoices ?? uncheckedMessaging;
+        messagingRef.current = started.messagingChoices ??
+          uncheckedMessagingFor(nextForm);
         setMessagingChoices(messagingRef.current);
         setStatus({message: "", tone: ""});
         setStage("form");
@@ -181,10 +207,18 @@ export function usePublicFormController(publicFormId: string) {
     setAnswers({});
     setUploads({});
     setReceipt(null);
+    receiptRef.current = null;
+    setPendingConsentResponseId(null);
+    promotingConsentRef.current = false;
+    setVerifyingConsent(false);
     setStage("loading");
     setStatus({message: "", tone: ""});
     const unsubscribe = watchPublicFormAuthState((user) => {
       if (cancelled) return;
+      if (promotingConsentRef.current && receiptRef.current) {
+        userRef.current = user;
+        return;
+      }
       if (userRef.current?.uid !== user?.uid) {
         authGenerationRef.current++;
         startPromiseRef.current = null;
@@ -196,6 +230,8 @@ export function usePublicFormController(publicFormId: string) {
         draftRef.current = null;
         setDraft(null);
         setReceipt(null);
+        receiptRef.current = null;
+        setPendingConsentResponseId(null);
         setAnswers({});
         setUploads({});
         answersRef.current = {};
@@ -219,6 +255,9 @@ export function usePublicFormController(publicFormId: string) {
             savedReceipt?.formId === loaded.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
+          receiptRef.current = savedReceipt;
+          setPendingConsentResponseId(isPendingConsentResponse(
+            publicFormId, savedReceipt) ? savedReceipt.responseId : null);
           setStage("complete");
           return;
         }
@@ -315,8 +354,13 @@ export function usePublicFormController(publicFormId: string) {
     setDirtyRevision((current) => current + 1);
   }
 
-  function updateMessagingChoice(scope: "organizerWhatsapp" | "catchWhatsapp", value: boolean) {
+  function updateMessagingChoice(scope: "organizerWhatsapp" | "catchWhatsapp" |
+    "organizerOperationsWhatsapp" | "organizerMarketingWhatsapp" |
+    "catchMarketingWhatsapp", value: boolean) {
     if (!formRef.current?.messagingOffer?.[scope]) return;
+    if (value && formRef.current.messagingOffer.termsVersion ===
+        "form-whatsapp-v2" && !hasMessagingEndpoint(formRef.current,
+          answersRef.current, userRef.current?.phoneNumber ?? null)) return;
     const choices = {...messagingRef.current, [scope]: value};
     messagingRef.current = choices;
     setMessagingChoices(choices);
@@ -341,9 +385,23 @@ export function usePublicFormController(publicFormId: string) {
     const verification = verificationRef.current;
     if (!verification) return;
     await actionMutation.mutateAsync(async () => {
-      await verification.confirm(code);
+      const verifiedUser = await verification.confirm(code);
       verification.clear();
       verificationRef.current = null;
+      if (promotingConsentRef.current && receiptRef.current) {
+        try {
+          await promoteSelectedConsent(verifiedUser);
+        } catch (error) {
+          userRef.current = verifiedUser;
+          persistReceipt(publicFormId, receiptRef.current,
+            verifiedUser.uid);
+          promotingConsentRef.current = false;
+          setVerifyingConsent(false);
+          setStage("complete");
+          throw error;
+        }
+        return;
+      }
       if (formRef.current) await startDraft(formRef.current);
     }).catch(() => undefined);
   }
@@ -483,6 +541,14 @@ export function usePublicFormController(publicFormId: string) {
         publicFormsCopy.genericError, tone: "is-error"});
       return;
     }
+    if (formRef.current?.messagingOffer?.termsVersion === "form-whatsapp-v2" &&
+        hasSelectedPurpose(messagingRef.current) &&
+        !hasMessagingEndpoint(formRef.current, answersRef.current,
+          userRef.current?.phoneNumber ?? null)) {
+      setStatus({message: publicFormsCopy.messagingPhoneRequired,
+        tone: "is-error"});
+      return;
+    }
     const generation = authGenerationRef.current;
     await actionMutation.mutateAsync(async () => {
       await flushSave();
@@ -495,6 +561,14 @@ export function usePublicFormController(publicFormId: string) {
         expectedRevision: current.revision,
         requestId: submitRequestIdRef.current,
       };
+      if (current.form.messagingOffer?.termsVersion === "form-whatsapp-v2" &&
+          hasSelectedPurpose(messagingRef.current)) {
+        writeFormStorage("local", consentIntentHintKey(publicFormId),
+          JSON.stringify({draftId: current.draftId,
+            versionId: current.form.versionId, responseId: null}));
+      } else {
+        removeFormStorage("local", consentIntentHintKey(publicFormId));
+      }
       if (current.form.definition.payment) {
         const uid = userRef.current?.uid;
         if (!uid) throw new Error(publicFormsCopy.identityTitle);
@@ -515,8 +589,49 @@ export function usePublicFormController(publicFormId: string) {
         requestId: requestId(),
       });
       clearReceipt(publicFormId);
+      setPendingConsentResponseId(null);
       setStage("withdrawn");
     }).catch(() => undefined);
+  }
+
+  async function promoteSelectedConsent(verifiedUser: User) {
+    const submitted = receiptRef.current;
+    if (!submitted) return;
+    const result = await promoteFormCommunicationIntent({
+      responseId: submitted.responseId,
+      withdrawalToken: submitted.withdrawalToken,
+      requestId: requestId(),
+    });
+    persistReceipt(publicFormId, submitted, verifiedUser.uid);
+    removeFormStorage("local", consentIntentHintKey(publicFormId));
+    setPendingConsentResponseId(null);
+    userRef.current = verifiedUser;
+    promotingConsentRef.current = false;
+    setVerifyingConsent(false);
+    setStage("complete");
+    setStatus({tone: "", message: result.promotedPurposes.length > 0 ?
+      publicFormsCopy.messagingActivated : publicFormsCopy.messagingNoChange});
+  }
+
+  async function startConsentPromotion() {
+    if (!receiptRef.current ||
+        pendingConsentResponseId !== receiptRef.current.responseId) {
+      return;
+    }
+    const currentUser = userRef.current;
+    if (currentUser?.phoneNumber) {
+      try {
+        await actionMutation.mutateAsync(() =>
+          promoteSelectedConsent(currentUser));
+        return;
+      } catch {
+        // A signed-in number can differ from the one on this response.
+      }
+    }
+    promotingConsentRef.current = true;
+    setVerifyingConsent(true);
+    setStatus({tone: "", message: publicFormsCopy.messagingVerifyHelp});
+    setStage("identity");
   }
 
   async function restartAfterPayment() {
@@ -527,6 +642,7 @@ export function usePublicFormController(publicFormId: string) {
       recoveringPaymentRef.current = false;
       setRecoveringPayment(false);
       clearReceipt(publicFormId);
+      setPendingConsentResponseId(null);
       submitRequestIdRef.current = requestId();
       const current = await getPublicOrganizerForm({publicFormId, sourceToken});
       formRef.current = current;
@@ -554,6 +670,8 @@ export function usePublicFormController(publicFormId: string) {
     code,
     consentAccepted,
     messagingChoices,
+    messagingEndpointAvailable: form !== null &&
+      hasMessagingEndpoint(form, answers, userRef.current?.phoneNumber ?? null),
     embed,
     email,
     errors,
@@ -564,6 +682,7 @@ export function usePublicFormController(publicFormId: string) {
     nextSection,
     pending,
     payments,
+    pendingConsentResponseId,
     phoneNumber,
     previousSection,
     receipt,
@@ -580,6 +699,7 @@ export function usePublicFormController(publicFormId: string) {
     setStage,
     stage,
     status,
+    startConsentPromotion,
     submit,
     updateAnswer,
     updateConsent,
@@ -588,6 +708,7 @@ export function usePublicFormController(publicFormId: string) {
     uploadInProgress,
     uploads,
     visibleSections,
+    verifyingConsent,
     withdraw,
   };
 }
@@ -638,6 +759,49 @@ function persistReceipt(
 
 function clearReceipt(publicFormId: string) {
   removeFormStorage("local", `catch:form:${publicFormId}:receipt`);
+  removeFormStorage("local", consentIntentHintKey(publicFormId));
+}
+
+function consentIntentHintKey(publicFormId: string) {
+  return `catch:form:${publicFormId}:consent-intent-hint`;
+}
+
+function hasSelectedPurpose(value: MessagingChoices): boolean {
+  return value.termsVersion === "form-whatsapp-v2" &&
+    (value.organizerOperationsWhatsapp === true ||
+      value.organizerMarketingWhatsapp === true ||
+      value.catchMarketingWhatsapp === true);
+}
+
+function pendingConsentHint(publicFormId: string): Record<string, unknown> | null {
+  const encoded = readFormStorage("local", consentIntentHintKey(publicFormId));
+  if (!encoded) return null;
+  try {
+    const parsed: unknown = JSON.parse(encoded);
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function isPendingConsentResponse(publicFormId: string,
+  receipt: PublicOrganizerFormReceipt): boolean {
+  const hint = pendingConsentHint(publicFormId);
+  return receipt.status === "submitted" &&
+    hint?.responseId === receipt.responseId &&
+    hint.versionId === receipt.versionId;
+}
+
+function bindPendingConsentResponse(publicFormId: string,
+  receipt: PublicOrganizerFormReceipt,
+  draft: PublicOrganizerFormDraft | null): boolean {
+  const hint = pendingConsentHint(publicFormId);
+  if (!hint || hint.versionId !== receipt.versionId ||
+      (hint.responseId !== null && hint.responseId !== receipt.responseId) ||
+      (draft && hint.draftId !== draft.draftId)) return false;
+  writeFormStorage("local", consentIntentHintKey(publicFormId),
+    JSON.stringify({...hint, responseId: receipt.responseId}));
+  return true;
 }
 
 function storedReceipt(publicFormId: string, ownerUid: string | null = null): PublicOrganizerFormReceipt | null {
@@ -667,6 +831,19 @@ function storedReceipt(publicFormId: string, ownerUid: string | null = null): Pu
 
 function normalizePhone(value: string) {
   return value.replace(/[\s()-]/gu, "");
+}
+
+function hasMessagingEndpoint(form: PublicOrganizerForm,
+  answers: PublicFormAnswers, verifiedPhone: string | null): boolean {
+  if (verifiedPhone && /^\+[1-9][0-9]{6,14}$/u.test(verifiedPhone)) {
+    return true;
+  }
+  const question = form.definition.sections.flatMap((section) =>
+    section.questions).find((candidate) =>
+    candidate.canonicalFieldId === "phoneNumber");
+  const answer = question ? answers[question.questionId] : null;
+  return typeof answer === "string" &&
+    /^\+[1-9][0-9]{6,14}$/u.test(normalizePhone(answer));
 }
 
 function sectionForFirstError(

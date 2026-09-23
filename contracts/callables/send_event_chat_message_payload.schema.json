@@ -35,6 +35,7 @@
     },
     "expectedUid": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-    }
+    },
+    "kind": {"type": "string", "enum": ["text", "announcement"]}
   }
 }
