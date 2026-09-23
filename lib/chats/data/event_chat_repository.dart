@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
+import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
@@ -15,6 +16,22 @@ part 'event_chat_repository.g.dart';
 class EventChatRepository {
   const EventChatRepository(this._functions);
   final FirebaseFunctions _functions;
+
+  Future<EventChatParticipantPage> participants(
+    String uid,
+    String eventId, {
+    Map<String, Object?>? cursor,
+  }) async => EventChatParticipantPage.fromMap(
+    await _call(
+      'listEventChatParticipants',
+      ListEventChatParticipantsCallableRequest(
+        expectedUid: uid,
+        eventId: eventId,
+        cursor: cursor,
+        limit: ReadLimitPolicy.eventChatDirectoryPage,
+      ).toJson(),
+    ),
+  );
 
   Future<EventProfileSettings> profileSettings(
     String uid,

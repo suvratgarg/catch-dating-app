@@ -421,6 +421,8 @@ export 'list_event_assistance_deliveries_callable_payload.g.dart';
 export 'list_event_assistance_departure_rosters_callable_payload.g.dart';
 export 'list_event_chat_messages_callable_payload.g.dart';
 export 'list_event_chat_messages_callable_response.g.dart';
+export 'list_event_chat_participants_callable_payload.g.dart';
+export 'list_event_chat_participants_callable_response.g.dart';
 export 'list_event_chats_callable_payload.g.dart';
 export 'list_event_chats_callable_response.g.dart';
 export 'list_event_rcs_preferences_callable_payload.g.dart';

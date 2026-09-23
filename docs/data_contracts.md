@@ -2686,6 +2686,16 @@ The reader returns at most 10 visible typing names from a bounded 11-row
 candidate query; this is a presence hint, not a member census. Client transport
 and UI must discard cached room content when access fails or identity changes.
 
+`listEventChatParticipants` scans at most ten room membership candidates plus
+lookahead in one transaction. Viewer and every visible subject must still be
+admitted, joined and claimed; both block directions and account deletion hide
+identities. The projection contains only UID, claimed display name and current
+host/attendee role. No contacts, form answers or CRM fields are returned. Cursors
+bind the viewer and event, and may advance over empty filtered pages. The client
+revalidates every loaded page and discards names on failed authority checks,
+account changes and backgrounding. Opening a person uses the separately gated
+profile projection below, including that person's explicit sharing choices.
+
 ### Event participant profile sharing
 
 The private form review returns the current `cardRevision` alongside organizer

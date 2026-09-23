@@ -162,6 +162,7 @@ export 'callables/list_event_assistance_cases_callable_request.g.dart';
 export 'callables/list_event_assistance_deliveries_callable_request.g.dart';
 export 'callables/list_event_assistance_departure_rosters_callable_request.g.dart';
 export 'callables/list_event_chat_messages_callable_request.g.dart';
+export 'callables/list_event_chat_participants_callable_request.g.dart';
 export 'callables/list_event_chats_callable_request.g.dart';
 export 'callables/list_event_rcs_preferences_callable_request.g.dart';
 export 'callables/list_event_sms_preferences_callable_request.g.dart';

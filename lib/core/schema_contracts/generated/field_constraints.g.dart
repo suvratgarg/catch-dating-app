@@ -67526,6 +67526,109 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const listEventChatParticipantsCallablePayloadCursorAccountUid = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallablePayload.cursor.accountUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallablePayloadCursorAfter = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallablePayload.cursor.after',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallablePayloadCursorEventId = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallablePayload.cursor.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const listEventChatParticipantsCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const listEventChatParticipantsCallableResponseItemsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.items.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallableResponseItemsItemsRole = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.items.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'attendee'],
+  );
+
+  static const listEventChatParticipantsCallableResponseItemsItemsUid = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.items.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallableResponseNextCursorAccountUid = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.nextCursor.accountUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallableResponseNextCursorAfter = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.nextCursor.after',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatParticipantsCallableResponseNextCursorEventId = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.nextCursor.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listEventChatsCallablePayloadCursorAccountUid = CatchContractFieldConstraints(
     path: 'listEventChatsCallablePayload.cursor.accountUid',
     maxLength: 180,
@@ -115074,6 +115177,19 @@ abstract final class CatchContractConstraints {
     'listEventChatMessagesCallableResponse.typing.items.expiresAtMillis': listEventChatMessagesCallableResponseTypingItemsExpiresAtMillis,
     'listEventChatMessagesCallableResponse.typing.items.uid': listEventChatMessagesCallableResponseTypingItemsUid,
     'listEventChatMessagesCallableResponse.typingHasMore': listEventChatMessagesCallableResponseTypingHasMore,
+    'listEventChatParticipantsCallablePayload.cursor.accountUid': listEventChatParticipantsCallablePayloadCursorAccountUid,
+    'listEventChatParticipantsCallablePayload.cursor.after': listEventChatParticipantsCallablePayloadCursorAfter,
+    'listEventChatParticipantsCallablePayload.cursor.eventId': listEventChatParticipantsCallablePayloadCursorEventId,
+    'listEventChatParticipantsCallablePayload.eventId': listEventChatParticipantsCallablePayloadEventId,
+    'listEventChatParticipantsCallablePayload.expectedUid': listEventChatParticipantsCallablePayloadExpectedUid,
+    'listEventChatParticipantsCallablePayload.limit': listEventChatParticipantsCallablePayloadLimit,
+    'listEventChatParticipantsCallableResponse.items': listEventChatParticipantsCallableResponseItems,
+    'listEventChatParticipantsCallableResponse.items.items.displayName': listEventChatParticipantsCallableResponseItemsItemsDisplayName,
+    'listEventChatParticipantsCallableResponse.items.items.role': listEventChatParticipantsCallableResponseItemsItemsRole,
+    'listEventChatParticipantsCallableResponse.items.items.uid': listEventChatParticipantsCallableResponseItemsItemsUid,
+    'listEventChatParticipantsCallableResponse.nextCursor.accountUid': listEventChatParticipantsCallableResponseNextCursorAccountUid,
+    'listEventChatParticipantsCallableResponse.nextCursor.after': listEventChatParticipantsCallableResponseNextCursorAfter,
+    'listEventChatParticipantsCallableResponse.nextCursor.eventId': listEventChatParticipantsCallableResponseNextCursorEventId,
     'listEventChatsCallablePayload.cursor.accountUid': listEventChatsCallablePayloadCursorAccountUid,
     'listEventChatsCallablePayload.cursor.after': listEventChatsCallablePayloadCursorAfter,
     'listEventChatsCallablePayload.cursor.source': listEventChatsCallablePayloadCursorSource,

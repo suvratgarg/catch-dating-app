@@ -33153,6 +33153,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.'**
   String get profileCoreDetailsBody;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get eventChatParticipantsTitle;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'People who have joined this event chat. Open a profile to see the details they chose to share here.'**
+  String get eventChatParticipantsDescription;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No participants are available to show.'**
+  String get eventChatParticipantsEmpty;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No visible participants in this part of the list. Continue to check the remaining participants.'**
+  String get eventChatParticipantsContinue;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more participants'**
+  String get eventChatParticipantsMore;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get eventChatParticipantHost;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee'**
+  String get eventChatParticipantAttendee;
 }
 
 class _AppLocalizationsDelegate

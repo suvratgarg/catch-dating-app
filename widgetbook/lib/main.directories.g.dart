@@ -531,6 +531,8 @@ import 'package:widgetbook_workspace/utility/calendar.dart'
     as _widgetbook_workspace_utility_calendar;
 import 'package:widgetbook_workspace/utility/event_chat.dart'
     as _widgetbook_workspace_utility_event_chat;
+import 'package:widgetbook_workspace/utility/event_chat_participants.dart'
+    as _widgetbook_workspace_utility_event_chat_participants;
 import 'package:widgetbook_workspace/utility/event_profile.dart'
     as _widgetbook_workspace_utility_event_profile;
 import 'package:widgetbook_workspace/utility/force_update.dart'
@@ -12801,6 +12803,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Review and explicit join',
                 builder: _widgetbook_workspace_utility_event_chat
                     .eventChatJoinPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatParticipantsList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'People and their shared event profiles',
+                builder: _widgetbook_workspace_utility_event_chat_participants
+                    .eventChatParticipantsListPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatParticipantsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Current event participants',
+                builder: _widgetbook_workspace_utility_event_chat_participants
+                    .eventChatParticipantsPreview,
               ),
             ],
           ),

@@ -197,6 +197,8 @@ export {validateGetParticipantFormProfileCallablePayload} from "./validators/get
 export {validateGetParticipantFormProfileCallableResponse} from "./validators/getParticipantFormProfileOutput";
 export {validateParticipantFormProfileProposalDocument} from "./validators/participantFormProfileProposalDocument";
 export {validateEventChatProfileShareDocument} from "./validators/eventChatProfileShareDocument";
+export {validateListEventChatParticipantsCallablePayload} from "./validators/listEventChatParticipantsInput";
+export {validateListEventChatParticipantsCallableResponse} from "./validators/listEventChatParticipantsOutput";
 export {validateGetEventChatProfileSharingCallablePayload} from "./validators/getEventChatProfileSharingInput";
 export {validateUpdateEventChatProfileSharingCallablePayload} from "./validators/updateEventChatProfileSharingInput";
 export {validateGetEventChatProfileCallablePayload} from "./validators/getEventChatProfileInput";

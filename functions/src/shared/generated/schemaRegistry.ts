@@ -197,6 +197,8 @@ export {getParticipantFormProfileCallablePayloadSchema} from "./schemas/getParti
 export {getParticipantFormProfileCallableResponseSchema} from "./schemas/getParticipantFormProfileOutput";
 export {participantFormProfileProposalDocumentSchema} from "./schemas/participantFormProfileProposalDocument";
 export {eventChatProfileShareDocumentSchema} from "./schemas/eventChatProfileShareDocument";
+export {listEventChatParticipantsCallablePayloadSchema} from "./schemas/listEventChatParticipantsInput";
+export {listEventChatParticipantsCallableResponseSchema} from "./schemas/listEventChatParticipantsOutput";
 export {getEventChatProfileSharingCallablePayloadSchema} from "./schemas/getEventChatProfileSharingInput";
 export {updateEventChatProfileSharingCallablePayloadSchema} from "./schemas/updateEventChatProfileSharingInput";
 export {getEventChatProfileCallablePayloadSchema} from "./schemas/getEventChatProfileInput";

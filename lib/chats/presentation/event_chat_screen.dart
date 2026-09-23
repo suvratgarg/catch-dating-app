@@ -129,6 +129,17 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
         actions: [
+          if (current?.access.canReadMessages == true)
+            CatchIconAction.toolbar(
+              tooltip: context.l10n.eventChatParticipantsTitle,
+              icon: CatchIcons.peopleOutlineRounded,
+              onPressed: current!.busy
+                  ? null
+                  : () => context.pushNamed(
+                      Routes.eventChatParticipantsScreen.name,
+                      pathParameters: {'eventId': widget.eventId},
+                    ),
+            ),
           if (current != null)
             CatchIconAction(
               tooltip: context.l10n.eventProfileMine,

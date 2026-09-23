@@ -58,6 +58,7 @@ void main() {
       '/you/forms/response-1',
       '/events/event-1/chat',
       '/events/event-1/chat/profile',
+      '/events/event-1/chat/people',
       '/events/event-1/chat/people/person-1',
       '/chats',
     ]) {
@@ -112,7 +113,6 @@ void main() {
         '/settings/launch-access',
         '/you/forms/response-1/other',
         '/events/event-1/chat/other',
-        '/events/event-1/chat/people',
         '/events/event-1/chat/people/person-1/other',
         '/payment-history',
         '/chats/match-1',

@@ -28234,5 +28234,61 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "eventChatParticipantsTitle": "Participants",
+  "@eventChatParticipantsTitle": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsDescription": "People who have joined this event chat. Open a profile to see the details they chose to share here.",
+  "@eventChatParticipantsDescription": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsEmpty": "No participants are available to show.",
+  "@eventChatParticipantsEmpty": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsContinue": "No visible participants in this part of the list. Continue to check the remaining participants.",
+  "@eventChatParticipantsContinue": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsMore": "Show more participants",
+  "@eventChatParticipantsMore": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantHost": "Host",
+  "@eventChatParticipantHost": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantAttendee": "Attendee",
+  "@eventChatParticipantAttendee": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
   }
 }

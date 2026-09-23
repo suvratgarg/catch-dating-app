@@ -1014,6 +1014,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventChatProfileShareDocument.ts",
   },
   {
+    name: "ListEventChatParticipantsCallablePayload",
+    source: "callables/list_event_chat_participants_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatParticipantsCallablePayload.ts",
+  },
+  {
+    name: "ListEventChatParticipantsCallableResponse",
+    source: "callable_responses/list_event_chat_participants_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatParticipantsCallableResponse.ts",
+  },
+  {
     name: "GetEventChatProfileSharingCallablePayload",
     source: "callables/get_event_chat_profile_sharing_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getEventChatProfileSharingCallablePayload.ts",

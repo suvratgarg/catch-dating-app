@@ -28,6 +28,10 @@ enum Routes {
     '/events/:eventId/chat/profile',
     AppRouteAudience.shared,
   ),
+  eventChatParticipantsScreen(
+    '/events/:eventId/chat/people',
+    AppRouteAudience.shared,
+  ),
   eventParticipantProfileScreen(
     '/events/:eventId/chat/people/:participantUid',
     AppRouteAudience.shared,

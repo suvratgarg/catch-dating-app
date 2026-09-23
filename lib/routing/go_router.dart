@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart'; // ChatsListScreen
@@ -302,6 +303,13 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
         name: Routes.eventProfileSharingScreen.name,
         builder: (context, state) =>
             EventProfileScreen(eventId: state.pathParameters['eventId']!),
+      ),
+      GoRoute(
+        path: Routes.eventChatParticipantsScreen.path,
+        name: Routes.eventChatParticipantsScreen.name,
+        builder: (context, state) => EventChatParticipantsScreen(
+          eventId: state.pathParameters['eventId']!,
+        ),
       ),
       GoRoute(
         path: Routes.eventParticipantProfileScreen.path,
@@ -1247,7 +1255,9 @@ bool _isOwnAccountRoute(String path) =>
     path == Routes.messagingPermissionsScreen.path ||
     path == Routes.formProfilesScreen.path ||
     RegExp(r'^/you/forms/[^/]+$').hasMatch(path) ||
-    RegExp(r'^/events/[^/]+/chat(?:/profile|/people/[^/]+)?$').hasMatch(path);
+    RegExp(
+      r'^/events/[^/]+/chat(?:/profile|/people(?:/[^/]+)?)?$',
+    ).hasMatch(path);
 
 bool _requiresSocialProfile(String matchedLocation) {
   return matchedLocation == Routes.filtersScreen.path ||

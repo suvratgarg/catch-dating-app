@@ -1149,6 +1149,22 @@
       ],
       "reason": "Authenticated participant form-profile review uses canonical pushed-route chrome and a single constrained body. Focused review tests cover selection, identity gating and large text."
     },
+    "eventChatParticipantsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventChatParticipantsScreen"
+          ],
+          "file": "lib/chats/presentation/event_chat_participants_screen.dart",
+          "symbol": "_EventChatParticipantsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Current admitted room participants use canonical route chrome, bounded directory rows and the existing protected profile view."
+    },
     "eventChatScreen": {
       "owners": [
         {

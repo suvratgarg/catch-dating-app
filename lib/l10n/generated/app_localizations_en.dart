@@ -20765,4 +20765,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileCoreDetailsBody =>
       'Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.';
+
+  @override
+  String get eventChatParticipantsTitle => 'Participants';
+
+  @override
+  String get eventChatParticipantsDescription =>
+      'People who have joined this event chat. Open a profile to see the details they chose to share here.';
+
+  @override
+  String get eventChatParticipantsEmpty =>
+      'No participants are available to show.';
+
+  @override
+  String get eventChatParticipantsContinue =>
+      'No visible participants in this part of the list. Continue to check the remaining participants.';
+
+  @override
+  String get eventChatParticipantsMore => 'Show more participants';
+
+  @override
+  String get eventChatParticipantHost => 'Host';
+
+  @override
+  String get eventChatParticipantAttendee => 'Attendee';
 }
