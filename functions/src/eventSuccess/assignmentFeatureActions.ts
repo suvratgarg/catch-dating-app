@@ -45,6 +45,7 @@ import {assignmentFeatureConsentId, assignmentFeatureRuleMatchesVersion,
   loadAuthorizedAssignmentFeatures,
   readAssignmentFeatureConsent} from "./assignmentFeatureConsent";
 import {type AssignmentFeatureRule,
+  buildAssignmentFeatureScoringContext,
   validateAssignmentFeatureRules} from "./assignmentFeatureScoring";
 
 interface Deps {
@@ -57,7 +58,7 @@ const defaults: Deps = {db: () => admin.firestore(),
 const hash = (text: string) => createHash("sha256").update(text)
   .digest("hex");
 
-/** Manager preview returns source catalog and aggregate coverage, never answers. */
+/** Manager preview returns a source catalog and aggregate coverage. */
 export async function previewEventAssignmentFeaturesHandler(
   request: CallableRequest<unknown>, deps: Deps = defaults
 ): Promise<PreviewResult> {
@@ -85,6 +86,8 @@ export async function previewEventAssignmentFeaturesHandler(
     throw new HttpsError("failed-precondition",
       "Structured matching preview is unavailable for this event.");
   }
+  const savedRules = validateAssignmentFeatureRules(
+    plan.assignmentFeatureRules ?? []);
   const organizerId = event.organizerId ?? event.clubId;
   const formIds = [...new Set([...(data.sourceFormIds ?? []),
     ...rules.map((rule) => rule.formId)])];
@@ -127,6 +130,8 @@ export async function previewEventAssignmentFeaturesHandler(
         question.options.length <= 40).map((question) => ({
         questionId: question.questionId, label: question.label,
         kind: question.kind as "singleChoice" | "multiChoice" | "number",
+        minNumber: question.validation?.minNumber ?? null,
+        maxNumber: question.validation?.maxNumber ?? null,
         options: question.options.map((option) => ({
           optionId: option.optionId, label: option.label,
         })),
@@ -137,7 +142,7 @@ export async function previewEventAssignmentFeaturesHandler(
     }
   }
   if (sources.length > 8) throw unavailable();
-  const roster = await loadEventSuccessRoster(db, data.eventId);
+  const roster = await loadEventSuccessRoster(db, data.eventId, 1000);
   const eligibleUids = roster.filter((item) => item.status === "signedUp" ||
     item.status === "attended").map((item) => item.uid);
   if (eligibleUids.length > 1000) {
@@ -146,17 +151,21 @@ export async function previewEventAssignmentFeaturesHandler(
   }
   const snapshots = await loadAuthorizedAssignmentFeatures({db,
     eventId: data.eventId, organizerId, eligibleUids, rules});
+  const context = buildAssignmentFeatureScoringContext({
+    eventId: data.eventId, organizerId, eligibleUids, rules, snapshots});
   const rows = rules.map((rule) => {
     const grantedCount = snapshots.filter((snapshot) =>
       snapshot.featureId === rule.featureId).length;
+    const usableCount = [...context.valuesByUid.values()].filter((values) =>
+      values.has(rule.featureId)).length;
     return {featureId: rule.featureId, kind: rule.kind, mode: rule.mode,
-      weight: rule.weight, grantedCount,
-      missingCount: eligibleUids.length - grantedCount};
+      weight: rule.weight, grantedCount, usableCount,
+      missingCount: eligibleUids.length - usableCount};
   });
   return {eventId: data.eventId,
     revision: plan.assignmentFeatureRevision ?? 0,
     rosterCount: eligibleUids.length,
-    coverageBasis: "currentEventRoster", sources, rows};
+    coverageBasis: "currentEventRoster", sources, rows, savedRules};
 }
 
 /** Host config validates source lineage and changes no participant grant. */

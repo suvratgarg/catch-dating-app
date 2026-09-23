@@ -99418,7 +99418,8 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
     "rosterCount",
     "coverageBasis",
     "rows",
-    "sources"
+    "sources",
+    "savedRules"
   ],
   "properties": {
     "eventId": {
@@ -99438,6 +99439,99 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
     },
     "coverageBasis": {
       "const": "currentEventRoster"
+    },
+    "savedRules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      }
     },
     "sources": {
       "type": "array",
@@ -99481,7 +99575,9 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
                 "questionId",
                 "label",
                 "kind",
-                "options"
+                "options",
+                "minNumber",
+                "maxNumber"
               ],
               "properties": {
                 "questionId": {
@@ -99499,6 +99595,18 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
                     "singleChoice",
                     "multiChoice",
                     "number"
+                  ]
+                },
+                "minNumber": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "maxNumber": {
+                  "type": [
+                    "number",
+                    "null"
                   ]
                 },
                 "options": {
@@ -99543,6 +99651,7 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
           "mode",
           "weight",
           "grantedCount",
+          "usableCount",
           "missingCount"
         ],
         "properties": {
@@ -99572,6 +99681,11 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
             "maximum": 100
           },
           "grantedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "usableCount": {
             "type": "integer",
             "minimum": 0,
             "maximum": 1000

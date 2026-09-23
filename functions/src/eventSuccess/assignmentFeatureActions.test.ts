@@ -32,7 +32,9 @@ function fixture() {
         label: "Favorite activity",
         privacyClass: "organizerCustom", kind: "singleChoice",
         options: [{optionId: "option-1", label: "Hiking",
-          value: "answer-1"}]}]}]}},
+          value: "answer-1"}]}, {questionId: "question-2",
+        label: "Pace", privacyClass: "organizerCustom", kind: "number",
+        validation: {minNumber: 0, maxNumber: 100}, options: []}]}]}},
     "organizerForms/form-1": {organizerId: "org-1",
       title: "Event choices", activeVersionId: "version-1"},
     "eventParticipations/event-1_user-1": {eventId: "event-1",
@@ -41,7 +43,7 @@ function fixture() {
       formId: "form-1", versionId: "version-1", status: "submitted",
       respondentUid: "user-1", identityKind: "phoneVerified",
       identity: {phoneE164: "+919900001111"}, withdrawnAt: null,
-      answers: {"question-1": "answer-1"}},
+      answers: {"question-1": "answer-1", "question-2": 99}},
   });
   const docs = store.docs as Record<string,
     Record<string, unknown> | undefined>;
@@ -115,7 +117,7 @@ test("preview uses exact published catalog and returns aggregate coverage",
     assert.equal(before.rosterCount, 1);
     assert.deepEqual(before.rows[0], {featureId: "feature-1",
       kind: "category", mode: "preferSimilar", weight: 5,
-      grantedCount: 0, missingCount: 1});
+      grantedCount: 0, usableCount: 0, missingCount: 1});
     assert.equal(before.sources[0].versionId, "version-1");
     assert.deepEqual(before.sources[0].questions[0].options,
       [{optionId: "option-1", label: "Hiking"}]);
@@ -133,7 +135,51 @@ test("preview uses exact published catalog and returns aggregate coverage",
     const after = await previewEventAssignmentFeaturesHandler(
       request as never, deps as never);
     assert.equal(after.rows[0].grantedCount, 1);
+    assert.equal(after.rows[0].usableCount, 1);
     assert.equal(after.rows[0].missingCount, 0);
     assert.equal(JSON.stringify(after).includes("answer-1"), false);
     assert.equal(JSON.stringify(after).includes("user-1"), false);
+  });
+
+test("out-of-range number is granted but missing from usable coverage",
+  async () => {
+    const {docs, deps} = fixture();
+    const numericRule = {featureId: "feature-2", formId: "form-1",
+      versionId: "version-1", questionId: "question-2",
+      transformVersion: 1, kind: "number", mode: "preferSimilar",
+      weight: 1, minimum: 0, maximum: 10};
+    docs[`eventAssignmentFeatureConsents/${assignmentFeatureConsentId(
+      "event-1", "user-1", "feature-2")}`] = {eventId: "event-1",
+      organizerId: "org-1", uid: "user-1", responseId: "response-1",
+      featureId: "feature-2", formId: "form-1", versionId: "version-1",
+      questionId: "question-2", transformVersion: 1,
+      purpose: "eventAssignmentMatching", status: "granted",
+      receiptId: "receipt-2", revision: 1, lastRequestId: "grant-2",
+      createdAt: stamp, updatedAt: stamp};
+    const preview = await previewEventAssignmentFeaturesHandler({
+      auth: {uid: "host-1"}, data: {eventId: "event-1",
+        sourceFormIds: ["form-1"], rules: [numericRule]},
+    } as never, deps as never);
+    assert.deepEqual(preview.rows[0], {featureId: "feature-2",
+      kind: "number", mode: "preferSimilar", weight: 1,
+      grantedCount: 1, usableCount: 0, missingCount: 1});
+    const question = preview.sources[0].questions.find((item) =>
+      item.questionId === "question-2");
+    assert.equal(question?.minNumber, 0);
+    assert.equal(question?.maxNumber, 100);
+  });
+
+test("preview caps roster query before loading profile or answer documents",
+  async () => {
+    const {docs, deps} = fixture();
+    for (let i = 0; i < 1001; i++) {
+      docs[`eventParticipations/event-1_extra-${i}`] = {
+        eventId: "event-1", uid: `extra-${i}`, status: "signedUp"};
+    }
+    await assert.rejects(() => previewEventAssignmentFeaturesHandler({
+      auth: {uid: "host-1"}, data: {eventId: "event-1", rules: []},
+    } as never, deps as never), (error: unknown) =>
+      error instanceof HttpsError &&
+      error.code === "failed-precondition" &&
+      error.message.includes("cohort"));
   });

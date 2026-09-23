@@ -93408,8 +93408,115 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['preferSimilar', 'preferDifferent', 'balanceAcrossGroups'],
   );
 
+  static const previewEventAssignmentFeaturesCallableResponseRowsItemsUsableCount = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.rows.items.usableCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
   static const previewEventAssignmentFeaturesCallableResponseRowsItemsWeight = CatchContractFieldConstraints(
     path: 'previewEventAssignmentFeaturesCallableResponse.rows.items.weight',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRules = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsFeatureId = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsFormId = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsKind = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.kind',
+    required: true,
+    enumValues: <String>['category', 'set', 'number', 'ordinal'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsMaximum = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.maximum',
+    valueTypes: <String>['number'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsMinimum = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.minimum',
+    valueTypes: <String>['number'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsMode = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.mode',
+    required: true,
+    enumValues: <String>['preferSimilar', 'preferDifferent', 'balanceAcrossGroups'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsOptionIds = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.optionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+    uniqueItems: true,
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsOptionIdsItems = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.optionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsQuestionId = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsScoreByOptionId = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.scoreByOptionId',
+    valueTypes: <String>['object'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsTransformVersion = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.transformVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsVersionId = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSavedRulesItemsWeight = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.savedRules.items.weight',
     required: true,
     valueTypes: <String>['number'],
     minimum: 0,
@@ -93466,6 +93573,16 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsMaxNumber = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.maxNumber',
+    valueTypes: <String>['number'],
+  );
+
+  static const previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsMinNumber = CatchContractFieldConstraints(
+    path: 'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.minNumber',
+    valueTypes: <String>['number'],
   );
 
   static const previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsOptions = CatchContractFieldConstraints(
@@ -126754,7 +126871,22 @@ abstract final class CatchContractConstraints {
     'previewEventAssignmentFeaturesCallableResponse.rows.items.kind': previewEventAssignmentFeaturesCallableResponseRowsItemsKind,
     'previewEventAssignmentFeaturesCallableResponse.rows.items.missingCount': previewEventAssignmentFeaturesCallableResponseRowsItemsMissingCount,
     'previewEventAssignmentFeaturesCallableResponse.rows.items.mode': previewEventAssignmentFeaturesCallableResponseRowsItemsMode,
+    'previewEventAssignmentFeaturesCallableResponse.rows.items.usableCount': previewEventAssignmentFeaturesCallableResponseRowsItemsUsableCount,
     'previewEventAssignmentFeaturesCallableResponse.rows.items.weight': previewEventAssignmentFeaturesCallableResponseRowsItemsWeight,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules': previewEventAssignmentFeaturesCallableResponseSavedRules,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.featureId': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsFeatureId,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.formId': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsFormId,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.kind': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsKind,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.maximum': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsMaximum,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.minimum': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsMinimum,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.mode': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsMode,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.optionIds': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsOptionIds,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.optionIds.items': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsOptionIdsItems,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.questionId': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsQuestionId,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.scoreByOptionId': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsScoreByOptionId,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.transformVersion': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsTransformVersion,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.versionId': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsVersionId,
+    'previewEventAssignmentFeaturesCallableResponse.savedRules.items.weight': previewEventAssignmentFeaturesCallableResponseSavedRulesItemsWeight,
     'previewEventAssignmentFeaturesCallableResponse.sources': previewEventAssignmentFeaturesCallableResponseSources,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.formId': previewEventAssignmentFeaturesCallableResponseSourcesItemsFormId,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.formTitle': previewEventAssignmentFeaturesCallableResponseSourcesItemsFormTitle,
@@ -126762,6 +126894,8 @@ abstract final class CatchContractConstraints {
     'previewEventAssignmentFeaturesCallableResponse.sources.items.questions': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestions,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.kind': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsKind,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.label': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsLabel,
+    'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.maxNumber': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsMaxNumber,
+    'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.minNumber': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsMinNumber,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.options': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsOptions,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.options.items.label': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsOptionsItemsLabel,
     'previewEventAssignmentFeaturesCallableResponse.sources.items.questions.items.options.items.optionId': previewEventAssignmentFeaturesCallableResponseSourcesItemsQuestionsItemsOptionsItemsOptionId,
