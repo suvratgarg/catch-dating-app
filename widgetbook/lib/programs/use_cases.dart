@@ -555,6 +555,7 @@ Widget programDispatchSheetStates(BuildContext context) {
     child: ProviderScope(
       overrides: _programOverrides(),
       child: ProgramDispatchSheet(
+        authorityGeneration: 0,
         accessExpiresAt: _now.add(const Duration(hours: 8)),
         accountId: 'uid_greeter',
         programId: _programId,

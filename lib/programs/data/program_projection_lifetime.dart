@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -64,5 +65,57 @@ void retainProgramProjection(
     throw const PermissionException(
       'Program access expired. Refresh this view.',
     );
+  }
+}
+
+const programReadSuperseded = BackendOperationException(
+  code: 'program-read-superseded',
+  message: 'Program access changed. Refresh to load current work.',
+  retryable: true,
+  context: BackendErrorContext(
+    service: BackendService.functions,
+    action: 'load current program work',
+  ),
+);
+
+/// Keep displayed projections tied to the same authority generation. A change
+/// during a successful read requires a new projection too. Failed reads do not
+/// reload themselves in response to their own denial and cache invalidation.
+Future<T> readWithProgramAuthority<T>(
+  Ref ref,
+  String accountId,
+  String programId,
+  Future<T> Function() read, {
+  void Function()? onAuthorityChanged,
+}) async {
+  var delivered = false;
+  var changed = false;
+  void reload() {
+    if (!ref.mounted) return;
+    onAuthorityChanged?.call();
+    if (ref.mounted) ref.invalidateSelf(asReload: true);
+  }
+
+  final cancel = ref.read(programReadSnapshotStoreProvider).listenToGeneration(
+    accountId,
+    programId,
+    () {
+      changed = true;
+      if (delivered) reload();
+    },
+  );
+  ref.onDispose(cancel);
+  try {
+    final result = await read();
+    if (!ref.mounted) throw programReadSuperseded;
+    if (changed) {
+      reload();
+      throw programReadSuperseded;
+    }
+    delivered = true;
+    return result;
+  } on Object {
+    cancel();
+    rethrow;
   }
 }

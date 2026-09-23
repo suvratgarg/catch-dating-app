@@ -445,17 +445,25 @@ Future<ProgramReadView<T>> _readView<T>(
   Future<T> Function() live,
   T Function(Object?) parse, {
   bool Function(ProgramWorkAccess)? allowsAccess,
-}) => readProgramWithSnapshot(
-  accountId: accountId,
-  programId: programId,
-  scope: scope,
-  store: ref.read(programReadSnapshotStoreProvider),
-  isCurrentAccount: () =>
-      ref.mounted && ref.read(uidProvider).asData?.value == accountId,
-  live: live,
-  parse: parse,
-  allowsAccess: allowsAccess,
-  now: ref.read(programProjectionClockProvider),
+  void Function()? onAuthorityChanged,
+}) => readWithProgramAuthority(
+  ref,
+  accountId,
+  programId,
+  () => readProgramWithSnapshot(
+    accountId: accountId,
+    programId: programId,
+    scope: scope,
+    store: ref.read(programReadSnapshotStoreProvider),
+    isCurrentRead: () => ref.mounted,
+    isCurrentAccount: () =>
+        ref.mounted && ref.read(uidProvider).asData?.value == accountId,
+    live: live,
+    parse: parse,
+    allowsAccess: allowsAccess,
+    now: ref.read(programProjectionClockProvider),
+  ),
+  onAuthorityChanged: onAuthorityChanged,
 );
 
 /// An invitation must be claimed online; an existing program may reopen from
@@ -527,6 +535,10 @@ Future<ProgramReadView<ProgramArrivalsRoster>> programArrivalsRosterView(
       programArrivalsRosterProvider(programId, pickupPointId).future,
     ),
     ProgramArrivalsRoster.fromCallableData,
+    onAuthorityChanged: () => ref.invalidate(
+      programArrivalsRosterProvider(programId, pickupPointId),
+      asReload: true,
+    ),
     allowsAccess: (access) => canReadProgramStation(
       access,
       pickupPointId,
@@ -581,6 +593,10 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
       programTransportPlanProvider(programId, pickupPointId).future,
     ),
     ProgramTransportPlan.fromCallableData,
+    onAuthorityChanged: () => ref.invalidate(
+      programTransportPlanProvider(programId, pickupPointId),
+      asReload: true,
+    ),
     allowsAccess: (access) => canReadProgramStation(
       access,
       pickupPointId,
@@ -609,20 +625,28 @@ Future<ProgramHotelInbound> programHotelInbound(
   String programId,
   String hotelId,
 ) async {
-  _watchWorkAccount(ref);
-  final result = await ref
-      .read(programWorkRepositoryProvider)
-      .getHotelInbound(programId: programId, hotelId: hotelId);
+  final accountId = _watchWorkAccount(ref);
+  final result = await readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () => ref
+        .read(programWorkRepositoryProvider)
+        .getHotelInbound(programId: programId, hotelId: hotelId),
+  );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;
 }
 
 @riverpod
 Future<ProgramTripList> programTripList(Ref ref, String programId) async {
-  _watchWorkAccount(ref);
-  final result = await ref
-      .read(programWorkRepositoryProvider)
-      .listTrips(programId);
+  final accountId = _watchWorkAccount(ref);
+  final result = await readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () => ref.read(programWorkRepositoryProvider).listTrips(programId),
+  );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;
 }
@@ -633,8 +657,13 @@ Future<List<ProgramVendorOption>> programTransportVendors(
   String organizerId,
   String programId,
 ) {
-  _watchWorkAccount(ref);
-  return ref
-      .read(programWorkRepositoryProvider)
-      .listVendors(organizerId: organizerId, programId: programId);
+  final accountId = _watchWorkAccount(ref);
+  return readWithProgramAuthority(
+    ref,
+    accountId,
+    programId,
+    () => ref
+        .read(programWorkRepositoryProvider)
+        .listVendors(organizerId: organizerId, programId: programId),
+  );
 }

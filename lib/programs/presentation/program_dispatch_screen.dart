@@ -8,6 +8,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
@@ -94,6 +95,9 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
         builder: (sheetContext) => ProgramDispatchSheet(
           programId: widget.programId,
           accessExpiresAt: expiresAt,
+          authorityGeneration: ref.read(
+            programAuthorityGenerationProvider(accountId, widget.programId),
+          ),
           accountId: accountId,
           pickupPointId: widget.pickupPointId,
           organizerId: access.organizerId,
@@ -309,6 +313,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
     super.key,
     required this.programId,
     required this.accessExpiresAt,
+    required this.authorityGeneration,
     required this.pickupPointId,
     required this.organizerId,
     required this.accountId,
@@ -319,6 +324,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
   });
 
   final DateTime? accessExpiresAt;
+  final int authorityGeneration;
   final String programId;
   final String pickupPointId;
   final String organizerId;
@@ -377,10 +383,17 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
       _error = null;
     });
     try {
-      if (!isProgramProjectionActive(
-        widget.accessExpiresAt,
-        ref.read(programProjectionClockProvider)(),
-      )) {
+      if (ref.read(
+                programAuthorityGenerationProvider(
+                  widget.accountId,
+                  widget.programId,
+                ),
+              ) !=
+              widget.authorityGeneration ||
+          !isProgramProjectionActive(
+            widget.accessExpiresAt,
+            ref.read(programProjectionClockProvider)(),
+          )) {
         throw const PermissionException(
           'Program access expired. Refresh this view.',
         );
@@ -395,10 +408,17 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         ).future,
       );
       if (!mounted) return;
-      if (!isProgramProjectionActive(
-        widget.accessExpiresAt,
-        ref.read(programProjectionClockProvider)(),
-      )) {
+      if (ref.read(
+                programAuthorityGenerationProvider(
+                  widget.accountId,
+                  widget.programId,
+                ),
+              ) !=
+              widget.authorityGeneration ||
+          !isProgramProjectionActive(
+            widget.accessExpiresAt,
+            ref.read(programProjectionClockProvider)(),
+          )) {
         throw const PermissionException(
           'Program access expired. Refresh this view.',
         );
@@ -455,7 +475,15 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
     final active = ref.watch(
       programProjectionActiveProvider(widget.accessExpiresAt),
     );
-    if (!accountMatches || !active) {
+    final authorityMatches =
+        ref.watch(
+          programAuthorityGenerationProvider(
+            widget.accountId,
+            widget.programId,
+          ),
+        ) ==
+        widget.authorityGeneration;
+    if (!accountMatches || !active || !authorityMatches) {
       return CatchSheet(
         title: context.l10n.programsDispatchSheetTitle,
         child: CatchLocalizedErrorState(

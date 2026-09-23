@@ -414,6 +414,12 @@ class _PausedSnapshotStore implements ProgramReadSnapshotStore {
   }
 
   @override
+  void Function() listenToGeneration(
+    String accountId,
+    String programId,
+    void Function() onChange,
+  ) => delegate.listenToGeneration(accountId, programId, onChange);
+  @override
   int generation(String accountId, String programId) =>
       delegate.generation(accountId, programId);
   @override

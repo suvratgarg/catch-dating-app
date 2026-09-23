@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.7
+version: 0.3.8
 updated: 2026-09-23
 owner: product
 status: draft
@@ -632,7 +632,13 @@ server outcome across a concurrent access change. Offline projections also
 expire at 24 hours from the older of their access and view snapshots, including
 an already-open manager view. Dispatch uses the shared work-entry read and
 carries both snapshot deadlines into its sheet; no separate access provider
-may discard that freshness metadata.
+may discard that freshness metadata. The same account/program authority
+generation is observable by active projections and open dispatch sheets. A
+change removes captured data and reloads dependent reads; a failed read does
+not restart itself in response to its own denial. Disposing a read is distinct
+from signing out and must not erase another view's valid access snapshot.
+Publishing new work authority may require one fresh read to settle against
+that generation; unchanged authority does not trigger another reload.
 Missing deadlines in legacy operational snapshots fail parsing; they are never
 interpreted as manager access.
 

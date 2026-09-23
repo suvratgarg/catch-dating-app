@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 
@@ -16,12 +17,14 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
   required String scope,
   required ProgramReadSnapshotStore store,
   required bool Function() isCurrentAccount,
+  bool Function()? isCurrentRead,
   required Future<T> Function() live,
   required T Function(Object?) parse,
   bool Function(ProgramWorkAccess)? allowsAccess,
   DateTime Function()? now,
 }) async {
   void requireAccount() {
+    if (isCurrentRead?.call() == false) throw programReadSuperseded;
     if (!isCurrentAccount()) {
       throw const SignInRequiredException('view program work');
     }
@@ -33,6 +36,7 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
     requireAccount();
     return (value: value, snapshotAt: null, snapshotExpiresAt: null);
   } on AppException catch (error) {
+    if (isCurrentRead?.call() == false) throw programReadSuperseded;
     if (error is PermissionException ||
         error is SignInRequiredException ||
         error is DocumentNotFoundException) {
