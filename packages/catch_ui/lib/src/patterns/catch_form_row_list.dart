@@ -141,14 +141,16 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
             );
           },
           range: (descriptor) {
+            final maximumContract =
+                descriptor.maximumContract ?? descriptor.contract;
             assert(
               descriptor.contract?.minimum == null ||
                   descriptor.sliderMin >= descriptor.contract!.minimum!,
               'The slider minimum cannot undercut the schema contract.',
             );
             assert(
-              descriptor.contract?.maximum == null ||
-                  descriptor.sliderMax <= descriptor.contract!.maximum!,
+              maximumContract?.maximum == null ||
+                  descriptor.sliderMax <= maximumContract!.maximum!,
               'The slider maximum cannot exceed the schema contract.',
             );
             return CatchFormRangeField<P>(

@@ -18,6 +18,7 @@ import '../../test_pump_helpers.dart';
 Future<void> _boot(
   WidgetTester tester, {
   Future<bool> Function(Object?)? save,
+  CatchFormRangeRow<Object?>? range,
 }) async {
   final copy = catchFieldCopy(AppLocalizationsEn());
   await tester.pumpWidget(
@@ -36,19 +37,20 @@ Future<void> _boot(
               value: 'One',
               patchForValue: (v) => v,
             ),
-            CatchFormRangeRow<Object?>(
-              id: 'range',
-              icon: CatchIcons.personOutlined,
-              label: 'Range',
-              value: '1–5',
-              currentMin: 1,
-              currentMax: 5,
-              sliderMin: 0,
-              sliderMax: 10,
-              divisions: 10,
-              labelText: (v) => v.toInt().toString(),
-              patchForRange: (a, b) => (a, b),
-            ),
+            range ??
+                CatchFormRangeRow<Object?>(
+                  id: 'range',
+                  icon: CatchIcons.personOutlined,
+                  label: 'Range',
+                  value: '1–5',
+                  currentMin: 1,
+                  currentMax: 5,
+                  sliderMin: 0,
+                  sliderMax: 10,
+                  divisions: 10,
+                  labelText: (v) => v.toInt().toString(),
+                  patchForRange: (a, b) => (a, b),
+                ),
             CatchFormTextRow<Object?>(
               id: 'text',
               icon: CatchIcons.personOutlined,
@@ -164,6 +166,47 @@ void main() {
           'Route destinations use CatchField.nav or navigate; action is non-navigation.',
     );
   });
+  testWidgets(
+    'range preserves distinct endpoint contracts and localized summaries',
+    (t) async {
+      await _boot(
+        t,
+        range: CatchFormRangeRow<Object?>(
+          id: 'range',
+          icon: CatchIcons.speedOutlined,
+          label: 'Range',
+          value: '1 to 5',
+          currentMin: 1,
+          currentMax: 5,
+          sliderMin: 0,
+          sliderMax: 10,
+          divisions: 10,
+          contract: const CatchContractFieldConstraints(
+            path: 'test.min',
+            minimum: 0,
+            maximum: 6,
+          ),
+          maximumContract: const CatchContractFieldConstraints(
+            path: 'test.max',
+            minimum: 1,
+            maximum: 10,
+          ),
+          labelText: (v) => v.round().toString(),
+          rangeLabel: (a, b) => '${a.round()} to ${b.round()}',
+          patchForRange: (a, b) => (a, b),
+        ),
+      );
+      await _open(t, 'Range');
+      final slider = t.widget<RangeSlider>(find.byType(RangeSlider));
+      expect(slider.min, 0);
+      expect(slider.max, 10);
+      await _change(t, 'Range');
+      expect(_field(t, 'Range').body, '2 to 8');
+      await _action(t, 'done');
+      expect(_field(t, 'Range').body, '2 to 8');
+      await _end(t);
+    },
+  );
   for (final title in ['Choice', 'Range']) {
     testWidgets('$title cancels drafts on ordinary row switching', (t) async {
       await _boot(t);

@@ -277,6 +277,8 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
     required this.labelText,
     required this.patchForRange,
     this.contract,
+    this.maximumContract,
+    this.rangeLabel,
   });
 
   final String value;
@@ -287,7 +289,16 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
   final int divisions;
   final String Function(double value) labelText;
   final CatchContractFieldConstraints? contract;
+
+  /// A distinct schema constraint for the upper endpoint, when present.
+  final CatchContractFieldConstraints? maximumContract;
+
+  /// Localized summary for the pair; individual thumb labels use [labelText].
+  final String Function(double min, double max)? rangeLabel;
   final P Function(int min, int max) patchForRange;
+
+  String formatRange(double min, double max) =>
+      rangeLabel?.call(min, max) ?? '${labelText(min)} - ${labelText(max)}';
 
   @override
   R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.range(this);

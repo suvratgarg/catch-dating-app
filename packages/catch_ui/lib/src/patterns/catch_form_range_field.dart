@@ -100,7 +100,7 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
       title: descriptor.label,
       contract: descriptor.contract,
       body: widget.scope.isExpanded || _committed != null
-          ? '${descriptor.labelText(_range.start)} - ${descriptor.labelText(_range.end)}'
+          ? descriptor.formatRange(_range.start, _range.end)
           : descriptor.value,
       disclosureMode: widget.scope.isExpanded
           ? CatchFieldMode.controlledExpanded
@@ -113,7 +113,7 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
       onSubmit: _submit,
       child: CatchRangeInput(
         minimumContract: descriptor.contract,
-        maximumContract: descriptor.contract,
+        maximumContract: descriptor.maximumContract ?? descriptor.contract,
         min: descriptor.sliderMin,
         max: descriptor.sliderMax,
         divisions: descriptor.divisions,
