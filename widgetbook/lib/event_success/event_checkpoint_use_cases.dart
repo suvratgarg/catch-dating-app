@@ -42,13 +42,7 @@ Widget assistanceCheckpointForm(BuildContext context) =>
 )
 Widget assistanceCheckpointRoster(BuildContext context) =>
     const _CheckpointPreview(surface: _Surface.liveReport);
-@widgetbook.UseCase(
-  name: 'Explicit guest observation',
-  type: EventAssistanceCheckpointGuestRow,
-  path: _path,
-)
-Widget assistanceCheckpointGuest(BuildContext context) =>
-    const _CheckpointPreview(surface: _Surface.liveReport);
+
 @widgetbook.UseCase(
   name: 'Live checkpoint report and retry',
   type: EventAssistanceCheckpointSheet,

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:03da706e307beb1589e71af3d063a1b141845eb47d33ae29b70b099fa80a0ec5",
+  "sourceDigest": "sha256:2238acec04a6cb5d08772e1d2b8364c3913e67bf7db9e0ec497b716f7b1f6bb4",
   "resolvedDigest": "sha256:ef7212afdec7a870f044168b4bef3cee3b653a4915af54c7fe5463038101d612",
   "feature": {
     "id": "feature.catches_event",
@@ -233,11 +233,11 @@
               "kind": "route",
               "authority": {
                 "registry": "flutter_screens",
-                "id": "screen.catches.hub"
+                "id": "screen.dashboard.home"
               }
             }
           ],
-          "description": "Exits the current event deck to the preceding route or canonical Catches hub fallback.",
+          "description": "Exits the current event deck to the preceding route or Dashboard fallback via the legacy Catches redirect.",
           "implementationStatus": "implemented"
         }
       ],

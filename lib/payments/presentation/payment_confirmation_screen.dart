@@ -636,27 +636,6 @@ class PaymentConfirmationHeadsUp extends StatelessWidget {
   }
 }
 
-class PaymentReferralBannerController extends ConsumerWidget {
-  const PaymentReferralBannerController({super.key, required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final share = ref.watch(externalShareControllerProvider);
-    return PaymentReferralBanner(
-      onShare: () => unawaited(
-        showTrackedAttendeeEventShareCardSheet(
-          context,
-          event: event,
-          share: share,
-          actions: ref.read(attendeeEventShareActionsProvider),
-        ),
-      ),
-    );
-  }
-}
-
 class PaymentReferralBanner extends StatelessWidget {
   const PaymentReferralBanner({super.key, required this.onShare});
 

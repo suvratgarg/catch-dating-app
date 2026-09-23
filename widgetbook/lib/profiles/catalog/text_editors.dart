@@ -1,8 +1,3 @@
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -12,53 +7,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../../preview_layout_contracts.dart';
 import 'fixtures.dart';
 import 'preview.dart';
-
-@widgetbook.UseCase(
-  name: 'Direct text entry states',
-  type: ProfileDirectTextEntryField,
-  path: '[P1 product surfaces]/Profiles/Inline Editors',
-)
-Widget profileDirectTextEntryFieldStates(BuildContext context) {
-  return WidgetbookProfileProfileCatalog(
-    title: 'ProfileDirectTextEntryField',
-    contractId: 'screen.profile.inline.direct_text_entry',
-    children: [
-      WidgetbookProfileStateCard(
-        label: 'editable and legal identity rows',
-        child: WidgetbookProfileSectionFrame(
-          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
-          child: Column(
-            children: [
-              ProfileDirectTextEntryField(
-                icon: CatchIcons.personOutlined,
-                label: 'Display name',
-                contract:
-                    CatchContractConstraints.updateUserProfilePatchDisplayName,
-                currentValue: 'Neha',
-                currentFieldValue: 'Neha',
-                fieldName: 'displayName',
-                patchForValue: (value) =>
-                    UpdateUserProfilePatch(displayName: value as String),
-              ),
-              CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                icon: CatchIcons.cakeOutlined,
-                title: 'Date of birth',
-                body: '16/07/1994 (31 years)',
-              ),
-              CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                icon: CatchIcons.groupOutlined,
-                title: 'Gender',
-                body: 'Woman',
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
 
 @widgetbook.UseCase(
   name: 'Inline prompt editor states',

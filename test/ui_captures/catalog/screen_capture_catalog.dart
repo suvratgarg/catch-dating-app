@@ -207,6 +207,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
@@ -261,7 +262,6 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
@@ -1187,32 +1187,8 @@ final _postRunProfiles = [
 final _catchesOpenEvent = CatchesSurfaceFixtures.openWindowEvent(
   id: 'capture-catches-open',
 );
-final _catchesClosingSoonEvent = CatchesSurfaceFixtures.closingSoonEvent();
 final _catchesClosedEvent = CatchesSurfaceFixtures.closedWindowEvent();
 final _catchesUpcomingEvent = CatchesSurfaceFixtures.upcomingEvent();
-
-List<Object> _swipeHubProviderOverrides({
-  AsyncValue<String?> uidValue = const AsyncData<String?>(
-    CatchesSurfaceFixtures.viewerUid,
-  ),
-  AsyncValue<List<Event>>? eventsValue,
-}) {
-  final uid = switch (uidValue) {
-    AsyncData(:final value) => value,
-    _ => null,
-  };
-  return [
-    uidProvider.overrideWithValue(uidValue),
-    if (uid != null)
-      watchAttendedEventsProvider(uid).overrideWithValue(
-        eventsValue ??
-            AsyncData<List<Event>>([
-              _catchesOpenEvent,
-              _catchesClosingSoonEvent,
-            ]),
-      ),
-  ];
-}
 
 NetworkException _catchesOfflineException({required String action}) {
   return obviousOfflineException(
@@ -2002,7 +1978,7 @@ Future<void> _openProfileCaptureField(WidgetTester tester, String label) async {
   final field = _profileCaptureInfoTile(label);
   await tester.dragUntilVisible(
     field,
-    find.byKey(ProfileTab.scrollViewKey),
+    find.byKey(const ValueKey('profile-tab-scroll-view')),
     const Offset(0, -300),
   );
   await tester.ensureVisible(field);
@@ -2116,9 +2092,14 @@ List<Object> _publicProfileProviderOverrides({
 Widget _selfProfileCapture({SelfProfileTab initialTab = SelfProfileTab.edit}) =>
     ProfileScreen(initialTab: initialTab);
 
-Widget _editableSelfProfileCapture() => ProfileTab(
+Widget _editableSelfProfileCapture() => ProfileTabContent(
   user: ProfileSurfaceFixtures.viewer,
   uploadState: const PhotoUploadState(),
+  builder: (context, children) => ListView(
+    key: const ValueKey('profile-tab-scroll-view'),
+    padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+    children: children,
+  ),
 );
 
 class _SelfProfileUploadFailureCapture extends ConsumerStatefulWidget {
@@ -12391,7 +12372,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _InlineDialogCapture(
-      dialog: DraftDeleteConfirmationDialog(draft: _hostEventSetupDraft),
+      dialog: CatchDialog<bool>.confirmation(
+        title: draftDeleteConfirmationDialogTitle(context.l10n),
+        message: draftDeleteConfirmationDialogMessage(
+          context.l10n,
+          _hostEventSetupDraft,
+        ),
+        actions: draftDeleteConfirmationDialogActions(context.l10n),
+      ),
       child: HostEventEntrySheet(
         state: HostEventEntryState.resolve(
           organizerId: _hostEventSetupDraft.clubId,
@@ -12407,7 +12395,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _InlineDialogCapture(
-      dialog: const CreateEventUnsavedChangesDialog(),
+      dialog: CatchDialog<HostDraftExitDecision>.confirmation(
+        title: context.l10n.hostsDraftExitTitle,
+        message: context.l10n.hostsDraftExitMessage,
+        actions: hostDraftExitDialogActions(context.l10n),
+      ),
       child: _createEventCapture(),
     ),
   ),
@@ -14006,101 +13998,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) =>
         SwipeScreen(eventId: _postRunEvent.id, now: _captureNow),
   ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_active',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_uid_loading',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      uidValue: const AsyncLoading<String?>(),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_uid_error',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      uidValue: AsyncError<String?>(
-        StateError('Capture Catches session failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_signed_out',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      uidValue: const AsyncData<String?>(null),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_attended_events_loading',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: const AsyncLoading<List<Event>>(),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_attended_events_error',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: AsyncError<List<Event>>(
-        StateError('Capture Catches events failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_offline',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: AsyncError<List<Event>>(
-        _catchesOfflineException(action: 'load attended events'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_empty',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _swipeHubProviderOverrides(
-      eventsValue: AsyncData<List<Event>>([_catchesClosedEvent]),
-    ),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_text_scale_2',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    textScale: 2,
-    providerOverrides: _swipeHubProviderOverrides(),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
-  ScreenCaptureEntry(
-    id: 'swipe_hub_reduced_motion',
-    routeIds: const <String>['swipeHubScreen'],
-    device: CaptureDevice.reviewTall,
-    disableAnimations: true,
-    providerOverrides: _swipeHubProviderOverrides(),
-    builder: (context) => SwipeHubScreen(now: CatchesSurfaceFixtures.now),
-  ),
+
   ScreenCaptureEntry(
     id: 'swipe_event_queue_loading',
     routeIds: const <String>['swipeEventScreen'],

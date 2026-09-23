@@ -16,7 +16,15 @@ void _registerProfileEditingPromptsTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
+            body: ProfileTabContent(
+              user: user,
+              uploadState: const PhotoUploadState(),
+              builder: (context, children) => ListView(
+                key: const ValueKey('profile-tab-scroll-view'),
+                padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+                children: children,
+              ),
+            ),
           ),
         ),
       ),

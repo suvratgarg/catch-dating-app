@@ -29,21 +29,6 @@ String draftDeleteConfirmationDialogMessage(
   );
 }
 
-class DraftDeleteConfirmationDialog extends StatelessWidget {
-  const DraftDeleteConfirmationDialog({super.key, required this.draft});
-
-  final EventDraft draft;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDialog<bool>.confirmation(
-      title: draftDeleteConfirmationDialogTitle(context.l10n),
-      message: draftDeleteConfirmationDialogMessage(context.l10n, draft),
-      actions: draftDeleteConfirmationDialogActions(context.l10n),
-    );
-  }
-}
-
 Future<bool?> showDraftDeleteConfirmationDialog({
   required BuildContext context,
   required EventDraft draft,

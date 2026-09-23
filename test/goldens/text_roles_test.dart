@@ -39,11 +39,6 @@ void main() {
                 color: CatchTokens.of(context).ink2,
                 uppercase: true,
               ),
-              const CatchSectionHeaderTitle(label: 'Your guests'),
-              CatchSectionHeaderTitle(
-                label: 'Your guests',
-                icon: CatchIcons.groupsOutlined,
-              ),
             ],
           ),
         ),

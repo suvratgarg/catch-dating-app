@@ -258,21 +258,6 @@ Future<bool?> showHostTeamHostActionDialog({
   );
 }
 
-class HostTeamHostActionDialog extends StatelessWidget {
-  const HostTeamHostActionDialog({super.key, required this.confirmation});
-
-  final HostTeamHostActionConfirmation confirmation;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDialog<bool>.confirmation(
-      title: confirmation.title(context.l10n),
-      message: confirmation.message(context.l10n),
-      actions: confirmation.actions(context.l10n),
-    );
-  }
-}
-
 class HostTeamOwnerHostRow extends StatelessWidget {
   const HostTeamOwnerHostRow({
     super.key,
