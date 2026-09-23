@@ -20312,6 +20312,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose verified phone in Access to offer WhatsApp updates.';
 
   @override
+  String get hostFormMessagingOperations =>
+      'Offer application and event WhatsApp updates';
+
+  @override
+  String get hostFormMessagingFuture =>
+      'Offer future event and offer WhatsApp messages';
+
+  @override
+  String get hostFormMessagingCatchFuture =>
+      'Offer Catch experience and offer WhatsApp messages';
+
+  @override
+  String get hostFormMessagingPurposeHelp =>
+      'Each choice is optional and unchecked for applicants. They can submit without subscribing. A selected choice stays pending until they verify the same phone number.';
+
+  @override
   String get hostFormAnswerDestinationLabel => 'Profile use';
 
   @override
@@ -20366,11 +20382,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagingPermissionsStop => 'Stop updates';
 
   @override
+  String get messagingPermissionsOperations => 'Application and event updates';
+
+  @override
+  String get messagingPermissionsOrganizerMarketing =>
+      'Future events and offers';
+
+  @override
+  String get messagingPermissionsCatchMarketing =>
+      'Catch experiences and offers';
+
+  @override
+  String get messagingPermissionsStopPurpose => 'Stop these messages';
+
+  @override
+  String get hostCustomersWhatsappOperations => 'Application and event updates';
+
+  @override
+  String get hostCustomersWhatsappMarketing => 'Future events and offers';
+
+  @override
   String get messagingPermissionsRefresh => 'Refresh permissions';
 
   @override
   String get messagingPermissionsSettingsHelp =>
       'Manage Catch and organizer WhatsApp updates separately.';
+
+  @override
+  String get eventProfilePersonalize => 'Personalize your event profile';
+
+  @override
+  String get eventProfileFirstName => 'First name for this event';
+
+  @override
+  String get eventProfileIntroduction => 'Introduction for this event';
+
+  @override
+  String get eventProfileQuestionAudience =>
+      'Share this answer with event members';
+
+  @override
+  String get eventProfilePreview => 'Preview what event members can see';
 
   @override
   String get formProfilesTabLabel => 'Forms & cards';
