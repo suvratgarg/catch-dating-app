@@ -45,6 +45,25 @@ describe("form payment recovery", () => {
     expect(api.open).not.toHaveBeenCalled();
   });
 
+  it("recovers an older receipt behind a locally stored ended retry", async () => {
+    api.prepare.mockResolvedValue(ready);
+    const first = renderHook(() => usePublicFormPayment("public", vi.fn(), vi.fn()), {wrapper});
+    await act(async () => {await first.result.current.prepare(request, "person");});
+    first.unmount();
+    api.get.mockResolvedValue({...ready, status: "expired", checkout: null});
+    const oldReceipt = {...completed, paymentId: `fp_${"b".repeat(32)}`};
+    api.find.mockResolvedValue({payment: oldReceipt});
+    const onReceipt = vi.fn();
+    const second = renderHook(() => usePublicFormPayment("public", vi.fn(), onReceipt), {wrapper});
+    await act(async () => {expect(await second.result.current.resume("person")).toBe(true);});
+    expect(api.get).toHaveBeenCalledExactlyOnceWith({paymentId: ready.paymentId,
+      callback: null});
+    expect(api.find).toHaveBeenCalledExactlyOnceWith({publicFormId: "public"});
+    expect(second.result.current.payment?.paymentId).toBe(oldReceipt.paymentId);
+    expect(onReceipt).toHaveBeenCalledExactlyOnceWith(oldReceipt.receipt);
+    expect(api.open).not.toHaveBeenCalled();
+  });
+
   it("keeps payment and server recovery usable when all browser storage is denied", async () => {
     for (const method of ["getItem", "setItem", "removeItem"] as const) {
       vi.spyOn(Storage.prototype, method).mockImplementation(() => {throw new Error("Denied");});
