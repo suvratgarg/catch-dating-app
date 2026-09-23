@@ -46,6 +46,9 @@ class MessagingPermission {
   final MessagingPermissionStatus status;
   final String? receiptId;
   final Map<MessagingPermissionPurpose, MessagingPurposeDecision> purposes;
+  MessagingPermissionStatus get effectiveStatus => purposes.values.any(
+    (decision) => decision.status == MessagingPermissionStatus.optedIn,
+  ) ? MessagingPermissionStatus.optedIn : status;
   String get key => organizerId == null ? 'catch' : 'organizer:$organizerId';
   String get scope => organizerId == null ? 'catch' : 'organizer';
 

@@ -299,13 +299,18 @@ it("keeps an anonymous receipt through same-number OTP and promotes its source",
       return vi.fn();
     });
     const anonymousForm = {...form, definition: {...form.definition,
-      identityPolicy: "anonymous"}, messagingOffer: {
+      identityPolicy: "anonymous", sections: [{sectionId: "details",
+        title: "Details", questions: [{questionId: "mobile", key: "mobile",
+          label: "Mobile number", kind: "phone", required: false,
+          canonicalFieldId: "phoneNumber", options: [], validation: {
+            minLength: null, maxLength: null, patternPreset: null}}]}]},
+      messagingOffer: {
       termsVersion: "form-whatsapp-v2", organizerWhatsapp: null,
       catchWhatsapp: null, organizerOperationsWhatsapp: "Application updates",
       organizerMarketingWhatsapp: null, catchMarketingWhatsapp: null}};
     getPublicOrganizerForm.mockResolvedValue(anonymousForm);
     beginOrganizerFormResponse.mockResolvedValue({...draft, form: anonymousForm,
-      draftToken: "draft-bearer"});
+      draftToken: "draft-bearer", answers: {mobile: "+919000000001"}});
     saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2,
       expiresAtMillis: 200000});
     submitOrganizerFormResponse.mockResolvedValue({responseId: "response-1",

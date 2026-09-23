@@ -133,6 +133,11 @@ class HostCustomerWhatsappPermission {
   final DateTime? decisionAt;
   final String? identityStrength;
   final Map<String, HostCustomerWhatsappPurposePermission> purposes;
+  HostAudiencePermissionStatus get effectiveStatus => purposes.values.any(
+    (decision) => decision.status == HostAudiencePermissionStatus.optedIn &&
+        decision.evidenceStatus ==
+            HostCustomerPermissionEvidenceStatus.complete,
+  ) ? HostAudiencePermissionStatus.optedIn : status;
 }
 
 Map<String, HostCustomerWhatsappPurposePermission> _parseWhatsappPurposes(

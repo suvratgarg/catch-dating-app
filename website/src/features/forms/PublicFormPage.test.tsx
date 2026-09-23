@@ -214,7 +214,8 @@ describe("review messaging choices", () => {
       visibleSections: [], consentAccepted: true,
       messagingChoices: {organizerOperationsWhatsapp: false,
         organizerMarketingWhatsapp: false, catchMarketingWhatsapp: false},
-      updateMessagingChoice, status: {message: "", tone: ""}, pending: false,
+      messagingEndpointAvailable: true, updateMessagingChoice,
+      status: {message: "", tone: ""}, pending: false,
     });
     render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
     for (const name of ["Application updates", "Organizer future events",
@@ -228,6 +229,25 @@ describe("review messaging choices", () => {
       "organizerOperationsWhatsapp", true);
     expect(screen.getByText(/only after you verify the same mobile number/u))
       .not.toBeNull();
+  });
+
+  it("explains and disables v2 choices when no WhatsApp number is captured", () => {
+    usePublicFormController.mockReturnValue({stage: "review", answers: {},
+      form: {organizer: {name: "RSVP"}, messagingOffer: {
+        termsVersion: "form-whatsapp-v2", organizerOperationsWhatsapp: "Application updates",
+      }, definition: {title: "Application", appearance: {preset: "minimal"},
+        sections: [], consent: {retentionCopy: "Keep until withdrawal",
+          consentCopy: "Share answers"}}},
+      visibleSections: [], consentAccepted: true,
+      messagingChoices: {organizerOperationsWhatsapp: false},
+      messagingEndpointAvailable: false, status: {message: "", tone: ""},
+      pending: false,
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    expect((screen.getByRole("checkbox", {name: "Application updates"}) as
+      HTMLInputElement).disabled).toBe(true);
+    expect(screen.getByText(/leave these boxes unchecked/u)).not.toBeNull();
+    expect(screen.getByRole("button", {name: "Submit response"})).not.toBeNull();
   });
 });
 

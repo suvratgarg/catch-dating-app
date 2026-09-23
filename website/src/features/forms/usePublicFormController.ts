@@ -358,6 +358,9 @@ export function usePublicFormController(publicFormId: string) {
     "organizerOperationsWhatsapp" | "organizerMarketingWhatsapp" |
     "catchMarketingWhatsapp", value: boolean) {
     if (!formRef.current?.messagingOffer?.[scope]) return;
+    if (value && formRef.current.messagingOffer.termsVersion ===
+        "form-whatsapp-v2" && !hasMessagingEndpoint(formRef.current,
+          answersRef.current, userRef.current?.phoneNumber ?? null)) return;
     const choices = {...messagingRef.current, [scope]: value};
     messagingRef.current = choices;
     setMessagingChoices(choices);
@@ -538,6 +541,14 @@ export function usePublicFormController(publicFormId: string) {
         publicFormsCopy.genericError, tone: "is-error"});
       return;
     }
+    if (formRef.current?.messagingOffer?.termsVersion === "form-whatsapp-v2" &&
+        hasSelectedPurpose(messagingRef.current) &&
+        !hasMessagingEndpoint(formRef.current, answersRef.current,
+          userRef.current?.phoneNumber ?? null)) {
+      setStatus({message: publicFormsCopy.messagingPhoneRequired,
+        tone: "is-error"});
+      return;
+    }
     const generation = authGenerationRef.current;
     await actionMutation.mutateAsync(async () => {
       await flushSave();
@@ -659,6 +670,8 @@ export function usePublicFormController(publicFormId: string) {
     code,
     consentAccepted,
     messagingChoices,
+    messagingEndpointAvailable: form !== null &&
+      hasMessagingEndpoint(form, answers, userRef.current?.phoneNumber ?? null),
     embed,
     email,
     errors,
@@ -818,6 +831,19 @@ function storedReceipt(publicFormId: string, ownerUid: string | null = null): Pu
 
 function normalizePhone(value: string) {
   return value.replace(/[\s()-]/gu, "");
+}
+
+function hasMessagingEndpoint(form: PublicOrganizerForm,
+  answers: PublicFormAnswers, verifiedPhone: string | null): boolean {
+  if (verifiedPhone && /^\+[1-9][0-9]{6,14}$/u.test(verifiedPhone)) {
+    return true;
+  }
+  const question = form.definition.sections.flatMap((section) =>
+    section.questions).find((candidate) =>
+    candidate.canonicalFieldId === "phoneNumber");
+  const answer = question ? answers[question.questionId] : null;
+  return typeof answer === "string" &&
+    /^\+[1-9][0-9]{6,14}$/u.test(normalizePhone(answer));
 }
 
 function sectionForFirstError(

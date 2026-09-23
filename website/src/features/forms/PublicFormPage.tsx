@@ -612,12 +612,18 @@ function ReviewStage({
           <h2>{publicFormsCopy.messagingHeading}</h2>
           <p>{controller.form.messagingOffer.termsVersion === "form-whatsapp-v2" ?
             publicFormsCopy.messagingPurposeHelp : publicFormsCopy.messagingHelp}</p>
+          {controller.form.messagingOffer.termsVersion === "form-whatsapp-v2" &&
+          !controller.messagingEndpointAvailable ? (
+            <p>{publicFormsCopy.messagingPhoneRequired}</p>
+          ) : null}
           {(["organizerWhatsapp", "catchWhatsapp",
             "organizerOperationsWhatsapp", "organizerMarketingWhatsapp",
             "catchMarketingWhatsapp"] as const).map((scope) => {
             const label = controller.form?.messagingOffer?.[scope];
             return label ? <CheckboxField key={scope}
               checked={controller.messagingChoices[scope]}
+              disabled={controller.form?.messagingOffer?.termsVersion ===
+                "form-whatsapp-v2" && !controller.messagingEndpointAvailable}
               onChange={(event) => controller.updateMessagingChoice(scope, event.target.checked)}
             >{label}</CheckboxField> : null;
           })}

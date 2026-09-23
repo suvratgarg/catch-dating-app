@@ -80,7 +80,8 @@ class MessagingPermissionsPageBody extends StatelessWidget {
             ])
               CatchSection.fieldRows(
                 first: true,
-                footer: permission.status == MessagingPermissionStatus.optedOut
+                footer: permission.effectiveStatus ==
+                        MessagingPermissionStatus.optedOut
                     ? null
                     : CatchButton(
                         key: ValueKey('withdraw-${permission.key}'),
@@ -103,7 +104,7 @@ class MessagingPermissionsPageBody extends StatelessWidget {
                         : permission.organizerName ??
                               l10n.formProfilesOrganizerFallback,
                     body: [
-                      switch (permission.status) {
+                      switch (permission.effectiveStatus) {
                         MessagingPermissionStatus.optedIn =>
                           l10n.messagingPermissionsOn,
                         MessagingPermissionStatus.optedOut =>

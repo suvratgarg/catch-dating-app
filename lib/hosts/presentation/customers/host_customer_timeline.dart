@@ -117,7 +117,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 color: switch (customer.whatsappPermission.evidenceStatus) {
                   HostCustomerPermissionEvidenceStatus.unavailable => t.ink2,
                   HostCustomerPermissionEvidenceStatus.incomplete => t.warning,
-                  _ => switch (customer.whatsappPermission.status) {
+                  _ => switch (customer.whatsappPermission.effectiveStatus) {
                     HostAudiencePermissionStatus.optedIn => t.success,
                     HostAudiencePermissionStatus.optedOut => t.danger,
                     HostAudiencePermissionStatus.unknown => t.ink2,
@@ -246,7 +246,8 @@ String _permissionSummary(
   }
   final broad = _broadPermissionSummary(context, permission);
   if (scoped.isEmpty) return broad;
-  if (permission.status == HostAudiencePermissionStatus.unknown) {
+  if (permission.status == HostAudiencePermissionStatus.unknown ||
+      permission.effectiveStatus != permission.status) {
     return scoped.join('\n');
   }
   return [broad, ...scoped].join('\n');

@@ -1,10 +1,33 @@
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_send.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('new scoped grant is active after an older sender STOP', () {
+    final permission = HostCustomerWhatsappPermission.fromMap({
+      'status': 'optedOut',
+      'evidenceStatus': 'complete',
+      'receiptId': 'old-stop',
+      'source': 'inboundStop',
+      'sourceFormId': null,
+      'sourceFormTitle': null,
+      'decisionAtMillis': 1000,
+      'identityStrength': 'phoneVerified',
+      'purposes': {
+        'eventOperations': {
+          'status': 'optedIn',
+          'evidenceStatus': 'complete',
+          'receiptId': 'new-grant',
+          'decisionAtMillis': 2000,
+          'deliveryAvailable': false,
+        },
+      },
+    });
+    expect(permission.effectiveStatus.name, 'optedIn');
+  });
   test(
     'contact detail parses memory and typed campaign/announcement sends',
     () {
@@ -162,6 +185,7 @@ void main() {
         detail.whatsappPermission.purposes['marketing']?.status.name,
         'optedOut',
       );
+      expect(detail.whatsappPermission.effectiveStatus.name, 'optedIn');
       expect(detail.manualTagVocabulary, hasLength(2));
       expect(detail.notes.single.wasEdited, isTrue);
       expect(

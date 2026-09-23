@@ -124,6 +124,38 @@ void main() {
     await pumpFeatureUi(tester);
     expect(actions, [MessagingPermissionPurpose.eventOperations]);
   });
+  testWidgets('fresh scoped grant after older STOP keeps Stop all reachable', (
+    tester,
+  ) async {
+    final stoppedThenRejoined = const MessagingPermission(
+      organizerId: 'rsvp',
+      organizerName: 'RSVP Demo',
+      status: MessagingPermissionStatus.optedOut,
+      receiptId: 'old-stop',
+      purposes: {
+        MessagingPermissionPurpose.eventOperations:
+            MessagingPurposeDecision(
+              status: MessagingPermissionStatus.optedIn,
+              receiptId: 'fresh-grant',
+            ),
+      },
+    );
+    final state = MessagingPermissionsState(
+      uid: 'person',
+      page: MessagingPermissionPage(
+        catchPermission: _state().page.catchPermission,
+        organizers: [stoppedThenRejoined],
+        nextCursor: null,
+      ),
+    );
+    final actions = <MessagingPermission>[];
+    await _pump(tester, state, actions.add);
+    final stopAll = find.byKey(const ValueKey('withdraw-organizer:rsvp'));
+    expect(stopAll, findsOneWidget);
+    await tester.tap(stopAll);
+    await pumpFeatureUi(tester);
+    expect(actions.single, stoppedThenRejoined);
+  });
 }
 
 Future<void> _pump(
