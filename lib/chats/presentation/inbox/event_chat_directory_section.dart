@@ -81,11 +81,11 @@ class EventChatDirectoryRowList extends StatelessWidget {
                   key: ValueKey('event-chat-${room.eventId}'),
                   copy: catchFieldCopy(l),
                   title: room.title,
-                  body: room.roomStatus != 'open'
+                  body: !room.isRoomOpen
                       ? l.eventChatsWaiting
                       : room.profileClaimRequired
                       ? l.eventChatsReviewProfile
-                      : room.membershipStatus == 'joined'
+                      : room.hasJoined
                       ? l.eventChatsJoined
                       : l.eventChatsReady,
                   emphasis: CatchFieldEmphasis.title,

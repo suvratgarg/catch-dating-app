@@ -36,7 +36,7 @@ class EventChatEntrySection extends ConsumerWidget {
           CatchField.action(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventChatTitle,
-            body: access.roomStatus == 'open'
+            body: access.isRoomOpen
                 ? context.l10n.eventChatEntryBody
                 : context.l10n.eventChatGuestWaiting,
             emphasis: CatchFieldEmphasis.title,

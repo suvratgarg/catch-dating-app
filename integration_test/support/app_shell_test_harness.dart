@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
+import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_draft_repository.dart';
@@ -66,6 +67,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../test/support/empty_event_chat_repository.dart';
 import '../../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../../test/events/events_test_helpers.dart' as event_helpers;
 import '../../test/onboarding/onboarding_test_helpers.dart'
@@ -510,6 +512,7 @@ List<Object> appShellTestOverrides({
         uid,
       ).overrideWith((ref) => Stream.value(matches)),
       totalUnreadCountProvider(uid).overrideWithValue(0),
+      eventChatRepositoryProvider.overrideWithValue(EmptyEventChatRepository()),
       conversationRepositoryProvider.overrideWithValue(
         conversationRepository ?? FakeShellConversationRepository(),
       ),

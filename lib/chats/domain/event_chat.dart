@@ -56,6 +56,9 @@ class EventChatAccess {
   final String termsVersion;
   final int roomRevision, membershipRevision;
   final bool canManage, canJoin, canReadMessages, profileClaimRequired;
+  bool get isRoomOpen => roomStatus == 'open';
+  bool get hasJoined => membershipStatus == 'joined';
+
   int revisionFor(EventChatAction action) => switch (action) {
     EventChatAction.open || EventChatAction.close => roomRevision,
     EventChatAction.join || EventChatAction.leave => membershipRevision,

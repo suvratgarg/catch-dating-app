@@ -229,21 +229,21 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
             ),
           if (current != null &&
               (current.access.canManage ||
-                  current.access.membershipStatus == 'joined'))
+                  current.access.hasJoined))
             CatchActionMenu<EventChatAction>(
               tooltip: context.l10n.eventChatTitle,
               enabled: !current.busy,
               items: [
                 if (current.access.canManage)
                   CatchActionMenuItem(
-                    value: current.access.roomStatus == 'open'
+                    value: current.access.isRoomOpen
                         ? EventChatAction.close
                         : EventChatAction.open,
-                    label: current.access.roomStatus == 'open'
+                    label: current.access.isRoomOpen
                         ? context.l10n.eventChatClose
                         : context.l10n.eventChatOpen,
                   ),
-                if (current.access.membershipStatus == 'joined')
+                if (current.access.hasJoined)
                   CatchActionMenuItem(
                     value: EventChatAction.leave,
                     label: context.l10n.eventChatLeave,
@@ -354,14 +354,14 @@ class EventChatPageBody extends StatelessWidget {
           children: [
             gapH24,
             Text(
-              access.roomStatus != 'open'
+              !access.isRoomOpen
                   ? l.eventChatNotOpen
                   : l.eventChatJoinTitle,
               style: CatchTextStyles.headlineS(context),
             ),
             gapH16,
             Text(
-              access.roomStatus != 'open'
+              !access.isRoomOpen
                   ? access.canManage
                         ? l.eventChatHostSetup
                         : l.eventChatGuestWaiting
@@ -369,7 +369,7 @@ class EventChatPageBody extends StatelessWidget {
               style: CatchTextStyles.recordBody(context),
             ),
             gapH24,
-            if (access.canManage && access.roomStatus != 'open')
+            if (access.canManage && !access.isRoomOpen)
               CatchButton(
                 label: l.eventChatOpen,
                 fullWidth: true,

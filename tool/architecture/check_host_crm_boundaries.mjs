@@ -20,6 +20,8 @@ const manualQueueOwners = new Set([
 ]);
 const permissionCollectionReviewers = new Set([
   "functions/src/events/eventAttendees.ts",
+  "functions/src/messaging/participantMessagingPreferences.ts",
+  "functions/src/organizers/organizerFormMessagingConsent.ts",
   "functions/src/organizers/organizerAudienceProjection.ts",
   "functions/src/organizers/organizerCampaignDispatcher.ts",
   "functions/src/organizers/organizerCampaigns.ts",
