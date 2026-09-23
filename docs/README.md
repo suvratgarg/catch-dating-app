@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.8.0
-updated: 2026-09-22
+version: 5.8.1
+updated: 2026-09-23
 owner: agent_operating_model
 status: active
 ---
@@ -101,7 +101,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 | App listing screenshot production | `store/app_listing_screenshot_production_brief.md`, `store/app_listing_prototypes/README.md` | Approved Catch and Catch Host store-listing narrative, ordered shot matrix, first iPhone visual-review checkpoint, fixture and capture requirements, platform export contract, naming, QA, and upload handoff. |
 | UI capture / visual review pipeline | `plans/ui_capture_pipeline_plan.md` | One deterministic per-screen capture harness with two consumers — raw review PNGs (fast UI review after changes) and curated marketing media (feeds the manifest above). Reuses the golden harness (`matchCatchGolden`); a route-drift check keeps the screen catalog honest. |
 | Marketing landing page research | `marketing_landing_page_research.md` | Reference-site research, production rewrite rationale, guardrails, and residual marketing-site product decisions after the old tracker was folded in. |
-| Organizer/event discovery and claimable listings | `plans/host_listing_discovery_architecture.md` | Deterministic organizer/event discovery, immutable query/source freshness, claim workflow, source-mention resolution, clustering, bounded LLM extraction/adjudication, candidate backlog, source-evidence ledger, index-readiness gates, and Firestore projection planning. |
+| Organizer/event discovery and claimable listings | `operations_platform.md` | Current Supply Intake workflow and durable Operations ownership. `plans/host_listing_discovery_architecture.md` is preserved historical product/identity research; its retired commands are not operational guidance. |
 | Data contracts and Firestore/Functions ownership | `data_contracts.md` | Firestore document shape, repository query/index discipline, schema tooling, relationship documents, rules-test workflow, migration policy, and data-contract watch items. |
 | Clubs-to-organizers migration | `migrations/clubs_to_organizers.md`, `../contracts/migrations/clubs_to_organizers.json` | Organizer subtype taxonomy, canonical/compatibility authority map, dry-run/apply order, parity evidence, recovery, and legacy retirement boundary. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
@@ -140,8 +140,8 @@ durable owners above or closed in code.
 
 | Tracker | Why It Remains |
 |---|---|
-| `ds_resync_audit_2026-06.md` | Active execution tracker for re-syncing `lib/` to the latest Catch design-system spec (event-detail vertical first). Holds the 2026-06-16 gap audit, owner decisions, and the dependency-ordered porting plan. **Supersedes the older font/type language in `ui_elevation_implementation.md` and `design_language.md`** (Archivo + system font + IBM Plex Mono; retired type studies removed from code). Delete once the port completes and durable findings migrate to `design_language.md`. |
-| `ui_elevation_implementation.md` | Execution checklist for the UI elevation initiative (encode tokens/fonts → re-skin proof → flagship Profile → rollout). Self-contained for an implementing agent; pairs with `design_language.md`. **Font section is stale**; see `ds_resync_audit_2026-06.md`. Delete once the rollout completes. |
+| `ds_resync_audit_2026-06.md` | Active execution tracker for re-syncing `lib/` to the latest Catch design-system spec (event-detail vertical first). Holds the 2026-06-16 gap audit, owner decisions, and the dependency-ordered porting plan. **Supersedes the earlier rollout font/type language** (Archivo + system font + IBM Plex Mono; retired type studies removed from code). Delete once the port completes and durable findings migrate to `design_language.md`. |
+| `ui_elevation_implementation.md` | Remaining map-pin, emblem, pigment, photo-grade, and display-face decisions with links to current owners. Completed rollout instructions and stale code examples have been removed. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
