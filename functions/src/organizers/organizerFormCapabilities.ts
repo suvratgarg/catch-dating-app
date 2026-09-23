@@ -54,7 +54,8 @@ export function validateFormCapabilities(definition: Definition,
     definition.messagingConsent?.catchMarketingWhatsapp === true;
   if (asksWhatsapp && asksPendingWhatsapp) {
     add("mixedMessagingTerms", "messagingConsent",
-      "Publish either legacy messaging copy or separately scoped purpose choices.");
+      "Publish either legacy messaging copy or separately scoped " +
+      "purpose choices.");
   }
   if ((preparesProfile || asksWhatsapp || definition.payment) &&
       definition.identityPolicy !== "phoneVerified") {

@@ -1,5 +1,6 @@
-import {formMessagingOffer, formMessagingChoices, prepareFormCommunicationIntent,
-  normalizeFormMessagingDecision, prepareFormMessagingGrants} from
+import {formMessagingOffer, formMessagingChoices,
+  prepareFormCommunicationIntent, normalizeFormMessagingDecision,
+  prepareFormMessagingGrants} from
   "./organizerFormMessagingConsent";
 import {createHash, randomBytes} from "crypto";
 import {organizerFormEmbedAssets} from "./organizerFormEmbed";
