@@ -1,5 +1,10 @@
 import * as admin from "firebase-admin";
 import {requireDoc} from "../shared/validation";
+import {activityNotificationId,
+  allowsPushPreference, setActivityNotificationInTransaction,
+  type FcmParams} from "../shared/notifications";
+import {conversationPushTokens} from
+  "../shared/conversationPushTargets";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import type {EventChatMessageDocument as Message} from
   "../shared/generated/firestoreAdminTypes";
@@ -10,28 +15,25 @@ export interface EventChatNotificationCandidate {
   messageId: string;
   recipientUid: string;
 }
-export interface EventChatNotificationPreview extends
-  EventChatNotificationCandidate {
-  title: "Event room update";
-  body: "Open the room to see the new message.";
-}
 interface Deps {
   db: () => FirebaseFirestore.Firestore;
   enabled: boolean;
-  sink: (preview: EventChatNotificationPreview) => Promise<void>;
+  sink: (payload: FcmParams) => Promise<void>;
 }
 const defaults: Deps = {db: () => admin.firestore(), enabled: false,
   sink: async () => undefined};
 
-/** A queued candidate is never an access grant. Read current admission,
- * membership, mute, sender and message state immediately before delivery.
- * Production delivery remains disabled until an approved provider is wired. */
+/** A queued candidate is never an access grant. Current authority and a
+ * deterministic hidden Activity receipt are checked/created atomically. The
+ * injected sink is synthetic only; no production push provider is enabled. */
 export async function dispatchEventChatNotification(
   candidate: EventChatNotificationCandidate, deps: Deps = defaults
 ): Promise<boolean> {
   if (!deps.enabled) return false;
   const db = deps.db();
-  const deliver = await db.runTransaction(async (tx) => {
+  const receiptId = activityNotificationId("message",
+    `eventChat_${candidate.messageId}`);
+  const deliveries = await db.runTransaction(async (tx) => {
     const snap = await tx.get(db.collection("eventChatMessages")
       .doc(candidate.messageId));
     if (!snap.exists) return false;
@@ -47,22 +49,64 @@ export async function dispatchEventChatNotification(
       ]);
       const blocked = await hasBlockingRelationshipInTransaction(tx, db,
         candidate.recipientUid, [message.uid!]);
-      return !blocked && !recipient.member?.notificationsMuted &&
-        recipient.view.organizerId === message.organizerId &&
-        sender.view.organizerId === message.organizerId;
+      if (blocked || recipient.member?.notificationsMuted ||
+          recipient.view.organizerId !== message.organizerId ||
+          sender.view.organizerId !== message.organizerId) return false;
+      const [user, deleted, receipt, installations] = await Promise.all([
+        tx.get(db.collection("users").doc(candidate.recipientUid)),
+        tx.get(db.collection("deletedUsers").doc(candidate.recipientUid)),
+        tx.get(db.collection("notifications").doc(candidate.recipientUid)
+          .collection("items").doc(receiptId)),
+        tx.get(db.collection("users").doc(candidate.recipientUid)
+          .collection("pushInstallations").limit(21)),
+      ]);
+      if (!user.exists || user.data()?.deleted === true || deleted.exists ||
+          receipt.exists || installations.size > 20) return null;
+      const userData = user.data();
+      const role = recipient.view.canManage ? "host" : "consumer";
+      const pushEnabled = role === "host" ?
+        userData?.prefsMessages !== false :
+        allowsPushPreference(userData, "messages");
+      if (!pushEnabled) return null;
+      const tokens = conversationPushTokens(installations.docs.map((row) =>
+        row.data()), role, typeof userData?.fcmToken === "string" ?
+        userData.fcmToken : undefined);
+      if (tokens.length === 0) return null;
+      setActivityNotificationInTransaction(tx, db, {
+        id: receiptId,
+        uid: candidate.recipientUid,
+        type: "message",
+        title: "Event room update",
+        body: "Open the room to see the new message.",
+        createdAt: admin.firestore.Timestamp.now(),
+        eventId: candidate.eventId,
+        organizerId: message.organizerId,
+        actorUid: message.uid!,
+      });
+      return tokens.map((token): FcmParams => ({
+        token,
+        title: "Event room update",
+        body: "Open the room to see the new message.",
+        type: "eventChatMessage",
+        eventId: candidate.eventId,
+        organizerId: message.organizerId,
+        messageId: candidate.messageId,
+        notificationId: receiptId,
+        recipientUid: candidate.recipientUid,
+        appRole: role,
+      }));
     } catch {
-      return false;
+      return null;
     }
   });
-  if (!deliver) return false;
-  await deps.sink({...candidate, title: "Event room update",
-    body: "Open the room to see the new message."});
+  if (!deliveries) return false;
+  await Promise.all(deliveries.map((payload) => deps.sink(payload)));
   return true;
 }
 
 /** Bounded post-commit seam. Disabled by default; no queue or provider is
- * activated by a message write. A future worker can call this with its
- * approved sink and still gets dispatch-time authority rechecks. */
+ * activated by a message write. Synthetic sinks are at-most-once: if a sink
+ * fails after the receipt commits, retry does not replay that preview. */
 export async function dispatchEventChatNotificationCandidates(
   message: {eventId: string; messageId: string},
   deps: Deps = defaults

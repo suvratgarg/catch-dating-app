@@ -7,9 +7,11 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {eventChatMembershipId, updateEventChatAccessHandler} from
   "./eventChatAccess";
 import {dispatchEventChatNotification,
-  dispatchEventChatNotificationCandidates,
-  type EventChatNotificationPreview} from "./eventChatNotificationPolicy";
+  dispatchEventChatNotificationCandidates} from
+  "./eventChatNotificationPolicy";
 import {blockDocId} from "../safety/blocking";
+import {activityNotificationId, buildFcmMessage,
+  type FcmParams} from "../shared/notifications";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("queued chat previews suppress mute, leave, removal and closed rooms",
@@ -35,8 +37,11 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
         eventId, action, expectedRevision: revision,
         requestId: randomUUID(), termsVersion: action === "join" ?
           "event-chat-v1" : null}} as CallableRequest<unknown>, deps);
-    const previews: EventChatNotificationPreview[] = [];
+    const previews: FcmParams[] = [];
     const candidate = {eventId, messageId, recipientUid: person};
+    const receipt = db.collection("notifications").doc(person)
+      .collection("items").doc(activityNotificationId("message",
+        `eventChat_${messageId}`));
     const fanout = () => dispatchEventChatNotificationCandidates({eventId,
       messageId}, {db: () => db, enabled: true,
       sink: async (preview) => {
@@ -57,6 +62,8 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
       await ref("users", person).set({displayName: "Participant",
         profileRevision: 1, profileComplete: false,
         profileClaimedAt: Timestamp.now()});
+      await ref("users", person).collection("pushInstallations")
+        .doc("synthetic").set({appRole: "consumer", token: "synthetic-token"});
       await ref("eventParticipations", `${eventId}_${person}`).set({
         eventId, organizerId, clubId: organizerId,
         uid: person, status: "signedUp"});
@@ -69,11 +76,26 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
         reactionCounts: {like: 0, love: 0, laugh: 0, wow: 0, sad: 0,
           thanks: 0}, createdAt: Timestamp.now(), removedAt: null});
       assert.equal(await dispatch(false), false);
-      assert.equal(await dispatch(), true);
+      assert.equal(await fanout(), 1);
       assert.equal(previews.length, 1);
       assert.equal(JSON.stringify(previews).includes("Private message"),
         false);
-      assert.equal(await fanout(), 1);
+      assert.deepEqual(buildFcmMessage(previews[0]).data, {
+        type: "eventChatMessage", eventId, organizerId,
+        messageId, notificationId: receipt.id, recipientUid: person,
+        appRole: "consumer",
+      });
+      assert.equal(await dispatch(), false);
+      assert.equal(await fanout(), 0);
+      await receipt.delete();
+      await assert.rejects(dispatchEventChatNotification(candidate, {
+        db: () => db, enabled: true,
+        sink: async () => {
+          throw new Error("synthetic sink failure");
+        },
+      }), /synthetic sink failure/u);
+      assert.equal(await dispatch(), false);
+      await receipt.delete();
       for (const [blocker, blocked] of [[person, host], [host, person]]) {
         const edge = ref("blocks", blockDocId(blocker, blocked));
         await edge.set({blockerUserId: blocker, blockedUserId: blocked,
@@ -82,6 +104,19 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
         assert.equal(await fanout(), 0);
         await edge.delete();
       }
+      await ref("users", person).update({prefsMessages: false});
+      assert.equal(await dispatch(), false);
+      await ref("users", person).update({prefsMessages: true, deleted: true});
+      assert.equal(await dispatch(), false);
+      await ref("users", person).update({deleted: false});
+      await ref("deletedUsers", person).set({deletedAt: Timestamp.now()});
+      assert.equal(await dispatch(), false);
+      await ref("deletedUsers", person).delete();
+      await ref("users", person).collection("pushInstallations")
+        .doc("synthetic").delete();
+      assert.equal(await dispatch(), false);
+      await ref("users", person).collection("pushInstallations")
+        .doc("synthetic").set({appRole: "consumer", token: "synthetic-token"});
       await change(person, "mute", 1);
       assert.equal(await dispatch(), false);
       assert.equal(await fanout(), 0);
@@ -99,13 +134,17 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
       const batch = db.batch();
       for (const path of [ref("events", eventId),
         ref("organizers", organizerId), ref("users", host),
-        ref("users", person), ref("eventChatRooms", eventId),
+        ref("users", person), ref("deletedUsers", person),
+        ref("eventChatRooms", eventId),
         ref("eventChatMessages", messageId), member(host), member(person),
         ref("blocks", blockDocId(person, host)),
         ref("blocks", blockDocId(host, person)),
         ref("eventParticipations", `${eventId}_${person}`)]) {
         batch.delete(path);
       }
+      batch.delete(receipt);
+      batch.delete(ref("users", person).collection("pushInstallations")
+        .doc("synthetic"));
       const receipts = await db.collection("eventChatAccessReceipts")
         .where("eventId", "==", eventId).limit(100).get();
       for (const row of receipts.docs) batch.delete(row.ref);

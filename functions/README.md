@@ -188,10 +188,15 @@ options when specific functions need higher or lower limits.
 | `adminListOrganizerDetails` / `adminGetOrganizerDetails` / `adminUpdateOrganizerDetails` | `src/admin/clubDetails.ts` | Admin canonical organizer directory, detail, and audited safe patch surface |
 
 Event chat notification candidates are checked after a new message commits, but
-dispatch is disabled by default. The seam has no durable queue or production
-delivery provider. Its test sink rechecks admission, membership, room state,
-blocks and mutes at dispatch time, and fails closed above 100 candidate members.
-No private member answers enter notification previews.
+dispatch is disabled by default. The seam uses current admission, membership,
+room, block, mute, account, push preference, and installation checks with the
+shared notification helpers. It atomically creates a deterministic hidden
+`message` Activity receipt before sending a generic `eventChatMessage` payload
+to an injected synthetic sink. The client derives the room route from a
+validated event ID. There is no live provider or durable delivery queue, and
+sink failure after receipt creation is at-most-once and may lose that push.
+Fan-out fails closed above 100 candidate members. Private member answers never
+enter previews.
 
 ### Firestore-triggered
 

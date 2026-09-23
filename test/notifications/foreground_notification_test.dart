@@ -47,6 +47,35 @@ void main() {
     );
   });
 
+  test('event room arrivals derive a safe route without a match id', () {
+    final room = parse({
+      'type': 'eventChatMessage',
+      'eventId': 'event-7',
+      'messageId': 'room-message-1',
+      'recipientUid': 'me',
+    });
+    expect(room?.route, '/events/event-7/chat');
+    expect(room?.kind, ForegroundNotificationKind.eventChatMessage);
+    expect(
+      parse({
+        'type': 'eventChatMessage',
+        'eventId': '../other',
+        'matchId': 'abc',
+        'messageId': 'room-message-1',
+      }),
+      isNull,
+    );
+    expect(
+      parse({
+        'type': 'eventChatMessage',
+        'eventId': 'event-7',
+        'messageId': 'room-message-1',
+        'recipientUid': 'other',
+      }),
+      isNull,
+    );
+  });
+
   test('network URLs cannot supply navigation and avatar must be HTTPS', () {
     final event = parse({
       'type': 'message',

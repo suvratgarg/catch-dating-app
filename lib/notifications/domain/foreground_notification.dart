@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_config.dart';
 
-enum ForegroundNotificationKind { match, message }
+enum ForegroundNotificationKind { match, message, eventChatMessage }
 
 /// A validated arrival event, not a durable Activity row or a navigation URL
 /// supplied by the network. Its destination is derived locally from the role.
@@ -9,6 +9,7 @@ class ForegroundNotification {
     required this.id,
     required this.uid,
     required this.matchId,
+    required this.eventId,
     required this.kind,
     required this.role,
     this.title,
@@ -19,7 +20,7 @@ class ForegroundNotification {
 
   final String id;
   final String uid;
-  final String matchId;
+  final String? matchId, eventId;
   final ForegroundNotificationKind kind;
   final AppRole role;
   final String? title;
@@ -27,9 +28,11 @@ class ForegroundNotification {
   final String? actorName;
   final String? actorAvatarUrl;
 
-  String get route => role.isHost
-      ? '/host/inbox/${Uri.encodeComponent(matchId)}'
-      : '/chats/${Uri.encodeComponent(matchId)}';
+  String get route => kind == ForegroundNotificationKind.eventChatMessage
+      ? '/events/${Uri.encodeComponent(eventId!)}/chat'
+      : role.isHost
+          ? '/host/inbox/${Uri.encodeComponent(matchId!)}'
+          : '/chats/${Uri.encodeComponent(matchId!)}';
   String get dedupeKey => 'arrival.$route';
 
   static ForegroundNotification? parse({
@@ -43,37 +46,40 @@ class ForegroundNotification {
     final kind = switch (data['type']) {
       'match' => ForegroundNotificationKind.match,
       'message' => ForegroundNotificationKind.message,
+      'eventChatMessage' => ForegroundNotificationKind.eventChatMessage,
       _ => null,
     };
-    final matchId = _text(data['matchId']);
+    final matchId = _safeDocumentId(data['matchId']);
+    final roomEventId = _safeDocumentId(data['eventId']);
     final recipient = data['recipientUid'];
     final targetRole = data['appRole'];
     if (uid.isEmpty ||
         kind == null ||
-        matchId == null ||
-        matchId.contains('/') ||
-        matchId == '.' ||
-        matchId == '..' ||
+        (kind == ForegroundNotificationKind.eventChatMessage
+            ? roomEventId == null
+            : matchId == null) ||
         (recipient != null && recipient != uid) ||
         (targetRole != null && targetRole != role.value) ||
         (role.isHost && kind == ForegroundNotificationKind.match)) {
       return null;
     }
-    final eventId =
+    final deliveryIdentity =
         _text(data['notificationId']) ??
         _text(deliveryId) ??
         _text(data['messageId']);
     // Message bodies are not event identities. Without an id, fail closed
     // rather than replaying/replacing unrelated messages with identical copy.
-    if (eventId == null && kind == ForegroundNotificationKind.message) {
+    if (deliveryIdentity == null &&
+        kind != ForegroundNotificationKind.match) {
       return null;
     }
     final avatar = _text(data['actorAvatarUrl']);
     final avatarUri = avatar == null ? null : Uri.tryParse(avatar);
     return ForegroundNotification(
-      id: 'arrival.${eventId ?? 'match_$matchId'}',
+      id: 'arrival.${deliveryIdentity ?? 'match_$matchId'}',
       uid: uid,
       matchId: matchId,
+      eventId: roomEventId,
       kind: kind,
       role: role,
       title: _text(title),
@@ -87,4 +93,18 @@ class ForegroundNotification {
 
   static String? _text(Object? value) =>
       value is String && value.trim().isNotEmpty ? value.trim() : null;
+
+  static String? _safeDocumentId(Object? value) {
+    final id = _text(value);
+    if (id == null ||
+        id.length > 180 ||
+        id.trim() != id ||
+        id == '.' ||
+        id == '..' ||
+        id.contains('/') ||
+        id.contains('\\')) {
+      return null;
+    }
+    return id;
+  }
 }
