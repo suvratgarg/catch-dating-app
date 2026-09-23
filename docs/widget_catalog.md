@@ -776,7 +776,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart:19</code> | — | — | Explore recommendation card. |
 | <code>Recommendations</code> | <code>lib/explore/presentation/widgets/recommendations.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>UpdateRequiredContent</code> | <code>lib/force_update/presentation/update_required_screen.dart:55</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
-| <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:40</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:41</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:97</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:93</code> | — | — | No class documentation or registry summary. |
