@@ -5,6 +5,8 @@ import type {PropsWithChildren} from "react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 const beginOrganizerFormResponse = vi.hoisted(() => vi.fn());
+const beginPublicEventPhoneVerification = vi.hoisted(() => vi.fn());
+const promoteFormCommunicationIntent = vi.hoisted(() => vi.fn());
 const saveOrganizerFormResponseDraft = vi.hoisted(() => vi.fn());
 const submitOrganizerFormResponse = vi.hoisted(() => vi.fn());
 const getPublicOrganizerForm = vi.hoisted(() => vi.fn());
@@ -16,11 +18,12 @@ const finalizeOrganizerFormAsset = vi.hoisted(() => vi.fn());
 
 vi.mock("../../firebase", () => ({
   beginOrganizerFormResponse,
-  beginPublicEventPhoneVerification: vi.fn(),
+  beginPublicEventPhoneVerification,
   completePublicFormEmailSignIn: vi.fn(),
   createOrganizerFormAssetIntent,
   finalizeOrganizerFormAsset,
   getPublicOrganizerForm,
+  promoteFormCommunicationIntent,
   findOrganizerFormPayment,
   saveOrganizerFormResponseDraft,
   sendPublicFormEmailSignInLink: vi.fn(),
@@ -191,6 +194,24 @@ describe("form consent and authenticated draft ownership", () => {
       .toEqual({termsVersion: "form-whatsapp-v1", organizerWhatsapp: false, catchWhatsapp: false});
   });
 
+  it("does not propose activation after every v2 choice stays unchecked",
+    async () => {
+      const v2 = {...form, messagingOffer: {termsVersion:
+        "form-whatsapp-v2", organizerWhatsapp: null, catchWhatsapp: null,
+        organizerOperationsWhatsapp: "Application updates"}};
+      getPublicOrganizerForm.mockResolvedValue(v2);
+      beginOrganizerFormResponse.mockResolvedValue({...draft, form: v2});
+      const {result} = renderHook(() => usePublicFormController(
+        "public-form-1"), {wrapper: wrapper()});
+      await waitFor(() => expect(result.current.stage).toBe("form"));
+      act(() => result.current.updateConsent(true));
+      await act(async () => {await result.current.submit();});
+      expect(result.current.stage).toBe("complete");
+      expect(result.current.pendingConsentResponseId).toBeNull();
+      expect(window.localStorage.getItem(
+        "catch:form:public-form-1:consent-intent-hint")).toBeNull();
+    });
+
   for (const step of ["intent", "upload", "finalize"] as const) {
     for (const outcome of ["success", "failure"] as const) {
       it(`ignores an old account's ${step} ${outcome} after switching identity`, async () => {
@@ -266,6 +287,68 @@ describe("form consent and authenticated draft ownership", () => {
     expect(result.current.messagingChoices.catchWhatsapp).toBe(false);
   });
 });
+
+it("keeps an anonymous receipt through same-number OTP and promotes its source",
+  async () => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    let authChanged!: (user: {uid: string; phoneNumber: string} | null) => void;
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      authChanged = listener;
+      listener(null);
+      return vi.fn();
+    });
+    const anonymousForm = {...form, definition: {...form.definition,
+      identityPolicy: "anonymous"}, messagingOffer: {
+      termsVersion: "form-whatsapp-v2", organizerWhatsapp: null,
+      catchWhatsapp: null, organizerOperationsWhatsapp: "Application updates",
+      organizerMarketingWhatsapp: null, catchMarketingWhatsapp: null}};
+    getPublicOrganizerForm.mockResolvedValue(anonymousForm);
+    beginOrganizerFormResponse.mockResolvedValue({...draft, form: anonymousForm,
+      draftToken: "draft-bearer"});
+    saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2,
+      expiresAtMillis: 200000});
+    submitOrganizerFormResponse.mockResolvedValue({responseId: "response-1",
+      formId: "form-1", versionId: "version-1", status: "submitted",
+      submittedAtMillis: 1000, withdrawalToken: "source-bearer",
+      completion: {title: "Received", message: null, actionKind: "none",
+        actionLabel: null, actionUrl: null}});
+    const verified = {uid: "verified-person", phoneNumber: "+919000000001"};
+    beginPublicEventPhoneVerification.mockResolvedValue({clear: vi.fn(),
+      confirm: vi.fn(async () => {authChanged(verified); return verified;})});
+    promoteFormCommunicationIntent.mockResolvedValue({responseId: "response-1",
+      promotedPurposes: ["organizer:eventOperations"], replayed: false});
+    const {result} = renderHook(() => usePublicFormController("public-form-1"),
+      {wrapper: wrapper()});
+    await waitFor(() => expect(result.current.stage).toBe("form"));
+    act(() => {
+      result.current.updateConsent(true);
+      result.current.updateMessagingChoice("organizerOperationsWhatsapp", true);
+    });
+    await act(async () => {await result.current.submit();});
+    expect(result.current.stage).toBe("complete");
+    expect(result.current.pendingConsentResponseId).toBe("response-1");
+    expect(window.localStorage.getItem(
+      "catch:form:public-form-1:consent-intent-hint"))
+      .toContain('"responseId":"response-1"');
+    await act(async () => {await result.current.startConsentPromotion();});
+    expect(result.current.stage).toBe("identity");
+    expect(result.current.verifyingConsent).toBe(true);
+    act(() => result.current.setPhoneNumber("+919000000001"));
+    await act(async () => {await result.current.handlePhoneSubmit({
+      preventDefault: vi.fn()} as never);});
+    act(() => result.current.setCode("123456"));
+    await act(async () => {await result.current.handleCodeSubmit({
+      preventDefault: vi.fn()} as never);});
+    expect(promoteFormCommunicationIntent).toHaveBeenCalledWith({
+      responseId: "response-1", withdrawalToken: "source-bearer",
+      requestId: expect.any(String),
+    });
+    expect(result.current.stage).toBe("complete");
+    expect(result.current.receipt?.responseId).toBe("response-1");
+    expect(result.current.pendingConsentResponseId).toBeNull();
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+  });
 
 const recoveredPayment = {paymentId: `fp_${"a".repeat(32)}`, status: "submitted",
   checkout: null, receipt: {responseId: "response-1", formId: "form-1", versionId: "version-1",
