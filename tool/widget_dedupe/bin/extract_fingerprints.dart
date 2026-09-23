@@ -25,6 +25,12 @@ void main(List<String> rawArgs) {
       defaultsTo: 'artifacts/widget_dedupe/fingerprints.json',
       help: 'Output JSON path.',
     )
+    ..addFlag(
+      'retirement',
+      negatable: false,
+      help:
+          'Scan repository Dart references; emit an advisory retirement report to stdout.',
+    )
     ..addFlag('help', abbr: 'h', negatable: false, help: 'Print usage.');
 
   late ArgResults args;
@@ -48,6 +54,83 @@ void main(List<String> rawArgs) {
   }
 
   final repoRoot = _findRepoRoot(Directory.current);
+  if (args.flag('retirement')) {
+    if (args.wasParsed('files') ||
+        args.wasParsed('classification') ||
+        args.wasParsed('out')) {
+      stderr.writeln(
+        '--retirement scans the full repository and writes only stdout.',
+      );
+      exitCode = 64;
+      return;
+    }
+    final listing = Process.runSync('git', [
+      'ls-files',
+      '-z',
+      '--cached',
+      '--others',
+      '--exclude-standard',
+      '--',
+      '*.dart',
+    ], workingDirectory: repoRoot.path);
+    if (listing.exitCode != 0) {
+      stderr.write(listing.stderr);
+      exitCode = 1;
+      return;
+    }
+    final deletedResult = Process.runSync('git', [
+      'ls-files',
+      '-z',
+      '--deleted',
+    ], workingDirectory: repoRoot.path);
+    if (deletedResult.exitCode != 0) {
+      stderr.write(deletedResult.stderr);
+      exitCode = 1;
+      return;
+    }
+    final deleted = (deletedResult.stdout as String).split('\u0000').toSet();
+    final sources = <String, String>{};
+    for (final relative in (listing.stdout as String).split('\u0000').toSet()) {
+      if (relative.isEmpty ||
+          relative.startsWith('vendor/') ||
+          relative.startsWith('third_party/'))
+        continue;
+      if (deleted.contains(relative)) continue;
+      final file = File(p.join(repoRoot.path, relative));
+      if (file.existsSync()) {
+        sources[relative] = file.readAsStringSync();
+      } else {
+        // Sparse checkout: indexed source still participates in the scan.
+        final indexed = Process.runSync('git', [
+          'show',
+          ':$relative',
+        ], workingDirectory: repoRoot.path);
+        if (indexed.exitCode != 0) {
+          stderr.writeln('Cannot read $relative; retirement scan aborted.');
+          exitCode = 1;
+          return;
+        }
+        sources[relative] = indexed.stdout as String;
+      }
+    }
+    if (sources.isEmpty) {
+      stderr.writeln('No Dart sources discovered; retirement scan aborted.');
+      exitCode = 1;
+      return;
+    }
+    final report = analyzeRetirementSources(sources);
+    final revision = Process.runSync('git', [
+      'rev-parse',
+      'HEAD',
+    ], workingDirectory: repoRoot.path);
+    report['revision'] = revision.exitCode == 0
+        ? (revision.stdout as String).trim()
+        : null;
+    report['snapshot'] = 'working-tree; sourceDigest includes dirty source';
+    stdout.writeln(const JsonEncoder.withIndent('  ').convert(report));
+    if ((report['failures'] as List).isNotEmpty) exitCode = 1;
+    return;
+  }
   final files = (args.option('files') ?? '')
       .split(',')
       .map((value) => value.trim())
