@@ -5036,7 +5036,9 @@ export interface EventChatProfileShareDocument {
        */
       questionIds: string[];
     } | null;
-    termsVersion: "event-profile-sharing-v1";
+    firstName?: string;
+    introduction?: string;
+    termsVersion: "event-profile-sharing-v1" | "event-profile-sharing-v2";
   } | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
@@ -6342,6 +6344,13 @@ export interface OrganizerFormDraftDocument {
          * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
          */
         answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
+        /**
+         * Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.
+         */
+        answerAudience?: {
+          mode: "organizerOnly" | "eventMembersWithConsent";
+          eventProfileSlot: null | "customRow";
+        };
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6435,6 +6444,23 @@ export interface OrganizerFormDraftDocument {
     messagingConsent?: {
       organizerWhatsapp: boolean;
       catchWhatsapp: boolean;
+      organizerOperationsWhatsapp?: boolean;
+      organizerMarketingWhatsapp?: boolean;
+      catchMarketingWhatsapp?: boolean;
+    };
+    eventProfile?: {
+      enabled: boolean;
+      /**
+       * @maxItems 4
+       */
+      allowedSlots: (
+        | "displayName"
+        | "portrait"
+        | "introduction"
+        | "customRow"
+      )[];
+      maxCustomRows: number;
+      noticeVersion: "event-profile-sharing-v2";
     };
     completion: {
       title: string;
@@ -6549,6 +6575,13 @@ export interface OrganizerFormVersionDocument {
          * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
          */
         answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
+        /**
+         * Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.
+         */
+        answerAudience?: {
+          mode: "organizerOnly" | "eventMembersWithConsent";
+          eventProfileSlot: null | "customRow";
+        };
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6642,6 +6675,23 @@ export interface OrganizerFormVersionDocument {
     messagingConsent?: {
       organizerWhatsapp: boolean;
       catchWhatsapp: boolean;
+      organizerOperationsWhatsapp?: boolean;
+      organizerMarketingWhatsapp?: boolean;
+      catchMarketingWhatsapp?: boolean;
+    };
+    eventProfile?: {
+      enabled: boolean;
+      /**
+       * @maxItems 4
+       */
+      allowedSlots: (
+        | "displayName"
+        | "portrait"
+        | "introduction"
+        | "customRow"
+      )[];
+      maxCustomRows: number;
+      noticeVersion: "event-profile-sharing-v2";
     };
     completion: {
       title: string;

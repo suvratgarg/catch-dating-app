@@ -279,7 +279,7 @@ test(
             membershipRevision: 0,
             firstName: "Mira",
             introduction: "I like coffee and running.",
-            termsVersion: "event-profile-sharing-v2",
+            termsVersion: "event-profile-sharing-v2" as const,
           };
           const own = await settings(request(person, {}), deps);
           assert.equal(own.canShare, true);

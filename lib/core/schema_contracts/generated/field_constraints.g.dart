@@ -29964,6 +29964,24 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
   );
 
+  static const eventChatProfileShareDocumentSelectionFirstName = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.firstName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
+  static const eventChatProfileShareDocumentSelectionIntroduction = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.introduction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
   static const eventChatProfileShareDocumentSelectionMembershipRevision = CatchContractFieldConstraints(
     path: 'eventChatProfileShareDocument.selection.membershipRevision',
     required: true,
@@ -29992,6 +30010,7 @@ abstract final class CatchContractConstraints {
     path: 'eventChatProfileShareDocument.selection.termsVersion',
     required: true,
     valueTypes: <String>['string'],
+    enumValues: <String>['event-profile-sharing-v1', 'event-profile-sharing-v2'],
   );
 
   static const eventChatProfileShareDocumentUid = CatchContractFieldConstraints(
@@ -60263,6 +60282,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventChatProfileCallableResponseIntroduction = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.introduction',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventChatProfileCallableResponseParticipantUid = CatchContractFieldConstraints(
     path: 'getEventChatProfileCallableResponse.participantUid',
     maxLength: 180,
@@ -60316,6 +60341,106 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionCardQuestionIds = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.card.questionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionCardQuestionIdsItems = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.card.questionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionCardResponseId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.card.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionCardRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.card.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionCoreFieldIds = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.coreFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+    maxItems: 14,
+    uniqueItems: true,
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionCoreFieldIdsItems = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.coreFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionFirstName = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.firstName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionIntroduction = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.introduction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionMembershipRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.membershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionPhotoId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.photoId',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionProfileRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallablePayloadPreviewSelectionTermsVersion = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.previewSelection.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event-profile-sharing-v1', 'event-profile-sharing-v2'],
   );
 
   static const getEventChatProfileSharingCallableResponseCanShare = CatchContractFieldConstraints(
@@ -60387,6 +60512,115 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventChatProfileSharingCallableResponsePreviewCardFields = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.cardFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewCardFieldsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.cardFields.items.label',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewCardFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.cardFields.items.value',
+    maxLength: 10000,
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewCoreFields = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.coreFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 14,
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewCoreFieldsItemsFieldId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.coreFields.items.fieldId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewCoreFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.coreFields.items.value',
+    maxLength: 10000,
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewDisplayName = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewEventId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewIntroduction = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.introduction',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewParticipantUid = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.participantUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewPhotoContentType = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.photo.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewPhotoHeight = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.photo.height',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 640,
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewPhotoPreviewBase64 = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.photo.previewBase64',
+    maxLength: 349528,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9+/]+={0,2}\$',
+  );
+
+  static const getEventChatProfileSharingCallableResponsePreviewPhotoWidth = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.preview.photo.width',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 640,
+  );
+
   static const getEventChatProfileSharingCallableResponseProfileRevision = CatchContractFieldConstraints(
     path: 'getEventChatProfileSharingCallableResponse.profileRevision',
     required: true,
@@ -60454,6 +60688,24 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
   );
 
+  static const getEventChatProfileSharingCallableResponseSelectionFirstName = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.firstName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionIntroduction = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.introduction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
   static const getEventChatProfileSharingCallableResponseSelectionMembershipRevision = CatchContractFieldConstraints(
     path: 'getEventChatProfileSharingCallableResponse.selection.membershipRevision',
     required: true,
@@ -60482,6 +60734,7 @@ abstract final class CatchContractConstraints {
     path: 'getEventChatProfileSharingCallableResponse.selection.termsVersion',
     required: true,
     valueTypes: <String>['string'],
+    enumValues: <String>['event-profile-sharing-v1', 'event-profile-sharing-v2'],
   );
 
   static const getEventInviteLinkTokenCallablePayloadEventId = CatchContractFieldConstraints(
@@ -83584,6 +83837,43 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormDraftDocumentDefinitionEventProfileAllowedSlots = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.eventProfile.allowedSlots',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerFormDraftDocumentDefinitionEventProfileAllowedSlotsItems = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.eventProfile.allowedSlots.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionEventProfileEnabled = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.eventProfile.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionEventProfileMaxCustomRows = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.eventProfile.maxCustomRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const organizerFormDraftDocumentDefinitionEventProfileNoticeVersion = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.eventProfile.noticeVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFormDraftDocumentDefinitionIdentityPolicy = CatchContractFieldConstraints(
     path: 'organizerFormDraftDocument.definition.identityPolicy',
     required: true,
@@ -83673,9 +83963,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormDraftDocumentDefinitionMessagingConsentCatchMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.messagingConsent.catchMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
     path: 'organizerFormDraftDocument.definition.messagingConsent.catchWhatsapp',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionMessagingConsentOrganizerMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.messagingConsent.organizerMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionMessagingConsentOrganizerOperationsWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.messagingConsent.organizerOperationsWhatsapp',
     valueTypes: <String>['boolean'],
   );
 
@@ -83756,6 +84061,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.answerAudience.eventProfileSlot',
+    valueTypes: <String>['string'],
+    enumValues: <String>['customRow'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.answerAudience.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'eventMembersWithConsent'],
   );
 
   static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
@@ -85244,6 +85562,43 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormVersionDocumentDefinitionEventProfileAllowedSlots = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.eventProfile.allowedSlots',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerFormVersionDocumentDefinitionEventProfileAllowedSlotsItems = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.eventProfile.allowedSlots.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionEventProfileEnabled = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.eventProfile.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionEventProfileMaxCustomRows = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.eventProfile.maxCustomRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const organizerFormVersionDocumentDefinitionEventProfileNoticeVersion = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.eventProfile.noticeVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFormVersionDocumentDefinitionIdentityPolicy = CatchContractFieldConstraints(
     path: 'organizerFormVersionDocument.definition.identityPolicy',
     required: true,
@@ -85333,9 +85688,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormVersionDocumentDefinitionMessagingConsentCatchMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.messagingConsent.catchMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerFormVersionDocumentDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
     path: 'organizerFormVersionDocument.definition.messagingConsent.catchWhatsapp',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionMessagingConsentOrganizerMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.messagingConsent.organizerMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionMessagingConsentOrganizerOperationsWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.messagingConsent.organizerOperationsWhatsapp',
     valueTypes: <String>['boolean'],
   );
 
@@ -85416,6 +85786,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.answerAudience.eventProfileSlot',
+    valueTypes: <String>['string'],
+    enumValues: <String>['customRow'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.answerAudience.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'eventMembersWithConsent'],
   );
 
   static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
@@ -105040,6 +105423,24 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
   );
 
+  static const updateEventChatProfileSharingCallablePayloadSelectionFirstName = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.firstName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionIntroduction = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.introduction',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\S(?:[\\s\\S]*\\S)?\$',
+  );
+
   static const updateEventChatProfileSharingCallablePayloadSelectionMembershipRevision = CatchContractFieldConstraints(
     path: 'updateEventChatProfileSharingCallablePayload.selection.membershipRevision',
     required: true,
@@ -105068,6 +105469,7 @@ abstract final class CatchContractConstraints {
     path: 'updateEventChatProfileSharingCallablePayload.selection.termsVersion',
     required: true,
     valueTypes: <String>['string'],
+    enumValues: <String>['event-profile-sharing-v1', 'event-profile-sharing-v2'],
   );
 
   static const updateEventChatProfileSharingCallableResponseReplayed = CatchContractFieldConstraints(
@@ -106797,6 +107199,43 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlots = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlotsItems = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionEventProfileEnabled = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.eventProfile.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionEventProfileMaxCustomRows = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.eventProfile.maxCustomRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionEventProfileNoticeVersion = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.eventProfile.noticeVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy = CatchContractFieldConstraints(
     path: 'updateOrganizerFormDraftCallablePayload.definition.identityPolicy',
     required: true,
@@ -106886,9 +107325,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
   static const updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
     path: 'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerOperationsWhatsapp = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerOperationsWhatsapp',
     valueTypes: <String>['boolean'],
   );
 
@@ -106969,6 +107423,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.eventProfileSlot',
+    valueTypes: <String>['string'],
+    enumValues: <String>['customRow'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'eventMembersWithConsent'],
   );
 
   static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
@@ -110467,6 +110934,43 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const validateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlots = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlotsItems = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'portrait', 'introduction', 'customRow'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionEventProfileEnabled = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.eventProfile.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionEventProfileMaxCustomRows = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.eventProfile.maxCustomRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 20,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionEventProfileNoticeVersion = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.eventProfile.noticeVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const validateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy = CatchContractFieldConstraints(
     path: 'validateOrganizerFormDraftCallablePayload.definition.identityPolicy',
     required: true,
@@ -110556,9 +111060,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
   static const validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
     path: 'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerMarketingWhatsapp = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerMarketingWhatsapp',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerOperationsWhatsapp = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerOperationsWhatsapp',
     valueTypes: <String>['boolean'],
   );
 
@@ -110639,6 +111158,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.eventProfileSlot',
+    valueTypes: <String>['string'],
+    enumValues: <String>['customRow'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'eventMembersWithConsent'],
   );
 
   static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
@@ -116170,6 +116702,8 @@ abstract final class CatchContractConstraints {
     'eventChatProfileShareDocument.selection.card.revision': eventChatProfileShareDocumentSelectionCardRevision,
     'eventChatProfileShareDocument.selection.coreFieldIds': eventChatProfileShareDocumentSelectionCoreFieldIds,
     'eventChatProfileShareDocument.selection.coreFieldIds.items': eventChatProfileShareDocumentSelectionCoreFieldIdsItems,
+    'eventChatProfileShareDocument.selection.firstName': eventChatProfileShareDocumentSelectionFirstName,
+    'eventChatProfileShareDocument.selection.introduction': eventChatProfileShareDocumentSelectionIntroduction,
     'eventChatProfileShareDocument.selection.membershipRevision': eventChatProfileShareDocumentSelectionMembershipRevision,
     'eventChatProfileShareDocument.selection.photoId': eventChatProfileShareDocumentSelectionPhotoId,
     'eventChatProfileShareDocument.selection.profileRevision': eventChatProfileShareDocumentSelectionProfileRevision,
@@ -120238,6 +120772,7 @@ abstract final class CatchContractConstraints {
     'getEventChatProfileCallableResponse.coreFields.items.value': getEventChatProfileCallableResponseCoreFieldsItemsValue,
     'getEventChatProfileCallableResponse.displayName': getEventChatProfileCallableResponseDisplayName,
     'getEventChatProfileCallableResponse.eventId': getEventChatProfileCallableResponseEventId,
+    'getEventChatProfileCallableResponse.introduction': getEventChatProfileCallableResponseIntroduction,
     'getEventChatProfileCallableResponse.participantUid': getEventChatProfileCallableResponseParticipantUid,
     'getEventChatProfileCallableResponse.photo.contentType': getEventChatProfileCallableResponsePhotoContentType,
     'getEventChatProfileCallableResponse.photo.height': getEventChatProfileCallableResponsePhotoHeight,
@@ -120245,6 +120780,18 @@ abstract final class CatchContractConstraints {
     'getEventChatProfileCallableResponse.photo.width': getEventChatProfileCallableResponsePhotoWidth,
     'getEventChatProfileSharingCallablePayload.eventId': getEventChatProfileSharingCallablePayloadEventId,
     'getEventChatProfileSharingCallablePayload.expectedUid': getEventChatProfileSharingCallablePayloadExpectedUid,
+    'getEventChatProfileSharingCallablePayload.previewSelection.card.questionIds': getEventChatProfileSharingCallablePayloadPreviewSelectionCardQuestionIds,
+    'getEventChatProfileSharingCallablePayload.previewSelection.card.questionIds.items': getEventChatProfileSharingCallablePayloadPreviewSelectionCardQuestionIdsItems,
+    'getEventChatProfileSharingCallablePayload.previewSelection.card.responseId': getEventChatProfileSharingCallablePayloadPreviewSelectionCardResponseId,
+    'getEventChatProfileSharingCallablePayload.previewSelection.card.revision': getEventChatProfileSharingCallablePayloadPreviewSelectionCardRevision,
+    'getEventChatProfileSharingCallablePayload.previewSelection.coreFieldIds': getEventChatProfileSharingCallablePayloadPreviewSelectionCoreFieldIds,
+    'getEventChatProfileSharingCallablePayload.previewSelection.coreFieldIds.items': getEventChatProfileSharingCallablePayloadPreviewSelectionCoreFieldIdsItems,
+    'getEventChatProfileSharingCallablePayload.previewSelection.firstName': getEventChatProfileSharingCallablePayloadPreviewSelectionFirstName,
+    'getEventChatProfileSharingCallablePayload.previewSelection.introduction': getEventChatProfileSharingCallablePayloadPreviewSelectionIntroduction,
+    'getEventChatProfileSharingCallablePayload.previewSelection.membershipRevision': getEventChatProfileSharingCallablePayloadPreviewSelectionMembershipRevision,
+    'getEventChatProfileSharingCallablePayload.previewSelection.photoId': getEventChatProfileSharingCallablePayloadPreviewSelectionPhotoId,
+    'getEventChatProfileSharingCallablePayload.previewSelection.profileRevision': getEventChatProfileSharingCallablePayloadPreviewSelectionProfileRevision,
+    'getEventChatProfileSharingCallablePayload.previewSelection.termsVersion': getEventChatProfileSharingCallablePayloadPreviewSelectionTermsVersion,
     'getEventChatProfileSharingCallableResponse.canShare': getEventChatProfileSharingCallableResponseCanShare,
     'getEventChatProfileSharingCallableResponse.coreFields': getEventChatProfileSharingCallableResponseCoreFields,
     'getEventChatProfileSharingCallableResponse.coreFields.items.fieldId': getEventChatProfileSharingCallableResponseCoreFieldsItemsFieldId,
@@ -120254,6 +120801,20 @@ abstract final class CatchContractConstraints {
     'getEventChatProfileSharingCallableResponse.organizerId': getEventChatProfileSharingCallableResponseOrganizerId,
     'getEventChatProfileSharingCallableResponse.photoIds': getEventChatProfileSharingCallableResponsePhotoIds,
     'getEventChatProfileSharingCallableResponse.photoIds.items': getEventChatProfileSharingCallableResponsePhotoIdsItems,
+    'getEventChatProfileSharingCallableResponse.preview.cardFields': getEventChatProfileSharingCallableResponsePreviewCardFields,
+    'getEventChatProfileSharingCallableResponse.preview.cardFields.items.label': getEventChatProfileSharingCallableResponsePreviewCardFieldsItemsLabel,
+    'getEventChatProfileSharingCallableResponse.preview.cardFields.items.value': getEventChatProfileSharingCallableResponsePreviewCardFieldsItemsValue,
+    'getEventChatProfileSharingCallableResponse.preview.coreFields': getEventChatProfileSharingCallableResponsePreviewCoreFields,
+    'getEventChatProfileSharingCallableResponse.preview.coreFields.items.fieldId': getEventChatProfileSharingCallableResponsePreviewCoreFieldsItemsFieldId,
+    'getEventChatProfileSharingCallableResponse.preview.coreFields.items.value': getEventChatProfileSharingCallableResponsePreviewCoreFieldsItemsValue,
+    'getEventChatProfileSharingCallableResponse.preview.displayName': getEventChatProfileSharingCallableResponsePreviewDisplayName,
+    'getEventChatProfileSharingCallableResponse.preview.eventId': getEventChatProfileSharingCallableResponsePreviewEventId,
+    'getEventChatProfileSharingCallableResponse.preview.introduction': getEventChatProfileSharingCallableResponsePreviewIntroduction,
+    'getEventChatProfileSharingCallableResponse.preview.participantUid': getEventChatProfileSharingCallableResponsePreviewParticipantUid,
+    'getEventChatProfileSharingCallableResponse.preview.photo.contentType': getEventChatProfileSharingCallableResponsePreviewPhotoContentType,
+    'getEventChatProfileSharingCallableResponse.preview.photo.height': getEventChatProfileSharingCallableResponsePreviewPhotoHeight,
+    'getEventChatProfileSharingCallableResponse.preview.photo.previewBase64': getEventChatProfileSharingCallableResponsePreviewPhotoPreviewBase64,
+    'getEventChatProfileSharingCallableResponse.preview.photo.width': getEventChatProfileSharingCallableResponsePreviewPhotoWidth,
     'getEventChatProfileSharingCallableResponse.profileRevision': getEventChatProfileSharingCallableResponseProfileRevision,
     'getEventChatProfileSharingCallableResponse.revision': getEventChatProfileSharingCallableResponseRevision,
     'getEventChatProfileSharingCallableResponse.selection.card.questionIds': getEventChatProfileSharingCallableResponseSelectionCardQuestionIds,
@@ -120262,6 +120823,8 @@ abstract final class CatchContractConstraints {
     'getEventChatProfileSharingCallableResponse.selection.card.revision': getEventChatProfileSharingCallableResponseSelectionCardRevision,
     'getEventChatProfileSharingCallableResponse.selection.coreFieldIds': getEventChatProfileSharingCallableResponseSelectionCoreFieldIds,
     'getEventChatProfileSharingCallableResponse.selection.coreFieldIds.items': getEventChatProfileSharingCallableResponseSelectionCoreFieldIdsItems,
+    'getEventChatProfileSharingCallableResponse.selection.firstName': getEventChatProfileSharingCallableResponseSelectionFirstName,
+    'getEventChatProfileSharingCallableResponse.selection.introduction': getEventChatProfileSharingCallableResponseSelectionIntroduction,
     'getEventChatProfileSharingCallableResponse.selection.membershipRevision': getEventChatProfileSharingCallableResponseSelectionMembershipRevision,
     'getEventChatProfileSharingCallableResponse.selection.photoId': getEventChatProfileSharingCallableResponseSelectionPhotoId,
     'getEventChatProfileSharingCallableResponse.selection.profileRevision': getEventChatProfileSharingCallableResponseSelectionProfileRevision,
@@ -123441,6 +124004,11 @@ abstract final class CatchContractConstraints {
     'organizerFormDraftDocument.definition.defaultTargetId': organizerFormDraftDocumentDefinitionDefaultTargetId,
     'organizerFormDraftDocument.definition.defaultTargetKind': organizerFormDraftDocumentDefinitionDefaultTargetKind,
     'organizerFormDraftDocument.definition.description': organizerFormDraftDocumentDefinitionDescription,
+    'organizerFormDraftDocument.definition.eventProfile.allowedSlots': organizerFormDraftDocumentDefinitionEventProfileAllowedSlots,
+    'organizerFormDraftDocument.definition.eventProfile.allowedSlots.items': organizerFormDraftDocumentDefinitionEventProfileAllowedSlotsItems,
+    'organizerFormDraftDocument.definition.eventProfile.enabled': organizerFormDraftDocumentDefinitionEventProfileEnabled,
+    'organizerFormDraftDocument.definition.eventProfile.maxCustomRows': organizerFormDraftDocumentDefinitionEventProfileMaxCustomRows,
+    'organizerFormDraftDocument.definition.eventProfile.noticeVersion': organizerFormDraftDocumentDefinitionEventProfileNoticeVersion,
     'organizerFormDraftDocument.definition.identityPolicy': organizerFormDraftDocumentDefinitionIdentityPolicy,
     'organizerFormDraftDocument.definition.logicRules': organizerFormDraftDocumentDefinitionLogicRules,
     'organizerFormDraftDocument.definition.logicRules.items.action': organizerFormDraftDocumentDefinitionLogicRulesItemsAction,
@@ -123453,7 +124021,10 @@ abstract final class CatchContractConstraints {
     'organizerFormDraftDocument.definition.logicRules.items.ruleId': organizerFormDraftDocumentDefinitionLogicRulesItemsRuleId,
     'organizerFormDraftDocument.definition.logicRules.items.targetQuestionId': organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
     'organizerFormDraftDocument.definition.logicRules.items.targetSectionId': organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
+    'organizerFormDraftDocument.definition.messagingConsent.catchMarketingWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentCatchMarketingWhatsapp,
     'organizerFormDraftDocument.definition.messagingConsent.catchWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp,
+    'organizerFormDraftDocument.definition.messagingConsent.organizerMarketingWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentOrganizerMarketingWhatsapp,
+    'organizerFormDraftDocument.definition.messagingConsent.organizerOperationsWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentOrganizerOperationsWhatsapp,
     'organizerFormDraftDocument.definition.messagingConsent.organizerWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentOrganizerWhatsapp,
     'organizerFormDraftDocument.definition.payment.amountPaise': organizerFormDraftDocumentDefinitionPaymentAmountPaise,
     'organizerFormDraftDocument.definition.payment.connectionId': organizerFormDraftDocumentDefinitionPaymentConnectionId,
@@ -123465,6 +124036,8 @@ abstract final class CatchContractConstraints {
     'organizerFormDraftDocument.definition.sections.items.description': organizerFormDraftDocumentDefinitionSectionsItemsDescription,
     'organizerFormDraftDocument.definition.sections.items.pageBreak': organizerFormDraftDocumentDefinitionSectionsItemsPageBreak,
     'organizerFormDraftDocument.definition.sections.items.questions': organizerFormDraftDocumentDefinitionSectionsItemsQuestions,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.answerAudience.eventProfileSlot': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.answerAudience.mode': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode,
     'organizerFormDraftDocument.definition.sections.items.questions.items.answerDestination': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'organizerFormDraftDocument.definition.sections.items.questions.items.canonicalFieldId': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'organizerFormDraftDocument.definition.sections.items.questions.items.helpText': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHelpText,
@@ -123673,6 +124246,11 @@ abstract final class CatchContractConstraints {
     'organizerFormVersionDocument.definition.defaultTargetId': organizerFormVersionDocumentDefinitionDefaultTargetId,
     'organizerFormVersionDocument.definition.defaultTargetKind': organizerFormVersionDocumentDefinitionDefaultTargetKind,
     'organizerFormVersionDocument.definition.description': organizerFormVersionDocumentDefinitionDescription,
+    'organizerFormVersionDocument.definition.eventProfile.allowedSlots': organizerFormVersionDocumentDefinitionEventProfileAllowedSlots,
+    'organizerFormVersionDocument.definition.eventProfile.allowedSlots.items': organizerFormVersionDocumentDefinitionEventProfileAllowedSlotsItems,
+    'organizerFormVersionDocument.definition.eventProfile.enabled': organizerFormVersionDocumentDefinitionEventProfileEnabled,
+    'organizerFormVersionDocument.definition.eventProfile.maxCustomRows': organizerFormVersionDocumentDefinitionEventProfileMaxCustomRows,
+    'organizerFormVersionDocument.definition.eventProfile.noticeVersion': organizerFormVersionDocumentDefinitionEventProfileNoticeVersion,
     'organizerFormVersionDocument.definition.identityPolicy': organizerFormVersionDocumentDefinitionIdentityPolicy,
     'organizerFormVersionDocument.definition.logicRules': organizerFormVersionDocumentDefinitionLogicRules,
     'organizerFormVersionDocument.definition.logicRules.items.action': organizerFormVersionDocumentDefinitionLogicRulesItemsAction,
@@ -123685,7 +124263,10 @@ abstract final class CatchContractConstraints {
     'organizerFormVersionDocument.definition.logicRules.items.ruleId': organizerFormVersionDocumentDefinitionLogicRulesItemsRuleId,
     'organizerFormVersionDocument.definition.logicRules.items.targetQuestionId': organizerFormVersionDocumentDefinitionLogicRulesItemsTargetQuestionId,
     'organizerFormVersionDocument.definition.logicRules.items.targetSectionId': organizerFormVersionDocumentDefinitionLogicRulesItemsTargetSectionId,
+    'organizerFormVersionDocument.definition.messagingConsent.catchMarketingWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentCatchMarketingWhatsapp,
     'organizerFormVersionDocument.definition.messagingConsent.catchWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentCatchWhatsapp,
+    'organizerFormVersionDocument.definition.messagingConsent.organizerMarketingWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentOrganizerMarketingWhatsapp,
+    'organizerFormVersionDocument.definition.messagingConsent.organizerOperationsWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentOrganizerOperationsWhatsapp,
     'organizerFormVersionDocument.definition.messagingConsent.organizerWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentOrganizerWhatsapp,
     'organizerFormVersionDocument.definition.payment.amountPaise': organizerFormVersionDocumentDefinitionPaymentAmountPaise,
     'organizerFormVersionDocument.definition.payment.connectionId': organizerFormVersionDocumentDefinitionPaymentConnectionId,
@@ -123697,6 +124278,8 @@ abstract final class CatchContractConstraints {
     'organizerFormVersionDocument.definition.sections.items.description': organizerFormVersionDocumentDefinitionSectionsItemsDescription,
     'organizerFormVersionDocument.definition.sections.items.pageBreak': organizerFormVersionDocumentDefinitionSectionsItemsPageBreak,
     'organizerFormVersionDocument.definition.sections.items.questions': organizerFormVersionDocumentDefinitionSectionsItemsQuestions,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.answerAudience.eventProfileSlot': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.answerAudience.mode': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode,
     'organizerFormVersionDocument.definition.sections.items.questions.items.answerDestination': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'organizerFormVersionDocument.definition.sections.items.questions.items.canonicalFieldId': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'organizerFormVersionDocument.definition.sections.items.questions.items.helpText': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHelpText,
@@ -126377,6 +126960,8 @@ abstract final class CatchContractConstraints {
     'updateEventChatProfileSharingCallablePayload.selection.card.revision': updateEventChatProfileSharingCallablePayloadSelectionCardRevision,
     'updateEventChatProfileSharingCallablePayload.selection.coreFieldIds': updateEventChatProfileSharingCallablePayloadSelectionCoreFieldIds,
     'updateEventChatProfileSharingCallablePayload.selection.coreFieldIds.items': updateEventChatProfileSharingCallablePayloadSelectionCoreFieldIdsItems,
+    'updateEventChatProfileSharingCallablePayload.selection.firstName': updateEventChatProfileSharingCallablePayloadSelectionFirstName,
+    'updateEventChatProfileSharingCallablePayload.selection.introduction': updateEventChatProfileSharingCallablePayloadSelectionIntroduction,
     'updateEventChatProfileSharingCallablePayload.selection.membershipRevision': updateEventChatProfileSharingCallablePayloadSelectionMembershipRevision,
     'updateEventChatProfileSharingCallablePayload.selection.photoId': updateEventChatProfileSharingCallablePayloadSelectionPhotoId,
     'updateEventChatProfileSharingCallablePayload.selection.profileRevision': updateEventChatProfileSharingCallablePayloadSelectionProfileRevision,
@@ -126621,6 +127206,11 @@ abstract final class CatchContractConstraints {
     'updateOrganizerFormDraftCallablePayload.definition.defaultTargetId': updateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetId,
     'updateOrganizerFormDraftCallablePayload.definition.defaultTargetKind': updateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetKind,
     'updateOrganizerFormDraftCallablePayload.definition.description': updateOrganizerFormDraftCallablePayloadDefinitionDescription,
+    'updateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots': updateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlots,
+    'updateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots.items': updateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlotsItems,
+    'updateOrganizerFormDraftCallablePayload.definition.eventProfile.enabled': updateOrganizerFormDraftCallablePayloadDefinitionEventProfileEnabled,
+    'updateOrganizerFormDraftCallablePayload.definition.eventProfile.maxCustomRows': updateOrganizerFormDraftCallablePayloadDefinitionEventProfileMaxCustomRows,
+    'updateOrganizerFormDraftCallablePayload.definition.eventProfile.noticeVersion': updateOrganizerFormDraftCallablePayloadDefinitionEventProfileNoticeVersion,
     'updateOrganizerFormDraftCallablePayload.definition.identityPolicy': updateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy,
     'updateOrganizerFormDraftCallablePayload.definition.logicRules': updateOrganizerFormDraftCallablePayloadDefinitionLogicRules,
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.action': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsAction,
@@ -126633,7 +127223,10 @@ abstract final class CatchContractConstraints {
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId,
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId,
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId,
+    'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchMarketingWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchMarketingWhatsapp,
     'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp,
+    'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerMarketingWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerMarketingWhatsapp,
+    'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerOperationsWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerOperationsWhatsapp,
     'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerWhatsapp,
     'updateOrganizerFormDraftCallablePayload.definition.payment.amountPaise': updateOrganizerFormDraftCallablePayloadDefinitionPaymentAmountPaise,
     'updateOrganizerFormDraftCallablePayload.definition.payment.connectionId': updateOrganizerFormDraftCallablePayloadDefinitionPaymentConnectionId,
@@ -126645,6 +127238,8 @@ abstract final class CatchContractConstraints {
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.description': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.eventProfileSlot': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.mode': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerDestination': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText,
@@ -127132,6 +127727,11 @@ abstract final class CatchContractConstraints {
     'validateOrganizerFormDraftCallablePayload.definition.defaultTargetId': validateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetId,
     'validateOrganizerFormDraftCallablePayload.definition.defaultTargetKind': validateOrganizerFormDraftCallablePayloadDefinitionDefaultTargetKind,
     'validateOrganizerFormDraftCallablePayload.definition.description': validateOrganizerFormDraftCallablePayloadDefinitionDescription,
+    'validateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots': validateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlots,
+    'validateOrganizerFormDraftCallablePayload.definition.eventProfile.allowedSlots.items': validateOrganizerFormDraftCallablePayloadDefinitionEventProfileAllowedSlotsItems,
+    'validateOrganizerFormDraftCallablePayload.definition.eventProfile.enabled': validateOrganizerFormDraftCallablePayloadDefinitionEventProfileEnabled,
+    'validateOrganizerFormDraftCallablePayload.definition.eventProfile.maxCustomRows': validateOrganizerFormDraftCallablePayloadDefinitionEventProfileMaxCustomRows,
+    'validateOrganizerFormDraftCallablePayload.definition.eventProfile.noticeVersion': validateOrganizerFormDraftCallablePayloadDefinitionEventProfileNoticeVersion,
     'validateOrganizerFormDraftCallablePayload.definition.identityPolicy': validateOrganizerFormDraftCallablePayloadDefinitionIdentityPolicy,
     'validateOrganizerFormDraftCallablePayload.definition.logicRules': validateOrganizerFormDraftCallablePayloadDefinitionLogicRules,
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.action': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsAction,
@@ -127144,7 +127744,10 @@ abstract final class CatchContractConstraints {
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId,
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId,
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId,
+    'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchMarketingWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchMarketingWhatsapp,
     'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp,
+    'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerMarketingWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerMarketingWhatsapp,
+    'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerOperationsWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerOperationsWhatsapp,
     'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerWhatsapp,
     'validateOrganizerFormDraftCallablePayload.definition.payment.amountPaise': validateOrganizerFormDraftCallablePayloadDefinitionPaymentAmountPaise,
     'validateOrganizerFormDraftCallablePayload.definition.payment.connectionId': validateOrganizerFormDraftCallablePayloadDefinitionPaymentConnectionId,
@@ -127156,6 +127759,8 @@ abstract final class CatchContractConstraints {
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.description': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.eventProfileSlot': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceEventProfileSlot,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerAudience.mode': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerAudienceMode,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerDestination': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText,

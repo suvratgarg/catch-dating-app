@@ -147,9 +147,24 @@ const schemaEventChatProfileShareDocumentSchema = <String, Object?>{
                 },
               ],
             },
+            'firstName': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 80,
+              'pattern': '^\\S(?:[\\s\\S]*\\S)?\$',
+            },
+            'introduction': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+              'pattern': '^\\S(?:[\\s\\S]*\\S)?\$',
+            },
             'termsVersion': <String, Object?>{
               'type': 'string',
-              'const': 'event-profile-sharing-v1',
+              'enum': <Object?>[
+                'event-profile-sharing-v1',
+                'event-profile-sharing-v2',
+              ],
             },
           },
         },
