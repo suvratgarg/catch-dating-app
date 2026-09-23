@@ -17,12 +17,31 @@ class CatchFieldCopy {
     required this.emptyValueText,
     required this.selectPlaceholder,
     required this.clearTooltip,
+    this.clearLabel,
   });
+
+  /// Override caller-resolved action copy without changing other field grammar.
+  CatchFieldCopy copyWith({String? doneLabel}) => CatchFieldCopy(
+    label: label,
+    validation: validation,
+    cancelLabel: cancelLabel,
+    doneLabel: doneLabel ?? this.doneLabel,
+    savingLabel: savingLabel,
+    savingSemanticLabel: savingSemanticLabel,
+    savedSemanticLabel: savedSemanticLabel,
+    emptyValueText: emptyValueText,
+    selectPlaceholder: selectPlaceholder,
+    clearTooltip: clearTooltip,
+    clearLabel: clearLabel,
+  );
 
   final CatchFieldLabelTextCopy label;
   final CatchFormValidationCopy validation;
   final String cancelLabel;
   final String doneLabel;
+
+  /// Localized explicit commit action for removing an optional value.
+  final String? clearLabel;
   final String savingLabel;
   final String savingSemanticLabel;
   final String savedSemanticLabel;

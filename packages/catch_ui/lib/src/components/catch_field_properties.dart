@@ -147,14 +147,15 @@ mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
   bool get obscureText => inputVariant == CatchTextInputVariant.obscured;
   int? get maxLines => _inputConfig == null ? 1 : _inputConfig!.maxLines;
   int? get minLines => _inputConfig?.minLines;
-  int? get maxLength => _inputConfig != null
-      ? _inputConfig!.maxLength
-      : CatchContractFieldPolicy.effectiveMaxLength(contract, null);
+  int? get maxLength => CatchContractFieldPolicy.effectiveMaxLength(
+    contract,
+    _inputConfig?.maxLength,
+  );
   CatchTextInputMode get inputMode =>
       _inputConfig?.inputMode ?? CatchTextInputMode.editable;
   bool get readOnly => inputMode.readOnlyText;
   bool get autofocus => _inputConfig?.autofocus ?? false;
-  CatchFieldLabelTextMode get labelMode => switch (_config) {
+  CatchFieldLabelTextMode get _configuredLabelMode => switch (_config) {
     final _RowConfig config => config.labelMode,
     final _EditConfig config => config.labelMode,
     final _ControlConfig config => config.labelMode,
@@ -164,6 +165,20 @@ mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
           : CatchFieldLabelTextMode.hidden,
     _ => CatchFieldLabelTextMode.visible,
   };
+  CatchFieldLabelTextMode get labelMode {
+    final mode = _configuredLabelMode;
+    // Generated value constraints already distinguish required non-empty values
+    // from nullable/empty values; patch-property omission is not consulted here.
+    if (_inputConfig == null || contract == null) return mode;
+    return contract!.required
+        ? (mode.showsLabel
+              ? CatchFieldLabelTextMode.visible
+              : CatchFieldLabelTextMode.hidden)
+        : (mode.showsLabel
+              ? CatchFieldLabelTextMode.optional
+              : CatchFieldLabelTextMode.hiddenOptional);
+  }
+
   bool get isOptional => labelMode.isOptional;
   bool get showLabel => labelMode.showsLabel;
   String? get helperText => switch (_config) {

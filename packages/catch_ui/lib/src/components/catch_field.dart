@@ -719,6 +719,7 @@ final class CatchField<T> extends StatefulWidget
     int? maxLines = 1,
     int? minLines,
     int? maxLength,
+    bool showClearButton = true,
     this.states = const <WidgetState>{},
     this.icon,
     this.iconColor,
@@ -775,13 +776,12 @@ final class CatchField<T> extends StatefulWidget
          fontFeatures: null,
          prefixText: null,
          suffixText: null,
-         showClearButton: false,
+         showClearButton: showClearButton,
          leadingUnit: null,
          errorText: null,
          onTap: null,
          explicitSave: true,
        );
-
   const CatchField.add({
     required CatchFieldCopy copy,
     Key? key,
