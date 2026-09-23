@@ -1134,6 +1134,25 @@ test("rebaseline structurally excludes both lane selectors through snapshot comp
   assert.doesNotMatch(worker, /workflow_dispatch:|repository_dispatch:|workflow_run:|group: backend-delivery/);
 });
 
+test("rebaseline caller permits the finalizer's existing repository dispatch", () => {
+  const caller = workflow("backend-rebaseline.yml");
+  const worker = workflow("_backend-rebaseline.yml");
+  const snapshot = ciJob(caller, "snapshot");
+  const finalizer = ciJob(worker, "finalize");
+  const permissions = (source, indent) => {
+    const block = source.match(new RegExp(`^${" ".repeat(indent)}permissions:\\n((?:${" ".repeat(indent + 2)}[^\\n]+\\n)+)`, "m"));
+    return Object.fromEntries([...(block?.[1] ?? "").matchAll(/([a-z-]+): (none|read|write)/g)]
+      .map(([, name, level]) => [name, {none: 0, read: 1, write: 2}[level]]));
+  };
+  const allowed = /\n    permissions:\n/.test(snapshot)
+    ? permissions(snapshot, 4) : permissions(caller, 0);
+  for (const [scope, level] of Object.entries(permissions(finalizer, 4))) {
+    assert.ok((allowed[scope] ?? 0) >= level, `Caller denies finalizer ${scope}`);
+  }
+  assert.match(finalizer, /gh api --method POST[\s\S]*dispatches/);
+  assert.equal(permissions(worker, 0).contents, 1, "Other worker jobs remain read-only by default");
+});
+
 test("cutover refresh and peer wakeups are bounded and manual recovery cannot silently disappear", () => {
   const delivery = workflow("delivery.yml");
   const authorize = ciJob(delivery, "authorize");
