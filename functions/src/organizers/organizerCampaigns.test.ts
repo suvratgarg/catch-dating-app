@@ -76,8 +76,10 @@ test("campaign eligibility fails closed for an incomplete legacy grant", () => {
     uid: "user-1",
     whatsapp: {
       status: "optedIn",
-      evidenceStatus: "incomplete",
-      currentReceiptId: "legacy-receipt",
+    evidenceStatus: "incomplete",
+    currentReceiptId: "legacy-receipt",
+    termsVersion: "organizer-updates-v1",
+    source: "publicEventRegistration",
     },
   } as OrganizerCommunicationPreferenceDocument;
   const [row] = evaluateAudienceRows([{
@@ -123,7 +125,8 @@ test(
         status: "optedIn",
         evidenceStatus: "complete",
         currentReceiptId: "receipt-1",
-        termsVersion: "2026-08-30",
+        termsVersion: "organizer-updates-v1",
+        source: "publicEventRegistration",
         updatedAt: admin.firestore.Timestamp.fromMillis(9_000),
       },
     } as OrganizerCommunicationPreferenceDocument;
