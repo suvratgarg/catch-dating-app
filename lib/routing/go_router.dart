@@ -1225,6 +1225,11 @@ String? appRedirect({
   return null;
 }
 
+bool _requiresSocialProfile(String matchedLocation) {
+  return matchedLocation == Routes.filtersScreen.path ||
+      matchedLocation.startsWith('/catches/');
+}
+
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
   return EventDetailScreen(
     clubId: state.pathParameters['clubId']!,

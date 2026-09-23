@@ -1057,7 +1057,7 @@
             "hostWorkProgramScreen"
           ],
           "file": "lib/programs/presentation/program_work_screen.dart",
-          "symbol": "ProgramWorkScreen",
+          "symbol": "_ProgramWorkScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
@@ -1075,7 +1075,7 @@
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Pushed program workspace route rendered by CatchRouteScaffold under the Host shell."
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
     "screen.programs.arrivals": {
       "owners": [
@@ -1116,14 +1116,14 @@
             "hostWorkHotelScreen"
           ],
           "file": "lib/programs/presentation/program_hotel_desk_screen.dart",
-          "symbol": "ProgramHotelDeskScreen",
+          "symbol": "_ProgramHotelDeskScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Pushed hotel desk route rendered by CatchRouteScaffold through ProgramHotelDeskScaffold."
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
     "screen.programs.trips": {
       "owners": [
@@ -1132,14 +1132,14 @@
             "hostWorkTripsScreen"
           ],
           "file": "lib/programs/presentation/program_trips_screen.dart",
-          "symbol": "ProgramTripsScreen",
+          "symbol": "_ProgramTripsScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Pushed trip ledger route rendered by CatchRouteScaffold through ProgramTripsScaffold."
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     }
   },
   "layoutOnlyRoutes": {

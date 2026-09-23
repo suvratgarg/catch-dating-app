@@ -1,10 +1,5 @@
 part of 'go_router.dart';
 
-bool _requiresSocialProfile(String matchedLocation) {
-  return matchedLocation == Routes.filtersScreen.path ||
-      matchedLocation.startsWith('/catches/');
-}
-
 String? _pendingDestination({
   required Uri uri,
   required String matchedLocation,
