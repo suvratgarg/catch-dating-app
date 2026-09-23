@@ -62,7 +62,7 @@ class MessagingPermissionsPageBody extends StatelessWidget {
       children: [
         Text(
           l10n.messagingPermissionsDescription,
-          style: CatchTextStyles.bodyM(context),
+          style: CatchTextStyles.proseM(context),
         ),
         gapH24,
         CatchSectionList(

@@ -4548,9 +4548,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileProfileTabSkeletonTitleAboutYou => 'About you';
 
   @override
-  String get userProfileProfileTabSkeletonTitleRunning => 'Running';
-
-  @override
   String get userProfileProfileTabSkeletonTitleLifestyle => 'Lifestyle';
 
   @override
@@ -20394,12 +20391,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfilesLoadMore => 'Load more';
-
-  @override
-  String get formProfilesReview => 'Review details';
-
-  @override
-  String get formProfilesManage => 'Manage saved details';
 
   @override
   String get formProfilesOrganizerFallback => 'Organizer';

@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "d7d8b35f051bd882a25c0f04ace017ab1b9815390dede938fd6b1f9562e3a58a",
-    "routeContractSha256": "8e75b7e5a16dbb8c3e1808b0d11864a399e676152c485472acb26040ffbf96ca",
-    "goRouteCount": 93,
+    "normalizedFileSha256": "16ead855eb005dab08646add5c17d5ee9d9cd2f9c66a126ae42d705d74a71cd8",
+    "routeContractSha256": "515691cd9227739a67c72202d8068b3f4852041dcd960a974cad86fcda96ea8d",
+    "goRouteCount": 94,
     "shellBranchCount": 9,
-    "enumRouteCount": 78,
-    "referencedRouteCount": 78,
-    "runtimeRouteCount": 78,
+    "enumRouteCount": 79,
+    "referencedRouteCount": 79,
+    "runtimeRouteCount": 79,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -213,6 +213,23 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>EventProfileScreen(eventId:state.pathParameters['eventId']!)",
       "presentationTarget": "EventProfileScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventChatParticipantsScreen",
+      "path": "/events/:eventId/chat/people",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/events/:eventId/chat/people",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventChatParticipantsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EventChatParticipantsScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "EventChatParticipantsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1399,6 +1416,7 @@
     "crossPathsInvitationScreen",
     "dashboardEventDetailScreen",
     "dashboardScreen",
+    "eventChatParticipantsScreen",
     "eventChatScreen",
     "eventDetailScreen",
     "eventLocationMapScreen",

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -59,6 +60,7 @@ class _EventChatParticipantsScreenState
   Widget build(BuildContext context) {
     final provider = eventChatParticipantsControllerProvider(widget.eventId);
     final value = ref.watch(provider);
+    final presented = catchAsyncStateFromAsyncValue(value);
     final active = _resumed && (ModalRoute.isCurrentOf(context) ?? true);
     _syncActive(active);
     return CatchRouteScaffold(
@@ -74,7 +76,7 @@ class _EventChatParticipantsScreenState
           CatchIconAction.toolbar(
             tooltip: context.l10n.eventChatRefresh,
             icon: CatchIcons.refreshRounded,
-            onPressed: !active || value.isLoading
+            onPressed: !active || presented.isLoading
                 ? null
                 : () => unawaited(ref.read(provider.notifier).refresh()),
           ),

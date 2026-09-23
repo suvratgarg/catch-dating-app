@@ -537,6 +537,8 @@ import 'package:widgetbook_workspace/utility/event_profile.dart'
     as _widgetbook_workspace_utility_event_profile;
 import 'package:widgetbook_workspace/utility/force_update.dart'
     as _widgetbook_workspace_utility_force_update;
+import 'package:widgetbook_workspace/utility/form_profile_review.dart'
+    as _widgetbook_workspace_utility_form_profile_review;
 import 'package:widgetbook_workspace/utility/form_profiles.dart'
     as _widgetbook_workspace_utility_form_profiles;
 import 'package:widgetbook_workspace/utility/launch_access.dart'
@@ -12971,6 +12973,56 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Form profiles',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilePhotoField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Owned photo preview before selection',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfilePhotoFieldPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilePhotoSelection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Photo selection waits for decoding',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfilePhotoSelectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfileReviewBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Separate core fields and organizer answers',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfileReviewBodyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfileReviewScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review before claiming a form profile',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfileReviewScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfileValueField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed basic fields within a claim review',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfileValueFieldPreview,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'FormProfilesContent',
             useCases: [

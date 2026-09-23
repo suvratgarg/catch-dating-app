@@ -72,16 +72,20 @@ void main() {
             ),
           ],
         );
+        final container = ProviderContainer(
+          overrides: [
+            formProfilePhotoPreviewProvider(
+              'response',
+              'photo',
+              'asset',
+            ).overrideWith((ref) async => photo),
+          ],
+        );
+        addTearDown(container.dispose);
         await _pump(
           tester,
-          ProviderScope(
-            overrides: [
-              formProfilePhotoPreviewProvider(
-                'response',
-                'photo',
-                'asset',
-              ).overrideWith((ref) async => photo),
-            ],
+          UncontrolledProviderScope(
+            container: container,
             child: FormProfileReviewBody(
               review: review,
               onSave: (_) {},

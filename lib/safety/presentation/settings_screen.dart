@@ -688,12 +688,14 @@ class AccountProfileStatus extends StatelessWidget {
     if (profile.isMissing) {
       return Padding(
         padding: CatchInsets.content,
-        child: CatchField.nav(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.safetySettingsScreenTitleAccountUnavailable,
-          body: context.l10n.safetySettingsScreenMessageSignOutAndSign,
-          bodyMaxLines: 8,
-          onTap: onReviewForms,
+        child: CatchFieldLanes.single(
+          child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.safetySettingsScreenTitleAccountUnavailable,
+            body: context.l10n.safetySettingsScreenMessageSignOutAndSign,
+            bodyMaxLines: 8,
+            onTap: onReviewForms,
+          ),
         ),
       );
     }

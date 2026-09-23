@@ -7466,12 +7466,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Running'**
-  String get userProfileProfileTabSkeletonTitleRunning;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Lifestyle'**
   String get userProfileProfileTabSkeletonTitleLifestyle;
 
@@ -32493,18 +32487,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load more'**
   String get formProfilesLoadMore;
-
-  /// Participant form profile review copy.
-  ///
-  /// In en, this message translates to:
-  /// **'Review details'**
-  String get formProfilesReview;
-
-  /// Participant form profile review copy.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage saved details'**
-  String get formProfilesManage;
 
   /// Participant form profile review copy.
   ///

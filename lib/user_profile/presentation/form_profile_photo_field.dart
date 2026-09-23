@@ -139,15 +139,17 @@ class _FormProfilePhotoSelectionState extends State<FormProfilePhotoSelection> {
           onPressed: widget.onRetry,
           variant: CatchButtonVariant.secondary,
         ),
-      CatchField.toggle(
-        copy: catchFieldCopy(context.l10n),
-        title: widget.label,
-        helperText: context.l10n.formProfileUsePhoto,
-        titleMaxLines: 3,
-        contractExemption:
-            'Photo selection uses the exact source question after owned preview; claim revalidates and safety-checks the original bytes.',
-        value: widget.selected,
-        onChanged: _decoded ? widget.onChanged : null,
+      CatchFieldLanes.single(
+        child: CatchField.toggle(
+          copy: catchFieldCopy(context.l10n),
+          title: widget.label,
+          helperText: context.l10n.formProfileUsePhoto,
+          titleMaxLines: 3,
+          contractExemption:
+              'Photo selection uses the exact source question after owned preview; claim revalidates and safety-checks the original bytes.',
+          value: widget.selected,
+          onChanged: _decoded ? widget.onChanged : null,
+        ),
       ),
     ],
   );

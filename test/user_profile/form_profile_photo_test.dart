@@ -8,6 +8,7 @@ import 'package:catch_dating_app/user_profile/presentation/form_profile_photo_fi
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   test('preview rejects oversized, wrong-type and non-JPEG payloads', () {
@@ -60,11 +61,11 @@ void main() {
           tester.element(find.byType(FormProfilePhotoSelection)),
         );
       });
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(field().onChanged, isNotNull);
       await tester.ensureVisible(find.byType(CatchToggleInput));
       await tester.tap(find.byType(CatchToggleInput));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(selected, true);
       final key = MemoryImage(photo.bytes);
       await tester.pumpWidget(const SizedBox());
@@ -88,9 +89,9 @@ void main() {
       onRetry: () => retried = true,
     );
     await tester.runAsync(() async {
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await flushTestEventQueue();
     });
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Retry photo preview'));
     final field = tester.widget<CatchToggleInput>(
       find.byType(CatchToggleInput),
     );

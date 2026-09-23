@@ -8663,13 +8663,6 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.widgets.profile_tab_skeleton"
   },
-  "userProfileProfileTabSkeletonTitleRunning": "Running",
-  "@userProfileProfileTabSkeletonTitleRunning": {
-    "description": "Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "user_profile.presentation.widgets.profile_tab_skeleton"
-  },
   "userProfileProfileTabSkeletonTitleLifestyle": "Lifestyle",
   "@userProfileProfileTabSkeletonTitleLifestyle": {
     "description": "Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).",
@@ -27680,20 +27673,6 @@
   },
   "formProfilesLoadMore": "Load more",
   "@formProfilesLoadMore": {
-    "description": "Participant form profile review copy.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "user_profile.presentation.form_profiles"
-  },
-  "formProfilesReview": "Review details",
-  "@formProfilesReview": {
-    "description": "Participant form profile review copy.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "user_profile.presentation.form_profiles"
-  },
-  "formProfilesManage": "Manage saved details",
-  "@formProfilesManage": {
     "description": "Participant form profile review copy.",
     "x-audience": "consumer",
     "x-owner": "product",

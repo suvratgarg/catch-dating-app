@@ -22,10 +22,10 @@ import 'event_chat_controller_test.dart' show roomAccess;
 class FixtureDirectory extends EventChatDirectoryController {
   FixtureDirectory(this.page);
   final EventChatDirectoryPage page;
-  int refreshes = 0;
+  int _refreshes = 0;
   @override
   Future<void> refresh() async {
-    refreshes++;
+    _refreshes++;
   }
 
   @override
@@ -99,7 +99,7 @@ void main() {
           AppLifecycleState.resumed,
         );
         await pumpFeatureUi(tester);
-        expect(directory.refreshes, 1);
+        expect(directory._refreshes, 1);
         expect(tester.takeException(), isNull);
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(const ValueKey('capture')),

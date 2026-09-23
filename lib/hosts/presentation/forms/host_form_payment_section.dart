@@ -210,7 +210,10 @@ class HostFormPaymentSetupSection extends StatelessWidget {
             onPressed: () => Navigator.of(dialogContext).pop(true),
           ),
         ],
-        child: Text(context.l10n.hostFormPaymentDisconnectHelp),
+        child: Text(
+          context.l10n.hostFormPaymentDisconnectHelp,
+          style: CatchTextStyles.proseM(context),
+        ),
       ),
     );
     if (confirmed == true) onDisconnect(id);
