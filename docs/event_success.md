@@ -28,7 +28,9 @@ The current production loop supports two entry paths:
 1. A Consumer member joins/books through Catch, or a Host creates an
    operations-only event and imports/adds its operational attendees.
 2. The Host marks attendance; a linked event-scoped or Consumer attendee may
-   self-check in when the event policy permits it.
+   self-check in when the event policy permits it. Event-runtime self check-in
+   requires an admitted `registered` operational attendee; imported invitations
+   and waitlist entries cannot turn themselves into attendance.
 3. Profile-independent Event Success setup can guide the live event through
    structure, run-of-show prompts, attendance and Host controls. Assignment,
    First Hello, compatibility and wingman code is migrating from Consumer
