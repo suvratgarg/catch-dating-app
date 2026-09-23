@@ -159,7 +159,14 @@ void main() {
       },
     ));
     await pumpFeatureUi(tester);
-    expect(find.text('Music style'), findsOneWidget);
+    final coverageRow = find.ancestor(
+      of: find.textContaining('4 of 8 current roster'),
+      matching: find.byType(CatchField),
+    );
+    expect(find.descendant(
+      of: coverageRow,
+      matching: find.text('Music style'),
+    ), findsOneWidget);
     expect(find.textContaining('4 of 8 current roster'), findsOneWidget);
     expect(find.textContaining('Jazz'), findsNothing);
     await _captureMatchingFixture(tester);
@@ -302,6 +309,10 @@ void main() {
     ));
     await pumpFeatureUi(tester);
     expect(find.text('Form answer matching'), findsWidgets);
+    // Inactive still permits a privacy frame before paused disables frames.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await pumpFeatureUi(tester);
+    expect(find.text('Form answer matching'), findsNothing);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
     await tester.pump();
     expect(find.text('Form answer matching'), findsNothing);

@@ -15,9 +15,8 @@ class EventAssignmentFeatureSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(authenticatedSessionProvider);
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.eventMatchingTitle,
-      mode: CatchSheetMode.scrollable,
       child: switch (session) {
         AsyncData(:final value) => EventAssignmentFeatureChoicesPageBody(
           key: ValueKey((eventId, value)),
