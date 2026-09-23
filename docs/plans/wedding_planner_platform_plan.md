@@ -480,6 +480,16 @@ wider `programStaffDuty` values + `functionIds` scope (staff invites mirror
 the same enum — widen both), `programHouseholds.side`, campaign
 `recipientSource`.
 
+W0 progress: schema edits, fixtures and manifest registration are committed
+on `codex/w0-program-contract-corrections` (`68c378c`, schemas verified with
+ajv: all compile, fixtures accept/reject correctly). Deferred while the RSVP
+integration claim holds the toolchain: `firestore.rules` match blocks,
+`firestore.indexes.json` composite entry (`programId + functionId`),
+generated outputs regen, `docs/data_contracts.md` rows, and the
+`programSelection` recipient resolver inside the campaign dispatcher
+(`organizerCampaigns.ts` is claimed). Finish via `worktree_guard.mjs scope`
+on the W0 worktree, then run `./tool/check_data_contract.sh`.
+
 Current blockers (claims measured 2026-09-23):
 
 - `codex/rsvp-reviewed-integration-20260923` (active, 166 commits ahead of
