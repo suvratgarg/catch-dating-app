@@ -69,7 +69,8 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
-import {loadAuthorizedAssignmentFeatures} from "./assignmentFeatureConsent";
+import {loadAuthorizedAssignmentFeatures,
+  recheckAssignmentFeatureSnapshots} from "./assignmentFeatureConsent";
 import type {AssignmentFeatureRule,
   EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
 import {
@@ -108,6 +109,8 @@ interface EventSuccessPlanDocument {
   clubId?: string;
   selectedModuleIds?: unknown;
   assignmentFeatureRules?: AssignmentFeatureRule[];
+  assignmentFeatureRevision?: number;
+  assignmentFeatureConfigHash?: string;
   compatibilityAffectsRanking?: unknown;
   liveControlRevision?: unknown;
   assignmentDraftRevision?: unknown;
@@ -397,6 +400,12 @@ export async function prepareEventSuccessRotationDraft(
     targetRoundIndex,
     assignments,
     now: deps.serverTimestamp(),
+    featureGuard: featureRules.length ? {
+      organizerId: event.organizerId ?? event.clubId,
+      rules: featureRules, snapshots: featureSnapshots,
+      revision: plan.assignmentFeatureRevision ?? 0,
+      configHash: plan.assignmentFeatureConfigHash ?? "",
+    } : undefined,
   });
 
   return {
@@ -1398,6 +1407,9 @@ async function writeAssignmentDrafts(params: {
   targetRoundIndex: number;
   assignments: Map<string, GeneratedAssignment>;
   now: FirebaseFirestore.FieldValue;
+  featureGuard?: {organizerId: string; rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[];
+    revision: number; configHash: string};
 }): Promise<{revision: number; assignmentRevision: number}> {
   const planRef = params.db.collection("eventSuccessPlans").doc(params.eventId);
   const draftQuery = params.db.collection("eventSuccessAssignmentDrafts")
@@ -1413,6 +1425,20 @@ async function writeAssignmentDrafts(params: {
         "Event-success setup has not been saved.");
     }
     const plan = planSnap.data() as EventSuccessPlanDocument;
+    if (params.featureGuard) {
+      if (!params.featureGuard.configHash ||
+          plan.assignmentFeatureRevision !==
+            params.featureGuard.revision ||
+          plan.assignmentFeatureConfigHash !==
+            params.featureGuard.configHash) {
+        throw new HttpsError("aborted", "Assignment feature setup changed.");
+      }
+      await recheckAssignmentFeatureSnapshots({tx: transaction,
+        db: params.db, eventId: params.eventId,
+        organizerId: params.featureGuard.organizerId,
+        rules: params.featureGuard.rules,
+        snapshots: params.featureGuard.snapshots});
+    }
     const currentRevision = nonNegativeInteger(plan.liveControlRevision);
     const publishedRoundIndex = integerOr(
       plan.publishedRotationRoundIndex,

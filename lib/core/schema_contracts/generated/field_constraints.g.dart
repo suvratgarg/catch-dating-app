@@ -55071,6 +55071,20 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventSuccessPlanDocumentAssignmentFeatureConfigHash = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureConfigHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRequestId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRequestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventSuccessPlanDocumentAssignmentFeatureRevision = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.assignmentFeatureRevision',
     valueTypes: <String>['integer'],
@@ -121032,6 +121046,8 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.affinityConstraints.items.scope': eventSuccessPlanDocumentAffinityConstraintsItemsScope,
     'eventSuccessPlanDocument.affinityConstraints.items.value': eventSuccessPlanDocumentAffinityConstraintsItemsValue,
     'eventSuccessPlanDocument.assignmentDraftRevision': eventSuccessPlanDocumentAssignmentDraftRevision,
+    'eventSuccessPlanDocument.assignmentFeatureConfigHash': eventSuccessPlanDocumentAssignmentFeatureConfigHash,
+    'eventSuccessPlanDocument.assignmentFeatureRequestId': eventSuccessPlanDocumentAssignmentFeatureRequestId,
     'eventSuccessPlanDocument.assignmentFeatureRevision': eventSuccessPlanDocumentAssignmentFeatureRevision,
     'eventSuccessPlanDocument.assignmentFeatureRules': eventSuccessPlanDocumentAssignmentFeatureRules,
     'eventSuccessPlanDocument.assignmentFeatureRules.items.featureId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsFeatureId,

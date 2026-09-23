@@ -11432,6 +11432,8 @@ export interface EventSuccessPlanDocument {
     maximum?: number;
   }[];
   assignmentFeatureRevision?: number;
+  assignmentFeatureRequestId?: string;
+  assignmentFeatureConfigHash?: string;
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
   contextualOpenersEnabled: boolean;

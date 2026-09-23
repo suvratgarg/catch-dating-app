@@ -1,7 +1,9 @@
 import type {OrganizerFormResponseDocument as Response,
-  OrganizerFormVersionDocument as Version} from
+  OrganizerFormVersionDocument as Version,
+  EventAssignmentFeatureConsentDocument as ConsentDoc} from
   "../shared/generated/firestoreAdminTypes";
 import {createHash} from "node:crypto";
+import {HttpsError} from "firebase-functions/v2/https";
 import {requireDoc} from "../shared/validation";
 import type {AssignmentFeatureRule, AssignmentFeatureValue,
   EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
@@ -32,6 +34,27 @@ export function assignmentFeatureConsentId(
     .digest("hex").slice(0, 48);
 }
 
+/** Host mappings must name an exact published custom-answer source. */
+export function assignmentFeatureRuleMatchesVersion(
+  rule: AssignmentFeatureRule,
+  versionId: string,
+  version: Version,
+  organizerId: string
+): boolean {
+  if (versionId !== rule.versionId || version.formId !== rule.formId ||
+      version.organizerId !== organizerId) return false;
+  const question = version.definition.sections.flatMap((section) =>
+    section.questions).find((item) => item.questionId === rule.questionId);
+  if (!question || question.privacyClass !== "organizerCustom") return false;
+  if (rule.kind === "number") return question.kind === "number";
+  if (rule.kind === "set" ? question.kind !== "multiChoice" :
+    question.kind !== "singleChoice") return false;
+  const expected = question.options.map((option) => option.optionId).sort();
+  const configured = [...(rule.optionIds ?? [])].sort();
+  return expected.length > 0 && expected.length === configured.length &&
+    expected.every((id, index) => id === configured[index]);
+}
+
 /** Reads only current, participant-granted answers for the eligible pool. */
 export async function loadAuthorizedAssignmentFeatures(params: {
   db: FirebaseFirestore.Firestore;
@@ -57,11 +80,8 @@ export async function loadAuthorizedAssignmentFeatures(params: {
     const snaps = await db.getAll(...refs.slice(offset, offset + 200));
     for (const snap of snaps) {
       if (!snap.exists) continue;
-      const value = snap.data();
-      if (!validDecision(value)) {
-        throw new Error("Assignment feature consent is malformed.");
-      }
-      const decision = value;
+      const decision = requireDoc<ConsentDoc>(snap,
+        "EventAssignmentFeatureConsentDocument");
       const rule = byFeature.get(decision.featureId);
       if (!rule || !eligible.has(decision.uid) ||
           snap.id !== assignmentFeatureConsentId(
@@ -102,18 +122,63 @@ export async function loadAuthorizedAssignmentFeatures(params: {
   });
 }
 
-function validDecision(value: unknown):
-  value is AssignmentFeatureConsentDecision {
-  if (!value || typeof value !== "object") return false;
-  const row = value as Record<string, unknown>;
-  const ids = ["eventId", "organizerId", "uid", "responseId",
-    "featureId", "formId", "versionId", "questionId", "receiptId"];
-  return ids.every((key) => typeof row[key] === "string" &&
-    /^[A-Za-z0-9_-]{1,128}$/u.test(row[key] as string)) &&
-    Number.isSafeInteger(row.transformVersion) &&
-    (row.transformVersion as number) > 0 &&
-    row.purpose === "eventAssignmentMatching" &&
-    (row.status === "granted" || row.status === "withdrawn");
+/** Publication reads current decisions and source state in the write txn. */
+export async function recheckAssignmentFeatureSnapshots(params: {
+  tx: FirebaseFirestore.Transaction;
+  db: FirebaseFirestore.Firestore;
+  eventId: string;
+  organizerId: string;
+  rules: AssignmentFeatureRule[];
+  snapshots: EventAssignmentFeatureSnapshot[];
+}): Promise<void> {
+  const {tx, db, eventId, organizerId, rules, snapshots} = params;
+  if (snapshots.length === 0) return;
+  const byFeature = new Map(rules.map((rule) => [rule.featureId, rule]));
+  const source = await Promise.all(snapshots.map(async (snapshot) => {
+    const consentSnap = await tx.get(db.collection(
+      "eventAssignmentFeatureConsents").doc(assignmentFeatureConsentId(
+      eventId, snapshot.uid, snapshot.featureId)));
+    if (!consentSnap.exists) throw changed();
+    const decision = requireDoc<ConsentDoc>(consentSnap,
+      "EventAssignmentFeatureConsentDocument");
+    return {snapshot, decision};
+  }));
+  const uniqueResponseIds = [...new Set(source.map((item) =>
+    item.decision.responseId))];
+  const uniqueVersionIds = [...new Set(source.map((item) =>
+    item.decision.versionId))];
+  const [responseSnaps, versionSnaps] = await Promise.all([
+    Promise.all(uniqueResponseIds.map((id) =>
+      tx.get(db.collection("organizerFormResponses").doc(id)))),
+    Promise.all(uniqueVersionIds.map((id) =>
+      tx.get(db.collection("organizerFormVersions").doc(id)))),
+  ]);
+  const responses = new Map(responseSnaps.filter((snap) => snap.exists)
+    .map((snap) => [snap.id, requireDoc<Response>(snap,
+      "OrganizerFormResponseDocument")]));
+  const versions = new Map(versionSnaps.filter((snap) => snap.exists)
+    .map((snap) => [snap.id, requireDoc<Version>(snap,
+      "OrganizerFormVersionDocument")]));
+  for (const {snapshot, decision} of source) {
+    const rule = byFeature.get(snapshot.featureId);
+    if (!rule || decision.receiptId !== snapshot.consentReceiptId) {
+      throw changed();
+    }
+    const current = authorizedAssignmentFeatureSnapshot({eventId,
+      organizerId, uid: snapshot.uid, rule, decision,
+      responseId: decision.responseId,
+      response: responses.get(decision.responseId) ?? null,
+      versionId: rule.versionId,
+      version: versions.get(rule.versionId) ?? null});
+    if (!current || JSON.stringify(current) !== JSON.stringify(snapshot)) {
+      throw changed();
+    }
+  }
+}
+
+function changed(): HttpsError {
+  return new HttpsError("aborted",
+    "Matching consent or source changed before assignment publication.");
 }
 
 /** Host rules and responses alone never grant answer use. */
@@ -151,8 +216,7 @@ export function authorizedAssignmentFeatureSnapshot(params: {
 
   const question = version.definition.sections.flatMap((section) =>
     section.questions).find((item) => item.questionId === rule.questionId);
-  if (!question || question.privacyClass === "sensitive" ||
-      question.privacyClass === "contact") return null;
+  if (!question || question.privacyClass !== "organizerCustom") return null;
   const answer = response.answers[rule.questionId];
   const value = answerFeatureValue(rule, question, answer);
   if (!value) return null;

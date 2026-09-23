@@ -149122,6 +149122,17 @@ export const eventSuccessPlanDocumentSchema = {
       "maximum": 9007199254740991,
       "x-catch-ownership": "callable-owned"
     },
+    "assignmentFeatureRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureConfigHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300,

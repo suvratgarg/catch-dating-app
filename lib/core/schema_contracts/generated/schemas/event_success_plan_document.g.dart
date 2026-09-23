@@ -436,6 +436,17 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'maximum': 9007199254740991,
       'x-catch-ownership': 'callable-owned',
     },
+    'assignmentFeatureRequestId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentFeatureConfigHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
     'hostGoal': <String, Object?>{
       'type': 'string',
       'maxLength': 300,
