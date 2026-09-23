@@ -99,6 +99,44 @@ test("typed group balance distributes present categories across pods", () => {
   }
 });
 
+test("weak group balance does not undo stronger similar-pair choices", () => {
+  const rules: AssignmentFeatureRule[] = [
+    {featureId: "cohort", formId: "form", versionId: "v1",
+      questionId: "cohort", transformVersion: 1, kind: "category",
+      mode: "preferSimilar", weight: 100, optionIds: ["x", "y"]},
+    {featureId: "experience", formId: "form", versionId: "v1",
+      questionId: "experience", transformVersion: 1, kind: "category",
+      mode: "balanceAcrossGroups", weight: 1, optionIds: ["new", "old"]},
+  ];
+  const snapshots: EventAssignmentFeatureSnapshot[] = [];
+  for (const [uid, cohort, experience] of [
+    ["a", "x", "new"], ["b", "x", "new"],
+    ["c", "y", "old"], ["d", "y", "old"],
+  ]) {
+    for (const [featureId, optionId] of [
+      ["cohort", cohort], ["experience", experience],
+    ]) {
+      snapshots.push({eventId: "event", organizerId: "org", uid,
+        featureId, formId: "form", versionId: "v1", questionId: featureId,
+        transformVersion: 1, consentReceiptId: `${uid}-grant`,
+        value: {kind: "category", optionId}});
+    }
+  }
+  const plan = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {unitKind: "pods", unitSize: 2, groupCount: 2,
+      maxGroupSize: 2, rotationIntervalMinutes: null,
+      rotationsEnabled: false},
+    assignmentAlgorithm: "socialPods", compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    softFeatures: {eventId: "event", organizerId: "org", rules, snapshots},
+  });
+  const pairs = plan.groups.map((group) =>
+    group.participants.map((person) => person.uid).sort().join(""));
+  assert.deepEqual(pairs.sort(), ["ab", "cd"]);
+});
+
 test("minimizes maximum exclusion time ahead of assignment score", () => {
   const plan = runAssignmentEngine({
     participants: [

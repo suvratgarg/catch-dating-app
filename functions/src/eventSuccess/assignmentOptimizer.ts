@@ -1808,7 +1808,8 @@ function buildGroupUnitsForOptimizer<
   }
 
   rebalanceGroupsForSoftFeatures(groups, params.blockedPairs,
-    params.constraints, params.seenPairs === undefined);
+    params.constraints, params.seenPairs === undefined,
+    params.matchingObjective, params.compatibilityPolicy);
 
   return groups
     .map((group, index) => groupSummary({
@@ -1826,12 +1827,16 @@ function rebalanceGroupsForSoftFeatures<T extends AssignmentParticipant>(
   groups: T[][],
   blockedPairs: Set<string>,
   constraints: NormalizedAssignmentConstraints,
-  staticGroups: boolean
+  staticGroups: boolean,
+  matchingObjective: EventSuccessMatchingObjective,
+  compatibilityPolicy: EventSuccessCompatibilityPolicy
 ): void {
   const features = constraints.softFeatures;
   const size = groups.reduce((sum, group) => sum + group.length, 0);
-  if (!staticGroups || !features?.rules.some((rule) =>
-    rule.mode === "balanceAcrossGroups") || size > 80) return;
+  if (!staticGroups || matchingObjective !== "coverage" ||
+      compatibilityPolicy !== "none" || !features?.rules.length ||
+      !features.rules.every((rule) => rule.mode === "balanceAcrossGroups") ||
+      size > 80) return;
   for (let pass = 0; pass < Math.min(20, size); pass++) {
     let improved = false;
     for (let i = 0; i < groups.length && !improved; i++) {
