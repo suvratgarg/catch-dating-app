@@ -7,8 +7,9 @@ import {
 
 const now = 1_700_000_000_000;
 const pending: OrganizerFormDomain = {
-  hostname: "apply.client.example", organizerId: "organizer-a", formId: "form-a",
-  publicFormId: "public-a", ownershipChallenge: "catch-verification=random-proof",
+  hostname: "apply.client.example", organizerId: "organizer-a",
+  formId: "form-a", publicFormId: "public-a",
+  ownershipChallenge: "catch-verification=random-proof",
   expectedCname: "custom.catchdates.com", status: "pending",
   certificateStatus: "pending", verifiedAtMillis: null, generation: 1,
 };
@@ -18,25 +19,35 @@ const probe = {
 };
 
 describe("custom form domain policy", () => {
-  it("requires current TXT, exact CNAME, and certificate before routing", () => {
-    assert.equal(resolveCustomFormHost(pending.hostname, pending, probe, now), null);
+  it("requires current TXT, CNAME, and certificate", () => {
+    assert.equal(resolveCustomFormHost(
+      pending.hostname, pending, probe, now), null);
     const verified = verifyFormDomain(pending, probe, now);
     assert.throws(() => activateFormDomain(verified, probe, now));
-    const active = activateFormDomain({...verified, certificateStatus: "ready"}, probe, now);
-    assert.deepEqual(resolveCustomFormHost(pending.hostname, active, probe, now), {
-      organizerId: "organizer-a", formId: "form-a", publicFormId: "public-a",
+    const active = activateFormDomain(
+      {...verified, certificateStatus: "ready"}, probe, now);
+    assert.deepEqual(resolveCustomFormHost(
+      pending.hostname, active, probe, now), {
+      organizerId: "organizer-a", formId: "form-a",
+      publicFormId: "public-a",
     });
-    assert.equal(resolveCustomFormHost(pending.hostname, active, null, now), null);
-    assert.equal(resolveCustomFormHost(pending.hostname, active, probe, now + 900_001), null);
+    assert.equal(resolveCustomFormHost(
+      pending.hostname, active, null, now), null);
+    assert.equal(resolveCustomFormHost(
+      pending.hostname, active, probe, now + 900_001), null);
     assert.equal(resolveCustomFormHost(pending.hostname, active,
       {...probe, txtValues: []}, now), null);
     assert.equal(resolveCustomFormHost(pending.hostname, active,
       {...probe, cnameTarget: "elsewhere.example"}, now), null);
     assert.equal(resolveCustomFormHost(pending.hostname, active, probe, now,
       "organizer-b"), null);
-    assert.equal(resolveCustomFormHost("apply.client.example.evil.test", active, probe, now), null);
-    assert.equal(resolveCustomFormHost("apply.client.example:443", active, probe, now), null);
-    assert.equal(resolveCustomFormHost("app.catchdates.com", active, probe, now), null);
-    assert.equal(resolveCustomFormHost(pending.hostname, revokeFormDomain(active), probe, now), null);
+    assert.equal(resolveCustomFormHost(
+      "apply.client.example.evil.test", active, probe, now), null);
+    assert.equal(resolveCustomFormHost(
+      "apply.client.example:443", active, probe, now), null);
+    assert.equal(resolveCustomFormHost(
+      "app.catchdates.com", active, probe, now), null);
+    assert.equal(resolveCustomFormHost(
+      pending.hostname, revokeFormDomain(active), probe, now), null);
   });
 });

@@ -24,12 +24,17 @@ function fakeDb() {
     runTransaction: async <T>(operation: (tx: {
       get: (document: {path: string}) => Promise<ReturnType<typeof snap>>;
       set: (document: {path: string}, value: Record<string, unknown>) => void;
-      update: (document: {path: string}, value: Record<string, unknown>) => void;
+      update: (document: {path: string},
+        value: Record<string, unknown>) => void;
     }) => Promise<T>) => operation({
       get: async (document) => snap(document.path),
-      set: (document, value) => { rows.set(document.path, value); },
-      update: (document, value) => { rows.set(document.path,
-        {...rows.get(document.path), ...value}); },
+      set: (document, value) => {
+        rows.set(document.path, value);
+      },
+      update: (document, value) => {
+        rows.set(document.path,
+          {...rows.get(document.path), ...value});
+      },
     }),
   } as unknown as firestore.Firestore;
   return {db, rows};
@@ -37,41 +42,57 @@ function fakeDb() {
 
 const manager = async () => undefined;
 const input = {hostname: "apply.client.example", organizerId: "organizer-a",
-  formId: "form-a", actorUid: "manager-a", expectedCname: "custom.catch-hosting.example"};
+  formId: "form-a", actorUid: "manager-a"};
+const hostingTarget = "custom.catchdates.com";
 
 describe("organizer form domain registry", () => {
-  it("reserves one exact host, checks live evidence, and revokes routing", async () => {
+  it("reserves one host, checks evidence, and revokes routing", async () => {
     const {db, rows} = fakeDb();
-    const pending = await reserveOrganizerFormDomain(db, input, now, manager);
+    const pending = await reserveOrganizerFormDomain(db, input, now,
+      hostingTarget, manager);
     assert.equal(pending.status, "pending");
-    await assert.rejects(reserveOrganizerFormDomain(db, input, now, manager));
+    assert.equal(pending.expectedCname, hostingTarget);
+    await assert.rejects(reserveOrganizerFormDomain(db, input, now,
+      hostingTarget, manager));
     const probe = {hostname: input.hostname,
-      txtValues: [pending.ownershipChallenge], cnameTarget: input.expectedCname,
+      txtValues: [pending.ownershipChallenge], cnameTarget: hostingTarget,
       checkedAtMillis: now};
-    assert.equal(await resolveOrganizerFormDomain(db, input.hostname, probe, now), null);
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, probe, now), null);
     await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
       {...probe, txtValues: []}, now));
-    const verified = await verifyOrganizerFormDomain(db, input.hostname, probe, now);
-    await assert.rejects(activateOrganizerFormDomain(db, input.hostname, probe, now));
-    await markOrganizerFormCertificateReady(db, input.hostname, verified.generation);
+    const verified = await verifyOrganizerFormDomain(
+      db, input.hostname, probe, now);
+    await assert.rejects(activateOrganizerFormDomain(
+      db, input.hostname, probe, now));
+    await markOrganizerFormCertificateReady(
+      db, input.hostname, verified.generation);
     await activateOrganizerFormDomain(db, input.hostname, probe, now);
-    assert.deepEqual(await resolveOrganizerFormDomain(db, input.hostname, probe, now), {
+    assert.deepEqual(await resolveOrganizerFormDomain(
+      db, input.hostname, probe, now), {
       organizerId: "organizer-a", publicFormId: "public-a",
     });
     rows.set("organizerForms/form-a", {organizerId: "organizer-b",
       publicFormId: "public-a", status: "published"});
-    assert.equal(await resolveOrganizerFormDomain(db, input.hostname, probe, now), null);
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, probe, now), null);
     rows.set("organizerForms/form-a", {organizerId: "organizer-a",
       publicFormId: "public-a", status: "published"});
     assert.equal(await resolveOrganizerFormDomain(db, input.hostname,
       {...probe, cnameTarget: "other.example"}, now), null);
     await revokeOrganizerFormDomain(db, input.hostname, input.organizerId,
       input.actorUid, manager);
-    assert.equal(await resolveOrganizerFormDomain(db, input.hostname, probe, now), null);
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, probe, now), null);
     const replacement = await reserveOrganizerFormDomain(db,
-      {...input, organizerId: "organizer-a"}, now, manager);
+      {...input, organizerId: "organizer-a"}, now, hostingTarget, manager);
     assert.equal(replacement.generation, 2);
     assert.notEqual(replacement.ownershipChallenge, pending.ownershipChallenge);
-    assert.equal(await resolveOrganizerFormDomain(db, input.hostname, probe, now), null);
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, probe, now), null);
+    await assert.rejects(markOrganizerFormCertificateReady(db,
+      input.hostname, pending.generation));
+    await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
+      probe, now));
   });
 });

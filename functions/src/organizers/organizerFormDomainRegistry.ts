@@ -4,7 +4,8 @@ import type {firestore} from "firebase-admin";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {
   activateFormDomain, hasCurrentDomainOwnership, normalizeCustomFormHost,
-  resolveCustomFormHost, revokeFormDomain, verifyFormDomain,
+  normalizeHostingTarget, parseOrganizerFormDomain, resolveCustomFormHost,
+  revokeFormDomain, verifyFormDomain,
   type DomainProbe, type OrganizerFormDomain,
 } from "./organizerFormDomains";
 
@@ -12,12 +13,16 @@ const COLLECTION = "organizerFormDomains";
 
 function requireHostname(hostname: string): string {
   const normalized = normalizeCustomFormHost(hostname);
-  if (!normalized || normalized !== hostname) throw new Error("Invalid custom hostname");
+  if (!normalized || normalized !== hostname) {
+    throw new Error("Invalid custom hostname");
+  }
   return hostname;
 }
 
-/** Probe failures return no evidence. DNS is untrusted until checked against the record. */
-export async function probeFormDomain(hostname: string): Promise<DomainProbe | null> {
+/** Probe failures return no evidence. DNS is checked against the record. */
+export async function probeFormDomain(
+  hostname: string
+): Promise<DomainProbe | null> {
   if (!normalizeCustomFormHost(hostname)) return null;
   try {
     const [txt, cname] = await Promise.all([
@@ -36,25 +41,31 @@ export async function probeFormDomain(hostname: string): Promise<DomainProbe | n
 export async function reserveOrganizerFormDomain(
   db: firestore.Firestore,
   input: {hostname: string; organizerId: string; formId: string;
-    actorUid: string; expectedCname: string},
+    actorUid: string},
   nowMillis: number,
+  trustedHostingTarget: string,
   assertManager: typeof requireOrganizerManager = requireOrganizerManager
 ): Promise<OrganizerFormDomain> {
   const hostname = requireHostname(input.hostname);
-  if (!normalizeCustomFormHost(input.expectedCname) ||
+  const expectedCname = normalizeHostingTarget(trustedHostingTarget);
+  if (!expectedCname ||
       !Number.isFinite(nowMillis)) throw new Error("Invalid hosting target");
   await assertManager({db, organizerId: input.organizerId,
     actorUid: input.actorUid});
   const domainRef = db.collection(COLLECTION).doc(hostname);
   const formRef = db.collection("organizerForms").doc(input.formId);
   return db.runTransaction(async (tx) => {
-    const [existing, form] = await Promise.all([tx.get(domainRef), tx.get(formRef)]);
+    const [existing, form] = await Promise.all([
+      tx.get(domainRef), tx.get(formRef),
+    ]);
     if (!form.exists || form.get("organizerId") !== input.organizerId ||
         form.get("status") !== "published" ||
         typeof form.get("publicFormId") !== "string") {
       throw new Error("Published form ownership is required");
     }
-    const previous = existing.exists ? existing.data() as OrganizerFormDomain : null;
+    const previous = existing.exists ?
+      parseOrganizerFormDomain(existing.data()) : null;
+    if (existing.exists && !previous) throw new Error("Invalid domain record");
     if (previous && previous.status !== "revoked") {
       throw new Error("Hostname is already reserved");
     }
@@ -63,8 +74,9 @@ export async function reserveOrganizerFormDomain(
     const record: OrganizerFormDomain = {
       hostname, organizerId: input.organizerId, formId: input.formId,
       publicFormId: form.get("publicFormId") as string,
-      ownershipChallenge: `catch-verification=${randomBytes(24).toString("base64url")}`,
-      expectedCname: input.expectedCname.toLowerCase(), status: "pending",
+      ownershipChallenge: `catch-verification=${
+        randomBytes(24).toString("base64url")}`,
+      expectedCname, status: "pending",
       certificateStatus: "pending", verifiedAtMillis: null,
       generation: (previous?.generation ?? 0) + 1,
     };
@@ -73,7 +85,7 @@ export async function reserveOrganizerFormDomain(
   });
 }
 
-/** Trusted backend operation after a DNS probe; never accepts browser-supplied TXT. */
+/** Trusted backend operation. Never accepts browser-supplied TXT. */
 export async function verifyOrganizerFormDomain(
   db: firestore.Firestore, hostname: string, probe: DomainProbe | null,
   nowMillis: number
@@ -82,8 +94,12 @@ export async function verifyOrganizerFormDomain(
   return db.runTransaction(async (tx) => {
     const ref = db.collection(COLLECTION).doc(hostname);
     const snap = await tx.get(ref);
-    if (!snap.exists || !probe) throw new Error("Domain is not reserved or DNS is unavailable");
-    const verified = verifyFormDomain(snap.data() as OrganizerFormDomain, probe,
+    if (!snap.exists || !probe) {
+      throw new Error("Domain is not reserved or DNS is unavailable");
+    }
+    const record = parseOrganizerFormDomain(snap.data());
+    if (!record) throw new Error("Invalid domain record");
+    const verified = verifyFormDomain(record, probe,
       nowMillis);
     tx.set(ref, verified);
     return verified;
@@ -98,9 +114,11 @@ export async function markOrganizerFormCertificateReady(
   await db.runTransaction(async (tx) => {
     const ref = db.collection(COLLECTION).doc(hostname);
     const snap = await tx.get(ref);
-    const record = snap.data() as OrganizerFormDomain | undefined;
+    const record = parseOrganizerFormDomain(snap.data());
     if (!record || record.status !== "verified" ||
-        record.generation !== generation) throw new Error("Domain verification changed");
+        record.generation !== generation) {
+      throw new Error("Domain verification changed");
+    }
     tx.update(ref, {certificateStatus: "ready"});
   });
 }
@@ -114,7 +132,9 @@ export async function activateOrganizerFormDomain(
     const ref = db.collection(COLLECTION).doc(hostname);
     const snap = await tx.get(ref);
     if (!snap.exists || !probe) throw new Error("Domain or DNS is unavailable");
-    const active = activateFormDomain(snap.data() as OrganizerFormDomain,
+    const record = parseOrganizerFormDomain(snap.data());
+    if (!record) throw new Error("Invalid domain record");
+    const active = activateFormDomain(record,
       probe, nowMillis);
     tx.set(ref, active);
     return active;
@@ -131,7 +151,7 @@ export async function revokeOrganizerFormDomain(
   await db.runTransaction(async (tx) => {
     const ref = db.collection(COLLECTION).doc(hostname);
     const snap = await tx.get(ref);
-    const record = snap.data() as OrganizerFormDomain | undefined;
+    const record = parseOrganizerFormDomain(snap.data());
     if (!record || record.organizerId !== organizerId) {
       throw new Error("Domain is not owned by this organizer");
     }
@@ -147,13 +167,18 @@ export async function resolveOrganizerFormDomain(
   const hostname = normalizeCustomFormHost(requestHost);
   if (!hostname) return null;
   const domainSnap = await db.collection(COLLECTION).doc(hostname).get();
-  const record = domainSnap.data() as OrganizerFormDomain | undefined;
-  if (!record || !hasCurrentDomainOwnership(record, probe, nowMillis)) return null;
+  const record = parseOrganizerFormDomain(domainSnap.data());
+  if (!record || !hasCurrentDomainOwnership(record, probe, nowMillis)) {
+    return null;
+  }
   const resolved = resolveCustomFormHost(hostname, record, probe, nowMillis);
   if (!resolved) return null;
-  const formSnap = await db.collection("organizerForms").doc(resolved.formId).get();
-  if (!formSnap.exists || formSnap.get("organizerId") !== resolved.organizerId ||
+  const formSnap = await db.collection("organizerForms")
+    .doc(resolved.formId).get();
+  if (!formSnap.exists ||
+      formSnap.get("organizerId") !== resolved.organizerId ||
       formSnap.get("publicFormId") !== resolved.publicFormId ||
       formSnap.get("status") !== "published") return null;
-  return {organizerId: resolved.organizerId, publicFormId: resolved.publicFormId};
+  return {organizerId: resolved.organizerId,
+    publicFormId: resolved.publicFormId};
 }

@@ -41,6 +41,46 @@ export function normalizeCustomFormHost(raw: string): string | null {
   return host;
 }
 
+/** A trusted deployment target may itself be on a Catch/provider hostname. */
+export function normalizeHostingTarget(raw: string): string | null {
+  const host = raw.toLowerCase().replace(/\.$/u, "");
+  if (host.length > 253 || !/^[a-z0-9.-]+$/u.test(host)) return null;
+  const labels = host.split(".");
+  if (labels.length < 2 || labels.some((label) => label.length < 1 ||
+      label.length > 63 ||
+      !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/u.test(label))) return null;
+  return host;
+}
+
+export function parseOrganizerFormDomain(
+  value: unknown
+): OrganizerFormDomain | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const record = value as Partial<OrganizerFormDomain>;
+  if (typeof record.hostname !== "string" ||
+      normalizeCustomFormHost(record.hostname) !== record.hostname ||
+      typeof record.organizerId !== "string" || !record.organizerId ||
+      typeof record.formId !== "string" || !record.formId ||
+      typeof record.publicFormId !== "string" || !record.publicFormId ||
+      typeof record.ownershipChallenge !== "string" ||
+      !/^catch-verification=[A-Za-z0-9_-]{32}$/u.test(
+        record.ownershipChallenge) ||
+      typeof record.expectedCname !== "string" ||
+      normalizeHostingTarget(record.expectedCname) !== record.expectedCname ||
+      !["pending", "verified", "active", "revoked"].includes(
+        record.status ?? "") ||
+      !["pending", "ready", "failed"].includes(
+        record.certificateStatus ?? "") ||
+      !(record.verifiedAtMillis === null ||
+        (typeof record.verifiedAtMillis === "number" &&
+          Number.isFinite(record.verifiedAtMillis))) ||
+      !Number.isSafeInteger(record.generation) ||
+      (record.generation ?? 0) < 1) {
+    return null;
+  }
+  return record as OrganizerFormDomain;
+}
+
 export function hasCurrentDomainOwnership(
   domain: OrganizerFormDomain,
   probe: DomainProbe | null,
@@ -53,7 +93,8 @@ export function hasCurrentDomainOwnership(
       probe.checkedAtMillis > nowMillis ||
       nowMillis - probe.checkedAtMillis > MAX_PROBE_AGE_MS) return false;
   return probe.txtValues.includes(domain.ownershipChallenge) &&
-    probe.cnameTarget?.replace(/\.$/u, "").toLowerCase() === domain.expectedCname;
+    probe.cnameTarget?.replace(/\.$/u, "").toLowerCase() ===
+      domain.expectedCname;
 }
 
 export function verifyFormDomain(
@@ -61,7 +102,8 @@ export function verifyFormDomain(
   probe: DomainProbe,
   nowMillis: number
 ): OrganizerFormDomain {
-  if (domain.status !== "pending" || !hasCurrentDomainOwnership(domain, probe, nowMillis)) {
+  if (domain.status !== "pending" ||
+      !hasCurrentDomainOwnership(domain, probe, nowMillis)) {
     throw new Error("Domain ownership or routing is unverified");
   }
   return {...domain, status: "verified", verifiedAtMillis: nowMillis};
@@ -96,6 +138,8 @@ export function resolveCustomFormHost(
     publicFormId: domain.publicFormId};
 }
 
-export function revokeFormDomain(domain: OrganizerFormDomain): OrganizerFormDomain {
+export function revokeFormDomain(
+  domain: OrganizerFormDomain
+): OrganizerFormDomain {
   return {...domain, status: "revoked", certificateStatus: "pending"};
 }
