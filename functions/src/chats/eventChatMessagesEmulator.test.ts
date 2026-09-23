@@ -113,6 +113,22 @@ test("event messages fence retries, protect replies and expire typing",
           const next = await send(message(host, "Reopened"), deps);
           assert.equal(next.sequence, 4);
         });
+      await t.test("distinct concurrent sends allocate unique ordered pages",
+        async () => {
+          const [a, b] = await Promise.all([
+            send(message(person, "Concurrent attendee update"), deps),
+            send(message(host, "Concurrent host update"), deps),
+          ]);
+          assert.deepEqual([a.sequence, b.sequence].sort((x, y) => x - y),
+            [5, 6]);
+          const newest = await page(person, null, 2);
+          assert.deepEqual(newest.messages.map((row) => row.sequence),
+            [6, 5]);
+          assert.equal(newest.nextBeforeSequence, 5);
+          const older = await page(person, newest.nextBeforeSequence, 2);
+          assert.deepEqual(older.messages.map((row) => row.sequence),
+            [4, 3]);
+        });
       await t.test("one reaction per person, CAS and payload-bound replay",
         async () => {
           const action = request(person, {messageId: first.messageId,
