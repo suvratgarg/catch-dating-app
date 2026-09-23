@@ -68858,6 +68858,79 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const listEventAssignmentFeatureChoicesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoices = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsAnswerLabel = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.answerLabel',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsCanGrant = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.canGrant',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsFeatureId = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsQuestionLabel = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.questionLabel',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsResponseId = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsRevision = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseChoicesItemsStatus = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.choices.items.status',
+    required: true,
+    enumValues: <String>['notGranted', 'granted', 'withdrawn'],
+  );
+
+  static const listEventAssignmentFeatureChoicesCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'listEventAssignmentFeatureChoicesCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listEventAssistanceCasesCallablePayloadContextEventId = CatchContractFieldConstraints(
     path: 'listEventAssistanceCasesCallablePayload.context.eventId',
     maxLength: 160,
@@ -123471,6 +123544,16 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
+    'listEventAssignmentFeatureChoicesCallablePayload.eventId': listEventAssignmentFeatureChoicesCallablePayloadEventId,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices': listEventAssignmentFeatureChoicesCallableResponseChoices,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.answerLabel': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsAnswerLabel,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.canGrant': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsCanGrant,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.featureId': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsFeatureId,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.questionLabel': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsQuestionLabel,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.responseId': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsResponseId,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.revision': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsRevision,
+    'listEventAssignmentFeatureChoicesCallableResponse.choices.items.status': listEventAssignmentFeatureChoicesCallableResponseChoicesItemsStatus,
+    'listEventAssignmentFeatureChoicesCallableResponse.eventId': listEventAssignmentFeatureChoicesCallableResponseEventId,
     'listEventAssistanceCasesCallablePayload.context.eventId': listEventAssistanceCasesCallablePayloadContextEventId,
     'listEventAssistanceCasesCallablePayload.context.mode': listEventAssistanceCasesCallablePayloadContextMode,
     'listEventAssistanceCasesCallablePayload.context.organizerId': listEventAssistanceCasesCallablePayloadContextOrganizerId,

@@ -8,6 +8,7 @@ import {AudienceTestStore} from
 import {assignmentFeatureConsentId} from
   "./assignmentFeatureConsent";
 import {configureEventAssignmentFeaturesHandler,
+  listEventAssignmentFeatureChoicesHandler,
   previewEventAssignmentFeaturesHandler,
   setEventAssignmentFeatureConsentHandler} from
   "./assignmentFeatureActions";
@@ -43,6 +44,7 @@ function fixture() {
       formId: "form-1", versionId: "version-1", status: "submitted",
       respondentUid: "user-1", identityKind: "phoneVerified",
       identity: {phoneE164: "+919900001111"}, withdrawnAt: null,
+      submittedAt: stamp,
       answers: {"question-1": "answer-1", "question-2": 99}},
   });
   const docs = store.docs as Record<string,
@@ -182,4 +184,43 @@ test("preview caps roster query before loading profile or answer documents",
       error instanceof HttpsError &&
       error.code === "failed-precondition" &&
       error.message.includes("cohort"));
+  });
+
+test("participant can find own answer and old grant after mapping removal",
+  async () => {
+    const {docs, deps} = fixture();
+    docs["eventSuccessPlans/event-1"]!.assignmentFeatureRules = [rule];
+    const request = {auth: {uid: "user-1",
+      token: {phone_number: "+919900001111"}},
+    data: {eventId: "event-1"}};
+    const offered = await listEventAssignmentFeatureChoicesHandler(
+      request as never, deps as never);
+    assert.deepEqual(offered.choices, [{featureId: "feature-1",
+      responseId: "response-1", questionLabel: "Favorite activity",
+      answerLabel: "Hiking", status: "notGranted", revision: 0,
+      canGrant: true}]);
+    const consentPath = `eventAssignmentFeatureConsents/${
+      assignmentFeatureConsentId("event-1", "user-1", "feature-1")}`;
+    docs[consentPath] = {eventId: "event-1", organizerId: "org-1",
+      uid: "user-1", responseId: "response-1", featureId: "feature-1",
+      formId: "form-1", versionId: "version-1",
+      questionId: "question-1", transformVersion: 1,
+      purpose: "eventAssignmentMatching", status: "granted",
+      receiptId: "receipt-1", revision: 1, lastRequestId: "grant-1",
+      createdAt: stamp, updatedAt: stamp};
+    docs["eventSuccessPlans/event-1"]!.assignmentFeatureRules = [];
+    const retained = await listEventAssignmentFeatureChoicesHandler(
+      {auth: {uid: "user-1", token: {}},
+        data: {eventId: "event-1"}} as never, deps as never);
+    assert.deepEqual(retained.choices, [{featureId: "feature-1",
+      responseId: "response-1", questionLabel: null,
+      answerLabel: null, status: "granted", revision: 1,
+      canGrant: false}]);
+    const withdrawn = await setEventAssignmentFeatureConsentHandler({
+      auth: {uid: "user-1", token: {}}, data: {eventId: "event-1",
+        featureId: "feature-1", responseId: "response-1",
+        decision: "withdraw", expectedRevision: 1,
+        requestId: "withdraw-after-removal"},
+    } as never, deps as never);
+    assert.equal(withdrawn.status, "withdrawn");
   });

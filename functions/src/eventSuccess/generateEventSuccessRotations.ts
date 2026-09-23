@@ -1417,11 +1417,26 @@ async function writeAssignmentDrafts(params: {
   const draftQuery = params.db.collection("eventSuccessAssignmentDrafts")
     .where("eventId", "==", params.eventId)
     .where("moduleId", "==", GUIDED_ROTATIONS_MODULE_ID);
+  if (params.featureGuard &&
+      (params.assignments.size > 400 ||
+        !params.featureGuard.configHash)) {
+    throw new HttpsError("failed-precondition",
+      "Structured matching exceeds the supported draft size.");
+  }
   return params.db.runTransaction(async (transaction) => {
     const [planSnap, existingSnap] = await Promise.all([
       transaction.get(planRef),
-      transaction.get(draftQuery),
+      transaction.get(params.featureGuard ? draftQuery.limit(401) :
+        draftQuery),
     ]);
+    const staleDrafts = existingSnap.docs.filter((doc) =>
+      !params.assignments.has(doc.id));
+    if (params.featureGuard &&
+        (existingSnap.size > 400 ||
+          staleDrafts.length + params.assignments.size > 400)) {
+      throw new HttpsError("failed-precondition",
+        "Structured matching exceeds the supported draft size.");
+    }
     if (!planSnap.exists) {
       throw new HttpsError("failed-precondition",
         "Event-success setup has not been saved.");
@@ -1456,7 +1471,7 @@ async function writeAssignmentDrafts(params: {
     const assignmentRevision = nextLiveControlRevision(
       nonNegativeInteger(plan.assignmentDraftRevision)
     );
-    for (const doc of existingSnap.docs) {
+    for (const doc of params.featureGuard ? staleDrafts : existingSnap.docs) {
       transaction.delete(doc.ref);
     }
     for (const [docId, assignment] of params.assignments.entries()) {

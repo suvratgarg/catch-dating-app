@@ -21,6 +21,12 @@ import type {
   PreviewEventAssignmentFeaturesCallableResponse as PreviewResult} from
   "../shared/generated/previewEventAssignmentFeaturesCallableResponse";
 import type {
+  ListEventAssignmentFeatureChoicesCallablePayload as ChoicesInput} from
+  "../shared/generated/listEventAssignmentFeatureChoicesCallablePayload";
+import type {
+  ListEventAssignmentFeatureChoicesCallableResponse as ChoicesResult} from
+  "../shared/generated/listEventAssignmentFeatureChoicesCallableResponse";
+import type {
   SetEventAssignmentFeatureConsentCallablePayload as ConsentInput} from
   "../shared/generated/setEventAssignmentFeatureConsentCallablePayload";
 import type {
@@ -30,6 +36,8 @@ import {validateConfigureEventAssignmentFeaturesCallablePayload} from
   "../shared/generated/validators/configureEventAssignmentFeaturesInput";
 import {validatePreviewEventAssignmentFeaturesCallablePayload} from
   "../shared/generated/validators/previewEventAssignmentFeaturesInput";
+import {validateListEventAssignmentFeatureChoicesCallablePayload} from
+  "../shared/generated/validators/listEventAssignmentFeatureChoicesInput";
 import {validateSetEventAssignmentFeatureConsentCallablePayload} from
   "../shared/generated/validators/setEventAssignmentFeatureConsentInput";
 import {requireAuth} from "../shared/auth";
@@ -44,8 +52,9 @@ import {assignmentFeatureConsentId, assignmentFeatureRuleMatchesVersion,
   authorizedAssignmentFeatureSnapshot,
   loadAuthorizedAssignmentFeatures,
   readAssignmentFeatureConsent} from "./assignmentFeatureConsent";
-import {type AssignmentFeatureRule,
+import {type AssignmentFeatureRule, type AssignmentFeatureValue,
   buildAssignmentFeatureScoringContext,
+  normalizeAssignmentFeature,
   validateAssignmentFeatureRules} from "./assignmentFeatureScoring";
 
 interface Deps {
@@ -57,6 +66,136 @@ const defaults: Deps = {db: () => admin.firestore(),
   now: () => admin.firestore.Timestamp.now(), rateLimit: checkRateLimit};
 const hash = (text: string) => createHash("sha256").update(text)
   .digest("hex");
+
+/** Own-answer choices and old grants remain visible for withdrawal. */
+export async function listEventAssignmentFeatureChoicesHandler(
+  request: CallableRequest<unknown>, deps: Deps = defaults
+): Promise<ChoicesResult> {
+  const uid = requireAuth(request);
+  const data = validateCallableWithAjv<ChoicesInput>(request,
+    validateListEventAssignmentFeatureChoicesCallablePayload);
+  const db = deps.db();
+  await deps.rateLimit(db, uid, "listEventAssignmentFeatureChoices");
+  const consentSnap = await db.collection("eventAssignmentFeatureConsents")
+    .where("eventId", "==", data.eventId)
+    .where("uid", "==", uid).limit(1001).get();
+  if (consentSnap.size > 1000) {
+    throw new HttpsError("failed-precondition",
+      "Too many matching decisions to list safely.");
+  }
+  const decisions = new Map(consentSnap.docs.map((snap) => {
+    const decision = readAssignmentFeatureConsent(snap);
+    if (decision.eventId !== data.eventId || decision.uid !== uid ||
+        snap.id !== assignmentFeatureConsentId(data.eventId, uid,
+          decision.featureId)) throw unavailable();
+    return [decision.featureId, decision];
+  }));
+  const choices: ChoicesResult["choices"] = [];
+  const phone = request.auth?.token.phone_number;
+  const isPhoneVerified = typeof phone === "string" &&
+    /^\+[1-9][0-9]{6,14}$/u.test(phone);
+  if (isPhoneVerified && await loadEventSuccessRosterParticipant(
+    db, data.eventId, uid)) {
+    const [eventSnap, planSnap] = await Promise.all([
+      db.collection("events").doc(data.eventId).get(),
+      db.collection("eventSuccessPlans").doc(data.eventId).get(),
+    ]);
+    if (eventSnap.exists && planSnap.exists) {
+      const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+      const plan = requireDoc<EventSuccessPlanDocument>(planSnap,
+        "EventSuccessPlanDocument");
+      const organizerId = event.organizerId ?? event.clubId;
+      const rules = validateAssignmentFeatureRules(
+        plan.assignmentFeatureRules ?? []);
+      if (plan.eventId === data.eventId && plan.clubId === event.clubId &&
+          event.status !== "cancelled") {
+        const versionIds = [...new Set(rules.map((rule) =>
+          rule.versionId))];
+        const versionSnaps = await Promise.all(versionIds.map((id) =>
+          db.collection("organizerFormVersions").doc(id).get()));
+        const versions = new Map(versionSnaps.filter((snap) => snap.exists)
+          .map((snap) => [snap.id, requireDoc<Version>(snap,
+            "OrganizerFormVersionDocument")]));
+        const formIds = [...new Set(rules.map((rule) => rule.formId))];
+        for (const formId of formIds) {
+          const responses = await db.collection("organizerFormResponses")
+            .where("formId", "==", formId)
+            .where("respondentUid", "==", uid)
+            .orderBy("submittedAt", "desc").limit(20).get();
+          for (const responseSnap of responses.docs) {
+            const response = requireDoc<Response>(responseSnap,
+              "OrganizerFormResponseDocument");
+            if (response.respondentUid !== uid ||
+                response.identityKind !== "phoneVerified" ||
+                response.identity.phoneE164 !== phone ||
+                response.status !== "submitted" ||
+                response.withdrawnAt !== null ||
+                response.organizerId !== organizerId) continue;
+            for (const rule of rules.filter((item) =>
+              item.formId === formId &&
+              item.versionId === response.versionId)) {
+              const version = versions.get(rule.versionId);
+              if (!version || !assignmentFeatureRuleMatchesVersion(rule,
+                rule.versionId, version, organizerId)) continue;
+              const candidate = {eventId: data.eventId, organizerId, uid,
+                responseId: responseSnap.id, featureId: rule.featureId,
+                formId: rule.formId, versionId: rule.versionId,
+                questionId: rule.questionId,
+                transformVersion: rule.transformVersion,
+                purpose: "eventAssignmentMatching" as const,
+                status: "granted" as const,
+                receiptId: "preview"};
+              const snapshot = authorizedAssignmentFeatureSnapshot({
+                eventId: data.eventId, organizerId, uid, rule,
+                decision: candidate, responseId: responseSnap.id,
+                response, versionId: rule.versionId, version});
+              if (!snapshot || !normalizeAssignmentFeature(rule, snapshot,
+                {eventId: data.eventId, organizerId, uid})) continue;
+              const question = version.definition.sections.flatMap((s) =>
+                s.questions).find((q) => q.questionId === rule.questionId);
+              if (!question) continue;
+              const current = decisions.get(rule.featureId);
+              choices.push({featureId: rule.featureId,
+                responseId: responseSnap.id, questionLabel: question.label,
+                answerLabel: ownAnswerLabel(snapshot.value,
+                  question.options),
+                status: current?.responseId === responseSnap.id ?
+                  current.status : "notGranted",
+                revision: current?.revision ?? 0, canGrant: true});
+            }
+          }
+        }
+      }
+    }
+  }
+  for (const decision of decisions.values()) {
+    if (choices.some((choice) => choice.featureId === decision.featureId &&
+        choice.responseId === decision.responseId)) continue;
+    choices.push({featureId: decision.featureId,
+      responseId: decision.responseId, questionLabel: null,
+      answerLabel: null, status: decision.status,
+      revision: decision.revision, canGrant: false});
+  }
+  if (choices.length > 1000) throw unavailable();
+  choices.sort((a, b) => a.featureId.localeCompare(b.featureId) ||
+    a.responseId.localeCompare(b.responseId));
+  return {eventId: data.eventId, choices};
+}
+
+type FormSection = Version["definition"]["sections"][number];
+type FormQuestion = FormSection["questions"][number];
+
+function ownAnswerLabel(
+  value: AssignmentFeatureValue,
+  options: FormQuestion["options"]
+): string {
+  const label = (id: string) => options.find((option) =>
+    option.optionId === id)?.label ?? id;
+  if (value.kind === "number") return String(value.value);
+  if (value.kind === "set") return value.optionIds.map(label).join(", ")
+    .slice(0, 500);
+  return label(value.optionId);
+}
 
 /** Manager preview returns a source catalog and aggregate coverage. */
 export async function previewEventAssignmentFeaturesHandler(
@@ -327,12 +466,14 @@ export async function setEventAssignmentFeatureConsentHandler(
       transformVersion: source.transformVersion,
       purpose: "eventAssignmentMatching" as const,
       status: "granted" as const, receiptId};
+    const snapshot = authorizedAssignmentFeatureSnapshot({
+      eventId: data.eventId, organizerId, uid, rule,
+      decision: candidate, responseId: data.responseId, response,
+      versionId: rule.versionId, version});
     if (!assignmentFeatureRuleMatchesVersion(rule,
-      rule.versionId, version, organizerId) ||
-        !authorizedAssignmentFeatureSnapshot({eventId: data.eventId,
-          organizerId, uid, rule, decision: candidate,
-          responseId: data.responseId, response,
-          versionId: rule.versionId, version})) throw unavailable();
+      rule.versionId, version, organizerId) || !snapshot ||
+        !normalizeAssignmentFeature(rule, snapshot,
+          {eventId: data.eventId, organizerId, uid})) throw unavailable();
     const now = deps.now();
     const next: Consent = {...candidate, status: "granted",
       revision: revision + 1, lastRequestId: data.requestId,
@@ -353,6 +494,10 @@ export const configureEventAssignmentFeatures = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 30,
     maxInstances: 20}),
   (request) => configureEventAssignmentFeaturesHandler(request));
+export const listEventAssignmentFeatureChoices = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 30,
+    maxInstances: 20}),
+  (request) => listEventAssignmentFeatureChoicesHandler(request));
 export const previewEventAssignmentFeatures = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 30,
     maxInstances: 20}),

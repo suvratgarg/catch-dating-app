@@ -235,6 +235,8 @@ export {validateConfigureEventAssignmentFeaturesCallablePayload} from "./validat
 export {validateConfigureEventAssignmentFeaturesCallableResponse} from "./validators/configureEventAssignmentFeaturesOutput";
 export {validatePreviewEventAssignmentFeaturesCallablePayload} from "./validators/previewEventAssignmentFeaturesInput";
 export {validatePreviewEventAssignmentFeaturesCallableResponse} from "./validators/previewEventAssignmentFeaturesOutput";
+export {validateListEventAssignmentFeatureChoicesCallablePayload} from "./validators/listEventAssignmentFeatureChoicesInput";
+export {validateListEventAssignmentFeatureChoicesCallableResponse} from "./validators/listEventAssignmentFeatureChoicesOutput";
 export {validateListParticipantMessagingPreferencesCallablePayload} from "./validators/listParticipantMessagingPreferencesInput";
 export {validateListParticipantMessagingPreferencesCallableResponse} from "./validators/listParticipantMessagingPreferencesOutput";
 export {validateWithdrawParticipantMessagingPermissionCallablePayload} from "./validators/withdrawParticipantMessagingPermissionInput";

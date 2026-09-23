@@ -99701,6 +99701,107 @@ export const previewEventAssignmentFeaturesCallableResponseSchema = {
   }
 };
 
+export const listEventAssignmentFeatureChoicesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_assignment_feature_choices_payload.schema.json",
+  "title": "ListEventAssignmentFeatureChoicesCallablePayload",
+  "description": "Private participant discovery of exact event matching answers and prior grants.",
+  "x-callable-aliases": [
+    "listEventAssignmentFeatureChoices"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listEventAssignmentFeatureChoicesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_assignment_feature_choices_response.schema.json",
+  "title": "ListEventAssignmentFeatureChoicesCallableResponse",
+  "description": "Only the authenticated respondent's reviewed answer labels and purpose-specific decisions; old grants remain withdrawable after mapping/source changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "choices"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "choices": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "responseId",
+          "questionLabel",
+          "answerLabel",
+          "status",
+          "revision",
+          "canGrant"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "answerLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "status": {
+            "enum": [
+              "notGranted",
+              "granted",
+              "withdrawn"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "canGrant": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
 export const listParticipantMessagingPreferencesCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_participant_messaging_preferences_payload.schema.json",

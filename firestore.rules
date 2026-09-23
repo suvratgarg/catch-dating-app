@@ -2332,6 +2332,10 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /eventAssignmentFeatureConsents/{consentId} {
+      allow read, write: if false;
+    }
+
     match /eventSuccessPresence/{presenceId} {
       allow read, write: if false;
     }

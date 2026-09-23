@@ -55,7 +55,8 @@ class FakeCollectionRef {
       field: string;
       operator: string;
       value: unknown;
-    }> = []
+    }> = [],
+    private readonly cap = Infinity
   ) {}
 
   doc(docId: string) {
@@ -66,18 +67,18 @@ class FakeCollectionRef {
     return new FakeCollectionRef(this.firestore, this.path, [
       ...this.filters,
       {field, operator, value},
-    ]);
+    ], this.cap);
   }
 
   limit(count: number) {
-    void count;
-    return this;
+    return new FakeCollectionRef(this.firestore, this.path,
+      this.filters, count);
   }
 
   async get() {
-    return {
-      docs: this.firestore.query(this.path, this.filters),
-    };
+    const docs = this.firestore.query(this.path, this.filters)
+      .slice(0, this.cap);
+    return {docs, size: docs.length};
   }
 }
 
@@ -434,6 +435,17 @@ test("configured consented answers affect generated rotation drafts",
     assert.equal(guard.configHash, "hash-1");
     assert.equal((guard.snapshots as unknown[]).length, 1);
     assert.equal(JSON.stringify(assignment).includes("answer"), false);
+
+    for (let index = 0; index < 401; index++) {
+      firestore.set(`eventSuccessAssignmentDrafts/old-${index}`, {
+        eventId: "event-1", moduleId: "guided_rotations",
+        roundIndex: 0, uid: `old-${index}`});
+    }
+    await assert.rejects(() => generateEventSuccessRotationsHandler(
+      callableRequest("host-1", {expectedRevision: 1}), deps), (error) => {
+      isHttpsError(error, "failed-precondition", "supported draft size");
+      return true;
+    });
   });
 
 test("sequence topology uses configured court capacity", async () => {

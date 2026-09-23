@@ -167,6 +167,7 @@ export 'callables/import_organizer_applications_callable_request.g.dart';
 export 'callables/import_program_manifest_callable_request.g.dart';
 export 'callables/inject_event_rehearsal_behavior_callable_request.g.dart';
 export 'callables/invite_program_staff_callable_request.g.dart';
+export 'callables/list_event_assignment_feature_choices_callable_request.g.dart';
 export 'callables/list_event_assistance_cases_callable_request.g.dart';
 export 'callables/list_event_assistance_deliveries_callable_request.g.dart';
 export 'callables/list_event_assistance_departure_rosters_callable_request.g.dart';

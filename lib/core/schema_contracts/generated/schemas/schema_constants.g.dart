@@ -430,6 +430,8 @@ export 'inject_event_rehearsal_behavior_callable_payload.g.dart';
 export 'invite_program_staff_callable_payload.g.dart';
 export 'join_waitlist_http_request.g.dart';
 export 'join_waitlist_http_response.g.dart';
+export 'list_event_assignment_feature_choices_callable_payload.g.dart';
+export 'list_event_assignment_feature_choices_callable_response.g.dart';
 export 'list_event_assistance_cases_callable_payload.g.dart';
 export 'list_event_assistance_deliveries_callable_payload.g.dart';
 export 'list_event_assistance_departure_rosters_callable_payload.g.dart';

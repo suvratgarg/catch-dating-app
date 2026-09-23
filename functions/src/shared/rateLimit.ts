@@ -171,6 +171,9 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   previewEventAssignmentFeatures: {
     maxRequests: 30, windowMs: 60 * 1000,
   },
+  listEventAssignmentFeatureChoices: {
+    maxRequests: 30, windowMs: 60 * 1000,
+  },
   setEventAssignmentFeatureConsent: {
     maxRequests: 10, windowMs: 60 * 60 * 1000,
   },

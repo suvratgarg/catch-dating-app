@@ -1798,6 +1798,8 @@
     },
     {"collectionGroup": "organizerApplications", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerFormResponses", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
+    {"collectionGroup": "organizerFormResponses", "queryScope": "COLLECTION", "fields": [{"fieldPath": "formId", "mode": "ASCENDING"}, {"fieldPath": "respondentUid", "mode": "ASCENDING"}, {"fieldPath": "submittedAt", "mode": "DESCENDING"}]},
+    {"collectionGroup": "eventAssignmentFeatureConsents", "queryScope": "COLLECTION", "fields": [{"fieldPath": "eventId", "mode": "ASCENDING"}, {"fieldPath": "uid", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerContactOrigins", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "sourceKind", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerContactEventEdges", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "eventId", "mode": "ASCENDING"}]},
     {

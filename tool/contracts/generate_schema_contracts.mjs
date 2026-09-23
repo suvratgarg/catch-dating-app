@@ -1210,6 +1210,18 @@ const schemaSpecs = [
       "previewEventAssignmentFeaturesCallableResponse.ts",
   },
   {
+    name: "ListEventAssignmentFeatureChoicesCallablePayload",
+    source: "callables/list_event_assignment_feature_choices_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "listEventAssignmentFeatureChoicesCallablePayload.ts",
+  },
+  {
+    name: "ListEventAssignmentFeatureChoicesCallableResponse",
+    source: "callable_responses/list_event_assignment_feature_choices_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "listEventAssignmentFeatureChoicesCallableResponse.ts",
+  },
+  {
     name: "ListParticipantMessagingPreferencesCallablePayload",
     source: "callables/list_participant_messaging_preferences_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",

@@ -235,6 +235,8 @@ export {configureEventAssignmentFeaturesCallablePayloadSchema} from "./schemas/c
 export {configureEventAssignmentFeaturesCallableResponseSchema} from "./schemas/configureEventAssignmentFeaturesOutput";
 export {previewEventAssignmentFeaturesCallablePayloadSchema} from "./schemas/previewEventAssignmentFeaturesInput";
 export {previewEventAssignmentFeaturesCallableResponseSchema} from "./schemas/previewEventAssignmentFeaturesOutput";
+export {listEventAssignmentFeatureChoicesCallablePayloadSchema} from "./schemas/listEventAssignmentFeatureChoicesInput";
+export {listEventAssignmentFeatureChoicesCallableResponseSchema} from "./schemas/listEventAssignmentFeatureChoicesOutput";
 export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schemas/listParticipantMessagingPreferencesInput";
 export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
 export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";
