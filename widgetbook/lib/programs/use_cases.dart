@@ -715,3 +715,28 @@ Widget programOperationReviewSheetStates(BuildContext context) =>
         ),
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'Preserved local work',
+  type: ProgramJournalRecoverySheet,
+  path: '[P1 product surfaces]/Program arrivals',
+)
+Widget programJournalRecoverySheetPreview(BuildContext context) =>
+    WidgetbookUtilitySheetFrame(
+      child: ProviderScope(
+        overrides: [
+          ..._programOverrides(),
+          programOperationsOutboxProvider.overrideWithValue(
+            ProgramOperationsOutbox(
+              createProgramOperationJournal(
+                storage: () async => MemoryCommandJournalStorage(),
+                currentAccountId: () => 'uid_greeter',
+                loadLegacy: (_) async => 'damaged synthetic demo record',
+              ),
+              _PreviewMutator(),
+            ),
+          ),
+        ],
+        child: const ProgramJournalRecoverySheet(accountId: 'uid_greeter'),
+      ),
+    );

@@ -12356,6 +12356,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ProgramJournalRecoverySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Preserved local work',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programJournalRecoverySheetPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ProgramOperationReviewSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(

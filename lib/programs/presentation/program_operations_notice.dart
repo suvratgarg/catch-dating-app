@@ -67,7 +67,7 @@ class ProgramOperationsNotice extends ConsumerWidget {
                   onPressed: () => showCatchBottomSheet<void>(
                     context: context,
                     builder: (_) =>
-                        _ProgramJournalRecoverySheet(accountId: accountId),
+                        ProgramJournalRecoverySheet(accountId: accountId),
                   ),
                 ),
               CatchButton(
@@ -97,17 +97,18 @@ bool _canExportRecovery(Object error) =>
       'local-journal-quarantined',
     }.contains(error.code);
 
-class _ProgramJournalRecoverySheet extends ConsumerStatefulWidget {
-  const _ProgramJournalRecoverySheet({required this.accountId});
+/// Exports preserved local program operations through an account-fenced share flow.
+class ProgramJournalRecoverySheet extends ConsumerStatefulWidget {
+  const ProgramJournalRecoverySheet({super.key, required this.accountId});
   final String accountId;
 
   @override
-  ConsumerState<_ProgramJournalRecoverySheet> createState() =>
+  ConsumerState<ProgramJournalRecoverySheet> createState() =>
       _ProgramJournalRecoverySheetState();
 }
 
 class _ProgramJournalRecoverySheetState
-    extends ConsumerState<_ProgramJournalRecoverySheet> {
+    extends ConsumerState<ProgramJournalRecoverySheet> {
   bool _exporting = false;
   Object? _error;
 
