@@ -74,6 +74,7 @@ for (const duties of [
   [assignment([], [], now.toMillis())],
   [assignment([], [], now.toMillis() + 2 * 86_400_000)],
   [{...assignment(["A"], []), duty: "programCoordinator"}],
+  [{...assignment(["A"], ["H1"]), duty: "hotelDesk"}],
 ]) {
   test("invalid assignment expiry or coordinator scope fails closed",
     async () => {
@@ -99,3 +100,8 @@ test("coordinator and explicit duties are all retained for authorization",
     ]);
     assert.equal(dutyAssignments(access, "transportDispatcher").length, 2);
   });
+
+test("hotel desk rejects unenforceable pickup restrictions", () => {
+  assert.throws(() => grantDuties([{duty: "hotelDesk", pickupPointIds: ["A"],
+    hotelIds: ["H1"]}], expiry), code("invalid-argument"));
+});

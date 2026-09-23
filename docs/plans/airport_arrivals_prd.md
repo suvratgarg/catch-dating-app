@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.1
+version: 0.3.2
 updated: 2026-09-23
 owner: product
 status: draft
@@ -586,6 +586,19 @@ Legacy grants without per-assignment deadlines are denied and must be reissued
 by a manager; the old maximum deadline cannot reconstruct original authority.
 Any pending invites issued before tuple preservation must likewise be revoked
 and reissued before rollout, because their original scope cannot be recovered.
+
+Invite issuance reads manager authority and active owned resources in the same
+transaction as creation. Pending lookup applies the expiry predicate before its
+limit; exact normalized name/scope/deadline retries reuse the link, while changed
+requests require revoking the pending invite first. Claims and direct grants
+revalidate resource ownership and active state transactionally. Hotel-desk
+assignments accept hotel restrictions only, because hotel receipt and inbound
+views do not implement pickup-point restrictions. Grant/invite mutations reject
+records whose stored organizer/program/account binding has changed.
+Work bootstrap loads assigned resource IDs before applying its 32-pickup and
+64-hotel response caps. Unrestricted queries include current organizer ownership
+and active state; overflow is explicit. Hotel-only staff receive no airport
+pickup inventory.
 
 Offline access checks the individual deadlines. A cached station projection
 must refresh after any of its applicable scope tuples expires. Other valid

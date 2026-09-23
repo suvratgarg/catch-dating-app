@@ -77,7 +77,7 @@ test("a second invite for the same phone returns the pending invite",
     const first = await inviteProgramStaffHandler(
       request(invitePayload), deps(store));
     const second = await inviteProgramStaffHandler(
-      request({...invitePayload, displayName: "Renamed"}), deps(store));
+      request({...invitePayload, displayName: " Priya Greeter "}), deps(store));
     assert.equal(second.entityId, first.entityId);
     assert.equal(second.alreadyApplied, true);
   });
@@ -340,3 +340,175 @@ test("an invite exceeding eight scope tuples remains unclaimed", async () => {
   assert.deepEqual(store.getDoc("programStaffGrants/program-1__greeter-1")!
     .duties, existing);
 });
+
+const code = (expected: string) => (error: unknown) =>
+  (error as {code?: string}).code === expected;
+const pending = (store: FakeFirestore) => [...store.docs.entries()]
+  .filter(([path, doc]) => path.startsWith("programStaffInvites/") &&
+    doc.status === "pending");
+
+for (const patch of [
+  {displayName: "Changed Name"},
+  {expiresAtMillis: EXPIRES + 1},
+  {duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: []}]},
+]) {
+  test("changed request cannot replay a different pending invite", async () => {
+    const store = new FakeFirestore(seed());
+    const first = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    const before = store.getDoc(`programStaffInvites/${first.entityId}`);
+    await assert.rejects(inviteProgramStaffHandler(
+      request({...invitePayload, ...patch}), deps(store)),
+    code("failed-precondition"));
+    assert.deepEqual(store.getDoc(`programStaffInvites/${first.entityId}`),
+      before);
+    assert.equal(pending(store).length, 1);
+  });
+}
+
+test("simultaneous equivalent invite requests create one pending link",
+  async () => {
+    const store = new FakeFirestore(seed());
+    const results = await Promise.all(Array.from({length: 4}, () =>
+      inviteProgramStaffHandler(request(invitePayload), deps(store))));
+    assert.equal(new Set(results.map((r) => r.entityId)).size, 1);
+    assert.equal(results.filter((r) => !r.alreadyApplied).length, 1);
+    assert.equal(pending(store).length, 1);
+  });
+
+test("expired invites cannot hide a live pending invite beyond an old cap",
+  async () => {
+    const store = new FakeFirestore(seed());
+    const first = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store, NOW - 1000));
+    const original = store.getDoc(`programStaffInvites/${first.entityId}`)!;
+    store.docs.delete(`programStaffInvites/${first.entityId}`);
+    for (let i = 0; i < 6; i++) {
+      store.setDoc(`programStaffInvites/expired-${i}`,
+        {...original, expiresAt: ts(NOW)});
+    }
+    store.setDoc(`programStaffInvites/${first.entityId}`, original);
+    const replay = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    assert.equal(replay.entityId, first.entityId);
+    assert.equal(replay.alreadyApplied, true);
+  });
+
+test("conflicting legacy pending links require explicit reconciliation",
+  async () => {
+    const store = new FakeFirestore(seed());
+    const first = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    store.setDoc("programStaffInvites/duplicate",
+      store.getDoc(`programStaffInvites/${first.entityId}`)!);
+    await assert.rejects(inviteProgramStaffHandler(
+      request(invitePayload), deps(store)), code("failed-precondition"));
+    assert.equal(pending(store).length, 2);
+  });
+
+test("manager revocation during issuance prevents the invite commit",
+  async () => {
+    const store = new FakeFirestore(seed());
+    store.beforeCommit = async () => {
+      store.beforeCommit = undefined;
+      store.setDoc("organizers/org-1", {ownerUserId: "someone-else",
+        hostUserId: "someone-else", hostUserIds: [], hostProfiles: []});
+    };
+    await assert.rejects(inviteProgramStaffHandler(
+      request(invitePayload), deps(store)), code("permission-denied"));
+    assert.equal(pending(store).length, 0);
+  });
+
+for (const patch of [{active: false}, {organizerId: "foreign"},
+  {programId: "foreign"}]) {
+  for (const phase of ["issue", "claim"] as const) {
+    test(`${phase} retries observe resource changes: ${JSON.stringify(patch)}`,
+      async () => {
+        const store = new FakeFirestore(seed());
+        const invite = phase === "claim" ? await inviteProgramStaffHandler(
+          request(invitePayload), deps(store)) : null;
+        store.beforeCommit = async () => {
+          store.beforeCommit = undefined;
+          store.updateDoc("programPickupPoints/pickup-1", patch);
+        };
+        const call = invite ? claimProgramStaffInviteHandler(
+          request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+          deps(store)) : inviteProgramStaffHandler(
+          request(invitePayload), deps(store));
+        await assert.rejects(call, code("invalid-argument"));
+        assert.equal(store.getDoc("programStaffGrants/program-1__greeter-1"),
+          undefined);
+        assert.equal(pending(store).length, invite ? 1 : 0);
+      });
+  }
+}
+
+test("invite claim cannot overwrite a mismatched grant owner", async () => {
+  const store = new FakeFirestore(seed());
+  const invite = await inviteProgramStaffHandler(
+    request(invitePayload), deps(store));
+  const other = {programId: "program-1", organizerId: "foreign",
+    uid: "greeter-1", status: "active", expiresAt: ts(EXPIRES), duties: []};
+  store.setDoc("programStaffGrants/program-1__greeter-1", other);
+  await assert.rejects(claimProgramStaffInviteHandler(
+    request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+    deps(store)), code("failed-precondition"));
+  assert.deepEqual(store.getDoc("programStaffGrants/program-1__greeter-1"),
+    other);
+  assert.equal(pending(store).length, 1);
+});
+
+test("equivalent scope ordering replays the same invite", async () => {
+  const store = new FakeFirestore(seed());
+  store.setDoc("programPickupPoints/pickup-2",
+    store.getDoc("programPickupPoints/pickup-1")!);
+  const greeter = {duty: "airportGreeter", hotelIds: [],
+    pickupPointIds: ["pickup-1", "pickup-2"]};
+  const hotel = {duty: "hotelDesk", pickupPointIds: [], hotelIds: []};
+  const first = await inviteProgramStaffHandler(request({...invitePayload,
+    duties: [greeter, hotel]}), deps(store));
+  const replay = await inviteProgramStaffHandler(request({...invitePayload,
+    duties: [hotel, {...greeter, pickupPointIds: ["pickup-2", "pickup-1"]}]}),
+  deps(store));
+  assert.equal(replay.entityId, first.entityId);
+  assert.equal(replay.alreadyApplied, true);
+});
+
+test("invite replay and revoke cannot touch a foreign organizer binding",
+  async () => {
+    const store = new FakeFirestore(seed());
+    const first = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    const path = `programStaffInvites/${first.entityId}`;
+    store.updateDoc(path, {organizerId: "foreign"});
+    const before = store.getDoc(path);
+    await assert.rejects(inviteProgramStaffHandler(
+      request(invitePayload), deps(store)), code("failed-precondition"));
+    await assert.rejects(revokeProgramStaffInviteHandler(request({
+      programId: "program-1", inviteId: first.entityId,
+    }), deps(store)), code("not-found"));
+    assert.deepEqual(store.getDoc(path), before);
+  });
+
+for (const patch of [{active: false}, {organizerId: "foreign"}]) {
+  test(`hotel claim revalidates destination: ${JSON.stringify(patch)}`,
+    async () => {
+      const store = new FakeFirestore(seed());
+      store.setDoc("programHotels/hotel-1", {organizerId: "org-1",
+        programId: "program-1", active: true});
+      const invite = await inviteProgramStaffHandler(request({...invitePayload,
+        duties: [{duty: "hotelDesk", pickupPointIds: [],
+          hotelIds: ["hotel-1"]}],
+      }), deps(store));
+      store.beforeCommit = async () => {
+        store.beforeCommit = undefined;
+        store.updateDoc("programHotels/hotel-1", patch);
+      };
+      await assert.rejects(claimProgramStaffInviteHandler(
+        request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+        deps(store)), code("invalid-argument"));
+      const saved = store.getDoc(`programStaffInvites/${invite.entityId}`);
+      assert.equal(saved?.status,
+        "pending");
+    });
+}

@@ -83,7 +83,8 @@ class ProgramDutyAssignment {
       expiresAt != null &&
       expiresAt!.isAfter(now) &&
       (duty != ProgramStaffDuty.programCoordinator ||
-          (pickupPointIds.isEmpty && hotelIds.isEmpty));
+          (pickupPointIds.isEmpty && hotelIds.isEmpty)) &&
+      (duty != ProgramStaffDuty.hotelDesk || pickupPointIds.isEmpty);
 
   bool get coversAllStations => pickupPointIds.isEmpty;
   bool get coversAllHotels => hotelIds.isEmpty;

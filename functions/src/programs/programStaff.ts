@@ -1,9 +1,11 @@
 /* firestore-index: programPickupPoints (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   active:ASCENDING
 ) */
 /* firestore-index: programHotels (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   active:ASCENDING
 ) */
 /* firestore-index: programStaffGrants (
@@ -101,32 +103,27 @@ export async function getProgramWorkAccessHandler(
   });
   const {program} = access;
   const pickupScope = access.role === "manager" ? null :
-    unionScope(access.grant!, "pickupPointIds");
+    unionScope(access.grant!.duties.filter((duty) => duty.duty !== "hotelDesk"),
+      "pickupPointIds");
   const hotelScope = access.role === "manager" ? null :
-    unionScope(access.grant!, "hotelIds");
-  const [pickupsSnap, hotelsSnap] = await Promise.all([
-    db.collection("programPickupPoints")
-      .where("programId", "==", data.programId)
-      .where("active", "==", true).limit(32).get(),
-    db.collection("programHotels")
-      .where("programId", "==", data.programId)
-      .where("active", "==", true).limit(64).get(),
+    unionScope(access.grant!.duties, "hotelIds");
+  const common = {db, programId: data.programId,
+    organizerId: program.organizerId};
+  const [pickups, destinations] = await Promise.all([
+    loadWorkResources<ProgramPickupPointDocument>({...common,
+      collection: "programPickupPoints", scope: pickupScope, cap: 32}),
+    loadWorkResources<ProgramHotelDocument>({...common,
+      collection: "programHotels", scope: hotelScope, cap: 64}),
   ]);
-  const pickupPoints = pickupsSnap.docs
-    .map((doc) => ({id: doc.id,
-      doc: doc.data() as ProgramPickupPointDocument}))
-    .filter((entry) => pickupScope === null || pickupScope.has(entry.id))
-    .map((entry) => ({
-      pickupPointId: entry.id,
-      label: entry.doc.label,
-      kind: entry.doc.kind,
-      iataCode: entry.doc.iataCode,
-      terminal: entry.doc.terminal,
-    }));
-  const hotels = hotelsSnap.docs
-    .map((doc) => ({id: doc.id, doc: doc.data() as ProgramHotelDocument}))
-    .filter((entry) => hotelScope === null || hotelScope.has(entry.id))
-    .map((entry) => ({hotelId: entry.id, name: entry.doc.name}));
+  const pickupPoints = pickups.map((entry) => ({
+    pickupPointId: entry.id,
+    label: entry.doc.label,
+    kind: entry.doc.kind,
+    iataCode: entry.doc.iataCode,
+    terminal: entry.doc.terminal,
+  }));
+  const hotels = destinations.map((entry) =>
+    ({hotelId: entry.id, name: entry.doc.name}));
   return {
     programId: data.programId,
     organizerId: program.organizerId,
@@ -143,6 +140,42 @@ export async function getProgramWorkAccessHandler(
     hotels,
     vehicleClasses: program.transportSettings.vehicleClasses,
   };
+}
+
+/** Apply ownership and assignment scope before the response contract cap. */
+async function loadWorkResources<
+  T extends ProgramPickupPointDocument | ProgramHotelDocument
+>(params: {
+  db: FirebaseFirestore.Firestore;
+  collection: "programPickupPoints" | "programHotels";
+  programId: string;
+  organizerId: string;
+  scope: Set<string> | null;
+  cap: number;
+}): Promise<Array<{id: string; doc: T}>> {
+  const collection = params.db.collection(params.collection);
+  const docs = params.scope === null ? (await collection
+    .where("programId", "==", params.programId)
+    .where("organizerId", "==", params.organizerId)
+    .where("active", "==", true).limit(params.cap + 1).get()).docs :
+    await Promise.all([...params.scope].sort().map((id) =>
+      collection.doc(id).get()));
+  const resources: Array<{id: string; doc: T}> = [];
+  for (const snap of docs) {
+    const doc = snap.data() as T | undefined;
+    if (doc && doc.programId === params.programId &&
+        doc.organizerId === params.organizerId && doc.active === true) {
+      resources.push({id: snap.id, doc});
+    }
+  }
+  if (resources.length > params.cap) {
+    const label = params.collection === "programHotels" ?
+      "hotels" : "pickup points";
+    throw new HttpsError("resource-exhausted",
+      `This work view exceeds ${params.cap} active ${label}. ` +
+      "Reduce active resources or narrow the staff scope.");
+  }
+  return resources;
 }
 
 export async function listProgramStaffHandler(
@@ -177,7 +210,8 @@ export async function grantProgramStaffHandler(
       "Program staff access must expire within the next 14 days."
     );
   }
-  await validateDutyStations(db, data.programId, data.duties);
+  await validateDutyStations({db, programId: data.programId,
+    organizerId: program.organizerId, duties: data.duties});
   const phone = normalizeRosterPhone(data.phoneNumber);
   if (!phone.value || phone.issue) {
     throw new HttpsError("invalid-argument", phone.issue ?? "Invalid phone.");
@@ -199,6 +233,9 @@ export async function grantProgramStaffHandler(
         isOrganizerManager(fresh.organizer, authUser.uid)) {
       throw new HttpsError("aborted", "Program staff authority changed.");
     }
+    await validateDutyStations({db, programId: data.programId,
+      organizerId: fresh.program.organizerId, duties: data.duties,
+      transaction: tx});
     const [currentSnap, activeSnap] = await Promise.all([
       tx.get(ref),
       tx.get(db.collection("programStaffGrants")
@@ -209,6 +246,12 @@ export async function grantProgramStaffHandler(
     ]);
     const current = currentSnap.data() as ProgramStaffGrantDocument |
       undefined;
+    if (current && (current.programId !== data.programId ||
+        current.organizerId !== fresh.program.organizerId ||
+        current.uid !== authUser.uid)) {
+      throw new HttpsError("failed-precondition",
+        "Staff grant ownership changed.");
+    }
     const currentActive = current?.status === "active" &&
       staffTimestampMillis(current.expiresAt) > now.toMillis();
     if (!currentActive && activeSnap.size >= maxProgramStaff) {
@@ -260,10 +303,12 @@ export async function revokeProgramStaffHandler(
     programStaffGrantId(data.programId, data.uid));
   const now = deps.now();
   await db.runTransaction(async (tx) => {
-    await requireProgramManager(db, data.programId, actorUid, tx);
+    const {program} = await requireProgramManager(
+      db, data.programId, actorUid, tx);
     const snap = await tx.get(ref);
     const grant = snap.data() as ProgramStaffGrantDocument | undefined;
-    if (!grant || grant.programId !== data.programId) {
+    if (!grant || grant.programId !== data.programId ||
+        grant.organizerId !== program.organizerId || grant.uid !== data.uid) {
       throw new HttpsError("not-found", "Program staff member not found.");
     }
     if (grant.revision !== data.expectedRevision) {

@@ -313,4 +313,30 @@ void main() {
       expect(prefs.getString('unrelatedPreference'), 'keep');
     },
   );
+  test(
+    'legacy hotel pickup restriction cannot authorize cached work',
+    () async {
+      final raw = access();
+      (raw['duties']! as List<Map<String, Object?>>).first['duty'] =
+          'hotelDesk';
+      await store.save('account', programSnapshotScope('work', 'p1'), raw);
+      await expectLater(
+        readProgramWithSnapshot(
+          accountId: 'account',
+          programId: 'p1',
+          scope: programSnapshotScope('work', 'p1'),
+          store: store,
+          isCurrentAccount: () => true,
+          live: () async =>
+              throw const NetworkException('connection-failed', 'Offline'),
+          parse: ProgramWorkAccess.fromCallableData,
+        ),
+        throwsA(isA<NetworkException>()),
+      );
+      expect(
+        await store.load('account', programSnapshotScope('work', 'p1')),
+        isNull,
+      );
+    },
+  );
 }

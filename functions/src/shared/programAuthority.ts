@@ -15,6 +15,15 @@ export type ProgramStaffDuty =
 export type ProgramDutyAssignment =
   ProgramStaffGrantDocument["duties"][number];
 
+/** Named duties have fixed resource dimensions, not arbitrary expressions. */
+export function supportsProgramDutyScope(assignment: Pick<ProgramDutyAssignment,
+  "duty" | "pickupPointIds" | "hotelIds">): boolean {
+  return (assignment.duty !== "programCoordinator" ||
+    (assignment.pickupPointIds.length === 0 &&
+      assignment.hotelIds.length === 0)) &&
+    (assignment.duty !== "hotelDesk" || assignment.pickupPointIds.length === 0);
+}
+
 export const programStaffDuties: ProgramStaffDuty[] = [
   "programCoordinator",
   "airportGreeter",
@@ -107,9 +116,7 @@ export function activeProgramDuties(grant: ProgramStaffGrantDocument,
     assignment.expiresAtMillis <= staffTimestampMillis(grant.expiresAt) &&
     Array.isArray(assignment.pickupPointIds) &&
     Array.isArray(assignment.hotelIds) &&
-    (assignment.duty !== "programCoordinator" ||
-      (assignment.pickupPointIds.length === 0 &&
-       assignment.hotelIds.length === 0)));
+    supportsProgramDutyScope(assignment));
 }
 
 /** Coordinators implicitly satisfy every operational duty. Preserve tuples. */
