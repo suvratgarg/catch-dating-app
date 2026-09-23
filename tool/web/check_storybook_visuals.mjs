@@ -67,7 +67,7 @@ try {
 const knownStoryIds = new Set(
   resolveStories(allReadyStories, storyIndex.entries ?? {}).map((story) => story.id)
 );
-thresholdOverrides = new Map([...thresholdOverrides].filter(([, entry]) => entry.surface === args.surface));
+thresholdOverrides = thresholdsForSurface(thresholdOverrides, args.surface);
 const unusedOverrides = [...thresholdOverrides.keys()].filter((id) => !knownStoryIds.has(id));
 if (unusedOverrides.length > 0) {
   fail(`storybook_visual_thresholds.json lists unknown ready-story id(s): ${unusedOverrides.join(", ")}`);
@@ -322,6 +322,10 @@ function parseThresholdOverrides(data) {
   return overrides;
 }
 
+function thresholdsForSurface(overrides, surface) {
+  return new Map([...overrides].filter(([, entry]) => entry.surface === surface));
+}
+
 function currentDateKey() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -543,8 +547,8 @@ async function runSelfTest() {
       a: {surface: "admin", threshold: 0.003, reason: "evidence", expires: "2099-01-01", ...patch},
     }}));
   }
-  assert.deepEqual([...overrides].filter(([, entry]) => entry.surface === "webui"), []);
-  assert.deepEqual([...overrides].filter(([, entry]) => entry.surface === "website").map(([id]) => id), ["story-b"]);
+  assert.deepEqual([...thresholdsForSurface(overrides, "webui")], []);
+  assert.deepEqual([...thresholdsForSurface(overrides, "website").keys()], ["story-b"]);
   for (const bad of [
     null, [], "x",
     {version: 2, stories: {}},
@@ -558,6 +562,9 @@ async function runSelfTest() {
     {version: 1, stories: {a: {threshold: 0.5, expires: "soon"}}},
     {version: 1, stories: {a: {threshold: 0.5, extra: true}}},
   ]) {
+    if (bad?.stories?.a && typeof bad.stories.a === "object") {
+      bad.stories.a = {surface: "admin", expires: "2099-01-01", ...bad.stories.a};
+    }
     assert.throws(() => parseThresholdOverrides(bad), Error);
   }
   assert.deepEqual(

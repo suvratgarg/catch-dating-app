@@ -804,7 +804,7 @@ diff under `artifacts/visual-actuals/<surface>/<platform>/` and
 A story that provably drifts a few tenths of a percent between identical
 builds can take a scoped waiver instead of forcing a global threshold raise.
 `tool/web/storybook_visual_thresholds.json` maps a built story id to its own
-changed-pixel ratio with a required evidence `reason` and an optional
+changed-pixel ratio with a required `surface`, evidence `reason`, and valid
 `expires` date; the check fails on unknown story ids, malformed entries, and
 expired overrides so waivers cannot rot silently.
 

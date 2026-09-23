@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.17
+version: 2.7.18
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -446,7 +446,7 @@ The current workflows are:
 | `.github/workflows/mobile-internal-release.yml` | Signed package matrix and automatic iOS handoff. It consumes a successful `main` CI authority, builds only exact role/platform targets, publishes 90-day IPA/AAB packages plus separate post-comparison platform authorities, and dispatches one exact promoter for every authorized iOS target without mutating either store itself. |
 | `.github/workflows/mobile-internal-promote.yml` | Exact-artifact promoter. Automatic iOS dispatches and manual recovery dispatches both verify the current producer and authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. After an iOS upload claim is durable, it grants the VALID build to existing internal groups that already contain testers. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
-| `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
+| `.github/workflows/website-production-observability.yml` | Best-effort quarter-hour and manual production probes, offset from busy cron boundaries with a sparse checkout of the standalone probe. GitHub scheduling is not a latency SLA. |
 | `.github/workflows/branch-hygiene.yml` | Daily semantic branch audit, supervised integrated-ref candidates, and an issue plus failed run for stale code outside `main` without an open PR. |
 
 The Host Website push filter follows its production byte closure explicitly:
@@ -1242,11 +1242,18 @@ when no existing internal group contains testers. Play additionally requires the
 two-app live readiness gate to pass; public store promotion remains outside this
 workflow.
 
+Every producer-state check, including the last check immediately before store
+credentials are loaded, accepts the selected platform's successful v2 authority
+independently of a sibling platform failure. Each check re-reads the exact
+attempt's platform authority job; cancellation, missing/duplicate platform proof,
+stale attempts, and changed artifact bytes still fail closed.
+
 The mobile package receipt intentionally reports two repository-controlled
 measurements: compressed bytes in the signed IPA/AAB and the sum of raw archive
 member lengths. `tool/platform/mobile_package_policy.json` records the signed
 integration baseline for each role/platform and permits at most 20% budget
-headroom. App Store Connect and Play report processed download/install
+headroom. Reports also expose remaining bytes and the remaining fraction of
+each budget, including negative values on overruns. App Store Connect and Play report processed download/install
 estimates; those values are not compared to either archive metric. Similar
 store-displayed sizes do not imply identical applications: the release gate
 also requires different compiled binaries and entry sets, and rejects Health
@@ -2289,6 +2296,27 @@ digits prevent adjacent-run collisions. The verifier uses checksum-pinned
 bundletool `1.18.3`, verifies JAR integrity and the checked upload-certificate
 SHA-256, and reads compiled package, target/role, Firebase app/project, Maps,
 debuggable, version-name, and version-code identity before any Play edit.
+
+## Optional Flight Provider Configuration
+
+Airport coordination and manual arrival updates deploy without a flight-provider
+account. `FLIGHT_PROVIDER_CONFIG_VERSION` defaults to blank: the scheduled sweep
+returns before reading Firestore or calling a provider, manual provider refresh
+returns a failed-precondition response, and the flight webhook rejects requests.
+No placeholder API key or webhook secret is provisioned.
+
+To enable flight enrichment, provision a Secret Manager JSON object with exactly
+`schema: "catch.flight-provider/v1"`, `apiKey`, and `webhookSecret`. Use a random
+webhook secret of at least 32 non-whitespace characters. Grant the deployed
+functions' runtime identity access only to that secret, verify access, and set
+the environment's GitHub variable `FLIGHT_PROVIDER_CONFIG_VERSION` to a numeric
+version in the same Firebase project (never `latest`). The deploy parameter
+preflight rejects cross-project or unpinned references. Set
+`FLIGHT_WEBHOOK_BASE_URL` only when an explicit HTTPS override is required;
+otherwise the function uses its project-owned endpoint. Redeploy the affected
+functions to enable or disable sync, then verify the provider and webhook using
+a synthetic flight. Secret access and parsing failures fail closed without
+logging credential contents.
 
 ## TestFlight Status
 
