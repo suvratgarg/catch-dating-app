@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.18
+version: 0.3.19
 updated: 2026-09-23
 owner: product
 status: draft
@@ -482,7 +482,7 @@ Organizer: the planner company / corporate organizer
 
 Use `organizerType: eventProducer` where appropriate; do not add a global
 `weddingPlanner` Auth role or misuse social activity kinds to decide security.
-Introduce a program-level `kind: wedding | corporate | otherPrivate` and a
+Use the program-level `kind: wedding | corporate | social | other` and a
 versioned capability profile. Segment presets choose copy, templates and default
 modules. Server-validated enabled capabilities decide availability; grants decide
 authority. A planner can run both weddings and social events.
@@ -494,9 +494,9 @@ publicly readable. A wedding spans several dates, venues, guest subsets and
 staff shifts; airport pickup can happen before any function starts. Its master
 invitation status, room check-in and reception attendance are not one status.
 
-Proposed `organizerPrograms` is the private engagement root, not a new public
-listing. Proposed `programFunctions` contains the private schedule, venue and
-function-level invitations. Initially it does **not** create public `events`.
+`organizerPrograms` is the private engagement root, not a new public listing.
+`programFunctions` contains the private schedule and venue; function-level
+invitation membership is a planned separate relation. It does **not** create public `events`.
 If a later function needs existing Event Success or commerce, add a reviewed
 private-event/public-projection boundary and an explicit `eventId` bridge.
 Do not create a dummy public wedding event merely to satisfy current CRM or Form
@@ -531,7 +531,7 @@ Keep Firebase Auth for identity. Use **private program-scoped assignments** for
 staff authority, borrowing the event-grant revision/expiry/revocation model but
 not reinterpreting `eventId` as `programId`.
 
-Proposed `programStaffGrants/{programId_uid}` has organizer/program/UID binding,
+`programStaffGrants/{programId_uid}` has organizer/program/UID binding,
 status, revision, grantor/revocation fields and independently expiring duties.
 Each duty is a discriminated union with a bounded resource scope:
 
@@ -539,8 +539,8 @@ Each duty is a discriminated union with a bounded resource scope:
 programCoordinator(programId)
 airportGreeter(programId, pickupPointIds[])
 transportDispatcher(programId, pickupPointIds[])
-hotelReception(programId, hotelIds[])
-transportReconciler(programId)
+hotelDesk(programId, hotelIds[])
+reconciliationViewer(programId)
 ```
 
 The initial product may assign both greeter and dispatcher duties to the same
@@ -1274,60 +1274,82 @@ undoing physical departure; and a changed rate card rewriting a historical bill.
 
 ### 15. Implementation status and remaining decisions
 
-Landed slices, in order:
+The source implements the airport operations vertical; that does not establish
+production deployment or completion of the broader wedding platform.
 
-1. **A0 transport policy** — `functions/src/transport/` timing precedence and
-   deterministic grouping, covered by adjacent Node tests.
-2. **A1 contract foundation (partial)** — private program Firestore contracts
-   in `contracts/firestore/` (`organizerPrograms`, `programFunctions`,
-   `programGuests`, `programHouseholds`, `programStaffGrants`,
-   `programPickupPoints`, `programHotels`, `programTravelLegs`,
-   `programTravelParties`, `transportVendors`, `transportTrips`,
-   `transportActiveAssignments`, `transportOperationReceipts`), the shared
-   `contracts/shared/program_common.schema.json`, deny-by-default rules with
-   emulator-verified tests, contract registry entries and generated
-   Functions/Dart types. Staff may read only their own derived grant document.
-   Vehicle classes are a bounded embedded catalog on the program so grouping
-   needs no extra collection. Rate cards, room blocks, stays, import staging,
-   flight instances and reconciliation tables remain deferred.
-
-3. **A1–A3 staff surface (partial)** — program management callables, expiring
-   duty-scoped staff grants, the station-scoped redacted arrivals roster,
-   deterministic transport-plan projection, claim/ready/disruption writes,
-   transactional dispatch with plate/vendor capture and assignment
-   exclusivity, the hotel inbound projection, and the reconciliation trip
-   ledger. Flutter: the duty-scoped `ProgramWorkScreen` shell, arrivals
-   roster, dispatch desk, hotel inbound desk, trip ledger, and a
-   SharedPreferences-backed operations outbox with replay and needs-review
-   states. Not yet: CSV manifest import preview/commit, the staff
-   invite-before-first-login binding flow, the dispatcher cross-readiness
-   merge affordance, or offline read snapshots.
-4. **A4 flight adapter (partial)** — AeroDataBox polling integration in
-   `functions/src/transport/` (`aeroDataBox.ts`, `flightRefresh.ts`,
-   `programFlightRefresh.ts`): proximity-tiered refresh (cold 12h / warm 1h /
-   hot 10min) driven by a `flightNextRefreshAt` cursor, a 15-minute scheduled
-   sweep, a staff-callable manual refresh, and write-back rules where provider
-   data never un-lands an observed arrival and cancellation/diversion only
-   propagate pre-landing. `arrivalTerminal` flows to the roster row. Webhook
-   subscriptions (`/subscriptions/webhook`, `FlightByNumber`), the Routes API
-   transit estimate, and per-program provider cost caps remain deferred.
+| Area | Implemented source | Remaining integration or activation work |
+|---|---|---|
+| Transport policy | Pure arrival timing, bounded grouping, indivisible travel parties, wait deadlines, capacity and duplicate-passenger guards in `functions/src/transport/` | Pilot load and operational usability validation |
+| Private program foundation | Server-owned program/function/guest/household/resource contracts and management callables; explicit person and journey identities; transactional household membership | Per-function invitation/RSVP/attendance contracts and the full manager workspace |
+| Staff authority | Independently scoped and expiring duties, phone-bound invitations, paged staff inventory, canonical work access and restricted `ProgramWorkScreen` | Assignment discovery and the unified event/program work shell |
+| Operational workflow | Manifest preview/commit with resumable receipts and party-atomic chunks; arrivals/dispatch/hold UI; atomic vehicle occupancy; immutable dispatch manifests; independently paged hotel and trip views | Full accommodation, rate/billing reconciliation and return-airport workflow |
+| Flight integration | AeroDataBox polling and webhook handlers, itinerary/freshness fences and recoverable subscription reconciliation | Environment secrets, actual provider-payload validation, cost controls, cross-timezone stations, manual-refresh UI and Routes integration |
+| Offline operation | Shared SQLite/IndexedDB command journal for program work and event attendance; immutable IDs/times/revisions, dependencies and replay leases; conflict review and non-destructive recovery export; account-scoped expiring read snapshots | Physical-device durability/eviction validation, shift procedure and approved retention/erasure policy |
 
 `exportedFunctions` entries and callable payload/response contracts ship with
-their owning Functions commit, not before.
+their owning Functions source. Generated contracts are derived from those
+schemas; they are not a separate place to reconcile branch semantics.
 
-The complete policy boundary is: landing-time precedence, cancellation/
-diversion handling, reviewed manual/ready-time precedence, deterministic
-program/pickup/destination/readiness partitioning, anchored time bands, ready-wait
-ceilings, party integrity, seat/luggage/capability fitting and explicit no-fit
-results. The planner produces suggestions, not reservations or dispatches.
+The planner produces suggestions, not reservations or dispatches. Flight,
+travel readiness, hotel arrival and per-function attendance remain different
+facts. A6–A8 remain future product slices. Production activation still requires
+retention/erasure decisions, environment and index verification, provider
+verification where enabled, and exact-head CI/release checks. No real migration,
+notification sending or deployment is implied by this implementation status.
 
-Remaining structural slices A1–A8 not listed above remain the delivery backlog.
-Provider choice/credentials, retention periods, whether coordinators may send
-program-bound invitations in the first pilot, and the native/web
-offline-storage choice need resolution before the relevant integrations are
-enabled. The private program is the recommended architecture; do not silently
-convert existing public Events or organizer contacts during implementation.
+#### Integration contracts for the wedding epic
 
+The adjacent wedding plan, schedule, Moments and entitlement work can reuse
+these boundaries without adding another identity, outbox or permission model:
+
+- **Function membership is authoritative.** The schedule module's
+  `guestItinerary.ts` and `functionHeadcount.ts` currently accept a program-wide
+  invitation/RSVP plus optional RSVP overrides. That shape cannot express a
+  guest invited to the reception but excluded from another function. Before
+  wiring them into private itineraries, counts or outreach, introduce the owned
+  `programFunctionGuests` relation with explicit invitation, RSVP and attendance
+  facts. A missing relation must not grant access through program-wide RSVP.
+  Retire the current editable guest-level RSVP as an independent write source
+  when migrating; choose a documented derived rollup or remove it.
+- **Moments consume persisted facts.** `getProgramTransportPlan` is a
+  recomputed suggestion, whereas Moments' `transportPlanDeparture` anchor
+  expects a stable ID, departure time and revision. Supply an explicitly accepted
+  and versioned departure plan for pre-departure reminders, or use an immutable
+  trip fact for post-departure actions. Never invent a durable anchor from a
+  suggestion's list position or cache timestamp.
+- **Households delegate communication, not identity.** Program household
+  contact fields and membership are already owned here. A messaging adapter must
+  resolve the authorized household delegate instead of taking the first guest
+  phone in a deduplicated group. Validate program/function scope, channel consent
+  and suppression at send time. Import, RSVP and delivery preference do not
+  themselves grant messaging consent. Inbox remains the delivery owner.
+- **Limits require transactional claims.** The entitlement branch's grant
+  selection and soft-limit helpers are pure decisions, not budget consumption.
+  Program creation, paid capability enablement and billable sends must bind their
+  claim and operation receipt in the same transaction. Preserve reads, recovery
+  and reconciliation when new spending or actions are disabled. Household daily
+  send counters likewise need an atomic claim, not a count-then-send check.
+- **Unify staff presentation through a typed adapter.** Keep event and program
+  grant persistence and server authority explicit while projecting both into
+  the planned `HostWorkAssignment`/work shell. Retain each duty's resource tuple,
+  expiry and revision; flattening them into one union would reintroduce scope
+  widening. Function check-in should reuse the shared command journal and add
+  its own typed payload/replay adapter, rather than a third queue.
+- **Public Events remain separate.** A private function does not create an
+  Event or Consumer booking. A future `eventId` bridge needs explicit ownership,
+  authorization and public projection rules. Travel arrival never supplies
+  function check-in, and a CRM link never supplies guest membership or consent.
+
+Integrate the reviewed airport source and contract foundation first, then the
+per-function contract correction and adapters required by the schedule and
+staff-shell consumers. Add entitlement consumption and Moments delivery only
+with their transactional and consent boundaries. Reconcile authored schemas and
+registries before regenerating shared outputs once; do not merge generated
+files as competing sources. Re-derive checks against the integrated main head,
+including existing single-event attendance, Forms conversion and Inbox behavior.
+The old wedding-plan reference to a SharedPreferences attendance queue is
+superseded by the shared durable journal documented in
+[App Architecture](../app_architecture.md#durable-local-commands).
 
 ### Manifest persistence and identity boundaries
 
