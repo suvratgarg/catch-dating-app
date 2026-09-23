@@ -137,6 +137,42 @@ test("weak group balance does not undo stronger similar-pair choices", () => {
   assert.deepEqual(pairs.sort(), ["ab", "cd"]);
 });
 
+test("bounded typed matching cohort replays deterministically", () => {
+  const participants = Array.from({length: 80}, (_, index) =>
+    profileFreeParticipant(`runner-${index.toString().padStart(3, "0")}`));
+  const rule: AssignmentFeatureRule = {featureId: "pace", formId: "form",
+    versionId: "version-1", questionId: "pace", transformVersion: 1,
+    kind: "ordinal", mode: "balanceAcrossGroups", weight: 12,
+    optionIds: ["easy", "steady", "fast"],
+    scoreByOptionId: {easy: 0, steady: 1, fast: 2}};
+  const snapshots: EventAssignmentFeatureSnapshot[] = participants
+    .filter((_, index) => index % 5 !== 0)
+    .map((participant, index) => ({eventId: "event", organizerId: "org",
+      uid: participant.uid, featureId: "pace", formId: "form",
+      versionId: "version-1", questionId: "pace", transformVersion: 1,
+      consentReceiptId: `receipt-${participant.uid}`,
+      value: {kind: "ordinal", optionId:
+        ["easy", "steady", "fast"][index % 3]}}));
+  const params = {participants, blockedPairs: new Set<string>(),
+    topology: {unitKind: "pods" as const, unitSize: 8, groupCount: 10,
+      maxGroupSize: 8, rotationIntervalMinutes: null,
+      rotationsEnabled: false},
+    assignmentAlgorithm: "socialPods" as const,
+    compatibilityPolicy: "none" as const,
+    matchingObjective: "coverage" as const,
+    softFeatures: {eventId: "event", organizerId: "org",
+      rules: [rule], snapshots}};
+  const start = Date.now();
+  const first = runAssignmentEngine(params);
+  const elapsed = Date.now() - start;
+  const second = runAssignmentEngine(params);
+  const memberIds = (result: typeof first) => result.groups.map((group) =>
+    group.participants.map((person) => person.uid));
+  assert.equal(first.groups.length, 10);
+  assert.deepEqual(memberIds(first), memberIds(second));
+  assert.ok(elapsed < 15_000, `80-person solve took ${elapsed} ms`);
+});
+
 test("minimizes maximum exclusion time ahead of assignment score", () => {
   const plan = runAssignmentEngine({
     participants: [
