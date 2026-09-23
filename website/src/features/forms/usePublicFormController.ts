@@ -38,6 +38,14 @@ export type PublicFormStage =
 type MessagingChoices = NonNullable<PublicOrganizerFormDraft["messagingChoices"]>;
 const uncheckedMessaging: MessagingChoices = {termsVersion: "form-whatsapp-v1",
   organizerWhatsapp: false, catchWhatsapp: false};
+function uncheckedMessagingFor(form: PublicOrganizerForm): MessagingChoices {
+  if (form.messagingOffer?.termsVersion === "form-whatsapp-v2") {
+    return {termsVersion: "form-whatsapp-v2", organizerWhatsapp: false,
+      catchWhatsapp: false, organizerOperationsWhatsapp: false,
+      organizerMarketingWhatsapp: false, catchMarketingWhatsapp: false};
+  }
+  return uncheckedMessaging;
+}
 
 export interface PublicFormUploadState {
   status: "uploading" | "ready" | "error";
@@ -149,7 +157,8 @@ export function usePublicFormController(publicFormId: string) {
         setDraft(started);
         setAnswers({...started.answers});
         setConsentAccepted(started.consentAccepted);
-        messagingRef.current = started.messagingChoices ?? uncheckedMessaging;
+        messagingRef.current = started.messagingChoices ??
+          uncheckedMessagingFor(nextForm);
         setMessagingChoices(messagingRef.current);
         setStatus({message: "", tone: ""});
         setStage("form");
@@ -315,7 +324,9 @@ export function usePublicFormController(publicFormId: string) {
     setDirtyRevision((current) => current + 1);
   }
 
-  function updateMessagingChoice(scope: "organizerWhatsapp" | "catchWhatsapp", value: boolean) {
+  function updateMessagingChoice(scope: "organizerWhatsapp" | "catchWhatsapp" |
+    "organizerOperationsWhatsapp" | "organizerMarketingWhatsapp" |
+    "catchMarketingWhatsapp", value: boolean) {
     if (!formRef.current?.messagingOffer?.[scope]) return;
     const choices = {...messagingRef.current, [scope]: value};
     messagingRef.current = choices;

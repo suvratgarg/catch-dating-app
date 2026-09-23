@@ -55,10 +55,50 @@ async function summarize(db: FirebaseFirestore.Firestore,
   Promise<Page["catchPreference"]> {
   const channel = value?.whatsapp;
   const receiptId = channel?.currentReceiptId ?? null;
-  if (channel?.status === "optedOut") return {status: "optedOut", receiptId};
+  const purposes: NonNullable<Page["catchPreference"]["purposes"]> = {};
+  for (const purpose of ["eventOperations", "marketing"] as const) {
+    const scoped = value?.whatsappPurposes?.[purpose];
+    if (!scoped) continue;
+    const scopedReceiptId = scoped.currentReceiptId;
+    if (scoped.status === "optedOut" ||
+        (channel?.status === "optedOut" && channel.updatedAt &&
+          (!scoped.updatedAt ||
+            channel.updatedAt.toMillis() >= scoped.updatedAt.toMillis()))) {
+      purposes[purpose] = {status: "optedOut", receiptId: scopedReceiptId};
+      continue;
+    }
+    const scopedReceipt = scopedReceiptId ?
+      (await tx.get(db.collection(scope === "catch" ?
+        "catchCommunicationPermissionReceipts" :
+        "organizerCommunicationPermissionReceipts")
+        .doc(scopedReceiptId))).data() as CatchReceipt | OrganizerReceipt |
+          undefined : undefined;
+    purposes[purpose] = {status:
+      scoped.status === "optedIn" && scoped.evidenceStatus === "complete" &&
+      scopedReceipt?.uid === value?.uid &&
+      scopedReceipt?.purpose === purpose &&
+      scopedReceipt?.endpointE164 === scoped.endpointE164 &&
+      scopedReceipt?.sourceResponseId === scoped.sourceResponseId &&
+      scopedReceipt?.decision === "optedIn" &&
+      scopedReceipt?.evidenceStatus === "complete" &&
+      typeof scopedReceipt?.consentCopyHash === "string" &&
+      /^[a-f0-9]{64}$/u.test(scopedReceipt.consentCopyHash) &&
+      scopedReceipt?.revokedAt === null &&
+      (scope === "catch" || (scopedReceipt as OrganizerReceipt)
+        .organizerId === (value as OrganizerPreference).organizerId) ?
+        "optedIn" : "unknown", receiptId: scopedReceiptId};
+  }
+  const firstActive = purposes.eventOperations?.status === "optedIn" ?
+    purposes.eventOperations : purposes.marketing?.status === "optedIn" ?
+      purposes.marketing : null;
+  if (firstActive) return {status: "optedIn",
+    receiptId: firstActive.receiptId, purposes};
+  if (channel?.status === "optedOut") {
+    return {status: "optedOut", receiptId, purposes};
+  }
   if (!value || channel?.status !== "optedIn" ||
       channel.evidenceStatus !== "complete" || !receiptId) {
-    return {status: "unknown", receiptId};
+    return {status: "unknown", receiptId, purposes};
   }
   const receipt = (await tx.get(db.collection(scope === "catch" ?
     "catchCommunicationPermissionReceipts" :
@@ -73,7 +113,7 @@ async function summarize(db: FirebaseFirestore.Firestore,
     receipt.grantedAt != null && receipt.revokedAt === null &&
     (scope === "catch" || (receipt as OrganizerReceipt).organizerId ===
       (value as OrganizerPreference).organizerId);
-  return {status: complete ? "optedIn" : "unknown", receiptId};
+  return {status: complete ? "optedIn" : "unknown", receiptId, purposes};
 }
 
 async function assertActiveAccount(db: FirebaseFirestore.Firestore,
@@ -166,8 +206,12 @@ export async function withdrawParticipantMessagingPermissionHandler(
       return {preference: await summarize(db, tx, previous, scope), replayed:
         true};
     }
-    if ((previous?.whatsapp.currentReceiptId ?? null) !==
-      data.expectedReceiptId) {
+    const currentIds = [previous?.whatsapp.currentReceiptId ?? null,
+      previous?.whatsappPurposes?.eventOperations?.currentReceiptId ?? null,
+      previous?.whatsappPurposes?.marketing?.currentReceiptId ?? null];
+    if (!currentIds.includes(data.expectedReceiptId) ||
+        (data.expectedReceiptId === null &&
+          currentIds.some((id) => id !== null))) {
       throw new HttpsError("aborted",
         "Your messaging settings changed. Review them again.");
     }
@@ -178,7 +222,11 @@ export async function withdrawParticipantMessagingPermissionHandler(
     const now = deps.now();
     // Server ordering, including same-millisecond decisions, fences old drafts.
     const decidedAt = Timestamp.fromMillis(Math.max(now.toMillis(),
-      (previous?.whatsapp.updatedAt?.toMillis() ?? -1) + 1));
+      (previous?.whatsapp.updatedAt?.toMillis() ?? -1) + 1,
+      (previous?.whatsappPurposes?.eventOperations?.updatedAt?.toMillis() ??
+        -1) + 1,
+      (previous?.whatsappPurposes?.marketing?.updatedAt?.toMillis() ??
+        -1) + 1));
     const channel: CatchPreference["whatsapp"] = {
       status: "optedOut", evidenceStatus: "complete", currentReceiptId:
         receiptId,

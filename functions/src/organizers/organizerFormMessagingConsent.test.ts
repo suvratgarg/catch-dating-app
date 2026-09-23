@@ -9,6 +9,7 @@ import {submitOrganizerFormResponseHandler} from "./organizerFormResponses";
 import {promoteFormCommunicationIntentHandler} from
   "./organizerFormConsentPromotion";
 import {organizerCommunicationPreferenceId,
+  effectiveOrganizerWhatsappPurposeStatus,
   unknownOrganizerCommunicationChannel} from
   "../shared/organizerCommunicationPreferences";
 
@@ -213,9 +214,88 @@ test("v2 keeps unverified choices pending until same-source verified claim",
       token: {phone_number: "+919000000001"}}} as never;
     const deps = {db: () => h.db, now: () => now,
       rateLimit: async () => undefined} as never;
+    await assert.rejects(
+      promoteFormCommunicationIntentHandler({
+        ...request, auth: {uid: "person",
+          token: {phone_number: "+919000000099"}},
+      } as never, deps), /unavailable/u);
+    await assert.rejects(
+      promoteFormCommunicationIntentHandler({
+        ...request, auth: {uid: "another",
+          token: {phone_number: "+919000000001"}},
+      } as never, deps), /unavailable/u);
     const promoted = await promoteFormCommunicationIntentHandler(request, deps);
     assert.deepEqual(promoted.promotedPurposes,
       ["organizer:eventOperations", "catch:marketing"]);
     assert.equal((await promoteFormCommunicationIntentHandler(request, deps))
       .replayed, true);
   });
+
+test("purpose gate keeps operations out of marketing and honors STOP ordering",
+  () => {
+    const scoped = {status: "optedIn" as const,
+      evidenceStatus: "complete" as const, currentReceiptId: "receipt-op",
+      termsVersion: "reviewed-operations-v1",
+      source: "hostFormResponse" as const, sourceEventId: null,
+      sourceResponseId: "source-response",
+      endpointE164: "+919000000001", updatedAt: Timestamp.fromMillis(900)};
+    const stopped = {status: "optedOut" as const,
+      evidenceStatus: "complete" as const, currentReceiptId: "stop",
+      termsVersion: null, source: "inboundStop" as const,
+      sourceEventId: null, updatedAt: Timestamp.fromMillis(800)};
+    const preference = {organizerId: "org", uid: "person", whatsapp: stopped,
+      whatsappPurposes: {eventOperations: scoped},
+      sms: unknownOrganizerCommunicationChannel(),
+      createdAt: chosenAt, updatedAt: now};
+    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
+      "marketing", "+919000000001"), "unknown");
+    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
+      "eventOperations", "+919000000001", "other-response"), "unknown");
+    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
+      "eventOperations", "+919000000001", "source-response"), "optedIn");
+    preference.whatsapp.updatedAt = Timestamp.fromMillis(1000);
+    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
+      "eventOperations", "+919000000001", "source-response"), "optedOut");
+  });
+
+test("pending v2 choice cannot revive a later sender STOP", async () => {
+  const h = createFormPaymentFixture();
+  h.version.definition.messagingConsent = {
+    organizerWhatsapp: false, catchWhatsapp: false,
+    organizerOperationsWhatsapp: true,
+  };
+  const decision = normalizeFormMessagingDecision({
+    choices: {termsVersion: "form-whatsapp-v2",
+      organizerWhatsapp: false, catchWhatsapp: false,
+      organizerOperationsWhatsapp: true,
+      organizerMarketingWhatsapp: false, catchMarketingWhatsapp: false},
+    previous: undefined, definition: h.version.definition,
+    phoneVerified: false, now: chosenAt,
+  });
+  h.store.records.set("organizerFormResponseDrafts/draft",
+    {...h.draft, messagingDecision: decision});
+  const {paymentId} = await h.reserve();
+  h.capture(paymentId);
+  assert.equal(await h.finalize(paymentId), "submitted");
+  const responseId = [...h.store.records.keys()].find((path) =>
+    path.startsWith("organizerFormResponses/"))!.split("/")[1];
+  const stopped = {...unknownOrganizerCommunicationChannel(),
+    status: "optedOut", evidenceStatus: "complete",
+    currentReceiptId: "stop", source: "inboundStop",
+    updatedAt: Timestamp.fromMillis(800)};
+  const preferenceId = "organizerCommunicationPreferences/" +
+    organizerCommunicationPreferenceId("org", "person");
+  h.store.records.set(preferenceId, {organizerId: "org", uid: "person",
+    whatsapp: stopped, sms: unknownOrganizerCommunicationChannel(),
+    createdAt: chosenAt, updatedAt: stopped.updatedAt});
+  const result = await promoteFormCommunicationIntentHandler({
+    data: {responseId, withdrawalToken: null, requestId: "promote-stop"},
+    auth: {uid: "person", token: {phone_number: "+919000000001"}},
+  } as never, {db: () => h.db, now: () => now,
+    rateLimit: async () => undefined} as never);
+  assert.deepEqual(result.promotedPurposes, []);
+  assert.equal([...h.store.records.keys()].filter((path) =>
+    path.startsWith("organizerCommunicationPermissionReceipts/")).length, 0);
+  assert.equal((h.store.records.get(preferenceId)!.whatsapp as
+    {status: string}).status, "optedOut");
+});

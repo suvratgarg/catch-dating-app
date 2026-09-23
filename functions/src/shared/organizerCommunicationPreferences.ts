@@ -190,17 +190,31 @@ export function effectiveOrganizerCommunicationStatus(
 export function effectiveOrganizerWhatsappPurposeStatus(
   preference: OrganizerCommunicationPreferenceDocument | null | undefined,
   purpose: WhatsappPurpose,
-  endpointE164?: string | null
+  endpointE164?: string | null,
+  sourceResponseId?: string | null
 ): "unknown" | "optedIn" | "optedOut" {
-  if (preference?.whatsapp.status === "optedOut") return "optedOut";
   const scoped = preference?.whatsappPurposes?.[purpose];
+  const broad = preference?.whatsapp;
+  if (broad?.status === "optedOut" &&
+      (!scoped?.updatedAt || !broad.updatedAt ||
+        scoped.updatedAt.toMillis() <= broad.updatedAt.toMillis())) {
+    return "optedOut";
+  }
   if (scoped?.status === "optedOut") return "optedOut";
   if (scoped?.status === "optedIn") {
     if (!endpointE164 || scoped.endpointE164 !== endpointE164) return "unknown";
+    if (purpose === "eventOperations" &&
+        (!sourceResponseId || scoped.sourceResponseId !== sourceResponseId)) {
+      return "unknown";
+    }
+    // Capturing consent is separate from provider approval for this use case.
+    // Leave new form-originated WhatsApp sending disabled until reviewed.
+    if (scoped.source === "hostFormResponse" &&
+        scoped.termsVersion === "form-whatsapp-v2") return "unknown";
     return scoped.evidenceStatus === "complete" && scoped.currentReceiptId ?
       "optedIn" : "unknown";
   }
-  const legacy = preference?.whatsapp;
+  const legacy = broad;
   if (legacy?.status !== "optedIn" ||
       legacy.evidenceStatus !== "complete" || !legacy.currentReceiptId) {
     return "unknown";

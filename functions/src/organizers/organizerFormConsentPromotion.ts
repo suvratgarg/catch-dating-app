@@ -6,6 +6,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {formMessagingTerms} from "./organizerFormMessagingConsent";
 import {organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel} from
   "../shared/organizerCommunicationPreferences";
@@ -89,12 +90,27 @@ export async function promoteFormCommunicationIntentHandler(
     if ((organizer && (organizer.organizerId !== response.organizerId ||
           organizer.uid !== uid)) ||
         (catchPreference && catchPreference.uid !== uid)) throw unavailable();
+    const now = deps.now();
+    if (intent.createdAt.toMillis() > now.toMillis() ||
+        intent.createdAt.toMillis() > response.submittedAt.toMillis()) {
+      throw unavailable();
+    }
+    const reviewedCopy = {
+      "organizer:eventOperations": formMessagingTerms.organizerOperationsWhatsapp,
+      "organizer:marketing": formMessagingTerms.organizerMarketingWhatsapp,
+      "catch:marketing": formMessagingTerms.catchMarketingWhatsapp,
+    } as const;
     const seen = new Set<string>();
     const evidence = intent.decisions.map((decision) => {
       const key = purposeKey(decision.principal, decision.purpose);
       if (seen.has(key) ||
           (decision.principal === "catch" &&
             decision.purpose !== "marketing")) throw unavailable();
+      const copy = reviewedCopy[key as keyof typeof reviewedCopy];
+      if (!copy || decision.decidedAt.toMillis() > intent.createdAt.toMillis() ||
+          decision.copyHash !== sha256([
+            intent.termsVersion, decision.principal, decision.purpose, copy,
+          ].join("|"))) throw unavailable();
       seen.add(key);
       const receiptId = "fcpr2_" + sha256([
         data.responseId, uid, key,
@@ -107,7 +123,6 @@ export async function promoteFormCommunicationIntentHandler(
     });
     const receiptSnaps = await Promise.all(evidence.map((entry) =>
       tx.get(entry.receiptRef)));
-    const now = deps.now();
     const genericUnknown = unknownOrganizerCommunicationChannel();
     const orgNext: OrganizerPreference = organizer ?? {
       organizerId: response.organizerId, uid, whatsapp: genericUnknown,
@@ -124,7 +139,15 @@ export async function promoteFormCommunicationIntentHandler(
         const old = receiptSnaps[i].data() as OrganizerReceipt | CatchReceipt;
         if (old.uid !== uid || old.sourceResponseId !== data.responseId ||
             old.decision !== "optedIn" || old.purpose !== decision.purpose ||
-            old.endpointE164 !== phone) throw unavailable();
+            old.endpointE164 !== phone || old.sourceFormId !== response.formId ||
+            old.sourceVersionId !== response.versionId ||
+            old.consentCopyHash !== decision.copyHash ||
+            old.termsVersion !== intent.termsVersion ||
+            old.actorUid !== uid ||
+            (decision.principal === "organizer" ?
+              (old as OrganizerReceipt).organizerId !== response.organizerId :
+              (old as CatchReceipt).sourceOrganizerId !==
+                response.organizerId)) throw unavailable();
         continue;
       }
       const preference = decision.principal === "organizer" ? orgNext :
@@ -143,13 +166,15 @@ export async function promoteFormCommunicationIntentHandler(
         evidenceStatus: "complete" as const, currentReceiptId: receiptId,
         termsVersion: intent.termsVersion,
         source: "hostFormResponse" as const, sourceEventId: null,
-        endpointE164: phone, updatedAt: now};
+        sourceResponseId: data.responseId, endpointE164: phone,
+        updatedAt: decision.decidedAt};
       preference.whatsappPurposes = {...preference.whatsappPurposes,
         [decision.purpose]: channel};
       preference.updatedAt = now;
       const shared = {uid, channel: "whatsapp" as const,
         purpose: decision.purpose, endpointE164: phone,
-        sourceVersionId: response.versionId, decision: "optedIn" as const,
+        sourceVersionId: response.versionId,
+        sourceDecidedAt: decision.decidedAt, decision: "optedIn" as const,
         evidenceStatus: "complete" as const,
         termsVersion: intent.termsVersion, consentCopyHash: decision.copyHash,
         source: "hostFormResponse" as const, sourceEventId: null,

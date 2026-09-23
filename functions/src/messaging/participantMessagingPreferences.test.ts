@@ -117,6 +117,47 @@ test("Catch and each organizer withdraw independently, preserving SMS",
       result.preference.receiptId);
   });
 
+test("purpose grants are visible and sender withdrawal revokes every purpose",
+  async () => {
+    const h = fixture();
+    const orgPath = "organizerCommunicationPreferences/" +
+      organizerCommunicationPreferenceId("org", "person");
+    const makeChannel = (purpose: "eventOperations" | "marketing") => ({
+      status: "optedIn", evidenceStatus: "complete",
+      currentReceiptId: `purpose-${purpose}`,
+      termsVersion: "form-whatsapp-v2", source: "hostFormResponse",
+      sourceEventId: null, sourceResponseId: "response",
+      endpointE164: "+919000000001", updatedAt: Timestamp.fromMillis(500),
+    });
+    h.store.records.set(orgPath, {organizerId: "org", uid: "person",
+      whatsapp: unknownOrganizerCommunicationChannel(),
+      whatsappPurposes: {eventOperations: makeChannel("eventOperations"),
+        marketing: makeChannel("marketing")},
+      sms: unknownOrganizerCommunicationChannel(),
+      createdAt: now, updatedAt: now});
+    for (const purpose of ["eventOperations", "marketing"]) {
+      h.store.records.set(
+        `organizerCommunicationPermissionReceipts/purpose-${purpose}`,
+        {organizerId: "org", uid: "person", channel: "whatsapp", purpose,
+          sourceResponseId: "response", endpointE164: "+919000000001",
+          decision: "optedIn", evidenceStatus: "complete",
+          consentCopyHash: "a".repeat(64), revokedAt: null});
+    }
+    const listed = await list(request({cursor: null, limit: 10}), h.deps);
+    assert.equal(listed.organizers[0].preference.purposes?.eventOperations
+      ?.status, "optedIn");
+    assert.equal(listed.organizers[0].preference.purposes?.marketing
+      ?.status, "optedIn");
+    const result = await withdraw(request(input("organizer",
+      "purpose-eventOperations")), h.deps);
+    assert.equal(result.preference.status, "optedOut");
+    const after = await list(request({cursor: null, limit: 10}), h.deps);
+    assert.equal(after.organizers[0].preference.purposes?.eventOperations
+      ?.status, "optedOut");
+    assert.equal(after.organizers[0].preference.purposes?.marketing
+      ?.status, "optedOut");
+  });
+
 test("retry is immutable, payload bound, and cannot overwrite a newer grant",
   async () => {
     const h = fixture(); grant(h, "catch");
