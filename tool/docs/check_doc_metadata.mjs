@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import {createHash} from "node:crypto";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -405,6 +406,85 @@ export function buildDocumentInventory({paths, readSource}) {
   };
 }
 
+/** Review signals, never permission to delete an unlinked or old document. */
+export function buildDocumentRetirementReport({paths, readSource}) {
+  paths = new Set(paths);
+  const cache = new Map();
+  const read = (file) => {
+    if (!cache.has(file)) cache.set(file, readSource(file));
+    return cache.get(file);
+  };
+  const {documents} = buildDocumentInventory({paths, readSource: read});
+  const findings = [];
+  const protectedDocuments = [];
+  const duplicateBodies = new Map();
+  const hash = (text) => createHash("sha256").update(text).digest("hex");
+  for (const document of documents) {
+    const source = read(document.path);
+    const status = parseDocumentLifecycleStatus(source)?.toLowerCase();
+    const historical = /(?:^|\/)(?:historical|archive|archives|frozen)(?:\/|$)/iu.test(document.path) ||
+      ["historical", "archived", "frozen"].includes(status) ||
+      /historical implementation record|retained only as historical/iu.test(source.slice(0, 2000)) ||
+      document.path.startsWith("design/source_packs/");
+    // A generated region is also protected: its owner must regenerate it.
+    if (historical || document.generatedMarker != null || /(?:^|\/)generated\//u.test(document.path)) {
+      protectedDocuments.push({path: document.path, reason: historical ? "historical" : "generated-marker"});
+      continue;
+    }
+    const completedMarkers = source.split(/\r?\n/u).filter((line) =>
+      /✅.*\bDONE\b|\bDONE\b.*✅/iu.test(line)).length;
+    if (completedMarkers >= 3) findings.push({kind: "completed-checklist-review",
+      path: document.path, completedMarkers, lines: document.lines,
+      reason: "Repeated completed-work markers; inspect for removable execution history while preserving unresolved decisions."});
+    const pendingItems = (source.match(/^\s*[-*]\s+\[ \]/gmu) ?? []).length;
+    if (["retired", "superseded", "complete", "completed", "deprecated"].includes(status)) {
+      findings.push({kind: "retirement-review", path: document.path, status,
+        lines: document.lines, pendingItems, referencedBy: document.referencedBy,
+        reason: "Explicit lifecycle signal; migrate live guidance, open work and all consumers before deleting."});
+    }
+    if (document.referencedBy.length === 0) {
+      findings.push({kind: "no-inbound-markdown-links", path: document.path,
+        reason: "Navigation signal only; code, CI, agents, external links and human use are not counted."});
+    }
+    for (const reference of document.references) {
+      if (!/[ *<>,]/u.test(reference.path) && !paths.has(reference.path)) findings.push({kind: "missing-document-path",
+        path: document.path, line: reference.line, target: reference.path});
+    }
+    // Only explicit repository-root code spans. Ignore commands, placeholders,
+    // globs, fenced examples and external URLs rather than guessing semantics.
+    let fence = null;
+    for (const [index, line] of source.split(/\r?\n/u).entries()) {
+      const marker = /^\s*(`{3,}|~{3,})/u.exec(line)?.[1];
+      if (marker != null) {
+        if (fence == null) fence = marker;
+        else if (marker[0] === fence[0] && marker.length >= fence.length) fence = null;
+        continue;
+      }
+      if (fence != null) continue;
+      for (const match of line.matchAll(/`((?:lib|packages|apps|tool|test|widgetbook|design|contracts|functions|website|admin)\/[A-Za-z0-9_./-]+\.(?:dart|mjs|js|ts|tsx|json|yaml|yml|sh))(?::\d+(?:-\d+)?)?`/gu)) {
+        const local = path.posix.join(path.posix.dirname(document.path), match[1]);
+        if (!paths.has(match[1]) && !paths.has(local)) findings.push({kind: "missing-source-path",
+          path: document.path, line: index + 1, target: match[1]});
+      }
+    }
+    const frontmatter = parseFrontmatter(source);
+    const body = source.split(/\r?\n/u).slice(frontmatter?.endLine ?? 0).join("\n").trim();
+    if ((body.match(/\S+/gu)?.length ?? 0) >= 50) {
+      const key = hash(body);
+      if (!duplicateBodies.has(key)) duplicateBodies.set(key, []);
+      duplicateBodies.get(key).push(document.path);
+    }
+  }
+  return {
+    coverage: "Repository Markdown. Advisory literal paths and authored lifecycle only; age and missing inbound links never prove obsolescence. Generated and historical documents are protected. Duplicate bodies ignore frontmatter and surrounding whitespace, with a 50-word minimum.",
+    sourceDigest: hash(JSON.stringify({paths: [...paths].sort(), documents: documents.map((document) => [document.path, hash(read(document.path))])})),
+    documents: documents.length,
+    protectedDocuments,
+    findings,
+    exactDuplicateBodies: [...duplicateBodies.values()].filter((files) => files.length > 1),
+  };
+}
+
 export function retiredDocumentReferences({paths, readSource, retiredPaths}) {
   const retired = new Set(retiredPaths);
   paths = new Set(paths);
@@ -449,6 +529,7 @@ function parseArgs(argv) {
     repo: repoRoot,
     selfTest: false,
     inventory: false,
+    retirement: false,
     query: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
@@ -458,6 +539,7 @@ function parseArgs(argv) {
     else if (arg === "--repo") args.repo = path.resolve(requireValue(argv, (index += 1), arg));
     else if (arg === "--json") args.json = true;
     else if (arg === "--inventory") args.inventory = true;
+    else if (arg === "--retirement") args.retirement = true;
     else if (arg === "--query") args.query = requireValue(argv, (index += 1), arg);
     else if (arg === "--self-test") args.selfTest = true;
     else if (arg === "--help" || arg === "-h") args.help = true;
@@ -546,6 +628,7 @@ function printHelp() {
 Options:
   --base <ref>    Reject source-frontmatter identity swaps and version decreases.
   --ref <ref>     Inspect an exact Git revision instead of the working tree.
+  --retirement    Include advisory lifecycle, missing-path and duplicate-body signals.
   --inventory     Include a disposable Markdown owner/heading/reference inventory.
   --query <text>  Limit inventory output to matching paths, owners, or headings.
   --json          Print the comparison report as JSON.
@@ -604,6 +687,7 @@ function main() {
       governedDocuments: currentDocuments.length,
       ...comparison,
       ...(args.inventory ? {inventory: buildDocumentInventory(target)} : {}),
+      ...(args.retirement ? {retirement: buildDocumentRetirementReport(target)} : {}),
     };
     if (args.query != null) {
       const query = args.query.toLowerCase();
@@ -623,6 +707,9 @@ function main() {
       console.log(
         `Document metadata passed: ${currentDocuments.length} source-governed Markdown files.`,
       );
+      if (args.retirement) {
+        console.log(`Retirement review: ${report.retirement.findings.length} advisory signals across ${report.retirement.documents} documents; use --json for evidence.`);
+      }
       if (args.inventory) {
         console.log(`Inventory: ${report.inventory.documents.length} matching Markdown files.`);
         for (const document of report.inventory.documents) {
