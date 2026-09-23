@@ -454,7 +454,7 @@ RSVP and transport-only duties get baked into UI.
 
 ---
 
-## 10. Implementation status (updated 2026-09-23)
+## 10. Implementation status (updated 2026-09-24)
 
 Merged to `main`:
 
@@ -466,13 +466,17 @@ Merged to `main`:
   not on `main` (flight alerts, provider config, dispatch screen edits) —
   owned by that thread.
 
-Unmerged branches (all rebased onto current `main` 2026-09-23):
+Unmerged branches (all rebased onto current `main` 2026-09-24):
 
 | Branch | Contents | State |
 |---|---|---|
 | `codex/moments-engine-core-20260922` | `functions/src/moments`: pure engine (planning, conditions, audience, guard rails) + `momentTemplates` wedding pack. 40 tests | Verified on new main; awaiting callable wiring (W4) |
 | `codex/program-schedule-domain-20260922` | `functions/src/programSchedule`: timeline ordering, overlap/gap detection, tz day grouping, live-function + late-arrival classification, itineraries, headcounts, `.ics` serializer. 26 tests | Verified on new main; consumed by W1/W3/W4 |
-| `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables, admin finance panel | Verified on new main; merge-ready |
+| `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables, admin finance panel, `programLimits` usage/capability evaluator (13 tests) | Verified on new main; merge-ready |
+| `codex/program-rsvp-domain-20260924` | `functions/src/programRsvp` (W3 core): effective invite-set resolution, RSVP rollups (attending>maybe>pending>declined), conversion write plans into `programFunctionGuests`, HMAC household link tokens. 34 tests | New; wired by W3 callables/web page |
+| `codex/host-work-domain-20260924` | `functions/src/hostWork` (W2 core): duty→destination map for the widened duty union + `eventLead`, shell-mode resolution (task/tabs/programWorkspace), assignment projection with expiry, event-role→duty mapping. 18 tests | New; wired by `HostWorkAssignment` DTO + shell |
+| `codex/wedding-preset-domain-20260924` | `functions/src/programs/weddingPreset` (W1): five-function wedding preset (Mehndi/Haldi/Sangeet/Ceremony/Reception) with dress codes + instructions, capability list, deterministic day-offset materialization. 7 tests | New; consumed by create-program flow |
+| `codex/door-journal-domain-20260924` | `functions/src/doorJournal` (W2): durable check-in journal — idempotent journal ids, transition rules, order-insensitive projection to counts | In flight |
 
 W0 contract corrections (verified still needed on post-#408 main):
 `programFunctionGuests` collection, function dress-code/instructions fields,
@@ -502,18 +506,26 @@ No composite index is needed: planned queries are equality-only
 (`programId`, `functionId`, `guestId`) and no program collection carries an
 indexes entry.
 
-Current blockers (claims measured 2026-09-23):
+Current blockers (claims measured 2026-09-24):
 
-- `codex/rsvp-reviewed-integration-20260923` (active, 166 commits ahead of
-  `main`) claims `firestore.rules`, `firestore.indexes.json`,
+- `codex/rsvp-reviewed-integration-20260923` is pushed and open as **PR
+  #424** ("Complete RSVP profile, consent, review, room and matching
+  integration", 180 commits ahead). Its worktree still claims 589 paths:
+  `firestore.rules`, `firestore.indexes.json`,
   `tool/contracts/generate_schema_contracts.mjs`, the generated schema
   registries, `functions/src/index.ts`, `lib/routing/go_router.dart`,
   `design/screens/catch.screens.json`, and the campaign/RSVP organizers
-  files. All contract changes and route/screen registration wait on it.
+  files. All contract changes and route/screen registration wait on its
+  merge or claim release.
+- Former secondary blockers released: `unified-response-backend` and
+  `audience-directory-consistency` no longer hold claims (their work
+  merged as #405/#402); `nontext-field-lifecycle-20260923` holds 14
+  unrelated `packages/catch_ui`/profile paths.
 - Free for use now: `lib/programs`, `functions/src/programs`,
   `functions/src/transport`, `functions/src/moments`,
-  `functions/src/programSchedule`, `widgetbook` program use-cases, and all
-  program-scoped contract JSONs (none are claimed).
+  `functions/src/programSchedule`, `functions/src/programRsvp`,
+  `functions/src/hostWork`, `functions/src/doorJournal`, `widgetbook`
+  program use-cases, and all program-scoped contract JSONs.
 - WhatsApp template bodies are provider-side (Meta) artifacts; the moment
   template keys (`program_function_starting`, `program_get_ready`,
   `program_transport_ready`, `program_rsvp_deadline_reminder`) each need an
