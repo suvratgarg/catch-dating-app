@@ -30,6 +30,22 @@ void main() {
           'sourceFormTitle': 'Friday run sign-up',
           'decisionAtMillis': 1000,
           'identityStrength': 'phoneVerified',
+          'purposes': {
+            'eventOperations': {
+              'status': 'optedIn',
+              'evidenceStatus': 'complete',
+              'receiptId': 'operations-receipt',
+              'decisionAtMillis': 1000,
+              'deliveryAvailable': false,
+            },
+            'marketing': {
+              'status': 'optedOut',
+              'evidenceStatus': 'complete',
+              'receiptId': 'marketing-receipt',
+              'decisionAtMillis': 2000,
+              'deliveryAvailable': false,
+            },
+          },
         },
         'origins': <Object?>[
           {
@@ -133,6 +149,19 @@ void main() {
       });
 
       expect(detail.manualTags.single.label, 'Brings friends');
+      expect(
+        detail.whatsappPermission.purposes['eventOperations']?.status.name,
+        'optedIn',
+      );
+      expect(
+        detail.whatsappPermission.purposes['eventOperations']
+            ?.deliveryAvailable,
+        isFalse,
+      );
+      expect(
+        detail.whatsappPermission.purposes['marketing']?.status.name,
+        'optedOut',
+      );
       expect(detail.manualTagVocabulary, hasLength(2));
       expect(detail.notes.single.wasEdited, isTrue);
       expect(
