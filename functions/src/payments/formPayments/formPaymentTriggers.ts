@@ -69,7 +69,13 @@ export async function organizerFormPaymentWebhookHandler(
 }
 
 export async function reconcileOrganizerFormPaymentsHandler(
-  deps: Awaited<ReturnType<typeof formPaymentRuntime>>, now = Date.now()) {
+  deps: Awaited<ReturnType<typeof formPaymentRuntime>>, now = Date.now(),
+  operations = {
+    receipt: processFormPaymentWebhook,
+    expire: expireFormPaymentReservation,
+    clock: Date.now,
+  }) {
+  const deadline = operations.clock() + 8 * 60_000;
   const {db, processor} = deps;
   const cutoff = Timestamp.fromMillis(now - 120_000);
   const [receipts, payments, completed] = await Promise.all([
@@ -79,7 +85,7 @@ export async function reconcileOrganizerFormPaymentsHandler(
       .orderBy("nextAttemptAt").limit(40).get(),
     db.collection("organizerFormPayments").where("status", "in", [
       "creatingOrder", "orderUnknown", "checkoutReady", "verifying",
-      "captured", "failed", "expired", "refundPending"])
+      "captured", "failed", "expired", "refundPending", "reviewRequired"])
       .where("updatedAt", "<=", cutoff).orderBy("updatedAt").limit(40).get(),
     // Recent completed payments get a slower reconciliation pass in case a
     // refund callback was missed. No application state is changed by refunds.
@@ -90,33 +96,75 @@ export async function reconcileOrganizerFormPaymentsHandler(
   ]);
   let processed = 0;
   let failed = 0;
+  const receiptJobs: Array<() => Promise<void>> = [];
+  const paymentJobs: Array<() => Promise<void>> = [];
   for (const receipt of receipts.docs) {
-    try {
-      await processFormPaymentWebhook(receipt.id, deps);
-      processed++;
-    } catch {
-      failed++;
-    } finally {
-      // Failed receipts move behind other work instead of starving the queue.
-      await receipt.ref.update({nextAttemptAt:
-        Timestamp.fromMillis(now + 5 * 60_000)});
-    }
+    receiptJobs.push(async () => {
+      let succeeded = true;
+      try {
+        await operations.receipt(receipt.id, deps);
+      } catch {
+        succeeded = false;
+      }
+      try {
+        // Rescheduling has its own failure boundary: a failed write must not
+        // prevent other receipts or payments from being recovered.
+        await receipt.ref.update({nextAttemptAt:
+          Timestamp.fromMillis(now + 5 * 60_000)});
+      } catch {
+        succeeded = false;
+      }
+      if (succeeded) processed++;
+      else failed++;
+    });
   }
   for (const payment of [...payments.docs, ...completed.docs]) {
-    try {
-      await processor.reconcile(payment.id);
-      processed++;
-    } catch {
-      failed++;
-    } finally {
-      // Provider outages must not hold capacity forever. A later capture of a
-      // released reservation is refunded by the same reconciliation path.
-      await expireFormPaymentReservation({db, paymentId: payment.id,
-        now: Timestamp.fromMillis(now)});
-      await payment.ref.update({updatedAt: Timestamp.fromMillis(now)});
-    }
+    paymentJobs.push(async () => {
+      let succeeded = true;
+      try {
+        // Manual review is not permission to retry capture or refund. Only
+        // release its expired capacity; keep the financial review state.
+        if (payment.get("status") !== "reviewRequired") {
+          await processor.reconcile(payment.id);
+        }
+      } catch {
+        succeeded = false;
+      }
+      try {
+        // Provider outages must not hold capacity forever. A later capture of
+        // released capacity follows the existing refund/review path.
+        await operations.expire({db, paymentId: payment.id,
+          now: Timestamp.fromMillis(now)});
+      } catch {
+        succeeded = false;
+      }
+      try {
+        // Even malformed records move behind other work when this write works.
+        await payment.ref.update({updatedAt: Timestamp.fromMillis(now)});
+      } catch {
+        succeeded = false;
+      }
+      if (succeeded) processed++;
+      else failed++;
+    });
   }
-  return {processed, failed};
+  // Interleave queues so a receipt backlog does not consume every worker before
+  // expired capacity or captured submissions get a recovery attempt.
+  const jobs: Array<() => Promise<void>> = [];
+  for (let i = 0; i < Math.max(receiptJobs.length, paymentJobs.length); i++) {
+    if (receiptJobs[i]) jobs.push(receiptJobs[i]);
+    if (paymentJobs[i]) jobs.push(paymentJobs[i]);
+  }
+  // Limit provider pressure, while one slow merchant does not serialize the
+  // whole batch. Leave unstarted work eligible for the next scheduled sweep.
+  let cursor = 0;
+  await Promise.all(Array.from({length: Math.min(4, jobs.length)}, async () => {
+    while (cursor < jobs.length && operations.clock() < deadline) {
+      const job = jobs[cursor++];
+      await job();
+    }
+  }));
+  return {processed, failed, deferred: jobs.length - cursor};
 }
 
 export const organizerFormPaymentOauthCallback = onRequest({
@@ -151,7 +199,7 @@ export const reconcileOrganizerFormPayments = onSchedule({
   try {
     const summary = await reconcileOrganizerFormPaymentsHandler(
       await formPaymentRuntime());
-    if (summary.processed || summary.failed) {
+    if (summary.processed || summary.failed || summary.deferred) {
       logger.info("Form payment reconciliation", summary);
     }
   } catch {

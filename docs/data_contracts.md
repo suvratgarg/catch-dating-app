@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.143.0
+version: 1.144.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2475,6 +2475,12 @@ persisted response yields completion/redirect data. Checkout callbacks, fees,
 CRM conversion, review, event admission and room membership are separate.
 All four collections deny direct client reads and writes. The source and
 partner setup boundary is specified in [Host Forms](host_forms.md).
+Recovery isolates processing, reservation expiry and rescheduling errors per
+record. Four bounded workers prevent one slow merchant from serializing the
+batch; the sweep leaves unstarted work eligible when its run budget is spent.
+Manual-review payments release expired reservations without automatically
+retrying capture/refund or clearing their review status.
+
 
 ### Form messaging decisions
 

@@ -12,6 +12,8 @@ import {claimParticipantFormProfileHandler} from
 import {listParticipantFormProfilesHandler} from
   "../../profiles/listFormProfiles";
 import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
+import {reconcileOrganizerFormPaymentsHandler} from "./formPaymentTriggers";
+import type {formPaymentRuntime} from "./formPaymentRuntime";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 
@@ -24,7 +26,8 @@ test("Firestore serializes payment reservations, finalization and late capture",
     const fixture = createFormPaymentFixture();
     const collections = ["organizerForms", "organizerFormVersions",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
-      "organizerFormPayments", "organizerFormResponses",
+      "organizerFormPayments", "organizerFormPaymentWebhooks",
+      "organizerFormResponses",
       "participantFormProfileProposals", "participantOrganizerCards",
       "participantProfileClaimReceipts", "users", "participantIntakeProfiles",
       "organizerCommunicationPreferences",
@@ -183,6 +186,25 @@ test("Firestore serializes payment reservations, finalization and late capture",
         assert.equal("respondentUid" in row, false);
         assert.equal("draftId" in row, false);
       }
+      // Financial review must not reserve the form's only capacity forever.
+      await db.doc("organizerFormResponseDrafts/manual").set(fixture.draft);
+      const manual = await reserveFormPayment({db, now,
+        data: {...fixture.data, draftId: "manual"}, request: fixture.request});
+      const manualRef = db.doc(`organizerFormPayments/${manual.paymentId}`);
+      await manualRef.update({status: "reviewRequired"});
+      const visited: string[] = [];
+      await reconcileOrganizerFormPaymentsHandler({db,
+        processor: {reconcile: async (id: string) => {
+          visited.push(id);
+        }},
+      } as unknown as Awaited<ReturnType<typeof formPaymentRuntime>>,
+      manual.payment.checkoutExpiresAt.toMillis() + 120_000);
+      const reviewed = await manualRef.get();
+      assert.equal(reviewed.get("status"), "reviewRequired");
+      assert.equal(reviewed.get("reservationReleased"), true);
+      assert.equal((await db.doc("organizerForms/form").get())
+        .get("pendingPaymentCount"), 0);
+      assert.equal(visited.includes(manual.paymentId), false);
     } finally {
       for (const name of collections) {
         await db.recursiveDelete(db.collection(name));
