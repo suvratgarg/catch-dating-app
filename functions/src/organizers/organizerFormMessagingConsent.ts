@@ -30,9 +30,13 @@ export const formMessagingTerms = {
     "organizer on WhatsApp. Optional. I can opt out at any time.",
   catchWhatsapp: "Send me event recommendations and Catch updates from " +
     "Catch on WhatsApp. Optional. I can opt out at any time.",
-  organizerOperationsWhatsapp: "Send me WhatsApp updates from this organizer about this application or event, including payment links and reminders. Optional.",
-  organizerMarketingWhatsapp: "Send me WhatsApp messages from this organizer about future events and offers. Optional.",
-  catchMarketingWhatsapp: "Send me WhatsApp messages from Catch about upcoming experiences and offers. Optional.",
+  organizerOperationsWhatsapp: "Send me WhatsApp updates from this " +
+    "organizer about this application or event, including payment links " +
+    "and reminders. Optional.",
+  organizerMarketingWhatsapp: "Send me WhatsApp messages from this " +
+    "organizer about future events and offers. Optional.",
+  catchMarketingWhatsapp: "Send me WhatsApp messages from Catch about " +
+    "upcoming experiences and offers. Optional.",
 };
 
 export function formMessagingOffer(definition: Definition) {
@@ -59,7 +63,8 @@ export function formMessagingOffer(definition: Definition) {
 }
 
 export function hasPurposeChoices(definition: Definition): boolean {
-  return definition.messagingConsent?.organizerOperationsWhatsapp !== undefined ||
+  return definition.messagingConsent?.organizerOperationsWhatsapp !==
+      undefined ||
     definition.messagingConsent?.organizerMarketingWhatsapp !== undefined ||
     definition.messagingConsent?.catchMarketingWhatsapp !== undefined;
 }

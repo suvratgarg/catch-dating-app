@@ -64,7 +64,8 @@ export async function promoteFormCommunicationIntentHandler(
     const intent = requireDoc<Intent>(intentSnap,
       "FormCommunicationConsentIntentDocument");
     if (response.status !== "submitted" || response.withdrawnAt !== null ||
-        response.identity.phoneE164 !== phone || intent.endpointE164 !== phone ||
+        response.identity.phoneE164 !== phone ||
+        intent.endpointE164 !== phone ||
         intent.responseId !== data.responseId ||
         intent.organizerId !== response.organizerId ||
         intent.formId !== response.formId ||
@@ -96,7 +97,8 @@ export async function promoteFormCommunicationIntentHandler(
       throw unavailable();
     }
     const reviewedCopy = {
-      "organizer:eventOperations": formMessagingTerms.organizerOperationsWhatsapp,
+      "organizer:eventOperations":
+        formMessagingTerms.organizerOperationsWhatsapp,
       "organizer:marketing": formMessagingTerms.organizerMarketingWhatsapp,
       "catch:marketing": formMessagingTerms.catchMarketingWhatsapp,
     } as const;
@@ -107,7 +109,8 @@ export async function promoteFormCommunicationIntentHandler(
           (decision.principal === "catch" &&
             decision.purpose !== "marketing")) throw unavailable();
       const copy = reviewedCopy[key as keyof typeof reviewedCopy];
-      if (!copy || decision.decidedAt.toMillis() > intent.createdAt.toMillis() ||
+      if (!copy ||
+          decision.decidedAt.toMillis() > intent.createdAt.toMillis() ||
           decision.copyHash !== sha256([
             intent.termsVersion, decision.principal, decision.purpose, copy,
           ].join("|"))) throw unavailable();
@@ -139,7 +142,8 @@ export async function promoteFormCommunicationIntentHandler(
         const old = receiptSnaps[i].data() as OrganizerReceipt | CatchReceipt;
         if (old.uid !== uid || old.sourceResponseId !== data.responseId ||
             old.decision !== "optedIn" || old.purpose !== decision.purpose ||
-            old.endpointE164 !== phone || old.sourceFormId !== response.formId ||
+            old.endpointE164 !== phone ||
+            old.sourceFormId !== response.formId ||
             old.sourceVersionId !== response.versionId ||
             old.consentCopyHash !== decision.copyHash ||
             old.termsVersion !== intent.termsVersion ||

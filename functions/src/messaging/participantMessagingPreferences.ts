@@ -91,8 +91,9 @@ async function summarize(db: FirebaseFirestore.Firestore,
   const firstActive = purposes.eventOperations?.status === "optedIn" ?
     purposes.eventOperations : purposes.marketing?.status === "optedIn" ?
       purposes.marketing : null;
-  if (firstActive) return {status: "optedIn",
-    receiptId: firstActive.receiptId, purposes};
+  if (firstActive) {
+    return {status: "optedIn", receiptId: firstActive.receiptId, purposes};
+  }
   if (channel?.status === "optedOut") {
     return {status: "optedOut", receiptId, purposes};
   }
@@ -177,11 +178,17 @@ export async function withdrawParticipantMessagingPermissionHandler(
   if ((data.scope === "catch") !== (data.organizerId === null)) {
     throw new HttpsError("invalid-argument", "Choose one messaging sender.");
   }
+  if (data.scope === "catch" && data.purpose === "eventOperations") {
+    throw new HttpsError("invalid-argument",
+      "Catch has no event-operations permission here.");
+  }
   const db = deps.db();
   await deps.rateLimit(db, uid, "withdrawParticipantMessagingPermission");
   const scope = data.scope;
+  const purpose = data.purpose ?? null;
   const receiptId = "pmpr_" + createHash("sha256").update(JSON.stringify([
-    uid, scope, data.organizerId, data.requestId])).digest("hex").slice(0, 48);
+    uid, scope, data.organizerId, purpose, data.requestId]))
+    .digest("hex").slice(0, 48);
   const preferenceRef = scope === "catch" ?
     db.collection("catchCommunicationPreferences").doc(uid) :
     db.collection("organizerCommunicationPreferences").doc(
@@ -199,6 +206,7 @@ export async function withdrawParticipantMessagingPermissionHandler(
       const receipt = replay.data() as CatchReceipt | OrganizerReceipt;
       if (receipt.uid !== uid || receipt.source !== "participantSettings" ||
           receipt.decision !== "optedOut" ||
+          (receipt.purpose ?? null) !== purpose ||
           receipt.supersedesReceiptId !== data.expectedReceiptId) {
         throw new HttpsError("already-exists",
           "This request was used with different messaging settings.");
@@ -206,9 +214,11 @@ export async function withdrawParticipantMessagingPermissionHandler(
       return {preference: await summarize(db, tx, previous, scope), replayed:
         true};
     }
-    const currentIds = [previous?.whatsapp.currentReceiptId ?? null,
-      previous?.whatsappPurposes?.eventOperations?.currentReceiptId ?? null,
-      previous?.whatsappPurposes?.marketing?.currentReceiptId ?? null];
+    const currentIds = purpose ?
+      [previous?.whatsappPurposes?.[purpose]?.currentReceiptId ?? null] :
+      [previous?.whatsapp.currentReceiptId ?? null,
+        previous?.whatsappPurposes?.eventOperations?.currentReceiptId ?? null,
+        previous?.whatsappPurposes?.marketing?.currentReceiptId ?? null];
     if (!currentIds.includes(data.expectedReceiptId) ||
         (data.expectedReceiptId === null &&
           currentIds.some((id) => id !== null))) {
@@ -234,6 +244,7 @@ export async function withdrawParticipantMessagingPermissionHandler(
       updatedAt: decidedAt,
     };
     const receipt = {uid, channel: "whatsapp" as const,
+      ...(purpose ? {purpose} : {}),
       decision: "optedOut" as const, evidenceStatus: "complete" as const,
       termsVersion: null, consentCopyHash: null, source:
         "participantSettings" as const,
@@ -243,11 +254,12 @@ export async function withdrawParticipantMessagingPermissionHandler(
       revokedAt: decidedAt, supersedesReceiptId: data.expectedReceiptId,
       createdAt: now};
     if (scope === "catch") {
-      const document: CatchPreference = {uid, whatsapp: channel,
-        whatsappPurposes: {
-          ...(previous?.whatsappPurposes ?? {}),
-          eventOperations: channel, marketing: channel,
-        },
+      const document: CatchPreference = {uid,
+        whatsapp: purpose ? previous?.whatsapp ??
+          unknownOrganizerCommunicationChannel() : channel,
+        whatsappPurposes: purpose ? {
+          ...(previous?.whatsappPurposes ?? {}), [purpose]: channel,
+        } : {eventOperations: channel, marketing: channel},
         createdAt: previous?.createdAt ?? now, updatedAt: now};
       const evidence: CatchReceipt = {...receipt, sourceOrganizerId: null};
       tx.create(receiptRef, evidence);
@@ -255,10 +267,12 @@ export async function withdrawParticipantMessagingPermissionHandler(
     } else {
       const document: OrganizerPreference = {uid, organizerId:
         data.organizerId!,
-      whatsapp: channel, whatsappPurposes: {
-        ...(previous?.whatsappPurposes ?? {}),
-        eventOperations: channel, marketing: channel,
-      }, sms: (previous as OrganizerPreference | null)?.sms ??
+      whatsapp: purpose ? previous?.whatsapp ??
+        unknownOrganizerCommunicationChannel() : channel,
+      whatsappPurposes: purpose ? {
+        ...(previous?.whatsappPurposes ?? {}), [purpose]: channel,
+      } : {eventOperations: channel, marketing: channel},
+      sms: (previous as OrganizerPreference | null)?.sms ??
           unknownOrganizerCommunicationChannel(), createdAt:
             previous?.createdAt ?? now,
       updatedAt: now};

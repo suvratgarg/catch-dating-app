@@ -148,14 +148,25 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
       ?.status, "optedIn");
     assert.equal(listed.organizers[0].preference.purposes?.marketing
       ?.status, "optedIn");
+    const scoped = await withdraw(request({...input("organizer",
+      "purpose-eventOperations", "scope-operations"),
+    purpose: "eventOperations"}), h.deps);
+    assert.equal(scoped.preference.status, "optedOut");
+    const partial = await list(request({cursor: null, limit: 10}), h.deps);
+    assert.equal(partial.organizers[0].preference.purposes?.eventOperations
+      ?.status, "optedOut");
+    assert.equal(partial.organizers[0].preference.purposes?.marketing
+      ?.status, "optedIn");
     const result = await withdraw(request(input("organizer",
-      "purpose-eventOperations")), h.deps);
+      "purpose-marketing")), h.deps);
     assert.equal(result.preference.status, "optedOut");
     const after = await list(request({cursor: null, limit: 10}), h.deps);
     assert.equal(after.organizers[0].preference.purposes?.eventOperations
       ?.status, "optedOut");
     assert.equal(after.organizers[0].preference.purposes?.marketing
       ?.status, "optedOut");
+    await assert.rejects(withdraw(request({...input("catch"),
+      purpose: "eventOperations"}), h.deps), {code: "invalid-argument"});
   });
 
 test("retry is immutable, payload bound, and cannot overwrite a newer grant",
