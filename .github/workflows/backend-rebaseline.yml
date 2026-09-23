@@ -31,6 +31,13 @@ concurrency:
 jobs:
   snapshot:
     name: Exclude both delivery lanes for the approved snapshot
+    # The worker narrows ordinary jobs to read; its finalizer dispatches the
+    # next delivery only after the protected production snapshot succeeds.
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: read
+      id-token: write
     concurrency:
       group: backend-delivery-dev
       cancel-in-progress: false
