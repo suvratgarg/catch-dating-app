@@ -221,6 +221,9 @@ export type BeginOrganizerFormResponseCallableResponse = {
       messagingConsent?: {
         organizerWhatsapp: boolean;
         catchWhatsapp: boolean;
+        organizerOperationsWhatsapp?: boolean;
+        organizerMarketingWhatsapp?: boolean;
+        catchMarketingWhatsapp?: boolean;
       };
       completion: {
         title: string;
@@ -231,9 +234,12 @@ export type BeginOrganizerFormResponseCallableResponse = {
       };
     };
     messagingOffer?: {
-      termsVersion: "form-whatsapp-v1";
+      termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
       organizerWhatsapp: string | null;
       catchWhatsapp: string | null;
+      organizerOperationsWhatsapp?: string | null;
+      organizerMarketingWhatsapp?: string | null;
+      catchMarketingWhatsapp?: string | null;
     };
   };
   revision: number;
@@ -242,9 +248,12 @@ export type BeginOrganizerFormResponseCallableResponse = {
   };
   consentAccepted: boolean;
   messagingChoices?: {
-    termsVersion: "form-whatsapp-v1";
+    termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: boolean;
     catchWhatsapp: boolean;
+    organizerOperationsWhatsapp?: boolean;
+    organizerMarketingWhatsapp?: boolean;
+    catchMarketingWhatsapp?: boolean;
   };
   identityKind:
     | "anonymous"

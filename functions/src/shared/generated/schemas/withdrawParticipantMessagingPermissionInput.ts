@@ -35,6 +35,14 @@ export const withdrawParticipantMessagingPermissionCallablePayloadSchema: Record
         }
       ]
     },
+    "purpose": {
+      "description": "Omit for sender-wide withdrawal. Scope one purpose without changing the other.",
+      "type": "string",
+      "enum": [
+        "eventOperations",
+        "marketing"
+      ]
+    },
     "expectedReceiptId": {
       "anyOf": [
         {

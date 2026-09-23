@@ -211,7 +211,8 @@ test("v2 keeps unverified choices pending until same-source verified claim",
       path.includes("CommunicationPermissionReceipts/")).length, 0);
     const request = {data: {responseId, withdrawalToken: null,
       requestId: "promote-1"}, auth: {uid: "person",
-      token: {phone_number: "+919000000001"}}} as never;
+      token: {phone_number: "+919000000001"}}};
+    const callableRequest = request as never;
     const deps = {db: () => h.db, now: () => now,
       rateLimit: async () => undefined} as never;
     await assert.rejects(
@@ -230,17 +231,21 @@ test("v2 keeps unverified choices pending until same-source verified claim",
         validIntent.decisions as Array<Record<string, unknown>>
       ).map((entry) => ({...entry, copyHash: "tampered"}))});
     await assert.rejects(
-      promoteFormCommunicationIntentHandler(request, deps), /unavailable/u);
+      promoteFormCommunicationIntentHandler(callableRequest, deps),
+      /unavailable/u);
     h.store.records.set(`formCommunicationConsentIntents/${responseId}`,
       {...validIntent, createdAt: Timestamp.fromMillis(1100)});
     await assert.rejects(
-      promoteFormCommunicationIntentHandler(request, deps), /unavailable/u);
+      promoteFormCommunicationIntentHandler(callableRequest, deps),
+      /unavailable/u);
     h.store.records.set(`formCommunicationConsentIntents/${responseId}`,
       validIntent);
-    const promoted = await promoteFormCommunicationIntentHandler(request, deps);
+    const promoted = await promoteFormCommunicationIntentHandler(
+      callableRequest, deps);
     assert.deepEqual(promoted.promotedPurposes,
       ["organizer:eventOperations", "catch:marketing"]);
-    assert.equal((await promoteFormCommunicationIntentHandler(request, deps))
+    assert.equal((await promoteFormCommunicationIntentHandler(
+      callableRequest, deps))
       .replayed, true);
   });
 
@@ -261,7 +266,7 @@ test("purpose gate keeps operations out of marketing and honors STOP ordering",
       sms: unknownOrganizerCommunicationChannel(),
       createdAt: chosenAt, updatedAt: now};
     assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "marketing", "+919000000001"), "unknown");
+      "marketing", "+919000000001"), "optedOut");
     assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
       "eventOperations", "+919000000001", "other-response"), "unknown");
     assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
@@ -320,8 +325,8 @@ test("later v1 submission keeps scoped grant and withdrawal decisions",
     organizerCommunicationPreferenceId("org", "person");
     const scoped = {status: "optedOut" as const,
       evidenceStatus: "complete" as const, currentReceiptId: "scoped-stop",
-      termsVersion: null, source: "settings" as const,
-      sourceEventId: null, sourceResponseId: null, endpointE164: null,
+      termsVersion: null, source: "participantSettings" as const,
+      sourceEventId: null,
       updatedAt: Timestamp.fromMillis(450)};
     h.store.records.set(organizerId, {organizerId: "org", uid: "person",
       whatsapp: unknownOrganizerCommunicationChannel(),
@@ -350,8 +355,8 @@ test("only explicit newer registration marketing copy reverses scoped opt-out",
   () => {
     const scoped = {status: "optedOut" as const,
       evidenceStatus: "complete" as const, currentReceiptId: "stop",
-      termsVersion: null, source: "settings" as const,
-      sourceEventId: null, sourceResponseId: null, endpointE164: null,
+      termsVersion: null, source: "participantSettings" as const,
+      sourceEventId: null,
       updatedAt: Timestamp.fromMillis(800)};
     const broad = {status: "optedIn" as const,
       evidenceStatus: "complete" as const, currentReceiptId: "registration",

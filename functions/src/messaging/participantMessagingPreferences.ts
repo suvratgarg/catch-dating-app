@@ -57,6 +57,7 @@ async function summarize(db: FirebaseFirestore.Firestore,
   const receiptId = channel?.currentReceiptId ?? null;
   const purposes: NonNullable<Page["catchPreference"]["purposes"]> = {};
   for (const purpose of ["eventOperations", "marketing"] as const) {
+    if (scope === "catch" && purpose === "eventOperations") continue;
     const scoped = value?.whatsappPurposes?.[purpose];
     if (!scoped) continue;
     const scopedReceiptId = scoped.currentReceiptId;
@@ -220,7 +221,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
     const currentIds = purpose ?
       [previous?.whatsappPurposes?.[purpose]?.currentReceiptId ?? null] :
       [previous?.whatsapp.currentReceiptId ?? null,
-        previous?.whatsappPurposes?.eventOperations?.currentReceiptId ?? null,
+        ...(scope === "organizer" ?
+          [previous?.whatsappPurposes?.eventOperations?.currentReceiptId ??
+            null] : []),
         previous?.whatsappPurposes?.marketing?.currentReceiptId ?? null];
     if (!currentIds.includes(data.expectedReceiptId) ||
         (data.expectedReceiptId === null &&
@@ -260,9 +263,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
       const document: CatchPreference = {uid,
         whatsapp: purpose ? previous?.whatsapp ??
           unknownOrganizerCommunicationChannel() : channel,
-        whatsappPurposes: purpose ? {
+      whatsappPurposes: purpose ? {
           ...(previous?.whatsappPurposes ?? {}), [purpose]: channel,
-        } : {eventOperations: channel, marketing: channel},
+        } : {marketing: channel},
         createdAt: previous?.createdAt ?? now, updatedAt: now};
       const evidence: CatchReceipt = {...receipt, sourceOrganizerId: null};
       tx.create(receiptRef, evidence);

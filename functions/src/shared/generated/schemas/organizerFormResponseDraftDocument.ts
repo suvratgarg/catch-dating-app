@@ -41,8 +41,11 @@ export const organizerFormResponseDraftDocumentSchema: Record<string, unknown> =
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "form-whatsapp-v1",
+            "form-whatsapp-v2"
+          ]
         },
         "organizerWhatsapp": {
           "type": "boolean"
@@ -71,6 +74,75 @@ export const organizerFormResponseDraftDocumentSchema: Record<string, unknown> =
           }
         },
         "catchDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "organizerOperationsWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerMarketingWhatsapp": {
+          "type": "boolean"
+        },
+        "catchMarketingWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerOperationsDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "organizerMarketingDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "catchMarketingDecidedAt": {
           "type": "object",
           "description": "Serialized Firestore Timestamp fixture shape.",
           "x-firestore-type": "timestamp",

@@ -762,6 +762,15 @@ export const updateOrganizerFormDraftCallablePayloadSchema: Record<string, unkno
             },
             "catchWhatsapp": {
               "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
+              "type": "boolean"
             }
           }
         },

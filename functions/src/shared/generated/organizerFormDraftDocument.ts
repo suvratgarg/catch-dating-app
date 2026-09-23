@@ -200,6 +200,9 @@ export interface OrganizerFormDraftDocument {
     messagingConsent?: {
       organizerWhatsapp: boolean;
       catchWhatsapp: boolean;
+      organizerOperationsWhatsapp?: boolean;
+      organizerMarketingWhatsapp?: boolean;
+      catchMarketingWhatsapp?: boolean;
     };
     completion: {
       title: string;

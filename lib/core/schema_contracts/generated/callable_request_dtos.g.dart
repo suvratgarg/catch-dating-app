@@ -220,6 +220,7 @@ export 'callables/preview_organizer_saved_audience_callable_request.g.dart';
 export 'callables/program_id_callable_request.g.dart';
 export 'callables/program_station_scope_callable_request.g.dart';
 export 'callables/program_trip_action_callable_request.g.dart';
+export 'callables/promote_form_communication_intent_callable_request.g.dart';
 export 'callables/publish_event_live_position_callable_request.g.dart';
 export 'callables/publish_event_success_rotation_round_callable_request.g.dart';
 export 'callables/publish_organizer_application_form_callable_request.g.dart';

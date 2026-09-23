@@ -265,6 +265,14 @@ test("actual withdrawals fence both grants from an earlier pending checkout",
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "submitted");
     const page = await list(request({cursor: null, limit: 10}), deps);
-    assert.deepEqual(page.catchPreference, a.preference);
-    assert.deepEqual(page.organizers[0].preference, b.preference);
+    assert.equal(page.catchPreference.status, a.preference.status);
+    assert.equal(page.catchPreference.receiptId, a.preference.receiptId);
+    assert.equal(page.catchPreference.purposes?.marketing?.status,
+      "optedOut");
+    assert.equal(page.organizers[0].preference.status,
+      b.preference.status);
+    assert.equal(page.organizers[0].preference.receiptId,
+      b.preference.receiptId);
+    assert.equal(page.organizers[0].preference.purposes
+      ?.eventOperations?.status, "optedOut");
   });

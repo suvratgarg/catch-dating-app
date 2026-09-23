@@ -231,6 +231,9 @@ export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schema
 export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
 export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";
 export {withdrawParticipantMessagingPermissionCallableResponseSchema} from "./schemas/withdrawParticipantMessagingPermissionOutput";
+export {promoteFormCommunicationIntentCallablePayloadSchema} from "./schemas/promoteFormCommunicationIntentInput";
+export {promoteFormCommunicationIntentCallableResponseSchema} from "./schemas/promoteFormCommunicationIntentOutput";
+export {formCommunicationConsentIntentDocumentSchema} from "./schemas/formCommunicationConsentIntentDocument";
 export {catchCommunicationPreferenceDocumentSchema} from "./schemas/catchCommunicationPreferenceDocument";
 export {catchCommunicationPermissionReceiptDocumentSchema} from "./schemas/catchCommunicationPermissionReceiptDocument";
 export {organizerCommunicationPreferenceDocumentSchema} from "./schemas/organizerCommunicationPreferenceDocument";

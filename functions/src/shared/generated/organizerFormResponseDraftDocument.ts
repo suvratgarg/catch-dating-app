@@ -7,7 +7,7 @@
  */
 export interface OrganizerFormResponseDraftDocument {
   messagingDecision?: {
-    termsVersion: "form-whatsapp-v1";
+    termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: boolean;
     catchWhatsapp: boolean;
     /**
@@ -21,6 +21,30 @@ export interface OrganizerFormResponseDraftDocument {
      * Serialized Firestore Timestamp fixture shape.
      */
     catchDecidedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    organizerOperationsWhatsapp?: boolean;
+    organizerMarketingWhatsapp?: boolean;
+    catchMarketingWhatsapp?: boolean;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    organizerOperationsDecidedAt?: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    organizerMarketingDecidedAt?: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    catchMarketingDecidedAt?: {
       _seconds: number;
       _nanoseconds: number;
     };

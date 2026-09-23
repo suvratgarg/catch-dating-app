@@ -52,6 +52,42 @@ export const organizerCommunicationPermissionReceiptDocumentSchema: Record<strin
         "sms"
       ]
     },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "eventOperations",
+        "marketing"
+      ]
+    },
+    "endpointE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "sourceVersionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceDecidedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
     "decision": {
       "type": "string",
       "enum": [

@@ -246,6 +246,9 @@ export type GetOrganizerFormEditorCallableResponse = {
     messagingConsent?: {
       organizerWhatsapp: boolean;
       catchWhatsapp: boolean;
+      organizerOperationsWhatsapp?: boolean;
+      organizerMarketingWhatsapp?: boolean;
+      catchMarketingWhatsapp?: boolean;
     };
     completion: {
       title: string;
