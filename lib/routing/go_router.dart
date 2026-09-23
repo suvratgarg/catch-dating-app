@@ -786,7 +786,16 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         name: Routes.hostApplicationsScreen.name,
         redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
       ),
-      _hostApplicationReviewRoute(keys),
+      GoRoute(
+        path: 'applications/:applicationId',
+        name: Routes.hostApplicationDetailScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostApplicationDetailScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          applicationId: state.pathParameters['applicationId']!,
+          queue: _responseReviewQueue(state.extra),
+        ),
+      ),
       GoRoute(
         path: 'people/new',
         name: Routes.hostAddCustomerScreen.name,
@@ -824,7 +833,16 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
-      _hostFormResponseReviewRoute(keys),
+      GoRoute(
+        path: 'responses/:responseId',
+        name: Routes.hostFormResponseDetailScreen.name,
+        parentNavigatorKey: keys.root,
+        builder: (context, state) => HostFormResponseDetailScreen(
+          organizerId: state.uri.queryParameters['organizerId'] ?? '',
+          responseId: state.pathParameters['responseId']!,
+          queue: _responseReviewQueue(state.extra),
+        ),
+      ),
       GoRoute(
         path: 'forms/:formId/preview',
         name: Routes.hostFormPreviewScreen.name,
@@ -1082,28 +1100,6 @@ StatefulShellRoute _hostShellRoute(
         ],
       ),
     ],
-  );
-}
-
-EventDetailScreen _eventDetailScreen(GoRouterState state) {
-  return EventDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    eventId: state.pathParameters['eventId']!,
-    inviteCode: state.uri.queryParameters['invite'],
-    inviteLinkId:
-        state.uri.queryParameters['il'] ??
-        state.uri.queryParameters['inviteLinkId'],
-    initialEvent: _eventDetailInitialEvent(state),
-    presentationMode: _eventDetailPresentationMode(state),
-    heroTag: _eventDetailHeroTag(state),
-    attribution: _eventDetailAttribution(state),
-  );
-}
-
-ClubDetailScreen _clubDetailScreen(GoRouterState state) {
-  return ClubDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    initialClub: _clubDetailInitialClub(state),
   );
 }
 

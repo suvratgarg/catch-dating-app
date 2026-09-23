@@ -14,10 +14,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../support/catch_test_fonts.dart';
 import '../../test_pump_helpers.dart';
 import 'support/response_filter_fixtures.dart';
 
 void main() {
+  if (Platform.environment.containsKey('CATCH_HOST_RESPONSE_REVIEW_DIR')) {
+    setUpAll(loadCatchTestFonts);
+  }
+
   testWidgets('published version is selected and switching clears answer filters', (
     tester,
   ) async {
