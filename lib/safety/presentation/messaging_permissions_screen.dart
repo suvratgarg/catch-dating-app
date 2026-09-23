@@ -36,6 +36,9 @@ class MessagingPermissionsScreen extends ConsumerWidget {
           onWithdraw: (permission) => ref
               .read(messagingPermissionsControllerProvider.notifier)
               .withdraw(state.uid, permission),
+          onWithdrawPurpose: (permission, purpose) => ref
+              .read(messagingPermissionsControllerProvider.notifier)
+              .withdraw(state.uid, permission, purpose: purpose),
         ),
       ),
     ),
@@ -47,11 +50,14 @@ class MessagingPermissionsPageBody extends StatelessWidget {
     super.key,
     required this.state,
     required this.onWithdraw,
+    this.onWithdrawPurpose,
     required this.onRefresh,
     required this.onLoadMore,
   });
   final MessagingPermissionsState state;
   final ValueChanged<MessagingPermission> onWithdraw;
+  final void Function(MessagingPermission, MessagingPermissionPurpose)?
+      onWithdrawPurpose;
   final VoidCallback onRefresh;
   final VoidCallback onLoadMore;
   @override
@@ -112,6 +118,41 @@ class MessagingPermissionsPageBody extends StatelessWidget {
                     titleMaxLines: 3,
                     bodyMaxLines: 10,
                   ),
+                  for (final purpose in MessagingPermissionPurpose.values)
+                    if (permission.purposes[purpose] case final decision?) ...[
+                      CatchField.content(
+                        copy: catchFieldCopy(l10n),
+                        key: ValueKey('${permission.key}-${purpose.name}'),
+                        title: switch (purpose) {
+                          MessagingPermissionPurpose.eventOperations =>
+                            l10n.messagingPermissionsOperations,
+                          MessagingPermissionPurpose.marketing =>
+                            permission.organizerId == null
+                                ? l10n.messagingPermissionsCatchMarketing
+                                : l10n.messagingPermissionsOrganizerMarketing,
+                        },
+                        body: switch (decision.status) {
+                          MessagingPermissionStatus.optedIn =>
+                            l10n.messagingPermissionsOn,
+                          MessagingPermissionStatus.optedOut =>
+                            l10n.messagingPermissionsOff,
+                          MessagingPermissionStatus.unknown =>
+                            l10n.messagingPermissionsUnknown,
+                        },
+                      ),
+                      if (decision.status == MessagingPermissionStatus.optedIn &&
+                          onWithdrawPurpose != null)
+                        CatchField.action(
+                          copy: catchFieldCopy(l10n),
+                          key: ValueKey(
+                            'withdraw-${permission.key}-${purpose.name}',
+                          ),
+                          title: l10n.messagingPermissionsStopPurpose,
+                          onTap: state.busy
+                              ? null
+                              : () => onWithdrawPurpose!(permission, purpose),
+                        ),
+                    ],
                 ],
               ),
           ],

@@ -12,6 +12,7 @@ class _Repository extends Fake implements MessagingPermissionRepository {
   final cursors = <String?>[];
   final withdrawals =
       <(MessagingPermission, String, Completer<MessagingPermission>)>[];
+  final withdrawnPurposes = <MessagingPermissionPurpose?>[];
   @override
   Future<MessagingPermissionPage> list({String? cursor}) {
     cursors.add(cursor);
@@ -24,7 +25,9 @@ class _Repository extends Fake implements MessagingPermissionRepository {
   Future<MessagingPermission> withdraw(
     MessagingPermission permission,
     String requestId,
+    {MessagingPermissionPurpose? purpose}
   ) {
+    withdrawnPurposes.add(purpose);
     final call = Completer<MessagingPermission>();
     withdrawals.add((permission, requestId, call));
     return call.future;
@@ -150,4 +153,68 @@ void main() {
       expect(state.error, isNull);
     },
   );
+
+  test('scoped withdrawal leaves the other organizer purpose active', () async {
+    final repository = _Repository();
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('one')),
+        messagingPermissionRepositoryProvider.overrideWithValue(repository),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.listen(messagingPermissionsControllerProvider, (_, _) {});
+    await flushTestEventQueue();
+    const permission = MessagingPermission(
+      organizerId: 'rsvp',
+      organizerName: 'RSVP',
+      status: MessagingPermissionStatus.optedIn,
+      receiptId: 'broad',
+      purposes: {
+        MessagingPermissionPurpose.eventOperations: MessagingPurposeDecision(
+          status: MessagingPermissionStatus.optedIn,
+          receiptId: 'ops',
+        ),
+        MessagingPermissionPurpose.marketing: MessagingPurposeDecision(
+          status: MessagingPermissionStatus.optedIn,
+          receiptId: 'marketing',
+        ),
+      },
+    );
+    repository.lists.last.complete(
+      MessagingPermissionPage(
+        catchPermission: _permission('catch'),
+        organizers: const [permission],
+        nextCursor: null,
+      ),
+    );
+    await container.read(messagingPermissionsControllerProvider.future);
+    final controller = container.read(
+      messagingPermissionsControllerProvider.notifier,
+    );
+    final action = controller.withdraw(
+      'one',
+      permission,
+      purpose: MessagingPermissionPurpose.eventOperations,
+    );
+    expect(repository.withdrawnPurposes.single,
+        MessagingPermissionPurpose.eventOperations);
+    repository.withdrawals.single.$3.complete(
+      permission.afterWithdrawal(
+        MessagingPermissionPurpose.eventOperations,
+        'ops-stop',
+      ),
+    );
+    await action;
+    final saved = container
+        .read(messagingPermissionsControllerProvider)
+        .requireValue
+        .page
+        .organizers
+        .single;
+    expect(saved.purposes[MessagingPermissionPurpose.eventOperations]?.status,
+        MessagingPermissionStatus.optedOut);
+    expect(saved.purposes[MessagingPermissionPurpose.marketing]?.status,
+        MessagingPermissionStatus.optedIn);
+  });
 }

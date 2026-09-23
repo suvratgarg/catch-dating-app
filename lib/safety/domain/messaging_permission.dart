@@ -1,6 +1,21 @@
 import 'package:meta/meta.dart';
 
 enum MessagingPermissionStatus { unknown, optedIn, optedOut }
+enum MessagingPermissionPurpose { eventOperations, marketing }
+
+@immutable
+class MessagingPurposeDecision {
+  const MessagingPurposeDecision({required this.status, required this.receiptId});
+  factory MessagingPurposeDecision.fromMap(Map<Object?, Object?> json) =>
+      MessagingPurposeDecision(
+        status: MessagingPermissionStatus.values.byName(
+          json['status']! as String,
+        ),
+        receiptId: json['receiptId'] as String?,
+      );
+  final MessagingPermissionStatus status;
+  final String? receiptId;
+}
 
 @immutable
 class MessagingPermission {
@@ -9,6 +24,7 @@ class MessagingPermission {
     required this.organizerName,
     required this.status,
     required this.receiptId,
+    this.purposes = const {},
   });
   factory MessagingPermission.fromMap(
     Map<Object?, Object?> json, {
@@ -19,13 +35,46 @@ class MessagingPermission {
     organizerName: organizerName,
     status: MessagingPermissionStatus.values.byName(json['status']! as String),
     receiptId: json['receiptId'] as String?,
+    purposes: {
+      for (final entry in (json['purposes'] as Map? ?? const {}).entries)
+        MessagingPermissionPurpose.values.byName(entry.key as String):
+            MessagingPurposeDecision.fromMap(entry.value as Map),
+    },
   );
   final String? organizerId;
   final String? organizerName;
   final MessagingPermissionStatus status;
   final String? receiptId;
+  final Map<MessagingPermissionPurpose, MessagingPurposeDecision> purposes;
   String get key => organizerId == null ? 'catch' : 'organizer:$organizerId';
   String get scope => organizerId == null ? 'catch' : 'organizer';
+
+  MessagingPermission afterWithdrawal(
+    MessagingPermissionPurpose? purpose,
+    String withdrawalReceiptId,
+  ) {
+    final stopped = MessagingPurposeDecision(
+      status: MessagingPermissionStatus.optedOut,
+      receiptId: withdrawalReceiptId,
+    );
+    final updatedPurposes = purpose == null
+        ? {
+            for (final key in purposes.keys) key: stopped,
+          }
+        : {...purposes, purpose: stopped};
+    final anyActive = updatedPurposes.values.any(
+      (value) => value.status == MessagingPermissionStatus.optedIn,
+    );
+    return MessagingPermission(
+      organizerId: organizerId,
+      organizerName: organizerName,
+      status: anyActive
+          ? MessagingPermissionStatus.optedIn
+          : MessagingPermissionStatus.optedOut,
+      receiptId: purpose == null ? withdrawalReceiptId : receiptId,
+      purposes: updatedPurposes,
+    );
+  }
 }
 
 @immutable

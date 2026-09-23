@@ -30,6 +30,17 @@ MessagingPermissionsState _state({String? pendingKey, Object? error}) =>
             organizerName: 'RSVP Demo',
             status: MessagingPermissionStatus.optedIn,
             receiptId: 'rsvp-grant',
+            purposes: {
+              MessagingPermissionPurpose.eventOperations:
+                  MessagingPurposeDecision(
+                    status: MessagingPermissionStatus.optedIn,
+                    receiptId: 'ops-grant',
+                  ),
+              MessagingPermissionPurpose.marketing: MessagingPurposeDecision(
+                status: MessagingPermissionStatus.optedIn,
+                receiptId: 'marketing-grant',
+              ),
+            },
           ),
           MessagingPermission(
             organizerId: 'coffee',
@@ -88,12 +99,39 @@ void main() {
       );
     }
   });
+  testWidgets('each organizer purpose has its own withdrawal action', (
+    tester,
+  ) async {
+    final actions = <MessagingPermissionPurpose>[];
+    await _pump(
+      tester,
+      _state(),
+      (_) {},
+      onWithdrawPurpose: (permission, purpose) {
+        expect(permission.organizerId, 'rsvp');
+        actions.add(purpose);
+      },
+    );
+    final operations = find.byKey(
+      const ValueKey('withdraw-organizer:rsvp-eventOperations'),
+    );
+    final marketing = find.byKey(
+      const ValueKey('withdraw-organizer:rsvp-marketing'),
+    );
+    expect(operations, findsOneWidget);
+    expect(marketing, findsOneWidget);
+    await tester.tap(operations);
+    await pumpFeatureUi(tester);
+    expect(actions, [MessagingPermissionPurpose.eventOperations]);
+  });
 }
 
 Future<void> _pump(
   WidgetTester tester,
   MessagingPermissionsState state,
   ValueChanged<MessagingPermission> onWithdraw, {
+  void Function(MessagingPermission, MessagingPermissionPurpose)?
+      onWithdrawPurpose,
   bool dark = false,
   double scale = 1,
 }) async {
@@ -122,6 +160,7 @@ Future<void> _pump(
             child: MessagingPermissionsPageBody(
               state: state,
               onWithdraw: onWithdraw,
+              onWithdrawPurpose: onWithdrawPurpose,
               onRefresh: () {},
               onLoadMore: () {},
             ),
