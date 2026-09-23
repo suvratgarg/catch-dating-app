@@ -1469,6 +1469,12 @@ async function writeAssignmentDrafts(params: {
           roundIndex: params.targetRoundIndex,
           baseAssignmentRevision: assignmentRevision,
           assignment,
+          ...(params.featureGuard ? {assignmentFeatureGuard: {
+            revision: params.featureGuard.revision,
+            configHash: params.featureGuard.configHash,
+            snapshots: params.featureGuard.snapshots.filter((snapshot) =>
+              snapshot.uid === assignment.uid),
+          }} : {}),
           createdAt: params.now,
           updatedAt: params.now,
         }

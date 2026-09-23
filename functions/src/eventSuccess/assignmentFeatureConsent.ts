@@ -190,7 +190,7 @@ export function readAssignmentFeatureConsent(
     throw new HttpsError("failed-precondition",
       "Matching consent record is invalid.");
   }
-  return value;
+  return value as unknown as ConsentDoc;
 }
 
 /** Host rules and responses alone never grant answer use. */

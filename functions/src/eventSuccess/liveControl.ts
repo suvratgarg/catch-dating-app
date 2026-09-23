@@ -33,6 +33,12 @@ import {
   EventSuccessAccountability,
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
+import {recheckAssignmentFeatureSnapshots} from
+  "./assignmentFeatureConsent";
+import {validateAssignmentFeatureRules} from
+  "./assignmentFeatureScoring";
+import type {AssignmentFeatureRule, EventAssignmentFeatureSnapshot} from
+  "./assignmentFeatureScoring";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 
@@ -53,6 +59,9 @@ interface LivePlanDocument {
   activeStepIndex?: number;
   liveControlRevision?: number;
   assignmentDraftRevision?: number;
+  assignmentFeatureRules?: AssignmentFeatureRule[];
+  assignmentFeatureRevision?: number;
+  assignmentFeatureConfigHash?: string;
   publishedRotationRoundIndex?: number;
   publishedRevealRoundIndex?: number;
   status?: "setup" | "live" | "complete";
@@ -455,6 +464,51 @@ export async function publishEventSuccessRotationRoundHandler(
     if (drafts.length === 0) {
       throw new HttpsError("failed-precondition",
         "The next rotation round is not prepared yet.");
+    }
+    const rules = validateAssignmentFeatureRules(
+      plan.assignmentFeatureRules ?? []);
+    const featureSnapshots: EventAssignmentFeatureSnapshot[] = [];
+    let guardedDrafts = 0;
+    for (const draft of drafts) {
+      const data = draft.data();
+      const guard = data.assignmentFeatureGuard;
+      if (guard === undefined) {
+        if (rules.length && data.assignment?.source !==
+            "host_override_v1") {
+          throw new HttpsError("aborted",
+            "Prepared assignments lack matching consent audit.");
+        }
+        continue;
+      }
+      if (!guard || typeof guard !== "object" ||
+          guard.revision !== plan.assignmentFeatureRevision ||
+          guard.configHash !== plan.assignmentFeatureConfigHash ||
+          !Array.isArray(guard.snapshots) ||
+          guard.snapshots.length > rules.length ||
+          data.uid !== data.assignment?.uid) {
+        throw new HttpsError("aborted",
+          "Assignment feature setup changed after preparation.");
+      }
+      guardedDrafts++;
+      for (const snapshot of guard.snapshots) {
+        if (!snapshot || typeof snapshot !== "object" ||
+            snapshot.uid !== data.uid ||
+            snapshot.eventId !== payload.eventId) {
+          throw new HttpsError("aborted",
+            "Prepared matching consent audit is invalid.");
+        }
+        featureSnapshots.push(snapshot as EventAssignmentFeatureSnapshot);
+      }
+    }
+    if (guardedDrafts && guardedDrafts !== drafts.length) {
+      throw new HttpsError("aborted",
+        "Prepared assignments have mixed matching consent audits.");
+    }
+    if (guardedDrafts) {
+      const organizerId = drafts[0].data().organizerId;
+      await recheckAssignmentFeatureSnapshots({tx: transaction, db,
+        eventId: payload.eventId, organizerId, rules,
+        snapshots: featureSnapshots});
     }
     const now = deps.serverTimestamp();
     for (const draft of drafts) {

@@ -30,4 +30,39 @@ export interface EventSuccessAssignmentDraftDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  assignmentFeatureGuard?: {
+    revision: number;
+    configHash: string;
+    /**
+     * @maxItems 8
+     */
+    snapshots: {
+      eventId: string;
+      organizerId: string;
+      uid: string;
+      featureId: string;
+      formId: string;
+      versionId: string;
+      questionId: string;
+      transformVersion: number;
+      consentReceiptId: string;
+      value:
+        | {
+            kind: "category" | "ordinal";
+            optionId: string;
+          }
+        | {
+            kind: "set";
+            /**
+             * @minItems 1
+             * @maxItems 40
+             */
+            optionIds: string[];
+          }
+        | {
+            kind: "number";
+            value: number;
+          };
+    }[];
+  };
 }

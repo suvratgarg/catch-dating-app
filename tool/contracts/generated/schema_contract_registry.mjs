@@ -150768,6 +150768,160 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureGuard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "configHash",
+        "snapshots"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "configHash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "snapshots": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "organizerId",
+              "uid",
+              "featureId",
+              "formId",
+              "versionId",
+              "questionId",
+              "transformVersion",
+              "consentReceiptId",
+              "value"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "featureId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "formId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "versionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "questionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "transformVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "consentReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "optionId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "category",
+                          "ordinal"
+                        ]
+                      },
+                      "optionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "optionIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "set"
+                      },
+                      "optionIds": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 40,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "number"
+                      },
+                      "value": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 };

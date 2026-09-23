@@ -6,10 +6,15 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {
   LivePlanState,
   publishedAssignmentThroughRound,
+  publishEventSuccessRotationRoundHandler,
   resolveEventSuccessLiveAction,
   resolveRotationPublish,
 } from "./liveControl";
 import {configuredPreparationAttempts} from "./rotationDraftTrigger";
+import {AudienceTestStore} from
+  "../organizers/organizerAudienceTestStore";
+import {assignmentFeatureConsentId} from
+  "./assignmentFeatureConsent";
 
 const baseState = (overrides: Partial<LivePlanState> = {}): LivePlanState => ({
   activeStepIndex: 0,
@@ -184,4 +189,76 @@ test("draft preparation retry ceiling is deployment configurable", () => {
   assert.equal(configuredPreparationAttempts("0"), 3);
   assert.equal(configuredPreparationAttempts("6-retries"), 3);
   assert.equal(configuredPreparationAttempts("not-a-number"), 3);
+});
+
+test("revoked answer blocks publishing a prepared round", async () => {
+  const eventId = "event-1";
+  const uid = "user-1";
+  const featureId = "feature-1";
+  const snapshot = {eventId, organizerId: "org-1", uid, featureId,
+    formId: "form-1", versionId: "version-1",
+    questionId: "question-1", transformVersion: 1,
+    consentReceiptId: "receipt-1",
+    value: {kind: "category", optionId: "option-1"}};
+  const rule = {featureId, formId: "form-1", versionId: "version-1",
+    questionId: "question-1", transformVersion: 1, kind: "category",
+    mode: "preferSimilar", weight: 1, optionIds: ["option-1"]};
+  const stamp = {_seconds: 1, _nanoseconds: 0};
+  const consentPath = `eventAssignmentFeatureConsents/${
+    assignmentFeatureConsentId(eventId, uid, featureId)}`;
+  const store = new AudienceTestStore({
+    [`events/${eventId}`]: {organizerId: "org-1", clubId: "org-1"},
+    "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
+      hostProfiles: []},
+    [`eventSuccessPlans/${eventId}`]: {eventId, clubId: "org-1",
+      liveControlRevision: 4, assignmentDraftRevision: 1,
+      publishedRotationRoundIndex: -1, assignmentFeatureRules: [rule],
+      assignmentFeatureRevision: 1, assignmentFeatureConfigHash: "hash-1"},
+    [`eventSuccessAssignmentDrafts/${eventId}_guided_rotations_${uid}`]: {
+      eventId, organizerId: "org-1", clubId: "org-1", uid,
+      moduleId: "guided_rotations", roundIndex: 0,
+      baseAssignmentRevision: 1,
+      assignmentFeatureGuard: {revision: 1, configHash: "hash-1",
+        snapshots: [snapshot]},
+      assignment: {eventId, uid, moduleId: "guided_rotations",
+        rotationSlots: [], sitOutSlots: []},
+    },
+    [consentPath]: {eventId, organizerId: "org-1", uid,
+      responseId: "response-1", featureId, formId: "form-1",
+      versionId: "version-1", questionId: "question-1",
+      transformVersion: 1, purpose: "eventAssignmentMatching",
+      status: "granted", receiptId: "receipt-1", revision: 1,
+      lastRequestId: "request-1", createdAt: stamp, updatedAt: stamp},
+    "organizerFormResponses/response-1": {organizerId: "org-1",
+      formId: "form-1", versionId: "version-1", status: "submitted",
+      respondentUid: uid, identityKind: "phoneVerified",
+      withdrawnAt: null, answers: {"question-1": "answer-1"}},
+    "organizerFormVersions/version-1": {organizerId: "org-1",
+      formId: "form-1", definition: {sections: [{questions: [{
+        questionId: "question-1", privacyClass: "organizerCustom",
+        kind: "singleChoice", options: [{optionId: "option-1",
+          value: "answer-1"}],
+      }]}]}},
+  });
+  const deps = {firestore: () => store.asFirestore(),
+    serverTimestamp: () => stamp, nowMillis: () => 1,
+    checkRateLimit: async () => {}};
+  const request = {auth: {uid: "host-1"}, data: {eventId,
+    expectedRevision: 4, roundIndex: 0, confirmed: true}};
+  const current = await publishEventSuccessRotationRoundHandler(
+    request as never, deps as never);
+  assert.equal(current.assignmentCount, 1);
+
+  // Keep the prepared draft, restore the publish fence, then withdraw.
+  store.docs[`eventSuccessPlans/${eventId}`].liveControlRevision = 4;
+  store.docs[`eventSuccessPlans/${eventId}`].publishedRotationRoundIndex = -1;
+  const assignmentPath =
+    `eventSuccessAssignments/${eventId}_guided_rotations_${uid}`;
+  delete store.docs[assignmentPath];
+  store.docs[consentPath].status = "withdrawn";
+  store.docs[consentPath].receiptId = "withdrawal-2";
+  await assert.rejects(() => publishEventSuccessRotationRoundHandler(
+    request as never, deps as never), (error: unknown) =>
+    error instanceof HttpsError && error.code === "aborted");
+  assert.equal(store.docs[assignmentPath], undefined);
 });

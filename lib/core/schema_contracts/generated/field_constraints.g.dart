@@ -54419,6 +54419,139 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardConfigHash = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.configHash',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshots = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsConsentReceiptId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.consentReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsEventId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsFeatureId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsFormId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsTransformVersion = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.transformVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsUid = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueKind = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.kind',
+    required: true,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueOptionId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.optionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueOptionIds = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.optionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 40,
+    uniqueItems: true,
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueOptionIdsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.optionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueValue = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.value',
+    required: true,
+    valueTypes: <String>['number'],
+  );
+
+  static const eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsVersionId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventSuccessAssignmentDraftDocumentBaseAssignmentRevision = CatchContractFieldConstraints(
     path: 'eventSuccessAssignmentDraftDocument.baseAssignmentRevision',
     required: true,
@@ -120958,6 +121091,23 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDraftDocument.assignment.whyCodes': eventSuccessAssignmentDraftDocumentAssignmentWhyCodes,
     'eventSuccessAssignmentDraftDocument.assignment.whyCodes.items': eventSuccessAssignmentDraftDocumentAssignmentWhyCodesItems,
     'eventSuccessAssignmentDraftDocument.assignment.whySummary': eventSuccessAssignmentDraftDocumentAssignmentWhySummary,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.configHash': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardConfigHash,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.revision': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardRevision,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshots,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.consentReceiptId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsConsentReceiptId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.eventId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsEventId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.featureId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsFeatureId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.formId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsFormId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.organizerId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsOrganizerId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.questionId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsQuestionId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.transformVersion': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsTransformVersion,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.uid': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsUid,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.kind': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueKind,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.optionId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueOptionId,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.optionIds': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueOptionIds,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.optionIds.items': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueOptionIdsItems,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.value.value': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsValueValue,
+    'eventSuccessAssignmentDraftDocument.assignmentFeatureGuard.snapshots.items.versionId': eventSuccessAssignmentDraftDocumentAssignmentFeatureGuardSnapshotsItemsVersionId,
     'eventSuccessAssignmentDraftDocument.baseAssignmentRevision': eventSuccessAssignmentDraftDocumentBaseAssignmentRevision,
     'eventSuccessAssignmentDraftDocument.clubId': eventSuccessAssignmentDraftDocumentClubId,
     'eventSuccessAssignmentDraftDocument.createdAt._nanoseconds': eventSuccessAssignmentDraftDocumentCreatedAtNanoseconds,
