@@ -53,7 +53,7 @@ test("expiry frees capacity once and blocks late submission", async () => {
   assert.equal(h.store.records.get("organizerForms/form")?.pendingPaymentCount,
     0);
   h.capture(paymentId);
-  await assert.rejects(h.finalize(paymentId), /not finalizable/u);
+  assert.equal(await h.finalize(paymentId), "refundPending");
   assert.equal(
     h.store.records.get("organizerForms/form")?.submittedResponseCount,
     0);

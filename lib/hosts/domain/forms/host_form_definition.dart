@@ -88,6 +88,27 @@ class HostFormDefinition {
     _json['logicRules'],
   ).map(HostFormLogicRule.fromMap).toList(growable: false);
 
+  bool get offersOrganizerWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['organizerWhatsapp'] ==
+      true;
+  bool get offersCatchWhatsapp =>
+      formDefinitionDeepStringMap(_json['messagingConsent'])['catchWhatsapp'] ==
+      true;
+
+  HostFormDefinition withMessagingConsent({
+    bool? organizerWhatsapp,
+    bool? catchWhatsapp,
+  }) {
+    final next = toJson();
+    next['messagingConsent'] = {
+      'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,
+      'catchWhatsapp': catchWhatsapp ?? offersCatchWhatsapp,
+    };
+    return HostFormDefinition._(next);
+  }
+
   HostFormPayment? get payment => _json['payment'] == null
       ? null
       : HostFormPayment.fromMap(formDefinitionDeepStringMap(_json['payment']));

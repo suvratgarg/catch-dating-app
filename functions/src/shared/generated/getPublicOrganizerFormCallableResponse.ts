@@ -224,4 +224,9 @@ export type GetPublicOrganizerFormCallableResponse = {
       actionUrl: string | null;
     };
   };
+  messagingOffer?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: string | null;
+    catchWhatsapp: string | null;
+  };
 };

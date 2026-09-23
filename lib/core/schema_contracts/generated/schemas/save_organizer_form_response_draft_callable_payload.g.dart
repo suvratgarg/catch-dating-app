@@ -19,6 +19,27 @@ const schemaSaveOrganizerFormResponseDraftCallablePayloadSchema = <String, Objec
     'consentAccepted',
   ],
   'properties': <String, Object?>{
+    'messagingChoices': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'termsVersion',
+        'organizerWhatsapp',
+        'catchWhatsapp',
+      ],
+      'properties': <String, Object?>{
+        'termsVersion': <String, Object?>{
+          'const': 'form-whatsapp-v1',
+          'type': 'string',
+        },
+        'organizerWhatsapp': <String, Object?>{
+          'type': 'boolean',
+        },
+        'catchWhatsapp': <String, Object?>{
+          'type': 'boolean',
+        },
+      },
+    },
     'draftId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

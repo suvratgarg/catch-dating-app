@@ -5039,6 +5039,251 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const catchCommunicationPermissionReceiptDocumentActorClass = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.actorClass',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['participant', 'provider', 'system'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentChannel = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.channel',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentConsentCopyHash = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.consentCopyHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['optedIn', 'optedOut'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentEvidenceStatus = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['complete', 'incomplete'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentGrantedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.grantedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentGrantedAtSeconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.grantedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentIdentityStrength = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.identityStrength',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'emailVerified', 'phoneVerified', 'catchAccount'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSourceEventId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.sourceEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSourceFormId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.sourceFormId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSourceOrganizerId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.sourceOrganizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSourceProviderEventId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.sourceProviderEventId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSourceResponseId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.sourceResponseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentSupersedesReceiptId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.supersedesReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPermissionReceiptDocumentUid = CatchContractFieldConstraints(
+    path: 'catchCommunicationPermissionReceiptDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPreferenceDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchCommunicationPreferenceDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchCommunicationPreferenceDocumentUid = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPreferenceDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchCommunicationPreferenceDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.currentReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappEvidenceStatus = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'complete', 'incomplete'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappSource = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['publicEventRegistration', 'hostFormResponse', 'participantSettings', 'unsubscribeLink', 'inboundStop', 'providerWebhook', 'legacyIncomplete'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappSourceEventId = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.sourceEventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappStatus = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappTermsVersion = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.termsVersion',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchCommunicationPreferenceDocumentWhatsappUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'catchCommunicationPreferenceDocument.whatsapp.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const changeEventAssistanceRouteCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'changeEventAssistanceRouteCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -81167,6 +81412,52 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['anonymous', 'emailVerified', 'phoneVerified', 'catchAccount'],
   );
 
+  static const organizerFormResponseDraftDocumentMessagingDecisionCatchDecidedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.catchDecidedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDraftDocumentMessagingDecisionCatchDecidedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.catchDecidedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDraftDocumentMessagingDecisionCatchWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.catchWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormResponseDraftDocumentMessagingDecisionOrganizerDecidedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.organizerDecidedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormResponseDraftDocumentMessagingDecisionOrganizerDecidedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.organizerDecidedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormResponseDraftDocumentMessagingDecisionOrganizerWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.organizerWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormResponseDraftDocumentMessagingDecisionTermsVersion = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.messagingDecision.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFormResponseDraftDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'organizerFormResponseDraftDocument.organizerId',
     maxLength: 180,
@@ -91858,6 +92149,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadMessagingChoicesCatchWhatsapp = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.messagingChoices.catchWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadMessagingChoicesOrganizerWhatsapp = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.messagingChoices.organizerWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const saveOrganizerFormResponseDraftCallablePayloadMessagingChoicesTermsVersion = CatchContractFieldConstraints(
+    path: 'saveOrganizerFormResponseDraftCallablePayload.messagingChoices.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const saveOrganizerFormResponseDraftCallableResponseDraftId = CatchContractFieldConstraints(
@@ -103181,6 +103490,41 @@ abstract final class CatchContractConstraints {
     'cancelCrossPathsInvitationOrPlanCallableResponse.status': cancelCrossPathsInvitationOrPlanCallableResponseStatus,
     'cancelEventCallablePayload.eventId': cancelEventCallablePayloadEventId,
     'cancelEventCallablePayload.reason': cancelEventCallablePayloadReason,
+    'catchCommunicationPermissionReceiptDocument.actorClass': catchCommunicationPermissionReceiptDocumentActorClass,
+    'catchCommunicationPermissionReceiptDocument.actorUid': catchCommunicationPermissionReceiptDocumentActorUid,
+    'catchCommunicationPermissionReceiptDocument.channel': catchCommunicationPermissionReceiptDocumentChannel,
+    'catchCommunicationPermissionReceiptDocument.consentCopyHash': catchCommunicationPermissionReceiptDocumentConsentCopyHash,
+    'catchCommunicationPermissionReceiptDocument.createdAt._nanoseconds': catchCommunicationPermissionReceiptDocumentCreatedAtNanoseconds,
+    'catchCommunicationPermissionReceiptDocument.createdAt._seconds': catchCommunicationPermissionReceiptDocumentCreatedAtSeconds,
+    'catchCommunicationPermissionReceiptDocument.decision': catchCommunicationPermissionReceiptDocumentDecision,
+    'catchCommunicationPermissionReceiptDocument.evidenceStatus': catchCommunicationPermissionReceiptDocumentEvidenceStatus,
+    'catchCommunicationPermissionReceiptDocument.grantedAt._nanoseconds': catchCommunicationPermissionReceiptDocumentGrantedAtNanoseconds,
+    'catchCommunicationPermissionReceiptDocument.grantedAt._seconds': catchCommunicationPermissionReceiptDocumentGrantedAtSeconds,
+    'catchCommunicationPermissionReceiptDocument.identityStrength': catchCommunicationPermissionReceiptDocumentIdentityStrength,
+    'catchCommunicationPermissionReceiptDocument.revokedAt._nanoseconds': catchCommunicationPermissionReceiptDocumentRevokedAtNanoseconds,
+    'catchCommunicationPermissionReceiptDocument.revokedAt._seconds': catchCommunicationPermissionReceiptDocumentRevokedAtSeconds,
+    'catchCommunicationPermissionReceiptDocument.source': catchCommunicationPermissionReceiptDocumentSource,
+    'catchCommunicationPermissionReceiptDocument.sourceEventId': catchCommunicationPermissionReceiptDocumentSourceEventId,
+    'catchCommunicationPermissionReceiptDocument.sourceFormId': catchCommunicationPermissionReceiptDocumentSourceFormId,
+    'catchCommunicationPermissionReceiptDocument.sourceOrganizerId': catchCommunicationPermissionReceiptDocumentSourceOrganizerId,
+    'catchCommunicationPermissionReceiptDocument.sourceProviderEventId': catchCommunicationPermissionReceiptDocumentSourceProviderEventId,
+    'catchCommunicationPermissionReceiptDocument.sourceResponseId': catchCommunicationPermissionReceiptDocumentSourceResponseId,
+    'catchCommunicationPermissionReceiptDocument.supersedesReceiptId': catchCommunicationPermissionReceiptDocumentSupersedesReceiptId,
+    'catchCommunicationPermissionReceiptDocument.termsVersion': catchCommunicationPermissionReceiptDocumentTermsVersion,
+    'catchCommunicationPermissionReceiptDocument.uid': catchCommunicationPermissionReceiptDocumentUid,
+    'catchCommunicationPreferenceDocument.createdAt._nanoseconds': catchCommunicationPreferenceDocumentCreatedAtNanoseconds,
+    'catchCommunicationPreferenceDocument.createdAt._seconds': catchCommunicationPreferenceDocumentCreatedAtSeconds,
+    'catchCommunicationPreferenceDocument.uid': catchCommunicationPreferenceDocumentUid,
+    'catchCommunicationPreferenceDocument.updatedAt._nanoseconds': catchCommunicationPreferenceDocumentUpdatedAtNanoseconds,
+    'catchCommunicationPreferenceDocument.updatedAt._seconds': catchCommunicationPreferenceDocumentUpdatedAtSeconds,
+    'catchCommunicationPreferenceDocument.whatsapp.currentReceiptId': catchCommunicationPreferenceDocumentWhatsappCurrentReceiptId,
+    'catchCommunicationPreferenceDocument.whatsapp.evidenceStatus': catchCommunicationPreferenceDocumentWhatsappEvidenceStatus,
+    'catchCommunicationPreferenceDocument.whatsapp.source': catchCommunicationPreferenceDocumentWhatsappSource,
+    'catchCommunicationPreferenceDocument.whatsapp.sourceEventId': catchCommunicationPreferenceDocumentWhatsappSourceEventId,
+    'catchCommunicationPreferenceDocument.whatsapp.status': catchCommunicationPreferenceDocumentWhatsappStatus,
+    'catchCommunicationPreferenceDocument.whatsapp.termsVersion': catchCommunicationPreferenceDocumentWhatsappTermsVersion,
+    'catchCommunicationPreferenceDocument.whatsapp.updatedAt._nanoseconds': catchCommunicationPreferenceDocumentWhatsappUpdatedAtNanoseconds,
+    'catchCommunicationPreferenceDocument.whatsapp.updatedAt._seconds': catchCommunicationPreferenceDocumentWhatsappUpdatedAtSeconds,
     'changeEventAssistanceRouteCallablePayload.command.context.clockId': changeEventAssistanceRouteCallablePayloadCommandContextClockId,
     'changeEventAssistanceRouteCallablePayload.command.context.eventId': changeEventAssistanceRouteCallablePayloadCommandContextEventId,
     'changeEventAssistanceRouteCallablePayload.command.context.mode': changeEventAssistanceRouteCallablePayloadCommandContextMode,
@@ -113477,6 +113821,13 @@ abstract final class CatchContractConstraints {
     'organizerFormResponseDraftDocument.expiresAt._seconds': organizerFormResponseDraftDocumentExpiresAtSeconds,
     'organizerFormResponseDraftDocument.formId': organizerFormResponseDraftDocumentFormId,
     'organizerFormResponseDraftDocument.identityKind': organizerFormResponseDraftDocumentIdentityKind,
+    'organizerFormResponseDraftDocument.messagingDecision.catchDecidedAt._nanoseconds': organizerFormResponseDraftDocumentMessagingDecisionCatchDecidedAtNanoseconds,
+    'organizerFormResponseDraftDocument.messagingDecision.catchDecidedAt._seconds': organizerFormResponseDraftDocumentMessagingDecisionCatchDecidedAtSeconds,
+    'organizerFormResponseDraftDocument.messagingDecision.catchWhatsapp': organizerFormResponseDraftDocumentMessagingDecisionCatchWhatsapp,
+    'organizerFormResponseDraftDocument.messagingDecision.organizerDecidedAt._nanoseconds': organizerFormResponseDraftDocumentMessagingDecisionOrganizerDecidedAtNanoseconds,
+    'organizerFormResponseDraftDocument.messagingDecision.organizerDecidedAt._seconds': organizerFormResponseDraftDocumentMessagingDecisionOrganizerDecidedAtSeconds,
+    'organizerFormResponseDraftDocument.messagingDecision.organizerWhatsapp': organizerFormResponseDraftDocumentMessagingDecisionOrganizerWhatsapp,
+    'organizerFormResponseDraftDocument.messagingDecision.termsVersion': organizerFormResponseDraftDocumentMessagingDecisionTermsVersion,
     'organizerFormResponseDraftDocument.organizerId': organizerFormResponseDraftDocumentOrganizerId,
     'organizerFormResponseDraftDocument.paymentAttemptId': organizerFormResponseDraftDocumentPaymentAttemptId,
     'organizerFormResponseDraftDocument.publicFormId': organizerFormResponseDraftDocumentPublicFormId,
@@ -114950,6 +115301,9 @@ abstract final class CatchContractConstraints {
     'saveOrganizerFormResponseDraftCallablePayload.draftId': saveOrganizerFormResponseDraftCallablePayloadDraftId,
     'saveOrganizerFormResponseDraftCallablePayload.draftToken': saveOrganizerFormResponseDraftCallablePayloadDraftToken,
     'saveOrganizerFormResponseDraftCallablePayload.expectedRevision': saveOrganizerFormResponseDraftCallablePayloadExpectedRevision,
+    'saveOrganizerFormResponseDraftCallablePayload.messagingChoices.catchWhatsapp': saveOrganizerFormResponseDraftCallablePayloadMessagingChoicesCatchWhatsapp,
+    'saveOrganizerFormResponseDraftCallablePayload.messagingChoices.organizerWhatsapp': saveOrganizerFormResponseDraftCallablePayloadMessagingChoicesOrganizerWhatsapp,
+    'saveOrganizerFormResponseDraftCallablePayload.messagingChoices.termsVersion': saveOrganizerFormResponseDraftCallablePayloadMessagingChoicesTermsVersion,
     'saveOrganizerFormResponseDraftCallableResponse.draftId': saveOrganizerFormResponseDraftCallableResponseDraftId,
     'saveOrganizerFormResponseDraftCallableResponse.expiresAtMillis': saveOrganizerFormResponseDraftCallableResponseExpiresAtMillis,
     'saveOrganizerFormResponseDraftCallableResponse.revision': saveOrganizerFormResponseDraftCallableResponseRevision,

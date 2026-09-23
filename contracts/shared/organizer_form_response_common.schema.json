@@ -57,7 +57,8 @@
         "availabilityStatus": {"$ref": "#/definitions/publicAvailabilityStatus"},
         "availabilityMessage": {"type": ["string", "null"], "maxLength": 500},
         "organizer": {"$ref": "#/definitions/organizerPresentation"},
-        "definition": {"$ref": "organizer_form_common.schema.json#/definitions/formDefinition"}
+        "definition": {"$ref": "organizer_form_common.schema.json#/definitions/formDefinition"},
+        "messagingOffer": {"$ref": "#/definitions/messagingOffer"}
       }
     },
     "draftProjection": {
@@ -71,6 +72,7 @@
         "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
         "answers": {"$ref": "#/definitions/answerMap"},
         "consentAccepted": {"type": "boolean"},
+        "messagingChoices": {"$ref": "#/definitions/messagingChoices"},
         "identityKind": {"$ref": "#/definitions/responseIdentityKind"},
         "expiresAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
       }
@@ -87,6 +89,85 @@
         "submittedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
         "withdrawalToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
         "completion": {"$ref": "organizer_form_common.schema.json#/definitions/formCompletion"}
+      }
+    },
+    "messagingChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        }
+      }
+    },
+    "messagingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp",
+        "organizerDecidedAt",
+        "catchDecidedAt"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerDecidedAt": {
+          "$ref": "event_common.schema.json#/definitions/timestamp"
+        },
+        "catchDecidedAt": {
+          "$ref": "event_common.schema.json#/definitions/timestamp"
+        }
+      }
+    },
+    "messagingOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "catchWhatsapp": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
       }
     }
   }

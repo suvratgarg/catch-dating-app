@@ -899,6 +899,35 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                   }
                 }
               }
+            },
+            "messagingOffer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "termsVersion",
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "termsVersion": {
+                  "const": "form-whatsapp-v1",
+                  "type": "string"
+                },
+                "organizerWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
             }
           }
         },
@@ -946,6 +975,27 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
         },
         "consentAccepted": {
           "type": "boolean"
+        },
+        "messagingChoices": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
         },
         "identityKind": {
           "type": "string",

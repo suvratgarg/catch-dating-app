@@ -20,7 +20,20 @@ test("Firestore serializes payment reservations, finalization and late capture",
     const fixture = createFormPaymentFixture();
     const collections = ["organizerForms", "organizerFormVersions",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
-      "organizerFormPayments", "organizerFormResponses"];
+      "organizerFormPayments", "organizerFormResponses",
+      "organizerCommunicationPreferences",
+      "organizerCommunicationPermissionReceipts",
+      "catchCommunicationPreferences", "catchCommunicationPermissionReceipts"];
+    fixture.version.definition.messagingConsent = {
+      organizerWhatsapp: true, catchWhatsapp: true,
+    };
+    fixture.store.records.set("organizerFormResponseDrafts/draft", {
+      ...fixture.draft, messagingDecision: {
+        termsVersion: "form-whatsapp-v1", organizerWhatsapp: true,
+        catchWhatsapp: true, organizerDecidedAt: Timestamp.fromMillis(500),
+        catchDecidedAt: Timestamp.fromMillis(500),
+      },
+    });
     try {
       for (const name of collections) {
         await db.recursiveDelete(db.collection(name));
@@ -58,6 +71,13 @@ test("Firestore serializes payment reservations, finalization and late capture",
       assert.equal(
         (await db.collection("organizerFormResponses").get()).size, 1);
       assert.equal((await paymentRef.get()).get("reservationReleased"), true);
+      for (const collection of ["organizerCommunicationPermissionReceipts",
+        "catchCommunicationPermissionReceipts"]) {
+        const receipts = await db.collection(collection).get();
+        assert.equal(receipts.size, 1);
+        assert.equal(receipts.docs[0].get("uid"), "person");
+        assert.equal(receipts.docs[0].get("grantedAt").toMillis(), 500);
+      }
 
       // A separate frozen checkout expires. Later captured funds must not
       // create another response, even if two recovery workers race.

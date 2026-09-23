@@ -34,6 +34,10 @@ export type PublicFormStage =
   "loading" | "unavailable" | "identity" | "phoneCode" |
   "emailSent" | "form" | "review" | "payment" | "complete" | "withdrawn";
 
+type MessagingChoices = NonNullable<PublicOrganizerFormDraft["messagingChoices"]>;
+const uncheckedMessaging: MessagingChoices = {termsVersion: "form-whatsapp-v1",
+  organizerWhatsapp: false, catchWhatsapp: false};
+
 export interface PublicFormUploadState {
   status: "uploading" | "ready" | "error";
   label: string;
@@ -48,6 +52,7 @@ export function usePublicFormController(publicFormId: string) {
   );
   const [answers, setAnswers] = useState<PublicFormAnswers>({});
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [messagingChoices, setMessagingChoices] = useState<MessagingChoices>(uncheckedMessaging);
   const [sectionIndex, setSectionIndex] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
@@ -65,6 +70,8 @@ export function usePublicFormController(publicFormId: string) {
   const draftRef = useRef<PublicOrganizerFormDraft | null>(null);
   const answersRef = useRef<PublicFormAnswers>({});
   const consentRef = useRef(false);
+  const messagingRef = useRef<MessagingChoices>(uncheckedMessaging);
+  const authGenerationRef = useRef(0);
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const saveChainRef = useRef<Promise<void>>(Promise.resolve());
   const startPromiseRef = useRef<Promise<void> | null>(null);
@@ -107,6 +114,7 @@ export function usePublicFormController(publicFormId: string) {
 
   const startDraft = useCallback(async (nextForm: PublicOrganizerForm) => {
     if (startPromiseRef.current) return startPromiseRef.current;
+    const generation = authGenerationRef.current;
     const operation = (async () => {
       try {
         if (await resumePayment(userRef.current?.uid ?? null)) return;
@@ -115,15 +123,19 @@ export function usePublicFormController(publicFormId: string) {
           sourceToken,
           requestId: stableStartRequestId(publicFormId),
         });
+        if (generation !== authGenerationRef.current) return;
         draftRef.current = started;
         answersRef.current = {...started.answers};
         consentRef.current = started.consentAccepted;
         setDraft(started);
         setAnswers({...started.answers});
         setConsentAccepted(started.consentAccepted);
+        messagingRef.current = started.messagingChoices ?? uncheckedMessaging;
+        setMessagingChoices(messagingRef.current);
         setStatus({message: "", tone: ""});
         setStage("form");
       } catch (error) {
+        if (generation !== authGenerationRef.current) return;
         setStatus({message: publicFormError(error), tone: "is-error"});
         const policy = nextForm.definition.identityPolicy;
         setStage(policy === "anonymous" ? "unavailable" : "identity");
@@ -142,6 +154,12 @@ export function usePublicFormController(publicFormId: string) {
     const unsubscribe = watchPublicFormAuthState((user) => {
       if (cancelled) return;
       if (userRef.current?.uid !== user?.uid) {
+        authGenerationRef.current++;
+        startPromiseRef.current = null;
+        consentRef.current = false;
+        setConsentAccepted(false);
+        messagingRef.current = uncheckedMessaging;
+        setMessagingChoices(uncheckedMessaging);
         resetPaymentSession();
         draftRef.current = null;
         setDraft(null);
@@ -189,32 +207,44 @@ export function usePublicFormController(publicFormId: string) {
       });
     return () => {
       cancelled = true;
+      authGenerationRef.current++;
+      startPromiseRef.current = null;
       verificationRef.current?.clear();
       unsubscribe();
     };
   }, [pendingPayment, publicFormId, resetPaymentSession, sourceToken, startDraft]);
 
   const flushSave = useCallback(() => {
+    const generation = authGenerationRef.current;
     const operation = async () => {
+      if (generation !== authGenerationRef.current) return;
       const current = draftRef.current;
       if (!current || current.form.versionId !== formRef.current?.versionId) return;
       setSaveState("saving");
+      const savedAnswers = {...answersRef.current};
+      const savedConsent = consentRef.current;
+      const savedMessaging = {...messagingRef.current};
       try {
         const saved = await saveOrganizerFormResponseDraft({
           draftId: current.draftId,
           draftToken: current.draftToken,
           expectedRevision: current.revision,
-          answers: answersRef.current,
-          consentAccepted: consentRef.current,
+          answers: savedAnswers,
+          consentAccepted: savedConsent,
+          ...(current.form.messagingOffer ? {messagingChoices: savedMessaging} : {}),
         });
+        if (generation !== authGenerationRef.current ||
+            draftRef.current?.draftId !== current.draftId) return;
         const updated = {...current, revision: saved.revision,
           expiresAtMillis: saved.expiresAtMillis,
-          answers: {...answersRef.current},
-          consentAccepted: consentRef.current};
+          answers: savedAnswers,
+          consentAccepted: savedConsent,
+          messagingChoices: savedMessaging};
         draftRef.current = updated;
         setDraft(updated);
         setSaveState("saved");
       } catch (error) {
+        if (generation !== authGenerationRef.current) return;
         setSaveState("idle");
         setStatus({message: publicFormError(error), tone: "is-error"});
         throw error;
@@ -250,6 +280,14 @@ export function usePublicFormController(publicFormId: string) {
   function updateConsent(value: boolean) {
     consentRef.current = value;
     setConsentAccepted(value);
+    setDirtyRevision((current) => current + 1);
+  }
+
+  function updateMessagingChoice(scope: "organizerWhatsapp" | "catchWhatsapp", value: boolean) {
+    if (!formRef.current?.messagingOffer?.[scope]) return;
+    const choices = {...messagingRef.current, [scope]: value};
+    messagingRef.current = choices;
+    setMessagingChoices(choices);
     setDirtyRevision((current) => current + 1);
   }
 
@@ -405,8 +443,10 @@ export function usePublicFormController(publicFormId: string) {
         publicFormsCopy.genericError, tone: "is-error"});
       return;
     }
+    const generation = authGenerationRef.current;
     await actionMutation.mutateAsync(async () => {
       await flushSave();
+      if (generation !== authGenerationRef.current) return;
       const current = draftRef.current;
       if (!current) throw new Error(publicFormsCopy.genericError);
       const payload = {
@@ -420,7 +460,8 @@ export function usePublicFormController(publicFormId: string) {
         if (!uid) throw new Error(publicFormsCopy.identityTitle);
         await payments.prepare(payload, uid);
       } else {
-        acceptReceipt(await submitOrganizerFormResponse(payload));
+        const submitted = await submitOrganizerFormResponse(payload);
+        if (generation === authGenerationRef.current) acceptReceipt(submitted);
       }
     }).catch(() => undefined);
   }
@@ -458,6 +499,7 @@ export function usePublicFormController(publicFormId: string) {
     answers,
     code,
     consentAccepted,
+    messagingChoices,
     embed,
     email,
     errors,
@@ -485,6 +527,7 @@ export function usePublicFormController(publicFormId: string) {
     submit,
     updateAnswer,
     updateConsent,
+    updateMessagingChoice,
     uploadAnswer,
     uploadInProgress,
     uploads,

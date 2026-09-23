@@ -1110,6 +1110,15 @@ service cloud.firestore {
     // Organizer-scoped WhatsApp/SMS grants are server-owned. Hosts receive
     // only aggregate reachability counts; attendee self-service will use a
     // callable rather than exposing this cross-organizer consent ledger.
+    // Catch platform permission is independent of organizer grants. All
+    // identity-bound decisions go through participant callables.
+    match /catchCommunicationPreferences/{uid} {
+      allow read, write: if false;
+    }
+    match /catchCommunicationPermissionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizerCommunicationPreferences/{preferenceId} {
       allow read, write: if false;
     }

@@ -277,16 +277,20 @@ async function queueOrganizerCommunicationPreferenceCleanup(
   uid: string,
   writer: BatchQueue
 ) {
-  const [preferences, receipts, origins] = await Promise.all([
+  const [preferences, receipts, origins, catchReceipts] = await Promise.all([
     db.collection("organizerCommunicationPreferences")
       .where("uid", "==", uid).get(),
     db.collection("organizerCommunicationPermissionReceipts")
       .where("uid", "==", uid).get(),
     db.collection("organizerContactOrigins")
       .where("actorUid", "==", uid).get(),
+    db.collection("catchCommunicationPermissionReceipts")
+      .where("uid", "==", uid).get(),
   ]);
   preferences.forEach((doc) => writer.delete(doc.ref));
   receipts.forEach((doc) => writer.delete(doc.ref));
+  catchReceipts.forEach((doc) => writer.delete(doc.ref));
+  writer.delete(db.collection("catchCommunicationPreferences").doc(uid));
   origins.forEach((doc) => writer.update(doc.ref, {actorUid: null}));
 }
 

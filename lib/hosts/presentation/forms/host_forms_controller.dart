@@ -155,6 +155,14 @@ class HostFormEditorController extends _$HostFormEditorController {
     return HostFormEditorState(editor: editor);
   }
 
+  void updateMessagingConsent({bool? organizerWhatsapp, bool? catchWhatsapp}) =>
+      _mutate(
+        (definition) => definition.withMessagingConsent(
+          organizerWhatsapp: organizerWhatsapp,
+          catchWhatsapp: catchWhatsapp,
+        ),
+      );
+
   void updatePayment(HostFormPayment? payment) =>
       _mutate((definition) => definition.withPayment(payment));
 

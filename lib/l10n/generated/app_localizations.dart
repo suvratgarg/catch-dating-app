@@ -32367,6 +32367,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open submitted response'**
   String get hostFormPaymentsOpenResponse;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional WhatsApp choices'**
+  String get hostFormMessagingTitle;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer updates from this organizer'**
+  String get hostFormMessagingOrganizer;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer updates from Catch'**
+  String get hostFormMessagingCatch;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings add separate, unchecked choices to the form. Applicants can choose either, both, or neither. Payment and submission never grant messaging permission. Publish to update the form.'**
+  String get hostFormMessagingHelp;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose verified phone in Access to offer WhatsApp updates.'**
+  String get hostFormMessagingPhoneRequired;
 }
 
 class _AppLocalizationsDelegate

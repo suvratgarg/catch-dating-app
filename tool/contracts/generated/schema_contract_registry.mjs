@@ -94676,6 +94676,529 @@ export const organizerFollowDocumentSchema = {
   }
 };
 
+export const catchCommunicationPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_communication_preferences.schema.json",
+  "title": "CatchCommunicationPreferenceDocument",
+  "description": "Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchCommunicationPreferences",
+  "x-firestore-path": "catchCommunicationPreferences/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "participant consent handlers",
+  "required": [
+    "uid",
+    "whatsapp",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "currentReceiptId",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const catchCommunicationPermissionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_communication_permission_receipts.schema.json",
+  "title": "CatchCommunicationPermissionReceiptDocument",
+  "description": "Immutable participant evidence for Catch WhatsApp, separate from every organizer permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchCommunicationPermissionReceipts",
+  "x-firestore-path": "catchCommunicationPermissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant consent handlers",
+  "required": [
+    "uid",
+    "channel",
+    "decision",
+    "evidenceStatus",
+    "termsVersion",
+    "consentCopyHash",
+    "source",
+    "sourceEventId",
+    "sourceFormId",
+    "sourceResponseId",
+    "sourceProviderEventId",
+    "actorClass",
+    "actorUid",
+    "identityStrength",
+    "grantedAt",
+    "revokedAt",
+    "supersedesReceiptId",
+    "createdAt",
+    "sourceOrganizerId"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "const": "whatsapp",
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "evidenceStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "incomplete"
+      ]
+    },
+    "termsVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "consentCopyHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "publicEventRegistration",
+        "hostFormResponse",
+        "participantSettings",
+        "unsubscribeLink",
+        "inboundStop",
+        "providerWebhook",
+        "legacyIncomplete"
+      ]
+    },
+    "sourceEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceFormId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceProviderEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityStrength": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "grantedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersedesReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "sourceOrganizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedIn"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "consentCopyHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "grantedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "revokedAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedOut"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "grantedAt": {
+            "type": "null"
+          },
+          "revokedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
 export const organizerCommunicationPreferenceDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_communication_preferences.schema.json",
@@ -104393,6 +104916,69 @@ export const organizerFormResponseDraftDocumentSchema = {
     "submittedResponseId"
   ],
   "properties": {
+    "messagingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp",
+        "organizerDecidedAt",
+        "catchDecidedAt"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "catchDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
+    },
     "paymentAttemptId": {
       "anyOf": [
         {
@@ -197191,6 +197777,35 @@ export const getPublicOrganizerFormCallableResponseSchema = {
               }
             }
           }
+        },
+        "messagingOffer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
         }
       }
     }
@@ -198125,6 +198740,35 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                   }
                 }
               }
+            },
+            "messagingOffer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "termsVersion",
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "termsVersion": {
+                  "const": "form-whatsapp-v1",
+                  "type": "string"
+                },
+                "organizerWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
             }
           }
         },
@@ -198173,6 +198817,27 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
         "consentAccepted": {
           "type": "boolean"
         },
+        "messagingChoices": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
         "identityKind": {
           "type": "string",
           "enum": [
@@ -198207,6 +198872,27 @@ export const saveOrganizerFormResponseDraftCallablePayloadSchema = {
     "consentAccepted"
   ],
   "properties": {
+    "messagingChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        }
+      }
+    },
     "draftId": {
       "type": "string",
       "minLength": 1,

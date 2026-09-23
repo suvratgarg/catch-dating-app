@@ -95,6 +95,46 @@ class HostFormSettingsSectionList extends StatelessWidget {
         ],
       ),
       gapH20,
+      CatchSection.fieldRows(
+        title: context.l10n.hostFormMessagingTitle,
+        footer: Text(
+          definition.identityPolicy == HostFormIdentityPolicy.phoneVerified
+              ? context.l10n.hostFormMessagingHelp
+              : context.l10n.hostFormMessagingPhoneRequired,
+          style: CatchTextStyles.supporting(context),
+        ),
+        children: [
+          CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostFormMessagingOrganizer,
+            value: definition.offersOrganizerWhatsapp,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerWhatsapp,
+            onChanged:
+                definition.identityPolicy ==
+                        HostFormIdentityPolicy.phoneVerified ||
+                    definition.offersOrganizerWhatsapp
+                ? (value) =>
+                      notifier.updateMessagingConsent(organizerWhatsapp: value)
+                : null,
+          ),
+          CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostFormMessagingCatch,
+            value: definition.offersCatchWhatsapp,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp,
+            onChanged:
+                definition.identityPolicy ==
+                        HostFormIdentityPolicy.phoneVerified ||
+                    definition.offersCatchWhatsapp
+                ? (value) =>
+                      notifier.updateMessagingConsent(catchWhatsapp: value)
+                : null,
+          ),
+        ],
+      ),
+      gapH20,
       HostFormPaymentSection(
         organizerId: organizerId,
         definition: definition,

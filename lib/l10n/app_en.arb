@@ -27592,5 +27592,40 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.forms.payments"
+  },
+  "hostFormMessagingTitle": "Optional WhatsApp choices",
+  "@hostFormMessagingTitle": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingOrganizer": "Offer updates from this organizer",
+  "@hostFormMessagingOrganizer": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingCatch": "Offer updates from Catch",
+  "@hostFormMessagingCatch": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingHelp": "These settings add separate, unchecked choices to the form. Applicants can choose either, both, or neither. Payment and submission never grant messaging permission. Publish to update the form.",
+  "@hostFormMessagingHelp": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingPhoneRequired": "Choose verified phone in Access to offer WhatsApp updates.",
+  "@hostFormMessagingPhoneRequired": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
   }
 }

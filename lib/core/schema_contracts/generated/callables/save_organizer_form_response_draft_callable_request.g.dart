@@ -8,6 +8,7 @@
 /// Optimistically saves respondent answers without file bytes.
 final class SaveOrganizerFormResponseDraftCallableRequest {
   const SaveOrganizerFormResponseDraftCallableRequest({
+    this.messagingChoices,
     required this.draftId,
     required this.draftToken,
     required this.expectedRevision,
@@ -15,6 +16,7 @@ final class SaveOrganizerFormResponseDraftCallableRequest {
     required this.consentAccepted,
   });
 
+  final Map<String, Object?>? messagingChoices;
   final String draftId;
   final String? draftToken;
   final int expectedRevision;
@@ -22,6 +24,7 @@ final class SaveOrganizerFormResponseDraftCallableRequest {
   final bool consentAccepted;
 
   Map<String, Object?> toJson() => {
+    'messagingChoices': ?messagingChoices,
     'draftId': draftId,
     'draftToken': draftToken,
     'expectedRevision': expectedRevision,

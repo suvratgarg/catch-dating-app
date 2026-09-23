@@ -1880,6 +1880,8 @@ describe("firestore.rules", () => {
         ["eventVenueSessionRedemptions", "redemption-1"],
         ["organizerProviderConnections", "connection-1"],
         ["organizerCommunicationPermissionReceipts", "permission-1"],
+        ["catchCommunicationPreferences", "runner-1"],
+        ["catchCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],
         ["organizerManualSendTasks", "task-1"],

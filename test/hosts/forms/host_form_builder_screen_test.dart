@@ -2,11 +2,11 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
@@ -22,6 +22,28 @@ import '../../test_pump_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('settings offer separate unchecked WhatsApp choices', (
+    tester,
+  ) async {
+    await _pumpBuilder(tester, initialView: HostFormWorkspaceView.settings);
+    final organizer = find.byWidgetPredicate(
+      (w) => w is CatchField && w.title == 'Offer updates from this organizer',
+    );
+    final platform = find.byWidgetPredicate(
+      (w) => w is CatchField && w.title == 'Offer updates from Catch',
+    );
+    expect(organizer, findsOneWidget);
+    expect(platform, findsOneWidget);
+    for (final field in [organizer, platform]) {
+      expect(tester.widget<CatchField>(field).toggled, isFalse);
+    }
+    expect(
+      find.textContaining('Applicants can choose either, both, or neither'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('compact builder leads with questions instead of raw settings', (
     tester,
@@ -423,6 +445,7 @@ void main() {
 
 Future<void> _pumpBuilder(
   WidgetTester tester, {
+  HostFormWorkspaceView? initialView,
   bool published = false,
   bool withHistory = false,
   bool legacyConsequences = false,
@@ -468,7 +491,8 @@ Future<void> _pumpBuilder(
     ),
   );
   final router = GoRouter(
-    initialLocation: '/forms/form_1',
+    initialLocation:
+        '/forms/form_1${initialView == null ? '' : '?view=${initialView.name}'}',
     routes: [
       GoRoute(
         path: '/forms/:formId',

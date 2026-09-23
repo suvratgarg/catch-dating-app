@@ -230,12 +230,22 @@ export type BeginOrganizerFormResponseCallableResponse = {
         actionUrl: string | null;
       };
     };
+    messagingOffer?: {
+      termsVersion: "form-whatsapp-v1";
+      organizerWhatsapp: string | null;
+      catchWhatsapp: string | null;
+    };
   };
   revision: number;
   answers: {
     [k: string]: string | number | boolean | null | string[];
   };
   consentAccepted: boolean;
+  messagingChoices?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: boolean;
+    catchWhatsapp: boolean;
+  };
   identityKind:
     | "anonymous"
     | "emailVerified"

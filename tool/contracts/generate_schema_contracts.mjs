@@ -954,6 +954,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
   },
   {
+    name: "CatchCommunicationPreferenceDocument",
+    source: "firestore/catch_communication_preferences.schema.json",
+    typeOutput: "functions/src/shared/generated/catchCommunicationPreferenceDocument.ts",
+  },
+  {
+    name: "CatchCommunicationPermissionReceiptDocument",
+    source: "firestore/catch_communication_permission_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/catchCommunicationPermissionReceiptDocument.ts",
+  },
+  {
     name: "OrganizerCommunicationPreferenceDocument",
     source: "firestore/organizer_communication_preferences.schema.json",
     typeOutput:

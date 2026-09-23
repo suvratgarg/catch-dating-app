@@ -183,6 +183,8 @@ import {
   organizerPostDeliveryRecipientDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
+  catchCommunicationPreferenceDocumentSchema,
+  catchCommunicationPermissionReceiptDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
   organizerCommunicationPermissionReceiptDocumentSchema,
   organizerContactDocumentSchema,
@@ -910,6 +912,8 @@ export const validateOrganizerPostDeliveryOperationDocument = ajv.compile(organi
 export const validateOrganizerPostDeliveryRecipientDocument = ajv.compile(organizerPostDeliveryRecipientDocumentSchema);
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
+export const validateCatchCommunicationPreferenceDocument = ajv.compile(catchCommunicationPreferenceDocumentSchema);
+export const validateCatchCommunicationPermissionReceiptDocument = ajv.compile(catchCommunicationPermissionReceiptDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);
 export const validateOrganizerCommunicationPermissionReceiptDocument = ajv.compile(organizerCommunicationPermissionReceiptDocumentSchema);
 export const validateOrganizerContactDocument = ajv.compile(organizerContactDocumentSchema);

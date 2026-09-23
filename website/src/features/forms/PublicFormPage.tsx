@@ -543,6 +543,20 @@ function ReviewStage({
           {definition.consent.consentCopy}
         </CheckboxField>
       </PublicFormConsent>
+      {controller.form?.messagingOffer?.organizerWhatsapp ||
+          controller.form?.messagingOffer?.catchWhatsapp ? (
+        <PublicFormConsent>
+          <h2>{publicFormsCopy.messagingHeading}</h2>
+          <p>{publicFormsCopy.messagingHelp}</p>
+          {(["organizerWhatsapp", "catchWhatsapp"] as const).map((scope) => {
+            const label = controller.form?.messagingOffer?.[scope];
+            return label ? <CheckboxField key={scope}
+              checked={controller.messagingChoices[scope]}
+              onChange={(event) => controller.updateMessagingChoice(scope, event.target.checked)}
+            >{label}</CheckboxField> : null;
+          })}
+        </PublicFormConsent>
+      ) : null}
       <PublicFormActions>
         <Button
           onClick={() => {

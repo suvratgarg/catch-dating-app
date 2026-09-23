@@ -4917,6 +4917,71 @@ export interface OrganizerFollowDocument {
 }
 
 /**
+ * Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.
+ */
+export interface CatchCommunicationPreferenceDocument {
+  uid: string;
+  whatsapp: {
+    status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
+    termsVersion: string | null;
+    source:
+      | null
+      | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
+      | "unsubscribeLink"
+      | "inboundStop"
+      | "providerWebhook"
+      | "legacyIncomplete";
+    sourceEventId: string | null;
+    updatedAt: FirebaseFirestore.Timestamp | null;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable participant evidence for Catch WhatsApp, separate from every organizer permission.
+ */
+export interface CatchCommunicationPermissionReceiptDocument {
+  uid: string;
+  channel: "whatsapp";
+  decision: "optedIn" | "optedOut";
+  evidenceStatus: "complete" | "incomplete";
+  termsVersion: string | null;
+  consentCopyHash: string | null;
+  source:
+    | "publicEventRegistration"
+    | "hostFormResponse"
+    | "participantSettings"
+    | "unsubscribeLink"
+    | "inboundStop"
+    | "providerWebhook"
+    | "legacyIncomplete";
+  sourceEventId: string | null;
+  sourceFormId: string | null;
+  sourceResponseId: string | null;
+  sourceProviderEventId: string | null;
+  actorClass: "participant" | "provider" | "system";
+  actorUid: string | null;
+  identityStrength:
+    | "unknown"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  grantedAt: FirebaseFirestore.Timestamp | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  supersedesReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  sourceOrganizerId: string;
+}
+
+/**
  * Server-owned, organizer-scoped channel consent stored at organizerCommunicationPreferences/{organizerId_uid}.
  */
 export interface OrganizerCommunicationPreferenceDocument {
@@ -6380,6 +6445,13 @@ export interface OrganizerFormVersionDocument {
  * Expiring version-bound respondent autosave state.
  */
 export interface OrganizerFormResponseDraftDocument {
+  messagingDecision?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: boolean;
+    catchWhatsapp: boolean;
+    organizerDecidedAt: FirebaseFirestore.Timestamp;
+    catchDecidedAt: FirebaseFirestore.Timestamp;
+  };
   /**
    * Server-only checkout lock; prevents edits while a fee is unresolved.
    */

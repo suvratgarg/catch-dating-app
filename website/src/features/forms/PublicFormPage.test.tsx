@@ -111,3 +111,28 @@ describe("public form payment", () => {
     expect(refresh).toHaveBeenCalledOnce();
   });
 });
+
+describe("review messaging choices", () => {
+  it("shows two independent unchecked optional controls using the server's copy", () => {
+    const updateMessagingChoice = vi.fn();
+    usePublicFormController.mockReturnValue({stage: "review", answers: {},
+      form: {organizer: {name: "RSVP"}, messagingOffer: {
+        termsVersion: "form-whatsapp-v1", organizerWhatsapp: "From RSVP on WhatsApp (optional)",
+        catchWhatsapp: "From Catch on WhatsApp (optional)",
+      }, definition: {title: "Application", appearance: {preset: "minimal"}, sections: [],
+        consent: {retentionCopy: "Keep until withdrawal", consentCopy: "Share answers"}}},
+      visibleSections: [], consentAccepted: true,
+      messagingChoices: {organizerWhatsapp: false, catchWhatsapp: false},
+      updateMessagingChoice, status: {message: "", tone: ""}, pending: false,
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    for (const name of ["From RSVP on WhatsApp (optional)", "From Catch on WhatsApp (optional)"]) {
+      const input = screen.getByRole("checkbox", {name}) as HTMLInputElement;
+      expect(input.checked).toBe(false);
+      expect(input.required).toBe(false);
+    }
+    fireEvent.click(screen.getByRole("checkbox", {name: "From Catch on WhatsApp (optional)"}));
+    expect(updateMessagingChoice).toHaveBeenCalledWith("catchWhatsapp", true);
+    expect(screen.getByText(/These choices do not affect your application or payment/u)).not.toBeNull();
+  });
+});

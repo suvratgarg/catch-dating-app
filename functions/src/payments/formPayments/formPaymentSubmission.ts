@@ -191,7 +191,7 @@ export async function finalizeCapturedFormPayment(params: {
         lastErrorCode: "frozenUploadUnavailable"});
       return "refundPending";
     }
-    const {responseId} = persistOrganizerFormSubmission({tx, db,
+    const {responseId} = await persistOrganizerFormSubmission({tx, db,
       draftId: payment.draftId, draft, version, submittedAnswers: answers,
       identity: payment.identity, withdrawalTokenHash: null,
       submittedAssetRefs, now});
@@ -259,7 +259,9 @@ export function frozenFormContentHash(draft: Draft, version: Version): string {
   return digest(JSON.stringify({answers: Object.entries(answers)
     .sort(([left], [right]) => left.localeCompare(right)),
   consentAccepted: draft.consentAccepted,
-  consentVersion: draft.consentVersion}));
+  consentVersion: draft.consentVersion,
+  ...(draft.messagingDecision ?
+    {messagingDecision: draft.messagingDecision} : {})}));
 }
 
 function digest(value: string): string {

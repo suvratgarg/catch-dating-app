@@ -76,7 +76,6 @@
         "reconcileOrganizerFormPayments"
       ]
     },
-
     {
       "id": "config_cities",
       "path": "config/cities",
@@ -2915,6 +2914,46 @@
       ],
       "migrationNotes": [
         "Permanent completion survives session expiry, reset and fork. Legacy completed sessions are a bounded read-only fallback while retained."
+      ]
+    },
+    {
+      "id": "catchCommunicationPreferences",
+      "path": "catchCommunicationPreferences/{uid}",
+      "rulesMatch": "/catchCommunicationPreferences/{uid}",
+      "typescriptInterface": "CatchCommunicationPreferenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant form consent and account deletion",
+      "read": "server only; never organizer-visible",
+      "write": "server only",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+        "Delayed finalization cannot overwrite a newer withdrawal."
+      ]
+    },
+    {
+      "id": "catchCommunicationPermissionReceipts",
+      "path": "catchCommunicationPermissionReceipts/{receiptId}",
+      "rulesMatch": "/catchCommunicationPermissionReceipts/{receiptId}",
+      "typescriptInterface": "CatchCommunicationPermissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant form consent and account deletion",
+      "read": "server only; never organizer-visible",
+      "write": "server only",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+        "Delayed finalization cannot overwrite a newer withdrawal."
       ]
     }
   ]

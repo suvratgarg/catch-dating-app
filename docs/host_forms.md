@@ -347,6 +347,25 @@ list. Detail sheets identify test money, separate capture from submission,
 show selectable provider references, and only offer a response link when one
 exists. They do not imply that declining an application issues a refund.
 
+The Settings workspace can offer organizer and Catch WhatsApp choices
+independently; enabling either requires verified-phone identity. The public
+review step starts both unchecked and uses versioned server-owned copy. A
+respondent may choose either, both or neither without changing application or
+payment eligibility. Leaving a box unchecked does not revoke an existing
+permission. Draft choices resume with the same verified account, and switching
+accounts clears local answers and choices.
+
+Successful free submission or verified paid finalization atomically records only
+the selected permissions. Organizer receipts/preferences and Catch
+receipts/preferences are separate server-only collections. Each scope retains
+its own decision timestamp: a delayed payment cannot overwrite a later STOP or
+settings withdrawal, and changing one scope cannot renew the other. Checkout
+freezes the choices with the answers. Replays cannot create duplicate receipts;
+account deletion removes both scopes and its tombstone blocks late grants.
+Participant preference management must expose separate withdrawal controls
+before releasing this consent flow; form capture alone does not enable a Catch
+marketing sender.
+
 Live Razorpay setup remains external: create Catch's Technology Partner
 application, register the HTTPS callback, provision its client credentials and
 vault permissions, connect the organizer account, and create and verify the

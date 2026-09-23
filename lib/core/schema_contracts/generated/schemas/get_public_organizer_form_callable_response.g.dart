@@ -876,6 +876,35 @@ const schemaGetPublicOrganizerFormCallableResponseSchema = <String, Object?>{
             },
           },
         },
+        'messagingOffer': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'termsVersion',
+            'organizerWhatsapp',
+            'catchWhatsapp',
+          ],
+          'properties': <String, Object?>{
+            'termsVersion': <String, Object?>{
+              'const': 'form-whatsapp-v1',
+              'type': 'string',
+            },
+            'organizerWhatsapp': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
+            },
+            'catchWhatsapp': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
+            },
+          },
+        },
       },
     },
   ],

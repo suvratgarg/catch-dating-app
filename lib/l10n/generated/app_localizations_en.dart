@@ -20323,4 +20323,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPaymentsOpenResponse => 'Open submitted response';
+
+  @override
+  String get hostFormMessagingTitle => 'Optional WhatsApp choices';
+
+  @override
+  String get hostFormMessagingOrganizer => 'Offer updates from this organizer';
+
+  @override
+  String get hostFormMessagingCatch => 'Offer updates from Catch';
+
+  @override
+  String get hostFormMessagingHelp =>
+      'These settings add separate, unchecked choices to the form. Applicants can choose either, both, or neither. Payment and submission never grant messaging permission. Publish to update the form.';
+
+  @override
+  String get hostFormMessagingPhoneRequired =>
+      'Choose verified phone in Access to offer WhatsApp updates.';
 }

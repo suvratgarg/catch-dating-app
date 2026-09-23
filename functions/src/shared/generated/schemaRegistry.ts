@@ -185,6 +185,8 @@ export {organizerPostDeliveryOperationDocumentSchema} from "./schemas/organizerP
 export {organizerPostDeliveryRecipientDocumentSchema} from "./schemas/organizerPostDeliveryRecipientDocument";
 export {organizerTeamMembershipDocumentSchema} from "./schemas/organizerTeamMembershipDocument";
 export {organizerFollowDocumentSchema} from "./schemas/organizerFollowDocument";
+export {catchCommunicationPreferenceDocumentSchema} from "./schemas/catchCommunicationPreferenceDocument";
+export {catchCommunicationPermissionReceiptDocumentSchema} from "./schemas/catchCommunicationPermissionReceiptDocument";
 export {organizerCommunicationPreferenceDocumentSchema} from "./schemas/organizerCommunicationPreferenceDocument";
 export {organizerCommunicationPermissionReceiptDocumentSchema} from "./schemas/organizerCommunicationPermissionReceiptDocument";
 export {organizerContactDocumentSchema} from "./schemas/organizerContactDocument";

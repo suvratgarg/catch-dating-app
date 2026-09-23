@@ -31,6 +31,69 @@ const schemaOrganizerFormResponseDraftDocumentSchema = <String, Object?>{
     'submittedResponseId',
   ],
   'properties': <String, Object?>{
+    'messagingDecision': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'termsVersion',
+        'organizerWhatsapp',
+        'catchWhatsapp',
+        'organizerDecidedAt',
+        'catchDecidedAt',
+      ],
+      'properties': <String, Object?>{
+        'termsVersion': <String, Object?>{
+          'const': 'form-whatsapp-v1',
+          'type': 'string',
+        },
+        'organizerWhatsapp': <String, Object?>{
+          'type': 'boolean',
+        },
+        'catchWhatsapp': <String, Object?>{
+          'type': 'boolean',
+        },
+        'organizerDecidedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'catchDecidedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+      },
+    },
     'paymentAttemptId': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

@@ -902,6 +902,35 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                 },
               },
             },
+            'messagingOffer': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'termsVersion',
+                'organizerWhatsapp',
+                'catchWhatsapp',
+              ],
+              'properties': <String, Object?>{
+                'termsVersion': <String, Object?>{
+                  'const': 'form-whatsapp-v1',
+                  'type': 'string',
+                },
+                'organizerWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'catchWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+              },
+            },
           },
         },
         'revision': <String, Object?>{
@@ -948,6 +977,27 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
         },
         'consentAccepted': <String, Object?>{
           'type': 'boolean',
+        },
+        'messagingChoices': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'termsVersion',
+            'organizerWhatsapp',
+            'catchWhatsapp',
+          ],
+          'properties': <String, Object?>{
+            'termsVersion': <String, Object?>{
+              'const': 'form-whatsapp-v1',
+              'type': 'string',
+            },
+            'organizerWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'catchWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+          },
         },
         'identityKind': <String, Object?>{
           'type': 'string',

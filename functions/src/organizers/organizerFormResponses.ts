@@ -1,3 +1,6 @@
+import {formMessagingOffer, formMessagingChoices,
+  normalizeFormMessagingDecision, prepareFormMessagingGrants} from
+  "./organizerFormMessagingConsent";
 import {createHash} from "crypto";
 import {requireFreeFormSubmission} from "./organizerFormCapabilities";
 import * as admin from "firebase-admin";
@@ -290,6 +293,8 @@ export async function beginOrganizerFormResponseHandler(
     revision: draft.revision,
     answers: draft.answers,
     consentAccepted: draft.consentAccepted,
+    ...(draft.messagingDecision ?
+      {messagingChoices: formMessagingChoices(draft.messagingDecision)} : {}),
     identityKind: draft.identityKind,
     expiresAtMillis: draft.expiresAt.toMillis(),
   };
@@ -332,8 +337,17 @@ export async function saveOrganizerFormResponseDraftHandler(
     const version = await getVersion(tx, db, current.versionId);
     validateAnswerShape(version.definition, data.answers, false);
     const now = deps.timestamp();
+    const messagingDecision = normalizeFormMessagingDecision({
+      choices: data.messagingChoices, previous: current.messagingDecision,
+      definition: version.definition,
+      phoneVerified: current.identityKind === "phoneVerified" &&
+        typeof request.auth?.token.phone_number === "string" &&
+        /^\+[1-9]\d{6,14}$/u.test(request.auth.token.phone_number),
+      now,
+    });
     const updated: OrganizerFormResponseDraftDocument = {
       ...current,
+      ...(messagingDecision ? {messagingDecision} : {}),
       revision: current.revision + 1,
       answers: data.answers,
       consentAccepted: data.consentAccepted,
@@ -667,7 +681,7 @@ export async function submitOrganizerFormResponseHandler(
       definition: version.definition,
       answers: submittedAnswers,
     });
-    const {response} = persistOrganizerFormSubmission({
+    const {response} = await persistOrganizerFormSubmission({
       tx, db, draftId: data.draftId, draft, version, submittedAnswers,
       identity: responseIdentitySnapshot(version.definition,
         submittedAnswers, request),
@@ -686,7 +700,7 @@ export async function submitOrganizerFormResponseHandler(
 }
 
 /** Writes a previously validated submission inside its caller's transaction. */
-export function persistOrganizerFormSubmission(params: {
+export async function persistOrganizerFormSubmission(params: {
   tx: FirebaseFirestore.Transaction;
   db: FirebaseFirestore.Firestore;
   draftId: string;
@@ -697,12 +711,15 @@ export function persistOrganizerFormSubmission(params: {
   withdrawalTokenHash: string | null;
   submittedAssetRefs: FirebaseFirestore.DocumentReference[];
   now: FirebaseFirestore.Timestamp;
-}): {responseId: string; response: OrganizerFormResponseDocument} {
+}): Promise<{responseId: string; response: OrganizerFormResponseDocument}> {
   const {tx, db, draftId, draft, version, submittedAnswers, identity,
     withdrawalTokenHash, submittedAssetRefs, now} = params;
   const responseId = deterministicId("formresponse", draftId);
   const responseRef = db.collection("organizerFormResponses").doc(responseId);
   const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
+  const writeMessagingGrants = await prepareFormMessagingGrants({
+    tx, db, draft, definition: version.definition, responseId, now,
+  });
   const response: OrganizerFormResponseDocument = {
     organizerId: draft.organizerId,
     formId: draft.formId,
@@ -728,6 +745,7 @@ export function persistOrganizerFormSubmission(params: {
     submittedAt: now,
     withdrawnAt: null,
   };
+  writeMessagingGrants();
   tx.create(responseRef, response);
   for (const assetRef of submittedAssetRefs) {
     tx.update(assetRef, {
@@ -999,6 +1017,7 @@ async function resolvePublicForm(
       availabilityMessage: availability.message,
       organizer: presentation,
       definition: definitionToWire(version.definition),
+      messagingOffer: formMessagingOffer(version.definition),
     },
   };
 }

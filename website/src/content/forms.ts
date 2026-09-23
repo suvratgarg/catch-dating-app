@@ -28,6 +28,8 @@ export const publicFormsCopy = {
   reviewBody: "You can go back and change any answer before it is sent.",
   unanswered: "Not answered",
   consentHeading: "Consent and retention",
+  messagingHeading: "WhatsApp updates (optional)",
+  messagingHelp: "Choose either, both, or neither. These choices do not affect your application or payment. Leaving a box unchecked does not change an existing messaging permission.",
   submit: "Submit response",
   submitting: "Submitting",
   paymentKicker: "Form payment",

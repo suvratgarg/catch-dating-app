@@ -29,6 +29,69 @@ export const organizerFormResponseDraftDocumentSchema: Record<string, unknown> =
     "submittedResponseId"
   ],
   "properties": {
+    "messagingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp",
+        "organizerDecidedAt",
+        "catchDecidedAt"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "catchDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
+    },
     "paymentAttemptId": {
       "anyOf": [
         {

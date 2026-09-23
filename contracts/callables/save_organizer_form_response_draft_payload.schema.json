@@ -7,6 +7,7 @@
   "additionalProperties": false,
   "required": ["draftId", "draftToken", "expectedRevision", "answers", "consentAccepted"],
   "properties": {
+    "messagingChoices": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/messagingChoices"},
     "draftId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "draftToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
     "expectedRevision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},

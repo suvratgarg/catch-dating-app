@@ -17,6 +17,27 @@ export const saveOrganizerFormResponseDraftCallablePayloadSchema: Record<string,
     "consentAccepted"
   ],
   "properties": {
+    "messagingChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        }
+      }
+    },
     "draftId": {
       "type": "string",
       "minLength": 1,

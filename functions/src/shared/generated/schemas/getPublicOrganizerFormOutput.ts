@@ -873,6 +873,35 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
               }
             }
           }
+        },
+        "messagingOffer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
         }
       }
     }

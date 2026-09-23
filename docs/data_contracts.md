@@ -2476,6 +2476,25 @@ CRM conversion, review, event admission and room membership are separate.
 All four collections deny direct client reads and writes. The source and
 partner setup boundary is specified in [Host Forms](host_forms.md).
 
+### Form messaging decisions
+
+`organizerFormResponseDrafts.messagingDecision` stores separate organizer and
+Catch WhatsApp choices with versioned server copy and independent decision
+timestamps. Missing legacy choices grant nothing. Paid checkout includes the
+choices in its frozen-content hash; finalization and free submission write
+consent receipts atomically with the response. The submitted organizer response
+does not expose Catch's private preference.
+
+Organizer decisions use `organizerCommunicationPreferences` and
+`organizerCommunicationPermissionReceipts`. Catch decisions use separate
+server-only `catchCommunicationPreferences/{uid}` and
+`catchCommunicationPermissionReceipts/{receiptId}`. Neither can authorize the
+other sender. A newer withdrawal wins over a delayed submission/capture, while
+replayed finalization is idempotent. Account deletion removes these preferences
+and receipts, and a deletion tombstone prevents a late payment from granting
+consent again. Participant withdrawal controls and any Catch sender must use this
+same authority; collecting permission does not itself dispatch messages.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,
