@@ -129,3 +129,111 @@ bool _showsEventDetailBottomNavigation({
 
   return true;
 }
+
+void _openEventSignIn(
+  BuildContext context, {
+  required String clubId,
+  required String eventId,
+  String? inviteCode,
+  String? inviteLinkId,
+}) {
+  context.go(
+    Uri(
+      path: Routes.authScreen.path,
+      queryParameters: {
+        'from': AppDeepLinks.inAppEventPath(
+          clubId: clubId,
+          eventId: eventId,
+          inviteCode: inviteCode,
+          inviteLinkId: inviteLinkId,
+        ),
+      },
+    ).toString(),
+  );
+}
+
+void _openEventProfileCompletion(
+  BuildContext context, {
+  required String clubId,
+  required String eventId,
+}) {
+  unawaited(
+    context.push(
+      profileCompletionLocation(
+        from: AppDeepLinks.inAppEventPath(clubId: clubId, eventId: eventId),
+      ),
+    ),
+  );
+}
+
+Future<void> _shareEvent(
+  BuildContext context,
+  Event event,
+  ExternalShareController share,
+  AttendeeEventShareActions actions,
+  bool useAttendeeAttribution,
+  String? inviteCode,
+  String? inviteLinkId,
+) async {
+  if (useAttendeeAttribution) {
+    await showTrackedAttendeeEventShareCardSheet(
+      context,
+      event: event,
+      share: share,
+      actions: actions,
+      fallbackInviteCode: inviteCode,
+      fallbackInviteLinkId: inviteLinkId,
+    );
+    return;
+  }
+  await showEventShareCardSheet(
+    context,
+    event: event,
+    share: share,
+    inviteCode: inviteCode,
+    inviteLinkId: inviteLinkId,
+  );
+}
+
+Future<void> _addEventToCalendar(
+  BuildContext context,
+  Event event,
+  EventCalendarController calendar,
+) async {
+  try {
+    final opened = await calendar.addToCalendar(event);
+    if (!context.mounted || opened) return;
+    showCatchSnackBar(
+      context,
+      context.l10n.eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar,
+    );
+  } on Object catch (error, stackTrace) {
+    final actionError = ExternalActionException(
+      context.l10n.eventsEventDetailScreenVisiblecopyFailedToAddEvent,
+      cause: error,
+      stackTrace: stackTrace,
+    );
+
+    if (context.mounted) {
+      app_ops.logAppError(
+        actionError,
+        stackTrace: stackTrace,
+        context: app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.plugin,
+          action:
+              context.l10n.eventsEventDetailScreenVisiblecopyAddEventToCalendar,
+          resource: context.l10n.eventsEventDetailScreenVisiblecopyCalendarLink,
+        ),
+        logError: ProviderScope.containerOf(
+          context,
+          listen: false,
+        ).read(errorLoggerProvider),
+      );
+
+      showCatchSnackBar(
+        context,
+        context.l10n.eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar,
+      );
+    }
+  }
+}
