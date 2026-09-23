@@ -1,0 +1,27 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "name": "Sangeet",
+  "startsAt": {"_seconds": 1786800600, "_nanoseconds": 0},
+  "endsAt": {"_seconds": 1786815000, "_nanoseconds": 0},
+  "venueName": "Courtyard Lawn, Taj West End",
+  "venueNotes": "Enter through Gate 2; valet at the main porch.",
+  "venueLocation": {
+    "name": "Taj West End",
+    "address": "Race Course Road, Bengaluru",
+    "placeId": "ChIJtajwestend",
+    "latitude": 12.9986,
+    "longitude": 77.5806,
+    "notes": "Lawn is behind the main block."
+  },
+  "dressCode": "Pastel formal",
+  "instructions": "Shuttles leave the hotel porch at 18:30. Dance floor opens after the family performances.",
+  "invitationMode": "selectedGuests",
+  "checkInEnabled": true,
+  "expectedCount": 220,
+  "checkedInCount": 0,
+  "status": "scheduled",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}
