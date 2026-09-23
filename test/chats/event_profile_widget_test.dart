@@ -128,7 +128,8 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         await capture(tester, 'editor-${dark ? 'dark' : 'light'}-$scale');
-        final save = find.widgetWithText(CatchButton, 'Save sharing choices');
+        final save = find.widgetWithText(CatchButton,
+          'Preview what event members can see');
         await tester.ensureVisible(save);
         await pumpFeatureUi(tester);
         expect(tester.getSize(save).height, greaterThanOrEqualTo(44));
@@ -188,7 +189,8 @@ void main() {
       await tester.ensureVisible(age);
       await tester.tap(age);
       await pumpFeatureUi(tester);
-      final save = find.widgetWithText(CatchButton, 'Save sharing choices');
+      final save = find.widgetWithText(CatchButton,
+        'Preview what event members can see');
       await tester.ensureVisible(save);
       await tester.tap(save);
       expect(saved.single!.coreFieldIds, {'age'});
@@ -216,7 +218,8 @@ void main() {
       await pumpProfile(tester, editor(editorState(), onSave: saved.add));
       expect(tester.widget<CatchToggleInput>(toggle('Age')).value, true);
       expect(tester.widget<CatchToggleInput>(toggle('drink')).value, false);
-      final save = find.widgetWithText(CatchButton, 'Save sharing choices');
+      final save = find.widgetWithText(CatchButton,
+        'Preview what event members can see');
       await tester.ensureVisible(save);
       await tester.tap(save);
       expect(saved.single!.coreFieldIds, {'age'});

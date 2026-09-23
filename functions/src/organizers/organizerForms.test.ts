@@ -21,7 +21,7 @@ test("legacy canonical fields remain organizer-only", () => {
   assert.deepEqual(validateOrganizerFormDefinition(value), []);
 });
 
-test("event attendee audience is independent and requires a bounded profile policy", () => {
+test("event attendee audience is independent and bounded", () => {
   const value = definition();
   value.identityPolicy = "phoneVerified";
   const field = value.sections[0].questions[0];

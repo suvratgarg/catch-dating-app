@@ -48,7 +48,8 @@ export function validateFormCapabilities(definition: Definition,
     formAnswerDestination(question) !== "organizerOnly");
   const proposedProfileRows = questions.filter((question) =>
     question.answerAudience?.mode === "eventMembersWithConsent");
-  if (proposedProfileRows.length > (definition.eventProfile?.maxCustomRows ?? 0)) {
+  if (proposedProfileRows.length >
+      (definition.eventProfile?.maxCustomRows ?? 0)) {
     add("tooManyEventProfileRows", "eventProfile.maxCustomRows",
       "Keep shared custom rows within the event profile limit.");
   }
@@ -61,7 +62,8 @@ export function validateFormCapabilities(definition: Definition,
     definition.messagingConsent?.catchMarketingWhatsapp === true;
   if (asksWhatsapp && asksPendingWhatsapp) {
     add("mixedMessagingTerms", "messagingConsent",
-      "Publish either legacy messaging copy or separately scoped purpose choices.");
+      "Publish either legacy messaging copy or separately scoped " +
+      "purpose choices.");
   }
   if ((preparesProfile || asksWhatsapp || definition.payment) &&
       definition.identityPolicy !== "phoneVerified") {
@@ -101,7 +103,8 @@ export function validateFormCapabilities(definition: Definition,
             definition.eventProfile?.enabled !== true ||
             !definition.eventProfile.allowedSlots.includes("customRow"))) {
         add("invalidEventProfileAudience", `${path}.answerAudience`,
-          "Enable event profile custom rows and choose an organizer card answer.");
+          "Enable event profile custom rows and choose an organizer card " +
+          "answer.");
       }
       if (destination === "catchProfile" && !question.canonicalFieldId) {
         add("profileFieldRequired", `${path}.canonicalFieldId`,

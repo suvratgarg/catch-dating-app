@@ -301,7 +301,8 @@ export async function getEventChatProfileSharingHandler(
         proposed.membershipRevision !== (access.member?.revision ?? 0) ||
         (access.member?.status === "joined" &&
           !selectionMatchesMember(proposed, access))) throw stale();
-      await validateSelection(db, tx, uid, access, proposed, deps.now().toDate());
+      await validateSelection(db, tx, uid, access, proposed,
+        deps.now().toDate());
       projected = await projectProfile(db, tx, data.eventId, uid, access,
         proposed, deps.now().toDate());
     }

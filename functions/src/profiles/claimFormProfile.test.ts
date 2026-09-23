@@ -25,13 +25,21 @@ const photo: ProfilePhoto = {id: "owned-photo", position: 0,
   thumbnailStoragePath: "users/person/photoThumbnails/owned-photo.jpg",
   createdAt: now, updatedAt: now};
 
-async function fixture(withPhoto = false) {
+async function fixture(withPhoto = false, withEventAudience = false) {
   const h = createFormPaymentFixture();
   const questions = h.version.definition.sections[0].questions;
   questions[0].answerDestination = "catchProfile";
   questions.push({...questions[0], questionId: "cocktail", key: "cocktail",
     required: false, canonicalFieldId: null,
-    answerDestination: "organizerCard"});
+    answerDestination: "organizerCard",
+    ...(withEventAudience ? {answerAudience: {
+      mode: "eventMembersWithConsent" as const,
+      eventProfileSlot: "customRow" as const}} : {})});
+  if (withEventAudience) {
+    h.version.definition.eventProfile = {enabled: true,
+      allowedSlots: ["customRow"], maxCustomRows: 1,
+      noticeVersion: "event-profile-sharing-v2"};
+  }
   questions.push({...questions[0], questionId: "crm", key: "crm",
     required: false, canonicalFieldId: null,
     answerDestination: "organizerOnly"});
@@ -98,6 +106,20 @@ test("claim creates a non-dating identity and only selected private pointers",
     assert.equal(resultReview.intakeRevision, 0);
     assert.deepEqual(resultReview.fields.map((field) => field.questionId),
       ["name", "cocktail"]);
+    assert.equal(resultReview.fields.find((field) =>
+      field.questionId === "cocktail")?.eventProfileEligible, false);
+  });
+
+test("explicit audience only marks the owner-reviewed answer as event-eligible",
+  async () => {
+    const h = await fixture(false, true);
+    const result = await review({...h.request(), data: {
+      responseId: h.responseId}}, h.deps);
+    assert.deepEqual(result.fields.map((field) =>
+      [field.questionId, field.eventProfileEligible]),
+    [["name", false], ["cocktail", true]]);
+    assert.equal(result.fields.some((field) => field.value === "Private"),
+      false);
   });
 
 test("concurrent identical claims commit once; reused keys cannot change data",

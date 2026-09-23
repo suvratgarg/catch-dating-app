@@ -85,10 +85,15 @@ class _EventProfileIdentitySectionState
           l.eventProfileSharedHere,
           style: CatchTextStyles.supporting(context),
         ),
+        if (profile.introduction case final introduction?) ...[
+          gapH12,
+          Text(introduction, style: CatchTextStyles.recordBody(context)),
+        ],
         gapH24,
         if (profile.coreFields.isEmpty &&
             profile.cardFields.isEmpty &&
-            profile.photo == null)
+            profile.photo == null &&
+            profile.introduction == null)
           CatchEmptyState(
             icon: CatchIcons.personOutlineRounded,
             title: l.eventProfileEmpty,

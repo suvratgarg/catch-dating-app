@@ -146,6 +146,45 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
                               photo.id: NetworkImage(photo.thumbnailUrl),
                       },
                       onSave: (selection) async {
+                        if (selection != null) {
+                          final preview = await ref
+                              .read(editor.notifier)
+                              .preview(
+                                selection,
+                                reviewedUid: state.uid,
+                                reviewedRevision: state.settings.revision,
+                              );
+                          if (!context.mounted || preview == null) return;
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (dialogContext) => CatchDialog<bool>(
+                              title: context.l10n.eventProfilePreview,
+                              child: SizedBox(
+                                height: MediaQuery.sizeOf(dialogContext).height *
+                                    0.48,
+                                child: SingleChildScrollView(
+                                  child: EventProfileIdentitySection(
+                                    profile: preview,
+                                  ),
+                                ),
+                              ),
+                              actions: [
+                                CatchButton(
+                                  label: context.l10n.coreCatchAdaptivePickerTextCancel,
+                                  variant: CatchButtonVariant.secondary,
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(false),
+                                ),
+                                CatchButton(
+                                  label: context.l10n.eventProfileSave,
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(true),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirmed != true || !context.mounted) return;
+                        }
                         final saved = await ref
                             .read(editor.notifier)
                             .save(

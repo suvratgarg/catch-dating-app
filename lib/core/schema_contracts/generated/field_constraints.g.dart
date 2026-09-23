@@ -64861,6 +64861,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['catchProfile', 'organizerCard'],
   );
 
+  static const getParticipantFormProfileCallableResponseFieldsItemsEventProfileEligible = CatchContractFieldConstraints(
+    path: 'getParticipantFormProfileCallableResponse.fields.items.eventProfileEligible',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const getParticipantFormProfileCallableResponseFieldsItemsKind = CatchContractFieldConstraints(
     path: 'getParticipantFormProfileCallableResponse.fields.items.kind',
     required: true,
@@ -121385,6 +121391,7 @@ abstract final class CatchContractConstraints {
     'getParticipantFormProfileCallableResponse.fields': getParticipantFormProfileCallableResponseFields,
     'getParticipantFormProfileCallableResponse.fields.items.canonicalFieldId': getParticipantFormProfileCallableResponseFieldsItemsCanonicalFieldId,
     'getParticipantFormProfileCallableResponse.fields.items.destination': getParticipantFormProfileCallableResponseFieldsItemsDestination,
+    'getParticipantFormProfileCallableResponse.fields.items.eventProfileEligible': getParticipantFormProfileCallableResponseFieldsItemsEventProfileEligible,
     'getParticipantFormProfileCallableResponse.fields.items.kind': getParticipantFormProfileCallableResponseFieldsItemsKind,
     'getParticipantFormProfileCallableResponse.fields.items.label': getParticipantFormProfileCallableResponseFieldsItemsLabel,
     'getParticipantFormProfileCallableResponse.fields.items.options': getParticipantFormProfileCallableResponseFieldsItemsOptions,

@@ -211,7 +211,8 @@ test(
           consent: {consentVersion: "v1"},
           eventProfile: {
             enabled: true,
-            allowedSlots: ["displayName", "portrait", "introduction", "customRow"],
+            allowedSlots: ["displayName", "portrait", "introduction",
+              "customRow"],
             maxCustomRows: 2,
             noticeVersion: "event-profile-sharing-v2",
           },
@@ -291,7 +292,8 @@ test(
             "I like coffee and running.");
           assert.deepEqual(preview.preview?.cardFields,
             [{label: "Favourite drink", value: "Tequila"}]);
-          assert.equal(JSON.stringify(preview.preview).includes("private"), false);
+          assert.equal(JSON.stringify(preview.preview).includes("private"),
+            false);
           await assert.rejects(read(), {code: "permission-denied"});
           await save(proposed);
           await change("join", 0);

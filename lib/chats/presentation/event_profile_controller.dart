@@ -176,6 +176,47 @@ class EventProfileEditorController extends _$EventProfileEditorController {
     }
   }
 
+  Future<EventParticipantProfile?> preview(
+    EventProfileSelection selection, {
+    required String reviewedUid,
+    required int reviewedRevision,
+  }) async {
+    final current = state.asData?.value;
+    if (current == null ||
+        current.busy ||
+        !_foreground ||
+        !current.settings.canShare ||
+        current.uid != reviewedUid ||
+        current.settings.revision != reviewedRevision ||
+        ref.read(uidProvider).asData?.value != reviewedUid) {
+      return null;
+    }
+    final generation = _generation, epoch = ++_readEpoch;
+    state = AsyncData(current.pending());
+    try {
+      final fresh = await ref
+          .read(eventChatRepositoryProvider)
+          .previewProfile(reviewedUid, current.settings, selection);
+      if (!_current(reviewedUid, generation) ||
+          epoch != _readEpoch ||
+          !_foreground) return null;
+      if (fresh.revision != reviewedRevision ||
+          fresh.profileRevision != selection.profileRevision ||
+          fresh.membershipRevision != selection.membershipRevision ||
+          !fresh.canShare ||
+          fresh.preview == null) {
+        throw StateError('Event profile choices changed. Review them again.');
+      }
+      state = AsyncData(current);
+      return fresh.preview;
+    } on Object catch (error, stack) {
+      if (_current(reviewedUid, generation) && epoch == _readEpoch) {
+        state = AsyncError(error, stack);
+      }
+      return null;
+    }
+  }
+
   Future<bool> save(
     EventProfileSelection? selection, {
     required String reviewedUid,
