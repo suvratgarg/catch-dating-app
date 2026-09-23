@@ -14044,11 +14044,11 @@
           "id": "draft_picker_restore",
           "kind": "populated",
           "status": "captured",
-          "source": "After first frame, existing drafts load through CreateEventDraftController and can be restored from DraftPickerSheet.",
+          "source": "After first frame, existing drafts load through CreateEventDraftController and can be restored from HostEventEntrySheet.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "After first frame, existing drafts load through CreateEventDraftController and can be restored from DraftPickerSheet. Captures now cover the resume-draft picker and restored-draft wizard state; multiple/stale drafts remain follow-up.",
+          "nextAction": "After first frame, existing drafts load through CreateEventDraftController and can be restored from HostEventEntrySheet. The shared entry sheet lists saved drafts directly alongside new-event choices; captures cover the combined entry and restored wizard.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
           ],
@@ -14517,19 +14517,19 @@
           },
           {
             "id": "section.host.event_create_drafts",
-            "name": "Create event draft picker and save states",
+            "name": "Create event combined entry and draft save states",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "DraftPickerSheet",
+              "HostEventEntrySheet",
               "DraftSaveState"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart",
-              "symbol": "showDraftPickerSheet"
+              "file": "lib/hosts/events/presentation/host_event_entry_sheet.dart",
+              "symbol": "showHostEventEntrySheet"
             },
             "currentOwner": "CreateEventScreen",
-            "targetOwner": "CreateEventDraftController plus provider-free draft picker section",
+            "targetOwner": "CreateEventDraftController plus shared HostEventEntrySheet",
             "dependencies": [
               "catch.button",
               "catch.surface"

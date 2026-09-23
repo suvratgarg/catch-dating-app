@@ -53,9 +53,8 @@ class EventAssistanceHelpSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceHelpTitle,
-        mode: CatchSheetMode.scrollable,
         child: state is AssistanceCaseFormUnavailable
             ? CatchLocalizedErrorBanner(state.error)
             : CatchAsyncBoundary<EventAssistanceCasesSession>(

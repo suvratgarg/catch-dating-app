@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_hub.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:426d608b3c6ddb0e7876f024bce3fe8d43586e47b6c991088f38f7116ee2b0f4",
-  "resolvedDigest": "sha256:697259bbc613cbeb769f4fb82b648087a124ad2137e8f6320e9bd1efc81fd005",
+  "resolvedDigest": "sha256:b50f6fe91e844183626feabe5b39c425ce9a0269c159539588ef4c0d30787b1d",
   "feature": {
     "id": "feature.catches_hub",
     "name": "Catches Hub",
@@ -778,7 +778,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

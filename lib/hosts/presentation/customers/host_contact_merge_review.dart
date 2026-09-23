@@ -61,77 +61,73 @@ class _HostContactMergeReviewSheetState
   }
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
     title: context.l10n.hostCustomersMergeReviewTitle,
     subtitle: context.l10n.hostCustomersMergeReviewHelp,
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.68,
-      ),
-      child: FutureBuilder<HostContactMergeCandidatePage>(
-        future: _page,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done &&
-              _active.isEmpty &&
-              _dismissed.isEmpty) {
-            return const CatchStateViewport.loading(
-              accountForBottomOverlay: false,
-            );
-          }
-          if (snapshot.hasError && _active.isEmpty && _dismissed.isEmpty) {
-            return CatchLocalizedErrorState(
-              snapshot.error!,
-              context: AppErrorContext.club,
-              mode: CatchErrorStateMode.compact,
-              onRetry: _reload,
-            );
-          }
-          if (_active.isEmpty && _dismissed.isEmpty) {
-            return CatchEmptyState(
-              title: context.l10n.hostCustomersMergeReviewEmpty,
-            );
-          }
-          return ListView(
-            shrinkWrap: true,
-            children: [
-              for (final candidate in _active) ...[
-                HostContactMergeCandidateCard(
+    child: FutureBuilder<HostContactMergeCandidatePage>(
+      future: _page,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done &&
+            _active.isEmpty &&
+            _dismissed.isEmpty) {
+          return const CatchStateViewport.loading(
+            accountForBottomOverlay: false,
+          );
+        }
+        if (snapshot.hasError && _active.isEmpty && _dismissed.isEmpty) {
+          return CatchLocalizedErrorState(
+            snapshot.error!,
+            context: AppErrorContext.club,
+            mode: CatchErrorStateMode.compact,
+            onRetry: _reload,
+          );
+        }
+        if (_active.isEmpty && _dismissed.isEmpty) {
+          return CatchEmptyState(
+            title: context.l10n.hostCustomersMergeReviewEmpty,
+          );
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final candidate in _active) ...[
+              HostContactMergeCandidateCard(
+                organizerId: widget.organizerId,
+                candidate: candidate,
+                onChanged: _reload,
+                onMerged: () => Navigator.of(context).pop(true),
+              ),
+              gapH12,
+            ],
+            if (_dismissed.isNotEmpty) ...[
+              gapH8,
+              Text(
+                context.l10n.hostCustomersDismissedDuplicates,
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH12,
+              for (final candidate in _dismissed) ...[
+                _DismissedMergeCandidateCard(
                   organizerId: widget.organizerId,
                   candidate: candidate,
                   onChanged: _reload,
-                  onMerged: () => Navigator.of(context).pop(true),
                 ),
                 gapH12,
               ],
-              if (_dismissed.isNotEmpty) ...[
-                gapH8,
-                Text(
-                  context.l10n.hostCustomersDismissedDuplicates,
-                  style: CatchTextStyles.sectionTitle(context),
-                ),
-                gapH12,
-                for (final candidate in _dismissed) ...[
-                  _DismissedMergeCandidateCard(
-                    organizerId: widget.organizerId,
-                    candidate: candidate,
-                    onChanged: _reload,
-                  ),
-                  gapH12,
-                ],
-              ],
-              if (_nextCursor != null)
-                CatchButton(
-                  label: context.l10n.hostCustomersLoadMore,
-                  variant: CatchButtonVariant.secondary,
-                  status: (_loadingMore)
-                      ? CatchButtonStatus.loading
-                      : CatchButtonStatus.idle,
-                  onPressed: _loadingMore ? null : _loadMore,
-                ),
             ],
-          );
-        },
-      ),
+            if (_nextCursor != null)
+              CatchButton(
+                label: context.l10n.hostCustomersLoadMore,
+                variant: CatchButtonVariant.secondary,
+                status: (_loadingMore)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                onPressed: _loadingMore ? null : _loadMore,
+              ),
+          ],
+        );
+      },
     ),
   );
 

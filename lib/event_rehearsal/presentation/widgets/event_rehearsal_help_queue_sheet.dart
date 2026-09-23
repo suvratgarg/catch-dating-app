@@ -55,11 +55,10 @@ class _EventRehearsalHelpQueueSheetState
         practiceOperatorId: widget.practiceOperatorId,
       ),
     );
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.eventAssistanceHelpTitle,
       badge: context.l10n.hostEventRehearsalBadge,
       badgeTone: CatchBadgeTone.danger,
-      mode: CatchSheetMode.scrollable,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

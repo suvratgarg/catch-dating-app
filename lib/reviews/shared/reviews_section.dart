@@ -168,30 +168,30 @@ class ReviewsPreviewSection extends StatelessWidget {
   void _showAllReviews(BuildContext context) {
     showCatchBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => CatchSheet(
+      builder: (sheetContext) => CatchSheet.standard(
         title: context.l10n.reviewsReviewsSectionTitleAllReviewsLength(
           length: reviews.length,
         ),
-        child: SizedBox(
-          height: MediaQuery.sizeOf(sheetContext).height * 0.68,
-          child: ListView.separated(
-            itemCount: reviews.length,
-            separatorBuilder: (_, _) => gapH12,
-            itemBuilder: (_, index) {
-              final review = reviews[index];
-              final isOwn = review.reviewerUserId == currentUid;
-              return ReviewCard(
-                review: review,
-                isOwn: isOwn,
-                onEdit: isOwn && onEditReview != null
-                    ? () => onEditReview!(review)
-                    : null,
-                onRespond: onRespondToReview == null
-                    ? null
-                    : () => onRespondToReview!(review),
-              );
-            },
-          ),
+        child: ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          itemCount: reviews.length,
+          separatorBuilder: (_, _) => gapH12,
+          itemBuilder: (_, index) {
+            final review = reviews[index];
+            final isOwn = review.reviewerUserId == currentUid;
+            return ReviewCard(
+              review: review,
+              isOwn: isOwn,
+              onEdit: isOwn && onEditReview != null
+                  ? () => onEditReview!(review)
+                  : null,
+              onRespond: onRespondToReview == null
+                  ? null
+                  : () => onRespondToReview!(review),
+            );
+          },
         ),
       ),
     );
@@ -518,19 +518,18 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
       }
     });
 
-    return CatchSheet(
+    return CatchSheet.standard(
       title: widget.review.ownerResponse == null
           ? context.l10n.reviewsReviewsSectionTitleRespondToReview
           : context.l10n.reviewsReviewsSectionTitleEditResponse,
-      keyboardSafe: true,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.commit,
         key: ReviewKeys.submitOwnerResponseButton,
         label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,
         status: (mutation.isPending)
             ? CatchButtonStatus.loading
             : CatchButtonStatus.idle,
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

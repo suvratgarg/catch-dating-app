@@ -89,6 +89,7 @@ test("extracts every current facade and semantic slot", () => {
   assert.deepEqual(extractCatchSectionVariants(sectionSource), [
     "divided",
     "fieldRows",
+    "choiceGroup",
     "containedFieldRows",
     "containedFieldGroups",
     "contained",

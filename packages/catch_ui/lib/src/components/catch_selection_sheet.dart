@@ -1,4 +1,3 @@
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/components/catch_menu_row.dart';
 import 'package:catch_ui/src/components/catch_selection_menu_item.dart';
@@ -23,39 +22,32 @@ class CatchSelectionSheet<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxHeight =
-        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchSheet(
-        title: title,
-        subtitle: subtitle,
-        child: Flexible(
-          child: ListView(
-            key: const ValueKey('catch-selection-sheet-list'),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              for (final item in items)
-                CatchMenuRow<T>(
-                  key: ValueKey<Object?>(item.value),
-                  item: CatchMenuItem<T>(
-                    value: item.value,
-                    label: item.label,
-                    sublabel: item.sublabel,
-                    icon: item.icon,
-                    selected: item.value == value,
-                    enabled: item.enabled,
-                    variant: CatchMenuItemVariant.choice,
-                  ),
-                  onSelected: (selected, _) {
-                    if (selected != value) catchSelectionHaptic();
-                    Navigator.of(context).pop(selected);
-                  },
-                ),
-            ],
-          ),
-        ),
+    return CatchSheet.standard(
+      title: title,
+      subtitle: subtitle,
+      child: Column(
+        key: const ValueKey('catch-selection-sheet-list'),
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final item in items)
+            CatchMenuRow<T>.sheet(
+              key: ValueKey<Object?>(item.value),
+              item: CatchMenuItem<T>(
+                value: item.value,
+                label: item.label,
+                sublabel: item.sublabel,
+                icon: item.icon,
+                selected: item.value == value,
+                enabled: item.enabled,
+                variant: CatchMenuItemVariant.choice,
+              ),
+              onSelected: (selected, _) {
+                if (selected != value) catchSelectionHaptic();
+                Navigator.of(context).pop(selected);
+              },
+            ),
+        ],
       ),
     );
   }
