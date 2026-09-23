@@ -218,7 +218,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Choose a published form'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Event questions').last);
+    await tester.tap(find.descendant(
+      of: find.byType(CatchSheet),
+      matching: find.widgetWithText(CatchField, 'Event questions'),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(CatchField, 'Music style'));
     await tester.pumpAndSettle();
@@ -250,7 +253,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Choose a published form'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Event questions').last);
+    await tester.tap(find.descendant(
+      of: find.byType(CatchSheet),
+      matching: find.widgetWithText(CatchField, 'Event questions'),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove question'));
     await tester.pumpAndSettle();
