@@ -16,7 +16,6 @@ const schemaProgramIdCallablePayloadSchema = <String, Object?>{
     'getProgramWorkAccess',
     'listProgramStaff',
     'listProgramHouseholds',
-    'listProgramTrips',
   ],
   'required': <Object?>[
     'programId',

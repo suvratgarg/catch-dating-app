@@ -8,7 +8,7 @@
 export interface ProgramTripListCallableResponse {
   programId: string;
   /**
-   * @maxItems 200
+   * @maxItems 50
    */
   trips: {
     tripId: string;
@@ -35,4 +35,5 @@ export interface ProgramTripListCallableResponse {
    * Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.
    */
   accessExpiresAtMillis: number | null;
+  nextCursor: string | null;
 }

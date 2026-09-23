@@ -279,6 +279,7 @@ import {
   claimProgramStaffInviteCallablePayloadSchema,
   revokeProgramStaffInviteCallablePayloadSchema,
   upsertProgramGuestCallablePayloadSchema,
+  listProgramTripsCallablePayloadSchema,
   listProgramGuestsCallablePayloadSchema,
   upsertProgramHouseholdCallablePayloadSchema,
   upsertProgramFunctionCallablePayloadSchema,
@@ -1049,6 +1050,7 @@ export const validateInviteProgramStaffCallablePayload = ajv.compile(inviteProgr
 export const validateClaimProgramStaffInviteCallablePayload = ajv.compile(claimProgramStaffInviteCallablePayloadSchema);
 export const validateRevokeProgramStaffInviteCallablePayload = ajv.compile(revokeProgramStaffInviteCallablePayloadSchema);
 export const validateUpsertProgramGuestCallablePayload = ajv.compile(upsertProgramGuestCallablePayloadSchema);
+export const validateListProgramTripsCallablePayload = ajv.compile(listProgramTripsCallablePayloadSchema);
 export const validateListProgramGuestsCallablePayload = ajv.compile(listProgramGuestsCallablePayloadSchema);
 export const validateUpsertProgramHouseholdCallablePayload = ajv.compile(upsertProgramHouseholdCallablePayloadSchema);
 export const validateUpsertProgramFunctionCallablePayload = ajv.compile(upsertProgramFunctionCallablePayloadSchema);

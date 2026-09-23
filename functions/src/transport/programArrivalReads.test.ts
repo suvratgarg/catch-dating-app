@@ -27,6 +27,21 @@ for (const handler of [getProgramArrivalsRosterHandler,
       assert.deepEqual(ids, ["leg-1"]);
     });
 
+  test(`${handler.name}: foreign ownership is filtered before the roster cap`,
+    async () => {
+      const seed = baseSeed();
+      for (let index = 0; index < 505; index++) {
+        seed[`programTravelLegs/foreign-${index}`] = {
+          ...seed["programTravelLegs/leg-1"], organizerId: "other",
+        };
+      }
+      const result = await handler(request({programId: "program-1"},
+        "greeter-1"), deps(new FakeFirestore(seed)));
+      const ids = "rows" in result ? result.rows.map((row) => row.legId) :
+        result.groups.flatMap((group) => group.legIds);
+      assert.deepEqual(ids, ["leg-1"]);
+    });
+
   test(`${handler.name}: oversize view is explicit, never a partial manifest`,
     async () => {
       const seed = baseSeed();

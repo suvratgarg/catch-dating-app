@@ -13,8 +13,7 @@ export const programIdCallablePayloadSchema: Record<string, unknown> = {
     "getOrganizerProgram",
     "getProgramWorkAccess",
     "listProgramStaff",
-    "listProgramHouseholds",
-    "listProgramTrips"
+    "listProgramHouseholds"
   ],
   "required": [
     "programId"

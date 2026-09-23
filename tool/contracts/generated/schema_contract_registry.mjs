@@ -119311,8 +119311,7 @@ export const programIdCallablePayloadSchema = {
     "getOrganizerProgram",
     "getProgramWorkAccess",
     "listProgramStaff",
-    "listProgramHouseholds",
-    "listProgramTrips"
+    "listProgramHouseholds"
   ],
   "required": [
     "programId"
@@ -119996,6 +119995,37 @@ export const upsertProgramGuestCallablePayloadSchema = {
         "declined",
         "maybe"
       ]
+    }
+  }
+};
+
+export const listProgramTripsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_trips_payload.schema.json",
+  "title": "ListProgramTripsCallablePayload",
+  "description": "Scoped trip ledger page, ordered by departure time descending.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "maxLength": 180,
+      "description": "Opaque cursor returned by the previous page.",
+      "minLength": 1,
+      "pattern": "^[^/]+$"
     }
   }
 };
@@ -123162,7 +123192,8 @@ export const programTripListCallableResponseSchema = {
   "required": [
     "programId",
     "trips",
-    "accessExpiresAtMillis"
+    "accessExpiresAtMillis",
+    "nextCursor"
   ],
   "properties": {
     "programId": {
@@ -123172,7 +123203,7 @@ export const programTripListCallableResponseSchema = {
     },
     "trips": {
       "type": "array",
-      "maxItems": 200,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -123303,6 +123334,14 @@ export const programTripListCallableResponseSchema = {
       "minimum": 1,
       "maximum": 9007199254740991,
       "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };

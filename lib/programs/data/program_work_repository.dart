@@ -250,13 +250,17 @@ class ProgramWorkRepository {
     parse: ProgramHotelInbound.fromCallableData,
   );
 
-  Future<ProgramTripList> listTrips(String programId) => _call(
-    name: 'listProgramTrips',
-    authorityScopedRead: true,
-    payload: ProgramIdCallableRequest(programId: programId).toJson(),
-    action: 'load the trip ledger',
-    parse: ProgramTripList.fromCallableData,
-  );
+  Future<ProgramTripList> listTrips(String programId, {String? cursor}) =>
+      _call(
+        name: 'listProgramTrips',
+        authorityScopedRead: true,
+        payload: ListProgramTripsCallableRequest(
+          programId: programId,
+          cursor: cursor,
+        ).toJson(),
+        action: 'load the trip ledger',
+        parse: ProgramTripList.fromCallableData,
+      );
 
   /// Vendor picker data for the dispatch sheet — the callable filters to
   /// vendors bound to this program and returns operational fields only.
@@ -639,13 +643,19 @@ Future<ProgramHotelInbound> programHotelInbound(
 }
 
 @riverpod
-Future<ProgramTripList> programTripList(Ref ref, String programId) async {
+Future<ProgramTripList> programTripList(
+  Ref ref,
+  String programId, {
+  String? cursor,
+}) async {
   final accountId = _watchWorkAccount(ref);
   final result = await readWithProgramAuthority(
     ref,
     accountId,
     programId,
-    () => ref.read(programWorkRepositoryProvider).listTrips(programId),
+    () => ref
+        .read(programWorkRepositoryProvider)
+        .listTrips(programId, cursor: cursor),
   );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;

@@ -13,18 +13,40 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The trip ledger: every dispatch as a reconciliation record — plate,
 /// vendor, class, manifest and outcome. Voided trips keep their row so the
 /// vendor invoice can be checked line by line.
-class ProgramTripsScreen extends ConsumerWidget {
+class ProgramTripsScreen extends ConsumerStatefulWidget {
   const ProgramTripsScreen({super.key, required this.programId});
 
   final String programId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tripsAsync = ref.watch(programTripListProvider(programId));
+  ConsumerState<ProgramTripsScreen> createState() => _ProgramTripsScreenState();
+}
+
+class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
+  final List<String> _cursors = [];
+
+  @override
+  void didUpdateWidget(ProgramTripsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.programId != widget.programId) _cursors.clear();
+  }
+
+  void _latest() {
+    setState(_cursors.clear);
+    ref.invalidate(programTripListProvider(widget.programId));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = programTripListProvider(
+      widget.programId,
+      cursor: _cursors.lastOrNull,
+    );
+    final tripsAsync = ref.watch(provider);
     return CatchAsyncBoundary<ProgramTripList>(
       retainDataOn: const {},
       value: tripsAsync,
-      onRetry: () => ref.invalidate(programTripListProvider(programId)),
+      onRetry: _latest,
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.programsTripsTitle,
@@ -56,6 +78,7 @@ class ProgramTripsScreen extends ConsumerWidget {
             error,
             context: AppErrorContext.event,
             onRetry: onBoundaryRetry,
+            retryLabel: context.l10n.programsTripsLatest,
           ),
         ),
       ),
@@ -72,6 +95,30 @@ class ProgramTripsScreen extends ConsumerWidget {
         ),
         body: CatchRouteBody.standardSections(
           sections: [
+            if (_cursors.isNotEmpty || list.nextCursor != null)
+              CatchSectionListItem(
+                child: Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    if (_cursors.isNotEmpty) ...[
+                      CatchButton.command(
+                        label: context.l10n.programsTripsNewer,
+                        onPressed: () => setState(_cursors.removeLast),
+                      ),
+                      CatchButton.command(
+                        label: context.l10n.programsTripsLatest,
+                        onPressed: _latest,
+                      ),
+                    ],
+                    if (list.nextCursor case final cursor?)
+                      CatchButton.command(
+                        label: context.l10n.programsTripsOlder,
+                        onPressed: () => setState(() => _cursors.add(cursor)),
+                      ),
+                  ],
+                ),
+              ),
             CatchSectionListItem(
               child: CatchSection.contained(
                 title: context.l10n.programsTripsLedgerTitle,
@@ -87,7 +134,8 @@ class ProgramTripsScreen extends ConsumerWidget {
                           for (final trip in list.trips) ...[
                             ProgramTripLedgerRow(
                               trip: trip,
-                              programId: programId,
+                              programId: widget.programId,
+                              onChanged: () => ref.invalidate(provider),
                             ),
                             gapH8,
                           ],
@@ -107,10 +155,12 @@ class ProgramTripLedgerRow extends ConsumerStatefulWidget {
     super.key,
     required this.trip,
     required this.programId,
+    required this.onChanged,
   });
 
   final ProgramTripSummary trip;
   final String programId;
+  final VoidCallback onChanged;
 
   @override
   ConsumerState<ProgramTripLedgerRow> createState() =>
@@ -144,7 +194,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
                 '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}',
           );
       if (!mounted) return;
-      ref.invalidate(programTripListProvider(widget.programId));
+      widget.onChanged();
     } on Object catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {

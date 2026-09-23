@@ -585,12 +585,19 @@ class ProgramTripList {
     required this.programId,
     required this.accessExpiresAt,
     required this.trips,
+    required this.nextCursor,
   });
 
   factory ProgramTripList.fromCallableData(Object? value) {
     final map = requiredMap(value, 'program trips');
+    if (!map.containsKey('nextCursor')) {
+      throw const FormatException('Missing trip pagination cursor');
+    }
     return ProgramTripList(
       programId: requiredString(map, 'programId'),
+      nextCursor: map['nextCursor'] == null
+          ? null
+          : requiredString(map, 'nextCursor'),
       accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       trips: mapList(
         map['trips'],
@@ -602,6 +609,7 @@ class ProgramTripList {
   final DateTime? accessExpiresAt;
   final String programId;
   final List<ProgramTripSummary> trips;
+  final String? nextCursor;
 }
 
 class HotelExpectedLeg {

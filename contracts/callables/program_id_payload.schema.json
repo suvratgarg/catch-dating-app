@@ -9,8 +9,7 @@
     "getOrganizerProgram",
     "getProgramWorkAccess",
     "listProgramStaff",
-    "listProgramHouseholds",
-    "listProgramTrips"
+    "listProgramHouseholds"
   ],
   "required": [
     "programId"

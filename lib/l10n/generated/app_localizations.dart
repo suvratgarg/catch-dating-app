@@ -32554,6 +32554,24 @@ abstract class AppLocalizations {
   /// **'Voided'**
   String get programsHotelStatusVoided;
 
+  /// Trip ledger pagination action
+  ///
+  /// In en, this message translates to:
+  /// **'Newer trips'**
+  String get programsTripsNewer;
+
+  /// Trip ledger pagination action
+  ///
+  /// In en, this message translates to:
+  /// **'Older trips'**
+  String get programsTripsOlder;
+
+  /// Trip ledger pagination action
+  ///
+  /// In en, this message translates to:
+  /// **'Latest trips'**
+  String get programsTripsLatest;
+
   /// Program operations copy: programsTripsTitle.
   ///
   /// In en, this message translates to:

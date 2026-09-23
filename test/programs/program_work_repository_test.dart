@@ -57,6 +57,24 @@ void main() {
     repository = ProgramWorkRepository(functions, store, () => 'account');
   });
 
+  test(
+    'ledger sends the continuation cursor and retains the returned cursor',
+    () async {
+      functions.respond = (_) async => {
+        'programId': 'p1',
+        'accessExpiresAtMillis': null,
+        'trips': [],
+        'nextCursor': 'following-trip',
+      };
+      final page = await repository.listTrips('p1', cursor: 'prior-trip');
+      expect(functions.lastPayload, {
+        'programId': 'p1',
+        'cursor': 'prior-trip',
+      });
+      expect(page.nextCursor, 'following-trip');
+    },
+  );
+
   test('fresh work bootstrap accepts its own generation change', () async {
     functions.respond = (_) async => access();
     final result = await repository.getWorkAccess(
@@ -116,6 +134,7 @@ void main() {
       'programId': 'p1',
       'accessExpiresAtMillis': expiry,
       'trips': [],
+      'nextCursor': null,
     });
     await rejected;
   });
@@ -178,17 +197,21 @@ void main() {
 
 class _Functions extends Fake implements FirebaseFunctions {
   late Future<Object?> Function(String) respond;
+  Object? lastPayload;
   @override
   HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
-      _Callable(() => respond(name));
+      _Callable((payload) {
+        lastPayload = payload;
+        return respond(name);
+      });
 }
 
 class _Callable extends Fake implements HttpsCallable {
   _Callable(this.respond);
-  final Future<Object?> Function() respond;
+  final Future<Object?> Function(Object?) respond;
   @override
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async =>
-      _Result(await respond() as T);
+      _Result(await respond(parameters) as T);
 }
 
 class _Result<T> extends Fake implements HttpsCallableResult<T> {

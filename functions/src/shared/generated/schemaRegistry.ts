@@ -281,6 +281,7 @@ export {inviteProgramStaffCallablePayloadSchema} from "./schemas/inviteProgramSt
 export {claimProgramStaffInviteCallablePayloadSchema} from "./schemas/claimProgramStaffInviteInput";
 export {revokeProgramStaffInviteCallablePayloadSchema} from "./schemas/revokeProgramStaffInviteInput";
 export {upsertProgramGuestCallablePayloadSchema} from "./schemas/upsertProgramGuestInput";
+export {listProgramTripsCallablePayloadSchema} from "./schemas/listProgramTripsInput";
 export {listProgramGuestsCallablePayloadSchema} from "./schemas/listProgramGuestsInput";
 export {upsertProgramHouseholdCallablePayloadSchema} from "./schemas/upsertProgramHouseholdInput";
 export {upsertProgramFunctionCallablePayloadSchema} from "./schemas/upsertProgramFunctionInput";

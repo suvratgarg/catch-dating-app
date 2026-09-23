@@ -20431,6 +20431,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsHotelStatusVoided => 'Voided';
 
   @override
+  String get programsTripsNewer => 'Newer trips';
+
+  @override
+  String get programsTripsOlder => 'Older trips';
+
+  @override
+  String get programsTripsLatest => 'Latest trips';
+
+  @override
   String get programsTripsTitle => 'Trip ledger';
 
   @override

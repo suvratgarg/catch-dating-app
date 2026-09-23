@@ -11,7 +11,8 @@
   "required": [
     "programId",
     "trips",
-    "accessExpiresAtMillis"
+    "accessExpiresAtMillis",
+    "nextCursor"
   ],
   "properties": {
     "programId": {
@@ -21,7 +22,7 @@
     },
     "trips": {
       "type": "array",
-      "maxItems": 200,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -136,6 +137,14 @@
     },
     "accessExpiresAtMillis": {
       "$ref": "../shared/program_common.schema.json#/definitions/programProjectionExpiry"
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 }

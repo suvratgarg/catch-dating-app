@@ -593,7 +593,7 @@ final class ProgramTripListProvider
     with $FutureModifier<ProgramTripList>, $FutureProvider<ProgramTripList> {
   ProgramTripListProvider._({
     required ProgramTripListFamily super.from,
-    required String super.argument,
+    required (String, {String? cursor}) super.argument,
   }) : super(
          retry: null,
          name: r'programTripListProvider',
@@ -609,7 +609,7 @@ final class ProgramTripListProvider
   String toString() {
     return r'programTripListProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -620,8 +620,8 @@ final class ProgramTripListProvider
 
   @override
   FutureOr<ProgramTripList> create(Ref ref) {
-    final argument = this.argument as String;
-    return programTripList(ref, argument);
+    final argument = this.argument as (String, {String? cursor});
+    return programTripList(ref, argument.$1, cursor: argument.cursor);
   }
 
   @override
@@ -635,10 +635,14 @@ final class ProgramTripListProvider
   }
 }
 
-String _$programTripListHash() => r'a08da11bc7b366d990b81f77384ee0a90777148a';
+String _$programTripListHash() => r'567c8a1f768d508f26d435ab1dc865997b20eae6';
 
 final class ProgramTripListFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProgramTripList>, String> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramTripList>,
+          (String, {String? cursor})
+        > {
   ProgramTripListFamily._()
     : super(
         retry: null,
@@ -648,8 +652,11 @@ final class ProgramTripListFamily extends $Family
         isAutoDispose: true,
       );
 
-  ProgramTripListProvider call(String programId) =>
-      ProgramTripListProvider._(argument: programId, from: this);
+  ProgramTripListProvider call(String programId, {String? cursor}) =>
+      ProgramTripListProvider._(
+        argument: (programId, cursor: cursor),
+        from: this,
+      );
 
   @override
   String toString() => r'programTripListProvider';

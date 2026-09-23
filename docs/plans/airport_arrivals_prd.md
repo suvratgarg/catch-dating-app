@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.11
+version: 0.3.12
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1424,6 +1424,22 @@ reconciliation. An inactive owned pickup still permits releasing a claim. Views 
 than 200 groups fail explicitly instead of returning an incomplete plan.
 
 ### Operational read scope
+
+The trip ledger uses pages of at most 50 trips in descending departure order,
+with Firestore's descending document-ID tie-break. Each cursor is checked
+against current organizer/program ownership and the actor's complete duty
+scopes; overlapping scopes are deduplicated before selecting the page. The
+response always declares its next cursor, and the Host offers older, newer and
+latest pages. An unavailable cursor offers a return to the latest page rather
+than silently losing the rest of the history. Each page retains the existing
+live authority and expiry fences. A page is a current read, not a frozen export;
+new dispatches appear when returning to the latest trips.
+
+Organizer predicates precede arrival and trip query limits. Hotel expected
+journeys are inbound-only. Passenger names require matching organizer, program,
+pickup and destination bindings between trip and journey, plus owned guest
+records. Related-document reads deduplicate references and bound concurrent
+requests. Inactive owned hotels still expose their historical/in-flight work.
 
 Arrivals and trip queries apply each duty's pickup and hotel restrictions before
 reading passengers or applying limits. Restrictions from different duties are

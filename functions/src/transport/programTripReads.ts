@@ -1,33 +1,40 @@
 import {programResourceScopes} from "../shared/programResourceScopes";
 /* firestore-index: transportTrips (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   pickupPointId:ASCENDING,
   departedAt:DESCENDING
 ) */
 /* firestore-index: transportTrips (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   destinationHotelId:ASCENDING,
   departedAt:DESCENDING
 ) */
 /* firestore-index: transportTrips (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   pickupPointId:ASCENDING,
   destinationHotelId:ASCENDING,
   departedAt:DESCENDING
 ) */
 /* firestore-index: transportTrips (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   destinationHotelId:ASCENDING,
   status:ASCENDING,
   departedAt:ASCENDING
 ) */
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   destinationHotelId:ASCENDING,
+  kind:ASCENDING,
   readiness:ASCENDING
 ) */
 /* firestore-index: transportTrips (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   departedAt:DESCENDING
 ) */
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
@@ -46,18 +53,19 @@ import type {ProgramGuestDocument, ProgramHotelDocument,
   from "../shared/generated/firestoreAdminTypes";
 import type {GetProgramHotelInboundCallablePayload} from
   "../shared/generated/getProgramHotelInboundCallablePayload";
-import type {ProgramIdCallablePayload} from
-  "../shared/generated/programIdCallablePayload";
+import type {ListProgramTripsCallablePayload} from
+  "../shared/generated/listProgramTripsCallablePayload";
 import type {ProgramHotelInboundCallableResponse} from
   "../shared/generated/programHotelInboundCallableResponse";
 import type {ProgramTripListCallableResponse} from
   "../shared/generated/programTripListCallableResponse";
 import {validateGetProgramHotelInboundCallablePayload} from
   "../shared/generated/validators/getProgramHotelInboundInput";
-import {validateProgramIdCallablePayload} from
-  "../shared/generated/validators/programIdInput";
+import {validateListProgramTripsCallablePayload} from
+  "../shared/generated/validators/listProgramTripsInput";
 
-const tripListCap = 200;
+const tripPageCap = 50;
+const hotelTripCap = 200;
 const readLimits = {timeoutSeconds: 60, maxInstances: 40};
 
 export async function getProgramHotelInboundHandler(
@@ -85,20 +93,24 @@ export async function getProgramHotelInboundHandler(
   const hotelSnap = await db.collection("programHotels")
     .doc(data.hotelId).get();
   const hotel = hotelSnap.data() as ProgramHotelDocument | undefined;
-  if (!hotel || hotel.programId !== data.programId) {
+  if (!hotel || hotel.programId !== data.programId ||
+      hotel.organizerId !== access.program.organizerId) {
     throw new HttpsError("not-found", "Hotel not found in this program.");
   }
   const [tripsSnap, legsSnap] = await Promise.all([
     db.collection("transportTrips")
       .where("programId", "==", data.programId)
+      .where("organizerId", "==", access.program.organizerId)
       .where("destinationHotelId", "==", data.hotelId)
       .where("status", "==", "enRoute")
       .orderBy("departedAt")
-      .limit(tripListCap)
+      .limit(hotelTripCap)
       .get(),
     db.collection("programTravelLegs")
       .where("programId", "==", data.programId)
+      .where("organizerId", "==", access.program.organizerId)
       .where("destinationHotelId", "==", data.hotelId)
+      .where("kind", "==", "inbound")
       .where("readiness", "in", ["expected", "ready"])
       .limit(500)
       .get(),
@@ -112,37 +124,38 @@ export async function getProgramHotelInboundHandler(
   }
   const trips = tripsSnap.docs.map((doc) => ({
     id: doc.id, doc: doc.data() as TransportTripDocument}));
-  for (const trip of trips) {
-    for (const legId of trip.doc.legIds) {
-      const legSnap = await db.collection("programTravelLegs")
-        .doc(legId).get();
-      const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
-      if (leg && leg.programId === data.programId) {
-        legs.set(legId, leg);
-        guestIds.add(leg.guestId);
-      }
+  const tripLegIds = trips.flatMap((trip) => trip.doc.legIds)
+    .filter((id) => !legs.has(id));
+  const tripLegSnaps = await readTripDocuments(db, "programTravelLegs",
+    tripLegIds);
+  for (const snap of tripLegSnaps) {
+    const leg = snap.data() as ProgramTravelLegDocument | undefined;
+    if (leg && trips.some((trip) => trip.doc.legIds.includes(snap.id) &&
+        tripIncludesLeg(trip.doc, leg))) {
+      legs.set(snap.id, leg);
+      guestIds.add(leg.guestId);
     }
   }
   const partyIds = [...new Set([...legs.values()]
     .map((leg) => leg.partyId)
     .filter((id): id is string => id !== null))];
   const [guestSnaps, partySnaps] = await Promise.all([
-    Promise.all([...guestIds].map((id) =>
-      db.collection("programGuests").doc(id).get())),
-    Promise.all(partyIds.map((id) =>
-      db.collection("programTravelParties").doc(id).get())),
+    readTripDocuments(db, "programGuests", [...guestIds]),
+    readTripDocuments(db, "programTravelParties", partyIds),
   ]);
   const guests = new Map<string, ProgramGuestDocument>();
   for (const snap of guestSnaps) {
     const guest = snap.data() as ProgramGuestDocument | undefined;
-    if (guest && guest.programId === data.programId) {
+    if (guest && guest.programId === data.programId &&
+        guest.organizerId === access.program.organizerId) {
       guests.set(snap.id, guest);
     }
   }
   const parties = new Map<string, ProgramTravelPartyDocument>();
   for (const snap of partySnaps) {
     const party = snap.data() as ProgramTravelPartyDocument | undefined;
-    if (party && party.programId === data.programId) {
+    if (party && party.programId === data.programId &&
+        party.organizerId === access.program.organizerId) {
       parties.set(snap.id, party);
     }
   }
@@ -164,7 +177,9 @@ export async function getProgramHotelInboundHandler(
       estimatedArriveAtMillis: null,
       passengerCount: trip.doc.passengerCount,
       guestNames: trip.doc.legIds
-        .map((legId) => legs.get(legId)?.guestId)
+        .map((legId) => legs.get(legId))
+        .filter((leg) => leg !== undefined && tripIncludesLeg(trip.doc, leg))
+        .map((leg) => leg!.guestId)
         .map((guestId) => guestId ? guests.get(guestId)?.displayName :
           undefined)
         .filter((name): name is string => name !== undefined),
@@ -193,8 +208,8 @@ export async function listProgramTripsHandler(
   deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<ProgramTripListCallableResponse> {
   const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ProgramIdCallablePayload>(
-    request, validateProgramIdCallablePayload, normalizePayload);
+  const data = validateCallableWithAjv<ListProgramTripsCallablePayload>(
+    request, validateListProgramTripsCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listProgramTrips");
   const access = await requireProgramAccess({
@@ -215,23 +230,49 @@ export async function listProgramTripsHandler(
   // page could hide every trip at a less busy assigned station.
   const scopes = programResourceScopes(
     access.role === "manager" ? null : duties);
+  const limit = data.limit ?? tripPageCap;
+  const cursor = data.cursor ? await db.collection("transportTrips")
+    .doc(data.cursor).get() : null;
+  if (cursor) {
+    const trip = cursor.data() as TransportTripDocument | undefined;
+    if (!trip || trip.programId !== data.programId ||
+        trip.organizerId !== access.program.organizerId ||
+        !scopes.some((scope) =>
+          (!scope.pickup.length || scope.pickup.includes(trip.pickupPointId)) &&
+          (!scope.hotels.length || (trip.destinationHotelId !== null &&
+            scope.hotels.includes(trip.destinationHotelId))))) {
+      throw new HttpsError("invalid-argument",
+        "This page is no longer available. Return to the latest trips.");
+    }
+  }
   const pages = await Promise.all(scopes.map((scope) => {
     let query = db.collection("transportTrips")
-      .where("programId", "==", data.programId);
+      .where("programId", "==", data.programId)
+      .where("organizerId", "==", access.program.organizerId)
+      .orderBy("departedAt", "desc")
+      .limit(limit + 1);
     if (scope.pickup.length) {
       query = query.where("pickupPointId", "in", scope.pickup);
     }
     if (scope.hotels.length) {
       query = query.where("destinationHotelId", "in", scope.hotels);
     }
-    return query.orderBy("departedAt", "desc").limit(tripListCap).get();
+    if (cursor) query = query.startAfter(cursor);
+    return query.get();
   }));
   const byId = new Map(pages.flatMap((page) =>
     page.docs.map((doc) => [doc.id, doc])));
-  const visibleTrips = [...byId.values()].sort((a, b) =>
-    staffTimestampMillis(b.data().departedAt) -
-      staffTimestampMillis(a.data().departedAt) || a.id.localeCompare(b.id))
-    .slice(0, tripListCap);
+  // Match Firestore's full Timestamp order and implicit descending document
+  // ID tie-break, including when duties overlap or departure times are equal.
+  const orderedTrips = [...byId.values()].sort((a, b) => {
+    const at = a.data().departedAt as FirebaseFirestore.Timestamp;
+    const bt = b.data().departedAt as FirebaseFirestore.Timestamp;
+    return bt.seconds - at.seconds || bt.nanoseconds - at.nanoseconds ||
+      (a.id < b.id ? 1 : a.id > b.id ? -1 : 0);
+  });
+  const visibleTrips = orderedTrips.slice(0, limit);
+  const nextCursor = orderedTrips.length > limit ?
+    visibleTrips[visibleTrips.length - 1].id : null;
   const guestIds = new Set<string>();
   const legIds = new Set<string>();
   for (const doc of visibleTrips) {
@@ -239,28 +280,33 @@ export async function listProgramTripsHandler(
       legIds.add(legId);
     }
   }
-  const legSnaps = await Promise.all([...legIds].map((id) =>
-    db.collection("programTravelLegs").doc(id).get()));
+  const legSnaps = await readTripDocuments(db, "programTravelLegs",
+    [...legIds]);
   const legs = new Map<string, ProgramTravelLegDocument>();
   for (const snap of legSnaps) {
     const leg = snap.data() as ProgramTravelLegDocument | undefined;
-    if (leg && leg.programId === data.programId) {
+    if (leg && visibleTrips.some((trip) => {
+      const record = trip.data() as TransportTripDocument;
+      return record.legIds.includes(snap.id) && tripIncludesLeg(record, leg);
+    })) {
       legs.set(snap.id, leg);
       guestIds.add(leg.guestId);
     }
   }
-  const guestSnaps = await Promise.all([...guestIds].map((id) =>
-    db.collection("programGuests").doc(id).get()));
+  const guestSnaps = await readTripDocuments(db, "programGuests",
+    [...guestIds]);
   const guests = new Map<string, ProgramGuestDocument>();
   for (const snap of guestSnaps) {
     const guest = snap.data() as ProgramGuestDocument | undefined;
-    if (guest && guest.programId === data.programId) {
+    if (guest && guest.programId === data.programId &&
+        guest.organizerId === access.program.organizerId) {
       guests.set(snap.id, guest);
     }
   }
   return {
     programId: data.programId,
     accessExpiresAtMillis: programProjectionExpiresAt(access, duties),
+    nextCursor,
     trips: visibleTrips.map((doc) => {
       const trip = doc.data() as TransportTripDocument;
       return {
@@ -280,7 +326,9 @@ export async function listProgramTripsHandler(
           staffTimestampMillis(trip.arrivedAt) : null,
         voidReason: trip.voidReason,
         guestNames: trip.legIds
-          .map((legId) => legs.get(legId)?.guestId)
+          .map((legId) => legs.get(legId))
+          .filter((leg) => leg !== undefined && tripIncludesLeg(trip, leg))
+          .map((leg) => leg!.guestId)
           .map((guestId) => guestId ? guests.get(guestId)?.displayName :
             undefined)
           .filter((name): name is string => name !== undefined),
@@ -290,13 +338,35 @@ export async function listProgramTripsHandler(
   };
 }
 
+/** A malformed manifest reference cannot disclose another station's guest. */
+function tripIncludesLeg(trip: TransportTripDocument,
+  leg: ProgramTravelLegDocument): boolean {
+  return leg.programId === trip.programId &&
+    leg.organizerId === trip.organizerId &&
+    leg.pickupPointId === trip.pickupPointId &&
+    leg.destinationHotelId === trip.destinationHotelId;
+}
+
+/** Deduplicate references and bound concurrent RPCs for large manifests. */
+async function readTripDocuments(db: FirebaseFirestore.Firestore,
+  collection: string, ids: string[],
+): Promise<FirebaseFirestore.DocumentSnapshot[]> {
+  const unique = [...new Set(ids)];
+  const snapshots: FirebaseFirestore.DocumentSnapshot[] = [];
+  for (let offset = 0; offset < unique.length; offset += 32) {
+    snapshots.push(...await Promise.all(unique.slice(offset, offset + 32)
+      .map((id) => db.collection(collection).doc(id).get())));
+  }
+  return snapshots;
+}
+
 function normalizePayload(value: unknown): unknown {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return value;
   }
   const input = value as Record<string, unknown>;
   const trimmed = {...input};
-  for (const key of ["programId", "hotelId"]) {
+  for (const key of ["programId", "hotelId", "cursor"]) {
     if (typeof trimmed[key] === "string") {
       trimmed[key] = (trimmed[key] as string).trim();
     }

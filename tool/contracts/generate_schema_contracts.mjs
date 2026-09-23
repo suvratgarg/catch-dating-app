@@ -1520,6 +1520,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/upsertProgramGuestCallablePayload.ts",
   },
   {
+    name: "ListProgramTripsCallablePayload",
+    source: "callables/list_program_trips_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listProgramTripsCallablePayload.ts",
+  },
+  {
     name: "ListProgramGuestsCallablePayload",
     source: "callables/list_program_guests_payload.schema.json",
     typeOutput:

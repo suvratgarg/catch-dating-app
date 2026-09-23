@@ -18,6 +18,7 @@ const schemaProgramTripListCallableResponseSchema = <String, Object?>{
     'programId',
     'trips',
     'accessExpiresAtMillis',
+    'nextCursor',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -27,7 +28,7 @@ const schemaProgramTripListCallableResponseSchema = <String, Object?>{
     },
     'trips': <String, Object?>{
       'type': 'array',
-      'maxItems': 200,
+      'maxItems': 50,
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
@@ -158,6 +159,14 @@ const schemaProgramTripListCallableResponseSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 9007199254740991,
       'description': 'Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.',
+    },
+    'nextCursor': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

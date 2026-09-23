@@ -1,22 +1,26 @@
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   kind:ASCENDING,
   readiness:ASCENDING
 ) */
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   kind:ASCENDING,
   readiness:ASCENDING,
   pickupPointId:ASCENDING
 ) */
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   kind:ASCENDING,
   readiness:ASCENDING,
   destinationHotelId:ASCENDING
 ) */
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   kind:ASCENDING,
   readiness:ASCENDING,
   pickupPointId:ASCENDING,
@@ -59,6 +63,7 @@ export async function loadArrivalLegContext(
   const pages = await Promise.all(scopes.map((scope) => {
     let query: FirebaseFirestore.Query = db.collection("programTravelLegs")
       .where("programId", "==", programId)
+      .where("organizerId", "==", station.access.program.organizerId)
       .where("kind", "==", "inbound")
       .where("readiness", "in", ["expected", "ready", "disrupted"]);
     if (scope.pickup.length) {

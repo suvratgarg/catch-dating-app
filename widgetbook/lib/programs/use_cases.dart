@@ -219,6 +219,7 @@ final _inbound = ProgramHotelInbound(
 );
 
 final _trips = ProgramTripList(
+  nextCursor: null,
   accessExpiresAt: _now.add(const Duration(hours: 8)),
   programId: _programId,
   trips: [_trip],
@@ -600,7 +601,11 @@ Widget programTripLedgerRowStates(BuildContext context) {
     children: [
       ProviderScope(
         overrides: _programOverrides(),
-        child: ProgramTripLedgerRow(trip: _trip, programId: _programId),
+        child: ProgramTripLedgerRow(
+          trip: _trip,
+          programId: _programId,
+          onChanged: () {},
+        ),
       ),
     ],
   );

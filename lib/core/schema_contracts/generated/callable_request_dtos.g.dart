@@ -178,6 +178,7 @@ export 'callables/list_organizer_programs_callable_request.g.dart';
 export 'callables/list_organizer_saved_audiences_callable_request.g.dart';
 export 'callables/list_organizer_whatsapp_threads_callable_request.g.dart';
 export 'callables/list_program_guests_callable_request.g.dart';
+export 'callables/list_program_trips_callable_request.g.dart';
 export 'callables/list_public_club_reviews_callable_request.g.dart';
 export 'callables/list_public_organizer_reviews_callable_request.g.dart';
 export 'callables/list_transport_vendors_callable_request.g.dart';
