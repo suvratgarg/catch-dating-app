@@ -61,9 +61,8 @@ class EventAssistanceLateJoinSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceLateJoinTitle,
-        mode: CatchSheetMode.scrollable,
         child: state is LateJoinSettingFormUnavailable
             ? CatchLocalizedErrorBanner(state.error)
             : CatchAsyncBoundary<LateJoinSettingSession>(

@@ -732,7 +732,10 @@ void main() {
       await _pumpCreateEventFlow(tester);
       await _openCreateEventFlow(tester);
 
-      expect(find.text('Resume a draft?'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey<String>('host-event-entry-sheet')),
+        findsOneWidget,
+      );
       expect(find.textContaining('Delete Point'), findsOneWidget);
       expect(find.textContaining('Keep Point'), findsOneWidget);
 
@@ -754,7 +757,10 @@ void main() {
       await tester.tap(find.textContaining('Keep Point'));
       await _pumpTestAnimation(tester);
 
-      expect(find.text('Resume a draft?'), findsNothing);
+      expect(
+        find.byKey(const ValueKey<String>('host-event-entry-sheet')),
+        findsNothing,
+      );
       expect(find.text('9'), findsOneWidget);
     });
 
@@ -790,7 +796,10 @@ void main() {
       expect(find.text('When & where'), findsWidgets);
       expect(find.text('Select a date'), findsOneWidget);
       expect(find.text('8:15 PM'), findsOneWidget);
-      expect(find.text('Resume a draft?'), findsNothing);
+      expect(
+        find.byKey(const ValueKey<String>('host-event-entry-sheet')),
+        findsNothing,
+      );
       final drafts = await draftRepository.loadDrafts(
         clubId: 'club-1',
         userId: 'runner-1',

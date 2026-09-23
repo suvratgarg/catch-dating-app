@@ -589,6 +589,20 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               draft.kind == _AudienceRuleKind.manualTag,
         )
         .toList(growable: false);
+    final directoryFilters = switch (draft.sourcePredicate) {
+      HostSavedAudienceDirectoryFilters value => value,
+      _ => null,
+    };
+    final selectedFilters =
+        directoryFilters?.segments
+            .map(hostCustomerFilterForAudienceSegment)
+            .toSet() ??
+        const <HostCustomerFilter>{};
+    final selectedTags = manualTags
+        .where(
+          (tag) => directoryFilters?.manualTagIds.contains(tag.tagId) ?? false,
+        )
+        .toList();
     return CatchSection.fieldRows(
       title: context.l10n.hostSavedAudienceCondition(number: number),
       trailing: !canRemove
@@ -615,6 +629,48 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           },
         ),
         ...switch (draft.kind) {
+          _AudienceRuleKind.directoryFilters => [
+            CatchField.nav(
+              key: ValueKey('host-saved-audience-directory-filters-$number'),
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostCustomersFilters,
+              valueText: _customerSelectionLabel(
+                context,
+                selectedFilters,
+                selectedTags,
+              ),
+              onTap: !enabled
+                  ? null
+                  : () async {
+                      await showCatchBottomSheet<HostCustomerFilterSelection>(
+                        context: context,
+                        builder: (_) => HostCustomerFilterSheet(
+                          selectedFilters: selectedFilters,
+                          selectedManualTags: selectedTags,
+                          manualTagVocabulary: manualTags,
+                          smsReadiness: null,
+                          onChanged: (selection) => onChanged(
+                            draft.copyWith(
+                              sourcePredicate:
+                                  HostSavedAudienceDirectoryFilters(
+                                    segments: {
+                                      for (final filter in selection.allFilters)
+                                        ?hostAudienceSegmentForCustomerFilter(
+                                          filter,
+                                        ),
+                                    },
+                                    manualTagIds: {
+                                      for (final tag in selection.allManualTags)
+                                        tag.tagId,
+                                    },
+                                  ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+            ),
+          ],
           _AudienceRuleKind.spend ||
           _AudienceRuleKind.applicationStatus ||
           _AudienceRuleKind.formAnswer ||

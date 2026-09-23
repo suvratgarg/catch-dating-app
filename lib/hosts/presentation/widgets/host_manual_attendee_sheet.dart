@@ -24,14 +24,13 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterManualTitle,
       subtitle: context.l10n.hostsOperationalRosterManualSubtitle,
-      keyboardSafe: true,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.commit,
         label: context.l10n.hostsOperationalRosterManualSave,
         onPressed: _submit,
-        fullWidth: true,
       ),
       child: CatchFieldLanes.divided(
         children: [

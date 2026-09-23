@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
   "sourceDigest": "sha256:f6ebec2b713559acad7bf8242e0e322f99e841611f52c83604a99b5e2fef2518",
-  "resolvedDigest": "sha256:5379b6a01e830e52a4f3daa6ed36256d447e2246eee626c8fd92b4aa168e85df",
+  "resolvedDigest": "sha256:f3c2e603c0d7703870fe6a6cbb2739c451e641fc641e5c0ed99fc70c23a34ac5",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4691,7 +4691,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

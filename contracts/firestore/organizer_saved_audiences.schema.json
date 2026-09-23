@@ -61,7 +61,38 @@
       }
     },
     "predicate": {
-      "oneOf": [{"$ref": "#/definitions/computedSegmentPredicate"}, {"$ref": "#/definitions/manualTagPredicate"}, {"$ref": "#/definitions/attendanceCountPredicate"}, {"$ref": "#/definitions/lastSeenWithinDaysPredicate"}, {"$ref": "#/definitions/reachableForIntentPredicate"}, {"$ref": "#/definitions/applicationStatusPredicate"}, {"$ref": "#/definitions/formAnswerPredicate"}, {"$ref": "#/definitions/attendedEventPredicate"}, {"$ref": "#/definitions/spendPredicate"}, {"$ref": "#/definitions/staticMembersPredicate"}]
+      "oneOf": [{"$ref": "#/definitions/computedSegmentPredicate"}, {"$ref": "#/definitions/manualTagPredicate"}, {"$ref": "#/definitions/attendanceCountPredicate"}, {"$ref": "#/definitions/lastSeenWithinDaysPredicate"}, {"$ref": "#/definitions/reachableForIntentPredicate"}, {"$ref": "#/definitions/applicationStatusPredicate"}, {"$ref": "#/definitions/formAnswerPredicate"}, {"$ref": "#/definitions/attendedEventPredicate"}, {"$ref": "#/definitions/spendPredicate"}, {"$ref": "#/definitions/staticMembersPredicate"}, {"$ref": "#/definitions/directoryFiltersPredicate"}]
+    },
+    "directoryFiltersPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "segmentIds",
+        "manualTagIds"
+      ],
+      "properties": {
+        "kind": {
+          "const": "directoryFilters"
+        },
+        "segmentIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "organizer_contact_traits.schema.json#/definitions/segmentId"
+          }
+        },
+        "manualTagIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          }
+        }
+      }
     },
     "computedSegmentPredicate": {
       "type": "object",

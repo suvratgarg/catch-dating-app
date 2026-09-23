@@ -59,13 +59,12 @@ class EventRehearsalCheckpointVisitSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: state is RehearsalMovementUnavailable
             ? context.l10n.eventAssistanceVisitReview
             : guestName,
         badge: context.l10n.hostEventRehearsalBadge,
         badgeTone: CatchBadgeTone.danger,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           RehearsalMovementUnavailable(:final error) =>
             CatchLocalizedErrorBanner(error),

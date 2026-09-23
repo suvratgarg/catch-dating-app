@@ -6,6 +6,8 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_guests_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
@@ -73,21 +75,22 @@ Widget createEventPhotoPickerCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Draft sheet states',
-  type: DraftPickerSheet,
+  type: HostEventEntrySheet,
   path: '[P1 product surfaces]/Host create event',
 )
 Widget draftPickerSheetCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'DraftPickerSheet',
+    title: 'HostEventEntrySheet',
     contractId: 'component.host.event.draft_picker_sheet',
     children: [
       WidgetbookPageStateCard(
         label: 'with drafts',
         child: WidgetbookHostDeviceFrame(
-          child: DraftPickerSheet(
-            drafts: [HostOperationsFixtures.eventDraft],
-            onSelectDraft: (_) {},
-            onStartFresh: () {},
+          child: HostEventEntrySheet(
+            state: HostEventEntryState.resolve(
+              organizerId: HostOperationsFixtures.primaryClub.id,
+              drafts: [HostOperationsFixtures.eventDraft],
+            ),
             onDeleteDraft: (_) async {},
           ),
         ),
@@ -95,10 +98,10 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'empty',
         child: WidgetbookHostDeviceFrame(
-          child: DraftPickerSheet(
-            drafts: const [],
-            onSelectDraft: (_) {},
-            onStartFresh: () {},
+          child: HostEventEntrySheet(
+            state: HostEventEntryState.resolve(
+              organizerId: HostOperationsFixtures.primaryClub.id,
+            ),
             onDeleteDraft: (_) async {},
           ),
         ),
