@@ -58,6 +58,7 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
     this.helpSection,
     this.deliverySection,
     this.assistanceSettingsSection,
+    this.assignmentFeaturesSection,
     this.movementSection,
     this.accountabilityMode,
     this.accountabilityError,
@@ -140,6 +141,7 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
   final Widget? helpSection;
   final Widget? deliverySection;
   final Widget? assistanceSettingsSection;
+  final Widget? assignmentFeaturesSection;
   final Widget? movementSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
@@ -239,6 +241,7 @@ class _EventSuccessHostWorkspacePageBodyState
     final body = switch (_selectedTab) {
       EventSuccessHostTab.setup => EventSuccessHostSetupPageBody(
         assistanceSettingsSection: widget.assistanceSettingsSection,
+        assignmentFeaturesSection: widget.assignmentFeaturesSection,
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,

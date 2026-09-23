@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -30,12 +32,16 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_e
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
+import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_features_section.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -387,6 +393,25 @@ class _EventSuccessHostSectionState
         break;
     }
 
+    final sourceFormsRequest = HostFormListRequest(
+      organizerId: event.organizerId,
+      statuses: const {HostFormLifecycleStatus.published},
+    );
+    final sourceFormsAsync = ref.watch(
+      hostFormsDirectoryControllerProvider(sourceFormsRequest),
+    );
+    final sourceFormsState = sourceFormsAsync.when(
+      data: (value) => CatchAsyncState<List<HostFormSummary>>.data(
+        value.forms,
+      ),
+      loading: () => const CatchAsyncState<List<HostFormSummary>>.loading(),
+      error: (error, stack) => CatchAsyncState<List<HostFormSummary>>.error(
+        error, stack,
+      ),
+    );
+    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final viewerUid = uidState.isSettledData ? uidState.value : null;
+
     return EventSuccessHostWorkspacePageBody(
       event: event,
       plan: state.plan,
@@ -431,6 +456,43 @@ class _EventSuccessHostSectionState
           : null,
       assistanceSettingsSection: EventAssistanceLiveSettingsSection(
         event: event,
+      ),
+      assignmentFeaturesSection: EventSuccessAssignmentFeaturesSection(
+        key: ValueKey('matching:${event.id}:$viewerUid'),
+        eventId: event.id,
+        viewerUid: viewerUid,
+        enabled: state.planIsPersisted &&
+            state.plan.status == EventSuccessPlanStatus.setup &&
+            state.plan.frozenAt == null,
+        sequenceUnsupported: state.plan.structureConfig.topology ==
+            EventSuccessTopology.sequence,
+        formsState: sourceFormsState,
+        onLoadMoreForms: sourceFormsAsync.asData?.value.canLoadMore == true
+            ? () => unawaited(ref.read(
+                hostFormsDirectoryControllerProvider(sourceFormsRequest)
+                    .notifier,
+              ).loadMore())
+            : null,
+        onPreview: ({required eventId, required rules,
+            required sourceFormIds}) => ref
+            .read(eventSuccessControllerProvider.notifier)
+            .previewAssignmentFeatures(
+              eventId: eventId,
+              rules: rules,
+              sourceFormIds: sourceFormIds,
+            ),
+        onSave: ({required eventId, required expectedRevision,
+            required requestId, required rules}) =>
+            EventSuccessController.configureAssignmentFeaturesMutation.run(
+              ref,
+              (tx) => tx.get(eventSuccessControllerProvider.notifier)
+                  .configureAssignmentFeatures(
+                    eventId: eventId,
+                    expectedRevision: expectedRevision,
+                    requestId: requestId,
+                    rules: rules,
+                  ),
+            ),
       ),
       deliverySection: EventAssistanceLiveDeliverySection(
         organizerId: event.clubId,

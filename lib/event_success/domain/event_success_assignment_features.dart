@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+
 /// Event-local matching preferences. These rules never grant answer use.
 final class EventSuccessAssignmentFeatureRule {
   const EventSuccessAssignmentFeatureRule({
@@ -65,6 +67,81 @@ final class EventSuccessAssignmentFeatureRule {
   final Map<String, double>? scoreByOptionId;
   final double? minimum;
   final double? maximum;
+
+  /// Builds a soft rule only from a server-returned published question.
+  factory EventSuccessAssignmentFeatureRule.fromPublishedQuestion({
+    required EventSuccessAssignmentFeatureSource source,
+    required EventSuccessAssignmentFeatureQuestion question,
+    required String kind,
+    required String mode,
+    required double weight,
+    List<String>? ordinalOrder,
+    double? minimum,
+    double? maximum,
+  }) {
+    final published = source.questions.where((item) =>
+      item.questionId == question.questionId).firstOrNull;
+    if (published == null) {
+      throw ArgumentError.value(question.questionId, 'question', 'Not in source');
+    }
+    if (!{'singleChoice', 'multiChoice', 'number'}.contains(published.kind)) {
+      throw ArgumentError.value(published.kind, 'question',
+          'Unsupported published answer type');
+    }
+    if (!{'preferSimilar', 'preferDifferent', 'balanceAcrossGroups'}
+        .contains(mode) || !weight.isFinite || weight < 0 || weight > 100) {
+      throw ArgumentError.value(mode, 'mode', 'Invalid matching preference');
+    }
+    if (published.kind == 'singleChoice' &&
+        kind != 'category' && kind != 'ordinal') {
+      throw ArgumentError.value(kind, 'kind', 'Invalid choice transform');
+    }
+    if (published.kind == 'multiChoice' && kind != 'set') {
+      throw ArgumentError.value(kind, 'kind', 'Invalid set transform');
+    }
+    if (published.kind == 'number' && kind != 'number') {
+      throw ArgumentError.value(kind, 'kind', 'Invalid numeric transform');
+    }
+    final optionIds = published.options.map((item) => item.optionId).toList();
+    if (kind != 'number' &&
+        (optionIds.isEmpty || optionIds.length > 40 ||
+          optionIds.toSet().length != optionIds.length)) {
+      throw ArgumentError.value(optionIds, 'options', 'Invalid source options');
+    }
+    final order = ordinalOrder ?? optionIds;
+    if (kind == 'ordinal' &&
+        (order.length < 2 || order.toSet().length != order.length ||
+          !order.toSet().containsAll(optionIds) ||
+          !optionIds.toSet().containsAll(order))) {
+      throw ArgumentError.value(order, 'ordinalOrder', 'Incomplete ordering');
+    }
+    if (kind == 'number' &&
+        (minimum == null || maximum == null ||
+          !minimum.isFinite || !maximum.isFinite || minimum >= maximum)) {
+      throw ArgumentError.value(minimum, 'minimum', 'Invalid numeric range');
+    }
+    final digest = sha256Digest(
+      '${source.formId}|${source.versionId}|${question.questionId}',
+    );
+    return EventSuccessAssignmentFeatureRule(
+      featureId: 'af_${digest.substring(0, 40)}',
+      formId: source.formId,
+      versionId: source.versionId,
+      questionId: question.questionId,
+      kind: kind,
+      mode: mode,
+      weight: weight,
+      optionIds: kind == 'number' ? null : List.unmodifiable(optionIds),
+      scoreByOptionId: kind == 'ordinal'
+          ? Map.unmodifiable({
+              for (var index = 0; index < order.length; index++)
+                order[index]: index.toDouble(),
+            })
+          : null,
+      minimum: kind == 'number' ? minimum : null,
+      maximum: kind == 'number' ? maximum : null,
+    );
+  }
 
   Map<String, Object?> toJson() => {
     'featureId': featureId,
