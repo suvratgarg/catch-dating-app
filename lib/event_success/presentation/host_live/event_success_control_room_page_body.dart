@@ -333,7 +333,7 @@ Future<void> _showControlRoomFallback(BuildContext context) {
       subtitle: context.l10n.eventSuccessControlRoomFallbackSubtitle,
       glyph: CatchIcons.helpOutlineRounded,
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.dismiss,
+        role: CatchButtonEmphasis.dismiss,
         label: context.l10n.eventSuccessControlRoomFallbackDone,
         onPressed: () => Navigator.of(sheetContext).pop(),
       ),

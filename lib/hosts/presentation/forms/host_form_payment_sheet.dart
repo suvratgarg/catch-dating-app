@@ -54,7 +54,7 @@ class _HostFormPaymentSheetState extends State<HostFormPaymentSheet> {
       subtitle: l10n.hostFormPaymentHelp,
       footer: CatchButton.sheet(
         label: l10n.hostFormPaymentSave,
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         onPressed: !canSave
             ? null
             : () => Navigator.of(context).pop(

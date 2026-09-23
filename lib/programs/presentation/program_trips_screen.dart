@@ -319,7 +319,7 @@ class _ProgramTripVoidSheetState extends State<ProgramTripVoidSheet> {
   Widget build(BuildContext context) {
     return CatchSheet.standard(
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: context.l10n.programsTripsVoidConfirm,
 
         onPressed: _controller.text.trim().isEmpty

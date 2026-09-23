@@ -620,7 +620,7 @@ class _HostWhatsappHandoffSheetState
         phone: widget.customer.phoneE164!,
       ),
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         key: const ValueKey('host-customer-confirm-whatsapp'),
         label: context.l10n.hostCustomersOpenWhatsapp,
         status: (_opening) ? CatchButtonStatus.loading : CatchButtonStatus.idle,

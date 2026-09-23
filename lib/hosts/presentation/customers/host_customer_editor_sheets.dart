@@ -36,7 +36,7 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
   @override
   Widget build(BuildContext context) => CatchSheet.standard(
     footer: CatchButton.sheet(
-      role: CatchSheetActionRole.commit,
+      role: CatchButtonEmphasis.commit,
 
       key: const ValueKey('host-saved-audience-save-and-message'),
       label: context.l10n.hostSavedAudienceSaveAndMessage,

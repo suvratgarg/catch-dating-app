@@ -260,7 +260,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
       title: context.l10n.hostsEventStaffGrantTitle,
       subtitle: context.l10n.hostsEventStaffGrantSubtitle,
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: context.l10n.hostsEventStaffGrantAction,
 
         onPressed: _submit,

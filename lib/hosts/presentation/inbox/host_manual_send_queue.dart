@@ -244,7 +244,7 @@ class _HostManualSendTaskSheetState
     title: context.l10n.hostManualSendTaskTitle(name: _task.displayName),
     subtitle: context.l10n.hostManualSendTaskSubtitle,
     footer: CatchButton.sheet(
-      role: CatchSheetActionRole.commit,
+      role: CatchButtonEmphasis.commit,
       key: const ValueKey('host-manual-send-mark-sent'),
       label: context.l10n.hostManualSendTaskMarkSent,
       status: (_busy) ? CatchButtonStatus.loading : CatchButtonStatus.idle,

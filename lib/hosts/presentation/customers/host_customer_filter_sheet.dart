@@ -122,3 +122,25 @@ class _HostCustomerFilterSheetState extends State<HostCustomerFilterSheet> {
     );
   }
 }
+
+String _customerSelectionLabel(
+  BuildContext context,
+  Set<HostCustomerFilter> filters,
+  List<HostCustomerManualTag> tags,
+) {
+  final groups = hostCustomerFilterGroupsForSmsReadiness(
+    HostCrmChannelReadiness.currentEventOnly,
+  );
+  final labels = [
+    for (final group in groups.values)
+      if (group.any(filters.contains))
+        group
+            .where(filters.contains)
+            .map((filter) => _customerFilterLabel(context, filter))
+            .join(' / '),
+    if (tags.isNotEmpty) tags.map((tag) => tag.label).join(' / '),
+  ];
+  return labels.isEmpty
+      ? _customerFilterLabel(context, HostCustomerFilter.all)
+      : labels.join(' · ');
+}

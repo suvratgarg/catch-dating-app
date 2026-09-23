@@ -885,7 +885,7 @@
             "name": "role",
             "type": "enum",
             "required": false,
-            "dartType": "CatchSheetActionRole",
+            "dartType": "CatchButtonEmphasis",
             "values": [
               "dismiss",
               "alternative",

@@ -147,7 +147,7 @@ class CatchSheet extends StatelessWidget {
         : CatchButton.sheet(
             label: _filterCloseLabel,
             onPressed: _onFilterClose,
-            role: CatchSheetActionRole.dismiss,
+            role: CatchButtonEmphasis.dismiss,
           );
     final mediaQuery = MediaQuery.maybeOf(context);
     final viewPaddingBottom = mediaQuery?.viewPadding.bottom ?? 0.0;

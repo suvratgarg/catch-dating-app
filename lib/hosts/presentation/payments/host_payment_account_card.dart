@@ -93,7 +93,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                     .hostsHostPaymentAccountCardSubtitlePoweredByRazorpay
               : context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
           footer: CatchButton.sheet(
-            role: CatchSheetActionRole.commit,
+            role: CatchButtonEmphasis.commit,
             label: isRazorpay
                 ? context
                       .l10n
@@ -351,7 +351,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
       title: l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
       subtitle: l10n.hostsHostPaymentAccountCardSubtitlePoweredByRazorpay,
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: l10n.hostsHostPaymentAccountCardLabelSubmitRazorpay,
 
         status: (widget.pending)

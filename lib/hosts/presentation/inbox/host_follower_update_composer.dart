@@ -91,7 +91,7 @@ class _HostFollowerUpdateComposerSheetState
             weeklyQuota: ClubPostsRepository.weeklyQuota,
           ),
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         key: const ValueKey('host-follower-update-submit'),
         label: _pending
             ? context.l10n.hostsHostClubToolsLabelPosting

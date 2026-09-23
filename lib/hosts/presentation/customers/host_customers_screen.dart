@@ -559,27 +559,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     );
   }
 
-  List<CatchActionMenuItem<HostAudienceMenuAction>> _hostCustomersHeaderActions(
-    BuildContext context, {
-    required bool includeExport,
-    required bool exportEnabled,
-    String? exportSublabel,
-  }) => [
-    CatchActionMenuItem(
-      value: HostAudienceMenuAction.reviewDuplicates,
-      label: context.l10n.hostCustomersReviewDuplicates,
-      icon: CatchIcons.peopleOutlineRounded,
-    ),
-    if (includeExport)
-      CatchActionMenuItem(
-        value: HostAudienceMenuAction.export,
-        label: context.l10n.hostsHostAudienceExport,
-        sublabel: exportSublabel,
-        icon: CatchIcons.downloadRounded,
-        enabled: exportEnabled,
-      ),
-  ];
-
   Future<void> _reviewDuplicates(String organizerId) async {
     final changed = await showCatchBottomSheet<bool>(
       context: context,
@@ -797,26 +776,4 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
       extra: HostCustomerDetailRouteArguments(displayName: displayName),
     );
   }
-}
-
-String _customerSelectionLabel(
-  BuildContext context,
-  Set<HostCustomerFilter> filters,
-  List<HostCustomerManualTag> tags,
-) {
-  final groups = hostCustomerFilterGroupsForSmsReadiness(
-    HostCrmChannelReadiness.currentEventOnly,
-  );
-  final labels = [
-    for (final group in groups.values)
-      if (group.any(filters.contains))
-        group
-            .where(filters.contains)
-            .map((filter) => _customerFilterLabel(context, filter))
-            .join(' / '),
-    if (tags.isNotEmpty) tags.map((tag) => tag.label).join(' / '),
-  ];
-  return labels.isEmpty
-      ? _customerFilterLabel(context, HostCustomerFilter.all)
-      : labels.join(' · ');
 }

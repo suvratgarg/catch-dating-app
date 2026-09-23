@@ -442,3 +442,24 @@ String _customerPeopleCountLabel(
   HostCustomerMatchCountCoverage.atLeast =>
     context.l10n.hostCustomersPeopleCountAtLeast(count: count),
 };
+
+List<CatchActionMenuItem<HostAudienceMenuAction>> _hostCustomersHeaderActions(
+  BuildContext context, {
+  required bool includeExport,
+  required bool exportEnabled,
+  String? exportSublabel,
+}) => [
+  CatchActionMenuItem(
+    value: HostAudienceMenuAction.reviewDuplicates,
+    label: context.l10n.hostCustomersReviewDuplicates,
+    icon: CatchIcons.peopleOutlineRounded,
+  ),
+  if (includeExport)
+    CatchActionMenuItem(
+      value: HostAudienceMenuAction.export,
+      label: context.l10n.hostsHostAudienceExport,
+      sublabel: exportSublabel,
+      icon: CatchIcons.downloadRounded,
+      enabled: exportEnabled,
+    ),
+];

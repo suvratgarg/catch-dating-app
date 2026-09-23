@@ -25,7 +25,7 @@ class HostFormPaymentDetailSheet extends StatelessWidget {
       footer: payment.responseId != null && onOpenResponse != null
           ? CatchButton.sheet(
               label: l10n.hostFormPaymentsOpenResponse,
-              role: CatchSheetActionRole.alternative,
+              role: CatchButtonEmphasis.alternative,
               onPressed: onOpenResponse,
             )
           : null,

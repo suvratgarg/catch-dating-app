@@ -156,7 +156,7 @@ class _ProgramJournalRecoverySheetState
     return CatchSheet.standard(
       footer: Builder(
         builder: (buttonContext) => CatchButton.sheet(
-          role: CatchSheetActionRole.commit,
+          role: CatchButtonEmphasis.commit,
 
           label: context.l10n.programsRecoveryExport,
           status: _exporting

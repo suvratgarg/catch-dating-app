@@ -180,7 +180,7 @@ void main() {
       void f() { showCatchBottomSheet(context: c, builder: b); }
       final a = CatchSheet.standard(child: child);
       final b = const CatchSheet.standard(child: child);
-      final d = CatchSheet.standard(footer: CatchButton.sheet(role: CatchSheetActionRole.commit, label: save, onPressed: save), child: child);
+      final d = CatchSheet.standard(footer: CatchButton.sheet(role: CatchButtonEmphasis.commit, label: save, onPressed: save), child: child);
       final c = CatchSheet.filter(title: l10n.hostCustomersFilters, child: CatchSection.choiceGroup(title: 'Purpose', child: chips), closeLabel: l10n.hostSheetClose, onClose: close);
     '''),
       isEmpty,

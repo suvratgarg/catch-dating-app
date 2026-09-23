@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('sheet action purpose fixes emphasis and full-width layout', () {
-    for (final role in CatchSheetActionRole.values) {
+    for (final role in CatchButtonEmphasis.values) {
       final button = CatchButton.sheet(
         label: 'Action',
         onPressed: () {},
@@ -14,7 +14,7 @@ void main() {
       expect(button.fullWidth, isTrue);
       expect(
         button.variant,
-        role == CatchSheetActionRole.commit
+        role == CatchButtonEmphasis.commit
             ? CatchButtonVariant.primary
             : CatchButtonVariant.secondary,
       );

@@ -516,7 +516,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         !_busy;
     return CatchSheet.standard(
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: context.l10n.programsDispatchConfirm,
         leading: Icon(CatchIcons.taxi),
 

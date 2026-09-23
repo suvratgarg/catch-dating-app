@@ -300,7 +300,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
               count: result.errors.length,
             ),
             footer: CatchButton.sheet(
-              role: CatchSheetActionRole.dismiss,
+              role: CatchButtonEmphasis.dismiss,
               label: context.l10n.hostsOperationalRosterImportResultDone,
 
               onPressed: () => Navigator.of(context).pop(),

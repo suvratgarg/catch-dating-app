@@ -130,7 +130,7 @@ class _HostBroadcastComposerSheetState
 
     return CatchSheet.standard(
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: recipientCount == 1
             ? context.l10n.hostsHostBroadcastComposerSheetLabelSendTo1Person
             : context.l10n

@@ -589,6 +589,20 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               draft.kind == _AudienceRuleKind.manualTag,
         )
         .toList(growable: false);
+    final directoryFilters = switch (draft.sourcePredicate) {
+      HostSavedAudienceDirectoryFilters value => value,
+      _ => null,
+    };
+    final selectedFilters =
+        directoryFilters?.segments
+            .map(hostCustomerFilterForAudienceSegment)
+            .toSet() ??
+        const <HostCustomerFilter>{};
+    final selectedTags = manualTags
+        .where(
+          (tag) => directoryFilters?.manualTagIds.contains(tag.tagId) ?? false,
+        )
+        .toList();
     return CatchSection.fieldRows(
       title: context.l10n.hostSavedAudienceCondition(number: number),
       trailing: !canRemove
@@ -620,71 +634,38 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               key: ValueKey('host-saved-audience-directory-filters-$number'),
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostCustomersFilters,
-              valueText:
-                  draft.sourcePredicate is HostSavedAudienceDirectoryFilters
-                  ? _customerSelectionLabel(
-                      context,
-                      (draft.sourcePredicate!
-                              as HostSavedAudienceDirectoryFilters)
-                          .segments
-                          .map(hostCustomerFilterForAudienceSegment)
-                          .toSet(),
-                      manualTags
-                          .where(
-                            (tag) =>
-                                (draft.sourcePredicate!
-                                        as HostSavedAudienceDirectoryFilters)
-                                    .manualTagIds
-                                    .contains(tag.tagId),
-                          )
-                          .toList(),
-                    )
-                  : _customerFilterLabel(context, HostCustomerFilter.all),
+              valueText: _customerSelectionLabel(
+                context,
+                selectedFilters,
+                selectedTags,
+              ),
               onTap: !enabled
                   ? null
                   : () async {
-                      final current = draft.sourcePredicate;
-                      void updateSelection(
-                        HostCustomerFilterSelection selection,
-                      ) {
-                        onChanged(
-                          draft.copyWith(
-                            sourcePredicate: HostSavedAudienceDirectoryFilters(
-                              segments: {
-                                for (final filter in selection.allFilters)
-                                  ?hostAudienceSegmentForCustomerFilter(filter),
-                              },
-                              manualTagIds: {
-                                for (final tag in selection.allManualTags)
-                                  tag.tagId,
-                              },
-                            ),
-                          ),
-                        );
-                      }
-
                       await showCatchBottomSheet<HostCustomerFilterSelection>(
                         context: context,
                         builder: (_) => HostCustomerFilterSheet(
-                          selectedFilters:
-                              current is HostSavedAudienceDirectoryFilters
-                              ? current.segments
-                                    .map(hostCustomerFilterForAudienceSegment)
-                                    .toSet()
-                              : const {},
-                          selectedManualTags:
-                              current is HostSavedAudienceDirectoryFilters
-                              ? manualTags
-                                    .where(
-                                      (tag) => current.manualTagIds.contains(
-                                        tag.tagId,
-                                      ),
-                                    )
-                                    .toList()
-                              : const [],
+                          selectedFilters: selectedFilters,
+                          selectedManualTags: selectedTags,
                           manualTagVocabulary: manualTags,
                           smsReadiness: null,
-                          onChanged: updateSelection,
+                          onChanged: (selection) => onChanged(
+                            draft.copyWith(
+                              sourcePredicate:
+                                  HostSavedAudienceDirectoryFilters(
+                                    segments: {
+                                      for (final filter in selection.allFilters)
+                                        ?hostAudienceSegmentForCustomerFilter(
+                                          filter,
+                                        ),
+                                    },
+                                    manualTagIds: {
+                                      for (final tag in selection.allManualTags)
+                                        tag.tagId,
+                                    },
+                                  ),
+                            ),
+                          ),
                         ),
                       );
                     },

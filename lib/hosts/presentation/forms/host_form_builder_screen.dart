@@ -430,7 +430,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchButton.sheet(
-              role: CatchSheetActionRole.alternative,
+              role: CatchButtonEmphasis.alternative,
               label: context.l10n.hostFormPreview,
 
               onPressed: () {
@@ -440,7 +440,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ),
             gapH8,
             CatchButton.sheet(
-              role: CatchSheetActionRole.commit,
+              role: CatchButtonEmphasis.commit,
               label:
                   state.editor.form.status == HostFormLifecycleStatus.published
                   ? context.l10n.hostFormPublishChanges

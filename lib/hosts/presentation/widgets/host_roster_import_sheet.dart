@@ -80,7 +80,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: context.l10n.hostsOperationalRosterImportAction(
           count: mapped.rows.length,
         ),

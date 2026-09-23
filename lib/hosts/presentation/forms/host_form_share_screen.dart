@@ -278,7 +278,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
           title: context.l10n.hostFormEmbed,
           subtitle: context.l10n.hostFormEmbedHelp,
           footer: CatchButton.sheet(
-            role: CatchSheetActionRole.commit,
+            role: CatchButtonEmphasis.commit,
             label: context.l10n.hostFormCopyEmbed,
 
             onPressed: () =>

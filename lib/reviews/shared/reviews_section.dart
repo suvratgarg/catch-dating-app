@@ -523,7 +523,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
           ? context.l10n.reviewsReviewsSectionTitleRespondToReview
           : context.l10n.reviewsReviewsSectionTitleEditResponse,
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         key: ReviewKeys.submitOwnerResponseButton,
         label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,

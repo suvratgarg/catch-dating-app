@@ -29,7 +29,7 @@ enum CatchButtonStatus { idle, loading }
 enum CatchButtonTone { primary, neutral, danger }
 
 /// Meaning determines footer emphasis; features do not choose its paint.
-enum CatchSheetActionRole { dismiss, alternative, commit }
+enum CatchButtonEmphasis { dismiss, alternative, commit }
 
 /// Canonical labelled action with command, selection and floating recipes.
 ///
@@ -79,14 +79,14 @@ class CatchButton extends StatefulWidget {
     Key? key,
     required String label,
     required VoidCallback? onPressed,
-    required CatchSheetActionRole role,
+    required CatchButtonEmphasis role,
     Widget? leading,
     CatchButtonStatus status = CatchButtonStatus.idle,
   }) : this(
          key: key,
          label: label,
          onPressed: onPressed,
-         variant: role == CatchSheetActionRole.commit
+         variant: role == CatchButtonEmphasis.commit
              ? CatchButtonVariant.primary
              : CatchButtonVariant.secondary,
          fullWidth: true,

@@ -8,8 +8,7 @@ import 'package:catch_tokens/src/primitives/catch_stroke.dart';
 import 'package:flutter/material.dart';
 
 abstract final class CatchLayout {
-  /// Content max-width clamp for large phones / foldables.
-  /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
+  /// Center full-bleed page bodies in a width-clamped [ConstrainedBox].
   static const double maxContentWidth = 600;
   static const int roomMapMaxVisiblePositions = 8;
   static const double roomMapPositionExtent = CatchSpacing.s5;

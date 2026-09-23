@@ -715,54 +715,6 @@ class _HostFormsLibraryPage extends ConsumerWidget
   }
 }
 
-List<CatchActionMenuItem<_HostFormRowAction>> _hostFormRowActions(
-  BuildContext context,
-  HostFormSummary form,
-) => [
-  if (form.activeVersionId != null)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.analytics,
-      label: context.l10n.hostFormsAnalyticsAction,
-      icon: CatchIcons.insightsOutlined,
-    ),
-  if (form.activeVersionId != null)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.automations,
-      label: context.l10n.hostFormsAutomationsAction,
-      icon: CatchIcons.autoAwesomeOutlined,
-    ),
-  CatchActionMenuItem(
-    value: _HostFormRowAction.duplicate,
-    label: context.l10n.hostFormsDuplicate,
-    icon: CatchIcons.contentCopyRounded,
-  ),
-  if (form.canPause)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.pause,
-      label: context.l10n.hostFormsPause,
-      icon: CatchIcons.pauseCircleOutlineRounded,
-    ),
-  if (form.canResume)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.resume,
-      label: context.l10n.hostFormsResume,
-      icon: CatchIcons.playCircleOutlineRounded,
-    ),
-  if (form.status != HostFormLifecycleStatus.archived)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.archive,
-      label: context.l10n.hostFormsArchive,
-      icon: CatchIcons.archiveOutlined,
-    ),
-  if (form.canDeleteDraft)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.delete,
-      label: context.l10n.hostFormsDeleteDraft,
-      icon: CatchIcons.deleteOutlineRounded,
-      isDestructive: true,
-    ),
-];
-
 class HostFormsNoOrganizer extends StatelessWidget {
   const HostFormsNoOrganizer({
     super.key,

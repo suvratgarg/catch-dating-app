@@ -28,7 +28,7 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
       title: context.l10n.hostsOperationalRosterManualTitle,
       subtitle: context.l10n.hostsOperationalRosterManualSubtitle,
       footer: CatchButton.sheet(
-        role: CatchSheetActionRole.commit,
+        role: CatchButtonEmphasis.commit,
         label: context.l10n.hostsOperationalRosterManualSave,
         onPressed: _submit,
       ),

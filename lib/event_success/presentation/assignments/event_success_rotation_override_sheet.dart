@@ -76,7 +76,7 @@ class _EventSuccessRotationOverrideSheetState
             gapH8,
           ],
           CatchButton.sheet(
-            role: CatchSheetActionRole.commit,
+            role: CatchButtonEmphasis.commit,
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
