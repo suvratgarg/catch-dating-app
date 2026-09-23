@@ -188,6 +188,17 @@ export function allowedHotelIds(access: ProgramAccess,
   return unrestricted ? null : scoped;
 }
 
+/** A projection must be refreshed when any contributing scope can shrink. */
+export function programProjectionExpiresAt(access: ProgramAccess,
+  assignments: ProgramDutyAssignment[]): number | null {
+  if (access.role === "manager") return null;
+  if (assignments.length === 0) {
+    throw new HttpsError("permission-denied", "No duties authorize this view.");
+  }
+  return Math.min(staffTimestampMillis(access.grant!.expiresAt),
+    ...assignments.map((assignment) => assignment.expiresAtMillis));
+}
+
 export function assertRevision(actual: number, expected: number | undefined):
   void {
   if (expected !== undefined && actual !== expected) {

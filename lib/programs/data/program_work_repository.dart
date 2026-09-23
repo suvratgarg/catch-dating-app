@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
@@ -428,6 +429,7 @@ Future<ProgramReadView<T>> _readView<T>(
   live: live,
   parse: parse,
   allowsAccess: allowsAccess,
+  now: ref.read(programProjectionClockProvider),
 );
 
 @riverpod
@@ -442,6 +444,10 @@ Future<ProgramWorkAccess> programWorkAccess(Ref ref, String programId) async {
         .read(programWorkRepositoryProvider)
         .getWorkAccess(programId, snapshotAccountId: accountId),
     ProgramWorkAccess.fromCallableData,
+  );
+  retainProgramProjection(
+    ref,
+    result.value.nextAccessChangeAt(ref.read(programProjectionClockProvider)()),
   );
   return result.value;
 }
@@ -460,7 +466,7 @@ Future<ProgramReadView<ProgramWorkAccess>> programWorkEntry(
       ? programId
       : await repository.claimStaffInvite(inviteId);
   if (!ref.mounted) throw const SignInRequiredException('view program work');
-  return _readView(
+  final result = await _readView(
     ref,
     accountId,
     resolvedProgramId,
@@ -471,6 +477,11 @@ Future<ProgramReadView<ProgramWorkAccess>> programWorkEntry(
     ),
     ProgramWorkAccess.fromCallableData,
   );
+  retainProgramProjection(
+    ref,
+    result.value.nextAccessChangeAt(ref.read(programProjectionClockProvider)()),
+  );
+  return result;
 }
 
 @riverpod
@@ -494,9 +505,9 @@ Future<ProgramReadView<ProgramArrivalsRoster>> programArrivalsRosterView(
   Ref ref,
   String programId,
   String? pickupPointId,
-) {
+) async {
   final accountId = _watchWorkAccount(ref);
-  return _readView(
+  final result = await _readView(
     ref,
     accountId,
     programId,
@@ -509,10 +520,19 @@ Future<ProgramReadView<ProgramArrivalsRoster>> programArrivalsRosterView(
       access,
       pickupPointId,
       dispatch: false,
-      now: DateTime.now(),
+      now: ref.read(programProjectionClockProvider)(),
       forSnapshot: true,
     ),
   );
+  retainProgramProjection(
+    ref,
+    result.value.accessExpiresAt,
+    onExpiry: () => ref.invalidate(
+      programArrivalsRosterProvider(programId, pickupPointId),
+      asReload: true,
+    ),
+  );
+  return result;
 }
 
 @riverpod
@@ -536,9 +556,9 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
   Ref ref,
   String programId,
   String? pickupPointId,
-) {
+) async {
   final accountId = _watchWorkAccount(ref);
-  return _readView(
+  final result = await _readView(
     ref,
     accountId,
     programId,
@@ -551,10 +571,19 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
       access,
       pickupPointId,
       dispatch: true,
-      now: DateTime.now(),
+      now: ref.read(programProjectionClockProvider)(),
       forSnapshot: true,
     ),
   );
+  retainProgramProjection(
+    ref,
+    result.value.accessExpiresAt,
+    onExpiry: () => ref.invalidate(
+      programTransportPlanProvider(programId, pickupPointId),
+      asReload: true,
+    ),
+  );
+  return result;
 }
 
 @riverpod
@@ -562,17 +591,23 @@ Future<ProgramHotelInbound> programHotelInbound(
   Ref ref,
   String programId,
   String hotelId,
-) {
+) async {
   _watchWorkAccount(ref);
-  return ref
+  final result = await ref
       .read(programWorkRepositoryProvider)
       .getHotelInbound(programId: programId, hotelId: hotelId);
+  retainProgramProjection(ref, result.accessExpiresAt);
+  return result;
 }
 
 @riverpod
-Future<ProgramTripList> programTripList(Ref ref, String programId) {
+Future<ProgramTripList> programTripList(Ref ref, String programId) async {
   _watchWorkAccount(ref);
-  return ref.read(programWorkRepositoryProvider).listTrips(programId);
+  final result = await ref
+      .read(programWorkRepositoryProvider)
+      .listTrips(programId);
+  retainProgramProjection(ref, result.accessExpiresAt);
+  return result;
 }
 
 @riverpod

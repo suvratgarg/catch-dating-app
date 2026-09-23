@@ -58,6 +58,7 @@ void main() {
           ).overrideWithValue(
             AsyncData((
               value: ProgramArrivalsRoster(
+                accessExpiresAt: null,
                 programId: 'program-1',
                 pickupPointId: 'pickup-1',
                 generatedAt: DateTime(2026, 2, 14),

@@ -31,6 +31,7 @@ void main() {
         find.byType(MaterialApp),
         matchesGoldenFile('program_screens/${entry.key}.png'),
       );
+      await tester.pumpWidget(const SizedBox.shrink());
     });
   }
 }

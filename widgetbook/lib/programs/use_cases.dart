@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import '../support/page_preview.dart';
 import '../support/widgetbook_harness.dart';
 import '../utility/preview.dart';
@@ -121,6 +122,7 @@ ArrivalsRosterRow _row({
 }
 
 final _roster = ProgramArrivalsRoster(
+  accessExpiresAt: _now.add(const Duration(hours: 8)),
   programId: _programId,
   pickupPointId: _pickupPointId,
   generatedAt: _now,
@@ -154,6 +156,7 @@ final _roster = ProgramArrivalsRoster(
 );
 
 final _plan = ProgramTransportPlan(
+  accessExpiresAt: _now.add(const Duration(hours: 8)),
   programId: _programId,
   pickupPointId: _pickupPointId,
   generatedAt: _now,
@@ -197,6 +200,7 @@ final _trip = ProgramTripSummary(
 );
 
 final _inbound = ProgramHotelInbound(
+  accessExpiresAt: _now.add(const Duration(hours: 8)),
   programId: _programId,
   hotelId: _hotelId,
   hotelName: 'Taj Palace',
@@ -214,7 +218,11 @@ final _inbound = ProgramHotelInbound(
   ],
 );
 
-final _trips = ProgramTripList(programId: _programId, trips: [_trip]);
+final _trips = ProgramTripList(
+  accessExpiresAt: _now.add(const Duration(hours: 8)),
+  programId: _programId,
+  trips: [_trip],
+);
 
 ProgramOperationOutboxStore _previewJournal() {
   final storage = MemoryCommandJournalStorage();
@@ -265,6 +273,7 @@ class _PreviewMutator implements ProgramOperationsMutator {
 
 List<Override> _programOverrides() {
   return [
+    programProjectionClockProvider.overrideWithValue(() => _now),
     uidProvider.overrideWithValue(const AsyncData<String?>('uid_greeter')),
     programOperationsOutboxProvider.overrideWithValue(
       ProgramOperationsOutbox(_previewJournal(), _PreviewMutator()),
@@ -548,6 +557,7 @@ Widget programDispatchSheetStates(BuildContext context) {
     child: ProviderScope(
       overrides: _programOverrides(),
       child: ProgramDispatchSheet(
+        accessExpiresAt: _now.add(const Duration(hours: 8)),
         accountId: 'uid_greeter',
         programId: _programId,
         pickupPointId: _pickupPointId,

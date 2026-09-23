@@ -146,9 +146,10 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
     final operations = catchAsyncStateFromAsyncValue(
       ref.watch(programOperationsStateProvider(programId)),
     ).value;
-    final roster = catchAsyncStateFromAsyncValue(
+    final rosterState = catchAsyncStateFromAsyncValue(
       ref.watch(programArrivalsRosterViewProvider(programId, pickupPointId)),
-    ).value?.value;
+    );
+    final roster = rosterState.isSettledData ? rosterState.value?.value : null;
     final names = {
       for (final row in roster?.rows ?? const <ArrivalsRosterRow>[])
         row.legId: row.guestDisplayName,

@@ -10,7 +10,8 @@
     "pickupPointId",
     "generatedAtMillis",
     "groups",
-    "unassigned"
+    "unassigned",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -157,6 +158,9 @@
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programProjectionExpiry"
     }
   }
 }

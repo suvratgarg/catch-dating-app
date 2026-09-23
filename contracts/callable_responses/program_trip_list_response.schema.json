@@ -10,7 +10,8 @@
   ],
   "required": [
     "programId",
-    "trips"
+    "trips",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -132,6 +133,9 @@
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programProjectionExpiry"
     }
   }
 }

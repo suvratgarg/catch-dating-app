@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
@@ -30,10 +31,12 @@ void main() {
     final mutator = FakeProgramMutator()
       ..error = const ValidationException('conflict');
     var accepted = false;
-    final now = DateTime.now();
+    var now = DateTime.now();
+    final expiry = now.add(const Duration(seconds: 10));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          programProjectionClockProvider.overrideWithValue(() => now),
           uidProvider.overrideWithValue(const AsyncData('acct')),
           isObviouslyOfflineProvider.overrideWithValue(false),
           programOperationsOutboxProvider.overrideWithValue(
@@ -49,6 +52,7 @@ void main() {
           ).overrideWithValue(
             AsyncData((
               value: ProgramArrivalsRoster(
+                accessExpiresAt: null,
                 programId: 'program-1',
                 pickupPointId: 'pickup-1',
                 generatedAt: now,
@@ -66,6 +70,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: ProgramDispatchSheet(
+              accessExpiresAt: expiry,
               programId: 'program-1',
               pickupPointId: 'pickup-1',
               organizerId: 'org-1',
@@ -111,6 +116,14 @@ void main() {
       (await journal.load('acct')).single.status,
       ProgramOperationOutboxStatus.needsReview,
     );
+    final calls = mutator.calls.length;
+    now = expiry;
+    await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle();
+    expect(find.text('DL 1 A 1234'), findsNothing);
+    expect(find.textContaining('Demo Hotel'), findsNothing);
+    expect(find.text('Dispatch now'), findsNothing);
+    expect(mutator.calls.length, calls);
     expect(tester.takeException(), isNull);
   });
 }

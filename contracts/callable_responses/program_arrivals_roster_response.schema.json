@@ -10,7 +10,8 @@
     "pickupPointId",
     "generatedAtMillis",
     "rows",
-    "vehicleClasses"
+    "vehicleClasses",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -217,6 +218,9 @@
       "items": {
         "$ref": "../shared/program_common.schema.json#/definitions/programVehicleClass"
       }
+    },
+    "accessExpiresAtMillis": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programProjectionExpiry"
     }
   }
 }

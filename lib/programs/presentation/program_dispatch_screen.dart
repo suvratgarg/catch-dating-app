@@ -7,8 +7,10 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
+import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
@@ -54,6 +56,24 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
         programWorkAccessProvider(widget.programId).future,
       );
       if (!mounted || ref.read(uidProvider).asData?.value != accountId) return;
+      final authority = programDispatchAccess(
+        access,
+        widget.pickupPointId,
+        group.destinationHotelId,
+        now: ref.read(programProjectionClockProvider)(),
+      );
+      if (!authority.allowed) {
+        throw const PermissionException(
+          'This route is outside your dispatch access.',
+        );
+      }
+      final deadlines = [
+        authority.expiresAt,
+        plan.accessExpiresAt,
+      ].whereType<DateTime>();
+      final expiresAt = deadlines.isEmpty
+          ? null
+          : deadlines.reduce((a, b) => a.isBefore(b) ? a : b);
       // Ready groups may hold for expected parties bound for the same
       // destination; the dispatcher, not the suggestion engine, makes that call.
       final holdCandidates = group.readiness == TransportGroupReadiness.ready
@@ -69,6 +89,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
         context: context,
         builder: (sheetContext) => ProgramDispatchSheet(
           programId: widget.programId,
+          accessExpiresAt: expiresAt,
           accountId: accountId,
           pickupPointId: widget.pickupPointId,
           organizerId: access.organizerId,
@@ -107,6 +128,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
       programTransportPlanViewProvider(widget.programId, widget.pickupPointId),
     );
     return CatchAsyncBoundary<ProgramReadView<ProgramTransportPlan>>(
+      retainDataOn: const {},
       value: planAsync,
       onRetry: () => ref.invalidate(
         programTransportPlanProvider(widget.programId, widget.pickupPointId),
@@ -282,6 +304,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
   const ProgramDispatchSheet({
     super.key,
     required this.programId,
+    required this.accessExpiresAt,
     required this.pickupPointId,
     required this.organizerId,
     required this.accountId,
@@ -291,6 +314,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
     required this.onDispatched,
   });
 
+  final DateTime? accessExpiresAt;
   final String programId;
   final String pickupPointId;
   final String organizerId;
@@ -349,6 +373,14 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
       _error = null;
     });
     try {
+      if (!isProgramProjectionActive(
+        widget.accessExpiresAt,
+        ref.read(programProjectionClockProvider)(),
+      )) {
+        throw const PermissionException(
+          'Program access expired. Refresh this view.',
+        );
+      }
       if (ref.read(uidProvider).asData?.value != widget.accountId) {
         throw const SignInRequiredException('dispatch this saved manifest');
       }
@@ -359,8 +391,24 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         ).future,
       );
       if (!mounted) return;
+      if (!isProgramProjectionActive(
+        widget.accessExpiresAt,
+        ref.read(programProjectionClockProvider)(),
+      )) {
+        throw const PermissionException(
+          'Program access expired. Refresh this view.',
+        );
+      }
       if (ref.read(uidProvider).asData?.value != widget.accountId) {
         throw const SignInRequiredException('dispatch this saved manifest');
+      }
+      if (!isProgramProjectionActive(
+        view.value.accessExpiresAt,
+        ref.read(programProjectionClockProvider)(),
+      )) {
+        throw const PermissionException(
+          'Roster access expired. Refresh this view.',
+        );
       }
       final provider = programOperationsControllerProvider(
         widget.programId,
@@ -394,14 +442,34 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final accountMatches =
+        uidState.isSettledData && uidState.value == widget.accountId;
+    final active = ref.watch(
+      programProjectionActiveProvider(widget.accessExpiresAt),
+    );
+    if (!accountMatches || !active) {
+      return CatchSheet(
+        title: context.l10n.programsDispatchSheetTitle,
+        child: CatchLocalizedErrorState(
+          const PermissionException(
+            'Program access changed. Reopen this view.',
+          ),
+          context: AppErrorContext.event,
+          actions: [
+            CatchButton(
+              label: MaterialLocalizations.of(context).closeButtonLabel,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      );
+    }
     final vendorsAsync = ref.watch(
       programTransportVendorsProvider(widget.organizerId, widget.programId),
     );
     final classes = [...widget.vehicleClasses]
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
-    final accountMatches =
-        uidState.isSettledData && uidState.value == widget.accountId;
     final operations = catchAsyncStateFromAsyncValue(
       ref.watch(programOperationsStateProvider(widget.programId)),
     );

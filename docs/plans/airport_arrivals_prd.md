@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.3
+version: 0.3.4
 updated: 2026-09-23
 owner: product
 status: draft
@@ -612,6 +612,18 @@ and grant deadline after loading, so a concurrent narrower bootstrap cannot
 release a roster captured under older permissions. Refreshing a changed access scope clears older program
 projections and fences in-flight cache writes. The v2 cache removes old v1
 private entries instead of interpreting their missing deadlines as permission.
+
+Operational arrivals, transport-plan, hotel-inbound and trip-ledger responses
+carry `accessExpiresAtMillis`: the earliest expiry among assignments that can
+contribute to that projection (null for organizer managers). This is a read
+lifetime, not a new grant or permission source. A narrower remaining assignment
+requires a fresh projection. The client shares one exact-deadline provider
+across reads and dispatch sheets, discards retained rows during reload, and
+rejects responses that arrive after their deadline. Saved-operation review
+stops resolving guest names from a roster while it reloads. A dispatch sheet
+checks both its captured route deadline and the current roster before queuing.
+Missing deadlines in legacy operational snapshots fail parsing; they are never
+interpreted as manager access.
 
 #### Staff onboarding and discovery
 

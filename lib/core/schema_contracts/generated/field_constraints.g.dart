@@ -88376,6 +88376,13 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const programArrivalsRosterCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programArrivalsRosterCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programArrivalsRosterCallableResponseGeneratedAtMillis = CatchContractFieldConstraints(
     path: 'programArrivalsRosterCallableResponse.generatedAtMillis',
     required: true,
@@ -89093,6 +89100,13 @@ abstract final class CatchContractConstraints {
     path: 'programHotelDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const programHotelInboundCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programHotelInboundCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const programHotelInboundCallableResponseExpectedLegs = CatchContractFieldConstraints(
@@ -90112,6 +90126,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programTransportPlanCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programTransportPlanCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programTransportPlanCallableResponseGeneratedAtMillis = CatchContractFieldConstraints(
     path: 'programTransportPlanCallableResponse.generatedAtMillis',
     required: true,
@@ -90763,6 +90784,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const programTripListCallableResponseAccessExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programTripListCallableResponse.accessExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const programTripListCallableResponseProgramId = CatchContractFieldConstraints(
@@ -118731,6 +118759,7 @@ abstract final class CatchContractConstraints {
     'programAccessCallableResponse.vehicleClasses.items.luggageCapacity': programAccessCallableResponseVehicleClassesItemsLuggageCapacity,
     'programAccessCallableResponse.vehicleClasses.items.passengerCapacity': programAccessCallableResponseVehicleClassesItemsPassengerCapacity,
     'programAccessCallableResponse.vehicleClasses.items.sortOrder': programAccessCallableResponseVehicleClassesItemsSortOrder,
+    'programArrivalsRosterCallableResponse.accessExpiresAtMillis': programArrivalsRosterCallableResponseAccessExpiresAtMillis,
     'programArrivalsRosterCallableResponse.generatedAtMillis': programArrivalsRosterCallableResponseGeneratedAtMillis,
     'programArrivalsRosterCallableResponse.pickupPointId': programArrivalsRosterCallableResponsePickupPointId,
     'programArrivalsRosterCallableResponse.programId': programArrivalsRosterCallableResponseProgramId,
@@ -118831,6 +118860,7 @@ abstract final class CatchContractConstraints {
     'programHotelDocument.revision': programHotelDocumentRevision,
     'programHotelDocument.updatedAt._nanoseconds': programHotelDocumentUpdatedAtNanoseconds,
     'programHotelDocument.updatedAt._seconds': programHotelDocumentUpdatedAtSeconds,
+    'programHotelInboundCallableResponse.accessExpiresAtMillis': programHotelInboundCallableResponseAccessExpiresAtMillis,
     'programHotelInboundCallableResponse.expectedLegs': programHotelInboundCallableResponseExpectedLegs,
     'programHotelInboundCallableResponse.expectedLegs.items.curbAtMillis': programHotelInboundCallableResponseExpectedLegsItemsCurbAtMillis,
     'programHotelInboundCallableResponse.expectedLegs.items.guestDisplayName': programHotelInboundCallableResponseExpectedLegsItemsGuestDisplayName,
@@ -118968,6 +118998,7 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.programId': programStaffListCallableResponseProgramId,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,
+    'programTransportPlanCallableResponse.accessExpiresAtMillis': programTransportPlanCallableResponseAccessExpiresAtMillis,
     'programTransportPlanCallableResponse.generatedAtMillis': programTransportPlanCallableResponseGeneratedAtMillis,
     'programTransportPlanCallableResponse.groups': programTransportPlanCallableResponseGroups,
     'programTransportPlanCallableResponse.groups.items.destinationHotelId': programTransportPlanCallableResponseGroupsItemsDestinationHotelId,
@@ -119059,6 +119090,7 @@ abstract final class CatchContractConstraints {
     'programTripActionCallablePayload.programId': programTripActionCallablePayloadProgramId,
     'programTripActionCallablePayload.reason': programTripActionCallablePayloadReason,
     'programTripActionCallablePayload.tripId': programTripActionCallablePayloadTripId,
+    'programTripListCallableResponse.accessExpiresAtMillis': programTripListCallableResponseAccessExpiresAtMillis,
     'programTripListCallableResponse.programId': programTripListCallableResponseProgramId,
     'programTripListCallableResponse.trips': programTripListCallableResponseTrips,
     'programTripListCallableResponse.trips.items.arrivedAtMillis': programTripListCallableResponseTripsItemsArrivedAtMillis,

@@ -190,6 +190,16 @@ class ProgramWorkAccess {
 
   bool get isManager => actorRole == ProgramActorRole.manager;
 
+  /// Next point at which the visible work choices must be recalculated.
+  DateTime? nextAccessChangeAt(DateTime now) {
+    if (isManager) return null;
+    var deadline = grantExpiresAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    for (final duty in activeDutiesAt(now)) {
+      if (duty.expiresAt!.isBefore(deadline)) deadline = duty.expiresAt!;
+    }
+    return deadline;
+  }
+
   Iterable<ProgramDutyAssignment> activeDutiesAt(DateTime now) =>
       grantExpiresAt == null || !grantExpiresAt!.isAfter(now)
       ? const []
@@ -355,6 +365,7 @@ class ArrivalsRosterRow {
 class ProgramArrivalsRoster {
   const ProgramArrivalsRoster({
     required this.programId,
+    required this.accessExpiresAt,
     required this.pickupPointId,
     required this.generatedAt,
     required this.rows,
@@ -365,6 +376,7 @@ class ProgramArrivalsRoster {
     final map = requiredMap(value, 'arrivals roster');
     return ProgramArrivalsRoster(
       programId: requiredString(map, 'programId'),
+      accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       pickupPointId: map['pickupPointId'] as String?,
       generatedAt: requiredDateTime(map, 'generatedAtMillis'),
       rows: mapList(
@@ -378,6 +390,7 @@ class ProgramArrivalsRoster {
     );
   }
 
+  final DateTime? accessExpiresAt;
   final String programId;
   final String? pickupPointId;
   final DateTime generatedAt;
@@ -443,6 +456,7 @@ class TransportGroupSuggestion {
 class ProgramTransportPlan {
   const ProgramTransportPlan({
     required this.programId,
+    required this.accessExpiresAt,
     required this.pickupPointId,
     required this.generatedAt,
     required this.groups,
@@ -453,6 +467,7 @@ class ProgramTransportPlan {
     final map = requiredMap(value, 'transport plan');
     return ProgramTransportPlan(
       programId: requiredString(map, 'programId'),
+      accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       pickupPointId: map['pickupPointId'] as String?,
       generatedAt: requiredDateTime(map, 'generatedAtMillis'),
       groups: mapList(
@@ -472,6 +487,7 @@ class ProgramTransportPlan {
     );
   }
 
+  final DateTime? accessExpiresAt;
   final String programId;
   final String? pickupPointId;
   final DateTime generatedAt;
@@ -565,12 +581,17 @@ class ProgramTripSummary {
 }
 
 class ProgramTripList {
-  const ProgramTripList({required this.programId, required this.trips});
+  const ProgramTripList({
+    required this.programId,
+    required this.accessExpiresAt,
+    required this.trips,
+  });
 
   factory ProgramTripList.fromCallableData(Object? value) {
     final map = requiredMap(value, 'program trips');
     return ProgramTripList(
       programId: requiredString(map, 'programId'),
+      accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       trips: mapList(
         map['trips'],
         'trips',
@@ -578,6 +599,7 @@ class ProgramTripList {
     );
   }
 
+  final DateTime? accessExpiresAt;
   final String programId;
   final List<ProgramTripSummary> trips;
 }
@@ -615,6 +637,7 @@ class HotelExpectedLeg {
 class ProgramHotelInbound {
   const ProgramHotelInbound({
     required this.programId,
+    required this.accessExpiresAt,
     required this.hotelId,
     required this.hotelName,
     required this.generatedAt,
@@ -626,6 +649,7 @@ class ProgramHotelInbound {
     final map = requiredMap(value, 'hotel inbound');
     return ProgramHotelInbound(
       programId: requiredString(map, 'programId'),
+      accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       hotelId: requiredString(map, 'hotelId'),
       hotelName: requiredString(map, 'hotelName'),
       generatedAt: requiredDateTime(map, 'generatedAtMillis'),
@@ -640,6 +664,7 @@ class ProgramHotelInbound {
     );
   }
 
+  final DateTime? accessExpiresAt;
   final String programId;
   final String hotelId;
   final String hotelName;
@@ -798,6 +823,11 @@ DateTime _dateTime(Object? value, String field) {
     throw FormatException('Invalid $field.');
   }
   return DateTime.fromMillisecondsSinceEpoch(millis);
+}
+
+DateTime? requiredNullableDateTime(Map<Object?, Object?> map, String field) {
+  if (!map.containsKey(field)) throw FormatException('Missing $field.');
+  return nullableDateTime(map[field]);
 }
 
 DateTime? nullableDateTime(Object? value) {

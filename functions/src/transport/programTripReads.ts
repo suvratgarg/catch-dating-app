@@ -35,7 +35,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {validateCallableWithAjv} from "../shared/validation";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
-import {dutyAssignments, dutyCoversHotel,
+import {dutyAssignments, dutyCoversHotel, programProjectionExpiresAt,
   requireProgramAccess} from "../shared/programAuthority";
 import type {ProgramDutyAssignment} from "../shared/programAuthority";
 import {defaultProgramDataDeps} from "../shared/programDataDeps";
@@ -74,8 +74,8 @@ export async function getProgramHotelInboundHandler(
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
+  const hotelDuties = dutyAssignments(access, "hotelDesk");
   if (access.role !== "manager") {
-    const hotelDuties = dutyAssignments(access, "hotelDesk");
     if (!dutyCoversHotel(hotelDuties, data.hotelId)) {
       throw new HttpsError(
         "permission-denied",
@@ -152,6 +152,8 @@ export async function getProgramHotelInboundHandler(
     programId: data.programId,
     hotelId: data.hotelId,
     hotelName: hotel.name,
+    accessExpiresAtMillis: programProjectionExpiresAt(access,
+      hotelDuties.filter((duty) => dutyCoversHotel([duty], data.hotelId))),
     generatedAtMillis: now.toMillis(),
     trips: trips.map((trip) => ({
       tripId: trip.id,
@@ -258,6 +260,7 @@ export async function listProgramTripsHandler(
   }
   return {
     programId: data.programId,
+    accessExpiresAtMillis: programProjectionExpiresAt(access, duties),
     trips: visibleTrips.map((doc) => {
       const trip = doc.data() as TransportTripDocument;
       return {

@@ -165,6 +165,32 @@ void main() {
     },
   );
 
+  test('missing projection expiry cannot become unlimited cached access', () {
+    final payload = <String, Object?>{
+      'programId': 'program',
+      'pickupPointId': 'pickup',
+      'generatedAtMillis': 1800000000000,
+      'rows': [],
+      'vehicleClasses': [],
+    };
+    expect(
+      () => ProgramArrivalsRoster.fromCallableData(payload),
+      throwsFormatException,
+    );
+    payload['accessExpiresAtMillis'] = null;
+    expect(
+      ProgramArrivalsRoster.fromCallableData(payload).accessExpiresAt,
+      isNull,
+    );
+    payload['accessExpiresAtMillis'] = 1800000000100;
+    expect(
+      ProgramArrivalsRoster.fromCallableData(
+        payload,
+      ).accessExpiresAt?.millisecondsSinceEpoch,
+      1800000000100,
+    );
+  });
+
   test('date readers reject fractions and out-of-range timestamps', () {
     expect(nullableDateTime(null), isNull);
     expect(

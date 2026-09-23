@@ -18,6 +18,7 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
     'generatedAtMillis',
     'trips',
     'expectedLegs',
+    'accessExpiresAtMillis',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -179,6 +180,15 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
           },
         },
       },
+    },
+    'accessExpiresAtMillis': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 1,
+      'maximum': 9007199254740991,
+      'description': 'Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.',
     },
   },
 };

@@ -114,7 +114,7 @@ final class ProgramWorkAccessProvider
   }
 }
 
-String _$programWorkAccessHash() => r'0527b0903d677b1c2777783c6f4e74bdd5bb2dda';
+String _$programWorkAccessHash() => r'fc83d202376d96a432425eeac7e15ec706189e3b';
 
 final class ProgramWorkAccessFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramWorkAccess>, String> {
@@ -199,7 +199,7 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'4318ba94dafe060a5449f85abc7f3a54a393ac04';
+String _$programWorkEntryHash() => r'3fe718addde6415ab059cdb36ba7bfe8354f33d0';
 
 /// An invitation must be claimed online; an existing program may reopen from
 /// a bounded snapshot of its previously verified access.
@@ -373,7 +373,7 @@ final class ProgramArrivalsRosterViewProvider
 }
 
 String _$programArrivalsRosterViewHash() =>
-    r'0dc7e27280d6773ceba2c0319767b087a4346499';
+    r'ff1bacf167281acc2edd2be4fa6e8aa246badf59';
 
 final class ProgramArrivalsRosterViewFamily extends $Family
     with
@@ -546,7 +546,7 @@ final class ProgramTransportPlanViewProvider
 }
 
 String _$programTransportPlanViewHash() =>
-    r'2fc531a37938daefa6f0710c337e5cdcf4be3652';
+    r'59fcfea8d52fb4c2f20b8fee9657d5417d771bf0';
 
 final class ProgramTransportPlanViewFamily extends $Family
     with
@@ -633,7 +633,7 @@ final class ProgramHotelInboundProvider
 }
 
 String _$programHotelInboundHash() =>
-    r'51f64f1c76f759f726c3f72c3104e0a6e1a87ab7';
+    r'7db20840bea481a2247717313192906cba0bd3b8';
 
 final class ProgramHotelInboundFamily extends $Family
     with
@@ -712,7 +712,7 @@ final class ProgramTripListProvider
   }
 }
 
-String _$programTripListHash() => r'aae90c4f59ff3c720a6ddbd3f85a309b08831c33';
+String _$programTripListHash() => r'7eff20d80de9ae2d6764ff814a367fc8c7f739f3';
 
 final class ProgramTripListFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramTripList>, String> {

@@ -14,7 +14,8 @@ export const programTripListCallableResponseSchema: Record<string, unknown> = {
   ],
   "required": [
     "programId",
-    "trips"
+    "trips",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -146,6 +147,15 @@ export const programTripListCallableResponseSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
     }
   }
 } as const;

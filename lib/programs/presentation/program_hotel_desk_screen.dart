@@ -29,6 +29,7 @@ class ProgramHotelDeskScreen extends ConsumerWidget {
       programHotelInboundProvider(programId, hotelId),
     );
     return CatchAsyncBoundary<ProgramHotelInbound>(
+      retainDataOn: const {},
       value: inboundAsync,
       onRetry: () =>
           ref.invalidate(programHotelInboundProvider(programId, hotelId)),
@@ -188,6 +189,7 @@ class _ProgramHotelInboundTripTileState
                 'arrive_${widget.trip.tripId.hashCode.abs().toRadixString(36)}_'
                 '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}',
           );
+      if (!mounted) return;
       ref.invalidate(
         programHotelInboundProvider(
           widget.inbound.programId,

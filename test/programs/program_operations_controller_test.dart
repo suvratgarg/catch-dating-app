@@ -71,6 +71,7 @@ void main() {
       expect(
         await controller.dispatch(
           roster: ProgramArrivalsRoster(
+            accessExpiresAt: null,
             vehicleClasses: const [],
             programId: 'program-1',
             pickupPointId: 'pickup-1',
@@ -119,6 +120,7 @@ void main() {
           .read(provider.notifier)
           .dispatch(
             roster: ProgramArrivalsRoster(
+              accessExpiresAt: null,
               vehicleClasses: const [],
               programId: 'program-1',
               pickupPointId: 'pickup-1',

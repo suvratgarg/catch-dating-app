@@ -8,7 +8,7 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {validateCallableWithAjv} from "../shared/validation";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
-  programStaffGrantId,
+  programStaffGrantId, programProjectionExpiresAt,
 } from "../shared/programAuthority";
 import {legTiming} from "./travelLegTiming";
 import {loadArrivalLegContext} from "./programArrivalReads";
@@ -66,6 +66,10 @@ export async function getProgramArrivalsRosterHandler(
     programId: data.programId,
     pickupPointId: data.pickupPointId ?? null,
     generatedAtMillis: now.toMillis(),
+    accessExpiresAtMillis: programProjectionExpiresAt(stationAccess.access,
+      stationAccess.assignments.filter((duty) => !data.pickupPointId ||
+        duty.pickupPointIds.length === 0 ||
+        duty.pickupPointIds.includes(data.pickupPointId))),
     rows: legs.map((leg) => {
       const timing = legTiming(leg.doc, settings);
       const guest = guests.get(leg.doc.guestId);
@@ -290,6 +294,10 @@ export async function getProgramTransportPlanHandler(
     programId: data.programId,
     pickupPointId: data.pickupPointId ?? null,
     generatedAtMillis: now.toMillis(),
+    accessExpiresAtMillis: programProjectionExpiresAt(stationAccess.access,
+      stationAccess.assignments.filter((duty) => !data.pickupPointId ||
+        duty.pickupPointIds.length === 0 ||
+        duty.pickupPointIds.includes(data.pickupPointId))),
     groups: result.groups.map((group) => {
       const legIds = group.partyIds.flatMap(
         (key) => unitMap.get(key)?.legIds ?? []);

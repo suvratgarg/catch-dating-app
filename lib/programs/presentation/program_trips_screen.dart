@@ -22,6 +22,7 @@ class ProgramTripsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tripsAsync = ref.watch(programTripListProvider(programId));
     return CatchAsyncBoundary<ProgramTripList>(
+      retainDataOn: const {},
       value: tripsAsync,
       onRetry: () => ref.invalidate(programTripListProvider(programId)),
       loadingBuilder: (_) => CatchRouteScaffold(
@@ -142,6 +143,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
                 'void_${widget.trip.tripId.hashCode.abs().toRadixString(36)}_'
                 '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}',
           );
+      if (!mounted) return;
       ref.invalidate(programTripListProvider(widget.programId));
     } on Object catch (error) {
       if (mounted) setState(() => _error = error);

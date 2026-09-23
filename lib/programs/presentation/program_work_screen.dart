@@ -41,6 +41,7 @@ class ProgramWorkScreen extends ConsumerWidget {
       programWorkEntryProvider(programId, inviteId),
     );
     return CatchAsyncBoundary<ProgramReadView<ProgramWorkAccess>>(
+      retainDataOn: const {},
       value: accessAsync,
       onRetry: () =>
           ref.invalidate(programWorkEntryProvider(programId, inviteId)),

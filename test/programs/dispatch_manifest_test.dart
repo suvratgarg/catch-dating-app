@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 ProgramArrivalsRoster roster(String readiness) =>
     ProgramArrivalsRoster.fromCallableData({
       'programId': 'program',
+      'accessExpiresAtMillis': null,
       'pickupPointId': 'pickup',
       'generatedAtMillis': 1800000000000,
       'vehicleClasses': <Object?>[],

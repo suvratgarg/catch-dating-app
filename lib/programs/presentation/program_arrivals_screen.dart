@@ -51,6 +51,7 @@ class ProgramArrivalsScreen extends ConsumerWidget {
       programArrivalsRosterViewProvider(programId, pickupPointId),
     );
     return CatchAsyncBoundary<ProgramReadView<ProgramArrivalsRoster>>(
+      retainDataOn: const {},
       value: rosterAsync,
       onRetry: () => ref.invalidate(
         programArrivalsRosterProvider(programId, pickupPointId),

@@ -35,3 +35,30 @@ bool canReadProgramStation(
   }
   return false;
 }
+
+/// Dispatch needs one tuple covering both ends of the selected route. Its
+/// captured sheet must refresh when any contributing tuple expires.
+({bool allowed, DateTime? expiresAt}) programDispatchAccess(
+  ProgramWorkAccess access,
+  String pickupPointId,
+  String? hotelId, {
+  required DateTime now,
+}) {
+  if (access.isManager) return (allowed: true, expiresAt: null);
+  final assignments = access
+      .activeDutiesAt(now)
+      .where(
+        (assignment) =>
+            (assignment.duty == ProgramStaffDuty.transportDispatcher ||
+                assignment.duty == ProgramStaffDuty.programCoordinator) &&
+            assignment.coversPickupPoint(pickupPointId) &&
+            (assignment.hotelIds.isEmpty ||
+                (hotelId != null && assignment.coversHotel(hotelId))),
+      );
+  if (assignments.isEmpty) return (allowed: false, expiresAt: null);
+  var expiry = access.grantExpiresAt!;
+  for (final assignment in assignments) {
+    if (assignment.expiresAt!.isBefore(expiry)) expiry = assignment.expiresAt!;
+  }
+  return (allowed: true, expiresAt: expiry);
+}

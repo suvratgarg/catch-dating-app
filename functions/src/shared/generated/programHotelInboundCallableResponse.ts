@@ -48,4 +48,8 @@ export interface ProgramHotelInboundCallableResponse {
       | "disrupted"
       | "noShow";
   }[];
+  /**
+   * Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.
+   */
+  accessExpiresAtMillis: number | null;
 }

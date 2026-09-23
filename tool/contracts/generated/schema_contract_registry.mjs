@@ -122328,7 +122328,8 @@ export const programArrivalsRosterCallableResponseSchema = {
     "pickupPointId",
     "generatedAtMillis",
     "rows",
-    "vehicleClasses"
+    "vehicleClasses",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -122607,6 +122608,15 @@ export const programArrivalsRosterCallableResponseSchema = {
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
     }
   }
 };
@@ -122623,7 +122633,8 @@ export const programTransportPlanCallableResponseSchema = {
     "pickupPointId",
     "generatedAtMillis",
     "groups",
-    "unassigned"
+    "unassigned",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -122770,6 +122781,15 @@ export const programTransportPlanCallableResponseSchema = {
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
     }
   }
 };
@@ -122787,7 +122807,8 @@ export const programHotelInboundCallableResponseSchema = {
     "hotelName",
     "generatedAtMillis",
     "trips",
-    "expectedLegs"
+    "expectedLegs",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -122949,6 +122970,15 @@ export const programHotelInboundCallableResponseSchema = {
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
     }
   }
 };
@@ -123131,7 +123161,8 @@ export const programTripListCallableResponseSchema = {
   ],
   "required": [
     "programId",
-    "trips"
+    "trips",
+    "accessExpiresAtMillis"
   ],
   "properties": {
     "programId": {
@@ -123263,6 +123294,15 @@ export const programTripListCallableResponseSchema = {
           }
         }
       }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
     }
   }
 };
