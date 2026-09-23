@@ -63315,6 +63315,110 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerFormResponseDetailCallableResponsePaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentCapturedAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.capturedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentCurrency = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.currency',
+    required: true,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentMode = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentPaymentId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^fp_[a-f0-9]{32}\$',
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentProviderOrderId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.providerOrderId',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.providerPaymentId',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentProviderRefundId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.providerRefundId',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentReceipt = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.receipt',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cfp_[a-f0-9]{32}\$',
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentRefundedAmountPaise = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.refundedAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentResponseId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.responseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'submitted', 'failed', 'expired', 'refundPending', 'refunded', 'reviewRequired'],
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.submittedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerFormResponseDetailCallableResponsePaymentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerFormResponseDetailCallableResponse.payment.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const getOrganizerFormResponseDetailCallableResponseResponseConversionKinds = CatchContractFieldConstraints(
     path: 'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds',
     required: true,
@@ -114198,6 +114302,21 @@ abstract final class CatchContractConstraints {
     'getOrganizerFormResponseDetailCallableResponse.completionMillis': getOrganizerFormResponseDetailCallableResponseCompletionMillis,
     'getOrganizerFormResponseDetailCallableResponse.consentVersion': getOrganizerFormResponseDetailCallableResponseConsentVersion,
     'getOrganizerFormResponseDetailCallableResponse.contactId': getOrganizerFormResponseDetailCallableResponseContactId,
+    'getOrganizerFormResponseDetailCallableResponse.payment.amountPaise': getOrganizerFormResponseDetailCallableResponsePaymentAmountPaise,
+    'getOrganizerFormResponseDetailCallableResponse.payment.capturedAtMillis': getOrganizerFormResponseDetailCallableResponsePaymentCapturedAtMillis,
+    'getOrganizerFormResponseDetailCallableResponse.payment.createdAtMillis': getOrganizerFormResponseDetailCallableResponsePaymentCreatedAtMillis,
+    'getOrganizerFormResponseDetailCallableResponse.payment.currency': getOrganizerFormResponseDetailCallableResponsePaymentCurrency,
+    'getOrganizerFormResponseDetailCallableResponse.payment.mode': getOrganizerFormResponseDetailCallableResponsePaymentMode,
+    'getOrganizerFormResponseDetailCallableResponse.payment.paymentId': getOrganizerFormResponseDetailCallableResponsePaymentPaymentId,
+    'getOrganizerFormResponseDetailCallableResponse.payment.providerOrderId': getOrganizerFormResponseDetailCallableResponsePaymentProviderOrderId,
+    'getOrganizerFormResponseDetailCallableResponse.payment.providerPaymentId': getOrganizerFormResponseDetailCallableResponsePaymentProviderPaymentId,
+    'getOrganizerFormResponseDetailCallableResponse.payment.providerRefundId': getOrganizerFormResponseDetailCallableResponsePaymentProviderRefundId,
+    'getOrganizerFormResponseDetailCallableResponse.payment.receipt': getOrganizerFormResponseDetailCallableResponsePaymentReceipt,
+    'getOrganizerFormResponseDetailCallableResponse.payment.refundedAmountPaise': getOrganizerFormResponseDetailCallableResponsePaymentRefundedAmountPaise,
+    'getOrganizerFormResponseDetailCallableResponse.payment.responseId': getOrganizerFormResponseDetailCallableResponsePaymentResponseId,
+    'getOrganizerFormResponseDetailCallableResponse.payment.status': getOrganizerFormResponseDetailCallableResponsePaymentStatus,
+    'getOrganizerFormResponseDetailCallableResponse.payment.submittedAtMillis': getOrganizerFormResponseDetailCallableResponsePaymentSubmittedAtMillis,
+    'getOrganizerFormResponseDetailCallableResponse.payment.updatedAtMillis': getOrganizerFormResponseDetailCallableResponsePaymentUpdatedAtMillis,
     'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds': getOrganizerFormResponseDetailCallableResponseResponseConversionKinds,
     'getOrganizerFormResponseDetailCallableResponse.response.conversionKinds.items': getOrganizerFormResponseDetailCallableResponseResponseConversionKindsItems,
     'getOrganizerFormResponseDetailCallableResponse.response.formId': getOrganizerFormResponseDetailCallableResponseResponseFormId,

@@ -2,8 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {createFormPaymentFixture} from "./formPaymentTestStore";
-import {listOrganizerFormPaymentsHandler, projectLedgerRow} from
+import {listOrganizerFormPaymentsHandler, projectLedgerRow,
+  readResponsePayment} from
   "./formPaymentLedger";
+import type {OrganizerFormResponseDocument} from
+  "../../shared/generated/firestoreAdminTypes";
 
 const data = {organizerId: "org", formId: "form", statuses: [],
   cursor: null, limit: 20};
@@ -49,4 +52,37 @@ test("ledger projects money and references without private respondent state",
     assert.equal("answersHash" in row, false);
     assert.equal("connectionId" in row, false);
     assert.equal("accountId" in row, false);
+  });
+
+test("response payment rejects mismatched records at the frozen draft link",
+  async () => {
+    const h = createFormPaymentFixture();
+    const {paymentId} = await h.reserve();
+    h.capture(paymentId);
+    await h.finalize(paymentId);
+    const entry = [...h.store.records.entries()].find(([path]) =>
+      path.startsWith("organizerFormResponses/"))!;
+    const responseId = entry[0].split("/")[1];
+    const response = entry[1] as unknown as OrganizerFormResponseDocument;
+    const row = await readResponsePayment(h.db, responseId, response);
+    assert.equal(row?.paymentId, paymentId);
+    assert.equal(row?.status, "submitted");
+    assert.equal(row?.responseId, responseId);
+    assert.equal("identity" in row!, false);
+    const fields = ["organizerId", "formId", "versionId",
+      "respondentUid"] as const;
+    for (const field of fields) {
+      await assert.rejects(readResponsePayment(h.db, responseId,
+        {...response, [field]: "foreign"}), /could not be loaded/u);
+    }
+    await assert.rejects(readResponsePayment(h.db, "other-response", response),
+      /could not be loaded/u);
+    assert.equal(await readResponsePayment(h.db, responseId,
+      {...response, draftId: "free-draft"}), null);
+    // Refunds remain visible without manufacturing a new application outcome.
+    const path = `organizerFormPayments/${paymentId}`;
+    h.store.records.set(path, {...h.store.records.get(path),
+      status: "refunded", refundedAmountPaise: 10000});
+    const refunded = await readResponsePayment(h.db, responseId, response);
+    assert.equal(refunded?.status, "refunded");
   });

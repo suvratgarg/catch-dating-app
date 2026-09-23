@@ -15,6 +15,7 @@ import {availabilityFor, persistOrganizerFormSubmission, requireReadyAssets,
   requireResponseIdentity, responseIdentitySnapshot, validateAnswerShape} from
   "../../organizers/organizerFormResponses";
 import {requireReadyFormPaymentConnection} from "./formPaymentConnectionPolicy";
+import {formPaymentId} from "./formPaymentIdentity";
 
 /** Reserves capacity and freezes the draft before any provider side effect. */
 export async function reserveFormPayment(params: {
@@ -29,7 +30,7 @@ export async function reserveFormPayment(params: {
   if (!uid || identity.kind !== "phoneVerified") {
     throw new HttpsError("unauthenticated", "Verify your phone before paying.");
   }
-  const paymentId = `fp_${digest(data.draftId).slice(0, 32)}`;
+  const paymentId = formPaymentId(data.draftId);
   const paymentRef = db.collection("organizerFormPayments").doc(paymentId);
   const draftRef = db.collection("organizerFormResponseDrafts")
     .doc(data.draftId);

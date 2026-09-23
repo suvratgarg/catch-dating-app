@@ -1,21 +1,60 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../support/catch_test_fonts.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  setUpAll(loadCatchTestFonts);
+  for (final status in ['submitted', 'refunded', 'reviewRequired']) {
+    for (final dark in [false, true]) {
+      for (final scale in [1.0, 2.0]) {
+        final label = '$status-${dark ? 'dark' : 'light'}-$scale';
+        testWidgets('response payment $label opens details', (tester) async {
+          await _pumpDetail(
+            tester,
+            paymentStatus: status,
+            theme: dark ? AppTheme.dark : AppTheme.light,
+            textScale: scale,
+          );
+          final payment = find.byKey(const ValueKey('host-response-payment'));
+          await tester.ensureVisible(payment);
+          await pumpFeatureUi(tester);
+          expect(tester.getSize(payment).height, greaterThanOrEqualTo(44));
+          await _capturePayment(tester, 'response-$label');
+          await tester.tap(payment);
+          await pumpFeatureUi(tester);
+          await pumpFeatureUiFor(tester, CatchMotion.slow);
+          final sheet = tester.widget<HostFormPaymentDetailSheet>(
+            find.byType(HostFormPaymentDetailSheet),
+          );
+          expect(sheet.payment.status.name, status);
+          expect(sheet.payment.amountPaise, 10000);
+          expect(sheet.onOpenResponse, isNull);
+          expect(tester.takeException(), isNull);
+          await _capturePayment(tester, 'payment-$label');
+        });
+      }
+    }
+  }
+
   test(
     'native response and application identities resolve the same detail',
     () async {
@@ -127,6 +166,7 @@ void main() {
   ) async {
     final launched = <Uri>[];
     await _pumpDetail(tester, launched: launched);
+    expect(find.byKey(const ValueKey('host-response-payment')), findsNothing);
     expect(find.text('Maya Kapoor'), findsOneWidget);
     expect(find.text('Saturday Social application'), findsOneWidget);
     expect(
@@ -220,12 +260,32 @@ Future<void> _pumpDetail(
   bool disableAnimations = false,
   bool canApply = true,
   bool withdrawn = false,
+  String? paymentStatus,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
   final data = _detailMap();
+  if (paymentStatus != null) {
+    data['payment'] = {
+      'paymentId': 'fp_${'1' * 32}',
+      'status': paymentStatus,
+      'mode': 'test',
+      'amountPaise': 10000,
+      'currency': 'INR',
+      'refundedAmountPaise': paymentStatus == 'refunded' ? 10000 : 0,
+      'createdAtMillis': 1790110000000,
+      'updatedAtMillis': 1790110060000,
+      'capturedAtMillis': 1790110020000,
+      'submittedAtMillis': 1790110030000,
+      'responseId': 'response_1',
+      'providerOrderId': 'order_demo',
+      'providerPaymentId': 'pay_demo',
+      'providerRefundId': null,
+      'receipt': 'cfp_${'2' * 32}',
+    };
+  }
   if (withdrawn) {
     (data['response'] as Map<String, Object?>)['status'] = 'withdrawn';
   }
@@ -250,13 +310,17 @@ Future<void> _pumpDetail(
         }),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: theme ?? AppTheme.light,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(textScale),
             disableAnimations: disableAnimations,
           ),
-          child: child!,
+          child: RepaintBoundary(
+            key: const ValueKey('response-payment-capture'),
+            child: child!,
+          ),
         ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -349,3 +413,19 @@ HostApplicationDetail _application({bool revoked = false}) =>
           ? 'revokedParticipantGrant'
           : 'submittedFormResponse',
     );
+
+Future<void> _capturePayment(WidgetTester tester, String name) async {
+  final directory = Platform.environment['CATCH_RESPONSE_PAYMENT_REVIEW_DIR'];
+  if (directory == null) return;
+  final boundary = tester.renderObject<RenderRepaintBoundary>(
+    find.byKey(const ValueKey('response-payment-capture')),
+  );
+  await tester.runAsync(() async {
+    final image = await boundary.toImage(pixelRatio: 2);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
+    final file = File('$directory/$name.png');
+    await file.parent.create(recursive: true);
+    await file.writeAsBytes(bytes!.buffer.asUint8List());
+  });
+}

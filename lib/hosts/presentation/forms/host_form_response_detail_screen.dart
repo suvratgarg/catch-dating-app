@@ -10,11 +10,15 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_copy.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -24,6 +28,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 part 'host_response_answer_section.dart';
 part 'host_response_detail_section.dart';
 
@@ -166,6 +171,7 @@ class _HostFormResponseDetailScreenState
               onConvert: _reviewConversion,
               onOpenAsset: _openAsset,
               onContact: _openContact,
+              onOpenPayment: _openPayment,
             );
           },
         ),
@@ -178,6 +184,13 @@ class _HostFormResponseDetailScreenState
     pathParameters: {'contactId': id},
     queryParameters: {'organizerId': widget.organizerId},
   );
+
+  Future<void> _openPayment(HostFormPaymentRecord payment) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) =>
+            HostFormPaymentDetailSheet(payment: payment, onOpenResponse: null),
+      );
 
   Future<void> _review(
     HostApplicationDetail application,

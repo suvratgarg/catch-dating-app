@@ -1,6 +1,6 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.2.1
+version: 1.2.2
 updated: 2026-09-23
 owner: host_tooling
 status: active
@@ -346,6 +346,9 @@ selected form/filter; stale pagination responses cannot overwrite a refreshed
 list. Detail sheets identify test money, separate capture from submission,
 show selectable provider references, and only offer a response link when one
 exists. They do not imply that declining an application issues a refund.
+The unified response screen also shows its submission fee, current ledger
+status and test-mode label. Its row opens the same details sheet, without
+routing back to the response or introducing a second application screen.
 
 The question editor separates the CRM Person field classification from Profile
 use. Classification alone preserves organizer-only behavior. A Host explicitly

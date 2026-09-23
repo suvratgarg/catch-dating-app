@@ -8,6 +8,7 @@ import {checkRateLimit} from "../../shared/rateLimit";
 import {requireOrganizerManager} from "../../shared/organizerManagerAuthority";
 import {requireDoc, validateCallableWithAjv} from "../../shared/validation";
 import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
+import {formPaymentId} from "./formPaymentIdentity";
 import type {ListOrganizerFormPaymentsCallablePayload as Payload} from
   "../../shared/generated/listOrganizerFormPaymentsCallablePayload";
 import type {ListOrganizerFormPaymentsCallableResponse as Result} from
@@ -15,7 +16,7 @@ import type {ListOrganizerFormPaymentsCallableResponse as Result} from
 import {validateListOrganizerFormPaymentsCallablePayload} from
   "../../shared/generated/validators/listOrganizerFormPaymentsInput";
 import type {OrganizerFormPaymentDocument as Payment,
-  OrganizerFormDocument as Form} from
+  OrganizerFormDocument as Form, OrganizerFormResponseDocument as Response} from
   "../../shared/generated/firestoreAdminTypes";
 
 interface LedgerDeps {
@@ -84,6 +85,26 @@ export function projectLedgerRow(paymentId: string, payment: Payment):
     responseId: payment.responseId, providerOrderId: payment.providerOrderId,
     providerPaymentId: payment.providerPaymentId,
     providerRefundId: payment.providerRefundId, receipt: payment.receipt};
+}
+
+/** Called only after manager and response ownership checks. One point read,
+ * never a search across another organizer's payments or unsubmitted drafts. */
+export async function readResponsePayment(db: FirebaseFirestore.Firestore,
+  responseId: string, response: Response):
+  Promise<Result["items"][number] | null> {
+  const id = formPaymentId(response.draftId);
+  const snap = await db.collection("organizerFormPayments").doc(id).get();
+  if (!snap.exists) return null;
+  const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+  if (payment.organizerId !== response.organizerId ||
+      payment.formId !== response.formId ||
+      payment.versionId !== response.versionId ||
+      payment.draftId !== response.draftId ||
+      payment.respondentUid !== response.respondentUid ||
+      payment.responseId !== responseId) {
+    throw new HttpsError("internal", "Response payment could not be loaded.");
+  }
+  return projectLedgerRow(id, payment);
 }
 
 function decodeCursor(value: string | null, scope: string): Cursor | null {

@@ -13,6 +13,7 @@ class HostResponseDetailSection extends ConsumerWidget {
     required this.onConvert,
     required this.onOpenAsset,
     required this.onContact,
+    required this.onOpenPayment,
   });
   final HostResponseReviewDetail value;
   final String organizerId;
@@ -29,6 +30,7 @@ class HostResponseDetailSection extends ConsumerWidget {
   onConvert;
   final Future<void> Function(HostFormAssetDownload) onOpenAsset;
   final Future<void> Function(Uri) onContact;
+  final ValueChanged<HostFormPaymentRecord> onOpenPayment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -87,6 +89,24 @@ class HostResponseDetailSection extends ConsumerWidget {
         if (!value.revoked) ...[
           gapH24,
           HostResponseContactSection(value: value, onContact: onContact),
+        ],
+        if (response?.payment case final payment? when !value.revoked) ...[
+          gapH24,
+          CatchSection.fieldRows(
+            children: [
+              CatchField.nav(
+                key: const ValueKey('host-response-payment'),
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostFormPaymentsAmount,
+                body:
+                    '${hostFormPaymentAmount(payment.amountPaise)} · '
+                    '${hostFormPaymentStatusLabel(context.l10n, payment.status)}'
+                    '${payment.mode == HostFormPaymentMode.test ? ' · ${context.l10n.hostFormPaymentTest}' : ''}',
+                bodyMaxLines: 3,
+                onTap: () => onOpenPayment(payment),
+              ),
+            ],
+          ),
         ],
         if (value.canReview) ...[
           gapH24,

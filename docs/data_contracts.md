@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.144.0
+version: 1.145.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2480,6 +2480,12 @@ record. Four bounded workers prevent one slow merchant from serializing the
 batch; the sweep leaves unstarted work eligible when its run budget is spent.
 Manual-review payments release expired reservations without automatically
 retrying capture/refund or clearing their review status.
+
+The authorized response-detail projection includes its financial ledger row
+through one deterministic draft-to-payment point read. Organizer, form, version,
+draft, respondent and response links must all match before money or provider
+references are returned. Free responses have no payment row. Refund and manual
+review states remain financial facts and do not change application review.
 
 
 ### Form messaging decisions

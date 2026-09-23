@@ -14,6 +14,8 @@ import {listParticipantFormProfilesHandler} from
 import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
 import {reconcileOrganizerFormPaymentsHandler} from "./formPaymentTriggers";
 import type {formPaymentRuntime} from "./formPaymentRuntime";
+import {getOrganizerFormResponseDetailHandler} from
+  "../../organizers/organizerFormOperations";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 
@@ -24,7 +26,8 @@ test("Firestore serializes payment reservations, finalization and late capture",
       `form-payments-${Date.now()}`);
     const db = getFirestore(app);
     const fixture = createFormPaymentFixture();
-    const collections = ["organizerForms", "organizerFormVersions",
+    const collections = ["organizers", "organizerForms",
+      "organizerFormVersions",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
       "organizerFormPayments", "organizerFormPaymentWebhooks",
       "organizerFormResponses",
@@ -54,6 +57,8 @@ test("Firestore serializes payment reservations, finalization and late capture",
         seed.set(db.doc(path), value);
       }
       await seed.commit();
+      await db.doc("organizers/org").set({ownerUserId: "host",
+        hostUserId: "host", hostUserIds: ["host"], hostProfiles: []});
       const now = Timestamp.fromMillis(1000);
       const reserve = () => reserveFormPayment({db, request: fixture.request,
         data: fixture.data, now});
@@ -82,6 +87,28 @@ test("Firestore serializes payment reservations, finalization and late capture",
       assert.equal(
         (await db.collection("organizerFormResponses").get()).size, 1);
       assert.equal((await paymentRef.get()).get("reservationReleased"), true);
+      const responseId = (await paymentRef.get()).get("responseId") as string;
+      const detailRequest = {auth: {uid: "host"}, data: {
+        organizerId: "org", responseId,
+      }} as CallableRequest<unknown>;
+      const detailDeps = {firestore: () => db, timestamp: () => now,
+        checkRateLimit: async () => undefined,
+        storageBucket: (): never => {
+          throw new Error("No upload in this response");
+        }};
+      const detail = await getOrganizerFormResponseDetailHandler(
+        detailRequest, detailDeps);
+      assert.equal(detail.payment?.paymentId, first.paymentId);
+      assert.equal(detail.payment?.status, "submitted");
+      assert.equal(detail.payment?.providerPaymentId, "pay_one");
+      assert.equal("identity" in detail.payment!, false);
+      await assert.rejects(getOrganizerFormResponseDetailHandler({
+        ...detailRequest, auth: {uid: "outsider"},
+      } as CallableRequest<unknown>, detailDeps), /Only organizer/u);
+      await paymentRef.update({organizerId: "foreign-org"});
+      await assert.rejects(getOrganizerFormResponseDetailHandler(
+        detailRequest, detailDeps), /Response payment could not be loaded/u);
+      await paymentRef.update({organizerId: "org"});
       for (const collection of ["organizerCommunicationPermissionReceipts",
         "catchCommunicationPermissionReceipts"]) {
         const receipts = await db.collection(collection).get();
