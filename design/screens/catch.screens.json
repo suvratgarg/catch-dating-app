@@ -27708,7 +27708,7 @@
         "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
       },
       "stateController": {
-        "primary": "programWorkAccessProvider",
+        "primary": "programWorkEntryProvider",
         "files": [
           {
             "file": "lib/programs/presentation/program_work_screen.dart",
@@ -27716,7 +27716,7 @@
           },
           {
             "file": "lib/programs/data/program_work_repository.dart",
-            "symbol": "programWorkAccess"
+            "symbol": "programWorkEntry"
           }
         ],
         "mutationOwners": [],
@@ -27737,7 +27737,7 @@
           "id": "access_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "ProgramWorkScreen renders the canonical loading viewport while programWorkAccessProvider resolves.",
+          "source": "ProgramWorkScreen renders the canonical loading viewport while programWorkEntryProvider resolves.",
           "nextAction": "Review against program design references when they land.",
           "previewIds": [
             "ProgramWorkScreen/Screen states"
@@ -27790,7 +27790,7 @@
               "file": "lib/programs/presentation/program_work_screen.dart",
               "symbol": "ProgramWorkScreen"
             },
-            "currentOwner": "ProgramWorkScreen + programWorkAccessProvider",
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
             "targetOwner": "provider-free program work body",
             "dependencies": [
               "catch.top_bar",
