@@ -18,7 +18,7 @@ class SelfProfileInlineEditPatchFactory {
     return UpdateUserProfilePatch(instagramHandle: value as String?);
   }
 
-  UpdateUserProfilePatch height(int value) {
+  UpdateUserProfilePatch height(int? value) {
     return UpdateUserProfilePatch(height: value);
   }
 

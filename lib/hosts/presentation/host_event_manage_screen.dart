@@ -292,7 +292,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         gapH20,
         CatchSection.fieldRows(
           children: [
-            CatchField.action(
+            CatchField.nav(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostEventRehearsalEntryTitle,
               body: context.l10n.hostEventRehearsalEntryBody,

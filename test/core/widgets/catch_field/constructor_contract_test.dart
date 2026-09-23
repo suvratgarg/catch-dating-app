@@ -62,7 +62,7 @@ void main() {
     }
   });
 
-  test('const input configuration preserves caller bounds and defaults', () {
+  test('const input uses contract bounds when the caller omits them', () {
     const field = CatchField.input(
       copy: copy,
       key: key,

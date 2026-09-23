@@ -159,9 +159,9 @@ final class CatchFormSingleChoiceRow<P, T> extends CatchFormChoiceRow<P, T> {
     this.itemAccent,
     this.contractValue,
     this.allowEmptySelection = true,
-    this.showOptionalLabel = false,
+    bool? showOptionalLabel,
     this.contract,
-  });
+  }) : showOptionalLabel = showOptionalLabel ?? allowEmptySelection;
 
   @override
   final List<T> values;
@@ -219,9 +219,9 @@ final class CatchFormMultiChoiceRow<P, T> extends CatchFormChoiceRow<P, T> {
     this.contractValue,
     this.isAddAffordanceWhenEmpty = true,
     this.allowEmptySelection = true,
-    this.showOptionalLabel = false,
+    bool? showOptionalLabel,
     this.contract,
-  });
+  }) : showOptionalLabel = showOptionalLabel ?? allowEmptySelection;
 
   @override
   final List<T> values;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -188,17 +189,55 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
 
 /// Internal save feedback owned and disposed by the form list's row editors.
 @internal
-class CatchFormSaveState {
+class CatchFormSaveState extends ChangeNotifier {
   Object? error;
-  bool saving = false;
   CatchFieldStatus status = CatchFieldStatus.idle;
-  Timer? savedTimer;
+  Timer? _savedTimer;
+  bool _disposed = false;
+
+  bool get saving => status == CatchFieldStatus.saving;
+
+  /// One pending/error/success lifecycle for every typed editor. A rejected
+  /// save keeps its draft open; only an accepted save earns success feedback.
+  Future<bool> submit(Future<bool> Function() save) async {
+    if (_disposed || saving) return false;
+    _savedTimer?.cancel();
+    error = null;
+    status = CatchFieldStatus.saving;
+    notifyListeners();
+    try {
+      final accepted = await save();
+      if (_disposed) return false;
+      status = accepted ? CatchFieldStatus.saved : CatchFieldStatus.idle;
+      if (accepted) {
+        _savedTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+          if (_disposed) return;
+          status = CatchFieldStatus.idle;
+          notifyListeners();
+        });
+      }
+      notifyListeners();
+      return accepted;
+    } catch (failure) {
+      if (_disposed) return false;
+      error = failure;
+      status = CatchFieldStatus.idle;
+      notifyListeners();
+      return false;
+    }
+  }
 
   void reset() {
-    savedTimer?.cancel();
+    if (_disposed || saving) return;
+    _savedTimer?.cancel();
     error = null;
     status = CatchFieldStatus.idle;
   }
 
-  void dispose() => savedTimer?.cancel();
+  @override
+  void dispose() {
+    _disposed = true;
+    _savedTimer?.cancel();
+    super.dispose();
+  }
 }

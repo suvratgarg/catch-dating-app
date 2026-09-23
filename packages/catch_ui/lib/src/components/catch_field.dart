@@ -629,6 +629,8 @@ final class CatchField<T> extends StatefulWidget
 
   /// Canonical numeric disclosure field. The revealed control includes a
   /// centered value and accelerated hold-to-repeat on both 44px targets.
+  /// Optional [onClear] clears only the caller-owned draft. It wraps below the
+  /// stepper at large text sizes rather than shrinking either touch target.
   factory CatchField.stepper({
     required CatchFieldCopy copy,
     Key? key,
@@ -637,6 +639,7 @@ final class CatchField<T> extends StatefulWidget
     CatchContractFieldConstraints? contract,
     required num value,
     required ValueChanged<num>? onChanged,
+    VoidCallback? onClear,
     num? min,
     num? max,
     num? step,
@@ -666,6 +669,7 @@ final class CatchField<T> extends StatefulWidget
     contract: contract,
     value: value,
     onChanged: onChanged,
+    onClear: onClear,
     min: min,
     max: max,
     step: step,
