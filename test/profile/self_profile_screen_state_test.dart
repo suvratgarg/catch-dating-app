@@ -9,6 +9,25 @@ const PhotoUploadState _idleUploadState = PhotoUploadState();
 final _today = DateTime(2026, 6, 24);
 
 void main() {
+  test('retained profile data is hidden during reload and refresh errors', () {
+    final user = buildUser();
+    for (final asyncState in [
+      CatchAsyncState.refreshing(user),
+      CatchAsyncState.staleData(user, StateError('failed')),
+    ]) {
+      final state = SelfProfileScreenState.fromAsync(
+        profileState: asyncState,
+        today: _today,
+        uploadState: _idleUploadState,
+        uploadMutationPending: false,
+        saveMutationPending: false,
+      );
+      expect(state.isReady, false);
+      expect(state.user, isNull);
+      expect(state.previewProfile, isNull);
+    }
+  });
+
   test('SelfProfileScreenState maps loading profile state', () {
     final state = SelfProfileScreenState.fromAsync(
       profileState: const CatchAsyncState.loading(),

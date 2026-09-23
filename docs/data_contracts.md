@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.135.0
+version: 1.136.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2546,8 +2546,11 @@ metadata and copied to owned profile media with a thumbnail. Original private
 form URLs are never promoted. The commit rechecks response withdrawal, account
 deletion and profile revision after image processing. Consumer form review lives
 at `/you/forms/:responseId`; the authenticated directory is `/you/forms`.
-These routes are available before dating setup, while booking and social gates
-remain unchanged. Selection is explicit, retries reuse a payload-bound key,
+The own-profile Forms & cards tab uses the same directory, including when the
+Consumer profile document is missing, loading or failed. The exact authenticated
+`/you`, `/settings`, directory and response-review routes are available before
+dating setup; adjacent routes are not implicitly exempt. Booking and social
+gates remain unchanged. Selection is explicit, retries reuse a payload-bound key,
 and account changes discard retained review data. `getParticipantFormPhoto`
 returns only a bounded metadata-free JPEG preview in memory, never the original
 upload URL or a storage grant. It verifies the phone-authenticated owner and

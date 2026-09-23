@@ -38,14 +38,19 @@ class SelfProfileScreenState {
       savePending: saveMutationPending,
     );
 
-    switch (profileState.status) {
-      case CatchAsyncStatus.loading:
+    // Own-account routes render during profile reloads, including account
+    // changes. Never render or edit retained profile data across that boundary.
+    switch (profileState.phase) {
+      case CatchAsyncPhase.initialLoading:
+      case CatchAsyncPhase.retrying:
+      case CatchAsyncPhase.refreshing:
         return SelfProfileScreenState(
           status: SelfProfileRouteStatus.loading,
           uploadState: uploadState,
           mutationMode: mutationMode,
         );
-      case CatchAsyncStatus.error:
+      case CatchAsyncPhase.staleDataWithError:
+      case CatchAsyncPhase.terminalError:
         return SelfProfileScreenState(
           status: SelfProfileRouteStatus.error,
           error: profileState.error,
@@ -53,7 +58,7 @@ class SelfProfileScreenState {
           mutationMode: mutationMode,
           retryIntent: SelfProfileRetryIntent.reloadProfile,
         );
-      case CatchAsyncStatus.data:
+      case CatchAsyncPhase.data:
         final value = profileState.value;
         return value == null
             ? SelfProfileScreenState(

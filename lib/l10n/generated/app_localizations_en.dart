@@ -3281,7 +3281,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userProfileProfileScreenMessageFinishOnboardingOrSign =>
-      'Finish onboarding or sign in again to load your profile.';
+      'You can review submitted details in Forms & cards before setting up the rest of your profile.';
 
   @override
   String get userProfileInlineEditorHeightTooltipDecreaseHeight =>
@@ -4422,11 +4422,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get safetySettingsScreenTitleAccountUnavailable =>
-      'Account unavailable';
+      'Review your form details';
 
   @override
   String get safetySettingsScreenMessageSignOutAndSign =>
-      'Sign out and sign back in if this keeps happening.';
+      'Your Catch profile is not set up yet. Review your submitted details in Forms & cards. Profile preferences become available after setup.';
 
   @override
   String get swipesEventRecapScreenTitleEventNotFound => 'Event not found';
@@ -20366,6 +20366,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.';
 
   @override
+  String get formProfilesTabLabel => 'Forms & cards';
+
+  @override
   String get formProfilesTitle => 'Forms & private cards';
 
   @override
@@ -20460,10 +20463,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfileReload => 'Reload latest details';
-
-  @override
-  String get formProfilePhotoReviewPending =>
-      'You can add a photo from your profile. Form photo preview will be available here before you can choose to use it.';
 
   @override
   String get formProfilePhoneAuthority =>

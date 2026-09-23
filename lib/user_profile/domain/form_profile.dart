@@ -94,6 +94,8 @@ class FormProfileField {
   final Object? value;
   final Map<String, String> options;
 
+  bool get isVerifiedPhone => canonicalFieldId == 'phoneNumber';
+
   bool get isProfilePhoto =>
       destination == FormProfileDestination.catchProfile &&
       canonicalFieldId == 'profilePhoto' &&

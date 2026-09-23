@@ -1090,6 +1090,22 @@ String? appRedirect({
   final isHostApp = AppConfig.appRole.isHost;
 
   final isWaitingOnAuth = uidAsync.isLoading;
+  // Owning an account is independent of dating/booking readiness. These exact
+  // routes have their own loading and error states and must remain reachable
+  // even before a form applicant has created a Consumer profile document.
+  if (!isHostApp && !isWaitingOnAuth && uidAsync.value != null) {
+    if (_isOwnAccountRoute(matchedLocation)) return null;
+    final isAccountResume =
+        onLoading ||
+        onStart ||
+        onAuth ||
+        (onOnboarding &&
+            !uri.queryParameters.containsKey(_onboardingIntentQueryParam));
+    if (isAccountResume) {
+      final resume = _resumeDestination(uri);
+      if (_isOwnAccountRoute(Uri.parse(resume).path)) return resume;
+    }
+  }
   final isWaitingOnProfile =
       !isHostApp &&
       uidAsync.hasValue &&
@@ -1147,14 +1163,6 @@ String? appRedirect({
     return null;
   }
 
-  // Claiming applicant-owned form details must not require dating preferences.
-  // Authentication still runs above; booking and dating routes keep their gates.
-  if (_isFormProfileRoute(matchedLocation)) return null;
-  if (onLoading || onStart || onAuth || onOnboarding) {
-    final resume = _resumeDestination(uri);
-    if (_isFormProfileRoute(Uri.parse(resume).path)) return resume;
-  }
-
   final onProfileCompletionOnboarding =
       onOnboarding &&
       uri.queryParameters[_onboardingIntentQueryParam] ==
@@ -1204,7 +1212,9 @@ String? appRedirect({
   return null;
 }
 
-bool _isFormProfileRoute(String path) =>
+bool _isOwnAccountRoute(String path) =>
+    path == Routes.profileScreen.path ||
+    path == Routes.settingsScreen.path ||
     path == Routes.formProfilesScreen.path ||
     RegExp(r'^/you/forms/[^/]+$').hasMatch(path);
 

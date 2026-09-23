@@ -11,10 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class FormProfilesScreen extends ConsumerWidget {
+class FormProfilesScreen extends StatelessWidget {
   const FormProfilesScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => CatchRouteScaffold(
+  Widget build(BuildContext context) => CatchRouteScaffold(
     topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
       title: context.l10n.formProfilesTitle,
       navigation: const CatchTopBarNavigation(
@@ -24,8 +24,20 @@ class FormProfilesScreen extends ConsumerWidget {
           ? CatchTopBarEmphasis.divided
           : CatchTopBarEmphasis.plain,
     ),
-    body: CatchRouteBody.standardConstrained(
-      child: CatchAsyncBoundary<FormProfilesState>(
+    body: const CatchRouteBody.standardConstrained(
+      child: FormProfilesContent(),
+    ),
+  );
+}
+
+/// The authenticated form directory can render inside the account pager before
+/// the applicant has a Consumer profile. It owns its independent async state.
+class FormProfilesContent extends ConsumerWidget {
+  const FormProfilesContent({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      CatchAsyncBoundary<FormProfilesState>(
         value: ref.watch(formProfilesControllerProvider),
         retainDataOn: const {},
         errorContext: AppErrorContext.profile,
@@ -39,9 +51,7 @@ class FormProfilesScreen extends ConsumerWidget {
           onLoadMore: () =>
               ref.read(formProfilesControllerProvider.notifier).loadMore(),
         ),
-      ),
-    ),
-  );
+      );
 }
 
 class FormProfilesList extends StatelessWidget {

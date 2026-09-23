@@ -6471,7 +6471,7 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.profile_screen"
   },
-  "userProfileProfileScreenMessageFinishOnboardingOrSign": "Finish onboarding or sign in again to load your profile.",
+  "userProfileProfileScreenMessageFinishOnboardingOrSign": "You can review submitted details in Forms & cards before setting up the rest of your profile.",
   "@userProfileProfileScreenMessageFinishOnboardingOrSign": {
     "description": "Product copy used by lib/user_profile/presentation/profile_screen.dart (message).",
     "x-audience": "consumer",
@@ -8450,14 +8450,14 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenTitleAccountUnavailable": "Account unavailable",
+  "safetySettingsScreenTitleAccountUnavailable": "Review your form details",
   "@safetySettingsScreenTitleAccountUnavailable": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenMessageSignOutAndSign": "Sign out and sign back in if this keeps happening.",
+  "safetySettingsScreenMessageSignOutAndSign": "Your Catch profile is not set up yet. Review your submitted details in Forms & cards. Profile preferences become available after setup.",
   "@safetySettingsScreenMessageSignOutAndSign": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (message).",
     "x-audience": "consumer",
@@ -27642,6 +27642,13 @@
   "@hostFormAnswerCatchProfileHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
   "hostFormAnswerOrganizerCardHelp": "Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.",
   "@hostFormAnswerOrganizerCardHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "formProfilesTabLabel": "Forms & cards",
+  "@formProfilesTabLabel": {
+    "description": "Own-profile tab for form submissions and private organizer cards.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
   "formProfilesTitle": "Forms & private cards",
   "@formProfilesTitle": {
     "description": "Participant form profile review copy.",
@@ -27847,13 +27854,6 @@
   },
   "formProfileReload": "Reload latest details",
   "@formProfileReload": {
-    "description": "Participant form profile review copy.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "user_profile.presentation.form_profiles"
-  },
-  "formProfilePhotoReviewPending": "You can add a photo from your profile. Form photo preview will be available here before you can choose to use it.",
-  "@formProfilePhotoReviewPending": {
     "description": "Participant form profile review copy.",
     "x-audience": "consumer",
     "x-owner": "product",

@@ -5696,7 +5696,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/profile_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Finish onboarding or sign in again to load your profile.'**
+  /// **'You can review submitted details in Forms & cards before setting up the rest of your profile.'**
   String get userProfileProfileScreenMessageFinishOnboardingOrSign;
 
   /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_height.dart (tooltip).
@@ -7292,13 +7292,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Account unavailable'**
+  /// **'Review your form details'**
   String get safetySettingsScreenTitleAccountUnavailable;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Sign out and sign back in if this keeps happening.'**
+  /// **'Your Catch profile is not set up yet. Review your submitted details in Forms & cards. Profile preferences become available after setup.'**
   String get safetySettingsScreenMessageSignOutAndSign;
 
   /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (title).
@@ -32440,6 +32440,12 @@ abstract class AppLocalizations {
   /// **'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.'**
   String get hostFormAnswerOrganizerCardHelp;
 
+  /// Own-profile tab for form submissions and private organizer cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms & cards'**
+  String get formProfilesTabLabel;
+
   /// Participant form profile review copy.
   ///
   /// In en, this message translates to:
@@ -32619,12 +32625,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reload latest details'**
   String get formProfileReload;
-
-  /// Participant form profile review copy.
-  ///
-  /// In en, this message translates to:
-  /// **'You can add a photo from your profile. Form photo preview will be available here before you can choose to use it.'**
-  String get formProfilePhotoReviewPending;
 
   /// Participant form profile review copy.
   ///

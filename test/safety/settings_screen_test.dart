@@ -25,6 +25,47 @@ import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  for (final entry in <String, Stream<UserProfile?>>{
+    'missing': Stream.value(null),
+    'loading': const Stream.empty(),
+    'error': Stream.error(StateError('unavailable')),
+  }.entries) {
+    testWidgets(
+      'profile-unavailable settings keep account actions without preference writes ${entry.key}',
+      (tester) async {
+        final container = _settingsContainer(
+          user: buildUser(),
+          profileStream: entry.value,
+          blockedUsers: const [],
+        );
+        addTearDown(container.dispose);
+        await _pumpSettings(tester, container);
+        expect(
+          tester
+              .widget<CatchField>(find.byKey(SettingsKeys.weeklyDigestSwitch))
+              .onToggle,
+          isNull,
+        );
+        expect(
+          tester
+              .widget<CatchField>(find.byKey(SettingsKeys.showOnMapSwitch))
+              .onToggle,
+          isNull,
+        );
+        expect(
+          tester.widget<CatchField>(find.byKey(SettingsKeys.signOutRow)).onTap,
+          isNotNull,
+        );
+        expect(
+          tester
+              .widget<CatchField>(find.byKey(SettingsKeys.deleteAccountRow))
+              .onTap,
+          isNotNull,
+        );
+      },
+    );
+  }
+
   testWidgets('renders profile-backed settings and empty blocked state', (
     tester,
   ) async {

@@ -10,7 +10,6 @@ import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -21,7 +20,6 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inlin
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 export 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_skeleton.dart';
 
@@ -175,17 +173,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         emptyStateOmitted: true,
         gap: 0,
         children: [
-          CatchSection.rows(
-            children: [
-              CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.formProfilesTitle,
-                body: context.l10n.formProfilesDescription,
-                bodyMaxLines: 8,
-                onTap: () => context.pushNamed(Routes.formProfilesScreen.name),
-              ),
-            ],
-          ),
           CatchPageBody(
             padding: CatchInsets.pageHorizontal,
             child: ProfilePhotosSection(

@@ -200,7 +200,7 @@ class _FormProfileReviewBodyState extends State<FormProfileReviewBody> {
                       ),
                   ] else
                     Text(
-                      field.canonicalFieldId == 'phoneNumber'
+                      field.isVerifiedPhone
                           ? l10n.formProfilePhoneAuthority
                           : l10n.formProfileUnsupported,
                       style: CatchTextStyles.supporting(context),
@@ -384,6 +384,7 @@ class _FormProfileReviewBodyState extends State<FormProfileReviewBody> {
         onChanged: (v) => _changed(() => _draft.edit(key, v)),
       );
     }
+    final isBirthDate = key == 'dateOfBirth';
     final controller = _controllers.putIfAbsent(
       key,
       () => TextEditingController(
@@ -397,7 +398,7 @@ class _FormProfileReviewBodyState extends State<FormProfileReviewBody> {
       title: label,
       contract: contract,
       controller: controller,
-      helperText: key == 'dateOfBirth' ? l10n.formProfileDateHint : null,
+      helperText: isBirthDate ? l10n.formProfileDateHint : null,
       keyboardType: switch (key) {
         'height' => TextInputType.number,
         'email' => TextInputType.emailAddress,
@@ -412,7 +413,7 @@ class _FormProfileReviewBodyState extends State<FormProfileReviewBody> {
             text.isEmpty) {
           return l10n.formProfileRequired;
         }
-        if (key == 'dateOfBirth') {
+        if (isBirthDate) {
           final date = DateTime.tryParse(text);
           final now = DateTime.now();
           if (date == null ||
