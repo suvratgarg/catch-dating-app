@@ -224,6 +224,19 @@ test("v2 keeps unverified choices pending until same-source verified claim",
         ...request, auth: {uid: "another",
           token: {phone_number: "+919000000001"}},
       } as never, deps), /unavailable/u);
+    const validIntent = pending;
+    h.store.records.set(`formCommunicationConsentIntents/${responseId}`,
+      {...validIntent, decisions: (
+        validIntent.decisions as Array<Record<string, unknown>>
+      ).map((entry) => ({...entry, copyHash: "tampered"}))});
+    await assert.rejects(
+      promoteFormCommunicationIntentHandler(request, deps), /unavailable/u);
+    h.store.records.set(`formCommunicationConsentIntents/${responseId}`,
+      {...validIntent, createdAt: Timestamp.fromMillis(1100)});
+    await assert.rejects(
+      promoteFormCommunicationIntentHandler(request, deps), /unavailable/u);
+    h.store.records.set(`formCommunicationConsentIntents/${responseId}`,
+      validIntent);
     const promoted = await promoteFormCommunicationIntentHandler(request, deps);
     assert.deepEqual(promoted.promotedPurposes,
       ["organizer:eventOperations", "catch:marketing"]);
@@ -299,3 +312,58 @@ test("pending v2 choice cannot revive a later sender STOP", async () => {
   assert.equal((h.store.records.get(preferenceId)!.whatsapp as
     {status: string}).status, "optedOut");
 });
+
+test("later v1 submission keeps scoped grant and withdrawal decisions", async () => {
+  const h = fixture(true, true);
+  const organizerId = "organizerCommunicationPreferences/" +
+    organizerCommunicationPreferenceId("org", "person");
+  const scoped = {status: "optedOut" as const,
+    evidenceStatus: "complete" as const, currentReceiptId: "scoped-stop",
+    termsVersion: null, source: "settings" as const,
+    sourceEventId: null, sourceResponseId: null, endpointE164: null,
+    updatedAt: Timestamp.fromMillis(450)};
+  h.store.records.set(organizerId, {organizerId: "org", uid: "person",
+    whatsapp: unknownOrganizerCommunicationChannel(),
+    whatsappPurposes: {marketing: scoped},
+    sms: unknownOrganizerCommunicationChannel(),
+    createdAt: chosenAt, updatedAt: chosenAt});
+  h.store.records.set("catchCommunicationPreferences/person", {
+    uid: "person", whatsapp: unknownOrganizerCommunicationChannel(),
+    whatsappPurposes: {marketing: scoped},
+    createdAt: chosenAt, updatedAt: chosenAt,
+  });
+  const {paymentId} = await h.reserve();
+  h.capture(paymentId);
+  assert.equal(await h.finalize(paymentId), "submitted");
+  assert.deepEqual(h.store.records.get(organizerId)!.whatsappPurposes,
+    {marketing: scoped});
+  assert.deepEqual(h.store.records.get(
+    "catchCommunicationPreferences/person")!.whatsappPurposes,
+  {marketing: scoped});
+  assert.equal(effectiveOrganizerWhatsappPurposeStatus(
+    h.store.records.get(organizerId) as never,
+    "marketing", "+919000000001"), "optedOut");
+});
+
+test("only explicit newer registration marketing copy reverses scoped opt-out",
+  () => {
+    const scoped = {status: "optedOut" as const,
+      evidenceStatus: "complete" as const, currentReceiptId: "stop",
+      termsVersion: null, source: "settings" as const,
+      sourceEventId: null, sourceResponseId: null, endpointE164: null,
+      updatedAt: Timestamp.fromMillis(800)};
+    const broad = {status: "optedIn" as const,
+      evidenceStatus: "complete" as const, currentReceiptId: "registration",
+      termsVersion: "organizer-updates-v1",
+      source: "publicEventRegistration" as const,
+      sourceEventId: "event", updatedAt: Timestamp.fromMillis(900)};
+    const preference = {organizerId: "org", uid: "person", whatsapp: broad,
+      whatsappPurposes: {marketing: scoped},
+      sms: unknownOrganizerCommunicationChannel(),
+      createdAt: chosenAt, updatedAt: now};
+    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
+      "marketing", "+919000000001"), "optedIn");
+    broad.source = "hostFormResponse" as never;
+    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
+      "marketing", "+919000000001"), "optedOut");
+  });

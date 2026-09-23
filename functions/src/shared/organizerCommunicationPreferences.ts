@@ -200,7 +200,14 @@ export function effectiveOrganizerWhatsappPurposeStatus(
         scoped.updatedAt.toMillis() <= broad.updatedAt.toMillis())) {
     return "optedOut";
   }
-  if (scoped?.status === "optedOut") return "optedOut";
+  if (scoped?.status === "optedOut") {
+    // A later, expressly reviewed registration opt-in may reverse a prior
+    // marketing withdrawal. Ambiguous legacy copy cannot do so.
+    if (purpose === "marketing" && broad?.updatedAt && scoped.updatedAt &&
+        broad.updatedAt.toMillis() > scoped.updatedAt.toMillis() &&
+        isReviewedLegacyMarketingGrant(broad)) return "optedIn";
+    return "optedOut";
+  }
   if (scoped?.status === "optedIn") {
     if (!endpointE164 || scoped.endpointE164 !== endpointE164) return "unknown";
     if (purpose === "eventOperations" &&
@@ -219,10 +226,16 @@ export function effectiveOrganizerWhatsappPurposeStatus(
       legacy.evidenceStatus !== "complete" || !legacy.currentReceiptId) {
     return "unknown";
   }
-  if (purpose === "marketing" &&
-      legacy.source === "publicEventRegistration" &&
-      legacy.termsVersion === "organizer-updates-v1") return "optedIn";
+  if (purpose === "marketing" && isReviewedLegacyMarketingGrant(legacy)) {
+    return "optedIn";
+  }
   return "unknown";
+}
+
+function isReviewedLegacyMarketingGrant(value: ChannelPreference): boolean {
+  return value.status === "optedIn" && value.evidenceStatus === "complete" &&
+    !!value.currentReceiptId && value.source === "publicEventRegistration" &&
+    value.termsVersion === "organizer-updates-v1";
 }
 
 function sha256(value: string): string {
