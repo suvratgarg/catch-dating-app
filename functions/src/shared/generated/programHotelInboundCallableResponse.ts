@@ -30,6 +30,14 @@ export interface ProgramHotelInboundCallableResponse {
     guestNames: string[];
     status: "enRoute" | "arrived" | "cancelled" | "voided";
     revision: number;
+    /**
+     * Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip.
+     */
+    manifestSource: "dispatchSnapshot" | "currentRecords";
+    /**
+     * Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot.
+     */
+    vehicleClassLabel: string | null;
   }[];
   /**
    * @maxItems 500

@@ -50,7 +50,9 @@
           "passengerCount",
           "guestNames",
           "status",
-          "revision"
+          "revision",
+          "manifestSource",
+          "vehicleClassLabel"
         ],
         "properties": {
           "tripId": {
@@ -107,6 +109,18 @@
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "manifestSource": {
+            "$ref": "../shared/program_common.schema.json#/definitions/transportManifestSource"
+          },
+          "vehicleClassLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot."
           }
         }
       }

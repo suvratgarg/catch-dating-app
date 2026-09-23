@@ -30,6 +30,14 @@ export interface ProgramTripListCallableResponse {
      */
     guestNames: string[];
     revision: number;
+    /**
+     * Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip.
+     */
+    manifestSource: "dispatchSnapshot" | "currentRecords";
+    /**
+     * Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot.
+     */
+    vehicleClassLabel: string | null;
   }[];
   /**
    * Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.

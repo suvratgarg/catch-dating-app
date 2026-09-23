@@ -495,6 +495,8 @@ class ProgramTransportPlan {
   final List<({String legId, TransportUnassignedReason reason})> unassigned;
 }
 
+enum TransportManifestSource { dispatchSnapshot, currentRecords }
+
 enum TransportTripStatus { enRoute, arrived, cancelled, voided }
 
 class ProgramTripSummary {
@@ -504,6 +506,8 @@ class ProgramTripSummary {
     required this.destinationHotelId,
     required this.destinationLabel,
     required this.vehicleClassId,
+    required this.vehicleClassLabel,
+    required this.manifestSource,
     required this.plateDisplay,
     required this.vendorId,
     required this.vendorName,
@@ -524,6 +528,10 @@ class ProgramTripSummary {
         destinationHotelId: map['destinationHotelId'] as String?,
         destinationLabel: map['destinationLabel'] as String? ?? 'Unassigned',
         vehicleClassId: requiredString(map, 'vehicleClassId'),
+        vehicleClassLabel: requiredNullableString(map, 'vehicleClassLabel'),
+        manifestSource: TransportManifestSource.values.byName(
+          requiredString(map, 'manifestSource'),
+        ),
         plateDisplay: requiredString(map, 'plateDisplay'),
         vendorId: map['vendorId'] as String?,
         vendorName: map['vendorName'] as String?,
@@ -547,6 +555,10 @@ class ProgramTripSummary {
         destinationHotelId: null,
         destinationLabel: '',
         vehicleClassId: requiredString(map, 'vehicleClassId'),
+        vehicleClassLabel: requiredNullableString(map, 'vehicleClassLabel'),
+        manifestSource: TransportManifestSource.values.byName(
+          requiredString(map, 'manifestSource'),
+        ),
         plateDisplay: requiredString(map, 'plateDisplay'),
         vendorId: null,
         vendorName: map['vendorName'] as String?,
@@ -567,6 +579,8 @@ class ProgramTripSummary {
   final String? destinationHotelId;
   final String destinationLabel;
   final String vehicleClassId;
+  final String? vehicleClassLabel;
+  final TransportManifestSource manifestSource;
   final String plateDisplay;
   final String? vendorId;
   final String? vendorName;
@@ -805,6 +819,11 @@ String requiredString(Map<Object?, Object?> map, String field) {
   final value = map[field];
   if (value is String && value.isNotEmpty) return value;
   throw FormatException('Invalid $field.');
+}
+
+String? requiredNullableString(Map<Object?, Object?> map, String field) {
+  if (!map.containsKey(field)) throw FormatException('Missing $field.');
+  return map[field] == null ? null : requiredString(map, field);
 }
 
 int requiredInt(Map<Object?, Object?> map, String field) {

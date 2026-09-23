@@ -27456,6 +27456,8 @@
   "@programsTripsOlder": {"description": "Trip ledger pagination action", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips"},
   "programsTripsLatest": "Latest trips",
   "@programsTripsLatest": {"description": "Trip ledger pagination action", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips"},
+  "programsTripCurrentNames": "Guest names reflect current records; no dispatch snapshot was saved.",
+  "@programsTripCurrentNames": {"description": "Legacy trip manifest provenance shown in ledger and hotel receiving views", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation"},
   "programsTripsTitle": "Trip ledger",
   "@programsTripsTitle": {"description": "Program operations copy: programsTripsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
   "programsTripsSubtitle": "Dispatch reconciliation",

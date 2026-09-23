@@ -1,3 +1,5 @@
+import {projectTripManifest, readTripDispatchSnapshot, tripIncludesLeg}
+  from "./tripManifestProjection";
 import {programResourceScopes} from "../shared/programResourceScopes";
 /* firestore-index: transportTrips (
   programId:ASCENDING,
@@ -124,7 +126,10 @@ export async function getProgramHotelInboundHandler(
   }
   const trips = tripsSnap.docs.map((doc) => ({
     id: doc.id, doc: doc.data() as TransportTripDocument}));
-  const tripLegIds = trips.flatMap((trip) => trip.doc.legIds)
+  const snapshots = new Map(trips.map((trip) =>
+    [trip.id, readTripDispatchSnapshot(trip.doc)]));
+  const tripLegIds = trips.filter((trip) => !snapshots.get(trip.id))
+    .flatMap((trip) => trip.doc.legIds)
     .filter((id) => !legs.has(id));
   const tripLegSnaps = await readTripDocuments(db, "programTravelLegs",
     tripLegIds);
@@ -176,13 +181,7 @@ export async function getProgramHotelInboundHandler(
       departedAtMillis: staffTimestampMillis(trip.doc.departedAt),
       estimatedArriveAtMillis: null,
       passengerCount: trip.doc.passengerCount,
-      guestNames: trip.doc.legIds
-        .map((legId) => legs.get(legId))
-        .filter((leg) => leg !== undefined && tripIncludesLeg(trip.doc, leg))
-        .map((leg) => leg!.guestId)
-        .map((guestId) => guestId ? guests.get(guestId)?.displayName :
-          undefined)
-        .filter((name): name is string => name !== undefined),
+      ...projectTripManifest(trip.doc, snapshots.get(trip.id), legs, guests),
       status: trip.doc.status,
       revision: trip.doc.revision,
     })),
@@ -273,9 +272,12 @@ export async function listProgramTripsHandler(
   const visibleTrips = orderedTrips.slice(0, limit);
   const nextCursor = orderedTrips.length > limit ?
     visibleTrips[visibleTrips.length - 1].id : null;
+  const snapshots = new Map(visibleTrips.map((doc) =>
+    [doc.id, readTripDispatchSnapshot(doc.data() as TransportTripDocument)]));
   const guestIds = new Set<string>();
   const legIds = new Set<string>();
   for (const doc of visibleTrips) {
+    if (snapshots.get(doc.id)) continue;
     for (const legId of (doc.data() as TransportTripDocument).legIds) {
       legIds.add(legId);
     }
@@ -325,26 +327,11 @@ export async function listProgramTripsHandler(
         arrivedAtMillis: trip.arrivedAt ?
           staffTimestampMillis(trip.arrivedAt) : null,
         voidReason: trip.voidReason,
-        guestNames: trip.legIds
-          .map((legId) => legs.get(legId))
-          .filter((leg) => leg !== undefined && tripIncludesLeg(trip, leg))
-          .map((leg) => leg!.guestId)
-          .map((guestId) => guestId ? guests.get(guestId)?.displayName :
-            undefined)
-          .filter((name): name is string => name !== undefined),
+        ...projectTripManifest(trip, snapshots.get(doc.id), legs, guests),
         revision: trip.revision,
       };
     }),
   };
-}
-
-/** A malformed manifest reference cannot disclose another station's guest. */
-function tripIncludesLeg(trip: TransportTripDocument,
-  leg: ProgramTravelLegDocument): boolean {
-  return leg.programId === trip.programId &&
-    leg.organizerId === trip.organizerId &&
-    leg.pickupPointId === trip.pickupPointId &&
-    leg.destinationHotelId === trip.destinationHotelId;
 }
 
 /** Deduplicate references and bound concurrent RPCs for large manifests. */

@@ -48,6 +48,8 @@ const schemaProgramTripListCallableResponseSchema = <String, Object?>{
           'voidReason',
           'guestNames',
           'revision',
+          'manifestSource',
+          'vehicleClassLabel',
         ],
         'properties': <String, Object?>{
           'tripId': <String, Object?>{
@@ -147,6 +149,23 @@ const schemaProgramTripListCallableResponseSchema = <String, Object?>{
           'revision': <String, Object?>{
             'type': 'integer',
             'minimum': 1,
+          },
+          'manifestSource': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'dispatchSnapshot',
+              'currentRecords',
+            ],
+            'description': 'Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip.',
+          },
+          'vehicleClassLabel': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 60,
+            'description': 'Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot.',
           },
         },
       },

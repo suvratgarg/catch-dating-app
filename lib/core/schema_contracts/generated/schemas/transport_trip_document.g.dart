@@ -316,5 +316,142 @@ const schemaTransportTripDocumentSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 9007199254740991,
     },
+    'dispatchSnapshot': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Facts captured atomically when dispatch is recorded, including offline departures recorded later. Absent only on legacy trips; never reconstructed as historical evidence from current records.',
+      'required': <Object?>[
+        'recordedAt',
+        'vehicleClass',
+        'manifest',
+      ],
+      'properties': <String, Object?>{
+        'recordedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'vehicleClass': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'id',
+            'label',
+            'passengerCapacity',
+            'luggageCapacity',
+            'capabilities',
+            'sortOrder',
+          ],
+          'properties': <String, Object?>{
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 60,
+              'pattern': '^[a-z0-9][a-z0-9_-]{0,59}\$',
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 60,
+            },
+            'passengerCapacity': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 200,
+            },
+            'luggageCapacity': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 500,
+            },
+            'capabilities': <String, Object?>{
+              'type': 'array',
+              'maxItems': 12,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'wheelchairAccessible',
+                  'extraLuggage',
+                  'childSeat',
+                ],
+              },
+            },
+            'sortOrder': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000,
+            },
+          },
+        },
+        'manifest': <String, Object?>{
+          'type': 'array',
+          'minItems': 1,
+          'maxItems': 50,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'legId',
+              'guestId',
+              'guestDisplayName',
+              'partyId',
+              'passengers',
+              'luggageUnits',
+            ],
+            'properties': <String, Object?>{
+              'legId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'guestId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'guestDisplayName': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 140,
+              },
+              'partyId': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'passengers': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 200,
+              },
+              'luggageUnits': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 500,
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };

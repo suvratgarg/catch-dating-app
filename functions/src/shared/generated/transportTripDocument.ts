@@ -83,4 +83,39 @@ export interface TransportTripDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Facts captured atomically when dispatch is recorded, including offline departures recorded later. Absent only on legacy trips; never reconstructed as historical evidence from current records.
+   */
+  dispatchSnapshot?: {
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    recordedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    vehicleClass: {
+      id: string;
+      label: string;
+      passengerCapacity: number;
+      luggageCapacity: number;
+      /**
+       * @maxItems 12
+       */
+      capabilities: ("wheelchairAccessible" | "extraLuggage" | "childSeat")[];
+      sortOrder: number;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 50
+     */
+    manifest: {
+      legId: string;
+      guestId: string;
+      guestDisplayName: string;
+      partyId: string | null;
+      passengers: number;
+      luggageUnits: number;
+    }[];
+  };
 }

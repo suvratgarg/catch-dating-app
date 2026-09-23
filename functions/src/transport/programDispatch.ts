@@ -16,6 +16,7 @@ import {
 import {vehicleFits} from "./vehicleCapacity";
 import {hashRequest} from "../shared/programOperationHash";
 import type {
+  ProgramGuestDocument,
   ProgramHotelDocument,
   ProgramPickupPointDocument,
   ProgramTravelLegDocument,
@@ -273,6 +274,20 @@ export async function dispatchProgramTripHandler(
       throw new HttpsError("failed-precondition",
         "A guest cannot occupy multiple manifest rows on the same trip.");
     }
+    const guestSnaps = await Promise.all(legs.map((leg) =>
+      tx.get(db.collection("programGuests").doc(leg.doc.guestId))));
+    const guests = new Map<string, ProgramGuestDocument>();
+    for (const snap of guestSnaps) {
+      const guest = snap.data() as ProgramGuestDocument | undefined;
+      if (!guest || guest.programId !== data.programId ||
+          guest.organizerId !== access.program.organizerId ||
+          typeof guest.displayName !== "string" ||
+          guest.displayName.length < 1 || guest.displayName.length > 140) {
+        throw new HttpsError("failed-precondition",
+          "A manifest guest needs reconciliation before dispatch.");
+      }
+      guests.set(snap.id, guest);
+    }
     const partyIds = [...new Set(legs.map((leg) => leg.doc.partyId)
       .filter((id): id is string => id !== null))].sort();
     const partySnaps = await Promise.all(partyIds.map((id) =>
@@ -342,6 +357,15 @@ export async function dispatchProgramTripHandler(
       partyIds,
       legIds: [...data.legIds].sort(),
       passengerCount,
+      dispatchSnapshot: {
+        recordedAt: now,
+        vehicleClass,
+        manifest: [...legs].sort((a, b) => a.id.localeCompare(b.id))
+          .map((leg) => ({legId: leg.id, guestId: leg.doc.guestId,
+            guestDisplayName: guests.get(leg.doc.guestId)!.displayName,
+            partyId: leg.doc.partyId, passengers: leg.doc.passengers,
+            luggageUnits: leg.doc.luggageUnits})),
+      },
       status: "enRoute",
       departedAt,
       departedByUid: actorUid,

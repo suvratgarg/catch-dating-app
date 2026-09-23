@@ -120,6 +120,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/submit_event_success_wingman_request_payload.json", "submitEventSuccessWingmanRequestCallablePayloadSchema"],
   ["valid/swipe_doc.json", "swipeDocumentSchema"],
   ["valid/transport_trip_doc.json", "transportTripDocumentSchema"],
+  ["valid/transport_trip_snapshot_doc.json", "transportTripDocumentSchema"],
   ["valid/transport_vehicle_assignment_doc.json", "transportVehicleAssignmentDocumentSchema"],
   ["valid/unblock_user_payload.json", "unblockUserCallablePayloadSchema"],
   ["valid/update_club_payload.json", "updateClubCallablePayloadSchema"],

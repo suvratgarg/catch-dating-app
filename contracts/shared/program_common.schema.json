@@ -345,6 +345,14 @@
       "minimum": 1,
       "maximum": 9007199254740991,
       "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "transportManifestSource": {
+      "type": "string",
+      "enum": [
+        "dispatchSnapshot",
+        "currentRecords"
+      ],
+      "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
     }
   }
 }

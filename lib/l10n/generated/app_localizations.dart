@@ -32572,6 +32572,12 @@ abstract class AppLocalizations {
   /// **'Latest trips'**
   String get programsTripsLatest;
 
+  /// Legacy trip manifest provenance shown in ledger and hotel receiving views
+  ///
+  /// In en, this message translates to:
+  /// **'Guest names reflect current records; no dispatch snapshot was saved.'**
+  String get programsTripCurrentNames;
+
   /// Program operations copy: programsTripsTitle.
   ///
   /// In en, this message translates to:

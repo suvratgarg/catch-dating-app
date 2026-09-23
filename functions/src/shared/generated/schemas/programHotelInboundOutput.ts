@@ -54,7 +54,9 @@ export const programHotelInboundCallableResponseSchema: Record<string, unknown> 
           "passengerCount",
           "guestNames",
           "status",
-          "revision"
+          "revision",
+          "manifestSource",
+          "vehicleClassLabel"
         ],
         "properties": {
           "tripId": {
@@ -117,6 +119,23 @@ export const programHotelInboundCallableResponseSchema: Record<string, unknown> 
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "manifestSource": {
+            "type": "string",
+            "enum": [
+              "dispatchSnapshot",
+              "currentRecords"
+            ],
+            "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
+          },
+          "vehicleClassLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot."
           }
         }
       }

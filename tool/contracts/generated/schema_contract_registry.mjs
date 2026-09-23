@@ -118935,6 +118935,143 @@ export const transportTripDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "dispatchSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Facts captured atomically when dispatch is recorded, including offline departures recorded later. Absent only on legacy trips; never reconstructed as historical evidence from current records.",
+      "required": [
+        "recordedAt",
+        "vehicleClass",
+        "manifest"
+      ],
+      "properties": {
+        "recordedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "vehicleClass": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "passengerCapacity",
+            "luggageCapacity",
+            "capabilities",
+            "sortOrder"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60,
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "passengerCapacity": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "luggageCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 500
+            },
+            "capabilities": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "wheelchairAccessible",
+                  "extraLuggage",
+                  "childSeat"
+                ]
+              }
+            },
+            "sortOrder": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        },
+        "manifest": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "legId",
+              "guestId",
+              "guestDisplayName",
+              "partyId",
+              "passengers",
+              "luggageUnits"
+            ],
+            "properties": {
+              "legId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "guestId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "guestDisplayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "partyId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "passengers": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageUnits": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              }
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -122876,7 +123013,9 @@ export const programHotelInboundCallableResponseSchema = {
           "passengerCount",
           "guestNames",
           "status",
-          "revision"
+          "revision",
+          "manifestSource",
+          "vehicleClassLabel"
         ],
         "properties": {
           "tripId": {
@@ -122939,6 +123078,23 @@ export const programHotelInboundCallableResponseSchema = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "manifestSource": {
+            "type": "string",
+            "enum": [
+              "dispatchSnapshot",
+              "currentRecords"
+            ],
+            "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
+          },
+          "vehicleClassLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot."
           }
         }
       }
@@ -123222,7 +123378,9 @@ export const programTripListCallableResponseSchema = {
           "arrivedAtMillis",
           "voidReason",
           "guestNames",
-          "revision"
+          "revision",
+          "manifestSource",
+          "vehicleClassLabel"
         ],
         "properties": {
           "tripId": {
@@ -123322,6 +123480,23 @@ export const programTripListCallableResponseSchema = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "manifestSource": {
+            "type": "string",
+            "enum": [
+              "dispatchSnapshot",
+              "currentRecords"
+            ],
+            "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
+          },
+          "vehicleClassLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot."
           }
         }
       }

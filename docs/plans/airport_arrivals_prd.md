@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.12
+version: 0.3.13
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1422,6 +1422,24 @@ program bindings inside their transactions. Replays identify the original
 owned trip and operation; missing or rebound trip/assignment records require
 reconciliation. An inactive owned pickup still permits releasing a claim. Views needing more
 than 200 groups fail explicitly instead of returning an incomplete plan.
+
+### Recorded dispatch facts
+
+New dispatches capture owned guest identities, per-journey passenger/luggage
+counts and the canonical vehicle-class record in the same transaction as the
+trip and reservations. The snapshot records when the dispatch was saved;
+that time can differ from an offline command's physical departure time.
+Arrival, void and exact replay preserve it. Subsequent guest edits, rebookings
+or catalog changes cannot rewrite these recorded facts. No contact details
+are copied into the manifest.
+
+Hotel and ledger reads share one manifest projection. Snapshot-backed trips
+use their recorded names and class label without loading live guest records.
+Older trips explicitly identify their names as current records and retain
+strict ownership/resource checks; they are never silently backfilled with
+invented historical facts. A present inconsistent snapshot requires
+reconciliation rather than falling back to current names. Production retention
+and erasure policy still applies to these private operational records.
 
 ### Operational read scope
 

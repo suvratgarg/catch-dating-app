@@ -8686,6 +8686,35 @@ export interface TransportTripDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Facts captured atomically when dispatch is recorded, including offline departures recorded later. Absent only on legacy trips; never reconstructed as historical evidence from current records.
+   */
+  dispatchSnapshot?: {
+    recordedAt: FirebaseFirestore.Timestamp;
+    vehicleClass: {
+      id: string;
+      label: string;
+      passengerCapacity: number;
+      luggageCapacity: number;
+      /**
+       * @maxItems 12
+       */
+      capabilities: ("wheelchairAccessible" | "extraLuggage" | "childSeat")[];
+      sortOrder: number;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 50
+     */
+    manifest: {
+      legId: string;
+      guestId: string;
+      guestDisplayName: string;
+      partyId: string | null;
+      passengers: number;
+      luggageUnits: number;
+    }[];
+  };
 }
 
 /**

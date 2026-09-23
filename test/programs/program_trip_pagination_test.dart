@@ -27,6 +27,8 @@ ProgramTripList _page(String plate, {String? nextCursor}) =>
           'destinationHotelId': 'hotel',
           'destinationLabel': 'Hotel',
           'vehicleClassId': 'sedan',
+          'vehicleClassLabel': null,
+          'manifestSource': 'currentRecords',
           'plateDisplay': plate,
           'vendorId': null,
           'vendorName': null,
@@ -69,61 +71,66 @@ void main() {
     );
   });
 
-  testWidgets(
-    'ledger navigates pages and clears a page on learned revocation',
-    (tester) async {
-      final store = emptyProgramSnapshots();
-      final repository = _Repository();
-      await tester.pumpWidget(
-        ProviderScope(
-          retry: (_, _) => null,
-          overrides: [
-            uidProvider.overrideWithValue(const AsyncData('account')),
-            programReadSnapshotStoreProvider.overrideWithValue(store),
-            programWorkRepositoryProvider.overrideWithValue(repository),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const ProgramTripsScreen(programId: 'program'),
-          ),
+  testWidgets('ledger navigates pages and clears a page on learned revocation', (
+    tester,
+  ) async {
+    final store = emptyProgramSnapshots();
+    final repository = _Repository();
+    await tester.pumpWidget(
+      ProviderScope(
+        retry: (_, _) => null,
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData('account')),
+          programReadSnapshotStoreProvider.overrideWithValue(store),
+          programWorkRepositoryProvider.overrideWithValue(repository),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ProgramTripsScreen(programId: 'program'),
         ),
-      );
-      await pumpFeatureUi(tester);
-      expect(find.text('NEW 1234'), findsOneWidget);
-      await tester.tap(find.text('Older trips'));
-      await tester.pump();
-      expect(find.text('NEW 1234'), findsNothing);
-      expect(repository.cursors, [null, 'next-trip']);
-      repository.older.complete(_page('OLD 5678'));
-      await pumpFeatureUi(tester);
-      expect(find.text('OLD 5678'), findsOneWidget);
-      expect(find.text('Older trips'), findsNothing);
-      await tester.tap(find.text('Newer trips'));
-      await pumpFeatureUi(tester);
-      expect(find.text('NEW 1234'), findsOneWidget);
-      await tester.tap(find.text('Older trips'));
-      await pumpFeatureUi(tester);
-      expect(find.text('OLD 5678'), findsOneWidget);
-      await tester.tap(find.text('Latest trips'));
-      await pumpFeatureUi(tester);
-      expect(find.text('NEW 1234'), findsOneWidget);
-      await tester.tap(find.text('Older trips'));
-      await pumpFeatureUi(tester);
-      repository.error = const PermissionException('Revoked');
-      await tester.runAsync(() => store.clearProgram('account', 'program'));
-      await pumpFeatureUi(tester);
-      expect(find.text('OLD 5678'), findsNothing);
-      expect(find.text('NEW 1234'), findsNothing);
-      expect(find.text('Older trips'), findsNothing);
-      repository.error = null;
-      await tester.tap(find.text('Latest trips'));
-      await pumpFeatureUi(tester);
-      expect(repository.cursors.last, isNull);
-      expect(find.text('NEW 1234'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox.shrink());
-    },
-  );
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('NEW 1234'), findsOneWidget);
+    expect(
+      find.text(
+        'Guest names reflect current records; no dispatch snapshot was saved.',
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Older trips'));
+    await tester.pump();
+    expect(find.text('NEW 1234'), findsNothing);
+    expect(repository.cursors, [null, 'next-trip']);
+    repository.older.complete(_page('OLD 5678'));
+    await pumpFeatureUi(tester);
+    expect(find.text('OLD 5678'), findsOneWidget);
+    expect(find.text('Older trips'), findsNothing);
+    await tester.tap(find.text('Newer trips'));
+    await pumpFeatureUi(tester);
+    expect(find.text('NEW 1234'), findsOneWidget);
+    await tester.tap(find.text('Older trips'));
+    await pumpFeatureUi(tester);
+    expect(find.text('OLD 5678'), findsOneWidget);
+    await tester.tap(find.text('Latest trips'));
+    await pumpFeatureUi(tester);
+    expect(find.text('NEW 1234'), findsOneWidget);
+    await tester.tap(find.text('Older trips'));
+    await pumpFeatureUi(tester);
+    repository.error = const PermissionException('Revoked');
+    await tester.runAsync(() => store.clearProgram('account', 'program'));
+    await pumpFeatureUi(tester);
+    expect(find.text('OLD 5678'), findsNothing);
+    expect(find.text('NEW 1234'), findsNothing);
+    expect(find.text('Older trips'), findsNothing);
+    repository.error = null;
+    await tester.tap(find.text('Latest trips'));
+    await pumpFeatureUi(tester);
+    expect(repository.cursors.last, isNull);
+    expect(find.text('NEW 1234'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 }

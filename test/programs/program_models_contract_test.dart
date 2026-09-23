@@ -82,6 +82,18 @@ void main() {
             .enumValues!,
       ),
       (
+        TransportManifestSource.values,
+        CatchContractConstraints
+            .programTripListCallableResponseTripsItemsManifestSource
+            .enumValues!,
+      ),
+      (
+        TransportManifestSource.values,
+        CatchContractConstraints
+            .programHotelInboundCallableResponseTripsItemsManifestSource
+            .enumValues!,
+      ),
+      (
         ProgramStaffStatus.values,
         CatchContractConstraints
             .programStaffListCallableResponseMembersItemsStatus

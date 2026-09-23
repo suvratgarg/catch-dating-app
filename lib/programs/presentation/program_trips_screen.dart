@@ -233,6 +233,11 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
               names: trip.guestNames.join(', '),
             ),
           ),
+          if (trip.manifestSource == TransportManifestSource.currentRecords)
+            Text(
+              context.l10n.programsTripCurrentNames,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           CatchMetaRow(
             icon: CatchIcons.clock,
             label: trip.arrivedAt != null

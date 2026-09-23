@@ -89252,6 +89252,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHotelInboundCallableResponseTripsItemsManifestSource = CatchContractFieldConstraints(
+    path: 'programHotelInboundCallableResponse.trips.items.manifestSource',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['dispatchSnapshot', 'currentRecords'],
+  );
+
   static const programHotelInboundCallableResponseTripsItemsPassengerCount = CatchContractFieldConstraints(
     path: 'programHotelInboundCallableResponse.trips.items.passengerCount',
     required: true,
@@ -89295,6 +89302,13 @@ abstract final class CatchContractConstraints {
     maxLength: 60,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelInboundCallableResponseTripsItemsVehicleClassLabel = CatchContractFieldConstraints(
+    path: 'programHotelInboundCallableResponse.trips.items.vehicleClassLabel',
+    maxLength: 60,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -90890,6 +90904,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['guestTransfer', 'repositioning'],
   );
 
+  static const programTripListCallableResponseTripsItemsManifestSource = CatchContractFieldConstraints(
+    path: 'programTripListCallableResponse.trips.items.manifestSource',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['dispatchSnapshot', 'currentRecords'],
+  );
+
   static const programTripListCallableResponseTripsItemsPassengerCount = CatchContractFieldConstraints(
     path: 'programTripListCallableResponse.trips.items.passengerCount',
     required: true,
@@ -90941,6 +90962,13 @@ abstract final class CatchContractConstraints {
     maxLength: 60,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programTripListCallableResponseTripsItemsVehicleClassLabel = CatchContractFieldConstraints(
+    path: 'programTripListCallableResponse.trips.items.vehicleClassLabel',
+    maxLength: 60,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -98015,6 +98043,134 @@ abstract final class CatchContractConstraints {
     path: 'transportTripDocument.destinationLabel',
     maxLength: 140,
     valueTypes: <String>['string'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifest = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 50,
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifestItemsGuestDisplayName = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest.items.guestDisplayName',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifestItemsGuestId = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifestItemsLegId = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest.items.legId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifestItemsLuggageUnits = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest.items.luggageUnits',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifestItemsPartyId = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest.items.partyId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotManifestItemsPassengers = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.manifest.items.passengers',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const transportTripDocumentDispatchSnapshotRecordedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.recordedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const transportTripDocumentDispatchSnapshotRecordedAtSeconds = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.recordedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassCapabilities = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.capabilities',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['wheelchairAccessible', 'extraLuggage', 'childSeat'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassCapabilitiesItems = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.capabilities.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wheelchairAccessible', 'extraLuggage', 'childSeat'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassId = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.id',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9][a-z0-9_-]{0,59}\$',
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassLabel = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.label',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassLuggageCapacity = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.luggageCapacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassPassengerCapacity = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.passengerCapacity',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const transportTripDocumentDispatchSnapshotVehicleClassSortOrder = CatchContractFieldConstraints(
+    path: 'transportTripDocument.dispatchSnapshot.vehicleClass.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
   );
 
   static const transportTripDocumentKind = CatchContractFieldConstraints(
@@ -118911,12 +119067,14 @@ abstract final class CatchContractConstraints {
     'programHotelInboundCallableResponse.trips.items.estimatedArriveAtMillis': programHotelInboundCallableResponseTripsItemsEstimatedArriveAtMillis,
     'programHotelInboundCallableResponse.trips.items.guestNames': programHotelInboundCallableResponseTripsItemsGuestNames,
     'programHotelInboundCallableResponse.trips.items.guestNames.items': programHotelInboundCallableResponseTripsItemsGuestNamesItems,
+    'programHotelInboundCallableResponse.trips.items.manifestSource': programHotelInboundCallableResponseTripsItemsManifestSource,
     'programHotelInboundCallableResponse.trips.items.passengerCount': programHotelInboundCallableResponseTripsItemsPassengerCount,
     'programHotelInboundCallableResponse.trips.items.plateDisplay': programHotelInboundCallableResponseTripsItemsPlateDisplay,
     'programHotelInboundCallableResponse.trips.items.revision': programHotelInboundCallableResponseTripsItemsRevision,
     'programHotelInboundCallableResponse.trips.items.status': programHotelInboundCallableResponseTripsItemsStatus,
     'programHotelInboundCallableResponse.trips.items.tripId': programHotelInboundCallableResponseTripsItemsTripId,
     'programHotelInboundCallableResponse.trips.items.vehicleClassId': programHotelInboundCallableResponseTripsItemsVehicleClassId,
+    'programHotelInboundCallableResponse.trips.items.vehicleClassLabel': programHotelInboundCallableResponseTripsItemsVehicleClassLabel,
     'programHotelInboundCallableResponse.trips.items.vendorName': programHotelInboundCallableResponseTripsItemsVendorName,
     'programHouseholdDocument.createdAt._nanoseconds': programHouseholdDocumentCreatedAtNanoseconds,
     'programHouseholdDocument.createdAt._seconds': programHouseholdDocumentCreatedAtSeconds,
@@ -119135,6 +119293,7 @@ abstract final class CatchContractConstraints {
     'programTripListCallableResponse.trips.items.guestNames': programTripListCallableResponseTripsItemsGuestNames,
     'programTripListCallableResponse.trips.items.guestNames.items': programTripListCallableResponseTripsItemsGuestNamesItems,
     'programTripListCallableResponse.trips.items.kind': programTripListCallableResponseTripsItemsKind,
+    'programTripListCallableResponse.trips.items.manifestSource': programTripListCallableResponseTripsItemsManifestSource,
     'programTripListCallableResponse.trips.items.passengerCount': programTripListCallableResponseTripsItemsPassengerCount,
     'programTripListCallableResponse.trips.items.pickupPointId': programTripListCallableResponseTripsItemsPickupPointId,
     'programTripListCallableResponse.trips.items.plateDisplay': programTripListCallableResponseTripsItemsPlateDisplay,
@@ -119142,6 +119301,7 @@ abstract final class CatchContractConstraints {
     'programTripListCallableResponse.trips.items.status': programTripListCallableResponseTripsItemsStatus,
     'programTripListCallableResponse.trips.items.tripId': programTripListCallableResponseTripsItemsTripId,
     'programTripListCallableResponse.trips.items.vehicleClassId': programTripListCallableResponseTripsItemsVehicleClassId,
+    'programTripListCallableResponse.trips.items.vehicleClassLabel': programTripListCallableResponseTripsItemsVehicleClassLabel,
     'programTripListCallableResponse.trips.items.vendorId': programTripListCallableResponseTripsItemsVendorId,
     'programTripListCallableResponse.trips.items.vendorName': programTripListCallableResponseTripsItemsVendorName,
     'programTripListCallableResponse.trips.items.voidReason': programTripListCallableResponseTripsItemsVoidReason,
@@ -120087,6 +120247,22 @@ abstract final class CatchContractConstraints {
     'transportTripDocument.departedByUid': transportTripDocumentDepartedByUid,
     'transportTripDocument.destinationHotelId': transportTripDocumentDestinationHotelId,
     'transportTripDocument.destinationLabel': transportTripDocumentDestinationLabel,
+    'transportTripDocument.dispatchSnapshot.manifest': transportTripDocumentDispatchSnapshotManifest,
+    'transportTripDocument.dispatchSnapshot.manifest.items.guestDisplayName': transportTripDocumentDispatchSnapshotManifestItemsGuestDisplayName,
+    'transportTripDocument.dispatchSnapshot.manifest.items.guestId': transportTripDocumentDispatchSnapshotManifestItemsGuestId,
+    'transportTripDocument.dispatchSnapshot.manifest.items.legId': transportTripDocumentDispatchSnapshotManifestItemsLegId,
+    'transportTripDocument.dispatchSnapshot.manifest.items.luggageUnits': transportTripDocumentDispatchSnapshotManifestItemsLuggageUnits,
+    'transportTripDocument.dispatchSnapshot.manifest.items.partyId': transportTripDocumentDispatchSnapshotManifestItemsPartyId,
+    'transportTripDocument.dispatchSnapshot.manifest.items.passengers': transportTripDocumentDispatchSnapshotManifestItemsPassengers,
+    'transportTripDocument.dispatchSnapshot.recordedAt._nanoseconds': transportTripDocumentDispatchSnapshotRecordedAtNanoseconds,
+    'transportTripDocument.dispatchSnapshot.recordedAt._seconds': transportTripDocumentDispatchSnapshotRecordedAtSeconds,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.capabilities': transportTripDocumentDispatchSnapshotVehicleClassCapabilities,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.capabilities.items': transportTripDocumentDispatchSnapshotVehicleClassCapabilitiesItems,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.id': transportTripDocumentDispatchSnapshotVehicleClassId,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.label': transportTripDocumentDispatchSnapshotVehicleClassLabel,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.luggageCapacity': transportTripDocumentDispatchSnapshotVehicleClassLuggageCapacity,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.passengerCapacity': transportTripDocumentDispatchSnapshotVehicleClassPassengerCapacity,
+    'transportTripDocument.dispatchSnapshot.vehicleClass.sortOrder': transportTripDocumentDispatchSnapshotVehicleClassSortOrder,
     'transportTripDocument.kind': transportTripDocumentKind,
     'transportTripDocument.legIds': transportTripDocumentLegIds,
     'transportTripDocument.legIds.items': transportTripDocumentLegIdsItems,

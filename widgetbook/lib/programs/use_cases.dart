@@ -181,6 +181,8 @@ final _plan = ProgramTransportPlan(
 );
 
 final _trip = ProgramTripSummary(
+  manifestSource: TransportManifestSource.dispatchSnapshot,
+  vehicleClassLabel: 'Innova / SUV',
   tripId: 'trip_1',
   pickupPointId: _pickupPointId,
   destinationHotelId: _hotelId,

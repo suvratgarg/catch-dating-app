@@ -242,6 +242,9 @@ function addSecondProgram(db: FakeFirestore) {
   db.setDoc("programHotels/destination-2", {
     ...db.getDoc("programHotels/hotel-1"), programId: "program-2",
   });
+  db.setDoc("programGuests/guest-3", {
+    ...db.getDoc("programGuests/guest-1"), programId: "program-2",
+  });
   db.setDoc("programTravelLegs/leg-3", {
     ...db.getDoc("programTravelLegs/leg-1"), programId: "program-2",
     guestId: "guest-3", pickupPointId: "pickup-2",
@@ -313,7 +316,7 @@ test("vehicle occupancy is isolated between organizers", async () => {
   db.setDoc("organizers/org-2", {...db.getDoc("organizers/org-1")});
   for (const path of ["organizerPrograms/program-2",
     "programPickupPoints/pickup-2", "programHotels/destination-2",
-    "programTravelLegs/leg-3"]) {
+    "programTravelLegs/leg-3", "programGuests/guest-3"]) {
     db.updateDoc(path, {organizerId: "org-2"});
   }
   await dispatch(db);

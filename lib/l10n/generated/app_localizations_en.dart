@@ -20440,6 +20440,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsTripsLatest => 'Latest trips';
 
   @override
+  String get programsTripCurrentNames =>
+      'Guest names reflect current records; no dispatch snapshot was saved.';
+
+  @override
   String get programsTripsTitle => 'Trip ledger';
 
   @override
