@@ -32464,6 +32464,48 @@ abstract class AppLocalizations {
   /// **'Dispatch now'**
   String get programsDispatchConfirm;
 
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Previous vehicles'**
+  String get programsHotelPreviousTrip;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'First vehicles'**
+  String get programsHotelFirstTrip;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'More vehicles'**
+  String get programsHotelMoreTrip;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Previous guests'**
+  String get programsHotelPreviousExpected;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'First guests'**
+  String get programsHotelFirstExpected;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'More guests'**
+  String get programsHotelMoreExpected;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh hotel'**
+  String get programsHotelRefresh;
+
   /// Program operations copy: programsHotelTitle.
   ///
   /// In en, this message translates to:

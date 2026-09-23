@@ -11,7 +11,7 @@ export interface ProgramHotelInboundCallableResponse {
   hotelName: string;
   generatedAtMillis: number;
   /**
-   * @maxItems 200
+   * @maxItems 50
    */
   trips: {
     tripId: string;
@@ -40,7 +40,7 @@ export interface ProgramHotelInboundCallableResponse {
     vehicleClassLabel: string | null;
   }[];
   /**
-   * @maxItems 500
+   * @maxItems 50
    */
   expectedLegs: {
     legId: string;
@@ -60,4 +60,6 @@ export interface ProgramHotelInboundCallableResponse {
    * Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.
    */
   accessExpiresAtMillis: number | null;
+  nextTripCursor: string | null;
+  nextExpectedCursor: string | null;
 }

@@ -239,12 +239,16 @@ class ProgramWorkRepository {
   Future<ProgramHotelInbound> getHotelInbound({
     required String programId,
     required String hotelId,
+    String? tripCursor,
+    String? expectedCursor,
   }) => _call(
     name: 'getProgramHotelInbound',
     authorityScopedRead: true,
     payload: GetProgramHotelInboundCallableRequest(
       programId: programId,
       hotelId: hotelId,
+      tripCursor: tripCursor,
+      expectedCursor: expectedCursor,
     ).toJson(),
     action: 'load the hotel inbound view',
     parse: ProgramHotelInbound.fromCallableData,
@@ -627,8 +631,10 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
 Future<ProgramHotelInbound> programHotelInbound(
   Ref ref,
   String programId,
-  String hotelId,
-) async {
+  String hotelId, {
+  String? tripCursor,
+  String? expectedCursor,
+}) async {
   final accountId = _watchWorkAccount(ref);
   final result = await readWithProgramAuthority(
     ref,
@@ -636,7 +642,12 @@ Future<ProgramHotelInbound> programHotelInbound(
     programId,
     () => ref
         .read(programWorkRepositoryProvider)
-        .getHotelInbound(programId: programId, hotelId: hotelId),
+        .getHotelInbound(
+          programId: programId,
+          hotelId: hotelId,
+          tripCursor: tripCursor,
+          expectedCursor: expectedCursor,
+        ),
   );
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;

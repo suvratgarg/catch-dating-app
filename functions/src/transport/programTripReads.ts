@@ -1,3 +1,4 @@
+import {FieldPath} from "firebase-admin/firestore";
 import {projectTripManifest, readTripDispatchSnapshot, tripIncludesLeg}
   from "./tripManifestProjection";
 import {programResourceScopes} from "../shared/programResourceScopes";
@@ -67,7 +68,7 @@ import {validateListProgramTripsCallablePayload} from
   "../shared/generated/validators/listProgramTripsInput";
 
 const tripPageCap = 50;
-const hotelTripCap = 200;
+const hotelPageCap = 50;
 const readLimits = {timeoutSeconds: 60, maxInstances: 40};
 
 export async function getProgramHotelInboundHandler(
@@ -99,32 +100,56 @@ export async function getProgramHotelInboundHandler(
       hotel.organizerId !== access.program.organizerId) {
     throw new HttpsError("not-found", "Hotel not found in this program.");
   }
+  const limit = data.limit ?? hotelPageCap;
+  let tripQuery = db.collection("transportTrips")
+    .where("programId", "==", data.programId)
+    .where("organizerId", "==", access.program.organizerId)
+    .where("destinationHotelId", "==", data.hotelId)
+    .where("status", "==", "enRoute")
+    .orderBy("departedAt")
+    .limit(limit + 1);
+  if (data.tripCursor) {
+    const cursor = await db.collection("transportTrips")
+      .doc(data.tripCursor).get();
+    const trip = cursor.data() as TransportTripDocument | undefined;
+    // A received vehicle still provides a valid position in departure order.
+    if (!trip || trip.programId !== data.programId ||
+        trip.organizerId !== access.program.organizerId ||
+        trip.destinationHotelId !== data.hotelId) {
+      throw new HttpsError("invalid-argument",
+        "This vehicle page is unavailable. Refresh the hotel view.");
+    }
+    tripQuery = tripQuery.startAfter(cursor);
+  }
+  let expectedQuery = db.collection("programTravelLegs")
+    .where("programId", "==", data.programId)
+    .where("organizerId", "==", access.program.organizerId)
+    .where("destinationHotelId", "==", data.hotelId)
+    .where("kind", "==", "inbound")
+    .where("readiness", "in", ["expected", "ready"])
+    .orderBy(FieldPath.documentId())
+    .limit(limit + 1);
+  // Document-ID positions survive dispatch, rebooking and deleted rows. The
+  // query itself always reapplies this hotel's current ownership and scope.
+  if (data.expectedCursor) {
+    expectedQuery = expectedQuery.startAfter(data.expectedCursor);
+  }
   const [tripsSnap, legsSnap] = await Promise.all([
-    db.collection("transportTrips")
-      .where("programId", "==", data.programId)
-      .where("organizerId", "==", access.program.organizerId)
-      .where("destinationHotelId", "==", data.hotelId)
-      .where("status", "==", "enRoute")
-      .orderBy("departedAt")
-      .limit(hotelTripCap)
-      .get(),
-    db.collection("programTravelLegs")
-      .where("programId", "==", data.programId)
-      .where("organizerId", "==", access.program.organizerId)
-      .where("destinationHotelId", "==", data.hotelId)
-      .where("kind", "==", "inbound")
-      .where("readiness", "in", ["expected", "ready"])
-      .limit(500)
-      .get(),
-  ]);
+    tripQuery.get(), expectedQuery.get()]);
+  const tripPage = tripsSnap.docs.slice(0, limit);
+  const expectedPage = legsSnap.docs.slice(0, limit);
+  const nextTripCursor = tripsSnap.size > limit ?
+    tripPage[tripPage.length - 1].id : null;
+  const nextExpectedCursor = legsSnap.size > limit ?
+    expectedPage[expectedPage.length - 1].id : null;
   const legs = new Map<string, ProgramTravelLegDocument>();
   const guestIds = new Set<string>();
-  for (const doc of legsSnap.docs) {
+  for (const doc of expectedPage) {
     const leg = doc.data() as ProgramTravelLegDocument;
     legs.set(doc.id, leg);
     guestIds.add(leg.guestId);
   }
-  const trips = tripsSnap.docs.map((doc) => ({
+  const trips = tripPage.map((doc) => ({
     id: doc.id, doc: doc.data() as TransportTripDocument}));
   const snapshots = new Map(trips.map((trip) =>
     [trip.id, readTripDispatchSnapshot(trip.doc)]));
@@ -170,6 +195,7 @@ export async function getProgramHotelInboundHandler(
     programId: data.programId,
     hotelId: data.hotelId,
     hotelName: hotel.name,
+    nextTripCursor, nextExpectedCursor,
     accessExpiresAtMillis: programProjectionExpiresAt(access,
       hotelDuties.filter((duty) => dutyCoversHotel([duty], data.hotelId))),
     generatedAtMillis: now.toMillis(),
@@ -185,7 +211,7 @@ export async function getProgramHotelInboundHandler(
       status: trip.doc.status,
       revision: trip.doc.revision,
     })),
-    expectedLegs: legsSnap.docs.map((doc) => {
+    expectedLegs: expectedPage.map((doc) => {
       const leg = legs.get(doc.id)!;
       const timing = legTiming(leg, settings);
       return {
@@ -353,7 +379,8 @@ function normalizePayload(value: unknown): unknown {
   }
   const input = value as Record<string, unknown>;
   const trimmed = {...input};
-  for (const key of ["programId", "hotelId", "cursor"]) {
+  for (const key of ["programId", "hotelId", "cursor", "tripCursor",
+    "expectedCursor"]) {
     if (typeof trimmed[key] === "string") {
       trimmed[key] = (trimmed[key] as string).trim();
     }

@@ -202,6 +202,8 @@ final _trip = ProgramTripSummary(
 );
 
 final _inbound = ProgramHotelInbound(
+  nextTripCursor: null,
+  nextExpectedCursor: null,
   accessExpiresAt: _now.add(const Duration(hours: 8)),
   programId: _programId,
   hotelId: _hotelId,
@@ -585,7 +587,11 @@ Widget programHotelInboundTripTileStates(BuildContext context) {
     children: [
       ProviderScope(
         overrides: _programOverrides(),
-        child: ProgramHotelInboundTripTile(trip: _trip, inbound: _inbound),
+        child: ProgramHotelInboundTripTile(
+          trip: _trip,
+          inbound: _inbound,
+          onChanged: () {},
+        ),
       ),
     ],
   );

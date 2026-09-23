@@ -513,7 +513,8 @@ final class ProgramHotelInboundProvider
         $FutureProvider<ProgramHotelInbound> {
   ProgramHotelInboundProvider._({
     required ProgramHotelInboundFamily super.from,
-    required (String, String) super.argument,
+    required (String, String, {String? tripCursor, String? expectedCursor})
+    super.argument,
   }) : super(
          retry: null,
          name: r'programHotelInboundProvider',
@@ -540,8 +541,16 @@ final class ProgramHotelInboundProvider
 
   @override
   FutureOr<ProgramHotelInbound> create(Ref ref) {
-    final argument = this.argument as (String, String);
-    return programHotelInbound(ref, argument.$1, argument.$2);
+    final argument =
+        this.argument
+            as (String, String, {String? tripCursor, String? expectedCursor});
+    return programHotelInbound(
+      ref,
+      argument.$1,
+      argument.$2,
+      tripCursor: argument.tripCursor,
+      expectedCursor: argument.expectedCursor,
+    );
   }
 
   @override
@@ -556,13 +565,13 @@ final class ProgramHotelInboundProvider
 }
 
 String _$programHotelInboundHash() =>
-    r'84750e7c82ce7bd6f8093056974c89f9a966a54c';
+    r'85ec7cf0b6a8c27edd1740e0792a038601c75b08';
 
 final class ProgramHotelInboundFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<ProgramHotelInbound>,
-          (String, String)
+          (String, String, {String? tripCursor, String? expectedCursor})
         > {
   ProgramHotelInboundFamily._()
     : super(
@@ -573,8 +582,20 @@ final class ProgramHotelInboundFamily extends $Family
         isAutoDispose: true,
       );
 
-  ProgramHotelInboundProvider call(String programId, String hotelId) =>
-      ProgramHotelInboundProvider._(argument: (programId, hotelId), from: this);
+  ProgramHotelInboundProvider call(
+    String programId,
+    String hotelId, {
+    String? tripCursor,
+    String? expectedCursor,
+  }) => ProgramHotelInboundProvider._(
+    argument: (
+      programId,
+      hotelId,
+      tripCursor: tripCursor,
+      expectedCursor: expectedCursor,
+    ),
+    from: this,
+  );
 
   @override
   String toString() => r'programHotelInboundProvider';

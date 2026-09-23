@@ -16,7 +16,9 @@ export const programHotelInboundCallableResponseSchema: Record<string, unknown> 
     "generatedAtMillis",
     "trips",
     "expectedLegs",
-    "accessExpiresAtMillis"
+    "accessExpiresAtMillis",
+    "nextTripCursor",
+    "nextExpectedCursor"
   ],
   "properties": {
     "programId": {
@@ -40,7 +42,7 @@ export const programHotelInboundCallableResponseSchema: Record<string, unknown> 
     },
     "trips": {
       "type": "array",
-      "maxItems": 200,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -142,7 +144,7 @@ export const programHotelInboundCallableResponseSchema: Record<string, unknown> 
     },
     "expectedLegs": {
       "type": "array",
-      "maxItems": 500,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -206,6 +208,22 @@ export const programHotelInboundCallableResponseSchema: Record<string, unknown> 
       "minimum": 1,
       "maximum": 9007199254740991,
       "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "nextTripCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "nextExpectedCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

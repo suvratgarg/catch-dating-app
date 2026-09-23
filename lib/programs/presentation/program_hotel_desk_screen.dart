@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The hotel welcome team's inbound view: vehicles on the way with their
 /// manifest names and plates, plus parties still expected at the airport.
 /// Deliberately narrow — no contact fields, no other hotels.
-class ProgramHotelDeskScreen extends ConsumerWidget {
+class ProgramHotelDeskScreen extends ConsumerStatefulWidget {
   const ProgramHotelDeskScreen({
     super.key,
     required this.programId,
@@ -24,15 +24,47 @@ class ProgramHotelDeskScreen extends ConsumerWidget {
   final String hotelId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final inboundAsync = ref.watch(
-      programHotelInboundProvider(programId, hotelId),
-    );
+  ConsumerState<ProgramHotelDeskScreen> createState() =>
+      _ProgramHotelDeskScreenState();
+}
+
+class _ProgramHotelDeskScreenState
+    extends ConsumerState<ProgramHotelDeskScreen> {
+  final List<String> _tripCursors = [];
+  final List<String> _expectedCursors = [];
+
+  ProgramHotelInboundProvider get _provider => programHotelInboundProvider(
+    widget.programId,
+    widget.hotelId,
+    tripCursor: _tripCursors.lastOrNull,
+    expectedCursor: _expectedCursors.lastOrNull,
+  );
+
+  @override
+  void didUpdateWidget(ProgramHotelDeskScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.programId != widget.programId ||
+        oldWidget.hotelId != widget.hotelId) {
+      _tripCursors.clear();
+      _expectedCursors.clear();
+    }
+  }
+
+  void _resetPages() {
+    setState(() {
+      _tripCursors.clear();
+      _expectedCursors.clear();
+    });
+    ref.invalidate(_provider);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inboundAsync = ref.watch(_provider);
     return CatchAsyncBoundary<ProgramHotelInbound>(
       retainDataOn: const {},
       value: inboundAsync,
-      onRetry: () =>
-          ref.invalidate(programHotelInboundProvider(programId, hotelId)),
+      onRetry: _resetPages,
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.programsHotelTitle,
@@ -64,6 +96,7 @@ class ProgramHotelDeskScreen extends ConsumerWidget {
             error,
             context: AppErrorContext.event,
             onRetry: onBoundaryRetry,
+            retryLabel: context.l10n.programsHotelRefresh,
           ),
         ),
       ),
@@ -84,72 +117,127 @@ class ProgramHotelDeskScreen extends ConsumerWidget {
       ),
     );
   }
-}
 
-List<CatchSectionListItem> _inboundSections(
-  BuildContext context,
-  ProgramHotelInbound inbound,
-) {
-  return [
-    CatchSectionListItem(
-      child: CatchSection.contained(
-        title: context.l10n.programsHotelEnRouteTitle,
-        subtitle: context.l10n.programsHotelEnRouteSubtitle,
-        child: inbound.trips.isEmpty
-            ? CatchEmptyState(
-                icon: CatchIcons.taxi,
-                message: context.l10n.programsHotelEnRouteEmpty,
-                variant: CatchEmptyStateVariant.inline,
-              )
-            : Column(
-                children: [
-                  for (final trip in inbound.trips) ...[
-                    ProgramHotelInboundTripTile(trip: trip, inbound: inbound),
-                    gapH8,
-                  ],
-                ],
-              ),
-      ),
-    ),
-    CatchSectionListItem(
-      child: CatchSection.contained(
-        title: context.l10n.programsHotelExpectedTitle,
-        subtitle: context.l10n.programsHotelExpectedSubtitle,
-        child: inbound.expectedLegs.isEmpty
-            ? CatchEmptyState(
-                icon: CatchIcons.flightLanding,
-                message: context.l10n.programsHotelExpectedEmpty,
-                variant: CatchEmptyStateVariant.inline,
-              )
-            : Column(
-                children: [
-                  for (final leg in inbound.expectedLegs)
-                    CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.flightLanding),
-                      body: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            leg.partyLabel ?? leg.guestDisplayName,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          CatchMetaRow(
-                            icon: CatchIcons.group,
-                            label: leg.curbAt != null
-                                ? context.l10n.programsHotelExpectedMeta(
-                                    passengers: leg.passengers,
-                                    time: AppTimeFormatters.time(leg.curbAt!),
-                                  )
-                                : context.l10n.programsHotelExpectedNoEstimate,
-                          ),
-                        ],
+  List<CatchSectionListItem> _inboundSections(
+    BuildContext context,
+    ProgramHotelInbound inbound,
+  ) {
+    return [
+      if (_tripCursors.isNotEmpty || inbound.nextTripCursor != null)
+        CatchSectionListItem(
+          child: Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (_tripCursors.isNotEmpty) ...[
+                CatchButton.command(
+                  label: context.l10n.programsHotelPreviousTrip,
+                  onPressed: () => setState(_tripCursors.removeLast),
+                ),
+                CatchButton.command(
+                  label: context.l10n.programsHotelFirstTrip,
+                  onPressed: () => setState(_tripCursors.clear),
+                ),
+              ],
+              if (inbound.nextTripCursor case final cursor?)
+                CatchButton.command(
+                  label: context.l10n.programsHotelMoreTrip,
+                  onPressed: () => setState(() => _tripCursors.add(cursor)),
+                ),
+            ],
+          ),
+        ),
+      CatchSectionListItem(
+        child: CatchSection.contained(
+          title: context.l10n.programsHotelEnRouteTitle,
+          subtitle: context.l10n.programsHotelEnRouteSubtitle,
+          child: inbound.trips.isEmpty
+              ? CatchEmptyState(
+                  icon: CatchIcons.taxi,
+                  message: context.l10n.programsHotelEnRouteEmpty,
+                  variant: CatchEmptyStateVariant.inline,
+                )
+              : Column(
+                  children: [
+                    for (final trip in inbound.trips) ...[
+                      ProgramHotelInboundTripTile(
+                        key: ValueKey(trip.tripId),
+                        trip: trip,
+                        inbound: inbound,
+                        onChanged: () => ref.invalidate(_provider),
                       ),
-                    ),
-                ],
-              ),
+                      gapH8,
+                    ],
+                  ],
+                ),
+        ),
       ),
-    ),
-  ];
+      if (_expectedCursors.isNotEmpty || inbound.nextExpectedCursor != null)
+        CatchSectionListItem(
+          child: Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              if (_expectedCursors.isNotEmpty) ...[
+                CatchButton.command(
+                  label: context.l10n.programsHotelPreviousExpected,
+                  onPressed: () => setState(_expectedCursors.removeLast),
+                ),
+                CatchButton.command(
+                  label: context.l10n.programsHotelFirstExpected,
+                  onPressed: () => setState(_expectedCursors.clear),
+                ),
+              ],
+              if (inbound.nextExpectedCursor case final cursor?)
+                CatchButton.command(
+                  label: context.l10n.programsHotelMoreExpected,
+                  onPressed: () => setState(() => _expectedCursors.add(cursor)),
+                ),
+            ],
+          ),
+        ),
+      CatchSectionListItem(
+        child: CatchSection.contained(
+          title: context.l10n.programsHotelExpectedTitle,
+          subtitle: context.l10n.programsHotelExpectedSubtitle,
+          child: inbound.expectedLegs.isEmpty
+              ? CatchEmptyState(
+                  icon: CatchIcons.flightLanding,
+                  message: context.l10n.programsHotelExpectedEmpty,
+                  variant: CatchEmptyStateVariant.inline,
+                )
+              : Column(
+                  children: [
+                    for (final leg in inbound.expectedLegs)
+                      CatchFieldRow.standard(
+                        leading: Icon(CatchIcons.flightLanding),
+                        body: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              leg.partyLabel ?? leg.guestDisplayName,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            CatchMetaRow(
+                              icon: CatchIcons.group,
+                              label: leg.curbAt != null
+                                  ? context.l10n.programsHotelExpectedMeta(
+                                      passengers: leg.passengers,
+                                      time: AppTimeFormatters.time(leg.curbAt!),
+                                    )
+                                  : context
+                                        .l10n
+                                        .programsHotelExpectedNoEstimate,
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+        ),
+      ),
+    ];
+  }
 }
 
 class ProgramHotelInboundTripTile extends ConsumerStatefulWidget {
@@ -157,10 +245,12 @@ class ProgramHotelInboundTripTile extends ConsumerStatefulWidget {
     super.key,
     required this.trip,
     required this.inbound,
+    required this.onChanged,
   });
 
   final ProgramTripSummary trip;
   final ProgramHotelInbound inbound;
+  final VoidCallback onChanged;
 
   @override
   ConsumerState<ProgramHotelInboundTripTile> createState() =>
@@ -190,12 +280,7 @@ class _ProgramHotelInboundTripTileState
                 '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}',
           );
       if (!mounted) return;
-      ref.invalidate(
-        programHotelInboundProvider(
-          widget.inbound.programId,
-          widget.inbound.hotelId,
-        ),
-      );
+      widget.onChanged();
     } on Object catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {

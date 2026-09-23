@@ -197,3 +197,120 @@ test("hotel inbound excludes outbound and foreign-owned expected journeys",
     (error: unknown) => error instanceof HttpsError &&
       error.code === "not-found");
   });
+
+test("hotel pages traverse tied vehicles and more than 500 expected guests",
+  async () => {
+    const seed = baseSeed();
+    const leg = seed["programTravelLegs/leg-1"];
+    delete seed["programTravelLegs/leg-1"];
+    delete seed["programTravelLegs/leg-2"];
+    const tripIds = Array.from({length: 213}, (_, i) =>
+      `trip-${String(i).padStart(3, "0")}`);
+    const legIds = Array.from({length: 513}, (_, i) =>
+      `leg-${String(i).padStart(3, "0")}`);
+    for (const id of tripIds) seed[`transportTrips/${id}`] = trip([]);
+    for (const id of legIds) seed[`programTravelLegs/${id}`] = {...leg};
+    for (let i = 0; i < 520; i++) {
+      const patch = i % 3 === 0 ? {organizerId: "foreign"} :
+        i % 3 === 1 ? {programId: "foreign"} :
+          {destinationHotelId: "hotel-2"};
+      seed[`transportTrips/foreign-${i}`] = {...trip([]), ...patch};
+      seed[`programTravelLegs/foreign-${i}`] = {...leg, ...patch};
+    }
+    const db = new FakeFirestore(seed);
+    const seenTrips: string[] = [];
+    const seenLegs: string[] = [];
+    let tripCursor: string | null = null;
+    let expectedCursor: string | null = null;
+    do {
+      const page = await getProgramHotelInboundHandler(request({
+        programId: "program-1", hotelId: "hotel-1",
+        ...(tripCursor ? {tripCursor} : {}),
+        ...(expectedCursor ? {expectedCursor} : {}),
+      }, "hotelier-1"), deps(db));
+      assert.ok(page.trips.length <= 50 && page.expectedLegs.length <= 50);
+      // Once one stream finishes, retain its cursor while finishing the other.
+      if (seenTrips.length < tripIds.length) {
+        seenTrips.push(...page.trips.map((row) => row.tripId));
+        tripCursor = page.nextTripCursor ?? tripCursor;
+      }
+      seenLegs.push(...page.expectedLegs.map((row) => row.legId));
+      expectedCursor = page.nextExpectedCursor;
+      assert.ok(seenLegs.length <= legIds.length, "cursor must advance");
+    } while (expectedCursor);
+    assert.deepEqual(seenTrips, tripIds);
+    assert.deepEqual(seenLegs, legIds);
+  });
+
+test("hotel page cursors remain independent after vehicle and guest changes",
+  async () => {
+    const seed = baseSeed();
+    for (const id of ["a", "b", "c"]) {
+      seed[`transportTrips/${id}`] = trip([]);
+    }
+    seed["programTravelLegs/leg-3"] = {...seed["programTravelLegs/leg-2"]};
+    const db = new FakeFirestore(seed);
+    const read = (cursors = {}) => getProgramHotelInboundHandler(request({
+      programId: "program-1", hotelId: "hotel-1", limit: 1, ...cursors,
+    }, "hotelier-1"), deps(db));
+    const first = await read();
+    assert.equal(first.nextTripCursor, "a");
+    assert.equal(first.nextExpectedCursor, "leg-1");
+    const vehicles = await read({tripCursor: first.nextTripCursor});
+    assert.equal(vehicles.trips[0].tripId, "b");
+    assert.equal(vehicles.expectedLegs[0].legId, "leg-1");
+    const guests = await read({expectedCursor: first.nextExpectedCursor});
+    assert.equal(guests.trips[0].tripId, "a");
+    assert.equal(guests.expectedLegs[0].legId, "leg-2");
+    db.updateDoc("transportTrips/a", {status: "arrived"});
+    db.updateDoc("programTravelLegs/leg-1", {readiness: "dispatched"});
+    const afterDispatch = await read({
+      tripCursor: "a", expectedCursor: "leg-1"});
+    assert.equal(afterDispatch.trips[0].tripId, "b");
+    assert.equal(afterDispatch.expectedLegs[0].legId, "leg-2");
+    db.docs.delete("programTravelLegs/leg-1");
+    const afterDeletion = await read({expectedCursor: "leg-1"});
+    assert.equal(afterDeletion.expectedLegs[0].legId, "leg-2");
+  });
+
+test("hotel rejects missing and foreign vehicle cursors", async () => {
+  for (const patch of [null, {organizerId: "other"}, {programId: "other"},
+    {destinationHotelId: "hotel-2"}]) {
+    const seed = baseSeed();
+    if (patch) seed["transportTrips/cursor"] = {...trip(), ...patch};
+    await assert.rejects(getProgramHotelInboundHandler(request({
+      programId: "program-1", hotelId: "hotel-1", tripCursor: "cursor",
+    }, "hotelier-1"), deps(new FakeFirestore(seed))),
+    (error: unknown) => error instanceof HttpsError &&
+      error.code === "invalid-argument");
+  }
+});
+
+test("hotel continuation rechecks duty scope and expiry", async () => {
+  const db = new FakeFirestore(baseSeed());
+  const read = (hotelId: string) => getProgramHotelInboundHandler(request({
+    programId: "program-1", hotelId, limit: 1, expectedCursor: "leg-1",
+  }, "hotelier-1"), deps(db));
+  assert.equal((await read("hotel-1")).expectedLegs[0].legId, "leg-2");
+  const denied = (error: unknown) => error instanceof HttpsError &&
+    error.code === "permission-denied";
+  await assert.rejects(read("hotel-2"), denied);
+  db.updateDoc("programStaffGrants/program-1__hotelier-1", {expiresAt: now});
+  await assert.rejects(read("hotel-1"), denied);
+});
+
+test("hotel hydrates only the selected expected guest page", async () => {
+  const db = new FakeFirestore(baseSeed());
+  const reads: string[] = [];
+  const get = db.getDoc.bind(db);
+  db.getDoc = (path) => {
+    reads.push(path);
+    return get(path);
+  };
+  const page = await getProgramHotelInboundHandler(request({
+    programId: "program-1", hotelId: "hotel-1", limit: 1,
+  }, "hotelier-1"), deps(db));
+  assert.equal(page.nextExpectedCursor, "leg-1");
+  assert.deepEqual(reads.filter((path) => path.startsWith("programGuests/")),
+    ["programGuests/guest-1"]);
+});

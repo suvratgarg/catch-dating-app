@@ -19,6 +19,8 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
     'trips',
     'expectedLegs',
     'accessExpiresAtMillis',
+    'nextTripCursor',
+    'nextExpectedCursor',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -42,7 +44,7 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
     },
     'trips': <String, Object?>{
       'type': 'array',
-      'maxItems': 200,
+      'maxItems': 50,
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
@@ -144,7 +146,7 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
     },
     'expectedLegs': <String, Object?>{
       'type': 'array',
-      'maxItems': 500,
+      'maxItems': 50,
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
@@ -208,6 +210,22 @@ const schemaProgramHotelInboundCallableResponseSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 9007199254740991,
       'description': 'Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active.',
+    },
+    'nextTripCursor': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'nextExpectedCursor': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

@@ -8,4 +8,13 @@
 export interface GetProgramHotelInboundCallablePayload {
   programId: string;
   hotelId: string;
+  /**
+   * Continuation returned for this hotel list. Omit to read its first page.
+   */
+  tripCursor?: string;
+  /**
+   * Continuation returned for this hotel list. Omit to read its first page.
+   */
+  expectedCursor?: string;
+  limit?: number;
 }

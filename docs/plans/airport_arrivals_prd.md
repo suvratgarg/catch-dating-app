@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.13
+version: 0.3.14
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1442,6 +1442,16 @@ reconciliation rather than falling back to current names. Production retention
 and erasure policy still applies to these private operational records.
 
 ### Operational read scope
+
+The hotel desk independently pages incoming vehicles and expected guests,
+with at most 50 rows per list. Each response declares both continuations.
+Vehicle pages use departure order; receiving a vehicle does not invalidate
+its cursor. Expected-guest pages use document-ID order, so dispatch or removal
+of a prior row does not interrupt paging. Every request reapplies current
+hotel authorization and organizer/program filters. Staff can move backward or
+return either list to its first page; an unavailable vehicle cursor offers a
+fresh hotel view. Trip actions refresh the currently displayed page, and row
+state is keyed by trip identity rather than its position in a page.
 
 The trip ledger uses pages of at most 50 trips in descending departure order,
 with Firestore's descending document-ID tie-break. Each cursor is checked

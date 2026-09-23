@@ -133,6 +133,7 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
                         children: [
                           for (final trip in list.trips) ...[
                             ProgramTripLedgerRow(
+                              key: ValueKey(trip.tripId),
                               trip: trip,
                               programId: widget.programId,
                               onChanged: () => ref.invalidate(provider),

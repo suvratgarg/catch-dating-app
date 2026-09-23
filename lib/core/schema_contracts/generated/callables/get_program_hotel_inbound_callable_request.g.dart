@@ -10,13 +10,22 @@ final class GetProgramHotelInboundCallableRequest {
   const GetProgramHotelInboundCallableRequest({
     required this.programId,
     required this.hotelId,
+    this.tripCursor,
+    this.expectedCursor,
+    this.limit,
   });
 
   final String programId;
   final String hotelId;
+  final String? tripCursor;
+  final String? expectedCursor;
+  final int? limit;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
     'hotelId': hotelId,
+    'tripCursor': ?tripCursor,
+    'expectedCursor': ?expectedCursor,
+    'limit': ?limit,
   };
 }

@@ -62748,6 +62748,15 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getProgramHotelInboundCallablePayloadExpectedCursor = CatchContractFieldConstraints(
+    path: 'getProgramHotelInboundCallablePayload.expectedCursor',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
   static const getProgramHotelInboundCallablePayloadHotelId = CatchContractFieldConstraints(
     path: 'getProgramHotelInboundCallablePayload.hotelId',
     maxLength: 180,
@@ -62756,12 +62765,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getProgramHotelInboundCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'getProgramHotelInboundCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
   static const getProgramHotelInboundCallablePayloadProgramId = CatchContractFieldConstraints(
     path: 'getProgramHotelInboundCallablePayload.programId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getProgramHotelInboundCallablePayloadTripCursor = CatchContractFieldConstraints(
+    path: 'getProgramHotelInboundCallablePayload.tripCursor',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
   );
 
   static const getPublicOrganizerFormCallablePayloadPublicFormId = CatchContractFieldConstraints(
@@ -89138,7 +89163,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 500,
+    maxItems: 50,
   );
 
   static const programHotelInboundCallableResponseExpectedLegsItemsCurbAtMillis = CatchContractFieldConstraints(
@@ -89207,6 +89232,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHotelInboundCallableResponseNextExpectedCursor = CatchContractFieldConstraints(
+    path: 'programHotelInboundCallableResponse.nextExpectedCursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHotelInboundCallableResponseNextTripCursor = CatchContractFieldConstraints(
+    path: 'programHotelInboundCallableResponse.nextTripCursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const programHotelInboundCallableResponseProgramId = CatchContractFieldConstraints(
     path: 'programHotelInboundCallableResponse.programId',
     maxLength: 180,
@@ -89220,7 +89259,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 200,
+    maxItems: 50,
   );
 
   static const programHotelInboundCallableResponseTripsItemsDepartedAtMillis = CatchContractFieldConstraints(
@@ -115398,8 +115437,11 @@ abstract final class CatchContractConstraints {
     'getParticipantOrganizerApplicationFormCallableResponse.targetId': getParticipantOrganizerApplicationFormCallableResponseTargetId,
     'getParticipantOrganizerApplicationFormCallableResponse.targetKind': getParticipantOrganizerApplicationFormCallableResponseTargetKind,
     'getParticipantOrganizerApplicationFormCallableResponse.title': getParticipantOrganizerApplicationFormCallableResponseTitle,
+    'getProgramHotelInboundCallablePayload.expectedCursor': getProgramHotelInboundCallablePayloadExpectedCursor,
     'getProgramHotelInboundCallablePayload.hotelId': getProgramHotelInboundCallablePayloadHotelId,
+    'getProgramHotelInboundCallablePayload.limit': getProgramHotelInboundCallablePayloadLimit,
     'getProgramHotelInboundCallablePayload.programId': getProgramHotelInboundCallablePayloadProgramId,
+    'getProgramHotelInboundCallablePayload.tripCursor': getProgramHotelInboundCallablePayloadTripCursor,
     'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
     'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
@@ -119061,6 +119103,8 @@ abstract final class CatchContractConstraints {
     'programHotelInboundCallableResponse.generatedAtMillis': programHotelInboundCallableResponseGeneratedAtMillis,
     'programHotelInboundCallableResponse.hotelId': programHotelInboundCallableResponseHotelId,
     'programHotelInboundCallableResponse.hotelName': programHotelInboundCallableResponseHotelName,
+    'programHotelInboundCallableResponse.nextExpectedCursor': programHotelInboundCallableResponseNextExpectedCursor,
+    'programHotelInboundCallableResponse.nextTripCursor': programHotelInboundCallableResponseNextTripCursor,
     'programHotelInboundCallableResponse.programId': programHotelInboundCallableResponseProgramId,
     'programHotelInboundCallableResponse.trips': programHotelInboundCallableResponseTrips,
     'programHotelInboundCallableResponse.trips.items.departedAtMillis': programHotelInboundCallableResponseTripsItemsDepartedAtMillis,

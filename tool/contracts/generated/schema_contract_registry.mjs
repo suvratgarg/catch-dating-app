@@ -121372,6 +121372,25 @@ export const getProgramHotelInboundCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "tripCursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[^/]+$",
+      "description": "Continuation returned for this hotel list. Omit to read its first page."
+    },
+    "expectedCursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[^/]+$",
+      "description": "Continuation returned for this hotel list. Omit to read its first page."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
     }
   }
 };
@@ -122975,7 +122994,9 @@ export const programHotelInboundCallableResponseSchema = {
     "generatedAtMillis",
     "trips",
     "expectedLegs",
-    "accessExpiresAtMillis"
+    "accessExpiresAtMillis",
+    "nextTripCursor",
+    "nextExpectedCursor"
   ],
   "properties": {
     "programId": {
@@ -122999,7 +123020,7 @@ export const programHotelInboundCallableResponseSchema = {
     },
     "trips": {
       "type": "array",
-      "maxItems": 200,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -123101,7 +123122,7 @@ export const programHotelInboundCallableResponseSchema = {
     },
     "expectedLegs": {
       "type": "array",
-      "maxItems": 500,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -123165,6 +123186,22 @@ export const programHotelInboundCallableResponseSchema = {
       "minimum": 1,
       "maximum": 9007199254740991,
       "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "nextTripCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "nextExpectedCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };

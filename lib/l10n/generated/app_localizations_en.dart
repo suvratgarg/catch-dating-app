@@ -20382,6 +20382,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsDispatchConfirm => 'Dispatch now';
 
   @override
+  String get programsHotelPreviousTrip => 'Previous vehicles';
+
+  @override
+  String get programsHotelFirstTrip => 'First vehicles';
+
+  @override
+  String get programsHotelMoreTrip => 'More vehicles';
+
+  @override
+  String get programsHotelPreviousExpected => 'Previous guests';
+
+  @override
+  String get programsHotelFirstExpected => 'First guests';
+
+  @override
+  String get programsHotelMoreExpected => 'More guests';
+
+  @override
+  String get programsHotelRefresh => 'Refresh hotel';
+
+  @override
   String get programsHotelTitle => 'Hotel desk';
 
   @override

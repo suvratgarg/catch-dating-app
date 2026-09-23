@@ -665,11 +665,15 @@ class ProgramHotelInbound {
     required this.generatedAt,
     required this.trips,
     required this.expectedLegs,
+    required this.nextTripCursor,
+    required this.nextExpectedCursor,
   });
 
   factory ProgramHotelInbound.fromCallableData(Object? value) {
     final map = requiredMap(value, 'hotel inbound');
     return ProgramHotelInbound(
+      nextTripCursor: requiredNullableString(map, 'nextTripCursor'),
+      nextExpectedCursor: requiredNullableString(map, 'nextExpectedCursor'),
       programId: requiredString(map, 'programId'),
       accessExpiresAt: requiredNullableDateTime(map, 'accessExpiresAtMillis'),
       hotelId: requiredString(map, 'hotelId'),
@@ -693,6 +697,8 @@ class ProgramHotelInbound {
   final DateTime generatedAt;
   final List<ProgramTripSummary> trips;
   final List<HotelExpectedLeg> expectedLegs;
+  final String? nextTripCursor;
+  final String? nextExpectedCursor;
 }
 
 class ProgramVendorOption {

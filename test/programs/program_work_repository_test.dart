@@ -75,6 +75,37 @@ void main() {
     },
   );
 
+  test(
+    'hotel sends independent cursors and retains both continuations',
+    () async {
+      functions.respond = (_) async => {
+        'programId': 'p1',
+        'hotelId': 'hotel',
+        'hotelName': 'Hotel',
+        'generatedAtMillis': DateTime(2026).millisecondsSinceEpoch,
+        'accessExpiresAtMillis': null,
+        'trips': [],
+        'expectedLegs': [],
+        'nextTripCursor': 'next-trip',
+        'nextExpectedCursor': 'next-leg',
+      };
+      final page = await repository.getHotelInbound(
+        programId: 'p1',
+        hotelId: 'hotel',
+        tripCursor: 'prior-trip',
+        expectedCursor: 'prior-leg',
+      );
+      expect(functions.lastPayload, {
+        'programId': 'p1',
+        'hotelId': 'hotel',
+        'tripCursor': 'prior-trip',
+        'expectedCursor': 'prior-leg',
+      });
+      expect(page.nextTripCursor, 'next-trip');
+      expect(page.nextExpectedCursor, 'next-leg');
+    },
+  );
+
   test('fresh work bootstrap accepts its own generation change', () async {
     functions.respond = (_) async => access();
     final result = await repository.getWorkAccess(

@@ -26,5 +26,24 @@ const schemaGetProgramHotelInboundCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'tripCursor': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'pattern': '^[^/]+\$',
+      'description': 'Continuation returned for this hotel list. Omit to read its first page.',
+    },
+    'expectedCursor': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'pattern': '^[^/]+\$',
+      'description': 'Continuation returned for this hotel list. Omit to read its first page.',
+    },
+    'limit': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 50,
+    },
   },
 };

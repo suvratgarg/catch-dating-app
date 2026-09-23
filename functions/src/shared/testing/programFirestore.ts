@@ -58,9 +58,9 @@ class FakeQuery {
       [...this.wheres, {field, op, value}], this.order, this.limitN,
       this.startAfterValue);
   }
-  orderBy(field: string, dir: "asc" | "desc" = "asc") {
+  orderBy(field: string | {toString(): string}, dir: "asc" | "desc" = "asc") {
     return new FakeQuery(this.firestore, this.collectionPath, this.wheres,
-      {field, dir}, this.limitN, this.startAfterValue);
+      {field: String(field), dir}, this.limitN, this.startAfterValue);
   }
   limit(n: number) {
     return new FakeQuery(this.firestore, this.collectionPath, this.wheres,
@@ -156,9 +156,11 @@ export class FakeFirestore {
     if (query.order) {
       const {field, dir} = query.order;
       docs.sort((a, b) => {
-        const av = timestampMillis(a.data()?.[field]) ||
+        const av = field === "__name__" ? a.id :
+          timestampMillis(a.data()?.[field]) ||
           String(a.data()?.[field] ?? "");
-        const bv = timestampMillis(b.data()?.[field]) ||
+        const bv = field === "__name__" ? b.id :
+          timestampMillis(b.data()?.[field]) ||
           String(b.data()?.[field] ?? "");
         const order = av < bv ? -1 : av > bv ? 1 :
           a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
@@ -170,9 +172,9 @@ export class FakeFirestore {
       const field = query.order.field;
       const cursor = query.startAfterValue;
       const cursorValue = cursor instanceof FakeDocSnapshot ?
-        cursor.data()?.[field] : cursor;
+        (field === "__name__" ? cursor.id : cursor.data()?.[field]) : cursor;
       filtered = docs.filter((doc) => {
-        const value = doc.data()?.[field];
+        const value = field === "__name__" ? doc.id : doc.data()?.[field];
         const av = timestampMillis(value) || String(value ?? "");
         const bv = timestampMillis(cursorValue) || String(cursorValue ?? "");
         const order = av < bv ? -1 : av > bv ? 1 :

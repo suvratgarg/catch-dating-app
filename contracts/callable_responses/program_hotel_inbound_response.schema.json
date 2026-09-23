@@ -12,7 +12,9 @@
     "generatedAtMillis",
     "trips",
     "expectedLegs",
-    "accessExpiresAtMillis"
+    "accessExpiresAtMillis",
+    "nextTripCursor",
+    "nextExpectedCursor"
   ],
   "properties": {
     "programId": {
@@ -36,7 +38,7 @@
     },
     "trips": {
       "type": "array",
-      "maxItems": 200,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -127,7 +129,7 @@
     },
     "expectedLegs": {
       "type": "array",
-      "maxItems": 500,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -177,6 +179,22 @@
     },
     "accessExpiresAtMillis": {
       "$ref": "../shared/program_common.schema.json#/definitions/programProjectionExpiry"
+    },
+    "nextTripCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "nextExpectedCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 }
