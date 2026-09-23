@@ -25,6 +25,56 @@ jobs:
       - name: Resolve Widgetbook dependencies
         run: (cd widgetbook && flutter pub get)
 
+      - name: Generate Widgetbook directories
+        run: (cd widgetbook && dart run build_runner build --delete-conflicting-outputs)
+
+      - name: Package generated Widgetbook directories
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import shutil
+          import subprocess
+
+          source_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          if source_sha != os.environ['SOURCE_SHA']:
+              raise SystemExit('Checkout does not match the workflow source SHA')
+          output = pathlib.Path('build/ci/generated-widgetbook-directories')
+          output.mkdir(parents=True, exist_ok=True)
+          generated = pathlib.Path('widgetbook/lib/main.directories.g.dart')
+          sources = [pathlib.Path('widgetbook/pubspec.yaml'), pathlib.Path('widgetbook/pubspec.lock')]
+          sources += sorted(path for path in pathlib.Path('widgetbook/lib').rglob('*.dart')
+                            if not path.name.endswith('.g.dart'))
+          digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+          shutil.copy2(generated, output / generated.name)
+          manifest = {
+              'sourceSha': source_sha,
+              'runId': os.environ['RUN_ID'],
+              'runAttempt': os.environ['RUN_ATTEMPT'],
+              'sourceHashes': {str(path): digest(path) for path in sources},
+              'generatedHashes': {str(generated): digest(generated)},
+              'kind': 'generated Widgetbook directory; source artifact, not visual proof',
+          }
+          (output / 'manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
+          PY
+
+      - name: Upload generated Widgetbook directories
+        uses: actions/upload-artifact@v7
+        with:
+          name: generated-widgetbook-directories-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: build/ci/generated-widgetbook-directories/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Verify committed Widgetbook directories are current
+        run: git diff --exit-code -- widgetbook/lib/main.directories.g.dart
+
       - name: Widgetbook corpus contract gates
         run: >-
           node tool/run.mjs check
