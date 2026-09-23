@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.67.0
-updated: 2026-09-21
+version: 1.67.1
+updated: 2026-09-23
 owner: app_architecture
 status: active
 ---
@@ -1815,6 +1815,15 @@ persisted replay leases prevent two tabs from concurrently draining the same
 scope; server operation receipts remain the cross-device idempotency authority.
 Current account identity is checked before each replay. Reconnect always uses the
 server's current authorization, never a cached grant.
+
+Journal format version 2 hashes the immutable creation time as well as the
+payload and validates that command and envelope timestamps agree. Program
+adapters send this time as the observation/departure fact; all adapters use it
+to bound replay age. Version 1 journals upgrade in one storage transaction only
+after every existing hash and envelope passes validation. Migration preserves
+original timestamps, dependencies, leases and terminal states. Invalid or
+quarantined records remain stored and cannot replay. Migration cannot establish
+the historical integrity of a timestamp that version 1 did not hash.
 
 The storage interface wraps native SQLite (`sqlite3`, FULL synchronous commits)
 and browser IndexedDB (`idb_shim`, awaited transaction completion). Native writes

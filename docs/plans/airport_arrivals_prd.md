@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.15
+version: 0.3.16
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1387,6 +1387,16 @@ without attempting to claim the invite again. Failed claims retain their URL
 for retry, and a late result cannot navigate after the user leaves the route.
 
 ### Offline observation fences
+
+The shared command journal's version 2 request hash includes the immutable
+observation/departure time. Reusing a command ID with a changed time is a
+conflict, even when the rest of its payload matches. Loading verifies the
+stored envelope and command timestamps agree. A version 1 journal upgrades
+transactionally only after every old hash and envelope passes validation,
+keeping stored times, IDs, dependencies, leases and terminal states intact.
+Invalid or quarantined records stay preserved and cannot replay. This migration
+protects subsequent integrity checks; it cannot retrospectively prove a time
+that the older format did not hash.
 
 Every new arrival observation carries a roster revision and its immutable device
 observation time. A subsequent offline command can reference this actor's prior

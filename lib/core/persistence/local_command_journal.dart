@@ -32,6 +32,7 @@ class LocalCommandJournal<E> {
     this.clearLegacy,
   });
 
+  static const _version = 2;
   static const maxEntries = 200;
   static const maxBytes = 1024 * 1024;
   static const reviewAfter = Duration(days: 7);
@@ -82,9 +83,21 @@ class LocalCommandJournal<E> {
         ? null
         : sha256.convert(utf8.encode(legacy)).toString();
     final migrated = await _transaction(accountId, (state) {
+      if (state['version'] == 1) {
+        // Verify every old envelope before upgrading its hash. Preserve its
+        // stored time, dependencies, lease and replay state without inferring
+        // a new observation time from the migration clock.
+        final records = _records(state, version: 1);
+        for (final record in records) {
+          record['hash'] = _hash(
+            (record['command']! as Map).cast<String, Object?>(),
+          );
+        }
+        state['version'] = _version;
+      }
       if (state.isNotEmpty &&
           (legacy == null || state['legacyHash'] == legacyHash)) {
-        return state['version'] == 1 &&
+        return state['version'] == _version &&
             (state['quarantine'] as List?)?.isEmpty == true;
       }
       final records = state.isEmpty
@@ -115,7 +128,7 @@ class LocalCommandJournal<E> {
         }
       }
       state.addAll({
-        'version': 1,
+        'version': _version,
         'legacyHash': legacyHash,
         'records': records,
         'quarantine': quarantine,
@@ -129,8 +142,12 @@ class LocalCommandJournal<E> {
     }
   }
 
-  List<Map<String, Object?>> _records(Map<String, Object?> state) {
-    if (state['version'] != 1 || (state['quarantine']! as List).isNotEmpty) {
+  List<Map<String, Object?>> _records(
+    Map<String, Object?> state, {
+    int version = _version,
+  }) {
+    if (state['version'] != version ||
+        (state['quarantine']! as List).isNotEmpty) {
       throw const ValidationException(
         'Some saved operations need storage recovery. Their original data '
         'has been preserved; contact support before recording more work.',
@@ -143,7 +160,7 @@ class LocalCommandJournal<E> {
     for (final record in records) {
       final command = (record['command']! as Map).cast<String, Object?>();
       final decoded = codec.decode(command);
-      if (record['hash'] != _hash(command) ||
+      if (record['hash'] != _hash(command, version: version) ||
           record['id'] != command['clientOperationId'] ||
           record['scope'] != codec.scope(decoded) ||
           !{
@@ -153,6 +170,7 @@ class LocalCommandJournal<E> {
             'dismissed',
           }.contains(record['status']) ||
           record['createdAtMillis'] is! int ||
+          record['createdAtMillis'] != command['createdAtMillis'] ||
           record['dependencies'] is! List ||
           record['resources'] is! List) {
         throw const FormatException('Invalid command envelope');
@@ -162,20 +180,17 @@ class LocalCommandJournal<E> {
     return records;
   }
 
-  String _hash(Map<String, Object?> command) => sha256
-      .convert(
-        utf8.encode(
-          jsonEncode(
-            _canonical(
-              Map<String, Object?>.of(command)
-                ..remove('status')
-                ..remove('lastErrorCode')
-                ..remove('createdAtMillis'),
-            ),
-          ),
-        ),
-      )
-      .toString();
+  String _hash(Map<String, Object?> command, {int version = _version}) {
+    final immutable = Map<String, Object?>.of(command)
+      ..remove('status')
+      ..remove('lastErrorCode');
+    // Program replay sends creation time as an observation/departure fact,
+    // and every journal uses it to bound replay age. Version 2 binds it too.
+    if (version == 1) immutable.remove('createdAtMillis');
+    return sha256
+        .convert(utf8.encode(jsonEncode(_canonical(immutable))))
+        .toString();
+  }
 
   Map<String, Object?> _record(E entry, List<Map<String, Object?>> records) {
     // JSON round-trip detaches mutable caller lists/maps before any await.
