@@ -5,12 +5,18 @@ import {updateEventChatAccessHandler} from "./eventChatAccess";
 import {sendEventChatMessageHandler, setEventChatReactionHandler,
   setEventChatTypingHandler} from "./eventChatMessages";
 
+import {actOnEventChatMessageHandler} from "./eventChatMessageActions";
+
 const deps = {db: () => {
   throw new Error("A mismatched account must never reach Firestore.");
 }, now: () => {
   throw new Error("A mismatched account must never prepare a mutation.");
 }, rateLimit: async () => undefined};
 const cases = [
+  ...(["report", "block", "remove"] as const).map((action) =>
+    [action, actOnEventChatMessageHandler, {action,
+      requestId: "message-action-001", messageId: "a".repeat(64),
+      reasonCode: action === "report" ? "spam" : null}] as const),
   ["send", sendEventChatMessageHandler,
     {requestId: "request", text: "Private draft", replyToMessageId: null}],
   ["reaction", setEventChatReactionHandler, {requestId: "request",

@@ -352,6 +352,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   updateEventChatProfileSharing: {maxRequests: 30, windowMs: 60 * 1000},
   getEventChatProfile: {maxRequests: 60, windowMs: 60 * 1000},
   listEventChats: {maxRequests: 30, windowMs: 60 * 1000},
+  actOnEventChatMessage: {maxRequests: 20, windowMs: 60 * 1000},
   listEventChatParticipants: {maxRequests: 60, windowMs: 60 * 1000},
   listEventChatMessages: {maxRequests: 120, windowMs: 60 * 1000},
   getEventChatAccess: {maxRequests: 120, windowMs: 60 * 1000},

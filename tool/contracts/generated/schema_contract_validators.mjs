@@ -195,6 +195,8 @@ import {
   getParticipantFormProfileCallableResponseSchema,
   participantFormProfileProposalDocumentSchema,
   eventChatProfileShareDocumentSchema,
+  actOnEventChatMessageCallablePayloadSchema,
+  actOnEventChatMessageCallableResponseSchema,
   listEventChatParticipantsCallablePayloadSchema,
   listEventChatParticipantsCallableResponseSchema,
   getEventChatProfileSharingCallablePayloadSchema,
@@ -970,6 +972,8 @@ export const validateGetParticipantFormProfileCallablePayload = ajv.compile(getP
 export const validateGetParticipantFormProfileCallableResponse = ajv.compile(getParticipantFormProfileCallableResponseSchema);
 export const validateParticipantFormProfileProposalDocument = ajv.compile(participantFormProfileProposalDocumentSchema);
 export const validateEventChatProfileShareDocument = ajv.compile(eventChatProfileShareDocumentSchema);
+export const validateActOnEventChatMessageCallablePayload = ajv.compile(actOnEventChatMessageCallablePayloadSchema);
+export const validateActOnEventChatMessageCallableResponse = ajv.compile(actOnEventChatMessageCallableResponseSchema);
 export const validateListEventChatParticipantsCallablePayload = ajv.compile(listEventChatParticipantsCallablePayloadSchema);
 export const validateListEventChatParticipantsCallableResponse = ajv.compile(listEventChatParticipantsCallableResponseSchema);
 export const validateGetEventChatProfileSharingCallablePayload = ajv.compile(getEventChatProfileSharingCallablePayloadSchema);

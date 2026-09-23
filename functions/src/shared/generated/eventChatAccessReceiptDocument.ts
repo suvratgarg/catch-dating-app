@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Payload-bound idempotency receipt for an explicit room availability, membership or reaction change.
+ * Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.
  */
 export interface EventChatAccessReceiptDocument {
   eventId: string;

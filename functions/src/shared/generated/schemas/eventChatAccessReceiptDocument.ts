@@ -56,7 +56,7 @@ export const eventChatAccessReceiptDocumentSchema: Record<string, unknown> = {
       }
     }
   },
-  "description": "Payload-bound idempotency receipt for an explicit room availability, membership or reaction change.",
+  "description": "Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.",
   "x-firestore-collection": "eventChatAccessReceipts",
   "x-firestore-path": "eventChatAccessReceipts/{receiptId}",
   "x-document-id-field": "receiptId",

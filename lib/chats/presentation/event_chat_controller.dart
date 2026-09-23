@@ -362,6 +362,47 @@ class EventChatController extends _$EventChatController {
     return sent;
   }
 
+  Future<bool> actOnMessage(
+    EventChatMessage reviewed,
+    EventChatSafetyAction action, {
+    required String reviewedUid,
+    EventChatReportReason? reason,
+  }) async {
+    final current = state.asData?.value;
+    if (current?.canSend != true || current!.uid != reviewedUid) return false;
+    final message = current.messages
+        .where((row) => row.messageId == reviewed.messageId)
+        .firstOrNull;
+    if (message == null ||
+        !message.available ||
+        message.senderUid != reviewed.senderUid ||
+        (action == EventChatSafetyAction.report) != (reason != null)) {
+      return false;
+    }
+    final own = message.senderUid == current.uid;
+    if (action == EventChatSafetyAction.remove
+        ? !own && !current.access.canManage
+        : own) {
+      return false;
+    }
+    return _mutate(
+      jsonEncode([
+        'messageAction',
+        message.messageId,
+        action.name,
+        reason?.name,
+      ]),
+      (repository, requestId) => repository.actOnMessage(
+        current.uid,
+        eventId,
+        message.messageId,
+        action,
+        reason,
+        requestId,
+      ),
+    );
+  }
+
   Future<bool> react(
     EventChatMessage reviewed,
     EventChatReaction? reaction, {

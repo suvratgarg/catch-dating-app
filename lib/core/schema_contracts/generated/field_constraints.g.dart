@@ -423,6 +423,63 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const actOnEventChatMessageCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['report', 'block', 'remove'],
+  );
+
+  static const actOnEventChatMessageCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const actOnEventChatMessageCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const actOnEventChatMessageCallablePayloadMessageId = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallablePayload.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const actOnEventChatMessageCallablePayloadReasonCode = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallablePayload.reasonCode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['harassment', 'spam', 'inappropriate', 'other'],
+  );
+
+  static const actOnEventChatMessageCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallablePayload.requestId',
+    maxLength: 128,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const actOnEventChatMessageCallableResponseApplied = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallableResponse.applied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const actOnEventChatMessageCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'actOnEventChatMessageCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const addClubHostCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'addClubHostCallablePayload.clubId',
     maxLength: 180,
@@ -106111,6 +106168,14 @@ abstract final class CatchContractConstraints {
     'activityPreferences.running.runningReasons': activityPreferencesRunningRunningReasons,
     'activityPreferences.running.runningReasons.items': activityPreferencesRunningRunningReasonsItems,
     'activityPreferences.running.version': activityPreferencesRunningVersion,
+    'actOnEventChatMessageCallablePayload.action': actOnEventChatMessageCallablePayloadAction,
+    'actOnEventChatMessageCallablePayload.eventId': actOnEventChatMessageCallablePayloadEventId,
+    'actOnEventChatMessageCallablePayload.expectedUid': actOnEventChatMessageCallablePayloadExpectedUid,
+    'actOnEventChatMessageCallablePayload.messageId': actOnEventChatMessageCallablePayloadMessageId,
+    'actOnEventChatMessageCallablePayload.reasonCode': actOnEventChatMessageCallablePayloadReasonCode,
+    'actOnEventChatMessageCallablePayload.requestId': actOnEventChatMessageCallablePayloadRequestId,
+    'actOnEventChatMessageCallableResponse.applied': actOnEventChatMessageCallableResponseApplied,
+    'actOnEventChatMessageCallableResponse.replayed': actOnEventChatMessageCallableResponseReplayed,
     'addClubHostCallablePayload.clubId': addClubHostCallablePayloadClubId,
     'addClubHostCallablePayload.phoneNumber': addClubHostCallablePayloadPhoneNumber,
     'addClubHostCallablePayload.uid': addClubHostCallablePayloadUid,

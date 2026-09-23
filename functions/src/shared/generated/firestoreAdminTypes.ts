@@ -5074,7 +5074,7 @@ export interface EventChatMembershipDocument {
 }
 
 /**
- * Payload-bound idempotency receipt for an explicit room availability, membership or reaction change.
+ * Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.
  */
 export interface EventChatAccessReceiptDocument {
   eventId: string;

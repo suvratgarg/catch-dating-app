@@ -93,7 +93,7 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
-  testWidgets('message menu opens the selected participant profile', (
+  testWidgets('sender name opens the selected participant profile', (
     tester,
   ) async {
     var opened = false;
@@ -109,9 +109,9 @@ void main() {
         onViewProfile: () => opened = true,
       ),
     );
-    await tester.tap(find.byTooltip('Message actions'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('View event profile'));
+    final sender = find.byTooltip('View event profile');
+    expect(tester.getSize(sender).height, greaterThanOrEqualTo(44));
+    await tester.tap(sender);
     await pumpFeatureUi(tester);
     expect(opened, true);
   });

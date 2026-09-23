@@ -2,6 +2,10 @@ import 'package:meta/meta.dart';
 
 enum EventChatAction { open, close, join, leave }
 
+enum EventChatSafetyAction { report, block, remove }
+
+enum EventChatReportReason { harassment, spam, inappropriate, other }
+
 enum EventChatReaction {
   like('👍'),
   love('❤️'),

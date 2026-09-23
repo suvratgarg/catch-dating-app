@@ -96309,6 +96309,89 @@ export const eventChatProfileShareDocumentSchema = {
   "x-owner": "event profile sharing callables"
 };
 
+export const actOnEventChatMessageCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/act_on_event_chat_message_payload.schema.json",
+  "title": "ActOnEventChatMessageCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "messageId",
+    "action",
+    "reasonCode",
+    "requestId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "report",
+        "block",
+        "remove"
+      ]
+    },
+    "reasonCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "harassment",
+            "spam",
+            "inappropriate",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  }
+};
+
+export const actOnEventChatMessageCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/act_on_event_chat_message_response.schema.json",
+  "title": "ActOnEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applied",
+    "replayed"
+  ],
+  "properties": {
+    "applied": {
+      "const": true,
+      "type": "boolean"
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const listEventChatParticipantsCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_event_chat_participants_payload.schema.json",
@@ -97387,7 +97470,7 @@ export const eventChatAccessReceiptDocumentSchema = {
       }
     }
   },
-  "description": "Payload-bound idempotency receipt for an explicit room availability, membership or reaction change.",
+  "description": "Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.",
   "x-firestore-collection": "eventChatAccessReceipts",
   "x-firestore-path": "eventChatAccessReceipts/{receiptId}",
   "x-document-id-field": "receiptId",

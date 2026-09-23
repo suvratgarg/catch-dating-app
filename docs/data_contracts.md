@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.146.0
+version: 1.147.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2668,6 +2668,19 @@ bounded to 30 rows plus a lookahead with a sequence cursor. Prior messages from
 a participant who leaves remain history; account deletion redacts their text
 and identity. Existing text moderation blocks prohibited writes or atomically
 creates a review flag while leaving flagged text visible.
+
+`actOnEventChatMessage` offers separate report, block and remove actions. The
+server derives the target from an immutable, currently readable room message;
+`expectedUid` fences account changes. Reporting requires a reason and writes a
+source-bound reference into the existing Catch safety queue, without a public
+report or copied message body. Blocking creates the existing global block edge;
+all event projections check it, and the existing block trigger closes matches.
+Removal is available only to the sender or a current organizer manager and hides
+both the message and reply previews. Its original server-only content may remain
+for safety review until account deletion anonymizes it. A namespaced receipt and
+payload hash make retries idempotent; replay after unblocking never restores the
+block. Deleted-account fences apply even to replays. None of these actions changes
+event admission or removes another participant from the event.
 
 `eventChatReactions/{sha256([messageId,uid])}` stores one optional reaction per
 person; the message stores six anonymous aggregate counts. Revision checks and

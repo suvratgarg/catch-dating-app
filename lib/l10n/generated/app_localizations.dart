@@ -33195,6 +33195,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Attendee'**
   String get eventChatParticipantAttendee;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Report message'**
+  String get eventChatReport;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Block sender'**
+  String get eventChatBlock;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove message'**
+  String get eventChatRemove;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reason to send this message to Catch for review. The sender will not see your report.'**
+  String get eventChatReportDisclosure;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment or abuse'**
+  String get eventChatReportHarassment;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or scam'**
+  String get eventChatReportSpam;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
+  String get eventChatReportInappropriate;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get eventChatReportOther;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You and this person will stop seeing each other’s messages and event profiles. They stay in the event, and other participants can still see them. You can unblock them in Settings.'**
+  String get eventChatBlockDisclosure;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This message and its reply previews will be hidden from everyone in the room. You cannot undo this. Catch may retain a private record for safety review.'**
+  String get eventChatRemoveDisclosure;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent to Catch.'**
+  String get eventChatReported;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender blocked.'**
+  String get eventChatBlocked;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message removed.'**
+  String get eventChatRemoved;
 }
 
 class _AppLocalizationsDelegate

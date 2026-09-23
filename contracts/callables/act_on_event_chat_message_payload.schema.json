@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/act_on_event_chat_message_payload.schema.json",
+  "title": "ActOnEventChatMessageCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "messageId",
+    "action",
+    "reasonCode",
+    "requestId"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "expectedUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "report",
+        "block",
+        "remove"
+      ]
+    },
+    "reasonCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "harassment",
+            "spam",
+            "inappropriate",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  }
+}

@@ -13,6 +13,7 @@
 // that need custom normalization or response parsing beyond generated request
 // toJson() classes.
 
+export 'callables/act_on_event_chat_message_callable_request.g.dart';
 export 'callables/add_club_host_callable_request.g.dart';
 export 'callables/add_organizer_manager_callable_request.g.dart';
 export 'callables/admin_apply_event_messaging_budget_callable_request.g.dart';

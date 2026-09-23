@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.72.0
+version: 1.73.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1937,6 +1937,14 @@ It is reachable before dating onboarding so admitted form applicants can review
 and claim a private profile first. Admission and explicit room membership still
 come from the callable authority. The Host event toolbar opens the same room;
 the consumer event detail requests only room access metadata for its entry row.
+The message menu contains reply/react plus permitted report, block and removal
+actions. Reporting requires a selected reason; blocking and removal require an
+explicit confirmation. The controller binds each action to the reviewed account
+and message sender, rechecks the current snapshot and reuses its request ID after
+a lost acknowledgement. The backend derives the target and checks current room
+authority. Profile navigation uses the sender name with a full-height touch target
+so even a manager menu stays within the five-command primitive limit.
+
 The screen uses the canonical route top bar and chat composer. Reply previews
 resolve against the current message snapshot, and opening reactions dismisses
 the keyboard and replaces the composer until the selection closes.
@@ -1965,7 +1973,7 @@ result contains only selected fields and a bounded in-memory photo preview.
 participant view at `/events/:eventId/chat/people/:participantUid`. Both are
 shared authenticated routes before dating onboarding; server-side admission,
 claim and sharing checks still control each read. The room app bar opens the
-editor and a message action opens its sender's protected profile. Backgrounding
+editor and each message's sender name opens its protected profile. Backgrounding
 or covering either route clears visible details until a fresh foreground read.
 
 The editor exposes unchecked eligible values and only claimed applicant answers

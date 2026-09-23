@@ -28290,5 +28290,109 @@
     "x-owner": "product",
     "x-domain": "chats",
     "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatReport": "Report message",
+  "@eventChatReport": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatBlock": "Block sender",
+  "@eventChatBlock": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatRemove": "Remove message",
+  "@eventChatRemove": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportDisclosure": "Choose a reason to send this message to Catch for review. The sender will not see your report.",
+  "@eventChatReportDisclosure": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportHarassment": "Harassment or abuse",
+  "@eventChatReportHarassment": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportSpam": "Spam or scam",
+  "@eventChatReportSpam": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportInappropriate": "Inappropriate content",
+  "@eventChatReportInappropriate": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportOther": "Something else",
+  "@eventChatReportOther": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatBlockDisclosure": "You and this person will stop seeing each other’s messages and event profiles. They stay in the event, and other participants can still see them. You can unblock them in Settings.",
+  "@eventChatBlockDisclosure": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatRemoveDisclosure": "This message and its reply previews will be hidden from everyone in the room. You cannot undo this. Catch may retain a private record for safety review.",
+  "@eventChatRemoveDisclosure": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReported": "Report sent to Catch.",
+  "@eventChatReported": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatBlocked": "Sender blocked.",
+  "@eventChatBlocked": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatRemoved": "Message removed.",
+  "@eventChatRemoved": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
   }
 }

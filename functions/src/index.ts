@@ -608,6 +608,7 @@ export {getEventChatAccess, updateEventChatAccess}
 
 export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
   from "./chats/eventChatMessages";
+export {actOnEventChatMessage} from "./chats/eventChatMessageActions";
 export {listEventChatParticipants} from "./chats/listEventChatParticipants";
 export {listEventChatMessages} from "./chats/listEventChatMessages";
 

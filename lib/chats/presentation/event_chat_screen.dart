@@ -6,6 +6,7 @@ import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -103,6 +104,81 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
     }
   }
 
+  Future<void> _messageAction(
+    EventChatState reviewed,
+    EventChatMessage message,
+    EventChatSafetyAction action,
+  ) async {
+    final l = context.l10n;
+    EventChatReportReason? reason;
+    if (action == EventChatSafetyAction.report) {
+      reason = await showCatchSelectionSheet<EventChatReportReason?>(
+        context: context,
+        title: l.eventChatReport,
+        subtitle: l.eventChatReportDisclosure,
+        value: null,
+        items: [
+          CatchSelectionMenuItem(
+            value: EventChatReportReason.harassment,
+            label: l.eventChatReportHarassment,
+          ),
+          CatchSelectionMenuItem(
+            value: EventChatReportReason.spam,
+            label: l.eventChatReportSpam,
+          ),
+          CatchSelectionMenuItem(
+            value: EventChatReportReason.inappropriate,
+            label: l.eventChatReportInappropriate,
+          ),
+          CatchSelectionMenuItem(
+            value: EventChatReportReason.other,
+            label: l.eventChatReportOther,
+          ),
+        ],
+      );
+      if (reason == null) return;
+    } else {
+      final confirmed = await showCatchConfirmDialog(
+        context: context,
+        copy: catchDialogCopy(l),
+        title: action == EventChatSafetyAction.block
+            ? l.eventChatBlock
+            : l.eventChatRemove,
+        message: action == EventChatSafetyAction.block
+            ? l.eventChatBlockDisclosure
+            : l.eventChatRemoveDisclosure,
+        confirmLabel: action == EventChatSafetyAction.block
+            ? l.eventChatBlock
+            : l.eventChatRemove,
+        danger: true,
+      );
+      if (confirmed != true) return;
+    }
+    if (!mounted || ref.read(uidProvider).asData?.value != reviewed.uid) return;
+    final saved = await _controller.actOnMessage(
+      message,
+      action,
+      reviewedUid: reviewed.uid,
+      reason: reason,
+    );
+    if (!mounted ||
+        ref.read(uidProvider).asData?.value != reviewed.uid ||
+        !saved) {
+      return;
+    }
+    if (action != EventChatSafetyAction.report) {
+      setState(() {
+        _replyId = null;
+        _reactionId = null;
+      });
+    }
+    showCatchSnackBar(context, switch (action) {
+      EventChatSafetyAction.report => l.eventChatReported,
+      EventChatSafetyAction.block => l.eventChatBlocked,
+      EventChatSafetyAction.remove => l.eventChatRemoved,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = eventChatControllerProvider(widget.eventId);
@@ -192,6 +268,8 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
             replyId: _replyId,
             reactionId: _reactionId,
             onSend: () => unawaited(_send(state.uid)),
+            onMessageAction: (message, action) =>
+                unawaited(_messageAction(state, message, action)),
             onViewProfile: (uid) => context.pushNamed(
               Routes.eventParticipantProfileScreen.name,
               pathParameters: {
@@ -244,6 +322,7 @@ class EventChatPageBody extends StatelessWidget {
     required this.onShowReactions,
     required this.onReaction,
     this.onViewProfile,
+    this.onMessageAction,
   });
   final EventChatState state;
   final TextEditingController draft;
@@ -252,6 +331,7 @@ class EventChatPageBody extends StatelessWidget {
   final String? replyId, reactionId;
   final VoidCallback onSend, onLoadEarlier;
   final ValueChanged<String>? onViewProfile;
+  final void Function(EventChatMessage, EventChatSafetyAction)? onMessageAction;
   final ValueChanged<EventChatAction> onAction;
   final VoidCallback? onReviewProfile;
   final ValueChanged<String?> onReply, onShowReactions;
@@ -385,6 +465,31 @@ class EventChatPageBody extends StatelessWidget {
                         message: message,
                         isMe: message.senderUid == state.uid,
                         enabled: state.canSend,
+                        onReport:
+                            onMessageAction != null &&
+                                message.senderUid != state.uid
+                            ? () => onMessageAction!(
+                                message,
+                                EventChatSafetyAction.report,
+                              )
+                            : null,
+                        onBlock:
+                            onMessageAction != null &&
+                                message.senderUid != state.uid
+                            ? () => onMessageAction!(
+                                message,
+                                EventChatSafetyAction.block,
+                              )
+                            : null,
+                        onRemove:
+                            onMessageAction != null &&
+                                (message.senderUid == state.uid ||
+                                    access.canManage)
+                            ? () => onMessageAction!(
+                                message,
+                                EventChatSafetyAction.remove,
+                              )
+                            : null,
                         onReply: () => onReply(message.messageId),
                         onViewProfile:
                             message.senderUid == null || onViewProfile == null

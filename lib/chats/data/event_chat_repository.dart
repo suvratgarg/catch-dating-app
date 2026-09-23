@@ -171,6 +171,27 @@ class EventChatRepository {
     );
   }
 
+  Future<void> actOnMessage(
+    String uid,
+    String eventId,
+    String messageId,
+    EventChatSafetyAction action,
+    EventChatReportReason? reason,
+    String requestId,
+  ) async {
+    await _call(
+      'actOnEventChatMessage',
+      ActOnEventChatMessageCallableRequest(
+        expectedUid: uid,
+        eventId: eventId,
+        messageId: messageId,
+        action: action.name,
+        reasonCode: reason?.name,
+        requestId: requestId,
+      ).toJson(),
+    );
+  }
+
   Future<int> typing(
     String uid,
     String eventId,

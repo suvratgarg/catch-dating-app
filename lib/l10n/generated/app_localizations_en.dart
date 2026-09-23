@@ -20789,4 +20789,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventChatParticipantAttendee => 'Attendee';
+
+  @override
+  String get eventChatReport => 'Report message';
+
+  @override
+  String get eventChatBlock => 'Block sender';
+
+  @override
+  String get eventChatRemove => 'Remove message';
+
+  @override
+  String get eventChatReportDisclosure =>
+      'Choose a reason to send this message to Catch for review. The sender will not see your report.';
+
+  @override
+  String get eventChatReportHarassment => 'Harassment or abuse';
+
+  @override
+  String get eventChatReportSpam => 'Spam or scam';
+
+  @override
+  String get eventChatReportInappropriate => 'Inappropriate content';
+
+  @override
+  String get eventChatReportOther => 'Something else';
+
+  @override
+  String get eventChatBlockDisclosure =>
+      'You and this person will stop seeing each other’s messages and event profiles. They stay in the event, and other participants can still see them. You can unblock them in Settings.';
+
+  @override
+  String get eventChatRemoveDisclosure =>
+      'This message and its reply previews will be hidden from everyone in the room. You cannot undo this. Catch may retain a private record for safety review.';
+
+  @override
+  String get eventChatReported => 'Report sent to Catch.';
+
+  @override
+  String get eventChatBlocked => 'Sender blocked.';
+
+  @override
+  String get eventChatRemoved => 'Message removed.';
 }

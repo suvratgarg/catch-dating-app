@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/act_on_event_chat_message_response.schema.json",
+  "title": "ActOnEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applied",
+    "replayed"
+  ],
+  "properties": {
+    "applied": {
+      "const": true,
+      "type": "boolean"
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+}

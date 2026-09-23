@@ -15,11 +15,14 @@ class EventChatMessageTile extends StatelessWidget {
     required this.onReact,
     required this.onReaction,
     this.onViewProfile,
+    this.onReport,
+    this.onBlock,
+    this.onRemove,
   });
   final EventChatMessage message;
   final bool isMe, enabled;
   final VoidCallback onReply, onReact;
-  final VoidCallback? onViewProfile;
+  final VoidCallback? onViewProfile, onReport, onBlock, onRemove;
   final ValueChanged<EventChatReaction?> onReaction;
 
   @override
@@ -44,21 +47,32 @@ class EventChatMessageTile extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      isMe ? l.eventChatYou : message.senderName ?? '',
-                      style: CatchTextStyles.supporting(context),
-                    ),
+                    child: onViewProfile == null
+                        ? Text(
+                            isMe ? l.eventChatYou : message.senderName ?? '',
+                            style: CatchTextStyles.supporting(context),
+                          )
+                        : Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Tooltip(
+                              message: l.eventProfileView,
+                              child: CatchButton.text(
+                                label: isMe
+                                    ? l.eventChatYou
+                                    : message.senderName ?? '',
+                                minimumSize: const Size(0, CatchSpacing.s12),
+                                padding: EdgeInsets.zero,
+                                textStyle: CatchTextStyles.supporting(context),
+                                onPressed: enabled ? onViewProfile : null,
+                              ),
+                            ),
+                          ),
                   ),
                   CatchActionMenu<String>(
                     variant: CatchIconActionVariant.plain,
                     tooltip: l.eventChatMessageActions,
                     enabled: enabled,
                     items: [
-                      if (onViewProfile != null)
-                        CatchActionMenuItem(
-                          value: 'profile',
-                          label: l.eventProfileView,
-                        ),
                       CatchActionMenuItem(
                         value: 'reply',
                         label: l.eventChatReply,
@@ -67,11 +81,29 @@ class EventChatMessageTile extends StatelessWidget {
                         value: 'react',
                         label: l.eventChatReact,
                       ),
+                      if (onReport != null)
+                        CatchActionMenuItem(
+                          value: 'report',
+                          label: l.eventChatReport,
+                        ),
+                      if (onBlock != null)
+                        CatchActionMenuItem(
+                          value: 'block',
+                          label: l.eventChatBlock,
+                        ),
+                      if (onRemove != null)
+                        CatchActionMenuItem(
+                          value: 'remove',
+                          label: l.eventChatRemove,
+                        ),
                     ],
                     onSelected: (action) => switch (action) {
-                      'profile' => onViewProfile?.call(),
                       'reply' => onReply(),
-                      _ => onReact(),
+                      'react' => onReact(),
+                      'report' => onReport?.call(),
+                      'block' => onBlock?.call(),
+                      'remove' => onRemove?.call(),
+                      _ => null,
                     },
                   ),
                 ],
