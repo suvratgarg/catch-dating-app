@@ -1,7 +1,8 @@
 import {formMessagingOffer, formMessagingChoices, prepareFormCommunicationIntent,
   normalizeFormMessagingDecision, prepareFormMessagingGrants} from
   "./organizerFormMessagingConsent";
-import {createHash} from "crypto";
+import {createHash, randomBytes} from "crypto";
+import {organizerFormEmbedAssets} from "./organizerFormEmbed";
 import {prepareFormProfileProposal, readParticipantFormProfileProposal} from
   "./organizerFormProfileProposals";
 import {requireFreeFormSubmission} from "./organizerFormCapabilities";
@@ -963,14 +964,13 @@ export async function getOrganizerFormShareAssetsHandler(
   const formSnap = await db.collection("organizerForms").doc(data.formId).get();
   const form = requireOwnedPublishedForm(formSnap, data.organizerId);
   const canonicalUrl = publicFormUrl(form.publicFormId, null);
-  const embedUrl = `${canonicalUrl}?embed=1`;
+  const {embedUrl, embedSnippet} = organizerFormEmbedAssets(
+    canonicalUrl, form.title, randomBytes(12).toString("base64url")
+  );
   return {
     canonicalUrl,
     embedUrl,
-    embedSnippet:
-      `<iframe src="${embedUrl}" title="${escapeHtml(form.title)}" ` +
-      "loading=\"lazy\" style=\"width:100%;min-height:720px;border:0\" " +
-      "referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>",
+    embedSnippet,
   };
 }
 
@@ -1607,16 +1607,6 @@ function timestampToWire(
     _seconds: value.seconds,
     _nanoseconds: value.nanoseconds,
   } : null;
-}
-
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/gu, (character) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "\"": "&quot;",
-    "'": "&#39;",
-  })[character]!);
 }
 
 const publicCallableLimits = {
