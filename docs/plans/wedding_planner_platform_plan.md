@@ -454,32 +454,46 @@ RSVP and transport-only duties get baked into UI.
 
 ---
 
-## 10. Implementation status (updated 2026-09-22, evening)
+## 10. Implementation status (updated 2026-09-23)
 
-Foundations landed on sibling branches — none merged to `main` yet:
+Merged to `main`:
 
-| Branch / worktree | Contents | State |
+- **#408 private-program airport arrivals** — program contracts,
+  `functions/src/programs` + `functions/src/transport` callables,
+  `lib/programs` arrivals/dispatch/hotel-desk screens, operations outbox,
+  `programStaffInvites` collection. Flight-provider deployment followed in
+  #411. The airport worktree's tip still carries ~9 program/transport files
+  not on `main` (flight alerts, provider config, dispatch screen edits) —
+  owned by that thread.
+
+Unmerged branches (all rebased onto current `main` 2026-09-23):
+
+| Branch | Contents | State |
 |---|---|---|
-| `codex/airport-arrivals-prd-20260922` | Program contracts, `functions/src/programs` + `functions/src/transport` callables, `lib/programs` arrivals/dispatch/hotel-desk screens, operations outbox | In progress (other thread); uncommitted contract regen |
-| `codex/moments-engine-core-20260922` | `functions/src/moments`: pure engine (planning, conditions, audience, guard rails) + `momentTemplates` wedding pack (function-start, dress, transport-ready, RSVP chase, gate alert, flight disruption). 40 tests | Committed `6b84eac`; awaiting callable wiring (W4) |
-| `codex/program-schedule-domain-20260922` | `functions/src/programSchedule`: timeline ordering, overlap/gap detection, tz day grouping, live-function + late-arrival classification, per-guest/household itineraries, per-function headcounts, `.ics` feed serializer. 26 tests | Committed `b518e3a`; consumed by W1/W3/W4 |
-| `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables (`02e9bca80`), admin finance panel in progress | Callables committed; admin UI in flight |
+| `codex/moments-engine-core-20260922` | `functions/src/moments`: pure engine (planning, conditions, audience, guard rails) + `momentTemplates` wedding pack. 40 tests | Verified on new main; awaiting callable wiring (W4) |
+| `codex/program-schedule-domain-20260922` | `functions/src/programSchedule`: timeline ordering, overlap/gap detection, tz day grouping, live-function + late-arrival classification, itineraries, headcounts, `.ics` serializer. 26 tests | Verified on new main; consumed by W1/W3/W4 |
+| `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables, admin finance panel | Verified on new main; merge-ready |
 
-Still needed for W0 (all contract-layer, sequenced after the airport branch
-to avoid regenerating shared outputs concurrently): `programFunctionGuests`,
-function dress-code/instructions fields, wider `programStaffDuty` values +
-`functionIds` scope, `programHouseholds.side`, campaign `recipientSource`.
+W0 contract corrections (verified still needed on post-#408 main):
+`programFunctionGuests` collection, function dress-code/instructions fields,
+wider `programStaffDuty` values + `functionIds` scope (staff invites mirror
+the same enum — widen both), `programHouseholds.side`, campaign
+`recipientSource`.
 
-Notes:
+Current blockers (claims measured 2026-09-23):
 
-- The airport branch did add client code, but it is transport-duty scoped;
-  the W0 risk is confined to the program-wide `rsvpStatus` on
-  `programGuests`, which W0 must migrate rather than extend.
+- `codex/rsvp-reviewed-integration-20260923` (active, 166 commits ahead of
+  `main`) claims `firestore.rules`, `firestore.indexes.json`,
+  `tool/contracts/generate_schema_contracts.mjs`, the generated schema
+  registries, `functions/src/index.ts`, `lib/routing/go_router.dart`,
+  `design/screens/catch.screens.json`, and the campaign/RSVP organizers
+  files. All contract changes and route/screen registration wait on it.
+- Free for use now: `lib/programs`, `functions/src/programs`,
+  `functions/src/transport`, `functions/src/moments`,
+  `functions/src/programSchedule`, `widgetbook` program use-cases, and all
+  program-scoped contract JSONs (none are claimed).
 - WhatsApp template bodies are provider-side (Meta) artifacts; the moment
   template keys (`program_function_starting`, `program_get_ready`,
   `program_transport_ready`, `program_rsvp_deadline_reminder`) each need an
   approved `organizerMessageTemplates` doc per sender connection before a
   `sendTemplate` run can deliver. That is runbook/setup work, not code.
-- Host UI (`HostWorkShell`, routing) is blocked on the
-  `audience-directory-consistency` claim over `lib/routing`,
-  `lib/hosts/presentation`, `test`, `packages/catch_ui` (PR #402).
