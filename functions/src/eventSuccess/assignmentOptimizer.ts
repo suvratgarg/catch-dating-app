@@ -5,6 +5,11 @@ import {
   scoreQuestionnaireObjectivePair,
 } from "./compatibilityPolicy";
 import {AssignmentTopology} from "./assignmentTopology";
+import {assignmentFeatureGroupBalanceCost,
+  assignmentFeaturePairAdjustment,
+  buildAssignmentFeatureScoringContext,
+  type AssignmentFeatureRule,
+  type EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,
@@ -141,6 +146,13 @@ export interface AssignmentEngineContext<T extends AssignmentParticipant> {
   allowOrientationFallback?: boolean;
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
+  /** Trusted resolver must verify the current participant consent receipt. */
+  softFeatures?: {
+    eventId: string;
+    organizerId: string;
+    rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[];
+  };
 }
 
 export type AssignmentRotationRepeatStrategy =
@@ -243,6 +255,13 @@ export function runAssignmentEngine<
     params.constraints,
     params.topology.rotationIntervalMinutes ?? 0
   );
+  if (params.softFeatures?.rules.length) {
+    constraints.softFeatures = buildAssignmentFeatureScoringContext({
+      ...params.softFeatures,
+      eligibleUids: params.participants.map((participant) =>
+        participant.uid),
+    });
+  }
   const rotationPolicy = normalizeRotationPolicy(params.rotationPolicy);
   const assignmentResolution = eventSuccessVariableResolutionFor({
     assignmentAlgorithm,
@@ -1973,6 +1992,8 @@ function allCandidatePairs<T extends AssignmentParticipant>(params: {
         a,
         b,
         score: scored.score +
+          assignmentFeaturePairAdjustment(params.constraints.softFeatures,
+            a.uid, b.uid) +
           hostPairScoreAdjustment(a.uid, b.uid, params.constraints) +
           activityPairScoreAdjustment({
             a,
@@ -2423,8 +2444,12 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
     group: params.group,
     constraints: params.constraints,
   });
+  const featureBalanceCost = assignmentFeatureGroupBalanceCost(
+    params.constraints.softFeatures,
+    [...params.group, params.participant].map((member) => member.uid)
+  );
   if (params.group.length === 0) {
-    return hostPlacementCost + activityPlacementCost;
+    return hostPlacementCost + activityPlacementCost + featureBalanceCost;
   }
 
   let opportunityScore = 0;
@@ -2439,6 +2464,11 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
       allowOrientationFallback: true,
     });
     opportunityScore += scored.score;
+    opportunityScore += assignmentFeaturePairAdjustment(
+      params.constraints.softFeatures,
+      params.participant.uid,
+      member.uid
+    );
     if (scored.mutualInterest) mutualCount++;
     if (
       params.seenPairs?.has(
@@ -2467,6 +2497,7 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
   return params.group.length * GROUP_SIZE_PRESSURE +
     repeatedPairPenalty +
     activityPlacementCost +
+    featureBalanceCost +
     compositionCost +
     noMutualPenalty -
     opportunityScore +

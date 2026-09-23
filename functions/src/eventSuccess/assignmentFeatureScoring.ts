@@ -42,9 +42,86 @@ export type NormalizedFeatureValue =
   {kind: "category"; value: string} |
   {kind: "set"; values: ReadonlySet<string>};
 
+export interface AssignmentFeatureScoringContext {
+  rules: AssignmentFeatureRule[];
+  valuesByUid: Map<string, Map<string, NormalizedFeatureValue>>;
+  eligiblePoolByFeature: Map<string, NormalizedFeatureValue[]>;
+  missingValueCount: number;
+}
+
 const MAX_RULES = 8;
 const MAX_WEIGHT = 100;
 const MAX_OPTIONS = 40;
+
+/** Consumes only already-authorized snapshots for the current eligible pool. */
+export function buildAssignmentFeatureScoringContext(params: {
+  eventId: string;
+  organizerId: string;
+  eligibleUids: string[];
+  rules: AssignmentFeatureRule[];
+  snapshots: EventAssignmentFeatureSnapshot[];
+}): AssignmentFeatureScoringContext {
+  const rules = validateAssignmentFeatureRules(params.rules);
+  const eligible = new Set(params.eligibleUids);
+  const snapshots = new Map<string, EventAssignmentFeatureSnapshot>();
+  for (const snapshot of params.snapshots) {
+    if (!eligible.has(snapshot.uid)) continue;
+    const key = `${snapshot.uid}|${snapshot.featureId}`;
+    if (snapshots.has(key)) {
+      throw new Error("Duplicate assignment feature snapshot.");
+    }
+    snapshots.set(key, snapshot);
+  }
+  const valuesByUid = new Map<string,
+    Map<string, NormalizedFeatureValue>>();
+  const eligiblePoolByFeature = new Map<string, NormalizedFeatureValue[]>();
+  let missingValueCount = 0;
+  for (const rule of rules) {
+    const pool: NormalizedFeatureValue[] = [];
+    for (const uid of eligible) {
+      const value = normalizeAssignmentFeature(rule,
+        snapshots.get(`${uid}|${rule.featureId}`),
+        {eventId: params.eventId, organizerId: params.organizerId, uid});
+      if (!value) {
+        missingValueCount++;
+        continue;
+      }
+      const byFeature = valuesByUid.get(uid) ?? new Map();
+      byFeature.set(rule.featureId, value);
+      valuesByUid.set(uid, byFeature);
+      pool.push(value);
+    }
+    eligiblePoolByFeature.set(rule.featureId, pool);
+  }
+  return {rules, valuesByUid, eligiblePoolByFeature, missingValueCount};
+}
+
+export function assignmentFeaturePairAdjustment(
+  context: AssignmentFeatureScoringContext | undefined,
+  uidA: string,
+  uidB: string
+): number {
+  if (!context) return 0;
+  return context.rules.reduce((sum, rule) => sum +
+    assignmentFeaturePairScore(rule,
+      context.valuesByUid.get(uidA)?.get(rule.featureId) ?? null,
+      context.valuesByUid.get(uidB)?.get(rule.featureId) ?? null), 0);
+}
+
+export function assignmentFeatureGroupBalanceCost(
+  context: AssignmentFeatureScoringContext | undefined,
+  uids: string[]
+): number {
+  if (!context) return 0;
+  return context.rules.reduce((sum, rule) => {
+    if (rule.mode !== "balanceAcrossGroups") return sum;
+    const group = uids.map((uid) =>
+      context.valuesByUid.get(uid)?.get(rule.featureId))
+      .filter((value): value is NormalizedFeatureValue => value !== undefined);
+    return sum + assignmentFeatureBalanceCost(rule, group,
+      context.eligiblePoolByFeature.get(rule.featureId) ?? []);
+  }, 0);
+}
 
 /** Invalid configuration fails closed before any assignment is generated. */
 export function validateAssignmentFeatureRules(

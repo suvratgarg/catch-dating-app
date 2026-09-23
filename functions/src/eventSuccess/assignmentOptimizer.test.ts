@@ -22,6 +22,44 @@ import {
   affinityRepeatPairScoreAdjustment,
   normalizeAssignmentConstraints,
 } from "./assignmentConstraints";
+import type {AssignmentFeatureRule,
+  EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+
+test("typed answer feature changes pair order without relaxing blocked pairs",
+  () => {
+    const rule: AssignmentFeatureRule = {
+      featureId: "pace", formId: "form", versionId: "version-1",
+      questionId: "question", transformVersion: 1, kind: "category",
+      mode: "preferSimilar", weight: 20, optionIds: ["easy", "fast"],
+    };
+    const snapshots: EventAssignmentFeatureSnapshot[] = [
+      ["a", "easy"], ["b", "easy"], ["c", "fast"],
+    ].map(([uid, optionId]) => ({
+      eventId: "event", organizerId: "org", uid, featureId: "pace",
+      formId: "form", versionId: "version-1", questionId: "question",
+      transformVersion: 1, consentReceiptId: `${uid}-grant`,
+      value: {kind: "category", optionId},
+    }));
+    const params = {
+      participants: ["a", "b", "c"].map(profileFreeParticipant),
+      topology: pairTopology(1), assignmentAlgorithm: "pairRotations" as const,
+      compatibilityPolicy: "none" as const,
+      matchingObjective: "coverage" as const, rotationRoundCount: 1,
+      softFeatures: {eventId: "event", organizerId: "org",
+        rules: [rule], snapshots},
+    };
+    const selected = runAssignmentEngine({...params, blockedPairs: new Set()});
+    assert.deepEqual(pairUids(selected.rotationRounds[0].pairs[0]), ["a", "b"]);
+    const blocked = runAssignmentEngine({...params,
+      blockedPairs: new Set(["a__b"])});
+    assert.notDeepEqual(pairUids(blocked.rotationRounds[0].pairs[0]),
+      ["a", "b"]);
+    const withoutConfig = runAssignmentEngine({...params,
+      softFeatures: undefined, blockedPairs: new Set()});
+    const old = runAssignmentEngine({...params,
+      softFeatures: undefined, blockedPairs: new Set()});
+    assert.deepEqual(withoutConfig.rotationRounds, old.rotationRounds);
+  });
 
 test("minimizes maximum exclusion time ahead of assignment score", () => {
   const plan = runAssignmentEngine({
