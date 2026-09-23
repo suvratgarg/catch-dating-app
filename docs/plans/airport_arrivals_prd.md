@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.9
+version: 0.3.10
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1407,7 +1407,14 @@ operational views display the current hotel name. Every suggestion respects the
 50-journey dispatch limit even when a vehicle has more seats. Journey counts
 are derived from each unit's explicit guest IDs. Two units with overlapping
 guests remain separate suggestions, preserving legitimate separate journeys
-without producing a manifest that dispatch would reject. Views needing more
+without producing a manifest that dispatch would reject. Missing, inactive or
+foreign-owned pickup/hotel resources leave the whole unit unassigned with
+`missingScope`, while its journeys remain visible in the roster for correction.
+Planning hydrates pickup validity instead of unused private guest details.
+Dispatch, arrival observations and trip completion recheck both organizer and
+program bindings inside their transactions. Replays identify the original
+owned trip and operation; missing or rebound trip/assignment records require
+reconciliation. An inactive owned pickup still permits releasing a claim. Views needing more
 than 200 groups fail explicitly instead of returning an incomplete plan.
 
 ### Operational read scope

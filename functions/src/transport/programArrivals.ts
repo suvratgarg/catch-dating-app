@@ -45,7 +45,7 @@ export async function getProgramArrivalsRosterHandler(
   const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
   const {legs, guests, parties, hotels} = await loadArrivalLegContext(
-    db, data.programId, stationAccess, data.pickupPointId ?? null);
+    db, data.programId, stationAccess, data.pickupPointId ?? null, "roster");
   const settings = stationAccess.access.program.transportSettings;
   // Resolve claimant display names through staff grants; never leak uids.
   const claimantUids = [...new Set(legs.map((leg) => leg.doc.claimedByUid)
@@ -125,8 +125,8 @@ export async function getProgramTransportPlanHandler(
   const now = deps.now();
   const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
-  const {legs, parties, hotels} = await loadArrivalLegContext(
-    db, data.programId, stationAccess, data.pickupPointId ?? null);
+  const {legs, parties, hotels, pickups} = await loadArrivalLegContext(
+    db, data.programId, stationAccess, data.pickupPointId ?? null, "plan");
   const settings = stationAccess.access.program.transportSettings;
 
   // Fold legs into ride-together units for the policy. A party's availability
@@ -143,6 +143,7 @@ export async function getProgramTransportPlanHandler(
     earliestReadyAt: number;
     availableAt: number | null;
     unusable: boolean;
+    invalidScope: boolean;
     passengers: number;
     luggageUnits: number;
     capabilities: Set<string>;
@@ -187,6 +188,7 @@ export async function getProgramTransportPlanHandler(
         earliestReadyAt: Number.MAX_SAFE_INTEGER,
         availableAt: 0,
         unusable: false,
+        invalidScope: false,
         passengers: 0,
         luggageUnits: 0,
         capabilities: new Set(),
@@ -194,6 +196,12 @@ export async function getProgramTransportPlanHandler(
           (party?.dedicatedVehicle ?? false),
       };
       unitMap.set(key, unit);
+    }
+    if (!leg.doc.pickupPointId ||
+        pickups.get(leg.doc.pickupPointId)?.active !== true ||
+        (leg.doc.destinationHotelId &&
+        hotels.get(leg.doc.destinationHotelId)?.active !== true)) {
+      unit.invalidScope = true;
     }
     unit.legIds.push(leg.id);
     unit.passengers += leg.doc.passengers;
@@ -224,7 +232,7 @@ export async function getProgramTransportPlanHandler(
 
   const parties_: TransportParty[] = [];
   for (const unit of unitMap.values()) {
-    if (!unit.pickupPointId || !unit.destinationId) {
+    if (unit.invalidScope || !unit.pickupPointId || !unit.destinationId) {
       for (const legId of unit.legIds) {
         unassigned.push({legId, reason: "missingScope"});
       }

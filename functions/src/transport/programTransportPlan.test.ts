@@ -106,3 +106,49 @@ for (const inParty of [false, true]) {
     assert.ok(result.groups.every((group) => group.legIds.length === 1));
   });
 }
+
+
+for (const collection of ["programPickupPoints", "programHotels"]) {
+  for (const invalid of ["missing", "inactive", "foreign-program",
+    "foreign-organizer"]) {
+    test(`${invalid} ${collection} keeps journeys visible but unsuggested`,
+      async () => {
+        const seed = baseSeed();
+        const id = collection === "programHotels" ? "hotel-1" : "pp-t3";
+        if (invalid === "missing") {
+          delete seed[`${collection}/${id}`];
+        } else {
+          Object.assign(seed[`${collection}/${id}`], invalid === "inactive" ?
+            {active: false} : invalid === "foreign-program" ?
+              {programId: "other"} : {organizerId: "other"});
+        }
+        const db = new FakeFirestore(seed);
+        const result = await plan(db);
+        assert.ok(result.groups.every((group) =>
+          !group.legIds.includes("leg-1")));
+        assert.ok(result.unassigned.some((row) =>
+          row.legId === "leg-1" && row.reason === "missingScope"));
+        const roster = await getProgramArrivalsRosterHandler(request({
+          programId: "program-1",
+        }, "dispatcher-1"), deps(db));
+        assert.ok(roster.rows.some((row) => row.legId === "leg-1"));
+      });
+  }
+}
+
+test("invalid destination keeps the entire party unassigned", async () => {
+  const seed = baseSeed();
+  for (const id of ["leg-1", "leg-2"]) {
+    Object.assign(seed[`programTravelLegs/${id}`],
+      {partyId: "party", pickupPointId: "pp-t3"});
+  }
+  seed["programTravelParties/party"] = {programId: "program-1",
+    organizerId: "org-1", legIds: ["leg-1", "leg-2"]};
+  seed["programHotels/hotel-1"].active = false;
+  const result = await plan(new FakeFirestore(seed));
+  assert.deepEqual(result.groups, []);
+  assert.deepEqual(result.unassigned, [
+    {legId: "leg-1", reason: "missingScope"},
+    {legId: "leg-2", reason: "missingScope"},
+  ]);
+});

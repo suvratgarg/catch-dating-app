@@ -18,6 +18,7 @@ function isCode(code: string) {
 for (const [path, patch] of [
   ["programStaffGrants/program-1__greeter-1", {status: "revoked"}],
   ["programPickupPoints/pp-t3", {active: false}],
+  ["programPickupPoints/pp-t3", {organizerId: "foreign"}],
   ["organizerPrograms/program-1", {status: "archived"}],
 ]) {
   test(`readiness rechecks ${path} before commit`, async () => {
@@ -110,3 +111,19 @@ test("readiness needs a real pickup and valid Firestore time", async () => {
   await assert.rejects(setProgramTravelReadinessHandler(
     request(data(), "manager-1"), deps(db)), isCode("failed-precondition"));
 });
+
+
+test("unclaim permits an inactive owned pickup but rejects changed ownership",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    db.updateDoc("programPickupPoints/pp-t3", {active: false});
+    db.updateDoc("programTravelLegs/leg-1", {claimedByUid: "greeter-1"});
+    await setProgramTravelReadinessHandler(request(data("unclaim"),
+      "greeter-1"), deps(db));
+    assert.equal(db.getDoc("programTravelLegs/leg-1")?.claimedByUid, null);
+    db.updateDoc("programPickupPoints/pp-t3", {organizerId: "foreign"});
+    await assert.rejects(setProgramTravelReadinessHandler(request({
+      ...data("unclaim"), clientOperationId: "unclaim-foreign",
+      expectedRevision: db.getDoc("programTravelLegs/leg-1")!.revision,
+    }, "greeter-1"), deps(db)), isCode("failed-precondition"));
+  });

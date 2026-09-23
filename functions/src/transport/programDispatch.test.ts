@@ -32,6 +32,10 @@ for (const [path, patch, code] of [
     {status: "revoked"}, "permission-denied"],
   ["programPickupPoints/pp-t3", {active: false}, "failed-precondition"],
   ["programHotels/hotel-1", {active: false}, "invalid-argument"],
+  ["programPickupPoints/pp-t3", {organizerId: "foreign"},
+    "failed-precondition"],
+  ["programHotels/hotel-1", {organizerId: "foreign"}, "invalid-argument"],
+  ["programTravelLegs/leg-1", {organizerId: "foreign"}, "not-found"],
   ["transportVendors/vendor-1", {active: false}, "invalid-argument"],
   ["organizerPrograms/program-1", {status: "archived"}, "failed-precondition"],
   ["organizerPrograms/program-1", {capabilities: []}, "failed-precondition"],
@@ -318,3 +322,82 @@ test("vehicle occupancy is isolated between organizers", async () => {
     path.startsWith("transportVehicleAssignments/"));
   assert.equal(reservations.length, 2);
 });
+
+
+for (const pathKind of ["trip", "leg"]) {
+  for (const action of [markProgramTripArrivedHandler,
+    voidProgramTripHandler]) {
+    test(`${action.name} rejects changed ${pathKind} organizer ownership`,
+      async () => {
+        const db = new FakeFirestore(readySeed());
+        const created = await dispatch(db);
+        const path = pathKind === "trip" ? `transportTrips/${created.tripId}` :
+          "programTravelLegs/leg-1";
+        changeBeforeCommit(db, () => db.updateDoc(path,
+          {organizerId: "foreign"}));
+        await assert.rejects(action(request({programId: "program-1",
+          tripId: created.tripId, expectedRevision: created.revision,
+          reason: "Incorrect dispatch", clientOperationId: "complete-foreign",
+        }, "dispatcher-1"), deps(db)), isCode(pathKind === "trip" ?
+          "not-found" : "failed-precondition"));
+        assert.equal(db.getDoc(`transportTrips/${created.tripId}`)?.status,
+          "enRoute");
+        assert.equal(db.getDoc("transportActiveAssignments/program-1__leg-1")
+          ?.status, "active");
+      });
+  }
+}
+
+for (const patch of [{programId: "foreign"}, {organizerId: "foreign"},
+  {clientOperationId: "other"}, {departedByUid: "other"}]) {
+  test(`dispatch receipt rechecks trip ${Object.keys(patch)[0]}`, async () => {
+    const db = new FakeFirestore(readySeed());
+    const created = await dispatch(db);
+    db.updateDoc(`transportTrips/${created.tripId}`, patch);
+    await assert.rejects(dispatch(db), isCode("failed-precondition"));
+    assert.equal([...db.docs.keys()].filter((key) =>
+      key.startsWith("transportTrips/")).length, 1);
+  });
+}
+
+test("dispatch cannot overwrite an inactive assignment with foreign identity",
+  async () => {
+    const db = new FakeFirestore(readySeed());
+    const created = await dispatch(db);
+    await voidProgramTripHandler(request({programId: "program-1",
+      tripId: created.tripId, expectedRevision: created.revision,
+      reason: "Incorrect dispatch", clientOperationId: "void-first",
+    }, "dispatcher-1"), deps(db));
+    const vehicleKey = [...db.docs.keys()].find((key) =>
+      key.startsWith("transportVehicleAssignments/"))!;
+    const data = {...dispatchData(), clientOperationId: "dispatch-second",
+      expectedLegRevisions: [{legId: "leg-1",
+        revision: db.getDoc("programTravelLegs/leg-1")!.revision}]};
+    db.updateDoc(vehicleKey, {organizerId: "foreign"});
+    await assert.rejects(dispatchProgramTripHandler(
+      request(data, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
+    db.updateDoc(vehicleKey, {organizerId: "org-1"});
+    db.updateDoc("transportActiveAssignments/program-1__leg-1",
+      {legId: "foreign"});
+    await assert.rejects(dispatchProgramTripHandler(
+      request(data, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
+    assert.equal(db.getDoc(vehicleKey)?.status, "released");
+    assert.equal([...db.docs.keys()].filter((key) =>
+      key.startsWith("transportTrips/")).length, 1);
+  });
+
+
+for (const missing of ["trip", "reference"]) {
+  test(`dispatch receipt cannot claim success without its ${missing}`,
+    async () => {
+      const db = new FakeFirestore(readySeed());
+      const created = await dispatch(db);
+      if (missing === "trip") {
+        db.docs.delete(`transportTrips/${created.tripId}`);
+      } else {
+        db.updateDoc("transportOperationReceipts/" +
+          "program-1__dispatch__dispatch-operation-1", {tripId: null});
+      }
+      await assert.rejects(dispatch(db), isCode("failed-precondition"));
+    });
+}

@@ -115,14 +115,25 @@ export async function dispatchProgramTripHandler(
           "aborted",
           "This operation id was already used for a different request.");
       }
+      if (!receipt.tripId) {
+        throw new HttpsError("failed-precondition",
+          "Dispatch receipt has no trip. Reconcile before retrying.");
+      }
       const tripSnap = await tx.get(
-        db.collection("transportTrips").doc(receipt.tripId!));
+        db.collection("transportTrips").doc(receipt.tripId));
       const trip = tripSnap.data() as TransportTripDocument | undefined;
+      if (!trip || trip.programId !== data.programId ||
+          trip.organizerId !== access.program.organizerId ||
+          trip.clientOperationId !== data.clientOperationId ||
+          trip.departedByUid !== actorUid) {
+        throw new HttpsError("failed-precondition",
+          "Dispatch receipt no longer identifies a trip in this program.");
+      }
       result = {
         tripId: receipt.tripId!,
         revision: receipt.resultRevision,
         alreadyApplied: true,
-        passengerCount: trip?.passengerCount ?? data.legIds.length,
+        passengerCount: trip.passengerCount,
       };
       return;
     }
@@ -134,7 +145,8 @@ export async function dispatchProgramTripHandler(
     const pickupSnap = await tx.get(db.collection("programPickupPoints")
       .doc(data.pickupPointId));
     const pickup = pickupSnap.data() as ProgramPickupPointDocument | undefined;
-    if (!pickup || pickup.programId !== data.programId || !pickup.active) {
+    if (!pickup || pickup.programId !== data.programId ||
+        pickup.organizerId !== access.program.organizerId || !pickup.active) {
       throw new HttpsError("failed-precondition",
         "Pickup point is not active in this program.");
     }
@@ -143,7 +155,8 @@ export async function dispatchProgramTripHandler(
       const hotelSnap = await tx.get(db.collection("programHotels")
         .doc(data.destinationHotelId));
       const hotel = hotelSnap.data() as ProgramHotelDocument | undefined;
-      if (!hotel || hotel.programId !== data.programId || !hotel.active) {
+      if (!hotel || hotel.programId !== data.programId ||
+          hotel.organizerId !== access.program.organizerId || !hotel.active) {
         throw new HttpsError(
           "invalid-argument", "Destination hotel is not in this program.");
       }
@@ -184,6 +197,12 @@ export async function dispatchProgramTripHandler(
     const vehicleAssignmentSnap = await tx.get(vehicleAssignmentRef);
     const vehicleAssignment = vehicleAssignmentSnap.data() as
       TransportVehicleAssignmentDocument | undefined;
+    if (vehicleAssignment &&
+        (vehicleAssignment.organizerId !== access.program.organizerId ||
+        vehicleAssignment.plateNormalized !== plateNormalized)) {
+      throw new HttpsError("failed-precondition",
+        "Vehicle assignment ownership changed. Reconcile before dispatch.");
+    }
     if (vehicleAssignment?.status === "active") {
       throw new HttpsError("already-exists",
         "This vehicle is already assigned to an active trip.");
@@ -204,7 +223,8 @@ export async function dispatchProgramTripHandler(
     const legs: Array<{id: string; doc: ProgramTravelLegDocument}> = [];
     for (const snap of legSnaps) {
       const leg = snap.data() as ProgramTravelLegDocument | undefined;
-      if (!leg || leg.programId !== data.programId) {
+      if (!leg || leg.programId !== data.programId ||
+          leg.organizerId !== access.program.organizerId) {
         throw new HttpsError(
           "not-found", `Leg ${snap.id} is not in this program.`);
       }
@@ -237,6 +257,12 @@ export async function dispatchProgramTripHandler(
     for (const snap of assignmentSnaps) {
       const assignment = snap.data() as
         TransportActiveAssignmentDocument | undefined;
+      if (assignment && (assignment.programId !== data.programId ||
+          transportAssignmentId(assignment.programId, assignment.legId) !==
+            snap.id)) {
+        throw new HttpsError("failed-precondition",
+          "Journey assignment ownership changed. Reconcile before dispatch.");
+      }
       if (assignment && assignment.status === "active") {
         throw new HttpsError(
           "already-exists",
@@ -418,7 +444,8 @@ async function tripActionHandler(
     const receipt = receiptSnap.data() as
       TransportOperationReceiptDocument | undefined;
     const trip = tripSnap.data() as TransportTripDocument | undefined;
-    if (!trip || trip.programId !== data.programId) {
+    if (!trip || trip.programId !== data.programId ||
+        trip.organizerId !== access.program.organizerId) {
       throw new HttpsError("not-found", "Trip not found in this program.");
     }
     if (access.role !== "manager") {
@@ -494,6 +521,7 @@ async function tripActionHandler(
           assignment.programId !== data.programId ||
           assignment.legId !== trip.legIds[index] ||
           !leg || leg.programId !== data.programId ||
+          leg.organizerId !== access.program.organizerId ||
           leg.readiness !== "dispatched") {
         throw new HttpsError("failed-precondition",
           "Trip assignments changed. Reload and reconcile before continuing.");

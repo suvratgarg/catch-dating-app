@@ -91,6 +91,7 @@ export async function setProgramTravelReadinessHandler(
       .doc(leg.pickupPointId));
     const pickup = pickupSnap.data() as ProgramPickupPointDocument | undefined;
     if (!pickup || pickup.programId !== data.programId ||
+        pickup.organizerId !== access.program.organizerId ||
         (data.action !== "unclaim" && !pickup.active)) {
       throw new HttpsError("failed-precondition",
         "This pickup point is unavailable for arrival observations.");
