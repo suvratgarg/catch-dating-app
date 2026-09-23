@@ -328,7 +328,7 @@ void _registerProfileEditingPromptsTests() {
         of: heightTile,
         matching: find.textContaining('Optional'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(find.text('Cancel'), findsOneWidget);
 

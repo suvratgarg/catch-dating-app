@@ -627,10 +627,7 @@ final class CatchField<T> extends StatefulWidget
     errorText: errorText,
   );
 
-  /// Canonical numeric disclosure field. The revealed control includes a
-  /// centered value and accelerated hold-to-repeat on both 44px targets.
-  /// Optional [onClear] clears only the caller-owned draft. It wraps below the
-  /// stepper at large text sizes rather than shrinking either touch target.
+  /// Numeric disclosure with 44px repeat targets and optional draft clearing.
   factory CatchField.stepper({
     required CatchFieldCopy copy,
     Key? key,
@@ -693,10 +690,9 @@ final class CatchField<T> extends StatefulWidget
     errorText: errorText,
   );
 
-  /// A controlled, explicit-save row editor. The label and value lane stay in
-  /// place while supporting content and commit actions animate below them.
-  /// Trailing edit affordances, focus timing, typography, and content order are
-  /// owned by this primitive rather than by feature call sites.
+  /// An explicit-save row with a stable label/value lane and animated content.
+  /// This primitive owns edit affordances, focus, typography, and actions.
+  /// Content and commit actions animate below the row.
   const CatchField.inputActions({
     required CatchFieldCopy copy,
     super.key,
