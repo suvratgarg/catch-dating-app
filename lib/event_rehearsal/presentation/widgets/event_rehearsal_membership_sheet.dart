@@ -52,13 +52,12 @@ class EventRehearsalMembershipSheet extends ConsumerWidget {
     };
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: state is RehearsalMembershipUnavailable
             ? context.l10n.eventAssistanceGroupReview
             : guestName,
         badge: context.l10n.hostEventRehearsalBadge,
         badgeTone: CatchBadgeTone.danger,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           RehearsalMembershipUnavailable(:final error) =>
             CatchLocalizedErrorBanner(error),

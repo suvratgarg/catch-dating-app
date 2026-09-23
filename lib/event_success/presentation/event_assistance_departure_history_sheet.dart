@@ -44,9 +44,8 @@ class _EventAssistanceDepartureHistorySheetState
       beforeRevision: _cursors.lastOrNull,
     );
     final query = eventAssistanceDepartureHistoryProvider(selection);
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.eventAssistanceHistoryTitle,
-      mode: CatchSheetMode.scrollable,
       child: CatchAsyncBoundary<EventAssistanceDepartureHistorySession>(
         value: ref.watch(query),
         initialLoadTimeout: null,

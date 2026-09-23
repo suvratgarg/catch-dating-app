@@ -48,14 +48,14 @@ class _EventSuccessRotationOverrideSheetState
   @override
   Widget build(BuildContext context) {
     final validationError = _validationError;
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return CatchSheet(
+    return CatchSheet.standard(
       title:
           context.l10n.eventSuccessEventSuccessHostOverridesTitleEditRotations,
       subtitle: context
           .l10n
           .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
       footer: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
@@ -75,7 +75,8 @@ class _EventSuccessRotationOverrideSheetState
             ),
             gapH8,
           ],
-          CatchButton(
+          CatchButton.sheet(
+            role: CatchButtonEmphasis.commit,
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
@@ -89,29 +90,26 @@ class _EventSuccessRotationOverrideSheetState
                     widget.onOverride == null
                 ? null
                 : () => unawaited(_saveOverrides(context)),
-            fullWidth: true,
           ),
         ],
       ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: ListView.separated(
-          shrinkWrap: true,
-          itemCount: _rounds.length,
-          separatorBuilder: (_, _) => gapH12,
-          itemBuilder: (context, index) {
-            final round = _rounds[index];
-            return EventSuccessRotationOverrideRoundSection(
-              round: round,
-              participantUids: _participantUids,
-              participantLabel: _participantLabel,
-              onChanged: () => setState(() {}),
-              onAddPair: () => setState(() => _addPair(round)),
-              onRemovePair: (pair) =>
-                  setState(() => round.pairings.remove(pair)),
-            );
-          },
-        ),
+      child: ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        itemCount: _rounds.length,
+        separatorBuilder: (_, _) => gapH12,
+        itemBuilder: (context, index) {
+          final round = _rounds[index];
+          return EventSuccessRotationOverrideRoundSection(
+            round: round,
+            participantUids: _participantUids,
+            participantLabel: _participantLabel,
+            onChanged: () => setState(() {}),
+            onAddPair: () => setState(() => _addPair(round)),
+            onRemovePair: (pair) => setState(() => round.pairings.remove(pair)),
+          );
+        },
       ),
     );
   }

@@ -2197,6 +2197,11 @@ additional properties` diagnostic; other validation and access failures are
 not retried. Loading all tabs can add a
 second invocation and repeat core reads; overview-only visits omit operational
 queries. No minimum instances or new persistent listeners are introduced.
+The directory and export accept additive `segmentIds` and `manualTagIds` arrays
+alongside legacy scalar filters. Selections combine with OR within Attendance,
+Reliability, Advocacy, Reachable and Tags, then AND across nonempty groups;
+empty groups impose no condition. List cursors bind to the canonical selection,
+and combined-filter result counts come from the complete bounded candidate set.
 The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
@@ -2234,7 +2239,9 @@ documents may omit `manualTagIds` and read as an empty assignment, so neither
 feature requires a backfill.
 
 `organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
-audiences. A definition contains one to eight predicates joined by `all` or
+audiences. The closed `directoryFilters` predicate preserves the same combined
+segment/tag semantics as the People directory.
+A definition contains one to eight predicates joined by `all` or
 `any` over the reviewed computed-segment, organizer-tag, attendance-count,
 last-seen recency, named-intent reach, application status by form, immutable
 filterable choice/boolean answers, named-event attendance, and Catch spend.

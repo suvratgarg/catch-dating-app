@@ -237,10 +237,10 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
   Future<void> _showQr(HostFormShareAssets assets) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (context) => CatchSheet(
+        builder: (context) => CatchSheet.standard(
           title: context.l10n.hostAudienceShowQr,
-          mode: CatchSheetMode.scrollable,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(
@@ -274,13 +274,13 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
   Future<void> _showEmbed(HostFormShareAssets assets) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (context) => CatchSheet(
+        builder: (context) => CatchSheet.standard(
           title: context.l10n.hostFormEmbed,
           subtitle: context.l10n.hostFormEmbedHelp,
-          mode: CatchSheetMode.scrollable,
-          footer: CatchButton(
+          footer: CatchButton.sheet(
+            role: CatchButtonEmphasis.commit,
             label: context.l10n.hostFormCopyEmbed,
-            fullWidth: true,
+
             onPressed: () =>
                 _copy(assets.embedSnippet, context.l10n.hostFormEmbedCopied),
           ),

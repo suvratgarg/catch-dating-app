@@ -209,13 +209,13 @@ class _HostEventsRouteScaffoldState
   Future<void> _handleEventEntrySelected(
     Club club,
     HostEventEntryState state,
-    HostEventEntryIntent intent,
+    HostEventEntrySelection selection,
   ) => runHostEventEntryFlow(
     context: context,
     ref: ref,
     club: club,
     state: state,
-    intent: intent,
+    selection: selection,
     createdAt: _clockNow,
   );
 

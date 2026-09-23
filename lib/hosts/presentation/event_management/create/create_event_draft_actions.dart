@@ -87,15 +87,28 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
         .loadDrafts(clubId: widget.club.id);
     if (!mounted || !sideEffectState.shouldShowDraftPicker(drafts)) return;
 
-    final picked = await showDraftPickerSheet(
+    final picked = await showHostEventEntrySheet(
       context: context,
-      drafts: drafts,
+      state: HostEventEntryState.resolve(
+        organizerId: widget.club.id,
+        drafts: drafts,
+      ),
       onDeleteDraft: _deleteDraftFromPicker,
     );
     if (!mounted) return;
 
-    if (picked != null) {
-      _restoreFromDraft(picked);
+    if (picked == null) return;
+    if (picked.draft case final draft?) {
+      _restoreFromDraft(draft);
+    } else {
+      _setLocalState(() {
+        _externalBookingMode =
+            picked.intent == HostEventEntryIntent.createFromGuestList;
+        if (_externalBookingMode) {
+          _priceController.text = '0';
+          _eventSuccessDefaults = _eventSuccessDefaults.copyWith(enabled: true);
+        }
+      });
     }
   }
 

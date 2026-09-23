@@ -63,45 +63,14 @@ class HostOrganizerSwitcherSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSheet(
+    return CatchSelectionSheet<String>(
       key: const ValueKey<String>('host-organizer-switcher-sheet'),
       title: context.l10n.hostsHostTodayTooltipSwitchClub,
-      child: CatchSurface(
-        borderColor: t.line2,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        clipBehavior: Clip.antiAlias,
-        padding: CatchInsets.hostOrganizerSwitcherList,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final club in clubs)
-              CatchIndexRow(
-                key: ValueKey<String>(
-                  'host-organizer-switcher-option-${club.id}',
-                ),
-                title: club.name,
-                selected: club.id == selectedOrganizerId,
-                leading: HostOrganizerAvatar(
-                  club: club,
-                  size: CatchLayout.organizerSwitcherAvatarExtent,
-                  selected: club.id == selectedOrganizerId,
-                ),
-                trailing: SizedBox.square(
-                  dimension: CatchLayout.menuRowCheckSize,
-                  child: club.id == selectedOrganizerId
-                      ? Icon(
-                          CatchIcons.checkCircleFilled,
-                          color: t.ink,
-                          size: CatchLayout.menuRowCheckSize,
-                        )
-                      : null,
-                ),
-                onTap: () => Navigator.of(context).pop(club.id),
-              ),
-          ],
-        ),
-      ),
+      value: selectedOrganizerId,
+      items: [
+        for (final club in clubs)
+          CatchSelectionMenuItem(value: club.id, label: club.name),
+      ],
     );
   }
 }

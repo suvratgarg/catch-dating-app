@@ -50,13 +50,13 @@ Future<void> showHostFormSectionEditor(
       final currentSectionIndex = liveSectionIndex < 0
           ? sectionIndex
           : liveSectionIndex;
-      return CatchSheet(
+      return CatchSheet.standard(
         title: context.l10n.hostFormEditSection,
         subtitle: context.l10n.hostFormQuestionCount(
           count: currentSection.questions.length,
         ),
-        keyboardSafe: true,
-        child: CatchSection.containedFieldRows(
+        child: CatchSection.fieldRows(
+          first: true,
           children: [
             CatchField.input(
               copy: catchFieldCopy(context.l10n),
@@ -95,44 +95,38 @@ Future<void> showHostFormQuestionTypePicker(
       .toList(growable: false);
   final kind = await showCatchBottomSheet<HostFormQuestionKind>(
     context: context,
-    builder: (sheetContext) => CatchSheet(
+    builder: (sheetContext) => CatchSheet.standard(
       title: context.l10n.hostFormChooseQuestionType,
       subtitle: context.l10n.hostFormChooseQuestionTypeHelp,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.65,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchSection.fieldRows(
+            title: context.l10n.hostFormRecommendedQuestionTypes,
+            first: true,
             children: [
-              CatchSection.fieldRows(
-                title: context.l10n.hostFormRecommendedQuestionTypes,
-                first: true,
-                children: [
-                  for (final value in recommended)
-                    CatchField.nav(
-                      copy: catchFieldCopy(context.l10n),
-                      title: hostFormQuestionKindLabel(context, value),
-                      onTap: () => Navigator.of(sheetContext).pop(value),
-                    ),
-                ],
-              ),
-              gapH20,
-              CatchSection.fieldRows(
-                title: context.l10n.hostFormMoreQuestionTypes,
-                children: [
-                  for (final value in more)
-                    CatchField.nav(
-                      copy: catchFieldCopy(context.l10n),
-                      title: hostFormQuestionKindLabel(context, value),
-                      onTap: () => Navigator.of(sheetContext).pop(value),
-                    ),
-                ],
-              ),
+              for (final value in recommended)
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: hostFormQuestionKindLabel(context, value),
+                  onTap: () => Navigator.of(sheetContext).pop(value),
+                ),
             ],
           ),
-        ),
+          CatchSection.fieldRows(
+            first: true,
+            title: context.l10n.hostFormMoreQuestionTypes,
+            children: [
+              for (final value in more)
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: hostFormQuestionKindLabel(context, value),
+                  onTap: () => Navigator.of(sheetContext).pop(value),
+                ),
+            ],
+          ),
+        ],
       ),
     ),
   );

@@ -292,32 +292,31 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       } else {
         await showCatchBottomSheet<void>(
           context: context,
-          builder: (context) => CatchSheet(
+          builder: (context) => CatchSheet.standard(
             title: context.l10n.hostsOperationalRosterImportPartialTitle,
             subtitle: context.l10n.hostsOperationalRosterImportPartialBody(
               created: result.createdCount,
               updated: result.updatedCount,
               count: result.errors.length,
             ),
-            footer: CatchButton(
+            footer: CatchButton.sheet(
+              role: CatchButtonEmphasis.dismiss,
               label: context.l10n.hostsOperationalRosterImportResultDone,
-              fullWidth: true,
+
               onPressed: () => Navigator.of(context).pop(),
             ),
-            child: SingleChildScrollView(
-              child: CatchFieldLanes.divided(
-                children: [
-                  for (final error in result.errors)
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.hostsOperationalRosterImportRowError(
-                        row: error.rowId,
-                      ),
-                      body: error.message,
-                      bodyMaxLines: 5,
+            child: CatchFieldLanes.divided(
+              children: [
+                for (final error in result.errors)
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostsOperationalRosterImportRowError(
+                      row: error.rowId,
                     ),
-                ],
-              ),
+                    body: error.message,
+                    bodyMaxLines: 5,
+                  ),
+              ],
             ),
           ),
         );

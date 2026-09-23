@@ -66,8 +66,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   Timer? _searchDebounce;
   String? _query;
   String? _responseQuery;
-  HostFormLifecycleStatus? _status;
-  HostFormPurpose? _purpose;
+  Set<HostFormLifecycleStatus> _statuses = const {};
+  Set<HostFormPurpose> _purposes = const {};
   late HostAudienceView _view;
   late final TabController _tabController;
   String? _responseFormId;
@@ -210,8 +210,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     )!;
     final request = HostFormListRequest(
       organizerId: selectedClub.id,
-      statuses: _status == null ? const {} : {_status!},
-      purposes: _purpose == null ? const {} : {_purpose!},
+      statuses: _statuses.isEmpty
+          ? HostFormLifecycleStatus.values.toSet()
+          : _statuses,
+      purposes: _purposes,
       query: _query,
     );
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
@@ -271,10 +273,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               request: request,
               directory: directory,
               query: _query,
-              status: _status,
-              purpose: _purpose,
-              onPurposeChanged: (purpose) => setState(() => _purpose = purpose),
-              onStatusChanged: (status) => setState(() => _status = status),
+              statuses: _statuses,
+              purposes: _purposes,
+              onPurposesChanged: (values) => setState(() => _purposes = values),
+              onStatusesChanged: (values) => setState(() => _statuses = values),
               onCreate: () => _openTemplates(selectedClub.id),
               onOpenForm: _openForm,
               onRowAction: (action, form) =>
@@ -484,10 +486,10 @@ class _HostFormsLibraryPage extends ConsumerWidget
     required this.request,
     required this.directory,
     required this.query,
-    required this.status,
-    required this.purpose,
-    required this.onPurposeChanged,
-    required this.onStatusChanged,
+    required this.statuses,
+    required this.purposes,
+    required this.onPurposesChanged,
+    required this.onStatusesChanged,
     required this.onCreate,
     required this.onOpenForm,
     required this.onRowAction,
@@ -496,10 +498,10 @@ class _HostFormsLibraryPage extends ConsumerWidget
   final HostFormListRequest request;
   final AsyncValue<HostFormsDirectoryState> directory;
   final String? query;
-  final HostFormLifecycleStatus? status;
-  final HostFormPurpose? purpose;
-  final ValueChanged<HostFormPurpose?> onPurposeChanged;
-  final ValueChanged<HostFormLifecycleStatus?> onStatusChanged;
+  final Set<HostFormLifecycleStatus> statuses;
+  final Set<HostFormPurpose> purposes;
+  final ValueChanged<Set<HostFormPurpose>> onPurposesChanged;
+  final ValueChanged<Set<HostFormLifecycleStatus>> onStatusesChanged;
   final VoidCallback onCreate;
   final ValueChanged<HostFormSummary> onOpenForm;
   final Future<void> Function(_HostFormRowAction, HostFormSummary) onRowAction;
@@ -514,30 +516,40 @@ class _HostFormsLibraryPage extends ConsumerWidget
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
+                CatchChoiceInput<String>.segmented(
                   options: [
                     CatchOption(
-                      value: null,
+                      value: 'all',
                       label: context.l10n.hostFormsFilterAll,
                     ),
                     for (final candidate in [
                       HostFormLifecycleStatus.published,
                       HostFormLifecycleStatus.draft,
-                      if (status == HostFormLifecycleStatus.paused ||
-                          status == HostFormLifecycleStatus.archived)
-                        status!,
+                      HostFormLifecycleStatus.paused,
+                      HostFormLifecycleStatus.archived,
                     ])
-                      CatchOption(
-                        value: candidate,
-                        label: hostFormStatusLabel(context, candidate),
-                      ),
+                      if (candidate == HostFormLifecycleStatus.published ||
+                          candidate == HostFormLifecycleStatus.draft ||
+                          statuses.contains(candidate))
+                        CatchOption(
+                          value: candidate.name,
+                          label: hostFormStatusLabel(context, candidate),
+                        ),
                   ],
-                  selected: status,
+                  selected: statuses.isEmpty
+                      ? 'all'
+                      : statuses.length == 1
+                      ? statuses.single.name
+                      : null,
                   variant: CatchChoiceInputVariant.summary,
                   contractExemption:
-                      'The lifecycle rail maps All to no status and every other '
-                      'option to one item in the statuses array contract.',
-                  onChanged: onStatusChanged,
+                      'Quick presets replace the status set. A combined selection '
+                      'has no single active preset.',
+                  onChanged: (value) => onStatusesChanged(
+                    value == 'all'
+                        ? const {}
+                        : {HostFormLifecycleStatus.values.byName(value)},
+                  ),
                   scrollable: true,
                   showDivider: false,
                 ),
@@ -552,26 +564,29 @@ class _HostFormsLibraryPage extends ConsumerWidget
             filtersLabel: context.l10n.hostCustomersFilters,
             onFilters: () => _showHostFormsFilters(
               context,
-              purpose: purpose,
-              status: status,
-              onPurposeChanged: onPurposeChanged,
-              onStatusChanged: onStatusChanged,
+              purposes: purposes,
+              statuses: statuses,
+              onPurposesChanged: onPurposesChanged,
+              onStatusesChanged: onStatusesChanged,
             ),
-            activeFilters: status == null && purpose == null
+            activeFilters: statuses.isEmpty && purposes.isEmpty
                 ? null
                 : [
-                    if (status != null) hostFormStatusLabel(context, status!),
-                    if (purpose != null)
-                      hostFormPurposeLabel(context, purpose!),
+                    for (final status in HostFormLifecycleStatus.values)
+                      if (statuses.contains(status))
+                        hostFormStatusLabel(context, status),
+                    for (final purpose in HostFormPurpose.values)
+                      if (purposes.contains(purpose))
+                        hostFormPurposeLabel(context, purpose),
                   ].join(' · '),
-            clearLabel: status == null && purpose == null
+            clearLabel: statuses.isEmpty && purposes.isEmpty
                 ? null
                 : context.l10n.hostCustomersClearFilter,
-            onClear: status == null && purpose == null
+            onClear: statuses.isEmpty && purposes.isEmpty
                 ? null
                 : () {
-                    onStatusChanged(null);
-                    onPurposeChanged(null);
+                    onStatusesChanged(const {});
+                    onPurposesChanged(const {});
                   },
           ),
         ),
@@ -598,7 +613,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
           builder: (context, state) {
             if (state.forms.isEmpty) {
               final unfiltered =
-                  query == null && status == null && purpose == null;
+                  query == null && statuses.isEmpty && purposes.isEmpty;
               return SliverToBoxAdapter(
                 child: CatchEmptyState(
                   icon: CatchIcons.descriptionOutlined,
@@ -699,54 +714,6 @@ class _HostFormsLibraryPage extends ConsumerWidget
     );
   }
 }
-
-List<CatchActionMenuItem<_HostFormRowAction>> _hostFormRowActions(
-  BuildContext context,
-  HostFormSummary form,
-) => [
-  if (form.activeVersionId != null)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.analytics,
-      label: context.l10n.hostFormsAnalyticsAction,
-      icon: CatchIcons.insightsOutlined,
-    ),
-  if (form.activeVersionId != null)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.automations,
-      label: context.l10n.hostFormsAutomationsAction,
-      icon: CatchIcons.autoAwesomeOutlined,
-    ),
-  CatchActionMenuItem(
-    value: _HostFormRowAction.duplicate,
-    label: context.l10n.hostFormsDuplicate,
-    icon: CatchIcons.contentCopyRounded,
-  ),
-  if (form.canPause)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.pause,
-      label: context.l10n.hostFormsPause,
-      icon: CatchIcons.pauseCircleOutlineRounded,
-    ),
-  if (form.canResume)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.resume,
-      label: context.l10n.hostFormsResume,
-      icon: CatchIcons.playCircleOutlineRounded,
-    ),
-  if (form.status != HostFormLifecycleStatus.archived)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.archive,
-      label: context.l10n.hostFormsArchive,
-      icon: CatchIcons.archiveOutlined,
-    ),
-  if (form.canDeleteDraft)
-    CatchActionMenuItem(
-      value: _HostFormRowAction.delete,
-      label: context.l10n.hostFormsDeleteDraft,
-      icon: CatchIcons.deleteOutlineRounded,
-      isDestructive: true,
-    ),
-];
 
 class HostFormsNoOrganizer extends StatelessWidget {
   const HostFormsNoOrganizer({

@@ -40,6 +40,13 @@ sealed class HostSavedAudiencePredicate {
         'attendedEvent' => HostSavedAudienceAttendedEvent(
           crmRequiredString(map, 'eventId'),
         ),
+        'directoryFilters' => HostSavedAudienceDirectoryFilters(
+          segments: {
+            for (final value in crmStringList(map['segmentIds']))
+              _requiredAudienceSegment({'segmentId': value}, 'segmentId'),
+          },
+          manualTagIds: crmStringList(map['manualTagIds']).toSet(),
+        ),
         'computedSegment' => HostSavedAudienceComputedSegment(
           _requiredAudienceSegment(map, 'segmentId'),
         ),
@@ -280,5 +287,21 @@ final class HostSavedAudienceSpend extends HostSavedAudiencePredicate {
     'currency': currency,
     'amountMinor': amountMinor,
     'withinDays': withinDays,
+  };
+}
+
+final class HostSavedAudienceDirectoryFilters
+    extends HostSavedAudiencePredicate {
+  const HostSavedAudienceDirectoryFilters({
+    required this.segments,
+    required this.manualTagIds,
+  });
+  final Set<HostAudienceSegment> segments;
+  final Set<String> manualTagIds;
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': 'directoryFilters',
+    'segmentIds': segments.map((s) => s.wireValue).toList()..sort(),
+    'manualTagIds': manualTagIds.toList()..sort(),
   };
 }

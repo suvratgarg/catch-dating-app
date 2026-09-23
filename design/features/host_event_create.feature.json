@@ -30,7 +30,7 @@
           {"id": "create_actions", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_actions.dart", "symbol": "_handleCloseIntent"},
           {"id": "draft_actions", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_draft_actions.dart", "symbol": "_restoreFromDraft"},
           {"id": "location_picker", "language": "dart", "file": "lib/events/presentation/location_picker_screen.dart", "symbol": "LocationPickerScreen"},
-          {"id": "draft_picker", "language": "dart", "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart", "symbol": "DraftPickerSheet"},
+          {"id": "draft_picker", "language": "dart", "file": "lib/hosts/events/presentation/host_event_entry_sheet.dart", "symbol": "HostEventEntrySheet"},
           {"id": "submit_controller", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_controller.dart", "symbol": "CreateEventController"},
           {"id": "draft_controller", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_draft_controller.dart", "symbol": "CreateEventDraftController"}
         ],
@@ -315,11 +315,20 @@
         {
           "id": "start_fresh",
           "owner": "draft_picker",
-          "codeValue": "_onStartFresh",
+          "codeValue": "createWithCatchBookings",
           "cardinality": "singleton",
           "scopeKeys": ["viewerUid", "clubId", "pickerInstanceId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["basics_default"]}],
-          "description": "Dismisses the saved-draft picker without restoring a draft."
+          "description": "Starts a new Catch-ticketed event from the combined Create event sheet."
+        },
+        {
+          "id": "start_from_guest_list",
+          "owner": "draft_picker",
+          "codeValue": "createFromGuestList",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "clubId", "pickerInstanceId"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["runtime_basics"]}],
+          "description": "Starts a new guest-list event from the combined Create event sheet."
         },
         {
           "id": "delete_draft",
@@ -475,7 +484,7 @@
         "submit_pending": {"dimensions": {"step": "review", "mutation": "pending"}},
         "submit_error": {"dimensions": {"step": "review", "mutation": "error"}, "actionCases": [{"id": "retry", "enabledActions": ["previous_step", "configure_event_success", "submit_event", "save_draft"]}]},
         "success_manage": {"dimensions": {"step": "success", "mutation": "settled"}, "actionCases": [{"id": "success", "enabledActions": ["manage_created_event", "dismiss_success"]}]},
-        "draft_picker_restore": {"dimensions": {"draft": "picker"}, "actionCases": [{"id": "picker", "enabledActions": ["restore_draft", "start_fresh", "delete_draft"]}]},
+        "draft_picker_restore": {"dimensions": {"draft": "picker"}, "actionCases": [{"id": "picker", "enabledActions": ["restore_draft", "start_fresh", "start_from_guest_list", "delete_draft"]}]},
         "draft_save_update": {"dimensions": {"draft": "saved", "mutation": "settled"}, "actionCases": [{"id": "save", "enabledActions": ["save_draft"]}]},
         "draft_delete": {"dimensions": {"draft": "deleted", "mutation": "settled"}, "actionCases": [{"id": "delete", "enabledActions": ["delete_draft"]}]},
         "unsaved_changes": {"dimensions": {"draft": "dirty"}, "actionCases": [{"id": "exit", "enabledActions": ["save_and_exit", "discard_and_exit"]}]},

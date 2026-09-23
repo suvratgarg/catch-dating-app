@@ -13,11 +13,10 @@ class EventRehearsalStartSheet extends StatelessWidget {
   final Event event;
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
     key: const ValueKey<String>('event-rehearsal-start-sheet'),
     title: context.l10n.hostRehearsalStartTitle,
     subtitle: context.l10n.hostRehearsalStartSubtitle,
-    mode: CatchSheetMode.scrollable,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
