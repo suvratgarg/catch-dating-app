@@ -396,6 +396,7 @@ test("re-import cannot transfer a claimed attendee's verified endpoint",
     timestamp: () => now};
     const row = {rowId: "2", displayName: "Asha Shah",
       phone: "+919876543210", email: "asha@example.com",
+      cityMarketId: "in-ka-bengaluru",
       externalReference: "guest-7", arrivalGroup: "order-7",
       ticketType: "General", status: "registered" as const};
     const payload = {eventId: "event-1", importKey: "first-import",
@@ -405,10 +406,13 @@ test("re-import cannot transfer a claimed attendee's verified endpoint",
     assert.equal(first.createdCount, 1);
     const attendeePath = `eventAttendees/${eventAttendeeId("event-1",
       "external:guest-7")}`;
+    assert.equal(firestore.get(attendeePath)?.cityMarketId, "in-ka-bengaluru");
+    assert.equal(firestore.get(attendeePath)?.citySource, "hostImport");
     firestore.update(attendeePath, {linkedUid: "person-1"});
     const same = await importEventAttendeesForHost({hostUid: "host-1",
       payload: {...payload, importKey: "same-contact-import"}}, deps);
     assert.equal(same.updatedCount, 1);
+    assert.equal(firestore.get(attendeePath)?.cityMarketId, "in-ka-bengaluru");
     const changed = {eventId: "event-1", importKey: "changed-import",
       fileName: "roster.csv", format: "csv" as const,
       rows: [{...row, phone: "+919000000001"}]};
@@ -433,6 +437,18 @@ test("re-import cannot transfer a claimed attendee's verified endpoint",
       payload: changed}, deps), /conflicts with a claimed attendee/u);
     assert.equal(firestore.get(attendeePath)?.phoneE164, "+919876543210");
   });
+
+test("import rejects unsupported city values before writing a row", () => {
+  const result = prepareImportRows({eventId: "event-1",
+    importKey: "city-import", format: "csv", rows: [{
+      rowId: "2", displayName: "Asha Shah", phone: "+919876543210",
+      email: null, cityMarketId: "in-zz-atlantis",
+      externalReference: null, arrivalGroup: null, ticketType: null,
+      status: "registered",
+    }]});
+  assert.equal(result.prepared.length, 0);
+  assert.deepEqual(result.errors.map((error) => error.code), ["invalid-city"]);
+});
 
 test("eventAttendeeId is stable and event-isolated", () => {
   const stable = eventAttendeeId("event-1", "email:asha@example.com");

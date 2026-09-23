@@ -28820,6 +28820,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAttendeeDocumentCityMarketId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.cityMarketId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const eventAttendeeDocumentCitySource = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.citySource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostManual'],
+  );
+
   static const eventAttendeeDocumentClubId = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.clubId',
     maxLength: 180,
@@ -66931,6 +66945,14 @@ abstract final class CatchContractConstraints {
     path: 'importEventAttendeesCallablePayload.rows.items.arrivalGroup',
     maxLength: 180,
     valueTypes: <String>['string'],
+  );
+
+  static const importEventAttendeesCallablePayloadRowsItemsCityMarketId = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.cityMarketId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
   );
 
   static const importEventAttendeesCallablePayloadRowsItemsDisplayName = CatchContractFieldConstraints(
@@ -116255,6 +116277,8 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.checkedInAt._nanoseconds': eventAttendeeDocumentCheckedInAtNanoseconds,
     'eventAttendeeDocument.checkedInAt._seconds': eventAttendeeDocumentCheckedInAtSeconds,
     'eventAttendeeDocument.checkedInBy': eventAttendeeDocumentCheckedInBy,
+    'eventAttendeeDocument.cityMarketId': eventAttendeeDocumentCityMarketId,
+    'eventAttendeeDocument.citySource': eventAttendeeDocumentCitySource,
     'eventAttendeeDocument.clubId': eventAttendeeDocumentClubId,
     'eventAttendeeDocument.createdAt._nanoseconds': eventAttendeeDocumentCreatedAtNanoseconds,
     'eventAttendeeDocument.createdAt._seconds': eventAttendeeDocumentCreatedAtSeconds,
@@ -121383,6 +121407,7 @@ abstract final class CatchContractConstraints {
     'importEventAttendeesCallablePayload.importKey': importEventAttendeesCallablePayloadImportKey,
     'importEventAttendeesCallablePayload.rows': importEventAttendeesCallablePayloadRows,
     'importEventAttendeesCallablePayload.rows.items.arrivalGroup': importEventAttendeesCallablePayloadRowsItemsArrivalGroup,
+    'importEventAttendeesCallablePayload.rows.items.cityMarketId': importEventAttendeesCallablePayloadRowsItemsCityMarketId,
     'importEventAttendeesCallablePayload.rows.items.displayName': importEventAttendeesCallablePayloadRowsItemsDisplayName,
     'importEventAttendeesCallablePayload.rows.items.email': importEventAttendeesCallablePayloadRowsItemsEmail,
     'importEventAttendeesCallablePayload.rows.items.externalReference': importEventAttendeesCallablePayloadRowsItemsExternalReference,

@@ -79,6 +79,19 @@ const schemaImportEventAttendeesCallablePayloadSchema = <String, Object?>{
             ],
             'maxLength': 320,
           },
+          'cityMarketId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+                'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
           'externalReference': <String, Object?>{
             'type': <Object?>[
               'string',

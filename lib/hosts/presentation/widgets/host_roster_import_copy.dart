@@ -9,6 +9,7 @@ String hostRosterFieldCopy(
   HostRosterField.displayName => context.l10n.hostsOperationalRosterFieldName,
   HostRosterField.phone => context.l10n.hostsOperationalRosterFieldPhone,
   HostRosterField.email => context.l10n.hostsOperationalRosterFieldEmail,
+  HostRosterField.city => context.l10n.hostsOperationalRosterFieldCity,
   HostRosterField.externalReference =>
     context.l10n.hostsOperationalRosterFieldReference,
   HostRosterField.arrivalGroup =>
@@ -41,6 +42,10 @@ String hostRosterRowIssueCopy(BuildContext context, HostRosterRowIssue issue) =>
         ),
       HostRosterRowIssueType.invalidEmail =>
         context.l10n.hostsOperationalRosterIssueInvalidEmail(
+          row: issue.rowNumber ?? 0,
+        ),
+      HostRosterRowIssueType.invalidCity =>
+        context.l10n.hostsOperationalRosterIssueInvalidCity(
           row: issue.rowNumber ?? 0,
         ),
       HostRosterRowIssueType.invalidRevenueAmount =>

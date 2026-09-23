@@ -54,6 +54,7 @@ import {
 } from
   "../shared/organizerCommunicationPreferences";
 import {eventPolicyFromEvent} from "./eventPolicy";
+import {marketForIdOrAlias} from "../locations/marketConfig";
 import {resolveInviteAttributionToken} from "./inviteLinks";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
@@ -91,6 +92,7 @@ interface PreparedRow {
   searchName: string;
   phoneE164: string | null;
   email: string | null;
+  cityMarketId: string | null;
   externalReference: string | null;
   arrivalGroup: string | null;
   ticketType: string | null;
@@ -216,6 +218,8 @@ export async function importEventAttendeesForHost(
         linkedUid: existing?.linkedUid ?? null,
         phoneE164: row.phoneE164 ?? existing?.phoneE164 ?? null,
         email: row.email ?? existing?.email ?? null,
+        cityMarketId: row.cityMarketId ?? existing?.cityMarketId ?? null,
+        citySource: row.cityMarketId ? source : existing?.citySource ?? null,
         externalReference:
           row.externalReference ?? existing?.externalReference ?? null,
         arrivalGroup: row.arrivalGroup ?? existing?.arrivalGroup ?? null,
@@ -923,6 +927,13 @@ export function prepareImportRows(params: {
       });
       continue;
     }
+    const city = row.cityMarketId == null ? null :
+      marketForIdOrAlias(row.cityMarketId);
+    if (row.cityMarketId != null && !city) {
+      errors.push({rowId: row.rowId, code: "invalid-city",
+        message: "Choose a supported city or leave it blank."});
+      continue;
+    }
     const externalReference = stringOrNull(row.externalReference);
     const arrivalGroup = stringOrNull(row.arrivalGroup);
     let stableKey = `row:${params.importKey}:${row.rowId}`;
@@ -980,6 +991,7 @@ export function prepareImportRows(params: {
       searchName: displayName.toLocaleLowerCase("en"),
       phoneE164: phoneResult.value,
       email,
+      cityMarketId: city?.marketId ?? null,
       externalReference,
       arrivalGroup,
       ticketType: stringOrNull(row.ticketType),
@@ -1072,6 +1084,7 @@ function canonicalImportPayload(
       displayName: row.displayName,
       phone: row.phone ?? null,
       email: row.email ?? null,
+      cityMarketId: row.cityMarketId ?? null,
       externalReference: row.externalReference ?? null,
       arrivalGroup: row.arrivalGroup ?? null,
       ticketType: row.ticketType ?? null,
@@ -1099,7 +1112,8 @@ function normalizeImportPayload(data: unknown): unknown {
           Array.isArray(rawRow)) return rawRow;
       const row = {...rawRow} as Record<string, unknown>;
       for (const field of [
-        "rowId", "displayName", "phone", "email", "externalReference",
+        "rowId", "displayName", "phone", "email", "cityMarketId",
+        "externalReference",
         "arrivalGroup", "ticketType",
         "revenueCurrency",
       ]) {
