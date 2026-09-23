@@ -23,6 +23,7 @@ EventChatState fixture({
   bool removed = false,
 }) {
   final now = DateTime.utc(2026, 9, 23, 12);
+  final isClosed = roomStatus == 'closed' || roomStatus == 'archived';
   return EventChatState(
     uid: 'sara',
     access: EventChatAccess(
@@ -34,16 +35,17 @@ EventChatState fixture({
       membershipStatus: removed ? 'removed' : joined ? 'joined' : 'notJoined',
       membershipRevision: 0,
       canManage: host,
-      canJoin: !host && !claim,
-      canReadMessages: joined && !removed && roomStatus != 'scheduled',
+      canJoin: !host && !claim && !isClosed,
+      canReadMessages: joined && !removed && !isClosed &&
+          roomStatus != 'scheduled',
       canPostMessages: joined && !removed &&
-          !{'scheduled', 'paused', 'announcementsOnly'}
+          !{'scheduled', 'paused', 'announcementsOnly', 'closed', 'archived'}
               .contains(roomStatus),
       notificationsMuted: muted,
       profileClaimRequired: claim,
       termsVersion: 'event-chat-v1',
     ),
-    messages: joined && !removed && roomStatus != 'scheduled'
+    messages: joined && !removed && !isClosed && roomStatus != 'scheduled'
         ? [
             EventChatMessage(
               messageId: 'reply',
@@ -187,6 +189,48 @@ void main() {
       await capture(tester, 'fixture-$room');
     });
   }
+  for (final room in ['closed', 'archived']) {
+    testWidgets('terminal room $room hides messages and member actions', (
+      tester,
+    ) async {
+      final draft = TextEditingController();
+      final scroll = ScrollController();
+      addTearDown(draft.dispose);
+      addTearDown(scroll.dispose);
+      final state = fixture(roomStatus: room, host: room == 'archived');
+      expect(state.access.canReadMessages, isFalse);
+      expect(state.access.canPostMessages, isFalse);
+      expect(state.access.canJoin, isFalse);
+      await pumpRoom(tester, state, draft, scroll);
+      expect(find.byType(ChatInputBar), findsNothing);
+      expect(find.text('Join event chat'), findsNothing);
+      expect(find.text('Open event chat'), findsNothing);
+      expect(find.text('Looking forward to meeting everyone!'), findsNothing);
+      expect(tester.takeException(), isNull);
+      await capture(tester, 'fixture-$room');
+    });
+  }
+  testWidgets('desktop room preserves readable conversation and composer', (
+    tester,
+  ) async {
+    final draft = TextEditingController();
+    final scroll = ScrollController();
+    addTearDown(draft.dispose);
+    addTearDown(scroll.dispose);
+    await pumpRoom(
+      tester,
+      fixture(),
+      draft,
+      scroll,
+      scale: 2,
+      viewport: const Size(1280, 900),
+    );
+    expect(find.byType(ChatInputBar), findsOneWidget);
+    expect(find.textContaining('Looking forward to meeting everyone!'),
+        findsWidgets);
+    expect(tester.takeException(), isNull);
+    await capture(tester, 'desktop-room-open-2x');
+  });
   for (final reactions in [false, true]) {
     testWidgets(
       'large text with keyboard and ${reactions ? 'reactions' : 'reply'}',
@@ -262,12 +306,13 @@ Future<void> pumpRoom(
   ScrollController scroll, {
   bool dark = false,
   double scale = 1,
+  Size viewport = const Size(390, 844),
   ValueChanged<EventChatAction>? onAction,
   String? replyId,
   String? reactionId,
 }) async {
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = viewport;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
@@ -316,6 +361,8 @@ Future<void> pumpRoom(
 }
 
 Future<void> capture(WidgetTester tester, String name) async {
+  final directory = Platform.environment['CATCH_EVENT_CHAT_REVIEW_DIR'] ??
+      '/tmp/catch-event-chat-review';
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(captureKey),
   );
@@ -323,7 +370,7 @@ Future<void> capture(WidgetTester tester, String name) async {
     final image = await boundary.toImage(pixelRatio: 2);
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     image.dispose();
-    final file = File('/tmp/catch-event-chat-review/$name.png');
+    final file = File('$directory/$name.png');
     await file.parent.create(recursive: true);
     await file.writeAsBytes(bytes!.buffer.asUint8List());
   });
