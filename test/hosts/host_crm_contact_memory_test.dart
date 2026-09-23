@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_send.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_send.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:flutter_test/flutter_test.dart';
 
