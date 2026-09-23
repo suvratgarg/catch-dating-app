@@ -12,7 +12,7 @@ extension _HostResponseImport on _HostFormsScreenState {
       final draft = buildHostApplicationImportDraft(table);
       final confirmed = await showCatchBottomSheet<bool>(
         context: context,
-        builder: (context) => CatchSheet(
+        builder: (context) => CatchSheet.standard(
           title: context.l10n.hostApplicationsImportTitle,
           subtitle: context.l10n.hostApplicationsImportSubtitle,
           footer: CatchButton(
@@ -22,37 +22,37 @@ extension _HostResponseImport on _HostFormsScreenState {
             fullWidth: true,
             onPressed: () => Navigator.of(context).pop(true),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchSection.fieldRows(
-                  children: [
-                    for (final question in draft.questions)
-                      CatchField.read(
-                        copy: catchFieldCopy(context.l10n),
-                        title: question.label,
-                        body: question.canonicalFieldId == null
-                            ? context.l10n.hostApplicationsImportOrganizerField
-                            : context.l10n.hostApplicationsImportReusableField,
-                      ),
-                  ],
-                ),
-                if (draft.truncatedRowCount > 0) ...[
-                  gapH12,
-                  CatchNotice(
-                    dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
-                    notice: CatchNoticeData(
-                      id: 'application-import-limit',
-                      title: context.l10n.hostApplicationsImportLimit(
-                        count: draft.truncatedRowCount,
-                      ),
-                      tone: CatchNoticeTone.warning,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CatchSection.fieldRows(
+                first: true,
+                children: [
+                  for (final question in draft.questions)
+                    CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
+                      title: question.label,
+                      body: question.canonicalFieldId == null
+                          ? context.l10n.hostApplicationsImportOrganizerField
+                          : context.l10n.hostApplicationsImportReusableField,
                     ),
-                  ),
                 ],
+              ),
+              if (draft.truncatedRowCount > 0) ...[
+                gapH12,
+                CatchNotice(
+                  dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+                  notice: CatchNoticeData(
+                    id: 'application-import-limit',
+                    title: context.l10n.hostApplicationsImportLimit(
+                      count: draft.truncatedRowCount,
+                    ),
+                    tone: CatchNoticeTone.warning,
+                  ),
+                ),
               ],
-            ),
+            ],
           ),
         ),
       );

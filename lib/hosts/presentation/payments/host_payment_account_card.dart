@@ -85,7 +85,7 @@ class HostPaymentAccountCard extends StatelessWidget {
       ),
       builder: (sheetContext) {
         final sheetTokens = CatchTokens.of(sheetContext);
-        return CatchSheet(
+        return CatchSheet.standard(
           title: context.l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
           subtitle: isRazorpay
               ? context
@@ -119,6 +119,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                   },
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CatchBadge.functional(
@@ -141,6 +142,7 @@ class HostPaymentAccountCard extends StatelessWidget {
               ),
               gapH16,
               CatchSection.fieldRows(
+                first: true,
                 children: [
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
@@ -344,8 +346,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     const gap = SizedBox(height: CatchSpacing.s3);
-    return CatchSheet(
-      keyboardSafe: true,
+    return CatchSheet.standard(
       title: l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
       subtitle: l10n.hostsHostPaymentAccountCardSubtitlePoweredByRazorpay,
       footer: CatchButton(
@@ -356,238 +357,230 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
             : CatchButtonStatus.idle,
         onPressed: widget.pending || !_termsAccepted ? null : _submit,
       ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.62,
-        ),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
+              ),
+            ),
+            gapH16,
+            CatchFieldLanes.single(
+              child: CatchField<RazorpayHostBusinessType>.select(
+                copy: catchFieldCopy(context.l10n),
+                title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
+                contract: CatchContractConstraints
+                    .createRazorpayHostPaymentAccountCallablePayloadBusinessType,
+                contractValueBuilder: (value) => value.wireValue,
+                values: RazorpayHostBusinessType.values,
+                itemLabelBuilder: _businessTypeLabel,
+                value: _businessType,
+                states: <WidgetState>{if (widget.pending) WidgetState.disabled},
+                onChanged: (value) {
+                  if (value != null) setState(() => _businessType = value);
+                },
+              ),
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleLegalBusinessName,
+              _legalBusinessName,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadLegalBusinessName,
+              pending: widget.pending,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleContactName,
+              _contactName,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadContactName,
+              pending: widget.pending,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleEmail,
+              _email,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadEmail,
+              pending: widget.pending,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitlePhone,
+              _phone,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadPhone,
+              pending: widget.pending,
+              keyboardType: TextInputType.phone,
+              validator: (value) => _pattern(
+                value,
+                RegExp(r'^\+?[0-9]{8,15}$'),
+                l10n.hostsHostPaymentAccountCardTitlePhone,
+              ),
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleBusinessModel,
+              _businessModel,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadBusinessModel,
+              pending: widget.pending,
+              maxLines: 3,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleBusinessPan,
+              _businessPan,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadBusinessPan,
+              pending: widget.pending,
+              validator: (value) => _pattern(
+                value?.toUpperCase(),
+                RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$'),
+                l10n.hostsHostPaymentAccountCardTitleBusinessPan,
+              ),
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleBankAccountNumber,
+              _bankAccountNumber,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadBankAccountNumber,
+              pending: widget.pending,
+              keyboardType: TextInputType.number,
+              obscureText: true,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleIfscCode,
+              _ifscCode,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadIfscCode,
+              pending: widget.pending,
+              validator: (value) => _pattern(
+                value?.toUpperCase(),
+                RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$'),
+                l10n.hostsHostPaymentAccountCardTitleIfscCode,
+              ),
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleBeneficiaryName,
+              _beneficiaryName,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadBeneficiaryName,
+              pending: widget.pending,
+            ),
+            gapH16,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleStakeholderName,
+              _stakeholderName,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadStakeholderName,
+              pending: widget.pending,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleStakeholderEmail,
+              _stakeholderEmail,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadStakeholderEmail,
+              pending: widget.pending,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleStakeholderPhone,
+              _stakeholderPhone,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadStakeholderPhone,
+              pending: widget.pending,
+              keyboardType: TextInputType.phone,
+              validator: (value) => _pattern(
+                value,
+                RegExp(r'^\+?[0-9]{8,15}$'),
+                l10n.hostsHostPaymentAccountCardTitleStakeholderPhone,
+              ),
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleStakeholderPan,
+              _stakeholderPan,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadStakeholderPan,
+              pending: widget.pending,
+              validator: (value) => _pattern(
+                value?.toUpperCase(),
+                RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$'),
+                l10n.hostsHostPaymentAccountCardTitleStakeholderPan,
+              ),
+            ),
+            gap,
+            _RazorpaySetupInput(
+              l10n.hostsHostPaymentAccountCardTitleOwnershipPercent,
+              _ownershipPercent,
+              CatchContractConstraints
+                  .createRazorpayHostPaymentAccountCallablePayloadStakeholderOwnershipPercent,
+              pending: widget.pending,
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                final parsed = double.tryParse(value?.trim() ?? '');
+                return parsed != null && parsed >= 0 && parsed <= 100
+                    ? null
+                    : l10n.coreCatchFormValidationPattern(
+                        field: l10n
+                            .hostsHostPaymentAccountCardTitleOwnershipPercent,
+                      );
+              },
+            ),
+            gap,
+            CatchFieldLanes.divided(
               children: [
-                Text(
-                  l10n.hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).ink2,
-                  ),
+                CatchField.toggle(
+                  copy: catchFieldCopy(context.l10n),
+                  title:
+                      l10n.hostsHostPaymentAccountCardTitleStakeholderDirector,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderIsDirector,
+                  value: _isDirector,
+                  onChanged: widget.pending
+                      ? null
+                      : (value) => setState(() => _isDirector = value),
                 ),
-                gapH16,
-                CatchFieldLanes.single(
-                  child: CatchField<RazorpayHostBusinessType>.select(
-                    copy: catchFieldCopy(context.l10n),
-                    title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
-                    contract: CatchContractConstraints
-                        .createRazorpayHostPaymentAccountCallablePayloadBusinessType,
-                    contractValueBuilder: (value) => value.wireValue,
-                    values: RazorpayHostBusinessType.values,
-                    itemLabelBuilder: _businessTypeLabel,
-                    value: _businessType,
-                    states: <WidgetState>{
-                      if (widget.pending) WidgetState.disabled,
-                    },
-                    onChanged: (value) {
-                      if (value != null) setState(() => _businessType = value);
-                    },
-                  ),
+                CatchField.toggle(
+                  copy: catchFieldCopy(context.l10n),
+                  title:
+                      l10n.hostsHostPaymentAccountCardTitleStakeholderExecutive,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderIsExecutive,
+                  value: _isExecutive,
+                  onChanged: widget.pending
+                      ? null
+                      : (value) => setState(() => _isExecutive = value),
                 ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleLegalBusinessName,
-                  _legalBusinessName,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadLegalBusinessName,
-                  pending: widget.pending,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleContactName,
-                  _contactName,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadContactName,
-                  pending: widget.pending,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleEmail,
-                  _email,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadEmail,
-                  pending: widget.pending,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitlePhone,
-                  _phone,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadPhone,
-                  pending: widget.pending,
-                  keyboardType: TextInputType.phone,
-                  validator: (value) => _pattern(
-                    value,
-                    RegExp(r'^\+?[0-9]{8,15}$'),
-                    l10n.hostsHostPaymentAccountCardTitlePhone,
-                  ),
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleBusinessModel,
-                  _businessModel,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadBusinessModel,
-                  pending: widget.pending,
-                  maxLines: 3,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleBusinessPan,
-                  _businessPan,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadBusinessPan,
-                  pending: widget.pending,
-                  validator: (value) => _pattern(
-                    value?.toUpperCase(),
-                    RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$'),
-                    l10n.hostsHostPaymentAccountCardTitleBusinessPan,
-                  ),
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleBankAccountNumber,
-                  _bankAccountNumber,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadBankAccountNumber,
-                  pending: widget.pending,
-                  keyboardType: TextInputType.number,
-                  obscureText: true,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleIfscCode,
-                  _ifscCode,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadIfscCode,
-                  pending: widget.pending,
-                  validator: (value) => _pattern(
-                    value?.toUpperCase(),
-                    RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$'),
-                    l10n.hostsHostPaymentAccountCardTitleIfscCode,
-                  ),
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleBeneficiaryName,
-                  _beneficiaryName,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadBeneficiaryName,
-                  pending: widget.pending,
-                ),
-                gapH16,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleStakeholderName,
-                  _stakeholderName,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderName,
-                  pending: widget.pending,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleStakeholderEmail,
-                  _stakeholderEmail,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderEmail,
-                  pending: widget.pending,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleStakeholderPhone,
-                  _stakeholderPhone,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderPhone,
-                  pending: widget.pending,
-                  keyboardType: TextInputType.phone,
-                  validator: (value) => _pattern(
-                    value,
-                    RegExp(r'^\+?[0-9]{8,15}$'),
-                    l10n.hostsHostPaymentAccountCardTitleStakeholderPhone,
-                  ),
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleStakeholderPan,
-                  _stakeholderPan,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderPan,
-                  pending: widget.pending,
-                  validator: (value) => _pattern(
-                    value?.toUpperCase(),
-                    RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$'),
-                    l10n.hostsHostPaymentAccountCardTitleStakeholderPan,
-                  ),
-                ),
-                gap,
-                _RazorpaySetupInput(
-                  l10n.hostsHostPaymentAccountCardTitleOwnershipPercent,
-                  _ownershipPercent,
-                  CatchContractConstraints
-                      .createRazorpayHostPaymentAccountCallablePayloadStakeholderOwnershipPercent,
-                  pending: widget.pending,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    final parsed = double.tryParse(value?.trim() ?? '');
-                    return parsed != null && parsed >= 0 && parsed <= 100
-                        ? null
-                        : l10n.coreCatchFormValidationPattern(
-                            field: l10n
-                                .hostsHostPaymentAccountCardTitleOwnershipPercent,
-                          );
-                  },
-                ),
-                gap,
-                CatchFieldLanes.divided(
-                  children: [
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      title: l10n
-                          .hostsHostPaymentAccountCardTitleStakeholderDirector,
-                      contract: CatchContractConstraints
-                          .createRazorpayHostPaymentAccountCallablePayloadStakeholderIsDirector,
-                      value: _isDirector,
-                      onChanged: widget.pending
-                          ? null
-                          : (value) => setState(() => _isDirector = value),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      title: l10n
-                          .hostsHostPaymentAccountCardTitleStakeholderExecutive,
-                      contract: CatchContractConstraints
-                          .createRazorpayHostPaymentAccountCallablePayloadStakeholderIsExecutive,
-                      value: _isExecutive,
-                      onChanged: widget.pending
-                          ? null
-                          : (value) => setState(() => _isExecutive = value),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      title: l10n
-                          .hostsHostPaymentAccountCardTitleAcceptRazorpayTerms,
-                      body: l10n.hostsHostPaymentAccountCardBodyRazorpayTerms,
-                      contract: CatchContractConstraints
-                          .createRazorpayHostPaymentAccountCallablePayloadTermsAccepted,
-                      value: _termsAccepted,
-                      onChanged: widget.pending
-                          ? null
-                          : (value) => setState(() => _termsAccepted = value),
-                    ),
-                  ],
+                CatchField.toggle(
+                  copy: catchFieldCopy(context.l10n),
+                  title:
+                      l10n.hostsHostPaymentAccountCardTitleAcceptRazorpayTerms,
+                  body: l10n.hostsHostPaymentAccountCardBodyRazorpayTerms,
+                  contract: CatchContractConstraints
+                      .createRazorpayHostPaymentAccountCallablePayloadTermsAccepted,
+                  value: _termsAccepted,
+                  onChanged: widget.pending
+                      ? null
+                      : (value) => setState(() => _termsAccepted = value),
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

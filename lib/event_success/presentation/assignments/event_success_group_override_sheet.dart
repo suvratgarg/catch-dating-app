@@ -48,13 +48,13 @@ class _EventSuccessGroupOverrideSheetState
   @override
   Widget build(BuildContext context) {
     final validationError = _validationError;
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.eventSuccessEventSuccessHostOverridesTitleEditGroups,
       subtitle: context
           .l10n
           .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
       footer: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
@@ -92,28 +92,27 @@ class _EventSuccessGroupOverrideSheetState
           ),
         ],
       ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: ListView.separated(
-          shrinkWrap: true,
-          itemCount: _rounds.length,
-          separatorBuilder: (_, _) => gapH12,
-          itemBuilder: (context, index) {
-            final round = _rounds[index];
-            return EventSuccessGroupOverrideRoundSection(
-              round: round,
-              participantUids: _participantUids,
-              participantLabel: _participantLabel,
-              onChanged: () => setState(() {}),
-              onAddGroup: () => setState(() => _addGroup(round)),
-              onRemoveGroup: (group) =>
-                  setState(() => round.groups.remove(group)),
-              onAddMember: (group) => setState(() => _addMember(round, group)),
-              onRemoveMember: (group, member) =>
-                  setState(() => group.memberUids.remove(member)),
-            );
-          },
-        ),
+      child: ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        itemCount: _rounds.length,
+        separatorBuilder: (_, _) => gapH12,
+        itemBuilder: (context, index) {
+          final round = _rounds[index];
+          return EventSuccessGroupOverrideRoundSection(
+            round: round,
+            participantUids: _participantUids,
+            participantLabel: _participantLabel,
+            onChanged: () => setState(() {}),
+            onAddGroup: () => setState(() => _addGroup(round)),
+            onRemoveGroup: (group) =>
+                setState(() => round.groups.remove(group)),
+            onAddMember: (group) => setState(() => _addMember(round, group)),
+            onRemoveMember: (group, member) =>
+                setState(() => group.memberUids.remove(member)),
+          );
+        },
       ),
     );
   }

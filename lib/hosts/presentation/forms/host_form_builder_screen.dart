@@ -420,13 +420,13 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     );
     final shouldPublish = await showCatchBottomSheet<bool>(
       context: context,
-      builder: (sheetContext) => CatchSheet(
-        mode: CatchSheetMode.scrollable,
+      builder: (sheetContext) => CatchSheet.standard(
         title: state.editor.form.status == HostFormLifecycleStatus.published
             ? context.l10n.hostFormReviewChangesTitle
             : context.l10n.hostFormReviewPublishTitle,
         subtitle: context.l10n.hostFormReviewPublishSubtitle,
         footer: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchButton(
@@ -449,7 +449,8 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ),
           ],
         ),
-        child: CatchSection.containedFieldRows(
+        child: CatchSection.fieldRows(
+          first: true,
           children: [
             CatchField.read(
               copy: catchFieldCopy(context.l10n),

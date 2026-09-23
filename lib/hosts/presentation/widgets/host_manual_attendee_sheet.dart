@@ -24,10 +24,9 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterManualTitle,
       subtitle: context.l10n.hostsOperationalRosterManualSubtitle,
-      keyboardSafe: true,
       footer: CatchButton(
         label: context.l10n.hostsOperationalRosterManualSave,
         onPressed: _submit,

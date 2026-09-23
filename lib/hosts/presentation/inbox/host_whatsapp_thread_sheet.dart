@@ -61,29 +61,26 @@ class _HostWhatsappThreadSheetState
   @override
   Widget build(BuildContext context) => FutureBuilder<HostWhatsappThreadDetail>(
     future: _thread,
-    builder: (context, snapshot) => CatchSheet(
+    builder: (context, snapshot) => CatchSheet.standard(
       title:
           snapshot.data?.displayName ?? context.l10n.hostInboxWhatsappChannel,
       subtitle: context.l10n.hostInboxWhatsappChannel,
-      child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * 0.68,
-        child: switch (snapshot.connectionState) {
-          ConnectionState.none || ConnectionState.waiting
-              when snapshot.data == null =>
-            const CatchStateViewport.loading(accountForBottomOverlay: false),
-          _ when snapshot.hasError => CatchLocalizedErrorState(
-            snapshot.error!,
-            context: AppErrorContext.chat,
-            onRetry: _reload,
-          ),
-          _ => _HostWhatsappThreadBody(
-            thread: snapshot.requireData,
-            replyController: _replyController,
-            sending: _sending,
-            onSend: () => unawaited(_send(snapshot.requireData)),
-          ),
-        },
-      ),
+      child: switch (snapshot.connectionState) {
+        ConnectionState.none || ConnectionState.waiting
+            when snapshot.data == null =>
+          const CatchStateViewport.loading(accountForBottomOverlay: false),
+        _ when snapshot.hasError => CatchLocalizedErrorState(
+          snapshot.error!,
+          context: AppErrorContext.chat,
+          onRetry: _reload,
+        ),
+        _ => _HostWhatsappThreadBody(
+          thread: snapshot.requireData,
+          replyController: _replyController,
+          sending: _sending,
+          onSend: () => unawaited(_send(snapshot.requireData)),
+        ),
+      },
     ),
   );
 
@@ -140,37 +137,38 @@ class _HostWhatsappThreadBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Expanded(
-        child: ListView(
-          children: [
-            if (thread.messagesTruncated) ...[
-              Text(
-                context.l10n.hostInboxWhatsappHistoryTruncated,
-                style: CatchTextStyles.supporting(context),
-              ),
-              gapH12,
-            ],
-            for (final message in thread.messages) ...[
-              Align(
-                alignment:
-                    message.direction == HostWhatsappMessageDirection.outbound
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: CatchSurface(
-                  width: MediaQuery.sizeOf(context).width * 0.72,
-                  padding: CatchInsets.cardContent,
-                  child: Text(
-                    message.body,
-                    style: CatchTextStyles.proseM(context),
-                  ),
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (thread.messagesTruncated) ...[
+            Text(
+              context.l10n.hostInboxWhatsappHistoryTruncated,
+              style: CatchTextStyles.supporting(context),
+            ),
+            gapH12,
+          ],
+          for (final message in thread.messages) ...[
+            Align(
+              alignment:
+                  message.direction == HostWhatsappMessageDirection.outbound
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: CatchSurface(
+                width: MediaQuery.sizeOf(context).width * 0.72,
+                padding: CatchInsets.cardContent,
+                child: Text(
+                  message.body,
+                  style: CatchTextStyles.proseM(context),
                 ),
               ),
-              gapH8,
-            ],
+            ),
+            gapH8,
           ],
-        ),
+        ],
       ),
       Text(
         thread.serviceWindowOpen

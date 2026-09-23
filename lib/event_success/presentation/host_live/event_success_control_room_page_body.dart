@@ -328,7 +328,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
 Future<void> _showControlRoomFallback(BuildContext context) {
   return showCatchBottomSheet<void>(
     context: context,
-    builder: (sheetContext) => CatchSheet(
+    builder: (sheetContext) => CatchSheet.standard(
       title: context.l10n.eventSuccessControlRoomFallbackTitle,
       subtitle: context.l10n.eventSuccessControlRoomFallbackSubtitle,
       glyph: CatchIcons.helpOutlineRounded,
@@ -338,6 +338,7 @@ Future<void> _showControlRoomFallback(BuildContext context) {
         fullWidth: true,
       ),
       child: CatchSection.fieldRows(
+        first: true,
         children: [
           CatchField.content(
             copy: catchFieldCopy(context.l10n),

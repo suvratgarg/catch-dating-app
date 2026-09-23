@@ -426,12 +426,11 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
     final isSaving = widget.actionState.isSaving || _saving;
     final errorMessage = _errorMessage ?? widget.actionState.errorMessage;
 
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
       subtitle: context
           .l10n
           .hostsHostTeamManagementSectionSubtitleEnterThePhoneNumber,
-      keyboardSafe: true,
       footer: CatchButton(
         label: context.l10n.hostsHostTeamManagementSectionLabelAddHost,
         onPressed: isSaving ? null : () => unawaited(_submit()),

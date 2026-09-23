@@ -20,8 +20,8 @@ Widget createEventModalSectionComparison(BuildContext context) {
     contractIds: const ['catch.bottom_sheet', 'catch.section', 'catch.field'],
     principles: const [
       'The bottom sheet owns the overlay plane and terminal device-safe region.',
-      'One contained section perimeter binds every mutually exclusive starting path.',
-      'Internal group kickers, boundaries, sibling rules, clipping, and active geometry belong to CatchSection.',
+      'Flat field groups align every starting path with the sheet title.',
+      'Group kickers and sibling rules belong to CatchSection; the standard sheet owns height and scrolling.',
       'This page renders HostEventEntrySheet directly; it does not maintain a review-only modal implementation.',
     ],
     children: [

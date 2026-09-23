@@ -34,12 +34,19 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
+    footer: CatchButton(
+      fullWidth: true,
+      key: const ValueKey('host-saved-audience-save-and-message'),
+      label: context.l10n.hostSavedAudienceSaveAndMessage,
+      status: (_saving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
+      onPressed: _saving ? null : _save,
+    ),
     title: context.l10n.hostSavedAudienceSaveTitle,
     subtitle: context.l10n.hostSavedAudienceSaveBody,
-    keyboardSafe: true,
     child: CatchFieldLanes.custom(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.input(
@@ -52,15 +59,6 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => unawaited(_save()),
-          ),
-          gapH16,
-          CatchButton(
-            key: const ValueKey('host-saved-audience-save-and-message'),
-            label: context.l10n.hostSavedAudienceSaveAndMessage,
-            status: (_saving)
-                ? CatchButtonStatus.loading
-                : CatchButtonStatus.idle,
-            onPressed: _saving ? null : _save,
           ),
         ],
       ),

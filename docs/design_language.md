@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.31.1
+version: 1.32.0
 updated: 2026-09-23
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -901,3 +901,17 @@ What we tried and why, so we don't relitigate it:
 **Remaining policy decision:** map pins still need an explicit art-vs-token
 decision. Either route `CatchMapPinColors` through `ActivityPalette`/tokens, or
 document the map-pin palette as a sanctioned expressive-art exception here.
+
+## Host bottom-sheet composition
+
+`CatchSheet.standard` owns the modal surface, heading inset, body gap, scrolling,
+keyboard clearance and bottom safe region. Short sheets fit their content; long
+sheets use the shared viewport cap. Choices align with the heading through
+`CatchMenuRow.sheet`, wrap their labels, and show a trailing selection mark.
+Filter counts occupy supporting text rather than changing a chip's width.
+
+Use flat `CatchSection.fieldRows(first: true)` for the first field group in a
+sheet. Additional groups retain section spacing; do not add a contained card
+perimeter merely because the content is in a sheet. Keep different interaction
+contracts visible: choices apply on tap, Close dismisses immediate filters, and
+Save/Send confirms an editor through a full-width footer action.

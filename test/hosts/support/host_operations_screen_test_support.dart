@@ -187,14 +187,14 @@ void registerHostEventEntryTests() {
     );
     expect(
       find.descendant(of: eventEntrySheet, matching: find.byType(CatchSection)),
-      findsOneWidget,
+      findsNWidgets(2),
     );
     expect(
       find.descendant(
         of: eventEntrySheet,
         matching: find.byType(CatchSectionSurface),
       ),
-      findsOneWidget,
+      findsNothing,
     );
     expect(find.text('CONTINUE'), findsOneWidget);
     expect(find.text('START NEW'), findsOneWidget);

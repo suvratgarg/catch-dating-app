@@ -61,7 +61,27 @@ class CatchSheet extends StatelessWidget {
     this.keyboardSafe = false,
     this.mode = CatchSheetMode.content,
     this.padding,
-  });
+  }) : _standard = false;
+
+  /// Bounded, keyboard-safe sheet with one scroll owner and fixed geometry.
+  /// Supply natural-height content; the sheet owns vertical scrolling.
+  const CatchSheet.standard({
+    super.key,
+    required this.child,
+    this.title,
+    this.subtitle,
+    this.footer,
+    this.glyph,
+    this.badge,
+    this.badgeTone = CatchBadgeTone.neutral,
+    this.trailing,
+  }) : _standard = true,
+       grabber = true,
+       keyboardSafe = true,
+       mode = CatchSheetMode.scrollable,
+       padding = null;
+
+  final bool _standard;
 
   final String? title;
   final String? subtitle;
@@ -89,7 +109,7 @@ class CatchSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.maybeOf(context);
     final viewPaddingBottom = mediaQuery?.viewPadding.bottom ?? 0.0;
-    final keyboardInsetBottom = keyboardSafe
+    final keyboardInsetBottom = keyboardSafe && !_standard
         ? mediaQuery?.viewInsets.bottom ?? 0.0
         : 0.0;
     final obstructionBottom = math.max(viewPaddingBottom, keyboardInsetBottom);
@@ -128,7 +148,9 @@ class CatchSheet extends StatelessWidget {
         padding: effectivePadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: _standard
+              ? CrossAxisAlignment.stretch
+              : CrossAxisAlignment.start,
           children: [
             if (grabber) ...[
               const CatchSheetDragIndicator(),
@@ -155,6 +177,46 @@ class CatchSheet extends StatelessWidget {
         ),
       ),
     );
+    if (_standard) {
+      // Keyboard obstruction belongs outside the scrollable surface so content
+      // remains visible rather than requiring a scroll through keyboard padding.
+      final keyboard = mediaQuery?.viewInsets.bottom ?? 0.0;
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final mediaHeight = mediaQuery?.size.height ?? 0.0;
+          final viewportHeight = mediaHeight > 0
+              ? mediaHeight
+              : constraints.maxHeight;
+          final availableHeight = math.min(
+            constraints.hasBoundedHeight
+                ? constraints.maxHeight
+                : viewportHeight,
+            viewportHeight - (mediaQuery?.padding.top ?? 0.0),
+          );
+          final height =
+              math.max(0.0, availableHeight - keyboard) *
+              CatchLayout.sheetViewportMaxHeightFraction;
+          return Padding(
+            padding: EdgeInsets.only(bottom: keyboard),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: height,
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(CatchLayout.sheetTopRadius),
+                ),
+                child: SingleChildScrollView(
+                  key: const ValueKey('catch-sheet-scroll'),
+                  child: content,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
     return mode == CatchSheetMode.scrollable
         ? SingleChildScrollView(child: content)
         : content;

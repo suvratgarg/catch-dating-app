@@ -166,13 +166,21 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
+    footer: CatchButton(
+      fullWidth: true,
+      key: const ValueKey('host-customer-save-note'),
+      label: context.l10n.hostCustomersSaveNote,
+      status: (_saving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
+      onPressed: _saving ? null : _save,
+    ),
     title: widget.note == null
         ? context.l10n.hostCustomersAddNote
         : context.l10n.hostCustomersEditNote,
     subtitle: context.l10n.hostCustomersMemoryHelp,
     child: CatchFieldLanes.custom(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.input(
@@ -189,15 +197,6 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
             maxLines: 8,
             textCapitalization: TextCapitalization.sentences,
             autofocus: true,
-          ),
-          gapH12,
-          CatchButton(
-            key: const ValueKey('host-customer-save-note'),
-            label: context.l10n.hostCustomersSaveNote,
-            status: (_saving)
-                ? CatchButtonStatus.loading
-                : CatchButtonStatus.idle,
-            onPressed: _saving ? null : _save,
           ),
         ],
       ),
@@ -281,82 +280,79 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
+    footer: CatchButton(
+      fullWidth: true,
+      key: const ValueKey('host-customer-save-tags'),
+      label: context.l10n.hostCustomersSaveTags,
+      status: (_saving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
+      onPressed: _saving ? null : _save,
+    ),
     title: context.l10n.hostCustomersTagSheetTitle,
     subtitle: context.l10n.hostCustomersTagSheetSubtitle,
-    child: SingleChildScrollView(
-      child: CatchFieldLanes.custom(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_vocabulary.isNotEmpty)
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  for (final tag in _vocabulary)
-                    CatchChip.selectable(
-                      key: ValueKey('host-customer-tag-choice-${tag.tagId}'),
-                      label: tag.label,
-                      leading: Icon(CatchIcons.editNoteOutlined),
-                      selected: _selectedIds.contains(tag.tagId),
-                      enabled:
-                          _selectedIds.contains(tag.tagId) ||
-                          _selectionCount < _contactTagCap,
-                      accent: CatchTokens.of(context).ink2,
-                      contractExemption:
-                          'Manual tags are organizer-owned CRM vocabulary.',
-                      onChanged: (selected) => _toggle(tag.tagId, selected),
-                    ),
-                ],
-              ),
-            if (_vocabulary.isNotEmpty) gapH16,
-            CatchField.input(
-              copy: catchFieldCopy(context.l10n),
-              key: const ValueKey('host-customer-new-tag'),
-              title: context.l10n.hostCustomersNewTag,
-              contract: CatchContractConstraints
-                  .mutateOrganizerContactCallablePayloadManualTagsItems,
-              controller: _newTagController,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.done,
-              errorText: _error,
-              onSubmitted: (_) => _addTag(),
+    child: CatchFieldLanes.custom(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (_vocabulary.isNotEmpty)
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                for (final tag in _vocabulary)
+                  CatchChip.selectable(
+                    key: ValueKey('host-customer-tag-choice-${tag.tagId}'),
+                    label: tag.label,
+                    leading: Icon(CatchIcons.editNoteOutlined),
+                    selected: _selectedIds.contains(tag.tagId),
+                    enabled:
+                        _selectedIds.contains(tag.tagId) ||
+                        _selectionCount < _contactTagCap,
+                    accent: CatchTokens.of(context).ink2,
+                    contractExemption:
+                        'Manual tags are organizer-owned CRM vocabulary.',
+                    onChanged: (selected) => _toggle(tag.tagId, selected),
+                  ),
+              ],
             ),
-            gapH8,
-            CatchButton(
-              label: context.l10n.hostCustomersAddTag,
-              variant: CatchButtonVariant.secondary,
-              size: CatchButtonSize.sm,
-              onPressed: _selectionCount >= _contactTagCap ? null : _addTag,
-            ),
-            if (_newLabels.isNotEmpty) ...[
-              gapH12,
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  for (final label in _newLabels)
-                    CatchChip.removable(
-                      label: label,
-                      tintColor: CatchTokens.of(context).raised,
-                      inkColor: CatchTokens.of(context).ink,
-                      onRemove: () => setState(() => _newLabels.remove(label)),
-                    ),
-                ],
-              ),
-            ],
-            gapH16,
-            CatchButton(
-              key: const ValueKey('host-customer-save-tags'),
-              label: context.l10n.hostCustomersSaveTags,
-              status: (_saving)
-                  ? CatchButtonStatus.loading
-                  : CatchButtonStatus.idle,
-              onPressed: _saving ? null : _save,
+          if (_vocabulary.isNotEmpty) gapH16,
+          CatchField.input(
+            copy: catchFieldCopy(context.l10n),
+            key: const ValueKey('host-customer-new-tag'),
+            title: context.l10n.hostCustomersNewTag,
+            contract: CatchContractConstraints
+                .mutateOrganizerContactCallablePayloadManualTagsItems,
+            controller: _newTagController,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.done,
+            errorText: _error,
+            onSubmitted: (_) => _addTag(),
+          ),
+          gapH8,
+          CatchButton(
+            label: context.l10n.hostCustomersAddTag,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+            onPressed: _selectionCount >= _contactTagCap ? null : _addTag,
+          ),
+          if (_newLabels.isNotEmpty) ...[
+            gapH12,
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                for (final label in _newLabels)
+                  CatchChip.removable(
+                    label: label,
+                    tintColor: CatchTokens.of(context).raised,
+                    inkColor: CatchTokens.of(context).ink,
+                    onRemove: () => setState(() => _newLabels.remove(label)),
+                  ),
+              ],
             ),
           ],
-        ),
+        ],
       ),
     ),
   );

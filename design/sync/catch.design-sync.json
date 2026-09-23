@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-22",
+  "updated": "2026-09-23",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "82f6b76033bcbe272f54ba1e325b8df1d6980927ea89877e2307912e2abc0011",
+  "sourceDigest": "d9785573723423085cbe84d238c3a99205d22d7568d11d8a51736afc87d45abe",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "82f6b76033bcbe272f54ba1e325b8df1d6980927ea89877e2307912e2abc0011",
-    "contractDigest": "82f6b76033bcbe272f54ba1e325b8df1d6980927ea89877e2307912e2abc0011"
+    "digest": "d9785573723423085cbe84d238c3a99205d22d7568d11d8a51736afc87d45abe",
+    "contractDigest": "d9785573723423085cbe84d238c3a99205d22d7568d11d8a51736afc87d45abe"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "f0078b8e42c2b95b8edc21c2dfdfc3aff2b6956d288732729d5d44eca1a0e32d",
+    "handoffRequestDigest": "ab7f75d91a3f8572e562a73a917de7b074d3b34a147e71d0c1af503e3055dd6b",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1112,7 +1112,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "b800e86d3ae560969e73bc30457cef1fcebdb3eca563f9ad49af4b67885de7ab"
+      "contractDigest": "1f2b5b22ca31c3cceb027819437b654f7616d2b39093ba3b91cb25c431c5e242"
     },
     {
       "contractId": "catch.icon_button",
@@ -1176,7 +1176,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "a54cf4f4e1e88f59d78ab66c3059fb823ed95b2b1f30c086b1494cce8dcde73a"
+      "contractDigest": "5a2cc6b1f6a3051115b34435902af1a96de45e143a8de653abe850b0d1f7a8f4"
     },
     {
       "contractId": "catch.icon_tile",

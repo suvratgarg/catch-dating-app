@@ -5,6 +5,118 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final scale in [1.0, 2.0]) {
+    for (final size in [const Size(320, 568), const Size(844, 390)]) {
+      testWidgets('standard sheet keeps actions reachable at $size and $scale', (
+        tester,
+      ) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1;
+        tester.view.viewInsets = const FakeViewPadding(bottom: 180);
+        addTearDown(tester.view.reset);
+        var saved = false;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CatchTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => TextButton(
+                  onPressed: () => showCatchBottomSheet<void>(
+                    context: context,
+                    builder: (_) => CatchSheet.standard(
+                      title: 'Edit a long descriptive event name',
+                      subtitle:
+                          'Details remain readable when the keyboard is open.',
+                      footer: CatchButton(
+                        label: 'Save',
+                        fullWidth: true,
+                        onPressed: () => saved = true,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (var i = 0; i < 16; i++)
+                            Text('Field $i with supporting information'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  child: const Text('Open'),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+        final scroll = find.byKey(const ValueKey('catch-sheet-scroll'));
+        expect(
+          find.descendant(
+            of: find.byType(CatchSheet),
+            matching: find.byType(Scrollable),
+          ),
+          findsOneWidget,
+        );
+        final bounds = tester.getRect(scroll);
+        expect(
+          bounds.height,
+          lessThanOrEqualTo(
+            (size.height - 180) * CatchLayout.sheetViewportMaxHeightFraction +
+                1,
+          ),
+        );
+        expect(bounds.bottom, lessThanOrEqualTo(size.height - 180));
+        await tester.drag(scroll, const Offset(0, -4000));
+        await tester.pumpAndSettle();
+        final footer = find.widgetWithText(CatchButton, 'Save');
+        final rect = tester.getRect(footer);
+        expect(rect.top, greaterThanOrEqualTo(bounds.top));
+        expect(rect.bottom, lessThanOrEqualTo(bounds.bottom));
+        await tester.tap(footer);
+        expect(saved, isTrue);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
+  testWidgets('standard short sheet shrink wraps and aligns choice rows', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.light,
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.bottomCenter,
+            child: CatchSelectionSheet<int>(
+              title: 'Sort',
+              value: 1,
+              items: const [
+                CatchSelectionMenuItem(value: 1, label: 'Name'),
+                CatchSelectionMenuItem(value: 2, label: 'Recently checked'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    final bounds = tester.getRect(
+      find.byKey(const ValueKey('catch-sheet-scroll')),
+    );
+    expect(bounds.height, lessThan(300));
+    expect(
+      tester.getTopLeft(find.text('Sort')).dx,
+      tester.getTopLeft(find.text('Name')).dx,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final scale in [1.0, 2.0]) {
     testWidgets(
       'whole-sheet scrolling exposes a keyboard-safe footer at $scale',
       (tester) async {

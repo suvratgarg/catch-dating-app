@@ -5,7 +5,17 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CatchMenuRow<T> extends StatelessWidget {
-  const CatchMenuRow({super.key, required this.item, required this.onSelected});
+  const CatchMenuRow({super.key, required this.item, required this.onSelected})
+    : _sheet = false;
+
+  /// Sheet rows align with their heading and wrap at large text sizes.
+  const CatchMenuRow.sheet({
+    super.key,
+    required this.item,
+    required this.onSelected,
+  }) : _sheet = true;
+
+  final bool _sheet;
 
   final CatchMenuItem<T> item;
   final void Function(T value, CatchMenuItem<T> item)? onSelected;
@@ -31,12 +41,14 @@ class CatchMenuRow<T> extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: CatchLayout.menuRowMinHeight,
+            constraints: BoxConstraints(
+              minHeight: _sheet
+                  ? CatchPlatformTokens.minimumInteractiveExtent
+                  : CatchLayout.menuRowMinHeight,
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.micro14,
+              padding: EdgeInsets.symmetric(
+                horizontal: _sheet ? 0 : CatchSpacing.micro14,
                 vertical: CatchLayout.menuRowVerticalPadding,
               ),
               child: Row(
@@ -56,17 +68,22 @@ class CatchMenuRow<T> extends StatelessWidget {
                       children: [
                         Text(
                           item.label,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.labelL(context, color: color),
+                          maxLines: _sheet ? null : 2,
+                          overflow: _sheet ? null : TextOverflow.ellipsis,
+                          style: _sheet
+                              ? CatchTextStyles.fieldRowTitle(
+                                  context,
+                                  color: color,
+                                )
+                              : CatchTextStyles.labelL(context, color: color),
                         ),
                         if (item.sublabel != null &&
                             item.sublabel!.trim().isNotEmpty) ...[
                           const SizedBox(height: CatchSpacing.micro2),
                           Text(
                             item.sublabel!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                            maxLines: _sheet ? null : 2,
+                            overflow: _sheet ? null : TextOverflow.ellipsis,
                             style: CatchTextStyles.menuSupporting(
                               context,
                               color: t.ink3,

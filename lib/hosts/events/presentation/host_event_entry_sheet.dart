@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +12,6 @@ Future<HostEventEntryIntent?> showHostEventEntrySheet({
   assert(state.hasOrganizer, 'Event entry requires an organizer.');
   return showCatchBottomSheet<HostEventEntryIntent>(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
-    ),
     builder: (sheetContext) => HostEventEntrySheet(state: state),
   );
 }
@@ -27,15 +23,18 @@ class HostEventEntrySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
+    return CatchSheet.standard(
       key: const ValueKey<String>('host-event-entry-sheet'),
       title: context.l10n.hostsHostEventsListLabelNewEvent,
       subtitle:
           context.l10n.hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart,
-      child: CatchSection.containedFieldGroups(
-        groups: [
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           if (state.continueIntents.isNotEmpty)
-            CatchSectionFieldGroup(
+            CatchSection.fieldRows(
+              first: true,
               title:
                   context.l10n.hostsHostEventEntrySheetSectionContinueExisting,
               children: [
@@ -47,7 +46,8 @@ class HostEventEntrySheet extends StatelessWidget {
                   ),
               ],
             ),
-          CatchSectionFieldGroup(
+          CatchSection.fieldRows(
+            first: true,
             title: context.l10n.hostsHostEventEntrySheetSectionStartNew,
             children: [
               for (final intent in state.startIntents)

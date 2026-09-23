@@ -52,9 +52,8 @@ class EventAssistanceDeliverySheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceDeliveryTitle,
-        mode: CatchSheetMode.scrollable,
         child: state is AssistanceDeliveryUnavailable
             ? CatchLocalizedErrorBanner(state.error)
             : CatchAsyncBoundary<EventAssistanceDeliveriesSession>(

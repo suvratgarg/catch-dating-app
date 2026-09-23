@@ -279,7 +279,7 @@ void main() {
         await tester.tap(find.text('All purposes'));
         await pumpFeatureUi(tester);
         expect(formRequests.last.purposes, isEmpty);
-        await tester.tap(find.text('Done'));
+        await tester.tap(find.text('Close'));
         await pumpFeatureUi(tester);
 
         await tester.tap(find.text('Responses'));

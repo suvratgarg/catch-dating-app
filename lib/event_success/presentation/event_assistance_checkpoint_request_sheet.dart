@@ -43,9 +43,8 @@ class EventAssistanceCheckpointRequestSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceCheckpointRequestTitle,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           CheckpointRequestUnavailable(:final error) =>
             CatchLocalizedErrorBanner(error),

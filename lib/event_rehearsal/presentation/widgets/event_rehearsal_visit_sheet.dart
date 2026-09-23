@@ -54,13 +54,12 @@ class EventRehearsalVisitSheet extends ConsumerWidget {
     };
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: state is RehearsalAccountabilityUnavailable
             ? context.l10n.eventAssistanceVisitReview
             : guestName,
         badge: context.l10n.hostEventRehearsalBadge,
         badgeTone: CatchBadgeTone.danger,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           RehearsalAccountabilityUnavailable(:final error) =>
             CatchLocalizedErrorBanner(error),
@@ -78,7 +77,6 @@ class EventRehearsalVisitSheet extends ConsumerWidget {
                     review.snapshot.accountabilityReviews?.rows
                         .where((row) => row.scope == scope)
                         .firstOrNull;
-                // An old sheet must not follow a reset into another run.
                 if (row == null) {
                   return Text(
                     context.l10n.eventAssistanceVisitChanged,

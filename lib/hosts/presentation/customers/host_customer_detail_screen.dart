@@ -613,13 +613,12 @@ class _HostWhatsappHandoffSheetState
   @override
   Widget build(BuildContext context) {
     final message = _message.text.trim();
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostCustomersWhatsappHandoffTitle,
       subtitle: context.l10n.hostCustomersWhatsappHandoffSubtitle(
         name: widget.customer.displayName,
         phone: widget.customer.phoneE164!,
       ),
-      keyboardSafe: true,
       footer: CatchButton(
         key: const ValueKey('host-customer-confirm-whatsapp'),
         label: context.l10n.hostCustomersOpenWhatsapp,
@@ -628,6 +627,7 @@ class _HostWhatsappHandoffSheetState
         fullWidth: true,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchNotice(

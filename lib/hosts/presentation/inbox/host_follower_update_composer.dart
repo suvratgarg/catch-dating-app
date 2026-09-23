@@ -83,14 +83,13 @@ class _HostFollowerUpdateComposerSheetState
   Widget build(BuildContext context) {
     final text = _controller.text.trim();
     final canSubmit = !_pending && widget.remainingQuota > 0 && text.isNotEmpty;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsHostClubToolsTitlePostToFollowers,
       subtitle: context.l10n
           .hostsHostClubToolsSubtitleRemainingquotaOfWeeklyquotaPosts(
             remainingQuota: widget.remainingQuota,
             weeklyQuota: ClubPostsRepository.weeklyQuota,
           ),
-      keyboardSafe: true,
       footer: CatchButton(
         key: const ValueKey('host-follower-update-submit'),
         label: _pending

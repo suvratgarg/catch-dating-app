@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
-  "resolvedDigest": "sha256:16bc8632906d5b182c1ffac6da5425aa4d48aadca3374859aae1fd2d16de44f4",
+  "resolvedDigest": "sha256:ed8a9b8ccb442fd15d7128542df5878fcb56333edbfd2e34ed39234f17aaa0fc",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5313,7 +5313,8 @@
               "symbol": "CatchSheet",
               "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
-                "CatchSheet"
+                "CatchSheet",
+                "CatchSheet.standard"
               ]
             }
           },

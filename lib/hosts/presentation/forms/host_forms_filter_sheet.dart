@@ -12,14 +12,15 @@ Future<void> _showHostFormsFilters(
   await showCatchBottomSheet<void>(
     context: context,
     builder: (sheetContext) => StatefulBuilder(
-      builder: (context, updateSheet) => CatchSheet(
+      builder: (context, updateSheet) => CatchSheet.standard(
         title: context.l10n.hostCustomersFilters,
-        mode: CatchSheetMode.scrollable,
         footer: CatchButton(
-          label: context.l10n.coreCatchFieldLabelDone,
+          label: context.l10n.hostSheetClose,
+          fullWidth: true,
           onPressed: () => Navigator.of(sheetContext).pop(),
         ),
         child: CatchSection.fieldRows(
+          first: true,
           children: [
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),

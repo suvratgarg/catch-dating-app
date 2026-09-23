@@ -534,12 +534,13 @@ void _registerHostOperationsCustomersTests() {
       ),
     );
 
-    expect(find.text('New to your audience · 12 people'), findsOneWidget);
+    expect(find.text('New to your audience'), findsOneWidget);
+    expect(find.text('12 people'), findsOneWidget);
     expect(find.textContaining('Loading count'), findsNothing);
     expect(find.text('ADVOCACY').hitTestable(), findsNothing);
 
     final scrollable = find.descendant(
-      of: find.byKey(const ValueKey('host-customer-filter-scroll')),
+      of: find.byType(CatchSheet),
       matching: find.byType(Scrollable),
     );
     final position = tester.state<ScrollableState>(scrollable).position;

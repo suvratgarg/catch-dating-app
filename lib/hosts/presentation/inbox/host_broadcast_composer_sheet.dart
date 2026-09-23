@@ -128,149 +128,135 @@ class _HostBroadcastComposerSheetState
         body.isNotEmpty &&
         !mutation.isPending;
 
-    return SafeArea(
-      top: false,
-      child: SingleChildScrollView(
-        child: CatchSheet(
-          title: context.l10n.hostsHostBroadcastComposerSheetTitleNewBroadcast,
-          subtitle: widget.event.title,
-          keyboardSafe: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatchNotice(
-                dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
-                notice: CatchNoticeData(
-                  id: 'host.inbox.catch-announcement',
-                  title: context.l10n.hostSendsCatchAnnouncementChannel,
-                  message: context.l10n.hostInboxAnnouncementDisclosure,
-                ),
-              ),
-              gapH20,
-              Text(
-                context.l10n.hostsHostBroadcastComposerSheetTextAudience,
-                style: CatchTextStyles.fieldRowTitle(context),
-              ),
-              gapH8,
-              CatchChoiceInput<EventBroadcastAudience>.segmented(
-                contract: CatchContractConstraints
-                    .sendEventBroadcastCallablePayloadAudience,
-                contractValueBuilder: (audience) => audience.name,
-                options: [
-                  CatchOption(
-                    value: EventBroadcastAudience.booked,
-                    label: context.l10n
-                        .hostsHostBroadcastComposerSheetLabelBookedBookedcount(
-                          bookedCount: widget.bookedCount,
-                        ),
+    return CatchSheet.standard(
+      footer: CatchButton(
+        label: recipientCount == 1
+            ? context.l10n.hostsHostBroadcastComposerSheetLabelSendTo1Person
+            : context.l10n
+                  .hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople(
+                    recipientCount: recipientCount,
                   ),
-                  CatchOption(
-                    value: EventBroadcastAudience.prospective,
-                    label: context.l10n
-                        .hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount(
-                          prospectiveCount: widget.prospectiveCount,
-                        ),
-                  ),
-                  CatchOption(
-                    value: EventBroadcastAudience.everyone,
-                    label: context.l10n
-                        .hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount(
-                          recipientCount: _recipientCount(
-                            EventBroadcastAudience.everyone,
-                          ),
-                        ),
-                  ),
-                ],
-                selected: _audience,
-                scrollable: true,
-                onChanged: mutation.isPending ? null : _selectAudience,
+        onPressed: enabled ? _send : null,
+        status: (mutation.isPending)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
+        fullWidth: true,
+      ),
+      title: context.l10n.hostsHostBroadcastComposerSheetTitleNewBroadcast,
+      subtitle: widget.event.title,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+            notice: CatchNoticeData(
+              id: 'host.inbox.catch-announcement',
+              title: context.l10n.hostSendsCatchAnnouncementChannel,
+              message: context.l10n.hostInboxAnnouncementDisclosure,
+            ),
+          ),
+          gapH20,
+          Text(
+            context.l10n.hostsHostBroadcastComposerSheetTextAudience,
+            style: CatchTextStyles.fieldRowTitle(context),
+          ),
+          gapH8,
+          CatchChoiceInput<EventBroadcastAudience>.segmented(
+            contract: CatchContractConstraints
+                .sendEventBroadcastCallablePayloadAudience,
+            contractValueBuilder: (audience) => audience.name,
+            options: [
+              CatchOption(
+                value: EventBroadcastAudience.booked,
+                label: context.l10n
+                    .hostsHostBroadcastComposerSheetLabelBookedBookedcount(
+                      bookedCount: widget.bookedCount,
+                    ),
               ),
-              gapH20,
-              Text(
-                context.l10n.hostsHostBroadcastComposerSheetTextTemplate,
-                style: CatchTextStyles.fieldRowTitle(context),
+              CatchOption(
+                value: EventBroadcastAudience.prospective,
+                label: context.l10n
+                    .hostsHostBroadcastComposerSheetLabelWaitlistProspectivecount(
+                      prospectiveCount: widget.prospectiveCount,
+                    ),
               ),
-              gapH8,
-              CatchChoiceInput<HostBroadcastTemplate>.described(
-                values: HostBroadcastTemplate.values,
-                itemLabelBuilder: (template) => template.label(context.l10n),
-                itemSubtitleBuilder: (template) =>
-                    template.description(context.l10n),
-                selected: {?_template},
-                contract: CatchContractConstraints
-                    .mobileFormStateHostBroadcastTemplate,
-                contractValueBuilder: (template) => template.name,
-                onChanged: mutation.isPending
-                    ? null
-                    : (selection) => _selectTemplate(selection.single),
-              ),
-              gapH20,
-              CatchFieldLanes.single(
-                child: CatchField.input(
-                  copy: catchFieldCopy(context.l10n),
-                  title:
-                      context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
-                  contract: CatchContractConstraints
-                      .sendEventBroadcastCallablePayloadBody,
-                  controller: _bodyController,
-                  placeholder: context
-                      .l10n
-                      .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
-                  minLines: 3,
-                  maxLines: 5,
-                  states: <WidgetState>{
-                    if (mutation.isPending) WidgetState.disabled,
-                  },
-                  textCapitalization: TextCapitalization.sentences,
-                  onChanged: (_) => _handleContentChanged(),
-                ),
-              ),
-              if (!_sendingEnabled) ...[
-                gapH12,
-                Text(
-                  context
-                      .l10n
-                      .hostsHostBroadcastComposerSheetTextSendingStaysOffIn,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-              if (recipientCount == 0) ...[
-                gapH12,
-                Text(
-                  context
-                      .l10n
-                      .hostsHostBroadcastComposerSheetTextThisAudienceHasNo,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-              if (mutation.hasError) ...[
-                gapH12,
-                CatchLocalizedErrorBanner.mutation(
-                  mutation: mutation,
-                  context: AppErrorContext.event,
-                  onRetry: enabled ? _send : null,
-                ),
-              ],
-              gapH20,
-              CatchButton(
-                label: recipientCount == 1
-                    ? context
-                          .l10n
-                          .hostsHostBroadcastComposerSheetLabelSendTo1Person
-                    : context.l10n
-                          .hostsHostBroadcastComposerSheetLabelSendToRecipientcountPeople(
-                            recipientCount: recipientCount,
-                          ),
-                onPressed: enabled ? _send : null,
-                status: (mutation.isPending)
-                    ? CatchButtonStatus.loading
-                    : CatchButtonStatus.idle,
-                fullWidth: true,
+              CatchOption(
+                value: EventBroadcastAudience.everyone,
+                label: context.l10n
+                    .hostsHostBroadcastComposerSheetLabelEveryoneRecipientcount(
+                      recipientCount: _recipientCount(
+                        EventBroadcastAudience.everyone,
+                      ),
+                    ),
               ),
             ],
+            selected: _audience,
+            scrollable: true,
+            onChanged: mutation.isPending ? null : _selectAudience,
           ),
-        ),
+          gapH20,
+          Text(
+            context.l10n.hostsHostBroadcastComposerSheetTextTemplate,
+            style: CatchTextStyles.fieldRowTitle(context),
+          ),
+          gapH8,
+          CatchChoiceInput<HostBroadcastTemplate>.described(
+            values: HostBroadcastTemplate.values,
+            itemLabelBuilder: (template) => template.label(context.l10n),
+            itemSubtitleBuilder: (template) =>
+                template.description(context.l10n),
+            selected: {?_template},
+            contract:
+                CatchContractConstraints.mobileFormStateHostBroadcastTemplate,
+            contractValueBuilder: (template) => template.name,
+            onChanged: mutation.isPending
+                ? null
+                : (selection) => _selectTemplate(selection.single),
+          ),
+          gapH20,
+          CatchFieldLanes.single(
+            child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
+              contract: CatchContractConstraints
+                  .sendEventBroadcastCallablePayloadBody,
+              controller: _bodyController,
+              placeholder: context
+                  .l10n
+                  .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
+              minLines: 3,
+              maxLines: 5,
+              states: <WidgetState>{
+                if (mutation.isPending) WidgetState.disabled,
+              },
+              textCapitalization: TextCapitalization.sentences,
+              onChanged: (_) => _handleContentChanged(),
+            ),
+          ),
+          if (!_sendingEnabled) ...[
+            gapH12,
+            Text(
+              context.l10n.hostsHostBroadcastComposerSheetTextSendingStaysOffIn,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ],
+          if (recipientCount == 0) ...[
+            gapH12,
+            Text(
+              context.l10n.hostsHostBroadcastComposerSheetTextThisAudienceHasNo,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ],
+          if (mutation.hasError) ...[
+            gapH12,
+            CatchLocalizedErrorBanner.mutation(
+              mutation: mutation,
+              context: AppErrorContext.event,
+              onRetry: enabled ? _send : null,
+            ),
+          ],
+        ],
       ),
     );
   }

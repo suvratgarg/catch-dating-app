@@ -13953,11 +13953,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersSetUpWhatsappBusiness => 'Set up WhatsApp Business';
 
   @override
-  String get hostCustomersFilterSheetTitle => 'Filter customers';
+  String get hostCustomersFilterSheetTitle => 'Filter people';
 
   @override
   String get hostCustomersFilterSheetSubtitle =>
-      'Choose one computed segment or one of your tags. The result count updates after you apply it.';
+      'Choose one segment or tag. Your selection applies immediately.';
 
   @override
   String get hostCustomersFilterGroupAttendance => 'Attendance';
@@ -13970,14 +13970,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersFilterGroupReachable => 'Reachable';
-
-  @override
-  String hostCustomersFilterOption({
-    required String label,
-    required String countLabel,
-  }) {
-    return '$label · $countLabel';
-  }
 
   @override
   String hostCustomersPeopleCount({required int count}) {
@@ -14515,7 +14507,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notes are temporarily unavailable. Other customer details are still available.';
 
   @override
-  String get hostCustomersSort => 'Sort customers';
+  String get hostSheetClose => 'Close';
+
+  @override
+  String get hostCustomersSort => 'Sort';
 
   @override
   String hostCustomersSortControl({required String label}) {

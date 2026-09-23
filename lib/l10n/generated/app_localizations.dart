@@ -21790,13 +21790,13 @@ abstract class AppLocalizations {
   /// Grouped customer filter sheet title.
   ///
   /// In en, this message translates to:
-  /// **'Filter customers'**
+  /// **'Filter people'**
   String get hostCustomersFilterSheetTitle;
 
   /// Explains when the grouped customer filter result count updates.
   ///
   /// In en, this message translates to:
-  /// **'Choose one computed segment or one of your tags. The result count updates after you apply it.'**
+  /// **'Choose one segment or tag. Your selection applies immediately.'**
   String get hostCustomersFilterSheetSubtitle;
 
   /// Customer segment group for attendance lifecycle filters.
@@ -21822,15 +21822,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reachable'**
   String get hostCustomersFilterGroupReachable;
-
-  /// Customer filter chip with its server-backed match count.
-  ///
-  /// In en, this message translates to:
-  /// **'{label} · {countLabel}'**
-  String hostCustomersFilterOption({
-    required String label,
-    required String countLabel,
-  });
 
   /// Exact number of people matching a customer audience query.
   ///
@@ -22582,10 +22573,16 @@ abstract class AppLocalizations {
   /// **'Notes are temporarily unavailable. Other customer details are still available.'**
   String get hostCustomersNotesUnavailableBody;
 
+  /// Dismiss a sheet whose selections already apply immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostSheetClose;
+
   /// Customers directory sort menu group label.
   ///
   /// In en, this message translates to:
-  /// **'Sort customers'**
+  /// **'Sort'**
   String get hostCustomersSort;
 
   /// Visible Customers directory sort control with its current ordering.

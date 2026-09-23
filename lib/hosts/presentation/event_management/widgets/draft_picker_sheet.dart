@@ -150,7 +150,7 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsDraftPickerSheetTitleResumeADraft,
       subtitle: context.l10n.hostsDraftPickerSheetSubtitlePickUpWhereYou,
       footer: widget.onStartFresh == null
@@ -174,21 +174,17 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
                   context.l10n.hostsDraftPickerSheetMessageSavedDraftsForThis,
             )
           else
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 320),
-              child: SingleChildScrollView(
-                child: CatchSection.containedFieldRows(
-                  children: [
-                    for (final draft in _drafts)
-                      DraftCard(
-                        draft: draft,
-                        isDeleting: _deletingDraftId == draft.id,
-                        onSelect: () => _onSelect(draft),
-                        onDelete: () => _onDelete(draft),
-                      ),
-                  ],
-                ),
-              ),
+            CatchSection.fieldRows(
+              first: true,
+              children: [
+                for (final draft in _drafts)
+                  DraftCard(
+                    draft: draft,
+                    isDeleting: _deletingDraftId == draft.id,
+                    onSelect: () => _onSelect(draft),
+                    onDelete: () => _onDelete(draft),
+                  ),
+              ],
             ),
         ],
       ),

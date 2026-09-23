@@ -333,14 +333,15 @@ class _HostFormResponsesPanelState
   Future<void> _openFilters() => showCatchBottomSheet<void>(
     context: context,
     builder: (sheetContext) => StatefulBuilder(
-      builder: (context, updateSheet) => CatchSheet(
+      builder: (context, updateSheet) => CatchSheet.standard(
         title: context.l10n.hostCustomersFilters,
-        mode: CatchSheetMode.scrollable,
         footer: CatchButton(
-          label: context.l10n.coreCatchFieldLabelDone,
+          label: context.l10n.hostSheetClose,
+          fullWidth: true,
           onPressed: () => Navigator.of(sheetContext).pop(),
         ),
         child: CatchSection.fieldRows(
+          first: true,
           children: [
             if (widget.showFormContext)
               CatchField.nav(
@@ -410,10 +411,10 @@ class _HostFormResponsesPanelState
     final selected = await showCatchBottomSheet<String>(
       context: context,
       builder: (sheetContext) => Consumer(
-        builder: (context, ref, _) => CatchSheet(
+        builder: (context, ref, _) => CatchSheet.standard(
           title: context.l10n.hostAudienceChooseForm,
-          mode: CatchSheetMode.scrollable,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               CatchFieldLanes.single(
@@ -430,6 +431,7 @@ class _HostFormResponsesPanelState
                 ),
                 loadingBuilder: (_) => CatchSkeleton.content(
                   child: CatchSection.fieldRows(
+                    first: true,
                     children: [
                       for (var index = 0; index < 3; index++)
                         CatchField.nav(
@@ -440,6 +442,7 @@ class _HostFormResponsesPanelState
                   ),
                 ),
                 builder: (context, state) => CatchSection.fieldRows(
+                  first: true,
                   children: [
                     for (final form in state.forms)
                       CatchField.nav(

@@ -76,8 +76,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
         mapped.rows.isNotEmpty &&
         !mapped.hasBlockingMappingIssue &&
         !invalidFallback;
-    return CatchSheet(
-      mode: CatchSheetMode.scrollable,
+    return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
       footer: CatchButton(
@@ -95,6 +94,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
         fullWidth: true,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchBadge.functional(

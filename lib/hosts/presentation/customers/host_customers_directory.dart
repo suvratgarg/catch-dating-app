@@ -210,132 +210,67 @@ class HostCustomerFilterSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final groups = hostCustomerFilterGroupsForSmsReadiness(smsReadiness);
-    final maxHeight =
-        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchSheet(
-        title: context.l10n.hostCustomersFilterSheetTitle,
-        subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
-        child: Flexible(
-          child: ListView(
-            key: const ValueKey('host-customer-filter-scroll'),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              CatchSectionList(
-                emptyStateOmitted: true,
-                children: [
-                  for (final entry in groups.entries)
-                    CatchSection.divided(
-                      title: _customerFilterGroupLabel(context, entry.key),
-                      child: Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s2,
-                        children: [
-                          for (final filter in entry.value)
-                            _HostCustomerFilterChip(
-                              filter: filter,
-                              selected:
-                                  selectedManualTag == null &&
-                                  selectedFilter == filter,
-                              selectedCount: selectedCount,
-                            ),
-                        ],
-                      ),
+    return CatchSheet.standard(
+      title: context.l10n.hostCustomersFilterSheetTitle,
+      subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final entry in groups.entries)
+            CatchSection.divided(
+              first: true,
+              title: _customerFilterGroupLabel(context, entry.key),
+              children: [
+                for (final filter in entry.value)
+                  CatchMenuRow<HostCustomerFilterSelection>.sheet(
+                    key: ValueKey('host-customer-filter-${filter.name}'),
+                    item: CatchMenuItem(
+                      value: HostCustomerFilterSelection.computed(filter),
+                      label: _customerFilterLabel(context, filter),
+                      sublabel:
+                          selectedManualTag == null && selectedFilter == filter
+                          ? _customerPeopleCountLabel(
+                              context,
+                              selectedCount.count,
+                              selectedCount.coverage,
+                            )
+                          : null,
+                      selected:
+                          selectedManualTag == null && selectedFilter == filter,
+                      variant: CatchMenuItemVariant.choice,
                     ),
-                  if (manualTagVocabulary.isNotEmpty)
-                    CatchSection.divided(
-                      title: context.l10n.hostCustomersFilterGroupYourTags,
-                      child: Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s2,
-                        children: [
-                          for (final tag in manualTagVocabulary)
-                            _HostCustomerManualTagChip(
-                              tag: tag,
-                              selected: selectedManualTag?.tagId == tag.tagId,
-                              selectedCount: selectedCount,
-                            ),
-                        ],
-                      ),
+                    onSelected: (value, _) => Navigator.of(context).pop(value),
+                  ),
+              ],
+            ),
+          if (manualTagVocabulary.isNotEmpty)
+            CatchSection.divided(
+              first: true,
+              title: context.l10n.hostCustomersFilterGroupYourTags,
+              children: [
+                for (final tag in manualTagVocabulary)
+                  CatchMenuRow<HostCustomerFilterSelection>.sheet(
+                    key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
+                    item: CatchMenuItem(
+                      value: HostCustomerFilterSelection.manual(tag),
+                      label: tag.label,
+                      sublabel: selectedManualTag?.tagId == tag.tagId
+                          ? _customerPeopleCountLabel(
+                              context,
+                              selectedCount.count,
+                              selectedCount.coverage,
+                            )
+                          : null,
+                      selected: selectedManualTag?.tagId == tag.tagId,
+                      variant: CatchMenuItemVariant.choice,
                     ),
-                ],
-              ),
-            ],
-          ),
-        ),
+                    onSelected: (value, _) => Navigator.of(context).pop(value),
+                  ),
+              ],
+            ),
+        ],
       ),
-    );
-  }
-}
-
-class _HostCustomerFilterChip extends StatelessWidget {
-  const _HostCustomerFilterChip({
-    required this.filter,
-    required this.selected,
-    required this.selectedCount,
-  });
-
-  final HostCustomerFilter filter;
-  final bool selected;
-  final HostCustomerSegmentCount selectedCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final filterLabel = _customerFilterLabel(context, filter);
-    return CatchChip.selectable(
-      key: ValueKey('host-customer-filter-${filter.name}'),
-      label: selected
-          ? context.l10n.hostCustomersFilterOption(
-              label: filterLabel,
-              countLabel: _customerPeopleCountLabel(
-                context,
-                selectedCount.count,
-                selectedCount.coverage,
-              ),
-            )
-          : filterLabel,
-      selected: selected,
-      contractExemption: 'Customer filters map to reviewed CRM segments.',
-      onChanged: (_) => Navigator.of(
-        context,
-      ).pop(HostCustomerFilterSelection.computed(filter)),
-    );
-  }
-}
-
-class _HostCustomerManualTagChip extends StatelessWidget {
-  const _HostCustomerManualTagChip({
-    required this.tag,
-    required this.selected,
-    required this.selectedCount,
-  });
-
-  final HostCustomerManualTag tag;
-  final bool selected;
-  final HostCustomerSegmentCount selectedCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchChip.selectable(
-      key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
-      label: selected
-          ? context.l10n.hostCustomersFilterOption(
-              label: tag.label,
-              countLabel: _customerPeopleCountLabel(
-                context,
-                selectedCount.count,
-                selectedCount.coverage,
-              ),
-            )
-          : tag.label,
-      leading: Icon(CatchIcons.editNoteOutlined),
-      selected: selected,
-      accent: CatchTokens.of(context).ink2,
-      contractExemption: 'Manual tags are organizer-owned CRM vocabulary.',
-      onChanged: (_) =>
-          Navigator.of(context).pop(HostCustomerFilterSelection.manual(tag)),
     );
   }
 }

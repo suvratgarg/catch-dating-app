@@ -51,10 +51,9 @@ class _HostLumaConnectionSheetState extends State<HostLumaConnectionSheet> {
   @override
   Widget build(BuildContext context) {
     final apiKey = _apiKeyController.text.trim();
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterProviderConnectTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderConnectBody,
-      keyboardSafe: true,
       footer: CatchButton(
         label: context.l10n.hostsOperationalRosterProviderChooseEvent,
         onPressed: _loading ? null : _verifyAndChoose,
@@ -62,6 +61,7 @@ class _HostLumaConnectionSheetState extends State<HostLumaConnectionSheet> {
         fullWidth: true,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchFieldLanes.single(
@@ -132,59 +132,51 @@ class HostLumaEventChoiceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
-      mode: CatchSheetMode.scrollable,
+    return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterProviderChooseEventTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderChooseEventBody(
         calendar: choices.calendarName,
       ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.58,
-        ),
-        child: choices.events.isEmpty
-            ? CatchEmptyState(
-                variant: CatchEmptyStateVariant.inline,
-                icon: CatchIcons.calendarMonthOutlined,
-                title: context.l10n.hostsOperationalRosterProviderNoEventsTitle,
-                message:
-                    context.l10n.hostsOperationalRosterProviderNoEventsBody,
-              )
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (choices.truncated) ...[
-                      CatchBanner.error(
-                        message: context
-                            .l10n
-                            .hostsOperationalRosterProviderEventsTruncated,
-                      ),
-                      gapH12,
+      child: choices.events.isEmpty
+          ? CatchEmptyState(
+              variant: CatchEmptyStateVariant.inline,
+              icon: CatchIcons.calendarMonthOutlined,
+              title: context.l10n.hostsOperationalRosterProviderNoEventsTitle,
+              message: context.l10n.hostsOperationalRosterProviderNoEventsBody,
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (choices.truncated) ...[
+                  CatchBanner.error(
+                    message: context
+                        .l10n
+                        .hostsOperationalRosterProviderEventsTruncated,
+                  ),
+                  gapH12,
+                ],
+                CatchFieldLanes.single(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final indexed in choices.events.indexed) ...[
+                        if (indexed.$1 > 0) const CatchDivider.fieldRow(),
+                        CatchField.nav(
+                          copy: catchFieldCopy(context.l10n),
+                          title: indexed.$2.name,
+                          body: AppTimeFormatters.dateTime(
+                            indexed.$2.startAt.toLocal(),
+                          ),
+                          onTap: () => Navigator.of(context).pop(indexed.$2),
+                        ),
+                      ],
                     ],
-                    CatchFieldLanes.single(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final indexed in choices.events.indexed) ...[
-                            if (indexed.$1 > 0) const CatchDivider.fieldRow(),
-                            CatchField.nav(
-                              copy: catchFieldCopy(context.l10n),
-                              title: indexed.$2.name,
-                              body: AppTimeFormatters.dateTime(
-                                indexed.$2.startAt.toLocal(),
-                              ),
-                              onTap: () =>
-                                  Navigator.of(context).pop(indexed.$2),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-      ),
+              ],
+            ),
     );
   }
 }

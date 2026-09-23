@@ -498,6 +498,7 @@ abstract final class CatchLayout {
   static const double sheetGlyphTileRadius = CatchSpacing.s3;
   static const double sheetGlyphIconSize = 22.0;
   static const double sheetMaxHeightFraction = 0.56;
+  static const double sheetViewportMaxHeightFraction = 0.9;
   static const double skeletonCardHeight = 120.0;
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;

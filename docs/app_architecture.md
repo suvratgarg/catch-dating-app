@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.73.0
+version: 1.74.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -786,10 +786,23 @@ branch on medium or expanded layouts, but the route remains the selection
 authority and must preserve compact full-screen behavior.
 
 Bottom sheets must be opened through `showCatchBottomSheet` from
-`packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart`. The helper presents on the root
-navigator by default, which keeps drawers above shell chrome. Do not call
-Flutter's raw `showModalBottomSheet` directly from production code unless this
-policy test is intentionally updated.
+`packages/catch_ui/lib/src/components/catch_sheet.dart`. It presents above shell
+chrome on the root navigator. Raw Material sheet calls belong only in that
+shared presenter; Cupertino date/time popups belong only in the shared adaptive
+picker. `test/core/catch_bottom_sheet_policy_test.dart` enforces these boundaries.
+
+Host, Event Assistance and rehearsal use `CatchSheet.standard`. Natural-height
+content shrinks for short sheets and scrolls as one unit (header, body, footer)
+within 90% of the available viewport. The shell owns clipping, width, keyboard
+obstruction and terminal device clearance. Do not nest a vertical scroll view,
+`Flexible` body, per-feature height cap or custom surface padding. A non-scrolling,
+shrink-wrapped builder list is permitted for dynamic rows. Native wheel pickers
+and capturable share cards retain their distinct shared interaction contracts.
+
+Choice sheets use `CatchSelectionSheet` / `CatchMenuRow.sheet`; selection commits
+on tap. Filter summaries with immediate changes use Close. Editors put their
+explicit save/submit action in the sheet footer. The legacy `CatchSheet`
+constructor remains for Consumer surfaces pending a separate migration.
 
 Root-screen overlays that still coexist with the floating tab bar should use
 `CatchTabViewportScope.bottomOverlayClearanceOf(context, minimum: ...)`; feature

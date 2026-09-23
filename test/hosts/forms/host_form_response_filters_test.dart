@@ -51,7 +51,7 @@ void main() {
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Mumbai'));
       await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
-      await tester.tap(find.text('Done'));
+      await tester.tap(find.text('Close'));
       await pumpUntilFound(tester, find.text('Event city: Mumbai'));
       expect(requests.last.answerFilters, {'city': 'Mumbai'});
       expect(find.text('Event city: Mumbai'), findsOneWidget);
