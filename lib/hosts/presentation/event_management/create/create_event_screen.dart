@@ -25,6 +25,8 @@ import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
@@ -39,7 +41,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_guests_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';

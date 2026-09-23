@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
-  "resolvedDigest": "sha256:62eebd9d18b2dd4b5101c2ef9603a9459b1d641458e1562465f893dbb7f8a008",
+  "resolvedDigest": "sha256:99be761af529105c1fe0ab353764cbf88516fd6fe42efec24292878d38203453",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1575,7 +1575,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

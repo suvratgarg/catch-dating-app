@@ -584,7 +584,8 @@ export async function checkInEventRuntimeHandler(
     if (
       attendee.eventId !== resolved.eventId ||
       attendee.linkedUid !== uid ||
-      attendee.status === "cancelled"
+      (attendee.status !== "registered" &&
+        attendee.status !== "checkedIn")
     ) {
       throw new HttpsError(
         "failed-precondition",

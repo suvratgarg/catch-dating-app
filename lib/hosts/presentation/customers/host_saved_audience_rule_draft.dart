@@ -1,6 +1,7 @@
 part of 'host_customers_screen.dart';
 
 enum _AudienceRuleKind {
+  directoryFilters('directoryFilters'),
   computedSegment('computedSegment'),
   manualTag('manualTag'),
   attendanceCount('attendanceCount'),
@@ -36,6 +37,11 @@ class _AudienceRuleDraft {
   factory _AudienceRuleDraft.fromPredicate(
     HostSavedAudiencePredicate predicate,
   ) => switch (predicate) {
+    HostSavedAudienceDirectoryFilters() =>
+      _AudienceRuleDraft.defaults().copyWith(
+        kind: _AudienceRuleKind.directoryFilters,
+        sourcePredicate: predicate,
+      ),
     HostSavedAudienceStaticMembers() => throw StateError(
       'Static members do not use the rule editor.',
     ),
@@ -140,6 +146,10 @@ class _AudienceRuleDraft {
   );
 
   HostSavedAudiencePredicate? toPredicate() => switch (kind) {
+    _AudienceRuleKind.directoryFilters =>
+      sourcePredicate is HostSavedAudienceDirectoryFilters
+          ? sourcePredicate
+          : null,
     _AudienceRuleKind.spend =>
       sourcePredicate is HostSavedAudienceSpend ? sourcePredicate : null,
     _AudienceRuleKind.applicationStatus =>
@@ -171,6 +181,8 @@ class _AudienceRuleDraft {
 
 String _audienceRuleKindLabel(BuildContext context, _AudienceRuleKind kind) =>
     switch (kind) {
+      _AudienceRuleKind.directoryFilters =>
+        context.l10n.hostCustomersFilterSheetTitle,
       _AudienceRuleKind.spend => context.l10n.hostAudienceSpend,
       _AudienceRuleKind.applicationStatus =>
         context.l10n.hostAudienceRuleApplication,

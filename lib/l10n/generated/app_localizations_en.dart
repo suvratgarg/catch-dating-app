@@ -1740,24 +1740,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Loading organizer';
 
   @override
-  String get hostsDraftPickerSheetTitleResumeADraft => 'Resume a draft?';
-
-  @override
-  String get hostsDraftPickerSheetSubtitlePickUpWhereYou =>
-      'Pick up where you left off, or start fresh.';
-
-  @override
-  String get hostsDraftPickerSheetLabelStartAFreshEvent =>
-      'Start a fresh event';
-
-  @override
-  String get hostsDraftPickerSheetTitleNoDraftsYet => 'No drafts yet';
-
-  @override
-  String get hostsDraftPickerSheetMessageSavedDraftsForThis =>
-      'Saved drafts for this organizer will appear here.';
-
-  @override
   String get hostsDraftPickerSheetMessageDeleteDraft => 'Delete draft';
 
   @override
@@ -3972,13 +3954,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object name,
   }) {
     return '$displayName is now listed on $name. People can discover it, but only attendees with the invite code or private link can book.';
-  }
-
-  @override
-  String hostsDraftPickerSheetTextSavedTouppercase({
-    required Object toUpperCase,
-  }) {
-    return 'SAVED $toUpperCase';
   }
 
   @override
@@ -6295,10 +6270,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventsListLabelUseGuestList => 'Use guest list';
-
-  @override
-  String get hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart =>
-      'Choose how you want to start. You can review every detail before publishing.';
 
   @override
   String get hostsHostEventEntrySheetSectionContinueExisting => 'Continue';
@@ -9459,10 +9430,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateEventPhotoPickerVisiblecopyAddPhotos => 'Add photos';
-
-  @override
-  String get hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft =>
-      'Could not delete draft.';
 
   @override
   String get hostsEventDetailsStepVisiblecopyRequired => 'Required';
@@ -13953,11 +13920,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersSetUpWhatsappBusiness => 'Set up WhatsApp Business';
 
   @override
-  String get hostCustomersFilterSheetTitle => 'Filter customers';
+  String get hostCustomersFilterSheetTitle => 'Filter people';
 
   @override
-  String get hostCustomersFilterSheetSubtitle =>
-      'Choose one computed segment or one of your tags. The result count updates after you apply it.';
+  String get hostFiltersResetAll => 'Reset all';
 
   @override
   String get hostCustomersFilterGroupAttendance => 'Attendance';
@@ -13970,14 +13936,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersFilterGroupReachable => 'Reachable';
-
-  @override
-  String hostCustomersFilterOption({
-    required String label,
-    required String countLabel,
-  }) {
-    return '$label · $countLabel';
-  }
 
   @override
   String hostCustomersPeopleCount({required int count}) {
@@ -14426,10 +14384,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersFilterGroupYourTags => 'Your tags';
 
   @override
-  String get hostCustomersManualTagExportUnavailable =>
-      'Clear the manual tag filter to export.';
-
-  @override
   String get hostCustomersMemory => 'Notes & tags';
 
   @override
@@ -14515,7 +14469,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notes are temporarily unavailable. Other customer details are still available.';
 
   @override
-  String get hostCustomersSort => 'Sort customers';
+  String get hostSheetClose => 'Close';
+
+  @override
+  String get hostCustomersSort => 'Sort';
 
   @override
   String hostCustomersSortControl({required String label}) {
@@ -17281,15 +17238,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAutomationConfigured => 'Configured';
-
-  @override
-  String get hostAudienceAllPurposes => 'All purposes';
-
-  @override
-  String get hostAudienceAllStatuses => 'All statuses';
-
-  @override
-  String get hostAudienceFormPurposeFilter => 'Form purpose';
 
   @override
   String get hostAudienceFormStatusFilter => 'Form status';
@@ -21442,5 +21390,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String programsSnapshotBanner({required Object time}) {
     return 'Last synced at $time — your changes queue until you are back online.';
+  }
+
+  @override
+  String hostDraftSavedAt({required String time}) {
+    return 'Saved $time';
+  }
+
+  @override
+  String hostResponseFilterSelectionLimit({required int count}) {
+    return 'Choose up to $count options per question.';
   }
 }

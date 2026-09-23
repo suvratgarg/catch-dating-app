@@ -8,8 +8,7 @@ import 'package:catch_tokens/src/primitives/catch_stroke.dart';
 import 'package:flutter/material.dart';
 
 abstract final class CatchLayout {
-  /// Content max-width clamp for large phones / foldables.
-  /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
+  /// Center full-bleed page bodies in a width-clamped [ConstrainedBox].
   static const double maxContentWidth = 600;
   static const int roomMapMaxVisiblePositions = 8;
   static const double roomMapPositionExtent = CatchSpacing.s5;
@@ -498,6 +497,7 @@ abstract final class CatchLayout {
   static const double sheetGlyphTileRadius = CatchSpacing.s3;
   static const double sheetGlyphIconSize = 22.0;
   static const double sheetMaxHeightFraction = 0.56;
+  static const double sheetViewportMaxHeightFraction = 0.9;
   static const double skeletonCardHeight = 120.0;
   static const double skeletonCardCompactHeight = 96.0;
   static const double skeletonTextHeight = CatchIcon.sm;

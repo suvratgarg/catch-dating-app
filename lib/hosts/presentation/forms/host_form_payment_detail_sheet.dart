@@ -20,13 +20,12 @@ class HostFormPaymentDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
-    return CatchSheet(
+    return CatchSheet.standard(
       title: hostFormPaymentStatusLabel(l10n, payment.status),
-      mode: CatchSheetMode.scrollable,
       footer: payment.responseId != null && onOpenResponse != null
-          ? CatchButton(
+          ? CatchButton.sheet(
               label: l10n.hostFormPaymentsOpenResponse,
-              fullWidth: true,
+              role: CatchButtonEmphasis.alternative,
               onPressed: onOpenResponse,
             )
           : null,

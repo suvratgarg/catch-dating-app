@@ -10,11 +10,24 @@ enum HostEventEntryIntent {
   createFromGuestList,
 }
 
+/// A starting path, including the exact draft selected in the combined sheet.
+@immutable
+class HostEventEntrySelection {
+  const HostEventEntrySelection.start(this.intent)
+    : assert(intent != HostEventEntryIntent.resumeDraft),
+      draft = null;
+  const HostEventEntrySelection.resume(EventDraft this.draft)
+    : intent = HostEventEntryIntent.resumeDraft;
+
+  final HostEventEntryIntent intent;
+  final EventDraft? draft;
+}
+
 typedef HostEventEntryCallback =
     void Function(
       Club club,
       HostEventEntryState state,
-      HostEventEntryIntent intent,
+      HostEventEntrySelection selection,
     );
 
 /// Resolves the event-creation choices available for one organizer.

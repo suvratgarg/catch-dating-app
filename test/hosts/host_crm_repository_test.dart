@@ -103,6 +103,55 @@ void main() {
   );
 
   test(
+    'combined filters and search survive pagination and export serialization',
+    () async {
+      final functions = _TestFirebaseFunctions();
+      final listing =
+          functions.httpsCallable('listOrganizerContacts')
+              as _TestHttpsCallable;
+      final exporting =
+          functions.httpsCallable('exportOrganizerContacts')
+              as _TestHttpsCallable;
+      listing.resultData = crmEmptyAudiencePageData();
+      exporting.resultData = {
+        'csv': 'contact_id,display_name\n',
+        'fileName': 'audience.csv',
+        'rowCount': 0,
+        'truncated': false,
+        'generatedAtMillis': 1700000000000,
+        'sourceCoverage': 'exact',
+      };
+      final repository = HostContactsRepository(functions);
+      final query = HostAudienceQuery(
+        search: 'asha',
+        segments: const {
+          HostAudienceSegment.repeatAttendee,
+          HostAudienceSegment.firstTimeAttendee,
+          HostAudienceSegment.reliableAttendee,
+        },
+        manualTagIds: {'a' * 32, 'b' * 32},
+      );
+      await repository.listContacts(
+        'organizer-1',
+        query: query.copyWith(cursor: 'next'),
+      );
+      await repository.exportContacts('organizer-1', query: query);
+      final listPayload = listing.calls.single as Map;
+      final exportPayload = exporting.calls.single as Map;
+      for (final key in ['query', 'segmentIds', 'manualTagIds']) {
+        expect(exportPayload[key], listPayload[key]);
+      }
+      expect(listPayload['segmentIds'], [
+        'first_time_attendee',
+        'reliable_attendee',
+        'repeat_attendee',
+      ]);
+      expect(listPayload['cursor'], 'next');
+      expect(exportPayload.containsKey('cursor'), isFalse);
+    },
+  );
+
+  test(
     'communication plan is parsed from the server without local inference',
     () async {
       final functions = _TestFirebaseFunctions();

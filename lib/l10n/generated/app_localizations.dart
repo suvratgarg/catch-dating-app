@@ -3032,36 +3032,6 @@ abstract class AppLocalizations {
   /// **'Loading organizer'**
   String get hostsHostCreateEventRouteLoadingScreenBodyLoadingClub;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Resume a draft?'**
-  String get hostsDraftPickerSheetTitleResumeADraft;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Pick up where you left off, or start fresh.'**
-  String get hostsDraftPickerSheetSubtitlePickUpWhereYou;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Start a fresh event'**
-  String get hostsDraftPickerSheetLabelStartAFreshEvent;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No drafts yet'**
-  String get hostsDraftPickerSheetTitleNoDraftsYet;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Saved drafts for this organizer will appear here.'**
-  String get hostsDraftPickerSheetMessageSavedDraftsForThis;
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
   ///
   /// In en, this message translates to:
@@ -6745,14 +6715,6 @@ abstract class AppLocalizations {
     required Object name,
   });
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'SAVED {toUpperCase}'**
-  String hostsDraftPickerSheetTextSavedTouppercase({
-    required Object toUpperCase,
-  });
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (title).
   ///
   /// In en, this message translates to:
@@ -10039,12 +10001,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use guest list'**
   String get hostsHostEventsListLabelUseGuestList;
-
-  /// Explains that event-entry choices lead to a reviewable create flow.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose how you want to start. You can review every detail before publishing.'**
-  String get hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart;
 
   /// Section label for resuming existing event work.
   ///
@@ -14835,12 +14791,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add photos'**
   String get hostsCreateEventPhotoPickerVisiblecopyAddPhotos;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Could not delete draft.'**
-  String get hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
   ///
@@ -21790,14 +21740,14 @@ abstract class AppLocalizations {
   /// Grouped customer filter sheet title.
   ///
   /// In en, this message translates to:
-  /// **'Filter customers'**
+  /// **'Filter people'**
   String get hostCustomersFilterSheetTitle;
 
-  /// Explains when the grouped customer filter result count updates.
+  /// Clears every selected filter category.
   ///
   /// In en, this message translates to:
-  /// **'Choose one computed segment or one of your tags. The result count updates after you apply it.'**
-  String get hostCustomersFilterSheetSubtitle;
+  /// **'Reset all'**
+  String get hostFiltersResetAll;
 
   /// Customer segment group for attendance lifecycle filters.
   ///
@@ -21822,15 +21772,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reachable'**
   String get hostCustomersFilterGroupReachable;
-
-  /// Customer filter chip with its server-backed match count.
-  ///
-  /// In en, this message translates to:
-  /// **'{label} · {countLabel}'**
-  String hostCustomersFilterOption({
-    required String label,
-    required String countLabel,
-  });
 
   /// Exact number of people matching a customer audience query.
   ///
@@ -22426,12 +22367,6 @@ abstract class AppLocalizations {
   /// **'Your tags'**
   String get hostCustomersFilterGroupYourTags;
 
-  /// Explains why the segment-based export is unavailable for an organizer-authored tag filter.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear the manual tag filter to export.'**
-  String get hostCustomersManualTagExportUnavailable;
-
   /// Organizer-authored contact memory section heading.
   ///
   /// In en, this message translates to:
@@ -22582,10 +22517,16 @@ abstract class AppLocalizations {
   /// **'Notes are temporarily unavailable. Other customer details are still available.'**
   String get hostCustomersNotesUnavailableBody;
 
+  /// Dismiss a sheet whose selections already apply immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get hostSheetClose;
+
   /// Customers directory sort menu group label.
   ///
   /// In en, this message translates to:
-  /// **'Sort customers'**
+  /// **'Sort'**
   String get hostCustomersSort;
 
   /// Visible Customers directory sort control with its current ordering.
@@ -27301,24 +27242,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configured'**
   String get hostAutomationConfigured;
-
-  /// Form directory purpose filter for every purpose.
-  ///
-  /// In en, this message translates to:
-  /// **'All purposes'**
-  String get hostAudienceAllPurposes;
-
-  /// Directory status filter for every lifecycle state.
-  ///
-  /// In en, this message translates to:
-  /// **'All statuses'**
-  String get hostAudienceAllStatuses;
-
-  /// Form directory purpose selection title.
-  ///
-  /// In en, this message translates to:
-  /// **'Form purpose'**
-  String get hostAudienceFormPurposeFilter;
 
   /// Form directory lifecycle selection title.
   ///
@@ -34285,6 +34208,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last synced at {time} — your changes queue until you are back online.'**
   String programsSnapshotBanner({required Object time});
+
+  /// Supporting saved time for an event draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {time}'**
+  String hostDraftSavedAt({required String time});
+
+  /// Shown only when a response filter selection exceeds the API limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to {count} options per question.'**
+  String hostResponseFilterSelectionLimit({required int count});
 }
 
 class _AppLocalizationsDelegate

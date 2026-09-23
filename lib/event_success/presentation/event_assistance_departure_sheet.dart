@@ -49,9 +49,8 @@ class EventAssistanceDepartureSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceDepartureTitle,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           EventDepartureFormUnavailable(:final error) =>
             CatchLocalizedErrorBanner(error),
@@ -117,7 +116,9 @@ class EventAssistanceDepartureSheet extends ConsumerWidget {
                     if (a.isCheckedIn) (id: a.id, name: a.displayName),
                 ],
                 rosterLoading:
-                    (attendeesState.isLoading || attendeesState.isRefreshing || attendeesState.retrying),
+                    (attendeesState.isLoading ||
+                    attendeesState.isRefreshing ||
+                    attendeesState.retrying),
                 rosterError: attendeesState.error,
                 canConfirm: review.view.canConfirm,
                 actorUid: review.account.uid,

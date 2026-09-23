@@ -113,6 +113,24 @@ class CatchSection extends StatelessWidget {
        _plainConfig = null,
        _horizontalConfig = null;
 
+  /// An always-visible group of wrapping choices within an inset content lane.
+  /// Owns the muted heading, rule, and clearance above the chip surfaces.
+  /// Unlike field rows, bare choice inputs do not provide vertical row padding.
+  factory CatchSection.choiceGroup({
+    Key? key,
+    required String title,
+    bool first = false,
+    required Widget child,
+  }) => CatchSection.fieldRows(
+    key: key,
+    title: title,
+    first: first,
+    child: Padding(
+      padding: const EdgeInsets.only(top: CatchFieldTokens.rowVerticalPadding),
+      child: child,
+    ),
+  );
+
   /// Contained FieldSection variant from the form-field handoff. Unlike the
   /// generic card constructor, this surface clips field rows, owns a 1px
   /// line/ink focus border, and never adds generic card shadows. Its optional

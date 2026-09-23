@@ -298,7 +298,7 @@ class HostFormsRepository {
               for (final entry in request.answerFilters.entries)
                 {
                   'questionId': entry.key,
-                  'values': [entry.value],
+                  'values': entry.value.toList()..sort(),
                 },
             ],
       identityKinds: request.identityKinds.map((value) => value.name).toList(),

@@ -91,6 +91,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
     super.key,
     required this.filter,
     this.manualTag,
+    this.selectionLabel,
     required this.count,
     required this.countCoverage,
     required this.campaignBlocker,
@@ -102,6 +103,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
 
   final HostCustomerFilter filter;
   final HostCustomerManualTag? manualTag;
+  final String? selectionLabel;
   final int count;
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
@@ -114,7 +116,10 @@ class HostCustomerFilterSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final countLabel = _customerPeopleCountLabel(context, count, countCoverage);
     final header = context.l10n.hostCustomersFilterSummary(
-      label: manualTag?.label ?? _customerFilterLabel(context, filter),
+      label:
+          selectionLabel ??
+          manualTag?.label ??
+          _customerFilterLabel(context, filter),
       countLabel: countLabel,
     );
     return Column(
@@ -187,155 +192,6 @@ class HostCustomerFilterSummary extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class HostCustomerFilterSheet extends StatelessWidget {
-  const HostCustomerFilterSheet({
-    super.key,
-    required this.selectedFilter,
-    required this.selectedManualTag,
-    required this.manualTagVocabulary,
-    required this.selectedCount,
-    required this.smsReadiness,
-  });
-
-  final HostCustomerFilter selectedFilter;
-  final HostCustomerManualTag? selectedManualTag;
-  final List<HostCustomerManualTag> manualTagVocabulary;
-  final HostCustomerSegmentCount selectedCount;
-  final HostCrmChannelReadiness? smsReadiness;
-
-  @override
-  Widget build(BuildContext context) {
-    final groups = hostCustomerFilterGroupsForSmsReadiness(smsReadiness);
-    final maxHeight =
-        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchSheet(
-        title: context.l10n.hostCustomersFilterSheetTitle,
-        subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
-        child: Flexible(
-          child: ListView(
-            key: const ValueKey('host-customer-filter-scroll'),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              CatchSectionList(
-                emptyStateOmitted: true,
-                children: [
-                  for (final entry in groups.entries)
-                    CatchSection.divided(
-                      title: _customerFilterGroupLabel(context, entry.key),
-                      child: Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s2,
-                        children: [
-                          for (final filter in entry.value)
-                            _HostCustomerFilterChip(
-                              filter: filter,
-                              selected:
-                                  selectedManualTag == null &&
-                                  selectedFilter == filter,
-                              selectedCount: selectedCount,
-                            ),
-                        ],
-                      ),
-                    ),
-                  if (manualTagVocabulary.isNotEmpty)
-                    CatchSection.divided(
-                      title: context.l10n.hostCustomersFilterGroupYourTags,
-                      child: Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s2,
-                        children: [
-                          for (final tag in manualTagVocabulary)
-                            _HostCustomerManualTagChip(
-                              tag: tag,
-                              selected: selectedManualTag?.tagId == tag.tagId,
-                              selectedCount: selectedCount,
-                            ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HostCustomerFilterChip extends StatelessWidget {
-  const _HostCustomerFilterChip({
-    required this.filter,
-    required this.selected,
-    required this.selectedCount,
-  });
-
-  final HostCustomerFilter filter;
-  final bool selected;
-  final HostCustomerSegmentCount selectedCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final filterLabel = _customerFilterLabel(context, filter);
-    return CatchChip.selectable(
-      key: ValueKey('host-customer-filter-${filter.name}'),
-      label: selected
-          ? context.l10n.hostCustomersFilterOption(
-              label: filterLabel,
-              countLabel: _customerPeopleCountLabel(
-                context,
-                selectedCount.count,
-                selectedCount.coverage,
-              ),
-            )
-          : filterLabel,
-      selected: selected,
-      contractExemption: 'Customer filters map to reviewed CRM segments.',
-      onChanged: (_) => Navigator.of(
-        context,
-      ).pop(HostCustomerFilterSelection.computed(filter)),
-    );
-  }
-}
-
-class _HostCustomerManualTagChip extends StatelessWidget {
-  const _HostCustomerManualTagChip({
-    required this.tag,
-    required this.selected,
-    required this.selectedCount,
-  });
-
-  final HostCustomerManualTag tag;
-  final bool selected;
-  final HostCustomerSegmentCount selectedCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchChip.selectable(
-      key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
-      label: selected
-          ? context.l10n.hostCustomersFilterOption(
-              label: tag.label,
-              countLabel: _customerPeopleCountLabel(
-                context,
-                selectedCount.count,
-                selectedCount.coverage,
-              ),
-            )
-          : tag.label,
-      leading: Icon(CatchIcons.editNoteOutlined),
-      selected: selected,
-      accent: CatchTokens.of(context).ink2,
-      contractExemption: 'Manual tags are organizer-owned CRM vocabulary.',
-      onChanged: (_) =>
-          Navigator.of(context).pop(HostCustomerFilterSelection.manual(tag)),
     );
   }
 }
@@ -586,3 +442,24 @@ String _customerPeopleCountLabel(
   HostCustomerMatchCountCoverage.atLeast =>
     context.l10n.hostCustomersPeopleCountAtLeast(count: count),
 };
+
+List<CatchActionMenuItem<HostAudienceMenuAction>> _hostCustomersHeaderActions(
+  BuildContext context, {
+  required bool includeExport,
+  required bool exportEnabled,
+  String? exportSublabel,
+}) => [
+  CatchActionMenuItem(
+    value: HostAudienceMenuAction.reviewDuplicates,
+    label: context.l10n.hostCustomersReviewDuplicates,
+    icon: CatchIcons.peopleOutlineRounded,
+  ),
+  if (includeExport)
+    CatchActionMenuItem(
+      value: HostAudienceMenuAction.export,
+      label: context.l10n.hostsHostAudienceExport,
+      sublabel: exportSublabel,
+      icon: CatchIcons.downloadRounded,
+      enabled: exportEnabled,
+    ),
+];
