@@ -518,6 +518,10 @@ against its immutable version. Detail-only and withdrawn answers never satisfy
 an answer filter. Changing answer filters or chronological order starts a new
 query; cursors are bound to those selections. Bounded scans can yield an empty
 page with a continuation, so the UI must retain Load more and active controls.
+When an older client sends answer filters without a version ID, the server
+matches only the form's active published version and binds that resolved version
+to the cursor. An explicit version ID matches only that immutable version; equal
+labels or option values on another version do not widen the result.
 
 Application detail places authorized phone/social contact actions and review
 status controls before the answer list. Acceptance creates or reuses a CRM

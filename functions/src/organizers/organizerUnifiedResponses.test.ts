@@ -256,6 +256,53 @@ test("unified cursors cannot be replayed across organizers", async () => {
     cursor: page.nextCursor}), {code: "invalid-argument"});
 });
 
+test("answer filters without a version bind to the active version and cursor",
+  async () => {
+    const docs: Data = {...response("old", 300),
+      ...response("new-a", 200), ...response("new-b", 100),
+      "organizers/org": {ownerUserId: "owner", hostUserIds: ["owner"],
+        hostProfiles: []},
+      "organizerForms/form": {organizerId: "org", activeVersionId: "v2"},
+    };
+    const definition = {sections: [{questions: [{questionId: "city",
+      label: "City", kind: "singleChoice", hostPresentation: "filterable",
+      options: [{value: "same", label: "Same label"}]}]}]};
+    docs["organizerFormVersions/v1"] = {organizerId: "org", formId: "form",
+      version: 1, definition};
+    docs["organizerFormVersions/v2"] = {organizerId: "org", formId: "form",
+      version: 2, definition};
+    for (const id of ["old", "new-a", "new-b"]) {
+      docs[`organizerFormResponses/${id}`].versionId =
+        id === "old" ? "v1" : "v2";
+      docs[`organizerFormResponses/${id}`].answerSnapshots = [
+        {questionId: "city", answer: "same"}];
+    }
+    const deps = {firestore: () => fakeDb(docs),
+      checkRateLimit: async () => undefined,
+      timestamp: () => timestamp(0), storageBucket: () => {
+        throw Error();
+      }};
+    const query = {...defaults, formId: "form", limit: 1,
+      answerFilters: [{questionId: "city", values: ["same"]}]};
+    const run = (overrides: Partial<Query> = {}) =>
+      listOrganizerFormResponsesHandler({data: {...query, ...overrides},
+        auth: {uid: "owner"}} as CallableRequest<unknown>, deps);
+    const first = await run();
+    assert.deepEqual(first.entries?.map((row) => row.entryId),
+      ["response:new-a"]);
+    assert.ok(first.nextCursor);
+    const second = await run({cursor: first.nextCursor});
+    assert.deepEqual(second.entries?.map((row) => row.entryId),
+      ["response:new-b"]);
+    assert.deepEqual((await run({versionId: "v1"})).entries?.map((row) =>
+      row.entryId), ["response:old"]);
+    await assert.rejects(run({versionId: "v1", cursor: first.nextCursor}),
+      {code: "invalid-argument"});
+    docs["organizerForms/form"].activeVersionId = "v1";
+    await assert.rejects(run({cursor: first.nextCursor}),
+      {code: "invalid-argument"});
+  });
+
 test("legacy imported form and version scopes work", async () => {
   const docs: Data = {...application("import", 100),
     "organizers/org": {ownerUserId: "owner", hostUserIds: ["owner"],

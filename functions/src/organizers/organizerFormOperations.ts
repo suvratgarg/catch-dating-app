@@ -107,6 +107,7 @@ export async function listOrganizerFormResponsesHandler(
   const sortDirection = data.sortDirection ?? "desc";
   const versions = new Map<string, OrganizerFormVersionDocument>();
   let answerFilterOptions: ReturnType<typeof responseFilterOptions> = [];
+  let answerVersionId: string | null = null;
   if (data.formId) {
     const formSnap = await db.collection("organizerForms")
       .doc(data.formId).get();
@@ -144,6 +145,7 @@ export async function listOrganizerFormResponsesHandler(
         data.organizerId, data.formId);
         versions.set(versionId, version);
         answerFilterOptions = responseFilterOptions(version.definition);
+        answerVersionId = versionId;
       }
     }
   } else if (answerFilters.length > 0) {
@@ -152,9 +154,12 @@ export async function listOrganizerFormResponsesHandler(
     );
   }
   validateResponseFilters(answerFilters, answerFilterOptions);
+  // Older clients omit versionId. Their answer filters still belong to the
+  // active immutable version whose options were returned above.
+  const filterVersionId = answerFilters.length ? answerVersionId : data.versionId;
   const filterHash = hashJson({
     formId: data.formId,
-    versionId: data.versionId,
+    versionId: filterVersionId,
     statuses: [...data.statuses].sort(),
     identityKinds: [...data.identityKinds].sort(),
     sourceLinkId: data.sourceLinkId,
@@ -173,6 +178,7 @@ export async function listOrganizerFormResponsesHandler(
       matches: async (response) => {
         if (!matchesResponse(response, data)) return false;
         if (!answerFilters.length) return true;
+        if (response.versionId !== filterVersionId) return false;
         let version = versions.get(response.versionId);
         if (!version) {
           version = requireOwnedVersion(await db
@@ -224,6 +230,7 @@ export async function listOrganizerFormResponsesHandler(
       if (matchesResponse(response, data)) {
         let matches = true;
         if (answerFilters.length > 0) {
+          if (response.versionId !== filterVersionId) continue;
           let version = versions.get(response.versionId);
           if (!version) {
             version = requireOwnedVersion(await db
