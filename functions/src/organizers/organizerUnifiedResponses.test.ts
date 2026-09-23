@@ -303,6 +303,46 @@ test("answer filters without a version bind to the active version and cursor",
       {code: "invalid-argument"});
   });
 
+test("sparse active-version matches retain continuation at the scan bound",
+  async () => {
+    const docs: Data = {
+      "organizers/org": {ownerUserId: "owner", hostUserIds: ["owner"],
+        hostProfiles: []},
+      "organizerForms/form": {organizerId: "org", activeVersionId: "v2"},
+      "organizerFormVersions/v2": {organizerId: "org", formId: "form",
+        version: 2, definition: {sections: [{questions: [{questionId: "city",
+          label: "City", kind: "singleChoice",
+          hostPresentation: "filterable", options: [
+            {value: "yes", label: "Yes"}]}]}]}},
+    };
+    for (let i = 0; i < 501; i++) {
+      const id = `old-${String(i).padStart(3, "0")}`;
+      Object.assign(docs, response(id, 1000 - i));
+    }
+    Object.assign(docs, response("current", 1));
+    docs["organizerFormResponses/current"].versionId = "v2";
+    docs["organizerFormResponses/current"].answerSnapshots = [
+      {questionId: "city", answer: "yes"}];
+    const deps = {firestore: () => fakeDb(docs),
+      checkRateLimit: async () => undefined,
+      timestamp: () => timestamp(0), storageBucket: () => {
+        throw Error();
+      }};
+    for (const includeApplications of [false, true]) {
+      const query = {...defaults, formId: "form", includeApplications,
+        answerFilters: [{questionId: "city", values: ["yes"]}]};
+      const run = (cursor: string | null) =>
+        listOrganizerFormResponsesHandler({data: {...query, cursor},
+          auth: {uid: "owner"}} as CallableRequest<unknown>, deps);
+      const first = await run(null);
+      assert.deepEqual(first.items, []);
+      assert.ok(first.nextCursor);
+      const second = await run(first.nextCursor);
+      assert.deepEqual(second.items.map((row) => row.responseId),
+        ["current"]);
+    }
+  });
+
 test("legacy imported form and version scopes work", async () => {
   const docs: Data = {...application("import", 100),
     "organizers/org": {ownerUserId: "owner", hostUserIds: ["owner"],

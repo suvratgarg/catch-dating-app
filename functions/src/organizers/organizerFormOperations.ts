@@ -230,16 +230,18 @@ export async function listOrganizerFormResponsesHandler(
       if (matchesResponse(response, data)) {
         let matches = true;
         if (answerFilters.length > 0) {
-          if (response.versionId !== filterVersionId) continue;
-          let version = versions.get(response.versionId);
-          if (!version) {
-            version = requireOwnedVersion(await db
-              .collection("organizerFormVersions").doc(response.versionId)
-              .get(), data.organizerId, response.formId);
-            versions.set(response.versionId, version);
+          matches = response.versionId === filterVersionId;
+          if (matches) {
+            let version = versions.get(response.versionId);
+            if (!version) {
+              version = requireOwnedVersion(await db
+                .collection("organizerFormVersions").doc(response.versionId)
+                .get(), data.organizerId, response.formId);
+              versions.set(response.versionId, version);
+            }
+            matches = matchesAnswerFilters(response, version.definition,
+              answerFilters);
           }
-          matches = matchesAnswerFilters(response, version.definition,
-            answerFilters);
         }
         if (matches) matched.push(doc);
       }
