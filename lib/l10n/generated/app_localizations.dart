@@ -31888,6 +31888,30 @@ abstract class AppLocalizations {
   /// **'No verified account linked'**
   String get hostCustomersAccountNotVerified;
 
+  /// Fixed server ordering of the Forms directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently updated'**
+  String get hostAudienceRecentlyUpdated;
+
+  /// Active person filter on the unified responses list.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected person'**
+  String get hostAudienceSelectedPerson;
+
+  /// Explicit save for an application review note without changing its status.
+  ///
+  /// In en, this message translates to:
+  /// **'Save review note'**
+  String get hostResponseSaveReviewNote;
+
+  /// Create the review projection for a response on its existing detail page.
+  ///
+  /// In en, this message translates to:
+  /// **'Start application review'**
+  String get hostResponseStartReview;
+
   /// Program operations copy: programsWorkShellTitle.
   ///
   /// In en, this message translates to:
@@ -32791,30 +32815,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last synced at {time} — your changes queue until you are back online.'**
   String programsSnapshotBanner({required Object time});
-
-  /// Fixed server ordering of the Forms directory.
-  ///
-  /// In en, this message translates to:
-  /// **'Recently updated'**
-  String get hostAudienceRecentlyUpdated;
-
-  /// Active person filter on the unified responses list.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected person'**
-  String get hostAudienceSelectedPerson;
-
-  /// Explicit save for an application review note without changing its status.
-  ///
-  /// In en, this message translates to:
-  /// **'Save review note'**
-  String get hostResponseSaveReviewNote;
-
-  /// Create the review projection for a response on its existing detail page.
-  ///
-  /// In en, this message translates to:
-  /// **'Start application review'**
-  String get hostResponseStartReview;
 }
 
 class _AppLocalizationsDelegate

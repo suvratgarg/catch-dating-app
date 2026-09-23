@@ -20061,6 +20061,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersAccountNotVerified => 'No verified account linked';
 
   @override
+  String get hostAudienceRecentlyUpdated => 'Recently updated';
+
+  @override
+  String get hostAudienceSelectedPerson => 'Selected person';
+
+  @override
+  String get hostResponseSaveReviewNote => 'Save review note';
+
+  @override
+  String get hostResponseStartReview => 'Start application review';
+
+  @override
   String get programsWorkShellTitle => 'Program operations';
 
   @override
@@ -20610,16 +20622,4 @@ class AppLocalizationsEn extends AppLocalizations {
   String programsSnapshotBanner({required Object time}) {
     return 'Last synced at $time — your changes queue until you are back online.';
   }
-
-  @override
-  String get hostAudienceRecentlyUpdated => 'Recently updated';
-
-  @override
-  String get hostAudienceSelectedPerson => 'Selected person';
-
-  @override
-  String get hostResponseSaveReviewNote => 'Save review note';
-
-  @override
-  String get hostResponseStartReview => 'Start application review';
 }
