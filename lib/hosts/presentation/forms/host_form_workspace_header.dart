@@ -74,6 +74,10 @@ class HostFormWorkspaceHeader extends StatelessWidget {
               value: HostFormWorkspaceView.responses,
               label: context.l10n.hostFormsViewResponses,
             ),
+            CatchOption(
+              value: HostFormWorkspaceView.payments,
+              label: context.l10n.hostFormPaymentsTitle,
+            ),
           ],
           onChanged: onChanged,
         ),

@@ -10501,6 +10501,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentDetailSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Captured payment awaiting submission',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentDetailPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormPaymentSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10530,6 +10541,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_payment_use_cases
                             .hostFormPaymentSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentsSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Verified fee stages and test money',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentsPreview,
                   ),
                 ],
               ),

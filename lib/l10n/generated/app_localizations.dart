@@ -32121,6 +32121,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Razorpay account'**
   String get hostFormPaymentAccount;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostFormPaymentsTitle;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first. Payment confirmation and form submission are tracked separately. Test payments do not move real money.'**
+  String get hostFormPaymentsHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh payments'**
+  String get hostFormPaymentsRefresh;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get hostFormPaymentsPending;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get hostFormPaymentsRefunds;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get hostFormPaymentsAttention;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment records'**
+  String get hostFormPaymentsEmpty;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout attempts will appear here when someone starts paying for a submission.'**
+  String get hostFormPaymentsEmptyBody;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments in this stage'**
+  String get hostFormPaymentsNoMatches;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose All to see other payment stages.'**
+  String get hostFormPaymentsNoMatchesBody;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting checkout'**
+  String get hostFormPaymentsCreatingOrder;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming checkout'**
+  String get hostFormPaymentsOrderUnknown;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting payment'**
+  String get hostFormPaymentsCheckoutReady;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying payment'**
+  String get hostFormPaymentsVerifying;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid · submission pending'**
+  String get hostFormPaymentsCaptured;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid · submitted'**
+  String get hostFormPaymentsSubmitted;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment attempt failed'**
+  String get hostFormPaymentsFailed;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout expired'**
+  String get hostFormPaymentsExpired;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund pending'**
+  String get hostFormPaymentsRefundPending;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get hostFormPaymentsRefunded;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment needs review'**
+  String get hostFormPaymentsReviewRequired;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is confirmed. Catch is still completing the submission. Refresh to check its progress.'**
+  String get hostFormPaymentsCapturedHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is confirmed and the form response has been submitted. Acceptance and event admission are separate.'**
+  String get hostFormPaymentsSubmittedHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'This checkout is not confirmed as a completed payment. No form response has been submitted yet.'**
+  String get hostFormPaymentsPendingHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'This payment attempt failed. The applicant can retry while checkout is available.'**
+  String get hostFormPaymentsFailedHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'This checkout has expired. If a payment arrives late and cannot be submitted, Catch will attempt a refund.'**
+  String get hostFormPaymentsExpiredHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the refund in the connected Razorpay account using the references below. Withdrawing a response or declining an application does not automatically refund a fee.'**
+  String get hostFormPaymentsRefundHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic recovery needs attention. Check the connected Razorpay account using these references before taking further action.'**
+  String get hostFormPaymentsReviewHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission fee'**
+  String get hostFormPaymentsAmount;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed refunds'**
+  String get hostFormPaymentsRefundAmount;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout started'**
+  String get hostFormPaymentsStarted;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Last checked'**
+  String get hostFormPaymentsUpdated;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment captured'**
+  String get hostFormPaymentsCapturedAt;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Response submitted'**
+  String get hostFormPaymentsSubmittedAt;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment references'**
+  String get hostFormPaymentsReferences;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt reference'**
+  String get hostFormPaymentsReceipt;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay order'**
+  String get hostFormPaymentsOrderReference;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay payment'**
+  String get hostFormPaymentsPaymentReference;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay refund'**
+  String get hostFormPaymentsRefundReference;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Test payment. No real money was collected.'**
+  String get hostFormPaymentsTestHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Open submitted response'**
+  String get hostFormPaymentsOpenResponse;
 }
 
 class _AppLocalizationsDelegate

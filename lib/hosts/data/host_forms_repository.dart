@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
@@ -59,6 +60,24 @@ class HostFormsRepository {
     ).toJson(),
     action: 'manage form payment connection',
     parse: HostFormPaymentSetup.fromCallableData,
+  );
+
+  Future<HostFormPaymentPage> listPayments({
+    required String organizerId,
+    required String formId,
+    HostFormPaymentFilter filter = HostFormPaymentFilter.all,
+    String? cursor,
+  }) => _call(
+    name: 'listOrganizerFormPayments',
+    payload: ListOrganizerFormPaymentsCallableRequest(
+      organizerId: organizerId,
+      formId: formId,
+      statuses: filter.statuses.map((value) => value.name).toList(),
+      cursor: cursor,
+      limit: ReadLimitPolicy.historyPage,
+    ).toJson(),
+    action: 'load form payments',
+    parse: HostFormPaymentPage.fromCallableData,
   );
 
   Future<HostFormPage> listForms(HostFormListRequest request) => _call(

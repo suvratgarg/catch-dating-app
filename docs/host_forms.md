@@ -339,7 +339,13 @@ The projection omits respondent identity, draft tokens, unsubmitted answers,
 credential bindings, and internal error details. Status-filtered cursors are
 bound to the organizer, form and filters, with document-id ordering to disambiguate
 payments created at the same instant. Payment history is separate from the
-application review inbox.
+application review inbox. The form workspace exposes it through a Payments tab,
+including forms whose current draft no longer charges a fee. Pending, submitted,
+refund and attention filters query the server. Refresh and retry preserve the
+selected form/filter; stale pagination responses cannot overwrite a refreshed
+list. Detail sheets identify test money, separate capture from submission,
+show selectable provider references, and only offer a response link when one
+exists. They do not imply that declining an application issues a refund.
 
 Live Razorpay setup remains external: create Catch's Technology Partner
 application, register the HTTPS callback, provision its client credentials and

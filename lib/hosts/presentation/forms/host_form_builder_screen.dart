@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actio
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_viewport.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payments_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_questions_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
@@ -266,6 +267,10 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   formTitle: value.editor.definition.title,
                   showFormContext: false,
                 ),
+                HostFormWorkspaceView.payments => HostFormPaymentsSectionList(
+                  organizerId: widget.organizerId,
+                  formId: widget.formId,
+                ),
                 HostFormWorkspaceView.settings => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -278,9 +283,10 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   ],
                 ),
               };
-              if (view == HostFormWorkspaceView.responses) {
+              if (view == HostFormWorkspaceView.responses ||
+                  view == HostFormWorkspaceView.payments) {
                 return CustomScrollView(
-                  key: const PageStorageKey('host-form-builder-responses'),
+                  key: PageStorageKey('host-form-builder-${view.name}'),
                   slivers: [
                     CatchPageBody.sliver(
                       child: SliverToBoxAdapter(child: header),

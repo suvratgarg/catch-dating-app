@@ -27305,5 +27305,292 @@
   "hostFormPaymentPublishHelp": "This fee applies to new submissions after publishing. Previously started checkouts keep their original fee.",
   "@hostFormPaymentPublishHelp": {"description": "Form payment setup: PublishHelp.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormPaymentAccount": "Razorpay account",
-  "@hostFormPaymentAccount": {"description": "Connected merchant selector label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
+  "@hostFormPaymentAccount": {"description": "Connected merchant selector label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentsTitle": "Payments",
+  "@hostFormPaymentsTitle": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsHelp": "Newest first. Payment confirmation and form submission are tracked separately. Test payments do not move real money.",
+  "@hostFormPaymentsHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefresh": "Refresh payments",
+  "@hostFormPaymentsRefresh": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsPending": "Pending",
+  "@hostFormPaymentsPending": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefunds": "Refunds",
+  "@hostFormPaymentsRefunds": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsAttention": "Needs attention",
+  "@hostFormPaymentsAttention": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsEmpty": "No payment records",
+  "@hostFormPaymentsEmpty": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsEmptyBody": "Checkout attempts will appear here when someone starts paying for a submission.",
+  "@hostFormPaymentsEmptyBody": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsNoMatches": "No payments in this stage",
+  "@hostFormPaymentsNoMatches": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsNoMatchesBody": "Choose All to see other payment stages.",
+  "@hostFormPaymentsNoMatchesBody": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCreatingOrder": "Starting checkout",
+  "@hostFormPaymentsCreatingOrder": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsOrderUnknown": "Confirming checkout",
+  "@hostFormPaymentsOrderUnknown": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCheckoutReady": "Awaiting payment",
+  "@hostFormPaymentsCheckoutReady": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsVerifying": "Verifying payment",
+  "@hostFormPaymentsVerifying": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCaptured": "Paid · submission pending",
+  "@hostFormPaymentsCaptured": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsSubmitted": "Paid · submitted",
+  "@hostFormPaymentsSubmitted": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsFailed": "Payment attempt failed",
+  "@hostFormPaymentsFailed": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsExpired": "Checkout expired",
+  "@hostFormPaymentsExpired": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundPending": "Refund pending",
+  "@hostFormPaymentsRefundPending": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefunded": "Refunded",
+  "@hostFormPaymentsRefunded": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReviewRequired": "Payment needs review",
+  "@hostFormPaymentsReviewRequired": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCapturedHelp": "Payment is confirmed. Catch is still completing the submission. Refresh to check its progress.",
+  "@hostFormPaymentsCapturedHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsSubmittedHelp": "Payment is confirmed and the form response has been submitted. Acceptance and event admission are separate.",
+  "@hostFormPaymentsSubmittedHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsPendingHelp": "This checkout is not confirmed as a completed payment. No form response has been submitted yet.",
+  "@hostFormPaymentsPendingHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsFailedHelp": "This payment attempt failed. The applicant can retry while checkout is available.",
+  "@hostFormPaymentsFailedHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsExpiredHelp": "This checkout has expired. If a payment arrives late and cannot be submitted, Catch will attempt a refund.",
+  "@hostFormPaymentsExpiredHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundHelp": "Check the refund in the connected Razorpay account using the references below. Withdrawing a response or declining an application does not automatically refund a fee.",
+  "@hostFormPaymentsRefundHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReviewHelp": "Automatic recovery needs attention. Check the connected Razorpay account using these references before taking further action.",
+  "@hostFormPaymentsReviewHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsAmount": "Submission fee",
+  "@hostFormPaymentsAmount": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundAmount": "Confirmed refunds",
+  "@hostFormPaymentsRefundAmount": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsStarted": "Checkout started",
+  "@hostFormPaymentsStarted": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsUpdated": "Last checked",
+  "@hostFormPaymentsUpdated": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCapturedAt": "Payment captured",
+  "@hostFormPaymentsCapturedAt": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsSubmittedAt": "Response submitted",
+  "@hostFormPaymentsSubmittedAt": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReferences": "Payment references",
+  "@hostFormPaymentsReferences": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReceipt": "Receipt reference",
+  "@hostFormPaymentsReceipt": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsOrderReference": "Razorpay order",
+  "@hostFormPaymentsOrderReference": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsPaymentReference": "Razorpay payment",
+  "@hostFormPaymentsPaymentReference": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundReference": "Razorpay refund",
+  "@hostFormPaymentsRefundReference": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsTestHelp": "Test payment. No real money was collected.",
+  "@hostFormPaymentsTestHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsOpenResponse": "Open submitted response",
+  "@hostFormPaymentsOpenResponse": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  }
 }

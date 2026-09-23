@@ -20189,4 +20189,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPaymentAccount => 'Razorpay account';
+
+  @override
+  String get hostFormPaymentsTitle => 'Payments';
+
+  @override
+  String get hostFormPaymentsHelp =>
+      'Newest first. Payment confirmation and form submission are tracked separately. Test payments do not move real money.';
+
+  @override
+  String get hostFormPaymentsRefresh => 'Refresh payments';
+
+  @override
+  String get hostFormPaymentsPending => 'Pending';
+
+  @override
+  String get hostFormPaymentsRefunds => 'Refunds';
+
+  @override
+  String get hostFormPaymentsAttention => 'Needs attention';
+
+  @override
+  String get hostFormPaymentsEmpty => 'No payment records';
+
+  @override
+  String get hostFormPaymentsEmptyBody =>
+      'Checkout attempts will appear here when someone starts paying for a submission.';
+
+  @override
+  String get hostFormPaymentsNoMatches => 'No payments in this stage';
+
+  @override
+  String get hostFormPaymentsNoMatchesBody =>
+      'Choose All to see other payment stages.';
+
+  @override
+  String get hostFormPaymentsCreatingOrder => 'Starting checkout';
+
+  @override
+  String get hostFormPaymentsOrderUnknown => 'Confirming checkout';
+
+  @override
+  String get hostFormPaymentsCheckoutReady => 'Awaiting payment';
+
+  @override
+  String get hostFormPaymentsVerifying => 'Verifying payment';
+
+  @override
+  String get hostFormPaymentsCaptured => 'Paid · submission pending';
+
+  @override
+  String get hostFormPaymentsSubmitted => 'Paid · submitted';
+
+  @override
+  String get hostFormPaymentsFailed => 'Payment attempt failed';
+
+  @override
+  String get hostFormPaymentsExpired => 'Checkout expired';
+
+  @override
+  String get hostFormPaymentsRefundPending => 'Refund pending';
+
+  @override
+  String get hostFormPaymentsRefunded => 'Refunded';
+
+  @override
+  String get hostFormPaymentsReviewRequired => 'Payment needs review';
+
+  @override
+  String get hostFormPaymentsCapturedHelp =>
+      'Payment is confirmed. Catch is still completing the submission. Refresh to check its progress.';
+
+  @override
+  String get hostFormPaymentsSubmittedHelp =>
+      'Payment is confirmed and the form response has been submitted. Acceptance and event admission are separate.';
+
+  @override
+  String get hostFormPaymentsPendingHelp =>
+      'This checkout is not confirmed as a completed payment. No form response has been submitted yet.';
+
+  @override
+  String get hostFormPaymentsFailedHelp =>
+      'This payment attempt failed. The applicant can retry while checkout is available.';
+
+  @override
+  String get hostFormPaymentsExpiredHelp =>
+      'This checkout has expired. If a payment arrives late and cannot be submitted, Catch will attempt a refund.';
+
+  @override
+  String get hostFormPaymentsRefundHelp =>
+      'Check the refund in the connected Razorpay account using the references below. Withdrawing a response or declining an application does not automatically refund a fee.';
+
+  @override
+  String get hostFormPaymentsReviewHelp =>
+      'Automatic recovery needs attention. Check the connected Razorpay account using these references before taking further action.';
+
+  @override
+  String get hostFormPaymentsAmount => 'Submission fee';
+
+  @override
+  String get hostFormPaymentsRefundAmount => 'Confirmed refunds';
+
+  @override
+  String get hostFormPaymentsStarted => 'Checkout started';
+
+  @override
+  String get hostFormPaymentsUpdated => 'Last checked';
+
+  @override
+  String get hostFormPaymentsCapturedAt => 'Payment captured';
+
+  @override
+  String get hostFormPaymentsSubmittedAt => 'Response submitted';
+
+  @override
+  String get hostFormPaymentsReferences => 'Payment references';
+
+  @override
+  String get hostFormPaymentsReceipt => 'Receipt reference';
+
+  @override
+  String get hostFormPaymentsOrderReference => 'Razorpay order';
+
+  @override
+  String get hostFormPaymentsPaymentReference => 'Razorpay payment';
+
+  @override
+  String get hostFormPaymentsRefundReference => 'Razorpay refund';
+
+  @override
+  String get hostFormPaymentsTestHelp =>
+      'Test payment. No real money was collected.';
+
+  @override
+  String get hostFormPaymentsOpenResponse => 'Open submitted response';
 }
