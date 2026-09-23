@@ -159,7 +159,8 @@ function fixture() {
         status: "optedIn",
         evidenceStatus: "complete",
         currentReceiptId: "receipt",
-        termsVersion: "v1",
+        termsVersion: "organizer-updates-v1",
+        source: "publicEventRegistration",
         updatedAt: now,
       },
     };

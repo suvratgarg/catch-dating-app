@@ -78,6 +78,8 @@ test("campaign eligibility fails closed for an incomplete legacy grant", () => {
       status: "optedIn",
       evidenceStatus: "incomplete",
       currentReceiptId: "legacy-receipt",
+      termsVersion: "organizer-updates-v1",
+      source: "publicEventRegistration",
     },
   } as OrganizerCommunicationPreferenceDocument;
   const [row] = evaluateAudienceRows([{
@@ -98,6 +100,16 @@ test("campaign eligibility fails closed for an incomplete legacy grant", () => {
     channelState: null,
   }], now, ["repeat_attendee"]);
   assert.equal(eligible.eligibility, "eligible");
+  for (const termsVersion of ["v1", "2026-08-30"]) {
+    const [ambiguous] = evaluateAudienceRows([{
+      contactId: "contact-1", contact, trait,
+      preference: {...preference, whatsapp: {...preference.whatsapp,
+        termsVersion}},
+      channelState: null,
+    }], now, ["repeat_attendee"]);
+    assert.equal(ambiguous.eligibility, "excluded");
+    assert.equal(ambiguous.exclusionReason, "unknownPermission");
+  }
 });
 
 test(
@@ -123,7 +135,8 @@ test(
         status: "optedIn",
         evidenceStatus: "complete",
         currentReceiptId: "receipt-1",
-        termsVersion: "2026-08-30",
+        termsVersion: "organizer-updates-v1",
+        source: "publicEventRegistration",
         updatedAt: admin.firestore.Timestamp.fromMillis(9_000),
       },
     } as OrganizerCommunicationPreferenceDocument;
