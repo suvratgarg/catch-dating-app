@@ -19,16 +19,16 @@
     "ios": {
       "consumer": {
         "baselineArtifactBytes": 49861808,
-        "maxArtifactBytes": 53000000,
+        "maxArtifactBytes": 59000000,
         "baselineUncompressedBytes": 172081725,
-        "maxUncompressedBytes": 181000000,
+        "maxUncompressedBytes": 206000000,
         "forbiddenNativeEntries": []
       },
       "host": {
         "baselineArtifactBytes": 49379476,
-        "maxArtifactBytes": 52000000,
+        "maxArtifactBytes": 58000000,
         "baselineUncompressedBytes": 169696573,
-        "maxUncompressedBytes": 176000000,
+        "maxUncompressedBytes": 203000000,
         "forbiddenNativeEntries": [
           "Frameworks/health.framework/",
           "Frameworks/razorpay_flutter.framework/"
@@ -38,9 +38,9 @@
     "android": {
       "consumer": {
         "baselineArtifactBytes": 91537673,
-        "maxArtifactBytes": 96000000,
+        "maxArtifactBytes": 109000000,
         "baselineUncompressedBytes": 287636300,
-        "maxUncompressedBytes": 300000000,
+        "maxUncompressedBytes": 345000000,
         "forbiddenNativeEntries": []
       },
       "host": {

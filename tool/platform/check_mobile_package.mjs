@@ -126,6 +126,21 @@ export function evaluatePackageReport({report, policy}) {
   return findings;
 }
 
+export function packageBudgetHeadroom({report, policy}) {
+  const limits = policy.platforms?.[report.platform]?.[report.role];
+  if (!limits) return null;
+  const metric = (measured, budget) => ({
+    budgetBytes: budget,
+    remainingBytes: budget - measured,
+    remainingRatio: (budget - measured) / budget,
+  });
+  return {
+    artifact: report.artifactKind === "archive"
+      ? metric(report.artifactBytes, limits.maxArtifactBytes) : null,
+    uncompressed: metric(report.uncompressedBytes, limits.maxUncompressedBytes),
+  };
+}
+
 export function validatePackagePolicy(policy) {
   const findings = [];
   const requireBaselines =
@@ -257,7 +272,8 @@ export function inspectArtifact({artifactPath, role, platform, policy}) {
     entries,
     appBinaries,
   };
-  return {...report, findings: evaluatePackageReport({report, policy})};
+  return {...report, budgetHeadroom: packageBudgetHeadroom({report, policy}),
+    findings: evaluatePackageReport({report, policy})};
 }
 
 function valueAfter(args, flag) {
@@ -317,6 +333,7 @@ function main() {
             platform: report.platform,
             artifactBytes: report.artifactBytes,
             uncompressedBytes: report.uncompressedBytes,
+            budgetHeadroom: report.budgetHeadroom,
             entryCount: report.entryCount,
             appBinaries: report.appBinaries,
             findings: report.findings,
