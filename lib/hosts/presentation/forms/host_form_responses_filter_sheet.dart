@@ -45,7 +45,7 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                     ? null
                     : () {
                         if (hasVersionOverride) {
-                          _selectVersion(scope!.activeVersionId);
+                          _selectVersion(scope.activeVersionId);
                         }
                         _updateFilters(_answerFilters.clear);
                         if (widget.onFormChanged != null) changeForm(null);
@@ -192,7 +192,9 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                                 final number = int.tryParse(value);
                                 if (number == null ||
                                     number < 1 ||
-                                    number > scope.publishedVersion) return;
+                                    number > scope.publishedVersion) {
+                                  return;
+                                }
                                 _selectVersion('${formId}_v$number');
                                 updateSheet(() => options = const []);
                               },

@@ -338,14 +338,14 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.text('Bina'), findsOneWidget);
 
-    queue.reviewed = true;
+    queue._reviewed = true;
     container.invalidate(hostFormResponsesControllerProvider(request));
     await pumpFeatureUi(tester);
     await tester.tap(find.widgetWithText(CatchButton, 'Next'));
     await pumpFeatureUi(tester);
-    expect(queue.loadMoreCalls, 1);
+    expect(queue._loadMoreCalls, 1);
     expect(find.text('Cara'), findsOneWidget);
-    expect(queue.requests.every((value) => value == request), isTrue);
+    expect(queue._requests.every((value) => value == request), isTrue);
     await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
     await pumpFeatureUi(tester);
     expect(find.text('Asha'), findsOneWidget);
@@ -373,23 +373,23 @@ HostFormResponseDetail _queueDetail(String id, String name) {
 }
 
 class _ReviewQueueController extends HostFormResponsesController {
-  _ReviewQueueController(this.details);
-  final Map<String, HostFormResponseDetail> details;
-  final List<HostFormResponseListRequest> requests = [];
-  bool reviewed = false;
-  int loadMoreCalls = 0;
+  _ReviewQueueController(this._details);
+  final Map<String, HostFormResponseDetail> _details;
+  final List<HostFormResponseListRequest> _requests = [];
+  bool _reviewed = false;
+  int _loadMoreCalls = 0;
 
   List<HostFormInboxEntry> get _firstPage => [
-    HostFormInboxEntry.fromResponse(details['response_a']!.response),
-    if (!reviewed)
-      HostFormInboxEntry.fromResponse(details['response_b']!.response),
+    HostFormInboxEntry.fromResponse(_details['response_a']!.response),
+    if (!_reviewed)
+      HostFormInboxEntry.fromResponse(_details['response_b']!.response),
   ];
 
   @override
   Future<HostFormResponsesState> build(
     HostFormResponseListRequest request,
   ) async {
-    requests.add(request);
+    _requests.add(request);
     return HostFormResponsesState(
       responses: const [],
       entries: _firstPage,
@@ -399,13 +399,13 @@ class _ReviewQueueController extends HostFormResponsesController {
 
   @override
   Future<void> loadMore() async {
-    loadMoreCalls++;
+    _loadMoreCalls++;
     state = AsyncData(
       HostFormResponsesState(
         responses: const [],
         entries: [
           ..._firstPage,
-          HostFormInboxEntry.fromResponse(details['response_c']!.response),
+          HostFormInboxEntry.fromResponse(_details['response_c']!.response),
         ],
         nextCursor: null,
       ),

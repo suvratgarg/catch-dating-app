@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('response page exposes the server-owned published version scope', () {
-    final page = HostFormResponsePage.fromCallableData({
+    final page = HostFormResponsePage.fromCallableData(const {
       'organizerId': 'org',
       'items': <Object?>[],
       'nextCursor': null,

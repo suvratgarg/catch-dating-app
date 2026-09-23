@@ -195,8 +195,11 @@ class _HostFormResponseDetailScreenState
             final queued = queue == null
                 ? null
                 : ref.watch(hostFormResponsesControllerProvider(queue.request));
-            final entries = queued?.asData?.value.inboxEntries;
-            final canLoadMore = queued?.asData?.value.canLoadMore ?? false;
+            final queueState = queued == null
+                ? null
+                : catchAsyncStateFromAsyncValue(queued);
+            final entries = queueState?.value?.inboxEntries;
+            final canLoadMore = queueState?.value?.canLoadMore ?? false;
             final previous = entries == null || queue == null
                 ? -1
                 : queue.targetIndex(
@@ -238,8 +241,8 @@ class _HostFormResponseDetailScreenState
                       ),
                     ],
                   ),
-                  if (queued?.hasError == true ||
-                      queued?.asData?.value.loadMoreError != null)
+                  if (queueState?.error != null ||
+                      queueState?.value?.loadMoreError != null)
                     CatchButton.command(
                       label: context.l10n.sharedActionTryAgain,
                       onPressed: () => ref.invalidate(
@@ -293,7 +296,11 @@ class _HostFormResponseDetailScreenState
               pages < 10;
           pages++) {
         await ref.read(provider.notifier).loadMore();
-        current = ref.read(provider).requireValue;
+        final refreshed = catchAsyncStateFromAsyncValue(
+          ref.read(provider),
+        ).value;
+        if (refreshed == null) break;
+        current = refreshed;
         if (current.loadMoreError != null) break;
         target = queue.targetIndex(
           current.inboxEntries,
