@@ -70,6 +70,10 @@ class _EventSuccessAssignmentFeaturesSectionState
       _resumed && widget.viewerUid != null && widget.enabled &&
       !widget.sequenceUnsupported;
 
+  bool _isCurrent(int generation, String eventId, String? uid) =>
+      mounted && generation == _generation && _canRead &&
+      widget.eventId == eventId && widget.viewerUid == uid;
+
   @override
   void initState() {
     super.initState();
@@ -156,6 +160,9 @@ class _EventSuccessAssignmentFeaturesSectionState
         rules: resetDraft ? const [] : draft,
         sourceFormIds: sourceIds,
       );
+      if (!_isCurrent(generation, eventId, uid) || next.eventId != eventId) {
+        return;
+      }
       if (resetDraft && next.savedRules.isNotEmpty) {
         next = await widget.onPreview(
           eventId: eventId,
@@ -163,9 +170,9 @@ class _EventSuccessAssignmentFeaturesSectionState
           sourceFormIds: sourceIds,
         );
       }
-      if (!mounted || generation != _generation || !_canRead ||
-          widget.eventId != eventId || widget.viewerUid != uid ||
-          next.eventId != eventId) return;
+      if (!_isCurrent(generation, eventId, uid) || next.eventId != eventId) {
+        return;
+      }
       setState(() {
         _preview = next;
         if (resetDraft) {
@@ -177,8 +184,7 @@ class _EventSuccessAssignmentFeaturesSectionState
         _loading = false;
       });
     } on Object catch (error) {
-      if (!mounted || generation != _generation || !_canRead ||
-          widget.eventId != eventId || widget.viewerUid != uid) return;
+      if (!_isCurrent(generation, eventId, uid)) return;
       setState(() {
         _error = error;
         _loading = false;
@@ -187,6 +193,7 @@ class _EventSuccessAssignmentFeaturesSectionState
   }
 
   void _changeRules(List<EventSuccessAssignmentFeatureRule> rules) {
+    if (!_canRead || _loading || _saving) return;
     setState(() {
       _rules = List.unmodifiable(rules);
       _dirty = true;
@@ -216,9 +223,9 @@ class _EventSuccessAssignmentFeaturesSectionState
         requestId: requestId,
         rules: _rules,
       );
-      if (!mounted || generation != _generation || !_canRead ||
-          widget.eventId != eventId || widget.viewerUid != uid ||
-          saved.eventId != eventId) return;
+      if (!_isCurrent(generation, eventId, uid) || saved.eventId != eventId) {
+        return;
+      }
       setState(() {
         _saving = false;
         _dirty = false;
@@ -226,8 +233,7 @@ class _EventSuccessAssignmentFeaturesSectionState
       });
       await _load(resetDraft: true);
     } on Object catch (error) {
-      if (!mounted || generation != _generation || !_canRead ||
-          widget.eventId != eventId || widget.viewerUid != uid) return;
+      if (!_isCurrent(generation, eventId, uid)) return;
       setState(() {
         _saving = false;
         _error = error;
@@ -243,6 +249,10 @@ class _EventSuccessAssignmentFeaturesSectionState
   }
 
   Future<void> _chooseForm() async {
+    if (!_canRead || _loading || _saving) return;
+    final generation = _generation;
+    final eventId = widget.eventId;
+    final uid = widget.viewerUid;
     final forms = widget.formsState.value
             ?.where((form) => form.activeVersionId != null)
             .toList(growable: false) ??
@@ -264,7 +274,7 @@ class _EventSuccessAssignmentFeaturesSectionState
                     CatchField.nav(
                       copy: catchFieldCopy(sheetContext.l10n),
                       title: form.title,
-                      body: form.activeVersionId,
+                      body: sheetContext.l10n.eventMatchingHostActiveVersion,
                       onTap: () => Navigator.of(sheetContext).pop(form.formId),
                     ),
                 ],
@@ -283,7 +293,8 @@ class _EventSuccessAssignmentFeaturesSectionState
       },
     );
     _ownedSheetContext = null;
-    if (!mounted || selected == null || !_canRead) return;
+    if (selected == null || !_isCurrent(generation, eventId, uid) ||
+        _loading || _saving) return;
     setState(() => _selectedFormId = selected);
     await _load(resetDraft: false);
   }
@@ -293,6 +304,10 @@ class _EventSuccessAssignmentFeaturesSectionState
     EventSuccessAssignmentFeatureQuestion question,
     EventSuccessAssignmentFeatureRule? current,
   ) async {
+    if (!_canRead || _loading || _saving) return;
+    final generation = _generation;
+    final eventId = widget.eventId;
+    final uid = widget.viewerUid;
     final updated = await showCatchBottomSheet<EventSuccessAssignmentFeatureRule>(
       context: context,
       builder: (sheetContext) {
@@ -305,7 +320,8 @@ class _EventSuccessAssignmentFeaturesSectionState
       },
     );
     _ownedSheetContext = null;
-    if (!mounted || !_canRead || updated == null) return;
+    if (updated == null || !_isCurrent(generation, eventId, uid) ||
+        _loading || _saving) return;
     final next = _rules.where((item) => item.featureId != updated.featureId)
         .toList()..add(updated);
     _changeRules(next);
@@ -335,7 +351,7 @@ class _EventSuccessAssignmentFeaturesSectionState
           CatchField.content(
             copy: catchFieldCopy(l10n),
             title: l10n.eventMatchingHostUnsupported,
-            body: l10n.eventMatchingCoverageNote,
+            body: l10n.eventMatchingHostCoverageNote,
           )
         else if (!widget.enabled)
           CatchField.content(
@@ -348,7 +364,7 @@ class _EventSuccessAssignmentFeaturesSectionState
             CatchField.content(
               copy: catchFieldCopy(l10n),
               title: l10n.eventMatchingHostPreview,
-              body: l10n.eventMatchingCoverageNote,
+              body: l10n.eventMatchingHostCoverageNote,
             ),
           if (_conflict)
             CatchField.content(
@@ -392,10 +408,11 @@ class _EventSuccessAssignmentFeaturesSectionState
                     item.versionId == selected.versionId &&
                     item.questionId == question.questionId)
                     ? l10n.eventMatchingHostSavedRules : null,
-                onTap: _rules.length >= 8 && !_rules.any((item) =>
+                onTap: _loading || _saving ||
+                    (_rules.length >= 8 && !_rules.any((item) =>
                     item.formId == selected.formId &&
                     item.versionId == selected.versionId &&
-                    item.questionId == question.questionId)
+                    item.questionId == question.questionId))
                     ? null
                     : () => _editRule(selected, question,
                         _rules.where((item) =>
@@ -428,12 +445,13 @@ class _EventSuccessAssignmentFeaturesSectionState
                 title: l10n.eventMatchingHostRemove,
                 body: _questionLabel(sources, rule) ??
                     l10n.eventMatchingUnavailable,
-                onTap: _saving ? null : () => _removeRule(rule.featureId),
+                onTap: _loading || _saving ? null :
+                    () => _removeRule(rule.featureId),
               ),
             ],
           CatchField.content(
             copy: catchFieldCopy(l10n),
-            title: l10n.eventMatchingCoverageNote,
+            title: l10n.eventMatchingHostCoverageNote,
             body: l10n.eventMatchingHostDescription,
           ),
           CatchButton(

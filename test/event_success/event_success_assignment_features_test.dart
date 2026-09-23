@@ -7,11 +7,15 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_features_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../support/catch_test_fonts.dart';
 
 const _choiceQuestion = EventSuccessAssignmentFeatureQuestion(
   questionId: 'question-1',
@@ -28,6 +32,26 @@ const _source = EventSuccessAssignmentFeatureSource(
   versionId: 'version-1',
   isActiveVersion: true,
   questions: [_choiceQuestion],
+);
+final _publishedForm = HostFormSummary(
+  organizerId: 'organizer-1',
+  formId: 'form-1',
+  title: 'Event questions',
+  description: null,
+  purpose: HostFormPurpose.registration,
+  status: HostFormLifecycleStatus.published,
+  templateId: null,
+  publicFormId: 'public-1',
+  defaultTargetKind: HostFormTargetKind.event,
+  defaultTargetId: 'event-1',
+  activeVersionId: 'version-1',
+  draftRevision: 2,
+  publishedVersion: 1,
+  submittedResponseCount: 8,
+  consequences: const HostFormConsequences.unavailable(),
+  updatedAt: DateTime.utc(2026, 9, 23),
+  publishedAt: DateTime.utc(2026, 9, 23),
+  lastResponseAt: null,
 );
 
 EventSuccessAssignmentFeaturePreview _preview({
@@ -51,6 +75,10 @@ EventSuccessAssignmentFeaturePreview _preview({
 );
 
 void main() {
+  if (Platform.environment.containsKey('CATCH_MATCHING_HOST_REVIEW_DIR')) {
+    setUpAll(loadCatchTestFonts);
+  }
+
   test('published option identity and explicit ordinal order survive mapping', () {
     final rule = EventSuccessAssignmentFeatureRule.fromPublishedQuestion(
       source: _source,
@@ -171,6 +199,79 @@ void main() {
     expect(find.text('Form answer matching'), findsNothing);
   });
 
+  testWidgets('a rule sheet cannot apply after the organizer changes',
+      (tester) async {
+    Future<EventSuccessAssignmentFeaturePreview> preview({
+      required String eventId,
+      required List<EventSuccessAssignmentFeatureRule> rules,
+      required List<String> sourceFormIds,
+    }) async => _preview(rules: rules);
+    Future<EventSuccessAssignmentFeatureSaveResult> save({
+      required String eventId,
+      required int expectedRevision,
+      required String requestId,
+      required List<EventSuccessAssignmentFeatureRule> rules,
+    }) => throw const ValidationException('Unexpected save.');
+    await tester.pumpWidget(_harness(
+      viewerUid: 'host-1', onPreview: preview, onSave: save,
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Choose a published form'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Event questions').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(CatchField, 'Music style'));
+    await tester.pumpAndSettle();
+    expect(find.text('Answer type'), findsOneWidget);
+
+    await tester.pumpWidget(_harness(
+      viewerUid: 'host-2', onPreview: preview, onSave: save,
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('Answer type'), findsNothing);
+    expect(find.text('Save matching preferences'), findsNothing);
+  });
+
+  testWidgets('save in flight disables form and question edits', (tester) async {
+    final savedRule = EventSuccessAssignmentFeatureRule.fromPublishedQuestion(
+      source: _source, question: _choiceQuestion, kind: 'category',
+      mode: 'preferSimilar', weight: 1,
+    );
+    final savePending = Completer<EventSuccessAssignmentFeatureSaveResult>();
+    await tester.pumpWidget(_harness(
+      viewerUid: 'host-1',
+      onPreview: ({required eventId, required rules,
+          required sourceFormIds}) async => _preview(
+            rules: rules.isEmpty ? [savedRule] : rules,
+          ),
+      onSave: ({required eventId, required expectedRevision,
+          required requestId, required rules}) => savePending.future,
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Choose a published form'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Event questions').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Remove question'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save matching preferences'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(CatchField, 'Music style'),
+        warnIfMissed: false);
+    await tester.pump();
+    expect(find.text('Answer type'), findsNothing);
+    await tester.tap(find.text('Choose a published form'),
+        warnIfMissed: false);
+    await tester.pump();
+    expect(find.byType(CatchSheet), findsNothing);
+
+    savePending.complete(const EventSuccessAssignmentFeatureSaveResult(
+      eventId: 'event-1', revision: 4, replayed: false,
+    ));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('background hides the catalog until a fresh preview completes',
       (tester) async {
     var previews = 0;
@@ -228,7 +329,9 @@ Widget _harness({
         child: EventSuccessAssignmentFeaturesSection(
           eventId: 'event-1', viewerUid: viewerUid,
           enabled: true, sequenceUnsupported: false,
-          formsState: const CatchAsyncState<List<HostFormSummary>>.data([]),
+          formsState: CatchAsyncState<List<HostFormSummary>>.data(
+            [_publishedForm],
+          ),
           onLoadMoreForms: null, onPreview: onPreview, onSave: onSave,
         ),
       ),
