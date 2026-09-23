@@ -10,6 +10,16 @@ export type CatchCommunicationPermissionReceiptDocument = {
 } & {
   uid: string;
   channel: "whatsapp";
+  purpose?: "eventOperations" | "marketing";
+  endpointE164?: string;
+  sourceVersionId?: string;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  sourceDecidedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
   decision: "optedIn" | "optedOut";
   evidenceStatus: "complete" | "incomplete";
   termsVersion: string | null;

@@ -231,6 +231,9 @@ export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schema
 export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
 export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";
 export {withdrawParticipantMessagingPermissionCallableResponseSchema} from "./schemas/withdrawParticipantMessagingPermissionOutput";
+export {promoteFormCommunicationIntentCallablePayloadSchema} from "./schemas/promoteFormCommunicationIntentInput";
+export {promoteFormCommunicationIntentCallableResponseSchema} from "./schemas/promoteFormCommunicationIntentOutput";
+export {formCommunicationConsentIntentDocumentSchema} from "./schemas/formCommunicationConsentIntentDocument";
 export {catchCommunicationPreferenceDocumentSchema} from "./schemas/catchCommunicationPreferenceDocument";
 export {catchCommunicationPermissionReceiptDocumentSchema} from "./schemas/catchCommunicationPermissionReceiptDocument";
 export {organizerCommunicationPreferenceDocumentSchema} from "./schemas/organizerCommunicationPreferenceDocument";
@@ -255,6 +258,7 @@ export {organizerProviderConnectionDocumentSchema} from "./schemas/organizerProv
 export {organizerApplicationFormDocumentSchema} from "./schemas/organizerApplicationFormDocument";
 export {organizerApplicationFormVersionDocumentSchema} from "./schemas/organizerApplicationFormVersionDocument";
 export {organizerFormDocumentSchema} from "./schemas/organizerFormDocument";
+export {organizerFormDomainDocumentSchema} from "./schemas/organizerFormDomainDocument";
 export {organizerPaymentConnectionDocumentSchema} from "./schemas/organizerPaymentConnectionDocument";
 export {organizerPaymentOauthStateDocumentSchema} from "./schemas/organizerPaymentOauthStateDocument";
 export {organizerFormPaymentDocumentSchema} from "./schemas/organizerFormPaymentDocument";
@@ -614,6 +618,8 @@ export {getEventRosterInsightsCallableResponseSchema} from "./schemas/getEventRo
 export {getOrganizerCrmSummaryCallableResponseSchema} from "./schemas/getOrganizerCrmSummaryOutput";
 export {listOrganizerContactsCallablePayloadSchema} from "./schemas/listOrganizerContactsInput";
 export {createOrganizerFormCallablePayloadSchema} from "./schemas/createOrganizerFormInput";
+export {manageOrganizerFormDomainCallablePayloadSchema} from "./schemas/manageOrganizerFormDomainInput";
+export {manageOrganizerFormDomainCallableResponseSchema} from "./schemas/manageOrganizerFormDomainOutput";
 export {createOrganizerFormCallableResponseSchema} from "./schemas/createOrganizerFormOutput";
 export {updateOrganizerFormDraftCallablePayloadSchema} from "./schemas/updateOrganizerFormDraftInput";
 export {updateOrganizerFormDraftCallableResponseSchema} from "./schemas/updateOrganizerFormDraftOutput";

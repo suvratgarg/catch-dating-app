@@ -8,6 +8,7 @@ EventProfileSettings settingsFixture({
   int revision = 1,
   int profileRevision = 2,
   int membershipRevision = 3,
+  EventParticipantProfile? preview,
 }) => EventProfileSettings(
   eventId: 'event',
   organizerId: 'rsvp',
@@ -21,6 +22,7 @@ EventProfileSettings settingsFixture({
     EventProfileField(id: 'occupation', value: 'Founder'),
   ],
   photoIds: const ['photo'],
+  preview: preview,
 );
 
 FormProfileReview cardFixture({
@@ -45,10 +47,11 @@ FormProfileReview cardFixture({
         canonicalFieldId: null,
         label: id,
         kind: id == 'photo' ? 'file' : 'shortText',
+        eventProfileEligible: id == 'drink',
         value: id == 'photo' ? ['asset'] : 'Tequila',
       ),
   ],
-  selectedCardQuestionIds: const ['drink', 'photo'],
+  selectedCardQuestionIds: const ['drink', 'private', 'photo'],
   currentProfile: null,
   currentLinkedinUrl: null,
 );
@@ -70,6 +73,9 @@ EventProfileSelection selectionFixture({
           questionIds: const ['drink'],
         )
       : null,
+  termsVersion: withCard
+      ? 'event-profile-sharing-v2'
+      : 'event-profile-sharing-v1',
 );
 
 void main() {
@@ -100,6 +106,24 @@ void main() {
       );
     },
   );
+  test('prejoin choice survives only the first membership generation', () {
+    final saved = EventProfileSelection(
+      profileRevision: 2,
+      membershipRevision: 0,
+      coreFieldIds: const ['age'],
+      photoId: null,
+      card: null,
+      firstName: 'Mira',
+      introduction: 'I like coffee.',
+      termsVersion: 'event-profile-sharing-v2',
+    );
+    final first = EventProfileDraft(
+      settingsFixture(selection: saved, membershipRevision: 1), null);
+    expect(first.selection()!.firstName, 'Mira');
+    expect(first.selection()!.introduction, 'I like coffee.');
+    expect(EventProfileDraft(settingsFixture(
+      selection: saved), null).selection(), isNull);
+  });
   test('a core-only choice does not dereference a missing card', () {
     final saved = selectionFixture(withCard: false);
     final draft = EventProfileDraft(settingsFixture(selection: saved), null);
@@ -141,6 +165,9 @@ void main() {
       expect(eventCardFields(cardFixture(), 'rsvp').map((f) => f.questionId), [
         'drink',
       ]);
+      expect(cardFixture().fields.map((f) => f.questionId),
+        contains('private'),
+        reason: 'The private owner review retains answers omitted from rooms');
     },
   );
   test('payload snapshots are immutable after the editor changes', () {

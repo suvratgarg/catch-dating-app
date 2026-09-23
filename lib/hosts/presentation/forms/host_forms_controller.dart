@@ -155,16 +155,24 @@ class HostFormEditorController extends _$HostFormEditorController {
     return HostFormEditorState(editor: editor);
   }
 
-  void updateMessagingConsent({bool? organizerWhatsapp, bool? catchWhatsapp}) =>
+  void updateMessagingConsent({bool? organizerWhatsapp, bool? catchWhatsapp,
+    bool? organizerOperationsWhatsapp, bool? organizerMarketingWhatsapp,
+    bool? catchMarketingWhatsapp}) =>
       _mutate(
         (definition) => definition.withMessagingConsent(
           organizerWhatsapp: organizerWhatsapp,
           catchWhatsapp: catchWhatsapp,
+          organizerOperationsWhatsapp: organizerOperationsWhatsapp,
+          organizerMarketingWhatsapp: organizerMarketingWhatsapp,
+          catchMarketingWhatsapp: catchMarketingWhatsapp,
         ),
       );
 
   void updatePayment(HostFormPayment? payment) =>
       _mutate((definition) => definition.withPayment(payment));
+
+  void updateEventProfileEnabled(bool enabled) =>
+      _mutate((definition) => definition.withEventProfileEnabled(enabled));
 
   void updateMetadata({
     String? title,
@@ -281,6 +289,7 @@ class HostFormEditorController extends _$HostFormEditorController {
     HostFormPrefillPolicy? prefillPolicy,
     HostFormPresentation? hostPresentation,
     HostFormAnswerDestination? answerDestination,
+    bool? eventProfileAudience,
     HostFormQuestionValidation? validation,
   }) => _mutate((definition) {
     final currentSection = definition.sections[sectionIndex];
@@ -296,10 +305,14 @@ class HostFormEditorController extends _$HostFormEditorController {
       prefillPolicy: prefillPolicy,
       hostPresentation: hostPresentation,
       answerDestination: answerDestination,
+      eventProfileAudience: eventProfileAudience,
       validation: validation,
     );
     final section = currentSection.replaceQuestion(questionIndex, question);
-    return definition.replaceSection(sectionIndex, section);
+    final updated = definition.replaceSection(sectionIndex, section);
+    return eventProfileAudience == true && !updated.eventProfileEnabled
+        ? updated.withEventProfileEnabled(true)
+        : updated;
   });
 
   void removeQuestion(int sectionIndex, int questionIndex) =>

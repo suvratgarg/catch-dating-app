@@ -38,6 +38,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
+    'FORM_DOMAIN_CNAME_TARGET=" "',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
     "",
@@ -70,6 +71,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
+    'FORM_DOMAIN_CNAME_TARGET=" "',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
     'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
     "",
@@ -94,6 +96,22 @@ test("enabled provider requires and preserves real non-secret ids", () => {
   const contents = fs.readFileSync(result.outputPath, "utf8");
   assert.match(contents, /META_WHATSAPP_APP_ID="12345"/);
   assert.match(contents, /META_WHATSAPP_ENABLED="true"/);
+});
+
+test("custom form target is operator supplied and otherwise disabled", () => {
+  const functionsDir = fixture();
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir, projectId: "catchdates-dev",
+    environment: {...publicIds,
+      FORM_DOMAIN_CNAME_TARGET: "custom.catchdates.com"},
+  });
+  assert.match(fs.readFileSync(result.outputPath, "utf8"),
+    /FORM_DOMAIN_CNAME_TARGET="custom.catchdates.com"/);
+  assert.throws(() => prepareFunctionsParamsForDeploy({
+    functionsDir, projectId: "catchdates-dev",
+    environment: {...publicIds,
+      FORM_DOMAIN_CNAME_TARGET: "attacker.example/path"},
+  }));
 });
 
 test("provider enablement without real ids fails closed", () => {

@@ -46,6 +46,21 @@ class EventChatRepository {
     ),
   );
 
+  /// Read-only owner preview from the same projection served to room members.
+  Future<EventProfileSettings> previewProfile(
+    String uid,
+    EventProfileSettings reviewed,
+    EventProfileSelection selection,
+  ) async => EventProfileSettings.fromMap(
+    await _call(
+      'getEventChatProfileSharing',
+      GetEventChatProfileSharingCallableRequest(
+        eventId: reviewed.eventId,
+        expectedUid: uid,
+      ).toJson()..['previewSelection'] = selection.toJson(),
+    ),
+  );
+
   Future<EventParticipantProfile> participantProfile(
     String uid,
     String eventId,

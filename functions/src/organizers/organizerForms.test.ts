@@ -21,6 +21,30 @@ test("legacy canonical fields remain organizer-only", () => {
   assert.deepEqual(validateOrganizerFormDefinition(value), []);
 });
 
+test("event attendee audience is independent and bounded", () => {
+  const value = definition();
+  value.identityPolicy = "phoneVerified";
+  const field = value.sections[0].questions[0];
+  field.answerDestination = "organizerCard";
+  field.hostPresentation = "filterable";
+  assert.deepEqual(validateOrganizerFormDefinition(value), [],
+    "legacy card destination and Host filtering do not grant room audience");
+  field.answerAudience = {mode: "eventMembersWithConsent",
+    eventProfileSlot: "customRow"};
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "invalidEventProfileAudience"));
+  value.eventProfile = {enabled: true, allowedSlots: ["customRow"],
+    maxCustomRows: 1, noticeVersion: "event-profile-sharing-v2"};
+  assert.deepEqual(validateOrganizerFormDefinition(value), []);
+  field.answerDestination = "organizerOnly";
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "invalidEventProfileAudience"));
+  field.answerDestination = "organizerCard";
+  value.eventProfile.maxCustomRows = 0;
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "tooManyEventProfileRows"));
+});
+
 test("the free submission endpoint cannot bypass a published fee", () => {
   assert.doesNotThrow(() => requireFreeFormSubmission({}));
   assert.doesNotThrow(() => requireFreeFormSubmission({payment: null}));

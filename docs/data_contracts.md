@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.148.0
+version: 1.149.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2510,12 +2510,25 @@ retries financial mutations.
 
 ### Form messaging decisions
 
-`organizerFormResponseDrafts.messagingDecision` stores separate organizer and
-Catch WhatsApp choices with versioned server copy and independent decision
-timestamps. Missing legacy choices grant nothing. Paid checkout includes the
-choices in its frozen-content hash; finalization and free submission write
-consent receipts atomically with the response. The submitted organizer response
-does not expose Catch's private preference.
+`organizerFormResponseDrafts.messagingDecision` stores independent organizer
+application/event operations, organizer future-event marketing and Catch
+future-experience marketing choices for `form-whatsapp-v2`, each with its own
+decision timestamp and reviewed server copy. All choices start unchecked.
+Legacy v1 organizer/Catch choices remain phone-verified-first; ambiguous v1
+form copy does not gain new operations or marketing scope. Missing choices grant
+nothing. Paid checkout includes choices in the frozen-content hash; finalization
+and free submission write the consent outcome atomically with the response.
+The submitted organizer response does not expose Catch's private preference.
+
+An unverified v2 positive choice creates a private
+`formCommunicationConsentIntents/{responseId}` only when the submitted source
+provides a valid WhatsApp endpoint. This is pending evidence, not a permission.
+`promoteFormCommunicationIntent` requires the signed phone claim to match that
+exact endpoint and the caller to own the submitted response by respondent UID
+or its withdrawal bearer. It rechecks form/version/response lineage, immutable
+copy hashes, timestamps, deletion and withdrawal before atomically promoting
+each selected principal and purpose. Replayed requests return current state;
+an older intent cannot reverse a later STOP or purpose withdrawal.
 
 Organizer decisions use `organizerCommunicationPreferences` and
 `organizerCommunicationPermissionReceipts`. Catch decisions use separate
@@ -2528,15 +2541,19 @@ consent again. `listParticipantMessagingPreferences` lists only the signed-in
 UID's permissions, with at most 30 organizer rows and a document-ID cursor.
 Confirmed opt-in requires matching grant evidence. The exact authenticated
 `/settings/whatsapp` route remains available before profile setup.
-`withdrawParticipantMessagingPermission` stops exactly one sender, preserves
-SMS and all other organizers, and writes an immutable `participantSettings`
-receipt. Catch withdrawal receipts have a null source organizer. The reviewed
-receipt is an optimistic fence; retries reuse their receipt and return current
-status without overwriting later consent. Withdrawal timestamps also fence
-older pending form payments. No profile or phone re-verification is needed to
-withdraw existing account permission. The UI discards results after account
-changes. Any Catch sender must use this same authority; collecting permission
-does not itself dispatch messages.
+`withdrawParticipantMessagingPermission` stops one chosen purpose or the whole
+sender, preserving SMS and other organizers, and writes an immutable
+`participantSettings` receipt. Catch has marketing only; its withdrawal receipts
+have a null source organizer. Sender-wide STOP covers both active and pending
+purposes. The reviewed receipt is an optimistic fence; fresh and replayed
+withdrawals return the current canonical purpose projection rather than an
+optimistic local state. Decision ordering allows an explicit newer grant after
+an earlier STOP but never upgrades an ambiguous legacy receipt. Withdrawal
+timestamps also fence older pending form payments. No profile or phone
+re-verification is needed to withdraw account permission. The UI discards
+results after account changes. Campaign selection and send-time dispatch check
+marketing purpose; new form-originated managed WhatsApp delivery remains
+provider-disabled. Existing event-service permission paths are independent.
 
 ### Private form profile preparation
 
@@ -2617,9 +2634,16 @@ into production.
 
 ### Event chat access
 
-`eventChatRooms/{eventId}` is the organizer manager's explicit open/close
-switch for an event conversation. `eventChatMemberships/{sha256([eventId,uid])}`
-records the participant's explicit join/leave choice and versioned room terms.
+`eventChatRooms/{eventId}` is the organizer manager's explicit room control
+for an event conversation. It can carry an optional, manager-selected open and
+close time; no production schedule is inferred from the event. Before the open
+time and from the close time onward, access is closed. An explicit close or
+archive also closes access, and archive is terminal. An open room permits
+joined members to read and post; announcements-only permits all joined members
+to read and managers to post announcements; pause permits reading and safety
+actions but no posting, reactions or new typing.
+`eventChatMemberships/{sha256([eventId,uid])}` records the participant's
+explicit join/leave and mute choices and versioned room terms.
 `getEventChatAccess` and `updateEventChatAccess` own these records; all direct
 client access is denied. A room does not create event admission, a dating match,
 a public profile, or an organizer-card sharing grant.
@@ -2644,11 +2668,17 @@ profile claim timestamp); a revision number or private form proposal alone
 never qualifies. A claimed form
 profile may join without enabling dating discovery or completing dating setup.
 
-Organizer managers can open/close a room; guests cannot. Message access requires
-an active event, an open room and the caller's joined membership. A cancelled
+Organizer managers can schedule, open, pause, limit to announcements, close or
+archive a room; guests cannot. Message reads require an active event, a readable
+room mode and the caller's joined membership. A cancelled
 event or revoked admission disables access immediately, regardless of the
 membership record. Leaving remains possible after admission is revoked or the
-event is removed. Account deletion removes membership and private action
+event is removed. Removed and banned members cannot read, post or rejoin from
+an old invite or retry. A manager-only, revisioned `manageEventChatMember`
+action can remove or ban; explicit reinstatement requires current event
+admission and returns the person to `left`, requiring a fresh verified join.
+Ordinary leave does not ban a later eligible rejoin. Account deletion removes
+membership and private action
 receipts; its tombstone prevents replay from restoring access.
 
 Mutations bind `expectedUid` to the authenticated account before any reads or
@@ -2675,6 +2705,18 @@ bounded to 30 rows plus a lookahead with a sequence cursor. Prior messages from
 a participant who leaves remain history; account deletion redacts their text
 and identity. Existing text moderation blocks prohibited writes or atomically
 creates a review flag while leaving flagged text visible.
+Announcements are message records with a server-validated kind, not a separate
+renderer or permission source. Only a current manager can author them, and an
+announcements-only room rejects ordinary text. The history projection marks
+readable announcements and redacts kind with other fields when a message is
+unavailable.
+
+Room notification delivery is disabled by default. The delivery policy accepts
+only a queued message identifier and recipient UID, rechecks current admission,
+joined state, mute, room readability and sender status at dispatch time, and
+uses a fixed generic preview without message or applicant text. A later
+provider/outbox activation must preserve those checks and cannot infer
+WhatsApp permission from room membership.
 
 `actOnEventChatMessage` offers separate report, block and remove actions. The
 server derives the target from an immutable, currently readable room message;

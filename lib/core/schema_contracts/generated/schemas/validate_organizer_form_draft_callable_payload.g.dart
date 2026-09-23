@@ -289,6 +289,34 @@ const schemaValidateOrganizerFormDraftCallablePayloadSchema = <String, Object?>{
                         'organizerCard',
                       ],
                     },
+                    'answerAudience': <String, Object?>{
+                      'description': 'Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.',
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'mode',
+                        'eventProfileSlot',
+                      ],
+                      'properties': <String, Object?>{
+                        'mode': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'organizerOnly',
+                            'eventMembersWithConsent',
+                          ],
+                        },
+                        'eventProfileSlot': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'enum': <Object?>[
+                            null,
+                            'customRow',
+                          ],
+                        },
+                      },
+                    },
                     'prefillPolicy': <String, Object?>{
                       'type': 'string',
                       'enum': <Object?>[
@@ -765,6 +793,53 @@ const schemaValidateOrganizerFormDraftCallablePayloadSchema = <String, Object?>{
             },
             'catchWhatsapp': <String, Object?>{
               'type': 'boolean',
+            },
+            'organizerOperationsWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'organizerMarketingWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'catchMarketingWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+          },
+        },
+        'eventProfile': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'enabled',
+            'allowedSlots',
+            'maxCustomRows',
+            'noticeVersion',
+          ],
+          'properties': <String, Object?>{
+            'enabled': <String, Object?>{
+              'type': 'boolean',
+            },
+            'allowedSlots': <String, Object?>{
+              'type': 'array',
+              'uniqueItems': true,
+              'maxItems': 4,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'displayName',
+                  'portrait',
+                  'introduction',
+                  'customRow',
+                ],
+              },
+            },
+            'maxCustomRows': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 20,
+            },
+            'noticeVersion': <String, Object?>{
+              'type': 'string',
+              'const': 'event-profile-sharing-v2',
             },
           },
         },

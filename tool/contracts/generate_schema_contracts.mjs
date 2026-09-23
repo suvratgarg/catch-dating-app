@@ -1184,6 +1184,21 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse.ts",
   },
   {
+    name: "PromoteFormCommunicationIntentCallablePayload",
+    source: "callables/promote_form_communication_intent_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/promoteFormCommunicationIntentCallablePayload.ts",
+  },
+  {
+    name: "PromoteFormCommunicationIntentCallableResponse",
+    source: "callable_responses/promote_form_communication_intent_response.schema.json",
+    typeOutput: "functions/src/shared/generated/promoteFormCommunicationIntentCallableResponse.ts",
+  },
+  {
+    name: "FormCommunicationConsentIntentDocument",
+    source: "firestore/form_communication_consent_intents.schema.json",
+    typeOutput: "functions/src/shared/generated/formCommunicationConsentIntentDocument.ts",
+  },
+  {
     name: "CatchCommunicationPreferenceDocument",
     source: "firestore/catch_communication_preferences.schema.json",
     typeOutput: "functions/src/shared/generated/catchCommunicationPreferenceDocument.ts",
@@ -1328,6 +1343,11 @@ const schemaSpecs = [
     name: "OrganizerFormDocument",
     source: "firestore/organizer_forms.schema.json",
     typeOutput: "functions/src/shared/generated/organizerFormDocument.ts",
+  },
+  {
+    name: "OrganizerFormDomainDocument",
+    source: "firestore/organizer_form_domains.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormDomainDocument.ts",
   },
   {
     name: "OrganizerPaymentConnectionDocument",
@@ -3624,6 +3644,19 @@ const schemaSpecs = [
     source: "callables/create_organizer_form_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/createOrganizerFormCallablePayload.ts",
+  },
+  {
+    name: "ManageOrganizerFormDomainCallablePayload",
+    source: "callables/manage_organizer_form_domain_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/manageOrganizerFormDomainCallablePayload.ts",
+  },
+  {
+    name: "ManageOrganizerFormDomainCallableResponse",
+    source:
+      "callable_responses/manage_organizer_form_domain_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/manageOrganizerFormDomainCallableResponse.ts",
   },
   {
     name: "CreateOrganizerFormCallableResponse",

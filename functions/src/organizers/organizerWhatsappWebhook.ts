@@ -14,6 +14,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   inboundStopPermissionReceipt,
+  organizerCommunicationPermissionReceiptId,
   organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel,
 } from
@@ -477,22 +478,35 @@ async function optOutPreference(params: {
     const snap = await tx.get(ref);
     const existing = snap.data() as
       OrganizerCommunicationPreferenceDocument | undefined;
+    const receiptRef = params.db
+      .collection("organizerCommunicationPermissionReceipts")
+      .doc(organizerCommunicationPermissionReceiptId({
+        organizerId: params.organizerId,
+        uid: params.uid,
+        channel: "whatsapp",
+        decision: "optedOut",
+        source: "inboundStop",
+        sourceIdentity: params.providerEventId,
+      }));
+    // A provider replay is the original STOP, even if a newer, explicit
+    // purpose choice has since superseded it. Keep its original revokedAt.
+    if ((await tx.get(receiptRef)).exists) return;
+    const stopAt = admin.firestore.Timestamp.fromMillis(Math.max(
+      params.now.toMillis(),
+      (existing?.whatsapp.updatedAt?.toMillis() ?? -1) + 1,
+      (existing?.whatsappPurposes?.eventOperations?.updatedAt?.toMillis() ??
+        -1) + 1,
+      (existing?.whatsappPurposes?.marketing?.updatedAt?.toMillis() ??
+        -1) + 1,
+    ));
     const receipt = inboundStopPermissionReceipt({
       organizerId: params.organizerId,
       uid: params.uid,
       providerEventId: params.providerEventId,
       supersedesReceiptId: existing?.whatsapp.currentReceiptId ?? null,
-      now: params.now,
+      now: stopAt,
     });
-    const receiptRef = params.db
-      .collection("organizerCommunicationPermissionReceipts")
-      .doc(receipt.id);
-    const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists &&
-        existing?.whatsapp.currentReceiptId !== receipt.id) {
-      return;
-    }
-    if (!receiptSnap.exists) tx.create(receiptRef, receipt.document);
+    tx.create(receiptRef, receipt.document);
     tx.set(ref, {
       organizerId: params.organizerId,
       uid: params.uid,
@@ -503,11 +517,25 @@ async function optOutPreference(params: {
         termsVersion: existing?.whatsapp.termsVersion ?? null,
         source: "inboundStop",
         sourceEventId: null,
-        updatedAt: params.now,
+        updatedAt: stopAt,
+      },
+      whatsappPurposes: {
+        eventOperations: {
+          status: "optedOut", evidenceStatus: "complete",
+          currentReceiptId: receipt.id, termsVersion: null,
+          source: "inboundStop", sourceEventId: null,
+          updatedAt: stopAt,
+        },
+        marketing: {
+          status: "optedOut", evidenceStatus: "complete",
+          currentReceiptId: receipt.id, termsVersion: null,
+          source: "inboundStop", sourceEventId: null,
+          updatedAt: stopAt,
+        },
       },
       sms: existing?.sms ?? unknownOrganizerCommunicationChannel(),
-      createdAt: existing?.createdAt ?? params.now,
-      updatedAt: params.now,
+      createdAt: existing?.createdAt ?? stopAt,
+      updatedAt: stopAt,
     }, {merge: false});
   });
 }

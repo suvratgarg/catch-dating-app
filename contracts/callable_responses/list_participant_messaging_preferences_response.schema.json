@@ -27,6 +27,7 @@
             "optedOut"
           ]
         },
+        "purposes": {"$ref": "#/definitions/purposeSummaries"},
         "receiptId": {
           "anyOf": [
             {
@@ -77,6 +78,7 @@
                   "optedOut"
                 ]
               },
+              "purposes": {"$ref": "#/definitions/purposeSummaries"},
               "receiptId": {
                 "anyOf": [
                   {
@@ -101,6 +103,26 @@
           "type": "null"
         }
       ]
+    }
+  },
+  "definitions": {
+    "purposeSummaries": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "eventOperations": {"$ref": "#/definitions/purposeSummary"},
+        "marketing": {"$ref": "#/definitions/purposeSummary"}
+      }
+    },
+    "purposeSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "receiptId"],
+      "properties": {
+        "status": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
+        "receiptId": {"anyOf": [
+          {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          {"type": "null"}
+        ]}
+      }
     }
   }
 }

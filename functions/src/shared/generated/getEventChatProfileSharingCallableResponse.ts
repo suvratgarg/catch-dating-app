@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {GetEventChatProfileCallableResponse} from "./getEventChatProfileCallableResponse";
+
 export interface GetEventChatProfileSharingCallableResponse {
   eventId: string;
   organizerId: string | null;
@@ -38,7 +40,9 @@ export interface GetEventChatProfileSharingCallableResponse {
        */
       questionIds: string[];
     } | null;
-    termsVersion: "event-profile-sharing-v1";
+    firstName?: string;
+    introduction?: string;
+    termsVersion: "event-profile-sharing-v1" | "event-profile-sharing-v2";
   } | null;
   canShare: boolean;
   profileRevision: number;
@@ -68,4 +72,5 @@ export interface GetEventChatProfileSharingCallableResponse {
    * @maxItems 12
    */
   photoIds: string[];
+  preview?: GetEventChatProfileCallableResponse | null;
 }

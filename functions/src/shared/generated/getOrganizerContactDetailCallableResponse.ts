@@ -51,6 +51,28 @@ export interface GetOrganizerContactDetailCallableResponse {
       | "emailVerified"
       | "phoneVerified"
       | "catchAccount";
+    purposes?: {
+      eventOperations?: {
+        status: "unknown" | "optedIn" | "optedOut";
+        evidenceStatus: "complete" | "incomplete";
+        receiptId: string | null;
+        decisionAtMillis: number | null;
+        /**
+         * False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.
+         */
+        deliveryAvailable: boolean;
+      };
+      marketing?: {
+        status: "unknown" | "optedIn" | "optedOut";
+        evidenceStatus: "complete" | "incomplete";
+        receiptId: string | null;
+        decisionAtMillis: number | null;
+        /**
+         * False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.
+         */
+        deliveryAvailable: boolean;
+      };
+    };
   };
   /**
    * @maxItems 50

@@ -5036,7 +5036,9 @@ export interface EventChatProfileShareDocument {
        */
       questionIds: string[];
     } | null;
-    termsVersion: "event-profile-sharing-v1";
+    firstName?: string;
+    introduction?: string;
+    termsVersion: "event-profile-sharing-v1" | "event-profile-sharing-v2";
   } | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
@@ -5132,6 +5134,29 @@ export interface EventChatPresenceDocument {
 }
 
 /**
+ * Private, immutable form choice. Never read as dispatch permission; promotion requires response ownership and verified control of the exact endpoint.
+ */
+export interface FormCommunicationConsentIntentDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  responseId: string;
+  endpointE164: string;
+  termsVersion: "form-whatsapp-v2";
+  /**
+   * @minItems 1
+   * @maxItems 3
+   */
+  decisions: {
+    principal: "organizer" | "catch";
+    purpose: "eventOperations" | "marketing";
+    copyHash: string;
+    decidedAt: FirebaseFirestore.Timestamp;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.
  */
 export interface CatchCommunicationPreferenceDocument {
@@ -5143,6 +5168,8 @@ export interface CatchCommunicationPreferenceDocument {
      */
     evidenceStatus: "notApplicable" | "complete" | "incomplete";
     currentReceiptId: string | null;
+    endpointE164?: string;
+    sourceResponseId?: string;
     termsVersion: string | null;
     source:
       | null
@@ -5156,6 +5183,52 @@ export interface CatchCommunicationPreferenceDocument {
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
+  whatsappPurposes?: {
+    eventOperations?: {
+      status: "unknown" | "optedIn" | "optedOut";
+      /**
+       * Only complete evidence may make an opted-in channel eligible for managed delivery.
+       */
+      evidenceStatus: "notApplicable" | "complete" | "incomplete";
+      currentReceiptId: string | null;
+      endpointE164?: string;
+      sourceResponseId?: string;
+      termsVersion: string | null;
+      source:
+        | null
+        | "publicEventRegistration"
+        | "hostFormResponse"
+        | "participantSettings"
+        | "unsubscribeLink"
+        | "inboundStop"
+        | "providerWebhook"
+        | "legacyIncomplete";
+      sourceEventId: string | null;
+      updatedAt: FirebaseFirestore.Timestamp | null;
+    };
+    marketing?: {
+      status: "unknown" | "optedIn" | "optedOut";
+      /**
+       * Only complete evidence may make an opted-in channel eligible for managed delivery.
+       */
+      evidenceStatus: "notApplicable" | "complete" | "incomplete";
+      currentReceiptId: string | null;
+      endpointE164?: string;
+      sourceResponseId?: string;
+      termsVersion: string | null;
+      source:
+        | null
+        | "publicEventRegistration"
+        | "hostFormResponse"
+        | "participantSettings"
+        | "unsubscribeLink"
+        | "inboundStop"
+        | "providerWebhook"
+        | "legacyIncomplete";
+      sourceEventId: string | null;
+      updatedAt: FirebaseFirestore.Timestamp | null;
+    };
+  };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }
@@ -5166,6 +5239,10 @@ export interface CatchCommunicationPreferenceDocument {
 export interface CatchCommunicationPermissionReceiptDocument {
   uid: string;
   channel: "whatsapp";
+  purpose?: "eventOperations" | "marketing";
+  endpointE164?: string;
+  sourceVersionId?: string;
+  sourceDecidedAt?: FirebaseFirestore.Timestamp;
   decision: "optedIn" | "optedOut";
   evidenceStatus: "complete" | "incomplete";
   termsVersion: string | null;
@@ -5209,6 +5286,8 @@ export interface OrganizerCommunicationPreferenceDocument {
      */
     evidenceStatus: "notApplicable" | "complete" | "incomplete";
     currentReceiptId: string | null;
+    endpointE164?: string;
+    sourceResponseId?: string;
     termsVersion: string | null;
     source:
       | null
@@ -5222,6 +5301,52 @@ export interface OrganizerCommunicationPreferenceDocument {
     sourceEventId: string | null;
     updatedAt: FirebaseFirestore.Timestamp | null;
   };
+  whatsappPurposes?: {
+    eventOperations?: {
+      status: "unknown" | "optedIn" | "optedOut";
+      /**
+       * Only complete evidence may make an opted-in channel eligible for managed delivery.
+       */
+      evidenceStatus: "notApplicable" | "complete" | "incomplete";
+      currentReceiptId: string | null;
+      endpointE164?: string;
+      sourceResponseId?: string;
+      termsVersion: string | null;
+      source:
+        | null
+        | "publicEventRegistration"
+        | "hostFormResponse"
+        | "participantSettings"
+        | "unsubscribeLink"
+        | "inboundStop"
+        | "providerWebhook"
+        | "legacyIncomplete";
+      sourceEventId: string | null;
+      updatedAt: FirebaseFirestore.Timestamp | null;
+    };
+    marketing?: {
+      status: "unknown" | "optedIn" | "optedOut";
+      /**
+       * Only complete evidence may make an opted-in channel eligible for managed delivery.
+       */
+      evidenceStatus: "notApplicable" | "complete" | "incomplete";
+      currentReceiptId: string | null;
+      endpointE164?: string;
+      sourceResponseId?: string;
+      termsVersion: string | null;
+      source:
+        | null
+        | "publicEventRegistration"
+        | "hostFormResponse"
+        | "participantSettings"
+        | "unsubscribeLink"
+        | "inboundStop"
+        | "providerWebhook"
+        | "legacyIncomplete";
+      sourceEventId: string | null;
+      updatedAt: FirebaseFirestore.Timestamp | null;
+    };
+  };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
     /**
@@ -5229,6 +5354,8 @@ export interface OrganizerCommunicationPreferenceDocument {
      */
     evidenceStatus: "notApplicable" | "complete" | "incomplete";
     currentReceiptId: string | null;
+    endpointE164?: string;
+    sourceResponseId?: string;
     termsVersion: string | null;
     source:
       | null
@@ -5253,6 +5380,10 @@ export interface OrganizerCommunicationPermissionReceiptDocument {
   organizerId: string;
   uid: string;
   channel: "whatsapp" | "sms";
+  purpose?: "eventOperations" | "marketing";
+  endpointE164?: string;
+  sourceVersionId?: string;
+  sourceDecidedAt?: FirebaseFirestore.Timestamp;
   decision: "optedIn" | "optedOut";
   evidenceStatus: "complete" | "incomplete";
   termsVersion: string | null;
@@ -6160,6 +6291,24 @@ export interface OrganizerFormDocument {
 }
 
 /**
+ * Server-owned exact hostname lease and verified form binding. Client reads and writes are forbidden.
+ */
+export interface OrganizerFormDomainDocument {
+  hostname: string;
+  organizerId: string;
+  formId: string;
+  publicFormId: string;
+  ownershipChallenge: string;
+  expectedCname: string;
+  status: "pending" | "verified" | "active" | "revoked";
+  certificateStatus: "pending" | "ready" | "failed";
+  verifiedAtMillis: number | null;
+  generation: number;
+  reservedAtMillis: number;
+  pendingExpiresAtMillis: number;
+}
+
+/**
  * Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.
  */
 export interface OrganizerPaymentConnectionDocument {
@@ -6366,6 +6515,13 @@ export interface OrganizerFormDraftDocument {
          * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
          */
         answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
+        /**
+         * Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.
+         */
+        answerAudience?: {
+          mode: "organizerOnly" | "eventMembersWithConsent";
+          eventProfileSlot: null | "customRow";
+        };
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6459,6 +6615,23 @@ export interface OrganizerFormDraftDocument {
     messagingConsent?: {
       organizerWhatsapp: boolean;
       catchWhatsapp: boolean;
+      organizerOperationsWhatsapp?: boolean;
+      organizerMarketingWhatsapp?: boolean;
+      catchMarketingWhatsapp?: boolean;
+    };
+    eventProfile?: {
+      enabled: boolean;
+      /**
+       * @maxItems 4
+       */
+      allowedSlots: (
+        | "displayName"
+        | "portrait"
+        | "introduction"
+        | "customRow"
+      )[];
+      maxCustomRows: number;
+      noticeVersion: "event-profile-sharing-v2";
     };
     completion: {
       title: string;
@@ -6573,6 +6746,13 @@ export interface OrganizerFormVersionDocument {
          * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
          */
         answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
+        /**
+         * Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.
+         */
+        answerAudience?: {
+          mode: "organizerOnly" | "eventMembersWithConsent";
+          eventProfileSlot: null | "customRow";
+        };
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6666,6 +6846,23 @@ export interface OrganizerFormVersionDocument {
     messagingConsent?: {
       organizerWhatsapp: boolean;
       catchWhatsapp: boolean;
+      organizerOperationsWhatsapp?: boolean;
+      organizerMarketingWhatsapp?: boolean;
+      catchMarketingWhatsapp?: boolean;
+    };
+    eventProfile?: {
+      enabled: boolean;
+      /**
+       * @maxItems 4
+       */
+      allowedSlots: (
+        | "displayName"
+        | "portrait"
+        | "introduction"
+        | "customRow"
+      )[];
+      maxCustomRows: number;
+      noticeVersion: "event-profile-sharing-v2";
     };
     completion: {
       title: string;
@@ -6685,11 +6882,17 @@ export interface OrganizerFormVersionDocument {
  */
 export interface OrganizerFormResponseDraftDocument {
   messagingDecision?: {
-    termsVersion: "form-whatsapp-v1";
+    termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: boolean;
     catchWhatsapp: boolean;
     organizerDecidedAt: FirebaseFirestore.Timestamp;
     catchDecidedAt: FirebaseFirestore.Timestamp;
+    organizerOperationsWhatsapp?: boolean;
+    organizerMarketingWhatsapp?: boolean;
+    catchMarketingWhatsapp?: boolean;
+    organizerOperationsDecidedAt?: FirebaseFirestore.Timestamp;
+    organizerMarketingDecidedAt?: FirebaseFirestore.Timestamp;
+    catchMarketingDecidedAt?: FirebaseFirestore.Timestamp;
   };
   /**
    * Server-only checkout lock; prevents edits while a fee is unresolved.

@@ -9,13 +9,16 @@ final class GetEventChatProfileSharingCallableRequest {
   const GetEventChatProfileSharingCallableRequest({
     required this.eventId,
     required this.expectedUid,
+    this.previewSelection,
   });
 
   final String eventId;
   final String expectedUid;
+  final Map<String, Object?>? previewSelection;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'expectedUid': expectedUid,
+    'previewSelection': ?previewSelection,
   };
 }

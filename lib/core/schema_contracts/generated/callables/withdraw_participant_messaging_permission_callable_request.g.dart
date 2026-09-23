@@ -10,18 +10,21 @@ final class WithdrawParticipantMessagingPermissionCallableRequest {
   const WithdrawParticipantMessagingPermissionCallableRequest({
     required this.scope,
     required this.organizerId,
+    this.purpose,
     required this.expectedReceiptId,
     required this.requestId,
   });
 
   final String scope;
   final String? organizerId;
+  final String? purpose;
   final String? expectedReceiptId;
   final String requestId;
 
   Map<String, Object?> toJson() => {
     'scope': scope,
     'organizerId': organizerId,
+    'purpose': ?purpose,
     'expectedReceiptId': expectedReceiptId,
     'requestId': requestId,
   };

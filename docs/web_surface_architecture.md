@@ -31,6 +31,45 @@ submission receipts, and withdrawal, and remains usable in a bounded iframe
 presentation. It never reads Forms collections directly and does not bootstrap
 the Consumer Flutter application.
 
+## Form embeds and proposed custom-host activation
+
+The public form share asset keeps `/f/:publicFormId/` as the canonical Catch URL.
+Its iframe installer is an external script at `/form-embed-resize.js`; a parent
+site must allow the Catch iframe in `frame-src` and that script in `script-src`.
+The installer accepts only a dimension message with a matching Catch origin,
+exact iframe `contentWindow`, frame identifier and bounded height. The child
+sends only that message to the origin derived from its browser referrer. A
+direct Catch link remains available if the site blocks scripts or if embedding
+is unsupported. Site-specific CSP, keyboard, mobile scroll, checkout popups,
+and browser storage need real browser validation before a client page goes live.
+
+`organizerFormDomainRegistry.ts` is the server-side ownership and
+routing policy for a future Catch-served customer subdomain. It stores one
+exact hostname per record, binds it to a published organizer form, issues a
+fresh TXT challenge for every reservation, requires a matching CNAME and
+current DNS probe, and requires trusted certificate readiness before activation.
+An unverified reservation expires after 48 hours; reclaim rotates both the
+challenge and generation, while verified and active bindings do not expire
+into another organizer's control. Reservations are limited per organizer and
+per caller.
+Resolution also rechecks form ownership and publication. Revocation stops
+resolution; reassignment starts with a rotated challenge and generation.
+The public `/api/form-domain` endpoint resolves only active, still-owned
+bindings, and the React host gate shows only the bound form. Unknown or
+revoked hosts cannot render other marketing or form routes. Manager callables
+use Auth, App Check and per-user limits for reservation, verification and
+revocation. `FORM_DOMAIN_CNAME_TARGET` is deployment-owned and defaults to an
+unusable placeholder. Only the trusted hosting operator can mark certificate
+readiness and activate a verified record. No custom hostname is enabled by
+these source changes alone: DNS/TLS provisioning, the exact Firebase Hosting
+custom-domain binding, Auth/App Check allowed-domain setup, upload CORS and
+payment return origins require operator configuration and live validation.
+The canonical Firebase Hosting bypass is limited to configured Catch project
+site names and their preview channels. A client-owned `/apply` page can instead embed the Catch
+iframe without changing the form origin. Serving `/apply` directly on an
+existing client origin requires that site's supported proxy or native routing;
+DNS alone cannot select a URL path.
+
 ## Cross-Surface Feature Identity
 
 `design/features/feature_coverage.json` is the exhaustive migration boundary

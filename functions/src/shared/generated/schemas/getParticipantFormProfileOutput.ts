@@ -65,7 +65,8 @@ export const getParticipantFormProfileCallableResponseSchema: Record<string, unk
           "label",
           "kind",
           "value",
-          "options"
+          "options",
+          "eventProfileEligible"
         ],
         "properties": {
           "questionId": {
@@ -197,6 +198,10 @@ export const getParticipantFormProfileCallableResponseSchema: Record<string, unk
                 }
               }
             }
+          },
+          "eventProfileEligible": {
+            "type": "boolean",
+            "description": "True only for a published field explicitly proposed for optional event-member sharing; the owner must still grant event-specific consent."
           }
         }
       }
