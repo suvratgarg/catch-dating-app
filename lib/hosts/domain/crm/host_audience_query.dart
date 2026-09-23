@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart';
 
 enum HostAudienceSegment {
   newToOrganizer('new_to_organizer'),
@@ -82,8 +82,11 @@ class HostAudienceQuery {
       other.search == search &&
       other.segment == segment &&
       other.manualTagId == manualTagId &&
-      setEquals(other.segments, segments) &&
-      setEquals(other.manualTagIds, manualTagIds) &&
+      const SetEquality<HostAudienceSegment>().equals(
+        other.segments,
+        segments,
+      ) &&
+      const SetEquality<String>().equals(other.manualTagIds, manualTagIds) &&
       other.sort == sort &&
       other.cursor == cursor;
 

@@ -3032,36 +3032,6 @@ abstract class AppLocalizations {
   /// **'Loading organizer'**
   String get hostsHostCreateEventRouteLoadingScreenBodyLoadingClub;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Resume a draft?'**
-  String get hostsDraftPickerSheetTitleResumeADraft;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Pick up where you left off, or start fresh.'**
-  String get hostsDraftPickerSheetSubtitlePickUpWhereYou;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Start a fresh event'**
-  String get hostsDraftPickerSheetLabelStartAFreshEvent;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No drafts yet'**
-  String get hostsDraftPickerSheetTitleNoDraftsYet;
-
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Saved drafts for this organizer will appear here.'**
-  String get hostsDraftPickerSheetMessageSavedDraftsForThis;
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
   ///
   /// In en, this message translates to:

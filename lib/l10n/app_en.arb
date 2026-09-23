@@ -3508,41 +3508,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_route_loading_screen"
   },
-  "hostsDraftPickerSheetTitleResumeADraft": "Resume a draft?",
-  "@hostsDraftPickerSheetTitleResumeADraft": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetSubtitlePickUpWhereYou": "Pick up where you left off, or start fresh.",
-  "@hostsDraftPickerSheetSubtitlePickUpWhereYou": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (subtitle).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetLabelStartAFreshEvent": "Start a fresh event",
-  "@hostsDraftPickerSheetLabelStartAFreshEvent": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetTitleNoDraftsYet": "No drafts yet",
-  "@hostsDraftPickerSheetTitleNoDraftsYet": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
-  "hostsDraftPickerSheetMessageSavedDraftsForThis": "Saved drafts for this organizer will appear here.",
-  "@hostsDraftPickerSheetMessageSavedDraftsForThis": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
   "hostsDraftPickerSheetMessageDeleteDraft": "Delete draft",
   "@hostsDraftPickerSheetMessageDeleteDraft": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).",

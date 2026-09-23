@@ -1740,24 +1740,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Loading organizer';
 
   @override
-  String get hostsDraftPickerSheetTitleResumeADraft => 'Resume a draft?';
-
-  @override
-  String get hostsDraftPickerSheetSubtitlePickUpWhereYou =>
-      'Pick up where you left off, or start fresh.';
-
-  @override
-  String get hostsDraftPickerSheetLabelStartAFreshEvent =>
-      'Start a fresh event';
-
-  @override
-  String get hostsDraftPickerSheetTitleNoDraftsYet => 'No drafts yet';
-
-  @override
-  String get hostsDraftPickerSheetMessageSavedDraftsForThis =>
-      'Saved drafts for this organizer will appear here.';
-
-  @override
   String get hostsDraftPickerSheetMessageDeleteDraft => 'Delete draft';
 
   @override
