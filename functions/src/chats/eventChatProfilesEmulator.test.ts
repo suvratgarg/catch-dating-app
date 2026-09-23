@@ -77,7 +77,7 @@ test(
       coreFieldIds: ["age", "occupation"],
       photoId: null,
       card: {responseId, revision: 1, questionIds: ["cocktail"]},
-      termsVersion: "event-profile-sharing-v1",
+      termsVersion: "event-profile-sharing-v2",
     };
     const saveRequest = (selection: Payload["selection"] = chosen) =>
       request(person, {
@@ -202,13 +202,19 @@ test(
           ],
         },
       );
-      await put("organizerFormVersions", versionId, {
+      const version = await put("organizerFormVersions", versionId, {
         organizerId,
         formId,
         definition: {
           title: "RSVP",
           identityPolicy: "phoneVerified",
           consent: {consentVersion: "v1"},
+          eventProfile: {
+            enabled: true,
+            allowedSlots: ["displayName", "portrait", "introduction", "customRow"],
+            maxCustomRows: 2,
+            noticeVersion: "event-profile-sharing-v2",
+          },
           sections: [
             {
               questions: [
@@ -217,6 +223,10 @@ test(
                   label: "Favourite drink",
                   kind: "singleChoice",
                   answerDestination: "organizerCard",
+                  answerAudience: {
+                    mode: "eventMembersWithConsent",
+                    eventProfileSlot: "customRow",
+                  },
                   canonicalFieldId: null,
                   options: [{value: "tequila", label: "Tequila"}],
                 },
@@ -353,6 +363,8 @@ test(
           assert.equal(JSON.stringify(stored).includes("Tequila"), false);
           assert.equal(Object.hasOwn(stored.selection, "firstName"), false);
           assert.equal(Object.hasOwn(stored.selection, "introduction"), false);
+          await assert.rejects(save({...chosen,
+            termsVersion: "event-profile-sharing-v1"}), {code: "aborted"});
           await save(null);
           assert.deepEqual((await read()).coreFields, []);
           await update(req, deps);
@@ -368,12 +380,25 @@ test(
             ),
             {code: "already-exists"},
           );
+          await save({...chosen, card: null,
+            termsVersion: "event-profile-sharing-v1"});
+          const legacy = (await ref("eventChatProfileShares",
+            eventChatMembershipId(eventId, person)).get()).data()!;
+          assert.equal(Object.hasOwn(legacy.selection, "firstName"), false);
+          assert.equal(Object.hasOwn(legacy.selection, "introduction"), false);
           await save();
         },
       );
       await t.test(
         "foreign cards, unselected answers, images and stale edits fail closed",
         async () => {
+          const definition = (await version.get()).data()!.definition;
+          const oldDefinition = structuredClone(definition);
+          delete oldDefinition.sections[0].questions[0].answerAudience;
+          await version.update({definition: oldDefinition});
+          assert.deepEqual((await read()).cardFields, [],
+            "legacy versions do not grant attendee audience");
+          await version.update({definition});
           for (const patch of [
             {responseId: foreign},
             {questionIds: ["private"]},

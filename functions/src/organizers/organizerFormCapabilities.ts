@@ -5,7 +5,8 @@ import {personFieldCatalog} from
 import {HttpsError} from "firebase-functions/v2/https";
 
 type Definition = Pick<OrganizerFormDraftDocument["definition"],
-  "identityPolicy" | "sections" | "payment" | "messagingConsent">;
+  "identityPolicy" | "sections" | "payment" | "messagingConsent" |
+  "eventProfile">;
 type Question = Definition["sections"][number]["questions"][number];
 type AddIssue = (code: string, path: string, message: string) => void;
 
@@ -45,9 +46,23 @@ export function validateFormCapabilities(definition: Definition,
   }
   const preparesProfile = questions.some((question) =>
     formAnswerDestination(question) !== "organizerOnly");
+  const proposedProfileRows = questions.filter((question) =>
+    question.answerAudience?.mode === "eventMembersWithConsent");
+  if (proposedProfileRows.length > (definition.eventProfile?.maxCustomRows ?? 0)) {
+    add("tooManyEventProfileRows", "eventProfile.maxCustomRows",
+      "Keep shared custom rows within the event profile limit.");
+  }
   const asksWhatsapp =
     definition.messagingConsent?.organizerWhatsapp === true ||
     definition.messagingConsent?.catchWhatsapp === true;
+  const asksPendingWhatsapp =
+    definition.messagingConsent?.organizerOperationsWhatsapp === true ||
+    definition.messagingConsent?.organizerMarketingWhatsapp === true ||
+    definition.messagingConsent?.catchMarketingWhatsapp === true;
+  if (asksWhatsapp && asksPendingWhatsapp) {
+    add("mixedMessagingTerms", "messagingConsent",
+      "Publish either legacy messaging copy or separately scoped purpose choices.");
+  }
   if ((preparesProfile || asksWhatsapp || definition.payment) &&
       definition.identityPolicy !== "phoneVerified") {
     add("verifiedPhoneRequired", "identityPolicy",
@@ -74,6 +89,20 @@ export function validateFormCapabilities(definition: Definition,
     section.questions.forEach((question, questionIndex) => {
       const path = `sections.${sectionIndex}.questions.${questionIndex}`;
       const destination = formAnswerDestination(question);
+      const audience = question.answerAudience;
+      if (audience?.mode === "organizerOnly" &&
+          audience.eventProfileSlot !== null) {
+        add("privateAudienceSlot", `${path}.answerAudience`,
+          "Private answers cannot name an attendee profile slot.");
+      }
+      if (audience?.mode === "eventMembersWithConsent" &&
+          (audience.eventProfileSlot !== "customRow" ||
+            destination !== "organizerCard" ||
+            definition.eventProfile?.enabled !== true ||
+            !definition.eventProfile.allowedSlots.includes("customRow"))) {
+        add("invalidEventProfileAudience", `${path}.answerAudience`,
+          "Enable event profile custom rows and choose an organizer card answer.");
+      }
       if (destination === "catchProfile" && !question.canonicalFieldId) {
         add("profileFieldRequired", `${path}.canonicalFieldId`,
           "Choose a Catch profile building block for this answer.");

@@ -14,6 +14,8 @@ import type {
   EventChatProfileShareDocument as Share,
   EventChatAccessReceiptDocument as Receipt,
   ParticipantOrganizerCardDocument as Card,
+  OrganizerFormResponseDocument as FormResponse,
+  OrganizerFormVersionDocument as FormVersion,
 } from "../shared/generated/firestoreAdminTypes";
 import type {GetEventChatProfileSharingCallableResponse as Settings} from
   "../shared/generated/getEventChatProfileSharingCallableResponse";
@@ -114,15 +116,37 @@ async function cardFields(
   ) {
     throw unavailable();
   }
+  const responseSnap = await tx.get(db.collection("organizerFormResponses")
+    .doc(choice.responseId));
+  if (!responseSnap.exists) throw unavailable();
+  const response = requireDoc<FormResponse>(responseSnap,
+    "OrganizerFormResponseDocument");
+  const versionSnap = await tx.get(db.collection("organizerFormVersions")
+    .doc(response.versionId));
+  if (!versionSnap.exists) throw unavailable();
+  const version = requireDoc<FormVersion>(versionSnap,
+    "OrganizerFormVersionDocument");
+  if (version.organizerId !== organizerId ||
+    version.formId !== proposal.formId ||
+    version.definition.eventProfile?.enabled !== true ||
+    !version.definition.eventProfile.allowedSlots.includes("customRow") ||
+    choice.questionIds.length > version.definition.eventProfile.maxCustomRows) {
+    throw unavailable();
+  }
+  const questions = new Map(version.definition.sections.flatMap((section) =>
+    section.questions.map((question) => [question.questionId, question])));
   return choice.questionIds.map((questionId) => {
     const field = proposal.fields.find(
       (item) => item.questionId === questionId,
     );
+    const audience = questions.get(questionId)?.answerAudience;
     if (
       !card.questionIds.includes(questionId) ||
       !field ||
       field.destination !== "organizerCard" ||
-      field.kind === "file"
+      field.kind === "file" ||
+      audience?.mode !== "eventMembersWithConsent" ||
+      audience.eventProfileSlot !== "customRow"
     ) {
       throw unavailable();
     }
@@ -237,6 +261,9 @@ async function validateSelection(
     (selection.photoId && !eventProfilePhotos(access.user, uid)
       .some((photo) => photo.id === selection.photoId))) throw stale();
   if (selection.card) {
+    if (selection.termsVersion !== "event-profile-sharing-v2") {
+      throw stale();
+    }
     await cardFields(db, tx, uid, access.view.organizerId, selection.card);
   }
 }
