@@ -1,7 +1,6 @@
 import 'dart:math';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/data/event_assignment_feature_choice_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assignment_feature_choice.dart';
@@ -18,13 +17,16 @@ class EventAssignmentFeatureSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider);
+    final session = ref.watch(authenticatedSessionProvider);
     return CatchSheet(
       title: context.l10n.eventMatchingTitle,
       mode: CatchSheetMode.scrollable,
-      child: switch (uid) {
-        AsyncData(:final value) when value != null =>
-          _MatchingChoices(key: ValueKey(value), eventId: eventId),
+      child: switch (session) {
+        AsyncData(:final value) => _MatchingChoices(
+          key: ValueKey((eventId, value)),
+          eventId: eventId,
+          session: value,
+        ),
         AsyncError(:final error) => CatchLocalizedErrorBanner(error),
         AsyncLoading() => const CatchLoadingIndicator(),
         _ => Text(
@@ -37,8 +39,13 @@ class EventAssignmentFeatureSheet extends ConsumerWidget {
 }
 
 class _MatchingChoices extends ConsumerStatefulWidget {
-  const _MatchingChoices({super.key, required this.eventId});
+  const _MatchingChoices({
+    super.key,
+    required this.eventId,
+    required this.session,
+  });
   final String eventId;
+  final AuthenticatedSession session;
   @override
   ConsumerState<_MatchingChoices> createState() => _MatchingChoicesState();
 }
@@ -47,14 +54,21 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
     with WidgetsBindingObserver {
   EventAssignmentFeatureChoices? _review;
   Object? _error;
+  Object? _mutationError;
   bool _loading = true;
+  bool _saved = false;
+  bool _active = true;
   String? _savingFeatureId;
   int _generation = 0;
+  int _writeGeneration = 0;
 
-  EventAssignmentFeatureChoiceRepository get _repository =>
-      EventAssignmentFeatureChoiceRepository(
-        ref.read(firebaseFunctionsProvider),
-      );
+  EventAssignmentFeatureChoiceStore get _repository =>
+      ref.read(eventAssignmentFeatureChoiceStoreProvider);
+
+  bool _isCurrent(int generation) => mounted && _active &&
+      generation == _generation &&
+      identical(ref.read(authenticatedSessionProvider).asData?.value,
+          widget.session);
 
   @override
   void initState() {
@@ -72,27 +86,44 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && _savingFeatureId == null) {
-      _reload();
+    if (state == AppLifecycleState.resumed) {
+      _active = true;
+      _reload(clearMutationError: true);
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden) {
+      _generation++;
+      _writeGeneration++;
+      _active = false;
+      setState(() {
+        _review = null;
+        _error = null;
+        _mutationError = null;
+        _savingFeatureId = null;
+        _saved = false;
+        _loading = true;
+      });
     }
   }
 
-  Future<void> _reload() async {
+  Future<void> _reload({bool clearMutationError = false}) async {
     final generation = ++_generation;
     setState(() {
       _loading = true;
       _review = null;
       _error = null;
+      if (clearMutationError) _mutationError = null;
+      _saved = false;
     });
     try {
       final review = await _repository.list(widget.eventId);
-      if (!mounted || generation != _generation) return;
+      if (!_isCurrent(generation)) return;
       setState(() {
         _review = review;
         _loading = false;
       });
     } catch (error) {
-      if (!mounted || generation != _generation) return;
+      if (!_isCurrent(generation)) return;
       setState(() {
         _error = error;
         _loading = false;
@@ -101,7 +132,9 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
   }
 
   Future<void> _decide(EventAssignmentFeatureChoice choice) async {
-    if (_savingFeatureId != null) return;
+    final generation = _generation;
+    if (_savingFeatureId != null || !_isCurrent(generation)) return;
+    final writeGeneration = ++_writeGeneration;
     final grant = !choice.isGranted;
     if (grant && !choice.canGrant) return;
     final random = Random.secure();
@@ -111,7 +144,7 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
     ).join();
     setState(() {
       _savingFeatureId = choice.featureId;
-      _error = null;
+      _mutationError = null;
     });
     try {
       await _repository.decide(
@@ -120,15 +153,23 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
         grant: grant,
         requestId: requestId,
       );
-      if (!mounted) return;
+      if (!_isCurrent(generation)) return;
       await _reload();
+      if (writeGeneration == _writeGeneration &&
+          _isCurrent(_generation) && _review != null) {
+        setState(() => _saved = true);
+      }
     } catch (error) {
-      if (!mounted) return;
+      if (writeGeneration != _writeGeneration || !_isCurrent(generation)) {
+        return;
+      }
       // A timed-out write is uncertain; never show a local optimistic grant.
-      setState(() => _error = error);
+      setState(() => _mutationError = error);
       await _reload();
     } finally {
-      if (mounted) setState(() => _savingFeatureId = null);
+      if (writeGeneration == _writeGeneration && _isCurrent(_generation)) {
+        setState(() => _savingFeatureId = null);
+      }
     }
   }
 
@@ -137,7 +178,10 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
     final l = context.l10n;
     if (_loading) return const CatchLoadingIndicator();
     if (_error case final error?) {
-      return CatchLocalizedErrorBanner(error, onRetry: _reload);
+      return CatchLocalizedErrorBanner(
+        error,
+        onRetry: () => _reload(clearMutationError: true),
+      );
     }
     final choices = _review?.choices ?? const <EventAssignmentFeatureChoice>[];
     return Column(
@@ -145,6 +189,21 @@ class _MatchingChoicesState extends ConsumerState<_MatchingChoices>
       children: [
         Text(l.eventMatchingDisclosure,
             style: CatchTextStyles.supporting(context)),
+        gapH12,
+        Text(l.eventMatchingCoverageNote,
+            style: CatchTextStyles.supporting(context)),
+        if (_mutationError case final error?) ...[
+          gapH12,
+          CatchLocalizedErrorBanner(
+            error,
+            onRetry: () => _reload(clearMutationError: true),
+          ),
+        ],
+        if (_saved) ...[
+          gapH12,
+          Text(l.eventMatchingSaved,
+              style: CatchTextStyles.supportingStrong(context)),
+        ],
         gapH12,
         if (choices.isEmpty)
           Text(l.eventMatchingNoChoices,

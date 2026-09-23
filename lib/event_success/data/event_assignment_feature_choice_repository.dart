@@ -1,14 +1,34 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_assignment_feature_choices_callable_request.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_assignment_feature_choice.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+abstract interface class EventAssignmentFeatureChoiceStore {
+  Future<EventAssignmentFeatureChoices> list(String eventId);
+  Future<void> decide({
+    required String eventId,
+    required EventAssignmentFeatureChoice choice,
+    required bool grant,
+    required String requestId,
+  });
+}
+
+final eventAssignmentFeatureChoiceStoreProvider =
+    Provider<EventAssignmentFeatureChoiceStore>((ref) =>
+        EventAssignmentFeatureChoiceRepository(
+          ref.watch(firebaseFunctionsProvider),
+        ));
 
 /// Matching consent is independent of form sharing and messaging permission.
-class EventAssignmentFeatureChoiceRepository {
+class EventAssignmentFeatureChoiceRepository
+    implements EventAssignmentFeatureChoiceStore {
   const EventAssignmentFeatureChoiceRepository(this._functions);
   final FirebaseFunctions _functions;
 
+  @override
   Future<EventAssignmentFeatureChoices> list(String eventId) =>
       withBackendErrorContext(
         () async {
@@ -29,6 +49,7 @@ class EventAssignmentFeatureChoiceRepository {
         mapper: mapMissingCallableAsUnavailable,
       );
 
+  @override
   Future<void> decide({
     required String eventId,
     required EventAssignmentFeatureChoice choice,
