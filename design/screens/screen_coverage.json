@@ -530,6 +530,18 @@
       "status": "excluded",
       "priority": "P3",
       "reason": "Private account consent management covered by canonical route chrome and focused permission withdrawal widget tests."
+    },
+    {
+      "routeId": "eventProfileSharingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventParticipantProfileScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
     }
   ]
 }

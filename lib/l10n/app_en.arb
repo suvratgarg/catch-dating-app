@@ -27993,5 +27993,192 @@
   "hostResponseSaveReviewNote": "Save review note",
   "@hostResponseSaveReviewNote": {"description": "Explicit save for an application review note without changing its status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostResponseStartReview": "Start application review",
-  "@hostResponseStartReview": {"description": "Create the review projection for a response on its existing detail page.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
+  "@hostResponseStartReview": {"description": "Create the review projection for a response on its existing detail page.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "eventProfileTitle": "Event profile",
+  "@eventProfileTitle": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileMine": "My event profile",
+  "@eventProfileMine": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileDisclosure": "Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.",
+  "@eventProfileDisclosure": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileCardDisclosure": "Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.",
+  "@eventProfileCardDisclosure": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileCore": "Catch profile details",
+  "@eventProfileCore": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileCard": "Organizer card",
+  "@eventProfileCard": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfilePhoto": "Profile photo",
+  "@eventProfilePhoto": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileNoPhoto": "No photo shared",
+  "@eventProfileNoPhoto": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileNoCard": "No card selected",
+  "@eventProfileNoCard": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileChooseCard": "Choose a private card",
+  "@eventProfileChooseCard": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileNoCards": "No claimed cards from this organizer are available. You can review your submitted forms from your account.",
+  "@eventProfileNoCards": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileMoreCards": "Load more cards",
+  "@eventProfileMoreCards": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileSave": "Save sharing choices",
+  "@eventProfileSave": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileStop": "Stop sharing extra details",
+  "@eventProfileStop": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileSaved": "Event profile updated",
+  "@eventProfileSaved": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileCannotShare": "To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.",
+  "@eventProfileCannotShare": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileEmpty": "Only their name is shared",
+  "@eventProfileEmpty": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileEmptyBody": "This person has not shared extra profile details with this event chat.",
+  "@eventProfileEmptyBody": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileSharedHere": "Shared with this event chat",
+  "@eventProfileSharedHere": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileSelectedAnswers": "Selected organizer answers",
+  "@eventProfileSelectedAnswers": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileReviewAgain": "Changed profile details or answers need to be selected again before sharing.",
+  "@eventProfileReviewAgain": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileView": "View event profile",
+  "@eventProfileView": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfileEditAgain": "After saving, review your choices here whenever you want to change or stop sharing.",
+  "@eventProfileEditAgain": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfilePhotoLabel": "Photo {number}",
+  "@eventProfilePhotoLabel": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "eventProfileChoosePhoto": "Share this photo",
+  "@eventProfileChoosePhoto": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  },
+  "eventProfilePhotoUnavailable": "Photo preview unavailable. Reload before selecting it.",
+  "@eventProfilePhotoUnavailable": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "chats",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_profile"
+  }
 }

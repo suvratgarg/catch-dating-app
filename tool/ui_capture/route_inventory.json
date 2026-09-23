@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "c883ed16e80a400b36838b02297b61d7077b122539945bf6150548454897e975",
-    "routeContractSha256": "3cd5edb0d227f704c4c7163220eecd2356ce400b2fd17ef5ef62f0a7cb15f7e6",
-    "goRouteCount": 91,
+    "normalizedFileSha256": "d7d8b35f051bd882a25c0f04ace017ab1b9815390dede938fd6b1f9562e3a58a",
+    "routeContractSha256": "8e75b7e5a16dbb8c3e1808b0d11864a399e676152c485472acb26040ffbf96ca",
+    "goRouteCount": 93,
     "shellBranchCount": 9,
-    "enumRouteCount": 76,
-    "referencedRouteCount": 76,
-    "runtimeRouteCount": 76,
+    "enumRouteCount": 78,
+    "referencedRouteCount": 78,
+    "runtimeRouteCount": 78,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -196,6 +196,41 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>EventChatScreen(eventId:state.pathParameters['eventId']!)",
       "presentationTarget": "EventChatScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventProfileSharingScreen",
+      "path": "/events/:eventId/chat/profile",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/events/:eventId/chat/profile",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventProfileSharingScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EventProfileScreen(eventId:state.pathParameters['eventId']!)",
+      "presentationTarget": "EventProfileScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventParticipantProfileScreen",
+      "path": "/events/:eventId/chat/people/:participantUid",
+      "pathParameters": [
+        "eventId",
+        "participantUid"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/events/:eventId/chat/people/:participantUid",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.eventParticipantProfileScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>EventProfileScreen(eventId:state.pathParameters['eventId']!,participantUid:state.pathParameters['participantUid']!)",
+      "presentationTarget": "EventProfileScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1367,6 +1402,8 @@
     "eventChatScreen",
     "eventDetailScreen",
     "eventLocationMapScreen",
+    "eventParticipantProfileScreen",
+    "eventProfileSharingScreen",
     "eventRecapScreen",
     "eventSuccessCompanionScreen",
     "exploreMapScreen",

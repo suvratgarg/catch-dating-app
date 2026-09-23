@@ -14,10 +14,12 @@ class EventChatMessageTile extends StatelessWidget {
     required this.onReply,
     required this.onReact,
     required this.onReaction,
+    this.onViewProfile,
   });
   final EventChatMessage message;
   final bool isMe, enabled;
   final VoidCallback onReply, onReact;
+  final VoidCallback? onViewProfile;
   final ValueChanged<EventChatReaction?> onReaction;
 
   @override
@@ -52,6 +54,11 @@ class EventChatMessageTile extends StatelessWidget {
                     tooltip: l.eventChatMessageActions,
                     enabled: enabled,
                     items: [
+                      if (onViewProfile != null)
+                        CatchActionMenuItem(
+                          value: 'profile',
+                          label: l.eventProfileView,
+                        ),
                       CatchActionMenuItem(
                         value: 'reply',
                         label: l.eventChatReply,
@@ -61,8 +68,11 @@ class EventChatMessageTile extends StatelessWidget {
                         label: l.eventChatReact,
                       ),
                     ],
-                    onSelected: (action) =>
-                        action == 'reply' ? onReply() : onReact(),
+                    onSelected: (action) => switch (action) {
+                      'profile' => onViewProfile?.call(),
+                      'reply' => onReply(),
+                      _ => onReact(),
+                    },
                   ),
                 ],
               ),

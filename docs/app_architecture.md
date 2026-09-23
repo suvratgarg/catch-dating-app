@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.71.0
+version: 1.72.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1961,8 +1961,22 @@ Revocation does not require current admission or successful card loading.
 `EventParticipantProfileController` rechecks the protected projection while
 visible and clears it on failed reads, backgrounding or account changes. Its
 result contains only selected fields and a bounded in-memory photo preview.
-Both controllers expose lifecycle hooks for their presentation owners; route
-and rendered mini-profile integration remains in progress.
+`EventProfileScreen` owns the editor at `/events/:eventId/chat/profile` and the
+participant view at `/events/:eventId/chat/people/:participantUid`. Both are
+shared authenticated routes before dating onboarding; server-side admission,
+claim and sharing checks still control each read. The room app bar opens the
+editor and a message action opens its sender's protected profile. Backgrounding
+or covering either route clears visible details until a fresh foreground read.
+
+The editor exposes unchecked eligible values and only claimed applicant answers
+from the same organizer. Photo selection remains disabled until its owned preview
+has decoded; participant photos use only the bounded protected memory preview.
+Answer labels and values use natural-height text so a sharing choice never hides
+part of the reviewed answer behind an ellipsis.
+Card pagination retains unsaved choices while controls are disabled, provided
+the account, grant, profile and membership revisions remain unchanged. Changed
+card revisions discard local answer choices. Save and revocation use reviewed
+UID/revision snapshots; revocation remains available after admission ends.
 
 ## Controller And View-Model Contract
 

@@ -115,12 +115,15 @@ class EventProfileEditorController extends _$EventProfileEditorController {
     );
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({bool preserveDraft = false}) async {
     if (!_foreground || _saving || state.asData?.value.busy == true) return;
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return;
     final generation = _generation, epoch = ++_readEpoch;
-    state = const AsyncLoading();
+    final current = state.asData?.value;
+    state = preserveDraft && current != null
+        ? AsyncData(current.pending())
+        : const AsyncLoading();
     try {
       final result = await _read(uid);
       if (_current(uid, generation) && epoch == _readEpoch && _foreground) {
@@ -150,7 +153,7 @@ class EventProfileEditorController extends _$EventProfileEditorController {
     }
     _explicitCard = true;
     _cardId = responseId;
-    await refresh();
+    await refresh(preserveDraft: true);
   }
 
   Future<void> loadMore() async {
@@ -159,7 +162,7 @@ class EventProfileEditorController extends _$EventProfileEditorController {
       return;
     }
     _pages++;
-    await refresh();
+    await refresh(preserveDraft: true);
   }
 
   void setForeground(bool value) {

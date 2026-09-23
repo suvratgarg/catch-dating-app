@@ -32955,6 +32955,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start application review'**
   String get hostResponseStartReview;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Event profile'**
+  String get eventProfileTitle;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'My event profile'**
+  String get eventProfileMine;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.'**
+  String get eventProfileDisclosure;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.'**
+  String get eventProfileCardDisclosure;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch profile details'**
+  String get eventProfileCore;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer card'**
+  String get eventProfileCard;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get eventProfilePhoto;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No photo shared'**
+  String get eventProfileNoPhoto;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No card selected'**
+  String get eventProfileNoCard;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a private card'**
+  String get eventProfileChooseCard;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No claimed cards from this organizer are available. You can review your submitted forms from your account.'**
+  String get eventProfileNoCards;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more cards'**
+  String get eventProfileMoreCards;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Save sharing choices'**
+  String get eventProfileSave;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop sharing extra details'**
+  String get eventProfileStop;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Event profile updated'**
+  String get eventProfileSaved;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.'**
+  String get eventProfileCannotShare;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Only their name is shared'**
+  String get eventProfileEmpty;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'This person has not shared extra profile details with this event chat.'**
+  String get eventProfileEmptyBody;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with this event chat'**
+  String get eventProfileSharedHere;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected organizer answers'**
+  String get eventProfileSelectedAnswers;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed profile details or answers need to be selected again before sharing.'**
+  String get eventProfileReviewAgain;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'View event profile'**
+  String get eventProfileView;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'After saving, review your choices here whenever you want to change or stop sharing.'**
+  String get eventProfileEditAgain;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {number}'**
+  String eventProfilePhotoLabel({required int number});
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this photo'**
+  String get eventProfileChoosePhoto;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo preview unavailable. Reload before selecting it.'**
+  String get eventProfilePhotoUnavailable;
 }
 
 class _AppLocalizationsDelegate

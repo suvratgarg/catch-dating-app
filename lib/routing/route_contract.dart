@@ -24,6 +24,14 @@ enum Routes {
     AppRouteAudience.consumer,
   ),
   eventChatScreen('/events/:eventId/chat', AppRouteAudience.shared),
+  eventProfileSharingScreen(
+    '/events/:eventId/chat/profile',
+    AppRouteAudience.shared,
+  ),
+  eventParticipantProfileScreen(
+    '/events/:eventId/chat/people/:participantUid',
+    AppRouteAudience.shared,
+  ),
   eventLocationMapScreen('/events/:eventId/location', AppRouteAudience.shared),
   dashboardScreen('/', AppRouteAudience.consumer),
   notificationsScreen('/notifications', AppRouteAudience.consumer),

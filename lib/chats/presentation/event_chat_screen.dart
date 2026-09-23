@@ -129,6 +129,17 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
         actions: [
+          if (current != null)
+            CatchIconAction(
+              tooltip: context.l10n.eventProfileMine,
+              onPressed: current.busy
+                  ? null
+                  : () => context.pushNamed(
+                      Routes.eventProfileSharingScreen.name,
+                      pathParameters: {'eventId': widget.eventId},
+                    ),
+              child: Icon(CatchIcons.personOutlineRounded),
+            ),
           if (current != null &&
               (current.access.canManage ||
                   current.access.membershipStatus == 'joined'))
@@ -170,6 +181,13 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
             replyId: _replyId,
             reactionId: _reactionId,
             onSend: () => unawaited(_send(state.uid)),
+            onViewProfile: (uid) => context.pushNamed(
+              Routes.eventParticipantProfileScreen.name,
+              pathParameters: {
+                'eventId': widget.eventId,
+                'participantUid': uid,
+              },
+            ),
             onLoadEarlier: () => unawaited(_controller.loadEarlier()),
             onAction: (action) => unawaited(
               _controller.updateAccess(action, reviewedUid: state.uid),
@@ -214,6 +232,7 @@ class EventChatPageBody extends StatelessWidget {
     required this.onReply,
     required this.onShowReactions,
     required this.onReaction,
+    this.onViewProfile,
   });
   final EventChatState state;
   final TextEditingController draft;
@@ -221,6 +240,7 @@ class EventChatPageBody extends StatelessWidget {
   final DateTime now;
   final String? replyId, reactionId;
   final VoidCallback onSend, onLoadEarlier;
+  final ValueChanged<String>? onViewProfile;
   final ValueChanged<EventChatAction> onAction;
   final VoidCallback? onReviewProfile;
   final ValueChanged<String?> onReply, onShowReactions;
@@ -355,6 +375,10 @@ class EventChatPageBody extends StatelessWidget {
                         isMe: message.senderUid == state.uid,
                         enabled: state.canSend,
                         onReply: () => onReply(message.messageId),
+                        onViewProfile:
+                            message.senderUid == null || onViewProfile == null
+                            ? null
+                            : () => onViewProfile!(message.senderUid!),
                         onReact: () => onShowReactions(message.messageId),
                         onReaction: (reaction) => onReaction(message, reaction),
                       ),

@@ -20644,4 +20644,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostResponseStartReview => 'Start application review';
+
+  @override
+  String get eventProfileTitle => 'Event profile';
+
+  @override
+  String get eventProfileMine => 'My event profile';
+
+  @override
+  String get eventProfileDisclosure =>
+      'Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.';
+
+  @override
+  String get eventProfileCardDisclosure =>
+      'Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.';
+
+  @override
+  String get eventProfileCore => 'Catch profile details';
+
+  @override
+  String get eventProfileCard => 'Organizer card';
+
+  @override
+  String get eventProfilePhoto => 'Profile photo';
+
+  @override
+  String get eventProfileNoPhoto => 'No photo shared';
+
+  @override
+  String get eventProfileNoCard => 'No card selected';
+
+  @override
+  String get eventProfileChooseCard => 'Choose a private card';
+
+  @override
+  String get eventProfileNoCards =>
+      'No claimed cards from this organizer are available. You can review your submitted forms from your account.';
+
+  @override
+  String get eventProfileMoreCards => 'Load more cards';
+
+  @override
+  String get eventProfileSave => 'Save sharing choices';
+
+  @override
+  String get eventProfileStop => 'Stop sharing extra details';
+
+  @override
+  String get eventProfileSaved => 'Event profile updated';
+
+  @override
+  String get eventProfileCannotShare =>
+      'To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.';
+
+  @override
+  String get eventProfileEmpty => 'Only their name is shared';
+
+  @override
+  String get eventProfileEmptyBody =>
+      'This person has not shared extra profile details with this event chat.';
+
+  @override
+  String get eventProfileSharedHere => 'Shared with this event chat';
+
+  @override
+  String get eventProfileSelectedAnswers => 'Selected organizer answers';
+
+  @override
+  String get eventProfileReviewAgain =>
+      'Changed profile details or answers need to be selected again before sharing.';
+
+  @override
+  String get eventProfileView => 'View event profile';
+
+  @override
+  String get eventProfileEditAgain =>
+      'After saving, review your choices here whenever you want to change or stop sharing.';
+
+  @override
+  String eventProfilePhotoLabel({required int number}) {
+    return 'Photo $number';
+  }
+
+  @override
+  String get eventProfileChoosePhoto => 'Share this photo';
+
+  @override
+  String get eventProfilePhotoUnavailable =>
+      'Photo preview unavailable. Reload before selecting it.';
 }

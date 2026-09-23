@@ -531,6 +531,8 @@ import 'package:widgetbook_workspace/utility/calendar.dart'
     as _widgetbook_workspace_utility_calendar;
 import 'package:widgetbook_workspace/utility/event_chat.dart'
     as _widgetbook_workspace_utility_event_chat;
+import 'package:widgetbook_workspace/utility/event_profile.dart'
+    as _widgetbook_workspace_utility_event_profile;
 import 'package:widgetbook_workspace/utility/force_update.dart'
     as _widgetbook_workspace_utility_force_update;
 import 'package:widgetbook_workspace/utility/launch_access.dart'
@@ -12842,6 +12844,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Map states',
                 builder: _widgetbook_workspace_utility_location_map
                     .eventLocationMapScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Event profile',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileAnswerField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Full answer review',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileAnswerPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileEditorSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Revoke after admission ends',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileRevokePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileIdentitySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Participant mini-profile',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileIdentityPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfilePhotoField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review owned photo before sharing',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfilePhotoPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Choose details for one event',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileScreenPreview,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Only explicitly shared details',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventParticipantScreenPreview,
               ),
             ],
           ),
