@@ -12,10 +12,6 @@
   padding: 28px 20px 48px;
 }
 
-.public-form[data-embed] {
-  min-height: 0;
-}
-
 .public-form[data-appearance="editorial"] {
   max-width: 900px;
   --form-accent: #ad3c21;
