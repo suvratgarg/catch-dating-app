@@ -46,6 +46,42 @@ const schemaCatchCommunicationPermissionReceiptDocumentSchema = <String, Object?
       'const': 'whatsapp',
       'type': 'string',
     },
+    'purpose': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'eventOperations',
+        'marketing',
+      ],
+    },
+    'endpointE164': <String, Object?>{
+      'type': 'string',
+      'pattern': '^\\+[1-9][0-9]{6,14}\$',
+    },
+    'sourceVersionId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'sourceDecidedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
     'decision': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

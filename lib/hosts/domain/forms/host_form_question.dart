@@ -109,6 +109,11 @@ class HostFormQuestion {
     'form answer destination',
   );
 
+  /// A private card mapping alone never proposes an answer to attendees.
+  bool get proposesEventProfile =>
+      formDefinitionDeepStringMap(_json['answerAudience'])['mode'] ==
+      'eventMembersWithConsent';
+
   bool get canPrepareOrganizerCard =>
       kind != HostFormQuestionKind.acknowledgement &&
       kind != HostFormQuestionKind.signature;
@@ -184,6 +189,7 @@ class HostFormQuestion {
     HostFormPrefillPolicy? prefillPolicy,
     HostFormPresentation? hostPresentation,
     HostFormAnswerDestination? answerDestination,
+    bool? eventProfileAudience,
     HostFormQuestionValidation? validation,
   }) {
     final next = toJson();
@@ -261,6 +267,17 @@ class HostFormQuestion {
             )
             .toJson();
       }
+    }
+    if (next['answerDestination'] !=
+            HostFormAnswerDestination.organizerCard.name ||
+        (kind ?? this.kind) == HostFormQuestionKind.file ||
+        eventProfileAudience == false) {
+      next.remove('answerAudience');
+    } else if (eventProfileAudience == true) {
+      next['answerAudience'] = {
+        'mode': 'eventMembersWithConsent',
+        'eventProfileSlot': 'customRow',
+      };
     }
     return HostFormQuestion.fromMap(next);
   }

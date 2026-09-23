@@ -8,6 +8,10 @@
 export interface WithdrawParticipantMessagingPermissionCallablePayload {
   scope: "catch" | "organizer";
   organizerId: string | null;
+  /**
+   * Omit for sender-wide withdrawal. Scope one purpose without changing the other.
+   */
+  purpose?: "eventOperations" | "marketing";
   expectedReceiptId: string | null;
   requestId: string;
 }

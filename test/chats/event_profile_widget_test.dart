@@ -14,6 +14,8 @@ import 'package:catch_dating_app/chats/presentation/widgets/event_profile_identi
 import 'package:catch_dating_app/chats/presentation/widgets/event_profile_photo_field.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/user_profile/data/form_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile_photo_preview.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +27,8 @@ import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'event_chat_profile_test.dart';
 import 'event_chat_widget_test.dart' show fixture;
-import 'event_profile_controller_test.dart' show ProfileRepository;
+import 'event_profile_controller_test.dart'
+    show CardsRepository, ProfileRepository, miniProfile;
 
 final pixel = File('test/goldens/fixtures/portrait.jpg').readAsBytesSync();
 const captureKey = ValueKey('event-profile-capture');
@@ -127,8 +130,48 @@ void main() {
           scale: scale,
         );
         expect(tester.takeException(), isNull);
+        if (scale == 2) {
+          for (final (key, label, hint) in [
+            (
+              const ValueKey('event-profile-first-name'),
+              'first name for this event',
+              'First name',
+            ),
+            (
+              const ValueKey('event-profile-introduction'),
+              'introduction for this event',
+              'About you',
+            ),
+          ]) {
+            expect(
+              tester.widget<CatchField>(find.byKey(key)).title?.toLowerCase(),
+              label,
+              reason: 'The full event-specific label must remain configured',
+            );
+            final paragraphs = tester
+                .renderObjectList<RenderParagraph>(
+                  find.descendant(
+                    of: find.byKey(key),
+                    matching: find.byType(RichText),
+                  ),
+                )
+                .toList();
+            final hints = paragraphs.where(
+              (paragraph) => paragraph.text.toPlainText().startsWith(hint),
+            );
+            expect(hints, isNotEmpty, reason: hint);
+            expect(
+              hints.every((paragraph) => !paragraph.didExceedMaxLines),
+              isTrue,
+              reason: '$hint action must remain readable at 2× text',
+            );
+          }
+        }
         await capture(tester, 'editor-${dark ? 'dark' : 'light'}-$scale');
-        final save = find.widgetWithText(CatchButton, 'Save sharing choices');
+        final save = find.widgetWithText(
+          CatchButton,
+          'Preview what event members can see',
+        );
         await tester.ensureVisible(save);
         await pumpFeatureUi(tester);
         expect(tester.getSize(save).height, greaterThanOrEqualTo(44));
@@ -188,7 +231,10 @@ void main() {
       await tester.ensureVisible(age);
       await tester.tap(age);
       await pumpFeatureUi(tester);
-      final save = find.widgetWithText(CatchButton, 'Save sharing choices');
+      final save = find.widgetWithText(
+        CatchButton,
+        'Preview what event members can see',
+      );
       await tester.ensureVisible(save);
       await tester.tap(save);
       expect(saved.single!.coreFieldIds, {'age'});
@@ -216,7 +262,10 @@ void main() {
       await pumpProfile(tester, editor(editorState(), onSave: saved.add));
       expect(tester.widget<CatchToggleInput>(toggle('Age')).value, true);
       expect(tester.widget<CatchToggleInput>(toggle('drink')).value, false);
-      final save = find.widgetWithText(CatchButton, 'Save sharing choices');
+      final save = find.widgetWithText(
+        CatchButton,
+        'Preview what event members can see',
+      );
       await tester.ensureVisible(save);
       await tester.tap(save);
       expect(saved.single!.coreFieldIds, {'age'});
@@ -254,6 +303,168 @@ void main() {
     await tester.tap(stop);
     expect(saved, [null]);
     await capture(tester, 'revoke-after-admission');
+  });
+  testWidgets('personalization is editable only when sharing is eligible', (
+    tester,
+  ) async {
+    final saved = <EventProfileSelection?>[];
+    await pumpProfile(tester, editor(editorState(), onSave: saved.add));
+    final firstName = find.byKey(const ValueKey('event-profile-first-name'));
+    final introduction = find.byKey(const ValueKey('event-profile-introduction'));
+    expect(firstName, findsOneWidget);
+    expect(introduction, findsOneWidget);
+    await tester.enterText(
+      find.descendant(of: firstName, matching: find.byType(TextField)),
+      'Mira',
+    );
+    await tester.enterText(
+      find.descendant(of: introduction, matching: find.byType(TextField)),
+      'Happy to meet everyone',
+    );
+    final preview = find.widgetWithText(
+      CatchButton,
+      'Preview what event members can see',
+    );
+    await tester.ensureVisible(preview);
+    await tester.tap(preview);
+    expect(saved.single?.firstName, 'Mira');
+    expect(saved.single?.introduction, 'Happy to meet everyone');
+
+    await pumpProfile(tester, editor(editorState(canShare: false)));
+    expect(firstName, findsNothing);
+    expect(introduction, findsNothing);
+  });
+  testWidgets('owned preview confirmation saves the reviewed selection', (
+    tester,
+  ) async {
+    final repo = ProfileRepository()
+      ..readPreview = (_) async =>
+          settingsFixture(preview: miniProfile(name: 'Mira'));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((_) => Stream.value('person')),
+          eventChatRepositoryProvider.overrideWithValue(repo),
+          formProfileRepositoryProvider.overrideWithValue(CardsRepository()),
+          watchUserProfileProvider.overrideWith((_) => Stream.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const EventProfileScreen(eventId: 'event'),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final age = toggle('Age');
+    await tester.ensureVisible(age);
+    await tester.tap(age);
+    await pumpFeatureUi(tester);
+    final preview = find.widgetWithText(
+      CatchButton,
+      'Preview what event members can see',
+    );
+    await tester.ensureVisible(preview);
+    await tester.tap(preview);
+    await pumpUntilFound(tester, find.byType(EventProfileIdentitySection));
+    expect(find.byType(EventProfileIdentitySection), findsOneWidget);
+    expect(repo.writes, isEmpty);
+    await tester.tap(find.widgetWithText(CatchButton, 'Save sharing choices'));
+    await pumpFeatureUi(tester);
+    expect(repo.writes, hasLength(1));
+    expect(repo.writes.single.uid, 'person');
+    expect(repo.writes.single.revision, 1);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('account change hides an open preview and cannot save it', (
+    tester,
+  ) async {
+    final accounts = StreamController<String?>()..add('person');
+    addTearDown(accounts.close);
+    final repo = ProfileRepository()
+      ..readPreview = (_) async =>
+          settingsFixture(preview: miniProfile(name: 'Mira'));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((_) => accounts.stream),
+          eventChatRepositoryProvider.overrideWithValue(repo),
+          formProfileRepositoryProvider.overrideWithValue(CardsRepository()),
+          watchUserProfileProvider.overrideWith((_) => Stream.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const EventProfileScreen(eventId: 'event'),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final age = toggle('Age');
+    await tester.ensureVisible(age);
+    await tester.tap(age);
+    await pumpFeatureUi(tester);
+    final preview = find.widgetWithText(
+      CatchButton,
+      'Preview what event members can see',
+    );
+    await tester.ensureVisible(preview);
+    await tester.tap(preview);
+    await pumpUntilFound(tester, find.text('Mira'));
+    expect(find.text('Mira'), findsOneWidget);
+    accounts.add('another-person');
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsNothing);
+    expect(repo.writes, isEmpty);
+  });
+  testWidgets('backgrounding hides an open preview and cannot restore it', (
+    tester,
+  ) async {
+    final repo = ProfileRepository()
+      ..readPreview = (_) async => settingsFixture(
+        preview: miniProfile(name: 'Mira'),
+      );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((_) => Stream.value('person')),
+          eventChatRepositoryProvider.overrideWithValue(repo),
+          formProfileRepositoryProvider.overrideWithValue(CardsRepository()),
+          watchUserProfileProvider.overrideWith((_) => Stream.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const EventProfileScreen(eventId: 'event'),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final age = toggle('Age');
+    await tester.ensureVisible(age);
+    await tester.tap(age);
+    await pumpFeatureUi(tester);
+    final preview = find.widgetWithText(
+      CatchButton,
+      'Preview what event members can see',
+    );
+    await tester.ensureVisible(preview);
+    await tester.tap(preview);
+    await pumpUntilFound(tester, find.text('Mira'));
+    expect(find.text('Mira'), findsOneWidget);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsNothing);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsNothing);
+    expect(repo.writes, isEmpty);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await pumpFeatureUi(tester);
   });
   testWidgets(
     'photo selection waits for a decoded preview and resets on replacement',

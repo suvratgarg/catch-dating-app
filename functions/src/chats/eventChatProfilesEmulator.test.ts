@@ -77,7 +77,7 @@ test(
       coreFieldIds: ["age", "occupation"],
       photoId: null,
       card: {responseId, revision: 1, questionIds: ["cocktail"]},
-      termsVersion: "event-profile-sharing-v1",
+      termsVersion: "event-profile-sharing-v2",
     };
     const saveRequest = (selection: Payload["selection"] = chosen) =>
       request(person, {
@@ -202,13 +202,20 @@ test(
           ],
         },
       );
-      await put("organizerFormVersions", versionId, {
+      const version = await put("organizerFormVersions", versionId, {
         organizerId,
         formId,
         definition: {
           title: "RSVP",
           identityPolicy: "phoneVerified",
           consent: {consentVersion: "v1"},
+          eventProfile: {
+            enabled: true,
+            allowedSlots: ["displayName", "portrait", "introduction",
+              "customRow"],
+            maxCustomRows: 2,
+            noticeVersion: "event-profile-sharing-v2",
+          },
           sections: [
             {
               questions: [
@@ -217,6 +224,10 @@ test(
                   label: "Favourite drink",
                   kind: "singleChoice",
                   answerDestination: "organizerCard",
+                  answerAudience: {
+                    mode: "eventMembersWithConsent",
+                    eventProfileSlot: "customRow",
+                  },
                   canonicalFieldId: null,
                   options: [{value: "tequila", label: "Tequila"}],
                 },
@@ -257,6 +268,54 @@ test(
         createdAt: now,
         updatedAt: now,
       });
+
+      await t.test(
+        "verified prejoin preview is exact and grants only the first join",
+        async () => {
+          const member = ref("eventChatMemberships",
+            eventChatMembershipId(eventId, person));
+          await member.delete();
+          const proposed = {
+            ...chosen,
+            membershipRevision: 0,
+            firstName: "Mira",
+            introduction: "I like coffee and running.",
+            termsVersion: "event-profile-sharing-v2" as const,
+          };
+          const own = await settings(request(person, {}), deps);
+          assert.equal(own.canShare, true);
+          assert.equal(own.membershipRevision, 0);
+          const preview = await settings(request(person,
+            {previewSelection: proposed}), deps);
+          assert.equal(preview.preview?.displayName, "Mira");
+          assert.equal(preview.preview?.introduction,
+            "I like coffee and running.");
+          assert.deepEqual(preview.preview?.cardFields,
+            [{label: "Favourite drink", value: "Tequila"}]);
+          assert.equal(JSON.stringify(preview.preview).includes("private"),
+            false);
+          await assert.rejects(read(), {code: "permission-denied"});
+          await save(proposed);
+          await change("join", 0);
+          const visible = await read();
+          assert.equal(visible.displayName, preview.preview?.displayName);
+          assert.equal(visible.introduction, preview.preview?.introduction);
+          assert.deepEqual(visible.coreFields, preview.preview?.coreFields);
+          assert.deepEqual(visible.cardFields, preview.preview?.cardFields);
+          await change("leave", 1);
+          await change("join", 2);
+          const rejoined = await read();
+          assert.equal(rejoined.displayName, "Sara");
+          assert.equal(rejoined.introduction, null);
+          assert.deepEqual(rejoined.cardFields, []);
+          // Return the fixture to its original first membership for the
+          // independent revocation cases below.
+          await member.update({revision: 1});
+          await ref("eventChatProfileShares",
+            eventChatMembershipId(eventId, person)).delete();
+          revision = 0;
+        },
+      );
 
       await t.test(
         "joining alone shares only the claimed display name",
@@ -304,6 +363,10 @@ test(
             ).get()
           ).data()!;
           assert.equal(JSON.stringify(stored).includes("Tequila"), false);
+          assert.equal(Object.hasOwn(stored.selection, "firstName"), false);
+          assert.equal(Object.hasOwn(stored.selection, "introduction"), false);
+          await assert.rejects(save({...chosen,
+            termsVersion: "event-profile-sharing-v1"}), {code: "aborted"});
           await save(null);
           assert.deepEqual((await read()).coreFields, []);
           await update(req, deps);
@@ -319,12 +382,25 @@ test(
             ),
             {code: "already-exists"},
           );
+          await save({...chosen, card: null,
+            termsVersion: "event-profile-sharing-v1"});
+          const legacy = (await ref("eventChatProfileShares",
+            eventChatMembershipId(eventId, person)).get()).data()!;
+          assert.equal(Object.hasOwn(legacy.selection, "firstName"), false);
+          assert.equal(Object.hasOwn(legacy.selection, "introduction"), false);
           await save();
         },
       );
       await t.test(
         "foreign cards, unselected answers, images and stale edits fail closed",
         async () => {
+          const definition = (await version.get()).data()!.definition;
+          const oldDefinition = structuredClone(definition);
+          delete oldDefinition.sections[0].questions[0].answerAudience;
+          await version.update({definition: oldDefinition});
+          assert.deepEqual((await read()).cardFields, [],
+            "legacy versions do not grant attendee audience");
+          await version.update({definition});
           for (const patch of [
             {responseId: foreign},
             {questionIds: ["private"]},

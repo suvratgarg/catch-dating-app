@@ -15,6 +15,8 @@ export interface OrganizerCommunicationPreferenceDocument {
      */
     evidenceStatus: "notApplicable" | "complete" | "incomplete";
     currentReceiptId: string | null;
+    endpointE164?: string;
+    sourceResponseId?: string;
     termsVersion: string | null;
     source:
       | null
@@ -31,6 +33,58 @@ export interface OrganizerCommunicationPreferenceDocument {
       _nanoseconds: number;
     } | null;
   };
+  whatsappPurposes?: {
+    eventOperations?: {
+      status: "unknown" | "optedIn" | "optedOut";
+      /**
+       * Only complete evidence may make an opted-in channel eligible for managed delivery.
+       */
+      evidenceStatus: "notApplicable" | "complete" | "incomplete";
+      currentReceiptId: string | null;
+      endpointE164?: string;
+      sourceResponseId?: string;
+      termsVersion: string | null;
+      source:
+        | null
+        | "publicEventRegistration"
+        | "hostFormResponse"
+        | "participantSettings"
+        | "unsubscribeLink"
+        | "inboundStop"
+        | "providerWebhook"
+        | "legacyIncomplete";
+      sourceEventId: string | null;
+      updatedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+      } | null;
+    };
+    marketing?: {
+      status: "unknown" | "optedIn" | "optedOut";
+      /**
+       * Only complete evidence may make an opted-in channel eligible for managed delivery.
+       */
+      evidenceStatus: "notApplicable" | "complete" | "incomplete";
+      currentReceiptId: string | null;
+      endpointE164?: string;
+      sourceResponseId?: string;
+      termsVersion: string | null;
+      source:
+        | null
+        | "publicEventRegistration"
+        | "hostFormResponse"
+        | "participantSettings"
+        | "unsubscribeLink"
+        | "inboundStop"
+        | "providerWebhook"
+        | "legacyIncomplete";
+      sourceEventId: string | null;
+      updatedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+      } | null;
+    };
+  };
   sms: {
     status: "unknown" | "optedIn" | "optedOut";
     /**
@@ -38,6 +92,8 @@ export interface OrganizerCommunicationPreferenceDocument {
      */
     evidenceStatus: "notApplicable" | "complete" | "incomplete";
     currentReceiptId: string | null;
+    endpointE164?: string;
+    sourceResponseId?: string;
     termsVersion: string | null;
     source:
       | null

@@ -372,6 +372,34 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                                 'organizerCard',
                               ],
                             },
+                            'answerAudience': <String, Object?>{
+                              'description': 'Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.',
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'mode',
+                                'eventProfileSlot',
+                              ],
+                              'properties': <String, Object?>{
+                                'mode': <String, Object?>{
+                                  'type': 'string',
+                                  'enum': <Object?>[
+                                    'organizerOnly',
+                                    'eventMembersWithConsent',
+                                  ],
+                                },
+                                'eventProfileSlot': <String, Object?>{
+                                  'type': <Object?>[
+                                    'string',
+                                    'null',
+                                  ],
+                                  'enum': <Object?>[
+                                    null,
+                                    'customRow',
+                                  ],
+                                },
+                              },
+                            },
                             'prefillPolicy': <String, Object?>{
                               'type': 'string',
                               'enum': <Object?>[
@@ -849,6 +877,53 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                     'catchWhatsapp': <String, Object?>{
                       'type': 'boolean',
                     },
+                    'organizerOperationsWhatsapp': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                    'organizerMarketingWhatsapp': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                    'catchMarketingWhatsapp': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                  },
+                },
+                'eventProfile': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'enabled',
+                    'allowedSlots',
+                    'maxCustomRows',
+                    'noticeVersion',
+                  ],
+                  'properties': <String, Object?>{
+                    'enabled': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                    'allowedSlots': <String, Object?>{
+                      'type': 'array',
+                      'uniqueItems': true,
+                      'maxItems': 4,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'displayName',
+                          'portrait',
+                          'introduction',
+                          'customRow',
+                        ],
+                      },
+                    },
+                    'maxCustomRows': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 20,
+                    },
+                    'noticeVersion': <String, Object?>{
+                      'type': 'string',
+                      'const': 'event-profile-sharing-v2',
+                    },
                   },
                 },
                 'completion': <String, Object?>{
@@ -912,8 +987,11 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
               ],
               'properties': <String, Object?>{
                 'termsVersion': <String, Object?>{
-                  'const': 'form-whatsapp-v1',
                   'type': 'string',
+                  'enum': <Object?>[
+                    'form-whatsapp-v1',
+                    'form-whatsapp-v2',
+                  ],
                 },
                 'organizerWhatsapp': <String, Object?>{
                   'type': <Object?>[
@@ -923,6 +1001,27 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                   'maxLength': 1000,
                 },
                 'catchWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'organizerOperationsWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'organizerMarketingWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'catchMarketingWhatsapp': <String, Object?>{
                   'type': <Object?>[
                     'string',
                     'null',
@@ -988,13 +1087,25 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
           ],
           'properties': <String, Object?>{
             'termsVersion': <String, Object?>{
-              'const': 'form-whatsapp-v1',
               'type': 'string',
+              'enum': <Object?>[
+                'form-whatsapp-v1',
+                'form-whatsapp-v2',
+              ],
             },
             'organizerWhatsapp': <String, Object?>{
               'type': 'boolean',
             },
             'catchWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'organizerOperationsWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'organizerMarketingWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'catchMarketingWhatsapp': <String, Object?>{
               'type': 'boolean',
             },
           },

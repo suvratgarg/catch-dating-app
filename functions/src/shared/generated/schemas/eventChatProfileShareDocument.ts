@@ -145,9 +145,24 @@ export const eventChatProfileShareDocumentSchema: Record<string, unknown> = {
                 }
               ]
             },
+            "firstName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
+            "introduction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
             "termsVersion": {
               "type": "string",
-              "const": "event-profile-sharing-v1"
+              "enum": [
+                "event-profile-sharing-v1",
+                "event-profile-sharing-v2"
+              ]
             }
           }
         },

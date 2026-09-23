@@ -37,6 +37,14 @@ const schemaWithdrawParticipantMessagingPermissionCallablePayloadSchema = <Strin
         },
       ],
     },
+    'purpose': <String, Object?>{
+      'description': 'Omit for sender-wide withdrawal. Scope one purpose without changing the other.',
+      'type': 'string',
+      'enum': <Object?>[
+        'eventOperations',
+        'marketing',
+      ],
+    },
     'expectedReceiptId': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

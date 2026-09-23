@@ -112,7 +112,13 @@ export async function readParticipantFormProfileProposal(params: {
         throw unavailable();
       }
       return {...field, label: question.label, kind: question.kind, value,
-        options: question.options};
+        options: question.options,
+        eventProfileEligible: field.destination === "organizerCard" &&
+          question.kind !== "file" &&
+          question.answerAudience?.mode === "eventMembersWithConsent" &&
+          question.answerAudience.eventProfileSlot === "customRow" &&
+          version.definition.eventProfile?.enabled === true &&
+          version.definition.eventProfile.allowedSlots.includes("customRow")};
     });
     // Deliberately exclude the complete response, identity contact snapshot,
     // draft token, review notes and all organizer-only answers.

@@ -29,6 +29,8 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
     with WidgetsBindingObserver {
   bool _resumed = true;
   bool? _active;
+  bool _ownedPreviewOpen = false;
+  final ValueNotifier<bool> _previewValid = ValueNotifier(true);
   @override
   void initState() {
     super.initState();
@@ -41,11 +43,13 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _previewValid.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) _previewValid.value = false;
     setState(() => _resumed = state == AppLifecycleState.resumed);
   }
 
@@ -86,7 +90,11 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
     final busy =
         editorDisplay?.isSettledData == true &&
         editorDisplay?.value?.busy == true;
-    final active = _resumed && (ModalRoute.isCurrentOf(context) ?? true);
+    final route = ModalRoute.of(context);
+    final active =
+        _resumed &&
+        ((route?.isCurrent ?? true) ||
+            (_ownedPreviewOpen && (route?.isActive ?? false)));
     _syncActive(active);
     final profileDisplay = own
         ? catchAsyncStateFromAsyncValue(ref.watch(watchUserProfileProvider))
@@ -146,6 +154,89 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
                               photo.id: NetworkImage(photo.thumbnailUrl),
                       },
                       onSave: (selection) async {
+                        if (selection != null) {
+                          final preview = await ref
+                              .read(editor.notifier)
+                              .preview(
+                                selection,
+                                reviewedUid: state.uid,
+                                reviewedRevision: state.settings.revision,
+                              );
+                          if (!context.mounted || preview == null) return;
+                          _previewValid.value = true;
+                          setState(() => _ownedPreviewOpen = true);
+                          bool? confirmed;
+                          try {
+                            confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (dialogContext) => ValueListenableBuilder<bool>(
+                                valueListenable: _previewValid,
+                                builder: (dialogContext, valid, _) => Consumer(
+                                  builder: (dialogContext, dialogRef, _) {
+                                    final account =
+                                        catchAsyncStateFromAsyncValue(
+                                          dialogRef.watch(uidProvider),
+                                        );
+                                    if (!valid ||
+                                        !account.isSettledData ||
+                                        account.value != state.uid) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            if (dialogContext.mounted &&
+                                                ModalRoute.of(
+                                                      dialogContext,
+                                                    )?.isCurrent ==
+                                                    true) {
+                                              Navigator.of(
+                                                dialogContext,
+                                              ).pop(false);
+                                            }
+                                          });
+                                      return const SizedBox.shrink();
+                                    }
+                                    return CatchDialog<bool>(
+                                      title: context.l10n.eventProfilePreview,
+                                      actions: [
+                                        CatchButton(
+                                          label: context
+                                              .l10n
+                                              .coreCatchAdaptivePickerTextCancel,
+                                          variant: CatchButtonVariant.secondary,
+                                          onPressed: () => Navigator.of(
+                                            dialogContext,
+                                          ).pop(false),
+                                        ),
+                                        CatchButton(
+                                          label: context.l10n.eventProfileSave,
+                                          onPressed: () => Navigator.of(
+                                            dialogContext,
+                                          ).pop(true),
+                                        ),
+                                      ],
+                                      child: SizedBox(
+                                        height:
+                                            MediaQuery.sizeOf(
+                                              dialogContext,
+                                            ).height *
+                                            0.48,
+                                        child: SingleChildScrollView(
+                                          child: EventProfileIdentitySection(
+                                            profile: preview,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          } finally {
+                            if (mounted) {
+                              setState(() => _ownedPreviewOpen = false);
+                            }
+                          }
+                          if (confirmed != true || !context.mounted) return;
+                        }
                         final saved = await ref
                             .read(editor.notifier)
                             .save(

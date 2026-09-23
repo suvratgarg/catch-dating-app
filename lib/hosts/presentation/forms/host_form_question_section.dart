@@ -166,6 +166,24 @@ class HostFormQuestionSection extends StatelessWidget {
           ),
         ),
       ),
+      if (question.answerDestination ==
+              HostFormAnswerDestination.organizerCard &&
+          question.kind != HostFormQuestionKind.file)
+        CatchFieldLanes.single(
+          child: CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.eventProfileQuestionAudience,
+            value: question.proposesEventProfile,
+            contractExemption:
+                'Optional event audience requires a verified profile policy '
+                'and a later attendee sharing receipt.',
+            onChanged: (value) => notifier.updateQuestion(
+              sectionIndex,
+              questionIndex,
+              eventProfileAudience: value,
+            ),
+          ),
+        ),
       if (sections.length > 1)
         CatchFieldLanes.single(
           child: CatchField<int>.select(

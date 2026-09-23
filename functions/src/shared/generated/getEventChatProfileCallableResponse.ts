@@ -8,6 +8,7 @@ export interface GetEventChatProfileCallableResponse {
   eventId: string;
   participantUid: string;
   displayName: string;
+  introduction?: string | null;
   /**
    * @maxItems 14
    */

@@ -122,6 +122,13 @@ export type BeginOrganizerFormResponseCallableResponse = {
             | "organizerOnly"
             | "catchProfile"
             | "organizerCard";
+          /**
+           * Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.
+           */
+          answerAudience?: {
+            mode: "organizerOnly" | "eventMembersWithConsent";
+            eventProfileSlot: null | "customRow";
+          };
           prefillPolicy: "never" | "participantReviewRequired";
           hostPresentation: "detailOnly" | "filterable" | "sortable";
           validation: {
@@ -221,6 +228,23 @@ export type BeginOrganizerFormResponseCallableResponse = {
       messagingConsent?: {
         organizerWhatsapp: boolean;
         catchWhatsapp: boolean;
+        organizerOperationsWhatsapp?: boolean;
+        organizerMarketingWhatsapp?: boolean;
+        catchMarketingWhatsapp?: boolean;
+      };
+      eventProfile?: {
+        enabled: boolean;
+        /**
+         * @maxItems 4
+         */
+        allowedSlots: (
+          | "displayName"
+          | "portrait"
+          | "introduction"
+          | "customRow"
+        )[];
+        maxCustomRows: number;
+        noticeVersion: "event-profile-sharing-v2";
       };
       completion: {
         title: string;
@@ -231,9 +255,12 @@ export type BeginOrganizerFormResponseCallableResponse = {
       };
     };
     messagingOffer?: {
-      termsVersion: "form-whatsapp-v1";
+      termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
       organizerWhatsapp: string | null;
       catchWhatsapp: string | null;
+      organizerOperationsWhatsapp?: string | null;
+      organizerMarketingWhatsapp?: string | null;
+      catchMarketingWhatsapp?: string | null;
     };
   };
   revision: number;
@@ -242,9 +269,12 @@ export type BeginOrganizerFormResponseCallableResponse = {
   };
   consentAccepted: boolean;
   messagingChoices?: {
-    termsVersion: "form-whatsapp-v1";
+    termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: boolean;
     catchWhatsapp: boolean;
+    organizerOperationsWhatsapp?: boolean;
+    organizerMarketingWhatsapp?: boolean;
+    catchMarketingWhatsapp?: boolean;
   };
   identityKind:
     | "anonymous"

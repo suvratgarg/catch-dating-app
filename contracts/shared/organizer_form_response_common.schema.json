@@ -102,15 +102,18 @@
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": ["form-whatsapp-v1", "form-whatsapp-v2"]
         },
         "organizerWhatsapp": {
           "type": "boolean"
         },
         "catchWhatsapp": {
           "type": "boolean"
-        }
+        },
+        "organizerOperationsWhatsapp": {"type": "boolean"},
+        "organizerMarketingWhatsapp": {"type": "boolean"},
+        "catchMarketingWhatsapp": {"type": "boolean"}
       }
     },
     "messagingDecision": {
@@ -125,8 +128,8 @@
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": ["form-whatsapp-v1", "form-whatsapp-v2"]
         },
         "organizerWhatsapp": {
           "type": "boolean"
@@ -139,7 +142,13 @@
         },
         "catchDecidedAt": {
           "$ref": "event_common.schema.json#/definitions/timestamp"
-        }
+        },
+        "organizerOperationsWhatsapp": {"type": "boolean"},
+        "organizerMarketingWhatsapp": {"type": "boolean"},
+        "catchMarketingWhatsapp": {"type": "boolean"},
+        "organizerOperationsDecidedAt": {"$ref": "event_common.schema.json#/definitions/timestamp"},
+        "organizerMarketingDecidedAt": {"$ref": "event_common.schema.json#/definitions/timestamp"},
+        "catchMarketingDecidedAt": {"$ref": "event_common.schema.json#/definitions/timestamp"}
       }
     },
     "messagingOffer": {
@@ -152,8 +161,8 @@
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": ["form-whatsapp-v1", "form-whatsapp-v2"]
         },
         "organizerWhatsapp": {
           "type": [
@@ -168,7 +177,10 @@
             "null"
           ],
           "maxLength": 1000
-        }
+        },
+        "organizerOperationsWhatsapp": {"type": ["string", "null"], "maxLength": 1000},
+        "organizerMarketingWhatsapp": {"type": ["string", "null"], "maxLength": 1000},
+        "catchMarketingWhatsapp": {"type": ["string", "null"], "maxLength": 1000}
       }
     }
   }

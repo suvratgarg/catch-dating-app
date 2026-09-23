@@ -5,4 +5,43 @@
 export interface GetEventChatProfileSharingCallablePayload {
   eventId: string;
   expectedUid: string;
+  /**
+   * Owner-only proposed selection; no sharing receipt is written.
+   */
+  previewSelection?: {
+    profileRevision: number;
+    membershipRevision: number;
+    /**
+     * @maxItems 14
+     */
+    coreFieldIds: (
+      | "age"
+      | "gender"
+      | "city"
+      | "heightCm"
+      | "occupation"
+      | "company"
+      | "education"
+      | "languages"
+      | "relationshipGoal"
+      | "drinking"
+      | "smoking"
+      | "workout"
+      | "diet"
+      | "children"
+    )[];
+    photoId: string | null;
+    card: {
+      responseId: string;
+      revision: number;
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      questionIds: string[];
+    } | null;
+    firstName?: string;
+    introduction?: string;
+    termsVersion: "event-profile-sharing-v1" | "event-profile-sharing-v2";
+  };
 }

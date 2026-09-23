@@ -95497,7 +95497,8 @@ export const getParticipantFormProfileCallableResponseSchema = {
           "label",
           "kind",
           "value",
-          "options"
+          "options",
+          "eventProfileEligible"
         ],
         "properties": {
           "questionId": {
@@ -95629,6 +95630,10 @@ export const getParticipantFormProfileCallableResponseSchema = {
                 }
               }
             }
+          },
+          "eventProfileEligible": {
+            "type": "boolean",
+            "description": "True only for a published field explicitly proposed for optional event-member sharing; the owner must still grant event-specific consent."
           }
         }
       }
@@ -96250,9 +96255,24 @@ export const eventChatProfileShareDocumentSchema = {
                 }
               ]
             },
+            "firstName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
+            "introduction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
             "termsVersion": {
               "type": "string",
-              "const": "event-profile-sharing-v1"
+              "enum": [
+                "event-profile-sharing-v1",
+                "event-profile-sharing-v2"
+              ]
             }
           }
         },
@@ -96555,6 +96575,126 @@ export const getEventChatProfileSharingCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "previewSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileRevision",
+        "membershipRevision",
+        "coreFieldIds",
+        "photoId",
+        "card",
+        "termsVersion"
+      ],
+      "properties": {
+        "profileRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "membershipRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "coreFieldIds": {
+          "type": "array",
+          "maxItems": 14,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          }
+        },
+        "photoId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "card": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "revision",
+                "questionIds"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "questionIds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "firstName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+        },
+        "introduction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+        },
+        "termsVersion": {
+          "type": "string",
+          "enum": [
+            "event-profile-sharing-v1",
+            "event-profile-sharing-v2"
+          ]
+        }
+      },
+      "description": "Owner-only proposed selection; no sharing receipt is written."
     }
   }
 };
@@ -96693,9 +96833,24 @@ export const updateEventChatProfileSharingCallablePayloadSchema = {
                 }
               ]
             },
+            "firstName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
+            "introduction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
             "termsVersion": {
               "type": "string",
-              "const": "event-profile-sharing-v1"
+              "enum": [
+                "event-profile-sharing-v1",
+                "event-profile-sharing-v2"
+              ]
             }
           }
         },
@@ -96877,9 +97032,24 @@ export const getEventChatProfileSharingCallableResponseSchema = {
                 }
               ]
             },
+            "firstName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
+            "introduction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
             "termsVersion": {
               "type": "string",
-              "const": "event-profile-sharing-v1"
+              "enum": [
+                "event-profile-sharing-v1",
+                "event-profile-sharing-v2"
+              ]
             }
           }
         },
@@ -96972,6 +97142,186 @@ export const getEventChatProfileSharingCallableResponseSchema = {
         "minLength": 1,
         "maxLength": 80
       }
+    },
+    "preview": {
+      "anyOf": [
+        {
+          "title": "GetEventChatProfileCallableResponse",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "participantUid",
+            "displayName",
+            "coreFields",
+            "cardFields",
+            "photo"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "participantUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "introduction": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "coreFields": {
+              "type": "array",
+              "maxItems": 14,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "fieldId",
+                  "value"
+                ],
+                "properties": {
+                  "fieldId": {
+                    "type": "string",
+                    "enum": [
+                      "age",
+                      "gender",
+                      "city",
+                      "heightCm",
+                      "occupation",
+                      "company",
+                      "education",
+                      "languages",
+                      "relationshipGoal",
+                      "drinking",
+                      "smoking",
+                      "workout",
+                      "diet",
+                      "children"
+                    ]
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 10000
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "cardFields": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "maxLength": 240
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 10000
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "array",
+                        "maxItems": 100,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 10000
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "photo": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "title": "GetParticipantFormPhotoCallableResponse",
+                  "description": "Bounded metadata-free JPEG bytes for private in-memory review; never an original upload URL.",
+                  "required": [
+                    "contentType",
+                    "previewBase64",
+                    "width",
+                    "height"
+                  ],
+                  "properties": {
+                    "contentType": {
+                      "type": "string",
+                      "const": "image/jpeg"
+                    },
+                    "previewBase64": {
+                      "type": "string",
+                      "minLength": 4,
+                      "maxLength": 349528,
+                      "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+                    },
+                    "width": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 640
+                    },
+                    "height": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 640
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };
@@ -97027,6 +97377,13 @@ export const getEventChatProfileCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 120
+    },
+    "introduction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
     },
     "coreFields": {
       "type": "array",
@@ -98848,6 +99205,72 @@ export const listParticipantMessagingPreferencesCallableResponseSchema = {
             "optedOut"
           ]
         },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "receiptId": {
           "anyOf": [
             {
@@ -98902,6 +99325,72 @@ export const listParticipantMessagingPreferencesCallableResponseSchema = {
                   "optedOut"
                 ]
               },
+              "purposes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "eventOperations": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "status",
+                      "receiptId"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "unknown",
+                          "optedIn",
+                          "optedOut"
+                        ]
+                      },
+                      "receiptId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "marketing": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "status",
+                      "receiptId"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "unknown",
+                          "optedIn",
+                          "optedOut"
+                        ]
+                      },
+                      "receiptId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
               "receiptId": {
                 "anyOf": [
                   {
@@ -98930,6 +99419,104 @@ export const listParticipantMessagingPreferencesCallableResponseSchema = {
           "type": "null"
         }
       ]
+    }
+  },
+  "definitions": {
+    "purposeSummaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "receiptId"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "receiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "receiptId"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "receiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "purposeSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     }
   }
 };
@@ -98965,6 +99552,14 @@ export const withdrawParticipantMessagingPermissionCallablePayloadSchema = {
         {
           "type": "null"
         }
+      ]
+    },
+    "purpose": {
+      "description": "Omit for sender-wide withdrawal. Scope one purpose without changing the other.",
+      "type": "string",
+      "enum": [
+        "eventOperations",
+        "marketing"
       ]
     },
     "expectedReceiptId": {
@@ -99015,6 +99610,72 @@ export const withdrawParticipantMessagingPermissionCallableResponseSchema = {
             "optedOut"
           ]
         },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "receiptId": {
           "anyOf": [
             {
@@ -99033,6 +99694,198 @@ export const withdrawParticipantMessagingPermissionCallableResponseSchema = {
       "type": "boolean"
     }
   }
+};
+
+export const promoteFormCommunicationIntentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/promote_form_communication_intent_payload.schema.json",
+  "title": "PromoteFormCommunicationIntentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "withdrawalToken",
+    "requestId"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "withdrawalToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const promoteFormCommunicationIntentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/promote_form_communication_intent_response.schema.json",
+  "title": "PromoteFormCommunicationIntentCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "promotedPurposes",
+    "replayed"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "promotedPurposes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "organizer:eventOperations",
+          "organizer:marketing",
+          "catch:marketing"
+        ]
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const formCommunicationConsentIntentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/form_communication_consent_intents.schema.json",
+  "title": "FormCommunicationConsentIntentDocument",
+  "description": "Private, immutable form choice. Never read as dispatch permission; promotion requires response ownership and verified control of the exact endpoint.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "responseId",
+    "endpointE164",
+    "termsVersion",
+    "decisions",
+    "createdAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "endpointE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "termsVersion": {
+      "const": "form-whatsapp-v2"
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "principal",
+          "purpose",
+          "copyHash",
+          "decidedAt"
+        ],
+        "properties": {
+          "principal": {
+            "enum": [
+              "organizer",
+              "catch"
+            ]
+          },
+          "purpose": {
+            "enum": [
+              "eventOperations",
+              "marketing"
+            ]
+          },
+          "copyHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "decidedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "formCommunicationConsentIntents",
+  "x-firestore-path": "formCommunicationConsentIntents/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "organizer form respondent callables"
 };
 
 export const catchCommunicationPreferenceDocumentSchema = {
@@ -99103,6 +99956,15 @@ export const catchCommunicationPreferenceDocumentSchema = {
           ],
           "x-catch-ownership": "server-only"
         },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
         "termsVersion": {
           "type": [
             "string",
@@ -99169,6 +100031,258 @@ export const catchCommunicationPreferenceDocumentSchema = {
             }
           ],
           "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "whatsappPurposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
         }
       }
     },
@@ -99256,6 +100370,42 @@ export const catchCommunicationPermissionReceiptDocumentSchema = {
     "channel": {
       "const": "whatsapp",
       "type": "string"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "eventOperations",
+        "marketing"
+      ]
+    },
+    "endpointE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "sourceVersionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceDecidedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     },
     "decision": {
       "type": "string",
@@ -99663,6 +100813,15 @@ export const organizerCommunicationPreferenceDocumentSchema = {
           ],
           "x-catch-ownership": "server-only"
         },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
         "termsVersion": {
           "type": [
             "string",
@@ -99732,6 +100891,258 @@ export const organizerCommunicationPreferenceDocumentSchema = {
         }
       }
     },
+    "whatsappPurposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        }
+      }
+    },
     "sms": {
       "type": "object",
       "additionalProperties": false,
@@ -99776,6 +101187,15 @@ export const organizerCommunicationPreferenceDocumentSchema = {
             }
           ],
           "x-catch-ownership": "server-only"
+        },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
         },
         "termsVersion": {
           "type": [
@@ -99890,6 +101310,258 @@ export const organizerCommunicationPreferenceDocumentSchema = {
     }
   },
   "definitions": {
+    "whatsappPurposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        }
+      }
+    },
     "channelPreference": {
       "type": "object",
       "additionalProperties": false,
@@ -99934,6 +101606,15 @@ export const organizerCommunicationPreferenceDocumentSchema = {
             }
           ],
           "x-catch-ownership": "server-only"
+        },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
         },
         "termsVersion": {
           "type": [
@@ -100056,6 +101737,42 @@ export const organizerCommunicationPermissionReceiptDocumentSchema = {
         "whatsapp",
         "sms"
       ]
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "eventOperations",
+        "marketing"
+      ]
+    },
+    "endpointE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "sourceVersionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sourceDecidedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     },
     "decision": {
       "type": "string",
@@ -108091,6 +109808,34 @@ export const organizerFormDraftDocumentSchema = {
                         "organizerCard"
                       ]
                     },
+                    "answerAudience": {
+                      "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "mode",
+                        "eventProfileSlot"
+                      ],
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "eventMembersWithConsent"
+                          ]
+                        },
+                        "eventProfileSlot": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "customRow"
+                          ]
+                        }
+                      }
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -108567,6 +110312,53 @@ export const organizerFormDraftDocumentSchema = {
             },
             "catchWhatsapp": {
               "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
+        "eventProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "allowedSlots",
+            "maxCustomRows",
+            "noticeVersion"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "allowedSlots": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "portrait",
+                  "introduction",
+                  "customRow"
+                ]
+              }
+            },
+            "maxCustomRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            },
+            "noticeVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v2"
             }
           }
         },
@@ -108966,6 +110758,34 @@ export const organizerFormVersionDocumentSchema = {
                         "organizerCard"
                       ]
                     },
+                    "answerAudience": {
+                      "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "mode",
+                        "eventProfileSlot"
+                      ],
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "eventMembersWithConsent"
+                          ]
+                        },
+                        "eventProfileSlot": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "customRow"
+                          ]
+                        }
+                      }
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -109442,6 +111262,53 @@ export const organizerFormVersionDocumentSchema = {
             },
             "catchWhatsapp": {
               "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
+        "eventProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "allowedSlots",
+            "maxCustomRows",
+            "noticeVersion"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "allowedSlots": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "portrait",
+                  "introduction",
+                  "customRow"
+                ]
+              }
+            },
+            "maxCustomRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            },
+            "noticeVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v2"
             }
           }
         },
@@ -109587,8 +111454,11 @@ export const organizerFormResponseDraftDocumentSchema = {
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "form-whatsapp-v1",
+            "form-whatsapp-v2"
+          ]
         },
         "organizerWhatsapp": {
           "type": "boolean"
@@ -109617,6 +111487,75 @@ export const organizerFormResponseDraftDocumentSchema = {
           }
         },
         "catchDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "organizerOperationsWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerMarketingWhatsapp": {
+          "type": "boolean"
+        },
+        "catchMarketingWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerOperationsDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "organizerMarketingDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "catchMarketingDecidedAt": {
           "type": "object",
           "description": "Serialized Firestore Timestamp fixture shape.",
           "x-firestore-type": "timestamp",
@@ -202689,6 +204628,34 @@ export const createOrganizerFormCallableResponseSchema = {
                             "organizerCard"
                           ]
                         },
+                        "answerAudience": {
+                          "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventProfileSlot"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "eventMembersWithConsent"
+                              ]
+                            },
+                            "eventProfileSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "customRow"
+                              ]
+                            }
+                          }
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -203165,6 +205132,53 @@ export const createOrganizerFormCallableResponseSchema = {
                 },
                 "catchWhatsapp": {
                   "type": "boolean"
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": "boolean"
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchMarketingWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "eventProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "allowedSlots",
+                "maxCustomRows",
+                "noticeVersion"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "allowedSlots": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "portrait",
+                      "introduction",
+                      "customRow"
+                    ]
+                  }
+                },
+                "maxCustomRows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "noticeVersion": {
+                  "type": "string",
+                  "const": "event-profile-sharing-v2"
                 }
               }
             },
@@ -203545,6 +205559,34 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
                         "catchProfile",
                         "organizerCard"
                       ]
+                    },
+                    "answerAudience": {
+                      "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "mode",
+                        "eventProfileSlot"
+                      ],
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "eventMembersWithConsent"
+                          ]
+                        },
+                        "eventProfileSlot": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "customRow"
+                          ]
+                        }
+                      }
                     },
                     "prefillPolicy": {
                       "type": "string",
@@ -204022,6 +206064,53 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
             },
             "catchWhatsapp": {
               "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
+        "eventProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "allowedSlots",
+            "maxCustomRows",
+            "noticeVersion"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "allowedSlots": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "portrait",
+                  "introduction",
+                  "customRow"
+                ]
+              }
+            },
+            "maxCustomRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            },
+            "noticeVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v2"
             }
           }
         },
@@ -204550,6 +206639,34 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                             "organizerCard"
                           ]
                         },
+                        "answerAudience": {
+                          "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventProfileSlot"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "eventMembersWithConsent"
+                              ]
+                            },
+                            "eventProfileSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "customRow"
+                              ]
+                            }
+                          }
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -205026,6 +207143,53 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                 },
                 "catchWhatsapp": {
                   "type": "boolean"
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": "boolean"
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchMarketingWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "eventProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "allowedSlots",
+                "maxCustomRows",
+                "noticeVersion"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "allowedSlots": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "portrait",
+                      "introduction",
+                      "customRow"
+                    ]
+                  }
+                },
+                "maxCustomRows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "noticeVersion": {
+                  "type": "string",
+                  "const": "event-profile-sharing-v2"
                 }
               }
             },
@@ -205619,6 +207783,34 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                             "organizerCard"
                           ]
                         },
+                        "answerAudience": {
+                          "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventProfileSlot"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "eventMembersWithConsent"
+                              ]
+                            },
+                            "eventProfileSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "customRow"
+                              ]
+                            }
+                          }
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -206095,6 +208287,53 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                 },
                 "catchWhatsapp": {
                   "type": "boolean"
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": "boolean"
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchMarketingWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "eventProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "allowedSlots",
+                "maxCustomRows",
+                "noticeVersion"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "allowedSlots": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "portrait",
+                      "introduction",
+                      "customRow"
+                    ]
+                  }
+                },
+                "maxCustomRows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "noticeVersion": {
+                  "type": "string",
+                  "const": "event-profile-sharing-v2"
                 }
               }
             },
@@ -206783,6 +209022,34 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
                         "organizerCard"
                       ]
                     },
+                    "answerAudience": {
+                      "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "mode",
+                        "eventProfileSlot"
+                      ],
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "eventMembersWithConsent"
+                          ]
+                        },
+                        "eventProfileSlot": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            null,
+                            "customRow"
+                          ]
+                        }
+                      }
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -207259,6 +209526,53 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
             },
             "catchWhatsapp": {
               "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
+        "eventProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "allowedSlots",
+            "maxCustomRows",
+            "noticeVersion"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "allowedSlots": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "portrait",
+                  "introduction",
+                  "customRow"
+                ]
+              }
+            },
+            "maxCustomRows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            },
+            "noticeVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v2"
             }
           }
         },
@@ -208378,6 +210692,34 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                             "organizerCard"
                           ]
                         },
+                        "answerAudience": {
+                          "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventProfileSlot"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "eventMembersWithConsent"
+                              ]
+                            },
+                            "eventProfileSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "customRow"
+                              ]
+                            }
+                          }
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -208854,6 +211196,53 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                 },
                 "catchWhatsapp": {
                   "type": "boolean"
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": "boolean"
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchMarketingWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "eventProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "allowedSlots",
+                "maxCustomRows",
+                "noticeVersion"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "allowedSlots": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "portrait",
+                      "introduction",
+                      "customRow"
+                    ]
+                  }
+                },
+                "maxCustomRows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "noticeVersion": {
+                  "type": "string",
+                  "const": "event-profile-sharing-v2"
                 }
               }
             },
@@ -209486,6 +211875,34 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                             "organizerCard"
                           ]
                         },
+                        "answerAudience": {
+                          "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventProfileSlot"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "eventMembersWithConsent"
+                              ]
+                            },
+                            "eventProfileSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "customRow"
+                              ]
+                            }
+                          }
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -209962,6 +212379,53 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                 },
                 "catchWhatsapp": {
                   "type": "boolean"
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": "boolean"
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchMarketingWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "eventProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "allowedSlots",
+                "maxCustomRows",
+                "noticeVersion"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "allowedSlots": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "portrait",
+                      "introduction",
+                      "customRow"
+                    ]
+                  }
+                },
+                "maxCustomRows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "noticeVersion": {
+                  "type": "string",
+                  "const": "event-profile-sharing-v2"
                 }
               }
             },
@@ -210026,8 +212490,11 @@ export const getPublicOrganizerFormCallableResponseSchema = {
           ],
           "properties": {
             "termsVersion": {
-              "const": "form-whatsapp-v1",
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "form-whatsapp-v1",
+                "form-whatsapp-v2"
+              ]
             },
             "organizerWhatsapp": {
               "type": [
@@ -210037,6 +212504,27 @@ export const getPublicOrganizerFormCallableResponseSchema = {
               "maxLength": 1000
             },
             "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "organizerOperationsWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "organizerMarketingWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchMarketingWhatsapp": {
               "type": [
                 "string",
                 "null"
@@ -210448,6 +212936,34 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                                 "catchProfile",
                                 "organizerCard"
                               ]
+                            },
+                            "answerAudience": {
+                              "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "mode",
+                                "eventProfileSlot"
+                              ],
+                              "properties": {
+                                "mode": {
+                                  "type": "string",
+                                  "enum": [
+                                    "organizerOnly",
+                                    "eventMembersWithConsent"
+                                  ]
+                                },
+                                "eventProfileSlot": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "enum": [
+                                    null,
+                                    "customRow"
+                                  ]
+                                }
+                              }
                             },
                             "prefillPolicy": {
                               "type": "string",
@@ -210925,6 +213441,53 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                     },
                     "catchWhatsapp": {
                       "type": "boolean"
+                    },
+                    "organizerOperationsWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "organizerMarketingWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "catchMarketingWhatsapp": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "eventProfile": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled",
+                    "allowedSlots",
+                    "maxCustomRows",
+                    "noticeVersion"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "allowedSlots": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 4,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "portrait",
+                          "introduction",
+                          "customRow"
+                        ]
+                      }
+                    },
+                    "maxCustomRows": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 20
+                    },
+                    "noticeVersion": {
+                      "type": "string",
+                      "const": "event-profile-sharing-v2"
                     }
                   }
                 },
@@ -210989,8 +213552,11 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
               ],
               "properties": {
                 "termsVersion": {
-                  "const": "form-whatsapp-v1",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "form-whatsapp-v1",
+                    "form-whatsapp-v2"
+                  ]
                 },
                 "organizerWhatsapp": {
                   "type": [
@@ -211000,6 +213566,27 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                   "maxLength": 1000
                 },
                 "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchMarketingWhatsapp": {
                   "type": [
                     "string",
                     "null"
@@ -211065,13 +213652,25 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
           ],
           "properties": {
             "termsVersion": {
-              "const": "form-whatsapp-v1",
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "form-whatsapp-v1",
+                "form-whatsapp-v2"
+              ]
             },
             "organizerWhatsapp": {
               "type": "boolean"
             },
             "catchWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
               "type": "boolean"
             }
           }
@@ -211120,13 +213719,25 @@ export const saveOrganizerFormResponseDraftCallablePayloadSchema = {
       ],
       "properties": {
         "termsVersion": {
-          "const": "form-whatsapp-v1",
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "form-whatsapp-v1",
+            "form-whatsapp-v2"
+          ]
         },
         "organizerWhatsapp": {
           "type": "boolean"
         },
         "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerOperationsWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerMarketingWhatsapp": {
+          "type": "boolean"
+        },
+        "catchMarketingWhatsapp": {
           "type": "boolean"
         }
       }
@@ -220594,6 +223205,114 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "phoneVerified",
             "catchAccount"
           ]
+        },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -221811,6 +224530,165 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "phoneVerified",
             "catchAccount"
           ]
+        },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "purposePermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "receiptId",
+        "decisionAtMillis",
+        "deliveryAvailable"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "incomplete"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decisionAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "deliveryAvailable": {
+          "type": "boolean",
+          "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
         }
       }
     },

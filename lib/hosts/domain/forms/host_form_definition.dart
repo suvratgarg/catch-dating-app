@@ -96,16 +96,81 @@ class HostFormDefinition {
   bool get offersCatchWhatsapp =>
       formDefinitionDeepStringMap(_json['messagingConsent'])['catchWhatsapp'] ==
       true;
+  bool get usesPurposeMessaging {
+    final settings = formDefinitionDeepStringMap(_json['messagingConsent']);
+    return settings.containsKey('organizerOperationsWhatsapp') ||
+        settings.containsKey('organizerMarketingWhatsapp') ||
+        settings.containsKey('catchMarketingWhatsapp');
+  }
+  bool get offersOrganizerOperationsWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['organizerOperationsWhatsapp'] == true;
+  bool get offersOrganizerMarketingWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['organizerMarketingWhatsapp'] == true;
+  bool get offersCatchMarketingWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['catchMarketingWhatsapp'] == true;
 
+  bool get eventProfileEnabled =>
+      formDefinitionDeepStringMap(_json['eventProfile'])['enabled'] == true;
+
+  HostFormDefinition withEventProfileEnabled(bool enabled) {
+    final next = toJson();
+    if (enabled) {
+      next['eventProfile'] = {
+        'enabled': true,
+        'allowedSlots': [
+          'displayName',
+          'portrait',
+          'introduction',
+          'customRow',
+        ],
+        'maxCustomRows': 20,
+        'noticeVersion': 'event-profile-sharing-v2',
+      };
+    } else {
+      next.remove('eventProfile');
+      final sections = formDefinitionJsonList(next['sections']);
+      for (final section in sections) {
+        final questions = formDefinitionJsonList(section['questions']);
+        for (final question in questions) {
+          question.remove('answerAudience');
+        }
+        section['questions'] = questions;
+      }
+      next['sections'] = sections;
+    }
+    return HostFormDefinition._(next);
+  }
   HostFormDefinition withMessagingConsent({
     bool? organizerWhatsapp,
     bool? catchWhatsapp,
+    bool? organizerOperationsWhatsapp,
+    bool? organizerMarketingWhatsapp,
+    bool? catchMarketingWhatsapp,
   }) {
     final next = toJson();
-    next['messagingConsent'] = {
-      'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,
-      'catchWhatsapp': catchWhatsapp ?? offersCatchWhatsapp,
-    };
+    final purposeEdit = organizerOperationsWhatsapp != null ||
+        organizerMarketingWhatsapp != null || catchMarketingWhatsapp != null;
+    next['messagingConsent'] = purposeEdit || usesPurposeMessaging
+        ? <String, Object?>{
+            'organizerWhatsapp': false,
+            'catchWhatsapp': false,
+            'organizerOperationsWhatsapp': organizerOperationsWhatsapp ??
+                offersOrganizerOperationsWhatsapp,
+            'organizerMarketingWhatsapp': organizerMarketingWhatsapp ??
+                offersOrganizerMarketingWhatsapp,
+            'catchMarketingWhatsapp': catchMarketingWhatsapp ??
+                offersCatchMarketingWhatsapp,
+          }
+        : <String, Object?>{
+            'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,
+            'catchWhatsapp': catchWhatsapp ?? offersCatchWhatsapp,
+          };
     return HostFormDefinition._(next);
   }
 

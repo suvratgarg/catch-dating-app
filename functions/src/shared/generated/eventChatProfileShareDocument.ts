@@ -42,7 +42,9 @@ export interface EventChatProfileShareDocument {
        */
       questionIds: string[];
     } | null;
-    termsVersion: "event-profile-sharing-v1";
+    firstName?: string;
+    introduction?: string;
+    termsVersion: "event-profile-sharing-v1" | "event-profile-sharing-v2";
   } | null;
   /**
    * Serialized Firestore Timestamp fixture shape.
