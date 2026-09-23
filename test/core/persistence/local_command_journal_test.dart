@@ -28,6 +28,8 @@ class FaultStorage implements CommandJournalStorage {
   final CommandJournalStorage delegate;
   bool fail = false;
   @override
+  Future<String?> readRaw(String key) => delegate.readRaw(key);
+  @override
   Future<T> transact<T>(String key, T Function(Map<String, Object?>) change) =>
       delegate.transact(key, (state) {
         final result = change(state);

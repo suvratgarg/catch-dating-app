@@ -46,6 +46,21 @@ void main() {
           await reopened.transact('account', (state) => state['count']),
           40,
         );
+        expect(await reopened.readRaw('account'), '{"count":40}');
+        final writer = await idbFactoryNative.open(name);
+        try {
+          final transaction = writer.transaction(
+            IndexedDbCommandJournalStorage.storeName,
+            idbModeReadWrite,
+          );
+          await transaction
+              .objectStore(IndexedDbCommandJournalStorage.storeName)
+              .put('{damaged original', 'damaged');
+          await transaction.completed;
+        } finally {
+          writer.close();
+        }
+        expect(await reopened.readRaw('damaged'), '{damaged original');
       } finally {
         await reopened.close();
         await idbFactoryNative.deleteDatabase(name);

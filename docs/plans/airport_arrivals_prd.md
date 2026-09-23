@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.17
+version: 0.3.18
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1387,6 +1387,14 @@ without attempting to claim the invite again. Failed claims retain their URL
 for retry, and a late result cannot navigate after the user leaves the route.
 
 ### Offline observation fences
+
+An unreadable or quarantined operations journal offers a recovery export from
+the error notice. The operator reviews that the file includes saved operations
+across all programs for their account, then chooses a trusted save destination.
+The original journal and legacy data remain intact, including malformed JSON.
+Export does not clear the queue or restart replay; reconciliation must preserve
+the original command IDs and observation times. Whole-database damage can still
+prevent export and requires device/support recovery.
 
 The shared command journal's version 2 request hash includes the immutable
 observation/departure time. Reusing a command ID with a changed time is a

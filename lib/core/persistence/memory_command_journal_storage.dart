@@ -10,6 +10,10 @@ class MemoryCommandJournalStorage implements CommandJournalStorage {
   final _lock = AsyncKeyedLock();
 
   @override
+  Future<String?> readRaw(String key) =>
+      _lock.run(key, () async => _values[key]);
+
+  @override
   Future<T> transact<T>(
     String key,
     T Function(Map<String, Object?> state) change,

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.67.1
+version: 1.67.2
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1854,6 +1854,17 @@ depends on them. Corrupt legacy payloads remain quarantined; healthy migration
 commits before deleting the legacy copy. Account changes never expose another
 account's queue. Read-only snapshots have a separate bounded lease and are not
 command storage.
+
+Recovery export uses a read-only raw-value storage API so even malformed JSON
+can be copied without initialization, migration or replay. The versioned export
+contains this account and namespace's original journal string plus its original
+legacy string. It does not filter by feature scope because damaged records may
+have unreadable scope identities. Authentication is checked across every await;
+storage errors omit raw payloads. The operator explicitly chooses the file's
+destination through the existing platform share/save adapter. Export success
+never clears, dismisses or marks records repaired. Database-level damage that
+prevents reading still requires device/support recovery; an export is not an
+automatic repair or proof of a completed backup.
 
 ### Logging And Telemetry
 

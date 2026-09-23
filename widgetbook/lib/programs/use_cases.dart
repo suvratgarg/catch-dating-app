@@ -4,6 +4,7 @@ import '../support/widgetbook_harness.dart';
 import '../utility/preview.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
@@ -653,13 +654,41 @@ Widget programOperationsNoticeStates(BuildContext context) => ProviderScope(
       _programId,
     ).overrideWithValue(AsyncData(_reviewOperationsState())),
   ],
-  child: const WidgetbookCatalogFrame(
+  child: WidgetbookCatalogFrame(
     title: 'ProgramOperationsNotice',
     catalogId: 'screen.programs.arrivals',
     children: [
-      ProgramOperationsNotice(
+      const ProgramOperationsNotice(
         programId: _programId,
         pickupPointId: _pickupPointId,
+      ),
+      ProviderScope(
+        overrides: [
+          programOperationsStateProvider(_programId).overrideWithValue(
+            const AsyncData(
+              ProgramOperationsState(
+                error: ValidationException(
+                  'Damaged demo journal',
+                  code: 'local-journal-quarantined',
+                ),
+              ),
+            ),
+          ),
+          programOperationsOutboxProvider.overrideWithValue(
+            ProgramOperationsOutbox(
+              createProgramOperationJournal(
+                storage: () async => MemoryCommandJournalStorage(),
+                currentAccountId: () => 'uid_greeter',
+                loadLegacy: (_) async => 'damaged synthetic demo record',
+              ),
+              _PreviewMutator(),
+            ),
+          ),
+        ],
+        child: const ProgramOperationsNotice(
+          programId: _programId,
+          pickupPointId: _pickupPointId,
+        ),
       ),
     ],
   ),

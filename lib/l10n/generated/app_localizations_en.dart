@@ -20253,6 +20253,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reload the complete arrivals roster before dispatching this vehicle.';
 
   @override
+  String get coreSavedOperationsQuarantined =>
+      'Some saved operations need recovery. Keep the app’s saved data and contact support.';
+
+  @override
+  String get coreSavedOperationsUnavailable =>
+      'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.';
+
+  @override
+  String get programsRecoveryAction => 'Recover saved work';
+
+  @override
+  String get programsRecoveryTitle => 'Saved work recovery';
+
+  @override
+  String get programsRecoveryBody =>
+      'Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.';
+
+  @override
+  String get programsRecoveryExport => 'Export recovery file';
+
+  @override
   String get programsOperationsPassengersNotReady =>
       'Every passenger must be marked ready at the curb before this vehicle departs.';
 

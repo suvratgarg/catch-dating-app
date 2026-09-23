@@ -142,6 +142,46 @@ class LocalCommandJournal<E> {
     }
   }
 
+  /// A non-destructive recovery copy of this account's original journal and
+  /// legacy value. Do not initialize, migrate, parse, or replay damaged data.
+  /// The caller must let the account holder choose where to save the file.
+  Future<String> exportRecovery(String accountId) async {
+    _requireAccount(accountId);
+    try {
+      // Read legacy first: a concurrent migration may copy it into the journal
+      // and remove it. Reading in the opposite order could miss both copies.
+      final legacy = await loadLegacy?.call(accountId);
+      _requireAccount(accountId);
+      final database = await storage();
+      _requireAccount(accountId);
+      final raw = await database.readRaw(_key(accountId));
+      _requireAccount(accountId);
+      return jsonEncode({
+        'format': 'catch-command-journal-recovery',
+        'version': 1,
+        'namespace': namespace,
+        'accountId': accountId,
+        'exportedAtMillis': DateTime.now().millisecondsSinceEpoch,
+        'journalRaw': raw,
+        'legacyRaw': legacy,
+      });
+    } on AppException {
+      rethrow;
+    } on Object {
+      // Database/plugin errors can contain raw payloads. Keep them out of logs.
+      throw const BackendOperationException(
+        code: 'local-journal-unavailable',
+        message:
+            'Saved operations could not be exported. Existing records '
+            'were preserved. Try again or contact support.',
+        context: BackendErrorContext(
+          service: BackendService.local,
+          action: 'export command journal',
+        ),
+      );
+    }
+  }
+
   List<Map<String, Object?>> _records(
     Map<String, Object?> state, {
     int version = _version,

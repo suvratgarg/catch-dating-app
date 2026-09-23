@@ -20,6 +20,15 @@ class SqliteCommandJournalStorage implements CommandJournalStorage {
   final Database _database;
 
   @override
+  Future<String?> readRaw(String key) async {
+    final rows = _database.select(
+      'SELECT value FROM command_journals WHERE account_key = ?',
+      [key],
+    );
+    return rows.isEmpty ? null : rows.single['value'] as String;
+  }
+
+  @override
   Future<T> transact<T>(
     String key,
     T Function(Map<String, Object?> state) change,

@@ -32224,6 +32224,42 @@ abstract class AppLocalizations {
   /// **'Reload the complete arrivals roster before dispatching this vehicle.'**
   String get programsOperationsReloadManifest;
 
+  /// Shared attendance/program command journal contains quarantined records requiring recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Some saved operations need recovery. Keep the app’s saved data and contact support.'**
+  String get coreSavedOperationsQuarantined;
+
+  /// Shared attendance/program command journal storage is unavailable; original data must be preserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.'**
+  String get coreSavedOperationsUnavailable;
+
+  /// Opens recovery options when the local operations journal cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover saved work'**
+  String get programsRecoveryAction;
+
+  /// Title of the saved operations recovery sheet and exported file.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved work recovery'**
+  String get programsRecoveryTitle;
+
+  /// Explains recovery file scope, privacy, and the non-destructive export boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.'**
+  String get programsRecoveryBody;
+
+  /// Opens the platform file share or download flow for a recovery copy; does not automatically contact support.
+  ///
+  /// In en, this message translates to:
+  /// **'Export recovery file'**
+  String get programsRecoveryExport;
+
   /// Program saved operation review and recovery.
   ///
   /// In en, this message translates to:

@@ -26,6 +26,24 @@ class IndexedDbCommandJournalStorage implements CommandJournalStorage {
   );
 
   @override
+  Future<String?> readRaw(String key) async {
+    final transaction = _database.transaction(storeName, idbModeReadOnly);
+    final done = transaction.completed.then<Object?>(
+      (_) => null,
+      onError: (Object error) => error,
+    );
+    try {
+      final raw = await transaction.objectStore(storeName).getObject(key);
+      final failure = await done;
+      if (failure != null) throw failure;
+      return raw as String?;
+    } on Object {
+      await done;
+      rethrow;
+    }
+  }
+
+  @override
   Future<T> transact<T>(
     String key,
     T Function(Map<String, Object?> state) change,

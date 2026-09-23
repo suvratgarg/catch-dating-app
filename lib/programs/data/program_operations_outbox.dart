@@ -166,6 +166,11 @@ class ProgramOperationsOutbox {
   final ProgramOperationOutboxStore _journal;
   final ProgramOperationsMutator _mutator;
 
+  /// Recovery is account-wide because damaged records may have unreadable
+  /// program identities. Export never replays, repairs, or deletes commands.
+  Future<String> exportRecovery(String accountId) =>
+      _journal.exportRecovery(accountId);
+
   Future<ProgramOperationOutboxSummary> loadForProgram({
     required String accountId,
     required String programId,

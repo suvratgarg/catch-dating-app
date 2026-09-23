@@ -1,11 +1,13 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/domain/program_operations.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +61,15 @@ class ProgramOperationsNotice extends ConsumerWidget {
             message: appErrorMessage(error, l10n: context.l10n),
             tone: CatchBannerTone.danger,
             actions: [
+              if (accountId != null && _canExportRecovery(error))
+                CatchButton(
+                  label: context.l10n.programsRecoveryAction,
+                  onPressed: () => showCatchBottomSheet<void>(
+                    context: context,
+                    builder: (_) =>
+                        _ProgramJournalRecoverySheet(accountId: accountId),
+                  ),
+                ),
               CatchButton(
                 label: context.l10n.programsArrivalsOutboxSync,
                 onPressed: current?.busy == true
@@ -75,6 +86,103 @@ class ProgramOperationsNotice extends ConsumerWidget {
             ],
           ),
       ],
+    );
+  }
+}
+
+bool _canExportRecovery(Object error) =>
+    error is AppException &&
+    {
+      'local-journal-unavailable',
+      'local-journal-quarantined',
+    }.contains(error.code);
+
+class _ProgramJournalRecoverySheet extends ConsumerStatefulWidget {
+  const _ProgramJournalRecoverySheet({required this.accountId});
+  final String accountId;
+
+  @override
+  ConsumerState<_ProgramJournalRecoverySheet> createState() =>
+      _ProgramJournalRecoverySheetState();
+}
+
+class _ProgramJournalRecoverySheetState
+    extends ConsumerState<_ProgramJournalRecoverySheet> {
+  bool _exporting = false;
+  Object? _error;
+
+  bool get _current {
+    if (!mounted) return false;
+    final uid = catchAsyncStateFromAsyncValue(ref.read(uidProvider));
+    return uid.isSettledData && uid.value == widget.accountId;
+  }
+
+  Future<void> _export(BuildContext buttonContext) async {
+    if (_exporting || !_current) return;
+    final box = buttonContext.findRenderObject() as RenderBox?;
+    final origin = box == null
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+    final subject = context.l10n.programsRecoveryTitle;
+    setState(() {
+      _exporting = true;
+      _error = null;
+    });
+    try {
+      final json = await ref
+          .read(programOperationsOutboxProvider)
+          .exportRecovery(widget.accountId);
+      if (!_current) return;
+      await ref
+          .read(externalShareControllerProvider)
+          .shareJsonFile(
+            json: json,
+            fileName: 'catch-program-operations-recovery.json',
+            subject: subject,
+            origin: origin,
+          );
+    } on Object catch (error) {
+      if (_current) setState(() => _error = error);
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final current = uid.isSettledData && uid.value == widget.accountId;
+    return CatchSheet(
+      title: context.l10n.programsRecoveryTitle,
+      subtitle: context.l10n.programsRecoveryBody,
+      mode: CatchSheetMode.scrollable,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (!current)
+            CatchBanner.error(
+              message: appErrorMessage(
+                const SignInRequiredException('export saved operations'),
+                l10n: context.l10n,
+              ),
+            ),
+          if (current && _error != null)
+            CatchBanner.error(
+              message: appErrorMessage(_error!, l10n: context.l10n),
+            ),
+          Builder(
+            builder: (buttonContext) => CatchButton(
+              label: context.l10n.programsRecoveryExport,
+              status: _exporting
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
+              onPressed: current && !_exporting
+                  ? () => _export(buttonContext)
+                  : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
