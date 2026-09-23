@@ -76,10 +76,10 @@ test("campaign eligibility fails closed for an incomplete legacy grant", () => {
     uid: "user-1",
     whatsapp: {
       status: "optedIn",
-    evidenceStatus: "incomplete",
-    currentReceiptId: "legacy-receipt",
-    termsVersion: "organizer-updates-v1",
-    source: "publicEventRegistration",
+      evidenceStatus: "incomplete",
+      currentReceiptId: "legacy-receipt",
+      termsVersion: "organizer-updates-v1",
+      source: "publicEventRegistration",
     },
   } as OrganizerCommunicationPreferenceDocument;
   const [row] = evaluateAudienceRows([{
@@ -100,6 +100,16 @@ test("campaign eligibility fails closed for an incomplete legacy grant", () => {
     channelState: null,
   }], now, ["repeat_attendee"]);
   assert.equal(eligible.eligibility, "eligible");
+  for (const termsVersion of ["v1", "2026-08-30"]) {
+    const [ambiguous] = evaluateAudienceRows([{
+      contactId: "contact-1", contact, trait,
+      preference: {...preference, whatsapp: {...preference.whatsapp,
+        termsVersion}},
+      channelState: null,
+    }], now, ["repeat_attendee"]);
+    assert.equal(ambiguous.eligibility, "excluded");
+    assert.equal(ambiguous.exclusionReason, "unknownPermission");
+  }
 });
 
 test(
