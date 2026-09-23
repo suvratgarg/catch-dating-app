@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_rehearsal.feature.json",
   "generatedFor": "2026-09-21",
   "sourceDigest": "sha256:3c9290b341209a7bf6d4095876550c166609a5ad2f3da3510ab69ca2c53f7efd",
-  "resolvedDigest": "sha256:e2d26f7d8d60ca59a0d56140c552dcc840bb532230639c279f413dfce6b3e7c0",
+  "resolvedDigest": "sha256:2441f26ec1bfc19fdef203a8f7a935518be41dc2d69d38f417c6bcaab0532de8",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
@@ -779,7 +779,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

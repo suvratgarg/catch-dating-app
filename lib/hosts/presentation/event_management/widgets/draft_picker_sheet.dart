@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -8,32 +6,6 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-Future<EventDraft?> showDraftPickerSheet({
-  required BuildContext context,
-  required List<EventDraft> drafts,
-  required Future<void> Function(EventDraft draft) onDeleteDraft,
-  bool showStartFreshAction = true,
-}) {
-  final completer = Completer<EventDraft?>();
-  showCatchBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
-    ),
-    builder: (sheetContext) => DraftPickerSheet(
-      drafts: drafts,
-      onSelectDraft: (draft) => completer.complete(draft),
-      onStartFresh: showStartFreshAction
-          ? () => completer.complete(null)
-          : null,
-      onDeleteDraft: onDeleteDraft,
-    ),
-  ).then((_) {
-    if (!completer.isCompleted) completer.complete(null);
-  });
-  return completer.future;
-}
 
 String draftDeleteConfirmationDialogTitle(AppLocalizations l10n) =>
     l10n.hostsDraftPickerSheetVisiblecopyDeleteDraft;
@@ -84,114 +56,6 @@ Future<bool?> showDraftDeleteConfirmationDialog({
   );
 }
 
-class DraftPickerSheet extends StatefulWidget {
-  const DraftPickerSheet({
-    super.key,
-    required this.drafts,
-    required this.onSelectDraft,
-    this.onStartFresh,
-    required this.onDeleteDraft,
-  });
-
-  final List<EventDraft> drafts;
-  final ValueChanged<EventDraft> onSelectDraft;
-  final VoidCallback? onStartFresh;
-  final Future<void> Function(EventDraft draft) onDeleteDraft;
-
-  @override
-  State<DraftPickerSheet> createState() => _DraftPickerSheetState();
-}
-
-class _DraftPickerSheetState extends State<DraftPickerSheet> {
-  late List<EventDraft> _drafts;
-  String? _deletingDraftId;
-
-  @override
-  void initState() {
-    super.initState();
-    _drafts = List.of(widget.drafts);
-  }
-
-  void _onSelect(EventDraft draft) {
-    widget.onSelectDraft(draft);
-    Navigator.of(context).pop();
-  }
-
-  void _onStartFresh() {
-    widget.onStartFresh?.call();
-    Navigator.of(context).pop();
-  }
-
-  Future<void> _onDelete(EventDraft draft) async {
-    final confirmed = await showDraftDeleteConfirmationDialog(
-      context: context,
-      draft: draft,
-    );
-    if (confirmed != true || !mounted) return;
-
-    setState(() => _deletingDraftId = draft.id);
-    try {
-      await widget.onDeleteDraft(draft);
-      if (!mounted) return;
-      setState(() => _drafts.removeWhere((d) => d.id == draft.id));
-      if (_drafts.isEmpty) {
-        Navigator.of(context).pop();
-      }
-    } catch (_) {
-      if (!mounted) return;
-      showCatchSnackBar(
-        context,
-        context.l10n.hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft,
-      );
-    } finally {
-      if (mounted) setState(() => _deletingDraftId = null);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchSheet.standard(
-      title: context.l10n.hostsDraftPickerSheetTitleResumeADraft,
-      subtitle: context.l10n.hostsDraftPickerSheetSubtitlePickUpWhereYou,
-      footer: widget.onStartFresh == null
-          ? null
-          : CatchButton(
-              label: context.l10n.hostsDraftPickerSheetLabelStartAFreshEvent,
-              onPressed: _onStartFresh,
-              variant: CatchButtonVariant.secondary,
-              fullWidth: true,
-              leading: Icon(CatchIcons.addRounded),
-            ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (_drafts.isEmpty)
-            CatchEmptyState(
-              icon: CatchIcons.editNoteRounded,
-              title: context.l10n.hostsDraftPickerSheetTitleNoDraftsYet,
-              message:
-                  context.l10n.hostsDraftPickerSheetMessageSavedDraftsForThis,
-            )
-          else
-            CatchSection.fieldRows(
-              first: true,
-              children: [
-                for (final draft in _drafts)
-                  DraftCard(
-                    draft: draft,
-                    isDeleting: _deletingDraftId == draft.id,
-                    onSelect: () => _onSelect(draft),
-                    onDelete: () => _onDelete(draft),
-                  ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
 class DraftCard extends StatelessWidget {
   const DraftCard({
     super.key,
@@ -204,22 +68,24 @@ class DraftCard extends StatelessWidget {
   final EventDraft draft;
   final bool isDeleting;
   final VoidCallback onSelect;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
     return CatchFieldLanes.single(
-      child: CatchField.nav(
+      child: CatchField.content(
+        emphasis: CatchFieldEmphasis.title,
         copy: catchFieldCopy(context.l10n),
         title: draft.summary,
-        body: context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
-          toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),
+        body: context.l10n.hostDraftSavedAt(
+          time: _formatRelative(draft.savedAt),
         ),
         icon: CatchIcons.descriptionOutlined,
         iconColor: t.ink3,
         onTap: isDeleting ? null : onSelect,
+        showChevron: false,
         actions: Tooltip(
           message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
           child: CatchIconAction(

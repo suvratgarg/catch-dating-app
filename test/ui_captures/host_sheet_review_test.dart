@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
@@ -11,17 +12,17 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../hosts/forms/support/response_filter_fixtures.dart';
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'support/capture_device.dart';
@@ -41,8 +42,10 @@ void main() {
     'create-event': (_) => HostEventEntrySheet(
       state: HostEventEntryState.resolve(
         organizerId: HostOperationsFixtures.primaryClub.id,
+        drafts: [HostOperationsFixtures.eventDraft],
         repeatSource: HostOperationsFixtures.upcomingEvent,
       ),
+      onDeleteDraft: (_) async {},
     ),
     'people-filter': (_) => const HostCustomerFilterSheet(
       selectedFilters: {
@@ -63,11 +66,21 @@ void main() {
       onSortChanged: (_) {},
       onOpenFilters: () {},
     ),
-    'draft-picker': (_) => DraftPickerSheet(
-      drafts: [HostOperationsFixtures.eventDraft],
-      onSelectDraft: (_) {},
+    'draft-picker': (_) => HostEventEntrySheet(
+      state: HostEventEntryState.resolve(
+        organizerId: HostOperationsFixtures.primaryClub.id,
+        drafts: [
+          HostOperationsFixtures.eventDraft,
+          EventDraft(
+            id: 'second-review-draft',
+            clubId: HostOperationsFixtures.primaryClub.id,
+            savedAt: DateTime.now().subtract(const Duration(hours: 3)),
+            name: 'Saturday community breakfast',
+          ),
+        ],
+        repeatSource: HostOperationsFixtures.upcomingEvent,
+      ),
       onDeleteDraft: (_) async {},
-      onStartFresh: () {},
     ),
     'organizer-picker': (_) => HostOrganizerSwitcherSheet(
       clubs: [
@@ -102,6 +115,7 @@ void main() {
           drive: (tester) async {
             await tester.tap(find.text('Open'));
             await pumpFeatureUi(tester);
+            if (entry.key == 'people-filter') _expectChipClearance(tester);
             if (entry.key == 'people-sort') {
               await tester.tap(find.text('Sort: Last seen'));
               await pumpFeatureUi(tester);
@@ -129,19 +143,34 @@ void main() {
             hostOperableClubsProvider('host-review').overrideWithValue(
               AsyncData([HostOperationsFixtures.primaryClub]),
             ),
-            hostFormsDirectoryControllerProvider.overrideWith2((_) => _Forms()),
+            hostFormsDirectoryControllerProvider.overrideWith2(
+              (_) => _Forms(withExamples: responses),
+            ),
             hostFormResponsesControllerProvider.overrideWith2(
               (_) => _Responses(),
             ),
           ],
           builder: (_) => responses
-              ? const CustomScrollView(
-                  slivers: [HostFormResponsesPanel(organizerId: 'review')],
+              ? const HostFormsScreen(
+                  initialResponses: true,
+                  initialFormId: 'rsvp',
                 )
               : const HostFormsScreen(),
           drive: (tester) async {
             await tester.tap(find.text('Filters').hitTestable().first);
             await pumpFeatureUi(tester);
+            if (responses) {
+              for (final value in [
+                'city-Mumbai',
+                'city-Delhi',
+                'diet-vegetarian',
+              ]) {
+                final chip = find.byKey(ValueKey('response-filter-$value'));
+                await tester.ensureVisible(chip);
+                await tester.tap(chip);
+                await pumpFeatureUi(tester);
+              }
+            }
             if (!responses) {
               for (final label in [
                 'Application',
@@ -159,6 +188,7 @@ void main() {
                 await pumpFeatureUi(tester);
               }
             }
+            _expectChipClearance(tester);
           },
         );
         expect(tester.takeException(), isNull);
@@ -169,14 +199,45 @@ void main() {
 }
 
 class _Forms extends HostFormsDirectoryController {
+  _Forms({required this.withExamples});
+  final bool withExamples;
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async =>
-      const HostFormsDirectoryState(forms: [], nextCursor: null);
+      HostFormsDirectoryState(
+        forms: withExamples ? responseFilterForms : [],
+        nextCursor: null,
+      );
 }
 
 class _Responses extends HostFormResponsesController {
   @override
   Future<HostFormResponsesState> build(
     HostFormResponseListRequest request,
-  ) async => const HostFormResponsesState(responses: [], nextCursor: null);
+  ) async => HostFormResponsesState(
+    responses: const [],
+    nextCursor: null,
+    answerFilterOptions: request.formId == null
+        ? const []
+        : responseFilterQuestions,
+  );
+}
+
+void _expectChipClearance(WidgetTester tester) {
+  var measured = 0;
+  for (final section in find.byType(CatchSection).evaluate()) {
+    final group = find.byWidget(section.widget);
+    final chips = find.descendant(of: group, matching: find.byType(CatchChip));
+    final rules = find.descendant(
+      of: group,
+      matching: find.byType(CatchDivider),
+    );
+    if (chips.evaluate().isEmpty || rules.evaluate().isEmpty) continue;
+    expect(
+      tester.getTopLeft(chips.first).dy - tester.getBottomLeft(rules.first).dy,
+      closeTo(CatchFieldTokens.rowVerticalPadding, 0.1),
+      reason: 'Every filter group keeps the rule clear of its first chip.',
+    );
+    measured++;
+  }
+  expect(measured, greaterThan(1));
 }

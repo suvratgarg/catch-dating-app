@@ -299,9 +299,10 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
               updated: result.updatedCount,
               count: result.errors.length,
             ),
-            footer: CatchButton(
+            footer: CatchButton.sheet(
+              role: CatchSheetActionRole.dismiss,
               label: context.l10n.hostsOperationalRosterImportResultDone,
-              fullWidth: true,
+
               onPressed: () => Navigator.of(context).pop(),
             ),
             child: CatchFieldLanes.divided(

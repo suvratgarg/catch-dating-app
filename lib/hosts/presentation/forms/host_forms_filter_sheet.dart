@@ -12,10 +12,8 @@ Future<void> _showHostFormsFilters(
   await showCatchBottomSheet<void>(
     context: context,
     builder: (sheetContext) => StatefulBuilder(
-      builder: (context, updateSheet) => CatchSheet.standard(
-        pinFooter: true,
+      builder: (context, updateSheet) => CatchSheet.filter(
         title: context.l10n.hostCustomersFilters,
-        subtitle: context.l10n.hostFiltersMultiSelectHelp,
         trailing: CatchButton(
           label: context.l10n.hostFiltersResetAll,
           variant: CatchButtonVariant.ghost,
@@ -31,16 +29,13 @@ Future<void> _showHostFormsFilters(
                   onStatusesChanged(const {});
                 },
         ),
-        footer: CatchButton(
-          label: context.l10n.hostSheetClose,
-          fullWidth: true,
-          onPressed: () => Navigator.of(sheetContext).pop(),
-        ),
+        closeLabel: context.l10n.hostSheetClose,
+        onClose: () => Navigator.of(sheetContext).pop(),
         child: CatchSectionList(
           emptyStateOmitted: true,
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchSection.divided(
+            CatchSection.choiceGroup(
               first: true,
               title: context.l10n.hostFormPurposeLabel,
               child: CatchChoiceInput<HostFormPurpose>(
@@ -56,7 +51,7 @@ Future<void> _showHostFormsFilters(
                 },
               ),
             ),
-            CatchSection.divided(
+            CatchSection.choiceGroup(
               first: true,
               title: context.l10n.hostAudienceFormStatusFilter,
               child: CatchChoiceInput<HostFormLifecycleStatus>(

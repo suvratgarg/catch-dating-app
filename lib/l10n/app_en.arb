@@ -7738,16 +7738,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.create.create_event_success_screen"
   },
-  "hostsDraftPickerSheetTextSavedTouppercase": "SAVED {toUpperCase}",
-  "@hostsDraftPickerSheetTextSavedTouppercase": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (Text).",
-    "placeholders": {
-      "toUpperCase": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
   "hostsEventPolicyStepTitleBasePriceCurrencycode": "Base price ({currencyCode})",
   "@hostsEventPolicyStepTitleBasePriceCurrencycode": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (title).",
@@ -11596,13 +11586,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart": "Choose how you want to start. You can review every detail before publishing.",
-  "@hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart": {
-    "description": "Explains that event-entry choices lead to a reviewable create flow.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
   "hostsHostEventEntrySheetSectionContinueExisting": "Continue",
   "@hostsHostEventEntrySheetSectionContinueExisting": {
@@ -21903,8 +21886,6 @@
   "@hostCustomersSetUpWhatsappBusiness": {"description": "Opens the selected organizer's dedicated WhatsApp sender setup when an otherwise eligible customer audience is blocked by sender readiness.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersFilterSheetTitle": "Filter people",
   "@hostCustomersFilterSheetTitle": {"description": "Grouped customer filter sheet title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostFiltersMultiSelectHelp": "Choose any options in each group. Results match any selected option in a group and every group you filter.",
-  "@hostFiltersMultiSelectHelp": {"description": "Explains OR within categories and AND across filter categories.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
   "hostFiltersResetAll": "Reset all",
   "@hostFiltersResetAll": {"description": "Clears every selected filter category.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
   "hostCustomersFilterGroupAttendance": "Attendance",
@@ -28891,5 +28872,9 @@
   "programsSnapshotTitle": "Saved view",
   "@programsSnapshotTitle": {"description": "Program operations copy: programsSnapshotTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
   "programsSnapshotBanner": "Last synced at {time} — your changes queue until you are back online.",
-  "@programsSnapshotBanner": {"description": "Program operations copy: programsSnapshotBanner.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"time": {}}}
+  "@programsSnapshotBanner": {"description": "Program operations copy: programsSnapshotBanner.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"time": {}}},
+  "hostDraftSavedAt": "Saved {time}",
+  "@hostDraftSavedAt": {"description": "Supporting saved time for an event draft.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"},
+  "hostResponseFilterSelectionLimit": "Choose up to {count} options per question.",
+  "@hostResponseFilterSelectionLimit": {"description": "Shown only when a response filter selection exceeds the API limit.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation"}
 }

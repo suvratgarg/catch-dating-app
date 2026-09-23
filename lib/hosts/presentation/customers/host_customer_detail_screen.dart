@@ -619,12 +619,12 @@ class _HostWhatsappHandoffSheetState
         name: widget.customer.displayName,
         phone: widget.customer.phoneE164!,
       ),
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         key: const ValueKey('host-customer-confirm-whatsapp'),
         label: context.l10n.hostCustomersOpenWhatsapp,
         status: (_opening) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         onPressed: _opening || message.isEmpty ? null : _open,
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

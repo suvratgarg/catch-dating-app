@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:09d9c1a550a82890442f2d1ade2b2dfd908ccee68c7dad529e8357ac475510ec",
-  "resolvedDigest": "sha256:68e7ba47b06a2b0f3844124cb7b4391ac6b588b3e6dc1b3be5318011711f423a",
+  "resolvedDigest": "sha256:3a6137af64c9a8c51c19144b92216c2b95ca17bfe07c5efaacdf677160ba4d79",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3474,7 +3474,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },
@@ -5313,7 +5314,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

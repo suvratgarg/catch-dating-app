@@ -150,7 +150,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchBannerStatusScope</code> | <code>packages/catch_ui/lib/src/components/catch_banner_status_scope.dart:8</code> | <code>Scope</code> | <code>catch.banner</code> | Publishes context without drawing it. Canonical screen owners consume this scope once, below their title and optional primary rail, and clear it for nested content. The app publishes connectivity above the route navigator; route-specific rehearsal context is supplied to its scaffold's typed slot. |
 | <code>CatchBarIndicator</code> | <code>packages/catch_ui/lib/src/components/catch_bar_indicator.dart:8</code> | <code>Indicator</code> | <code>catch.mini_bar_chart</code> | One quantitative bar, including empty stubs and bounded fractional values. |
 | <code>CatchBarSeriesIndicator</code> | <code>packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart:6</code> | <code>Indicator</code> | <code>catch.mini_bar_chart</code> | Compact quantitative bar series with one shared scale, explicit empty-value treatment and a shared single-bar renderer. |
-| <code>CatchButton</code> | <code>packages/catch_ui/lib/src/components/catch_button.dart:37</code> | <code>Button</code> | <code>catch.button</code> | Canonical labelled action with command, selection and floating recipes. |
+| <code>CatchButton</code> | <code>packages/catch_ui/lib/src/components/catch_button.dart:40</code> | <code>Button</code> | <code>catch.button</code> | Canonical labelled action with command, selection and floating recipes. |
 | <code>CatchButtonContentRow</code> | <code>packages/catch_ui/lib/src/components/catch_button_content_row.dart:4</code> | <code>Row</code> | <code>catch.button</code> | Button content row with optional leading media, centered label and natural-height wrapping; interaction and busy state remain Button-owned. |
 | <code>CatchChip</code> | <code>packages/catch_ui/lib/src/components/catch_chip.dart:24</code> | <code>Chip</code> | <code>catch.chip</code> | Canonical compact-label primitive for facts, choices, activities, and removable values. |
 | <code>CatchChoiceButton</code> | <code>packages/catch_ui/lib/src/components/catch_choice_button.dart:9</code> | <code>Button</code> | <code>catch.chip.field</code> | Direct option renderer with platform-sized activation, selected/disabled semantics, and preserved custom spoken-label actions. Underline and operational labels retain a defensive one-line ellipsis fallback; CatchChoiceInput.segmented measures full content and enables scrolling before that fallback is needed. Summary labels wrap. |
@@ -216,7 +216,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchSelectionMenu</code> | <code>packages/catch_ui/lib/src/components/catch_selection_menu.dart:12</code> | <code>Menu</code> | <code>catch.menu</code> | Mutually-exclusive selection with anchored, adaptive and button-trigger recipes. |
 | <code>CatchSelectionSheet</code> | <code>packages/catch_ui/lib/src/components/catch_selection_sheet.dart:9</code> | <code>Sheet</code> | <code>catch.menu</code> | Phone-friendly selection surface with mutually-exclusive row semantics. |
 | <code>CatchShareCardSheet</code> | <code>packages/catch_ui/lib/src/components/catch_share_card_sheet.dart:13</code> | <code>Sheet</code> | <code>catch.sheet</code> | Presentation-only card preview and share action. |
-| <code>CatchSheet</code> | <code>packages/catch_ui/lib/src/components/catch_sheet.dart:49</code> | <code>Sheet</code> | <code>catch.sheet</code> | Canonical sheet surface, header and terminal safe region. |
+| <code>CatchSheet</code> | <code>packages/catch_ui/lib/src/components/catch_sheet.dart:50</code> | <code>Sheet</code> | <code>catch.sheet</code> | Canonical sheet surface, header and terminal safe region. |
 | <code>CatchSheetHeader</code> | <code>packages/catch_ui/lib/src/components/catch_sheet_header.dart:8</code> | <code>Header</code> | <code>catch.sheet</code> | Sheet heading with plain or branded glyph presentation and a trailing slot. |
 | <code>CatchStatusRow</code> | <code>packages/catch_ui/lib/src/components/catch_status_row.dart:10</code> | <code>Row</code> | <code>catch.badge</code> | Quiet, unboxed status made from a semantic dot and supporting copy. |
 | <code>CatchStepHeader</code> | <code>packages/catch_ui/lib/src/components/catch_step_header.dart:11</code> | <code>Header</code> | <code>catch.step_header</code> | Handoff `StepHeader`: wizard header built from the shared large AppBar plus a 2px progress hairline. |
@@ -405,7 +405,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventRehearsalCheckpointSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_sheet.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalCheckpointVisitSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_visit_sheet.dart:22</code> | — | — | Reuses the live atomic visit UI with original-departure practice evidence. |
 | <code>EventRehearsalChoiceTile</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart:7</code> | — | — | A destination with its explanation attached, rather than a field value squeezed into a trailing lane. All copy wraps at its natural height. |
-| <code>EventRehearsalConfigInput</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart:338</code> | — | — | No class documentation or registry summary. |
+| <code>EventRehearsalConfigInput</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart:339</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalCustomiseSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalDeliveryQueueSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_queue_sheet.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalDeliverySection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_section.dart:10</code> | — | — | No class documentation or registry summary. |
@@ -776,7 +776,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart:19</code> | — | — | Explore recommendation card. |
 | <code>Recommendations</code> | <code>lib/explore/presentation/widgets/recommendations.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>UpdateRequiredContent</code> | <code>lib/force_update/presentation/update_required_screen.dart:55</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
-| <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:19</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:40</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:97</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:93</code> | — | — | No class documentation or registry summary. |
@@ -811,7 +811,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerMemoryPreview</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerMemorySection</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:51</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerNoteSheet</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:145</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerTagsSheet</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:242</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerTagsSheet</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:243</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerSourcesSection</code> | <code>lib/hosts/presentation/customers/host_customer_sources_section.dart:4</code> | — | — | Contact provenance is independent of current communication availability. |
 | <code>HostCustomerSubmissionsSection</code> | <code>lib/hosts/presentation/customers/host_customer_submissions_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerHistoryFilters</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:310</code> | — | — | No class documentation or registry summary. |
@@ -829,7 +829,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSavedAudiencesWorkspace</code> | <code>lib/hosts/presentation/customers/host_saved_audiences_workspace.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostStaticAudienceMembersEditor</code> | <code>lib/hosts/presentation/customers/host_static_audience_members_editor.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventScopeNotice</code> | <code>lib/hosts/presentation/edit_hosted_event_scope_notice.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>CreateEventUnsavedChangesDialog</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:65</code> | — | — | No class documentation or registry summary. |
+| <code>CreateEventUnsavedChangesDialog</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:66</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventLoadingBody</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:39</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventLoadingFooter</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:92</code> | — | — | No class documentation or registry summary. |
 | <code>LoadingChipRow</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:70</code> | — | — | No class documentation or registry summary. |
@@ -843,9 +843,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CreateEventGuestsSection</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_guests_section.dart:10</code> | — | — | Guest source and runtime access; ticketing rules belong to EventPolicyStep. |
 | <code>CreateEventPhotoPicker</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventStepHeader</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_step_header.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>DraftCard</code> | <code>lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:195</code> | — | — | No class documentation or registry summary. |
-| <code>DraftDeleteConfirmationDialog</code> | <code>lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:60</code> | — | — | No class documentation or registry summary. |
-| <code>DraftPickerSheet</code> | <code>lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:87</code> | — | — | No class documentation or registry summary. |
+| <code>DraftCard</code> | <code>lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:59</code> | — | — | No class documentation or registry summary. |
+| <code>DraftDeleteConfirmationDialog</code> | <code>lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart:32</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgeRangeField</code> | <code>lib/hosts/presentation/event_management/widgets/event_age_range_field.dart:14</code> | — | — | Canonical Host event age selector. |
 | <code>EventDetailsStep</code> | <code>lib/hosts/presentation/event_management/widgets/event_details_step.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>EventItineraryEditor</code> | <code>lib/hosts/presentation/event_management/widgets/event_itinerary_editor.dart:13</code> | — | — | No class documentation or registry summary. |
@@ -940,8 +939,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSendsWorkspaceSliver</code> | <code>lib/hosts/presentation/inbox/host_sends_workspace.dart:29</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappThreadSheet</code> | <code>lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:34</code> | — | — | No class documentation or registry summary. |
-| <code>HostPaymentAccountErrorCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:669</code> | — | — | No class documentation or registry summary. |
-| <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:640</code> | — | — | No class documentation or registry summary. |
+| <code>HostPaymentAccountErrorCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:671</code> | — | — | No class documentation or registry summary. |
+| <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:642</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountControllerCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_controller_card.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountSection</code> | <code>lib/hosts/presentation/payments/host_payment_account_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CatchRosterActionCell</code> | <code>lib/hosts/presentation/widgets/catch_roster_board.dart:287</code> | — | — | No class documentation or registry summary. |
@@ -1063,9 +1062,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramDispatchGroupTile</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:240</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDispatchSheet</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:311</code> | — | — | Plate capture + vendor + class override. The dispatch write is queued through the operations outbox so a dead zone cannot lose a departure. |
 | <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:243</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramArrivalsOutboxBanner</code> | <code>lib/programs/presentation/program_operations_notice.dart:192</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramArrivalsOutboxBanner</code> | <code>lib/programs/presentation/program_operations_notice.dart:193</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramJournalRecoverySheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:101</code> | — | — | Exports preserved local program operations through an account-fenced share flow. |
-| <code>ProgramOperationReviewSheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:240</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramOperationReviewSheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:241</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramOperationsNotice</code> | <code>lib/programs/presentation/program_operations_notice.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:154</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:302</code> | — | — | No class documentation or registry summary. |
@@ -1243,7 +1242,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSavedAudienceEditorScreen</code> | <code>lib/hosts/presentation/customers/host_saved_audience_editor.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventRouteScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_route_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:59</code> | — | — | No class documentation or registry summary. |
-| <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:78</code> | — | — | No class documentation or registry summary. |
+| <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:79</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventSuccessScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_success_screen.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateEventRouteLoadingScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:43</code> | — | — | No class documentation or registry summary. |

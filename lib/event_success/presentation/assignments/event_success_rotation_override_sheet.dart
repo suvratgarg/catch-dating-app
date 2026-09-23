@@ -75,7 +75,8 @@ class _EventSuccessRotationOverrideSheetState
             ),
             gapH8,
           ],
-          CatchButton(
+          CatchButton.sheet(
+            role: CatchSheetActionRole.commit,
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
@@ -89,7 +90,6 @@ class _EventSuccessRotationOverrideSheetState
                     widget.onOverride == null
                 ? null
                 : () => unawaited(_saveOverrides(context)),
-            fullWidth: true,
           ),
         ],
       ),

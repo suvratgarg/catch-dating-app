@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:54ebef5512966f4a83c992383656e73a1c2158ce061da259f695241cfbdbaa15",
+  "resolvedDigest": "sha256:9011accb3d68c6bd9bf2f966ce7c724406e0db1e059555487fc9159db9d9dc93",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1758,7 +1758,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

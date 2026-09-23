@@ -515,10 +515,11 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         _plateController.text.trim().isNotEmpty &&
         !_busy;
     return CatchSheet.standard(
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: context.l10n.programsDispatchConfirm,
         leading: Icon(CatchIcons.taxi),
-        fullWidth: true,
+
         status: _busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         onPressed: canDispatch ? _dispatch : null,
       ),

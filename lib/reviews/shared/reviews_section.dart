@@ -522,14 +522,14 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
       title: widget.review.ownerResponse == null
           ? context.l10n.reviewsReviewsSectionTitleRespondToReview
           : context.l10n.reviewsReviewsSectionTitleEditResponse,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         key: ReviewKeys.submitOwnerResponseButton,
         label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,
         status: (mutation.isPending)
             ? CatchButtonStatus.loading
             : CatchButtonStatus.idle,
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

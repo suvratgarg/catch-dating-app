@@ -92,14 +92,15 @@ class HostPaymentAccountCard extends StatelessWidget {
                     .l10n
                     .hostsHostPaymentAccountCardSubtitlePoweredByRazorpay
               : context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
-          footer: CatchButton(
+          footer: CatchButton.sheet(
+            role: CatchSheetActionRole.commit,
             label: isRazorpay
                 ? context
                       .l10n
                       .hostsHostPaymentAccountCardLabelContinueToRazorpay
                 : context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
             leading: Icon(CatchIcons.openInNewRounded),
-            fullWidth: true,
+
             status: (onboardingPending)
                 ? CatchButtonStatus.loading
                 : CatchButtonStatus.idle,
@@ -349,9 +350,10 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
     return CatchSheet.standard(
       title: l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
       subtitle: l10n.hostsHostPaymentAccountCardSubtitlePoweredByRazorpay,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: l10n.hostsHostPaymentAccountCardLabelSubmitRazorpay,
-        fullWidth: true,
+
         status: (widget.pending)
             ? CatchButtonStatus.loading
             : CatchButtonStatus.idle,

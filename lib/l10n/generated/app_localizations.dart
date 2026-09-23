@@ -6745,14 +6745,6 @@ abstract class AppLocalizations {
     required Object name,
   });
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'SAVED {toUpperCase}'**
-  String hostsDraftPickerSheetTextSavedTouppercase({
-    required Object toUpperCase,
-  });
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_policy_step.dart (title).
   ///
   /// In en, this message translates to:
@@ -10039,12 +10031,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use guest list'**
   String get hostsHostEventsListLabelUseGuestList;
-
-  /// Explains that event-entry choices lead to a reviewable create flow.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose how you want to start. You can review every detail before publishing.'**
-  String get hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart;
 
   /// Section label for resuming existing event work.
   ///
@@ -21792,12 +21778,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filter people'**
   String get hostCustomersFilterSheetTitle;
-
-  /// Explains OR within categories and AND across filter categories.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose any options in each group. Results match any selected option in a group and every group you filter.'**
-  String get hostFiltersMultiSelectHelp;
 
   /// Clears every selected filter category.
   ///
@@ -34138,6 +34118,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last synced at {time} — your changes queue until you are back online.'**
   String programsSnapshotBanner({required Object time});
+
+  /// Supporting saved time for an event draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {time}'**
+  String hostDraftSavedAt({required String time});
+
+  /// Shown only when a response filter selection exceeds the API limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to {count} options per question.'**
+  String hostResponseFilterSelectionLimit({required int count});
 }
 
 class _AppLocalizationsDelegate

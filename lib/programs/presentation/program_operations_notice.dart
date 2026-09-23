@@ -155,8 +155,9 @@ class _ProgramJournalRecoverySheetState
     final current = uid.isSettledData && uid.value == widget.accountId;
     return CatchSheet.standard(
       footer: Builder(
-        builder: (buttonContext) => CatchButton(
-          fullWidth: true,
+        builder: (buttonContext) => CatchButton.sheet(
+          role: CatchSheetActionRole.commit,
+
           label: context.l10n.programsRecoveryExport,
           status: _exporting
               ? CatchButtonStatus.loading

@@ -54,11 +54,11 @@ class _HostLumaConnectionSheetState extends State<HostLumaConnectionSheet> {
     return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterProviderConnectTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderConnectBody,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: context.l10n.hostsOperationalRosterProviderChooseEvent,
         onPressed: _loading ? null : _verifyAndChoose,
         status: (_loading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

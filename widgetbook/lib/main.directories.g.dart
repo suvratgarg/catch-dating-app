@@ -9541,17 +9541,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'DraftPickerSheet',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Draft sheet states',
-                builder:
-                    _widgetbook_workspace_hosts_operations_create_event_details
-                        .draftPickerSheetCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventAgeRangeField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -9603,6 +9592,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_operations_create_event_routes
                         .hostCreateEventRouteStateViewCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostEventEntrySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Draft sheet states',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .draftPickerSheetCatalogStates,
               ),
             ],
           ),

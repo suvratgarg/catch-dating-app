@@ -167,8 +167,9 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
 
   @override
   Widget build(BuildContext context) => CatchSheet.standard(
-    footer: CatchButton(
-      fullWidth: true,
+    footer: CatchButton.sheet(
+      role: CatchSheetActionRole.commit,
+
       key: const ValueKey('host-customer-save-note'),
       label: context.l10n.hostCustomersSaveNote,
       status: (_saving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
@@ -281,8 +282,9 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
 
   @override
   Widget build(BuildContext context) => CatchSheet.standard(
-    footer: CatchButton(
-      fullWidth: true,
+    footer: CatchButton.sheet(
+      role: CatchSheetActionRole.commit,
+
       key: const ValueKey('host-customer-save-tags'),
       label: context.l10n.hostCustomersSaveTags,
       status: (_saving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,

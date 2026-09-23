@@ -139,12 +139,12 @@ void registerHostEventEntryTests() {
       find.byKey(const ValueKey<String>('host-event-entry-sheet')),
       findsOneWidget,
     );
-    expect(find.text('Continue draft'), findsOneWidget);
+    expect(find.text('Continue draft'), findsNothing);
     expect(find.text('Quiz night'), findsOneWidget);
     expect(find.text('Repeat last event'), findsOneWidget);
     expect(find.text('Use guest list'), findsOneWidget);
 
-    await tester.tap(find.text('Continue draft'));
+    await tester.tap(find.text('Quiz night'));
     await pumpFeatureUi(tester);
     expect(find.text('Draft quiet-draft'), findsOneWidget);
   });
@@ -180,7 +180,7 @@ void registerHostEventEntryTests() {
       find.byKey(const ValueKey<String>('host-events-create-event')),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('Continue draft'), findsOneWidget);
+    expect(find.text('Continue draft'), findsNothing);
     expect(find.text('Quiz night'), findsOneWidget);
     final eventEntrySheet = find.byKey(
       const ValueKey<String>('host-event-entry-sheet'),
@@ -199,7 +199,7 @@ void registerHostEventEntryTests() {
     expect(find.text('CONTINUE'), findsOneWidget);
     expect(find.text('START NEW'), findsOneWidget);
 
-    await tester.tap(find.text('Continue draft'));
+    await tester.tap(find.text('Quiz night'));
     await pumpFeatureUi(tester);
     expect(find.text('Draft draft-one'), findsOneWidget);
   });

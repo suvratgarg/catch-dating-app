@@ -64,6 +64,7 @@
       "variants": [
         "divided",
         "fieldRows",
+        "choiceGroup",
         "containedFieldRows",
         "containedFieldGroups",
         "contained",
@@ -639,7 +640,8 @@
           "CatchButton.command",
           "CatchButton.selection",
           "CatchButton.floating",
-          "CatchButton.text"
+          "CatchButton.text",
+          "CatchButton.sheet"
         ]
       },
       "design": {
@@ -878,6 +880,18 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsetsGeometry"
+          },
+          {
+            "name": "role",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSheetActionRole",
+            "values": [
+              "dismiss",
+              "alternative",
+              "commit"
+            ],
+            "notes": "Required on the sheet recipe. Dismiss and alternative are secondary; commit is primary. Always full width; no paint overrides."
           }
         ],
         "states": [
@@ -1057,6 +1071,13 @@
             "tapTargetSize",
             "minimumSize",
             "padding"
+          ],
+          "CatchButton.sheet": [
+            "label",
+            "onPressed",
+            "role",
+            "leading",
+            "status"
           ]
         }
       },
@@ -1069,7 +1090,8 @@
           "Command and CTA sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. CatchButton.selection is only for a bounded current-value trigger in compact chrome: one visible line with ellipsis, full semantics and tooltip, and unchanged platform typography. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual.",
           "Use floating for raised labelled overlay actions with optional value copy and an integer count. Its callback and nonempty label are required. Counts render through CatchCountBadge, including zero hiding, 99+ clamping and preserved child constraints.",
           "Busy CTA state uses CatchButtonStatus.loading. Leading and trailing are media slots, while the floating recipe accepts an IconData glyph. A geometry mode chooses the standard pill or rounded CTA silhouette.",
-          "CatchButton.text owns inline and dialog text actions, preserving native focus forwarding, disabled feedback, natural label wrapping and the platform target floor. It replaces the separate text-button Widget."
+          "CatchButton.text owns inline and dialog text actions, preserving native focus forwarding, disabled feedback, natural label wrapping and the platform target floor. It replaces the separate text-button Widget.",
+          "Sheet footer actions use CatchButton.sheet with a semantic role. Dismiss and alternative are outlined; commit is filled. Full width does not imply primary emphasis."
         ]
       },
       "governance": {
@@ -4356,6 +4378,11 @@
             "children",
             "child"
           ],
+          "CatchSection.choiceGroup": [
+            "title",
+            "first",
+            "child"
+          ],
           "CatchSection.containedFieldRows": [
             "title",
             "count",
@@ -6455,7 +6482,8 @@
         "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
         "constructors": [
           "CatchSheet",
-          "CatchSheet.standard"
+          "CatchSheet.standard",
+          "CatchSheet.filter"
         ]
       },
       "design": {
@@ -6565,6 +6593,28 @@
             "required": false,
             "dartType": "EdgeInsetsGeometry?",
             "notes": "Bottom padding cannot undercut the sheet-owned terminal safe region."
+          },
+          {
+            "name": "closeLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String",
+            "notes": "Required on the filter recipe; localized dismissal label."
+          },
+          {
+            "name": "onClose",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback",
+            "notes": "Required on the filter recipe; dismisses without committing."
+          },
+          {
+            "name": "pinFooter",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Standard recipe only; filter always pins its owned secondary Close action."
           }
         ],
         "states": [
@@ -6574,7 +6624,8 @@
           "action",
           "keyboard-safe",
           "scrollable",
-          "without-grabber"
+          "without-grabber",
+          "filter"
         ],
         "slots": [
           {
@@ -6817,9 +6868,10 @@
           "catch.badge"
         ],
         "notes": [
-          "Host uses CatchSheet.standard with natural-height content; the shell owns the viewport cap, keyboard obstruction, clipping and terminal safe region.",
+          "Host uses CatchSheet.standard or CatchSheet.filter with natural-height content; the shell owns the viewport cap, keyboard obstruction, clipping and terminal safe region.",
           "Use flat first field groups and sheet choice rows; editors use a full-width footer action. Legacy geometry controls remain only on the default constructor.",
-          "Native wheel pickers and capturable sharing keep their separate shared interaction contracts."
+          "Native wheel pickers and capturable sharing keep their separate shared interaction contracts.",
+          "Immediate filters use the filter recipe with no instructional subtitle and a persistent outlined Close action. Titled chip groups use CatchSection.fieldRows without color overrides, matching the muted ruled headings of action groups."
         ]
       },
       "governance": {

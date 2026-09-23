@@ -19,10 +19,10 @@ class HostRosterHandoffSheet extends StatelessWidget {
       title: context.l10n.hostsOperationalRosterForwardTitle,
       subtitle: context.l10n.hostsOperationalRosterForwardSubtitle,
       glyph: CatchIcons.alternateEmailOutlined,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.dismiss,
         label: context.l10n.hostsOperationalRosterForwardDone,
         onPressed: () => Navigator.of(context).pop(),
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -467,9 +467,10 @@ Future<void> _showLogicRuleBuilder(
             (!sectionAction || targetSectionId != null);
         return CatchSheet.standard(
           title: context.l10n.hostFormAddRule,
-          footer: CatchButton(
+          footer: CatchButton.sheet(
+            role: CatchSheetActionRole.commit,
             label: context.l10n.hostFormRuleSave,
-            fullWidth: true,
+
             onPressed: !canSave
                 ? null
                 : () {

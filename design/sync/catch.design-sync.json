@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "d9785573723423085cbe84d238c3a99205d22d7568d11d8a51736afc87d45abe",
+  "sourceDigest": "e4feba0f7b732d29c0860201000cee806d742ecb273d9e92844e45d75108f424",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "d9785573723423085cbe84d238c3a99205d22d7568d11d8a51736afc87d45abe",
-    "contractDigest": "d9785573723423085cbe84d238c3a99205d22d7568d11d8a51736afc87d45abe"
+    "digest": "e4feba0f7b732d29c0860201000cee806d742ecb273d9e92844e45d75108f424",
+    "contractDigest": "e4feba0f7b732d29c0860201000cee806d742ecb273d9e92844e45d75108f424"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "ab7f75d91a3f8572e562a73a917de7b074d3b34a147e71d0c1af503e3055dd6b",
+    "handoffRequestDigest": "708c16518f6ed1e28b392bdecff6414744f7e425759955c787a4275821cd71f8",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -573,8 +573,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 14,
-      "figmaExpectedPropertyDigest": "9df8d805ae03faadd1fd5d74e79f229b5140de980633f036c620dfc8cc1f6c37",
+      "figmaExpectedPropertyCount": 15,
+      "figmaExpectedPropertyDigest": "d64ba397b3505ba759c0466ae7a3ca15d6855bf9442b1dd497858ad848591e15",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -582,7 +582,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Button",
       "claudeAllowed": true,
-      "contractDigest": "588b8df957eafcf401f53aa8953fa506b9f6c5e3edc6b88c26285ddb18db28cd"
+      "contractDigest": "b68a2cd6042bae4200fdd82cfd2e27ab1e750cebb5f5b8da0e46bdd1dbd462ad"
     },
     {
       "contractId": "catch.chip",
@@ -1103,8 +1103,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 8,
-      "figmaExpectedPropertyDigest": "817dada9ff565a19747b32b684a1ebde3d4ac87ec078ff5b14fec1013c9a4d90",
+      "figmaExpectedPropertyCount": 10,
+      "figmaExpectedPropertyDigest": "37786d13f0043edaf5259a5e5581d8c5364cee476a0644373e49ccfbf4955127",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1112,7 +1112,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "1f2b5b22ca31c3cceb027819437b654f7616d2b39093ba3b91cb25c431c5e242"
+      "contractDigest": "dbaf84d72bc4c0fe856777eec302aa4712128364b87b4f77cb200f6c13c80ccd"
     },
     {
       "contractId": "catch.icon_button",

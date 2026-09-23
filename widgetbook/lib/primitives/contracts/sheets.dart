@@ -26,8 +26,29 @@ Widget catchSheetContractStates(BuildContext context) {
       'keyboard-safe',
       'scrollable',
       'without-grabber',
+      'filter',
     ],
     children: [
+      WidgetbookContractStateCard(
+        label: 'filter',
+        child: CatchSheet.filter(
+          title: 'Filters',
+          closeLabel: 'Close',
+          onClose: widgetbookNoop,
+          child: CatchSection.choiceGroup(
+            first: true,
+            title: 'Purpose',
+            child: CatchChoiceInput<String>(
+              values: const ['Application', 'Registration', 'Intake'],
+              selected: const {'Application', 'Intake'},
+              itemLabelBuilder: (value) => value,
+              mode: CatchChipMode.multiple,
+              allowEmptySelection: true,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
       const WidgetbookContractStateCard(
         label: 'plain',
         child: CatchSheet(

@@ -3975,13 +3975,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsDraftPickerSheetTextSavedTouppercase({
-    required Object toUpperCase,
-  }) {
-    return 'SAVED $toUpperCase';
-  }
-
-  @override
   String hostsEventPolicyStepTitleBasePriceCurrencycode({
     required Object currencyCode,
   }) {
@@ -6295,10 +6288,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostEventsListLabelUseGuestList => 'Use guest list';
-
-  @override
-  String get hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart =>
-      'Choose how you want to start. You can review every detail before publishing.';
 
   @override
   String get hostsHostEventEntrySheetSectionContinueExisting => 'Continue';
@@ -13956,10 +13945,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersFilterSheetTitle => 'Filter people';
 
   @override
-  String get hostFiltersMultiSelectHelp =>
-      'Choose any options in each group. Results match any selected option in a group and every group you filter.';
-
-  @override
   String get hostFiltersResetAll => 'Reset all';
 
   @override
@@ -21357,5 +21342,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String programsSnapshotBanner({required Object time}) {
     return 'Last synced at $time — your changes queue until you are back online.';
+  }
+
+  @override
+  String hostDraftSavedAt({required String time}) {
+    return 'Saved $time';
+  }
+
+  @override
+  String hostResponseFilterSelectionLimit({required int count}) {
+    return 'Choose up to $count options per question.';
   }
 }

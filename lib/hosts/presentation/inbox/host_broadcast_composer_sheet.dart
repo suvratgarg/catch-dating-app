@@ -129,7 +129,8 @@ class _HostBroadcastComposerSheetState
         !mutation.isPending;
 
     return CatchSheet.standard(
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: recipientCount == 1
             ? context.l10n.hostsHostBroadcastComposerSheetLabelSendTo1Person
             : context.l10n
@@ -140,7 +141,6 @@ class _HostBroadcastComposerSheetState
         status: (mutation.isPending)
             ? CatchButtonStatus.loading
             : CatchButtonStatus.idle,
-        fullWidth: true,
       ),
       title: context.l10n.hostsHostBroadcastComposerSheetTitleNewBroadcast,
       subtitle: widget.event.title,

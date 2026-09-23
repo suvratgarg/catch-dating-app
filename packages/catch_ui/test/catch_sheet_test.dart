@@ -4,6 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('sheet action purpose fixes emphasis and full-width layout', () {
+    for (final role in CatchSheetActionRole.values) {
+      final button = CatchButton.sheet(
+        label: 'Action',
+        onPressed: () {},
+        role: role,
+      );
+      expect(button.fullWidth, isTrue);
+      expect(
+        button.variant,
+        role == CatchSheetActionRole.commit
+            ? CatchButtonVariant.primary
+            : CatchButtonVariant.secondary,
+      );
+    }
+  });
+
   for (final scale in [1.0, 2.0]) {
     for (final size in [const Size(320, 568), const Size(844, 390)]) {
       testWidgets('standard sheet keeps actions reachable at $size and $scale', (
@@ -104,14 +121,10 @@ void main() {
             home: Scaffold(
               body: Align(
                 alignment: Alignment.bottomCenter,
-                child: CatchSheet.standard(
+                child: CatchSheet.filter(
                   title: 'Filters',
-                  pinFooter: true,
-                  footer: CatchButton(
-                    label: 'Close',
-                    fullWidth: true,
-                    onPressed: () => closed = true,
-                  ),
+                  closeLabel: 'Close',
+                  onClose: () => closed = true,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -125,6 +138,14 @@ void main() {
         );
         final close = find.widgetWithText(CatchButton, 'Close');
         final before = tester.getRect(close);
+        expect(
+          tester.widget<CatchButton>(close).variant,
+          CatchButtonVariant.secondary,
+        );
+        expect(
+          tester.widget<CatchSheet>(find.byType(CatchSheet)).subtitle,
+          isNull,
+        );
         expect(
           tester
               .widgetList<CatchSurface>(find.byType(CatchSurface))

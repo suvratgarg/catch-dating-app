@@ -27,10 +27,10 @@ class _HostManualAttendeeSheetState extends State<HostManualAttendeeSheet> {
     return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterManualTitle,
       subtitle: context.l10n.hostsOperationalRosterManualSubtitle,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: context.l10n.hostsOperationalRosterManualSave,
         onPressed: _submit,
-        fullWidth: true,
       ),
       child: CatchFieldLanes.divided(
         children: [

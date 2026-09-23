@@ -79,7 +79,8 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
     return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: context.l10n.hostsOperationalRosterImportAction(
           count: mapped.rows.length,
         ),
@@ -91,7 +92,6 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                 ),
               )
             : null,
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -79,8 +79,9 @@ class _EventRehearsalCustomiseSheetState
     final l10n = context.l10n;
     return CatchSheet.standard(
       title: l10n.hostRehearsalCustomise,
-      footer: CatchButton(
-        fullWidth: true,
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
+
         label: l10n.coreCatchFieldLabelDone,
         onPressed: _done,
       ),

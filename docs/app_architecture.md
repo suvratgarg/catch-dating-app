@@ -792,7 +792,7 @@ shared presenter; Cupertino date/time popups belong only in the shared adaptive
 picker. `test/core/catch_bottom_sheet_policy_test.dart` enforces these boundaries.
 
 Host, private-program operations, Event Assistance and rehearsal use
-`CatchSheet.standard`. Natural-height
+`CatchSheet.standard` or `.filter`. Natural-height
 content shrinks for short sheets and scrolls as one unit (header, body, footer)
 within 90% of the available viewport. The shell owns clipping, width, keyboard
 obstruction and terminal device clearance. Do not nest a vertical scroll view,
@@ -801,7 +801,11 @@ shrink-wrapped builder list is permitted for dynamic rows. Native wheel pickers
 and capturable share cards retain their distinct shared interaction contracts.
 
 Choice sheets use `CatchSelectionSheet` / `CatchMenuRow.sheet`; selection commits
-on tap. Filter summaries with immediate changes use Close. Editors put their
+on tap. Immediate filters use `.filter`: no instructional subtitle, an owned
+pinned secondary Close action, and muted ruled `CatchSection.fieldRows` groups.
+Other sheet footer actions use `CatchButton.sheet` with dismiss, alternative or
+commit roles; width never selects emphasis. Shared headers move trailing actions
+below the heading at large text scales. Editors put their
 explicit save/submit action in the sheet footer. The legacy `CatchSheet`
 constructor remains for Consumer surfaces pending a separate migration.
 

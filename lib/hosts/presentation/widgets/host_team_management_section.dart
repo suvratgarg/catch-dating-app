@@ -431,11 +431,12 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
       subtitle: context
           .l10n
           .hostsHostTeamManagementSectionSubtitleEnterThePhoneNumber,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: context.l10n.hostsHostTeamManagementSectionLabelAddHost,
         onPressed: isSaving ? null : () => unawaited(_submit()),
         status: (isSaving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-        fullWidth: true,
+
         leading: Icon(CatchIcons.personAddAlt1Rounded),
       ),
       child: Column(

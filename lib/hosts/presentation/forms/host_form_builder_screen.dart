@@ -429,22 +429,23 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchButton(
+            CatchButton.sheet(
+              role: CatchSheetActionRole.alternative,
               label: context.l10n.hostFormPreview,
-              variant: CatchButtonVariant.secondary,
-              fullWidth: true,
+
               onPressed: () {
                 Navigator.of(sheetContext).pop(false);
                 _openPreview();
               },
             ),
             gapH8,
-            CatchButton(
+            CatchButton.sheet(
+              role: CatchSheetActionRole.commit,
               label:
                   state.editor.form.status == HostFormLifecycleStatus.published
                   ? context.l10n.hostFormPublishChanges
                   : context.l10n.hostFormPublish,
-              fullWidth: true,
+
               onPressed: () => Navigator.of(sheetContext).pop(true),
             ),
           ],

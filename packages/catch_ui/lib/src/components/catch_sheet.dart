@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_sheet_header.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
@@ -61,7 +62,9 @@ class CatchSheet extends StatelessWidget {
     this.keyboardSafe = false,
     this.mode = CatchSheetMode.content,
     this.padding,
-  }) : _standard = false,
+  }) : _filterCloseLabel = null,
+       _onFilterClose = null,
+       _standard = false,
        pinFooter = false;
 
   /// Bounded, keyboard-safe sheet with one scroll owner and fixed geometry.
@@ -77,12 +80,39 @@ class CatchSheet extends StatelessWidget {
     this.badge,
     this.badgeTone = CatchBadgeTone.neutral,
     this.trailing,
-  }) : _standard = true,
+  }) : _filterCloseLabel = null,
+       _onFilterClose = null,
+       _standard = true,
        grabber = true,
        keyboardSafe = true,
        mode = CatchSheetMode.scrollable,
        padding = null;
 
+  /// Immediate filters have no instructional subtitle or commit action.
+  /// The shell owns the persistent, secondary Close action.
+  const CatchSheet.filter({
+    super.key,
+    required this.title,
+    required this.child,
+    required String closeLabel,
+    required VoidCallback onClose,
+    this.trailing,
+  }) : _filterCloseLabel = closeLabel,
+       _onFilterClose = onClose,
+       _standard = true,
+       pinFooter = true,
+       subtitle = null,
+       footer = null,
+       glyph = null,
+       badge = null,
+       badgeTone = CatchBadgeTone.neutral,
+       grabber = true,
+       keyboardSafe = true,
+       mode = CatchSheetMode.scrollable,
+       padding = null;
+
+  final String? _filterCloseLabel;
+  final VoidCallback? _onFilterClose;
   final bool _standard;
 
   /// Keeps a filter dismissal action reachable while long choices scroll.
@@ -112,6 +142,13 @@ class CatchSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final footer = _filterCloseLabel == null
+        ? this.footer
+        : CatchButton.sheet(
+            label: _filterCloseLabel,
+            onPressed: _onFilterClose,
+            role: CatchSheetActionRole.dismiss,
+          );
     final mediaQuery = MediaQuery.maybeOf(context);
     final viewPaddingBottom = mediaQuery?.viewPadding.bottom ?? 0.0;
     final keyboardInsetBottom = keyboardSafe && !_standard
@@ -179,7 +216,7 @@ class CatchSheet extends StatelessWidget {
             if (hasHeader)
               const SizedBox(height: CatchLayout.sheetHeaderBodyGap),
             child,
-            if (footer != null && !pinFooter) ...[gapH16, footer!],
+            if (footer != null && !pinFooter) ...[gapH16, footer],
           ],
         ),
       ),

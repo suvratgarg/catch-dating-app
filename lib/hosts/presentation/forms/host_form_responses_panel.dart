@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
@@ -17,6 +17,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+part 'host_form_responses_filter_sheet.dart';
 
 class HostFormResponsesPanel extends ConsumerStatefulWidget {
   const HostFormResponsesPanel({
@@ -51,7 +53,7 @@ class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
   HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
-  final Map<String, String> _answerFilters = {};
+  final Map<String, Set<String>> _answerFilters = {};
   List<HostFormResponseFilterOption> _filterOptions = const [];
 
   @override
@@ -66,16 +68,7 @@ class _HostFormResponsesPanelState
 
   @override
   Widget build(BuildContext context) {
-    final request = HostFormResponseListRequest(
-      organizerId: widget.organizerId,
-      formId: widget.formId,
-      includeApplications: true,
-      reviewStatus: _status,
-      contactId: widget.contactId,
-      query: widget.query,
-      answerFilters: Map.unmodifiable(_answerFilters),
-      oldestFirst: _oldestFirst,
-    );
+    final request = _responseRequest(widget.formId);
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
     final loaded = catchAsyncStateFromAsyncValue(responses).value;
     if (loaded != null) _filterOptions = loaded.answerFilterOptions;
@@ -87,7 +80,7 @@ class _HostFormResponsesPanelState
         for (final option in _filterOptions.where(
           (item) => item.questionId == entry.key,
         ))
-          '${option.label}: ${option.options[entry.value] ?? entry.value}',
+          '${option.label}: ${entry.value.map((value) => option.options[value] ?? value).join(', ')}',
     ];
     return SliverMainAxisGroup(
       slivers: [
@@ -330,163 +323,17 @@ class _HostFormResponsesPanelState
     if (value != null && mounted) setState(() => _oldestFirst = value);
   }
 
-  Future<void> _openFilters() => showCatchBottomSheet<void>(
-    context: context,
-    builder: (sheetContext) => StatefulBuilder(
-      builder: (context, updateSheet) => CatchSheet.standard(
-        title: context.l10n.hostCustomersFilters,
-        footer: CatchButton(
-          label: context.l10n.hostSheetClose,
-          fullWidth: true,
-          onPressed: () => Navigator.of(sheetContext).pop(),
-        ),
-        child: CatchSection.fieldRows(
-          first: true,
-          children: [
-            if (widget.showFormContext)
-              CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostAudienceChooseForm,
-                valueText: _formLabel(context, null),
-                onTap: widget.onFormChanged == null
-                    ? null
-                    : () async {
-                        await _chooseForm();
-                        if (context.mounted) updateSheet(() {});
-                      },
-              ),
-            for (final filter in _filterOptions)
-              CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                title: filter.label,
-                valueText:
-                    filter.options[_answerFilters[filter.questionId]] ??
-                    context.l10n.hostFormsFilterAll,
-                onTap:
-                    _answerFilters.containsKey(filter.questionId) ||
-                        _answerFilters.length < 5
-                    ? () async {
-                        await _selectAnswer(filter);
-                        if (context.mounted) updateSheet(() {});
-                      }
-                    : null,
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
+  void _updateFilters(VoidCallback update) => setState(update);
 
-  Future<void> _selectAnswer(HostFormResponseFilterOption filter) async {
-    final selected = await showCatchSelectionSheet<String>(
-      context: context,
-      title: filter.label,
-      value: _answerFilters[filter.questionId] ?? '',
-      items: [
-        CatchSelectionMenuItem(
-          value: '',
-          label: context.l10n.hostFormsFilterAll,
-        ),
-        for (final entry in filter.options.entries)
-          CatchSelectionMenuItem(value: entry.key, label: entry.value),
-      ],
-    );
-    if (selected == null || !mounted) return;
-    if (selected.isNotEmpty &&
-        !_answerFilters.containsKey(filter.questionId) &&
-        _answerFilters.length >= 5) {
-      return;
-    }
-    setState(() {
-      if (selected.isEmpty) {
-        _answerFilters.remove(filter.questionId);
-      } else {
-        _answerFilters[filter.questionId] = selected;
-      }
-    });
-  }
-
-  Future<void> _chooseForm() async {
-    final request = HostFormListRequest(organizerId: widget.organizerId);
-    final selected = await showCatchBottomSheet<String>(
-      context: context,
-      builder: (sheetContext) => Consumer(
-        builder: (context, ref, _) => CatchSheet.standard(
-          title: context.l10n.hostAudienceChooseForm,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchFieldLanes.single(
-                child: CatchField.nav(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostAudienceAllForms,
-                  onTap: () => Navigator.of(sheetContext).pop(''),
-                ),
-              ),
-              CatchAsyncBoundary<HostFormsDirectoryState>(
-                value: ref.watch(hostFormsDirectoryControllerProvider(request)),
-                onRetry: () => ref.invalidate(
-                  hostFormsDirectoryControllerProvider(request),
-                ),
-                loadingBuilder: (_) => CatchSkeleton.content(
-                  child: CatchSection.fieldRows(
-                    first: true,
-                    children: [
-                      for (var index = 0; index < 3; index++)
-                        CatchField.nav(
-                          copy: catchFieldCopy(context.l10n),
-                          title: CatchSkeleton.sampleFormTitle,
-                        ),
-                    ],
-                  ),
-                ),
-                builder: (context, state) => CatchSection.fieldRows(
-                  first: true,
-                  children: [
-                    for (final form in state.forms)
-                      CatchField.nav(
-                        copy: catchFieldCopy(context.l10n),
-                        title: form.title,
-                        onTap: () =>
-                            Navigator.of(sheetContext).pop(form.formId),
-                      ),
-                    if (state.canLoadMore || state.loadingMore)
-                      CatchButton.command(
-                        label: context.l10n.hostFormsLoadMore,
-                        onPressed: state.loadingMore
-                            ? null
-                            : () => ref
-                                  .read(
-                                    hostFormsDirectoryControllerProvider(
-                                      request,
-                                    ).notifier,
-                                  )
-                                  .loadMore(),
-                      ),
-                    if (state.loadMoreError case final error?)
-                      CatchLocalizedErrorState(
-                        error,
-                        context: AppErrorContext.forms,
-                        mode: CatchErrorStateMode.compact,
-                        onRetry: () => ref
-                            .read(
-                              hostFormsDirectoryControllerProvider(
-                                request,
-                              ).notifier,
-                            )
-                            .loadMore(),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (selected != null && mounted) {
-      widget.onFormChanged?.call(selected.isEmpty ? null : selected);
-    }
-  }
+  HostFormResponseListRequest _responseRequest(String? formId) =>
+      HostFormResponseListRequest(
+        organizerId: widget.organizerId,
+        formId: formId,
+        includeApplications: true,
+        reviewStatus: _status,
+        contactId: widget.contactId,
+        query: widget.query,
+        answerFilters: Map.unmodifiable(_answerFilters),
+        oldestFirst: _oldestFirst,
+      );
 }

@@ -90,14 +90,14 @@ class _HostFollowerUpdateComposerSheetState
             remainingQuota: widget.remainingQuota,
             weeklyQuota: ClubPostsRepository.weeklyQuota,
           ),
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         key: const ValueKey('host-follower-update-submit'),
         label: _pending
             ? context.l10n.hostsHostClubToolsLabelPosting
             : context.l10n.hostsHostClubToolsLabelPostUpdate,
         onPressed: canSubmit ? () => _submit(text) : null,
         status: (_pending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-        fullWidth: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

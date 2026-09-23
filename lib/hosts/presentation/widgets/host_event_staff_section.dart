@@ -259,9 +259,10 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
     return CatchSheet.standard(
       title: context.l10n.hostsEventStaffGrantTitle,
       subtitle: context.l10n.hostsEventStaffGrantSubtitle,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchSheetActionRole.commit,
         label: context.l10n.hostsEventStaffGrantAction,
-        fullWidth: true,
+
         onPressed: _submit,
       ),
       child: CatchFieldLanes.divided(

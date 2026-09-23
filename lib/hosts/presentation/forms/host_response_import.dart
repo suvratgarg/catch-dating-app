@@ -15,11 +15,12 @@ extension _HostResponseImport on _HostFormsScreenState {
         builder: (context) => CatchSheet.standard(
           title: context.l10n.hostApplicationsImportTitle,
           subtitle: context.l10n.hostApplicationsImportSubtitle,
-          footer: CatchButton(
+          footer: CatchButton.sheet(
+            role: CatchSheetActionRole.commit,
             label: context.l10n.hostApplicationsImportAction(
               count: draft.rows.length,
             ),
-            fullWidth: true,
+
             onPressed: () => Navigator.of(context).pop(true),
           ),
           child: Column(

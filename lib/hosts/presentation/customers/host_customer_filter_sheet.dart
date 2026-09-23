@@ -54,10 +54,8 @@ class _HostCustomerFilterSheetState extends State<HostCustomerFilterSheet> {
         HostCustomerFilter.smsReachable,
       ];
     }
-    return CatchSheet.standard(
-      pinFooter: true,
+    return CatchSheet.filter(
       title: context.l10n.hostCustomersFilterSheetTitle,
-      subtitle: context.l10n.hostFiltersMultiSelectHelp,
       trailing: CatchButton(
         label: context.l10n.hostFiltersResetAll,
         variant: CatchButtonVariant.ghost,
@@ -72,17 +70,14 @@ class _HostCustomerFilterSheetState extends State<HostCustomerFilterSheet> {
                 widget.onChanged?.call(_selection);
               },
       ),
-      footer: CatchButton(
-        label: context.l10n.hostSheetClose,
-        fullWidth: true,
-        onPressed: () => Navigator.of(context).pop(_selection),
-      ),
+      closeLabel: context.l10n.hostSheetClose,
+      onClose: () => Navigator.of(context).pop(_selection),
       child: CatchSectionList(
         emptyStateOmitted: true,
         mainAxisSize: MainAxisSize.min,
         children: [
           for (final entry in groups.entries)
-            CatchSection.divided(
+            CatchSection.choiceGroup(
               first: true,
               title: _customerFilterGroupLabel(context, entry.key),
               child: CatchChoiceInput<HostCustomerFilter>(
@@ -105,7 +100,7 @@ class _HostCustomerFilterSheetState extends State<HostCustomerFilterSheet> {
               ),
             ),
           if (widget.manualTagVocabulary.isNotEmpty)
-            CatchSection.divided(
+            CatchSection.choiceGroup(
               first: true,
               title: context.l10n.hostCustomersFilterGroupYourTags,
               child: CatchChoiceInput<HostCustomerManualTag>(

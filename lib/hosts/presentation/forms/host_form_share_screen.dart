@@ -277,9 +277,10 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
         builder: (context) => CatchSheet.standard(
           title: context.l10n.hostFormEmbed,
           subtitle: context.l10n.hostFormEmbedHelp,
-          footer: CatchButton(
+          footer: CatchButton.sheet(
+            role: CatchSheetActionRole.commit,
             label: context.l10n.hostFormCopyEmbed,
-            fullWidth: true,
+
             onPressed: () =>
                 _copy(assets.embedSnippet, context.l10n.hostFormEmbedCopied),
           ),

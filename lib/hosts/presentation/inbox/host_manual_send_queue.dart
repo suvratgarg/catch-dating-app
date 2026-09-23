@@ -243,14 +243,14 @@ class _HostManualSendTaskSheetState
   Widget build(BuildContext context) => CatchSheet.standard(
     title: context.l10n.hostManualSendTaskTitle(name: _task.displayName),
     subtitle: context.l10n.hostManualSendTaskSubtitle,
-    footer: CatchButton(
+    footer: CatchButton.sheet(
+      role: CatchSheetActionRole.commit,
       key: const ValueKey('host-manual-send-mark-sent'),
       label: context.l10n.hostManualSendTaskMarkSent,
       status: (_busy) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: _busy || _task.status != HostManualSendTaskStatus.handoffOpened
           ? null
           : () => unawaited(_mark(HostManualSendTaskAction.hostMarkedSent)),
-      fullWidth: true,
     ),
     child: Column(
       mainAxisSize: MainAxisSize.min,

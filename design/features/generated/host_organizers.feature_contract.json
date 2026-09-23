@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
-  "resolvedDigest": "sha256:ed8a9b8ccb442fd15d7128542df5878fcb56333edbfd2e34ed39234f17aaa0fc",
+  "resolvedDigest": "sha256:cbc2ee0d91eec0315142dddca8a20da65f3f33a321a5a2b91b7b956fd8530412",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5161,7 +5161,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },
@@ -5314,7 +5315,8 @@
               "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
                 "CatchSheet",
-                "CatchSheet.standard"
+                "CatchSheet.standard",
+                "CatchSheet.filter"
               ]
             }
           },

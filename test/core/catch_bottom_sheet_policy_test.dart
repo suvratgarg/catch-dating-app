@@ -29,7 +29,12 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
   final String path;
   final failures = <String>[];
 
-  void _check(String name, String? target, String? constructor) {
+  void _check(
+    String name,
+    String? target,
+    String? constructor,
+    ArgumentList arguments,
+  ) {
     final sharedPresenter =
         path == 'packages/catch_ui/lib/src/components/catch_sheet.dart';
     final nativePicker =
@@ -42,17 +47,76 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
     }
     if (_hostRoots.any(path.startsWith) &&
         (name == 'CatchSheet' || target == 'CatchSheet') &&
-        constructor != 'standard' &&
-        name != 'standard') {
+        !{'standard', 'filter'}.contains(constructor ?? name)) {
       failures.add(
-        '$path: use CatchSheet.standard for shared geometry and scrolling',
+        '$path: use CatchSheet.standard or CatchSheet.filter for shared geometry',
+      );
+    }
+    if (!_hostRoots.any(path.startsWith)) return;
+    final type = target ?? name;
+    final recipe = constructor ?? (target == null ? null : name);
+    final props = <String, String>{
+      for (final arg in arguments.arguments.whereType<NamedExpression>())
+        arg.name.label.name: arg.expression.toSource(),
+    };
+    if (type == 'CatchSheet' &&
+        RegExp(
+          r'hostCustomers(Filters|FilterSheetTitle)\b',
+        ).hasMatch(props['title'] ?? '') &&
+        recipe != 'filter') {
+      failures.add('$path: ordinary filters must use CatchSheet.filter');
+    }
+    if (type == 'CatchButton' &&
+        (props['label'] ?? '').contains('hostSheetClose')) {
+      failures.add('$path: the filter recipe owns the Close action');
+    }
+    if (type == 'CatchButton' && recipe != 'sheet') {
+      AstNode? ancestor = arguments.parent?.parent;
+      while (ancestor != null) {
+        if (ancestor is NamedExpression &&
+            ancestor.name.label.name == 'footer') {
+          final owner = ancestor.parent?.parent;
+          final isSheet =
+              owner is MethodInvocation &&
+                  owner.target?.toSource() == 'CatchSheet' ||
+              owner is InstanceCreationExpression &&
+                  owner.constructorName.type.name.lexeme == 'CatchSheet';
+          if (isSheet) {
+            failures.add(
+              '$path: sheet footer actions must declare their semantic role with CatchButton.sheet',
+            );
+          }
+          break;
+        }
+        ancestor = ancestor.parent;
+      }
+    }
+    if (type == 'CatchField' &&
+        recipe == 'nav' &&
+        arguments.root.toSource().contains('CatchSheet.filter(')) {
+      failures.add(
+        '$path: ordinary filter choices must be inline chips, not nested navigation rows',
+      );
+    }
+    // Inspect section calls in filter owners, including helper-built groups.
+    if (type == 'CatchSection' &&
+        props.containsKey('title') &&
+        arguments.root.toSource().contains('CatchSheet.filter(') &&
+        (recipe != 'choiceGroup' || props.containsKey('titleColor'))) {
+      failures.add(
+        '$path: filter groups use the shared choice-group heading and chip clearance',
       );
     }
   }
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
-    _check(node.methodName.name, node.target?.toSource(), null);
+    _check(
+      node.methodName.name,
+      node.target?.toSource(),
+      null,
+      node.argumentList,
+    );
     super.visitMethodInvocation(node);
   }
 
@@ -62,6 +126,7 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
       node.constructorName.type.name.lexeme,
       null,
       node.constructorName.name?.name,
+      node.argumentList,
     );
     super.visitInstanceCreationExpression(node);
   }
@@ -100,6 +165,8 @@ void main() {
       'void f() { const BottomSheet(onClosing: f, builder: b); }',
       'void f() { CatchSheet(child: child); }',
       'void f() { const CatchSheet(child: child); }',
+      'final a = CatchSheet.standard(footer: CatchButton(label: save, onPressed: save), child: child);',
+      'final a = CatchSheet.standard(footer: Column(children: [CatchButton(label: save, onPressed: save)]), child: child);',
     ]) {
       expect(
         _violations('lib/hosts/example.dart', source),
@@ -113,8 +180,27 @@ void main() {
       void f() { showCatchBottomSheet(context: c, builder: b); }
       final a = CatchSheet.standard(child: child);
       final b = const CatchSheet.standard(child: child);
+      final d = CatchSheet.standard(footer: CatchButton.sheet(role: CatchSheetActionRole.commit, label: save, onPressed: save), child: child);
+      final c = CatchSheet.filter(title: l10n.hostCustomersFilters, child: CatchSection.choiceGroup(title: 'Purpose', child: chips), closeLabel: l10n.hostSheetClose, onClose: close);
     '''),
       isEmpty,
     );
+  });
+  test('filter policy rejects ad hoc copy, footer and heading recipes', () {
+    for (final source in [
+      "final a = CatchSheet.standard(title: l10n.hostCustomersFilters, subtitle: 'Instructions', child: chips);",
+      'final a = CatchSheet.standard(title: l10n.hostCustomersFilterSheetTitle, child: chips);',
+      'final a = CatchButton(label: l10n.hostSheetClose, onPressed: close);',
+      "final a = CatchSheet.filter(child: CatchField.nav(title: 'Form', onTap: choose));",
+      "final a = CatchSheet.filter(child: CatchSection.fieldRows(title: 'Attendance', child: chips));",
+      "final a = CatchSheet.filter(child: CatchSection.divided(title: 'Attendance', child: chips));",
+      "final a = CatchSheet.filter(child: CatchSection.fieldRows(title: 'Attendance', titleColor: Colors.white, child: chips));",
+    ]) {
+      expect(
+        _violations('lib/hosts/example.dart', source),
+        isNotEmpty,
+        reason: source,
+      );
+    }
   });
 }
