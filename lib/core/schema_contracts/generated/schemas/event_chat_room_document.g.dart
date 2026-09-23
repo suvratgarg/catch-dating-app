@@ -35,7 +35,10 @@ const schemaEventChatRoomDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'open',
+        'announcementsOnly',
+        'paused',
         'closed',
+        'archived',
       ],
     },
     'revision': <String, Object?>{
@@ -97,6 +100,20 @@ const schemaEventChatRoomDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 9007199254740991,
+    },
+    'opensAtMillis': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
+    },
+    'closesAtMillis': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 0,
     },
   },
   'description': 'Host-controlled event conversation availability. No attendee admission or profile data.',

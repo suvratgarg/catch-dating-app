@@ -483,6 +483,8 @@ export 'list_public_organizer_reviews_callable_payload.g.dart';
 export 'list_public_organizer_reviews_callable_response.g.dart';
 export 'list_suvbot_demo_actions_callable_response.g.dart';
 export 'list_transport_vendors_callable_payload.g.dart';
+export 'manage_event_chat_member_callable_payload.g.dart';
+export 'manage_event_chat_member_callable_response.g.dart';
 export 'manage_organizer_form_payment_connection_callable_payload.g.dart';
 export 'manage_organizer_form_payment_connection_callable_response.g.dart';
 export 'mark_event_attendance_callable_payload.g.dart';

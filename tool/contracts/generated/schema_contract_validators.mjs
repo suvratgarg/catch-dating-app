@@ -225,6 +225,8 @@ import {
   updateEventChatAccessCallablePayloadSchema,
   getEventChatAccessCallableResponseSchema,
   updateEventChatAccessCallableResponseSchema,
+  manageEventChatMemberCallablePayloadSchema,
+  manageEventChatMemberCallableResponseSchema,
   listParticipantMessagingPreferencesCallablePayloadSchema,
   listParticipantMessagingPreferencesCallableResponseSchema,
   withdrawParticipantMessagingPermissionCallablePayloadSchema,
@@ -1059,6 +1061,8 @@ export const validateGetEventChatAccessCallablePayload = ajv.compile(getEventCha
 export const validateUpdateEventChatAccessCallablePayload = ajv.compile(updateEventChatAccessCallablePayloadSchema);
 export const validateGetEventChatAccessCallableResponse = ajv.compile(getEventChatAccessCallableResponseSchema);
 export const validateUpdateEventChatAccessCallableResponse = ajv.compile(updateEventChatAccessCallableResponseSchema);
+export const validateManageEventChatMemberCallablePayload = ajv.compile(manageEventChatMemberCallablePayloadSchema);
+export const validateManageEventChatMemberCallableResponse = ajv.compile(manageEventChatMemberCallableResponseSchema);
 export const validateListParticipantMessagingPreferencesCallablePayload = ajv.compile(listParticipantMessagingPreferencesCallablePayloadSchema);
 export const validateListParticipantMessagingPreferencesCallableResponse = ajv.compile(listParticipantMessagingPreferencesCallableResponseSchema);
 export const validateWithdrawParticipantMessagingPermissionCallablePayload = ajv.compile(withdrawParticipantMessagingPermissionCallablePayloadSchema);

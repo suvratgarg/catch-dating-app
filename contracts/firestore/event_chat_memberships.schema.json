@@ -30,7 +30,9 @@
       "type": "string",
       "enum": [
         "joined",
-        "left"
+        "left",
+        "removed",
+        "banned"
       ]
     },
     "revision": {
@@ -55,7 +57,10 @@
     },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
-    }
+    },
+    "notificationsMuted": {"type": "boolean"},
+    "removedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "removedByUid": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]}
   },
   "description": "Explicit room participation. Current admission and claimed identity must still be rechecked on every access.",
   "x-firestore-collection": "eventChatMemberships",

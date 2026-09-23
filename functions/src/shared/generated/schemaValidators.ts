@@ -227,6 +227,8 @@ export {validateGetEventChatAccessCallablePayload} from "./validators/getEventCh
 export {validateUpdateEventChatAccessCallablePayload} from "./validators/updateEventChatAccessInput";
 export {validateGetEventChatAccessCallableResponse} from "./validators/getEventChatAccessOutput";
 export {validateUpdateEventChatAccessCallableResponse} from "./validators/updateEventChatAccessOutput";
+export {validateManageEventChatMemberCallablePayload} from "./validators/manageEventChatMemberInput";
+export {validateManageEventChatMemberCallableResponse} from "./validators/manageEventChatMemberOutput";
 export {validateListParticipantMessagingPreferencesCallablePayload} from "./validators/listParticipantMessagingPreferencesInput";
 export {validateListParticipantMessagingPreferencesCallableResponse} from "./validators/listParticipantMessagingPreferencesOutput";
 export {validateWithdrawParticipantMessagingPermissionCallablePayload} from "./validators/withdrawParticipantMessagingPermissionInput";

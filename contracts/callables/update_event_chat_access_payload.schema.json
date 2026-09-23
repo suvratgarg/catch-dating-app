@@ -22,7 +22,14 @@
         "open",
         "close",
         "join",
-        "leave"
+        "leave",
+        "mute",
+        "unmute",
+        "pause",
+        "announcementsOnly",
+        "resume",
+        "schedule",
+        "archive"
       ]
     },
     "expectedRevision": {
@@ -48,6 +55,8 @@
     },
     "expectedUid": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-    }
+    },
+    "opensAtMillis": {"type": "integer", "minimum": 0},
+    "closesAtMillis": {"type": "integer", "minimum": 0}
   }
 }

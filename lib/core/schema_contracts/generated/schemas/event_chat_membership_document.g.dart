@@ -43,6 +43,8 @@ const schemaEventChatMembershipDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'joined',
         'left',
+        'removed',
+        'banned',
       ],
     },
     'revision': <String, Object?>{
@@ -142,6 +144,48 @@ const schemaEventChatMembershipDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+    },
+    'notificationsMuted': <String, Object?>{
+      'type': 'boolean',
+    },
+    'removedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'removedByUid': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
   },
   'description': 'Explicit room participation. Current admission and claimed identity must still be rechecked on every access.',

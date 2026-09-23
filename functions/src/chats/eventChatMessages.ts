@@ -46,9 +46,14 @@ export async function sendEventChatMessageHandler(
   await deps.rateLimit(db, uid, "sendEventChatMessage");
   const messageRef = db.collection("eventChatMessages")
     .doc(chatHash([data.eventId, uid, data.requestId]));
-  const payloadHash = chatHash([text, data.replyToMessageId]);
+  const kind = data.kind ?? "text";
+  const payloadHash = chatHash([text, data.replyToMessageId, kind]);
   return db.runTransaction(async (tx) => {
     const access = await requireEventChatMember(db, tx, data.eventId, uid);
+    if (!access.view.canPostMessages ||
+        (kind === "announcement" && !access.view.canManage) ||
+        (access.view.room.status === "announcementsOnly" &&
+          kind !== "announcement")) throw messageUnavailable();
     const existing = await tx.get(messageRef);
     if (existing.exists) {
       const message = requireDoc<Message>(existing, "EventChatMessageDocument");
@@ -76,6 +81,7 @@ export async function sendEventChatMessageHandler(
     const now = deps.now();
     tx.create(messageRef, {eventId: data.eventId,
       organizerId: access.view.organizerId, uid, sequence, text,
+      kind,
       replyToMessageId: data.replyToMessageId, status: "visible", payloadHash,
       reactionCounts: emptyReactionCounts(), createdAt: now, removedAt: null,
     } satisfies Message);
@@ -111,6 +117,7 @@ export async function setEventChatReactionHandler(
     .doc(eventChatReactionId(data.messageId, uid));
   return db.runTransaction(async (tx) => {
     const access = await requireEventChatMember(db, tx, data.eventId, uid);
+    if (!access.view.canPostMessages) throw messageUnavailable();
     const receiptSnap = await tx.get(receiptRef);
     if (receiptSnap.exists) {
       const receipt = requireDoc<Receipt>(receiptSnap,
@@ -170,7 +177,8 @@ export async function setEventChatTypingHandler(
   return db.runTransaction(async (tx) => {
     // Withdrawal can clear one's own indicator even after admission is revoked.
     if (data.isTyping) {
-      await requireEventChatMember(db, tx, data.eventId, uid);
+      const access = await requireEventChatMember(db, tx, data.eventId, uid);
+      if (!access.view.canPostMessages) throw messageUnavailable();
     } else {
       await readEventChatAccount(db, tx, uid);
     }
