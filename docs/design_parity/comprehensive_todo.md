@@ -96,22 +96,22 @@ ledgers as the source of truth when counts differ:
   overview, access-decision, role, safety, and marketing mutation directions
   now have strict request and response schemas; remaining structural callables
   stay explicitly labeled rather than being overclaimed.
-- Screen priority spread: 22 P1, 10 P2, and 5 P3 contracted screens.
-- Contracted screen states: 689.
-- Contracted screen sections: 241.
-- Screen registry migration gaps: 19 open, 25 blocked, and 113 closed. One of
-  the 19 non-blocked gaps is currently marked in progress. These are
+- Screen priority spread: 27 P1, 10 P2, and 5 P3 contracted screens.
+- Contracted screen states: 712.
+- Contracted screen sections: 249.
+- Screen registry migration gaps: 24 open, 25 blocked, and 113 closed. One of
+  the 24 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,143.
 - Open screen-contract validation gaps: 0.
-- Design parity matrix: 12 feature groups, 38 screens, 691 matrix states, and
-  55 open matrix gaps across screen-state, lint-candidate, and preview-plan
+- Design parity matrix: 13 feature groups, 43 screens, 734 matrix states, and
+  60 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
-- Matrix state status spread: 562 captured, 48 implemented, 4 planned, and
+- Matrix state status spread: 562 captured, 71 implemented, 4 planned, and
   77 tested.
-- Capture coverage registry: 624 capture ids across 39 captured route entries,
-  8 alias route entries, 17 planned route entries, and 2 excluded route entries.
+- Capture coverage registry: 671 capture ids across 54 captured route entries,
+  10 alias route entries, 16 planned route entries, and 2 excluded route entries.
 - Component contracts: 71 reusable primitive/composite contracts with 445
   contract states.
 - Widgetbook registry: 870 generated component entries, 928 generated use-case
@@ -758,6 +758,11 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.profile.self` | 16 | 8 | 1 | Blocked: current handoff is two-tab/stale edit layout | `DS-PROFILE-SELF-002` blocked | SelfProfileScreenState, SelfProfileEditTabState, SelfProfilePhotoActionController, and SelfProfileInlineEditPatchFactory now own the route, row descriptor, photo intent, patch seams, and settings navigation proof. Fresh references and Aanya fixture alignment still compare above threshold because the handoff lacks the production Insights tab and current photo/editor rows; resume when canonical design source catches up or product chooses the older two-tab/edit layout. |
 | P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | Blocked: phone handoff layout is stale | `DS-AUTH-001` blocked | `feature.phone_auth` compiles all eight phone/OTP states and six actions, distinguishing opening the country picker from selecting a dial code and preserving cooldown, verify, resend, change-number, mutation, and accessibility behavior. `DS-AUTH-004` is closed under `REG-PENDING-SNAPSHOT-001`: send pending freezes phone/country controls, duplicate controller dispatches share one request, reset invalidates stale callbacks, and focused controller/widget tests prove the snapshot boundary. OTP compares within threshold; phone entry remains blocked only on the stale canonical handoff. |
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | `feature.event_planning` compiles Calendar as the merged joined-and-saved projection with all ten states and seven recovery, date/header, Today, and Event Detail actions. It preserves identity/event-stream versus secondary organizer-name failure cases and exact evidence debt. Widgetbook and captures remain complete; canonical reference export is still blocked. |
+| P1 | `screen.programs.arrivals` | 5 | 1 | 0 | Planned: roster lane captures land with the program golden pass | `DP-PROGRAMS-ARRIVALS-001` | `feature.programs_arrivals_ops` binds the station-scoped greeter roster with attention, ready, and expected lanes; claim/readiness/disruption writes enqueue through the offline outbox with idempotent clientOperationIds. Route captures and pixel proof remain the explicit follow-up. |
+| P1 | `screen.programs.dispatch` | 5 | 1 | 0 | Planned: dispatch desk captures land with the program golden pass | `DP-PROGRAMS-DISPATCH-001` | `feature.programs_arrivals_ops` binds deterministic transport grouping plus the plate/vendor/class dispatch sheet; writes queue offline and replay through the outbox. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.hotel_desk` | 5 | 1 | 0 | Planned: hotel inbound captures land with the program golden pass | `DP-PROGRAMS-HOTEL-DESK-001` | `feature.programs_arrivals_ops` binds the hotel-scoped inbound projection: en-route plates, manifest names, ETAs, and expected parties, with mark-arrived scoped to the destination hotel. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.trips` | 4 | 1 | 0 | Planned: ledger captures land with the program golden pass | `DP-PROGRAMS-TRIPS-001` | `feature.programs_arrivals_ops` binds the trip ledger: every dispatched vehicle keeps plate, vendor, class, manifest, and outcome, with reasoned void preserved for reconciliation. Route captures remain the explicit follow-up. |
+| P1 | `screen.programs.work` | 4 | 1 | 0 | Planned: workspace captures land with the program golden pass | `DP-PROGRAMS-WORK-001` | `feature.programs_arrivals_ops` binds the scoped staff workspace: the server-returned access payload decides which station, hotel, and ledger links render, and every destination re-checks authority. Route captures remain the explicit follow-up. |
 | P2 | `screen.event.recap` | 12 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked | `feature.event_recap` compiles all 12 states and five close, route-recovery, profile-recovery, attendee-selection, and Catches-handoff actions. `DS-EVENT-RECAP-005` is closed: profile lookup loading keeps the resolved recap with a grid skeleton, failure shows inline retry for the exact batched query, and Guest is reserved for genuinely missing resolved profiles. Deterministic profile-enrichment loading/error previews and captures are registered; canonical reference export remains blocked. |
 | P2 | `screen.filters.preferences` | 11 | 5 | 0 | None | None | `feature.matching_preferences` compiles all 11 states and six close, recovery, age, gender, reset, and apply actions. `DS-FILTERS-004` is closed under `REG-PENDING-SNAPSHOT-001`, and `DS-FILTERS-005` is closed by branded missing-profile guidance plus retry and focused route proof. Existing Widgetbook, captures, and default reference stay registered. |
 | P2 | `screen.host.club.create` | 17 | 6 | 1 | Additional state-specific references needed beyond basics_default | `DS-HOST-CLUB-CREATE-004` blocked | `feature.host_organizer_create` compiles all 17 states and 12 meaningful actions across wizard movement, media, organizer type/city, reusable defaults, local draft recovery, submission, and caller-pop lifecycle. Pending submit, draft save, and initial restore now freeze route exit, step movement, media, fields/defaults, and footer actions; controller and widget proof closes `DS-HOST-CLUB-CREATE-005`. Remaining exceptions are reference or unrelated evidence debt. |

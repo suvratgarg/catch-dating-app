@@ -168,3 +168,45 @@ test("contract parser preserves ordered and array index modes", () => {
     "events|marketId:ASCENDING,cohorts:CONTAINS,startTime:DESCENDING"
   );
 });
+
+test("TypeScript queries require every static composite shape to be declared", () => {
+  const contents = `
+/* firestore-index: events (
+  marketId:ASCENDING,
+  startTime:ASCENDING
+) */
+const events = db.collection("events")
+  .where("marketId", "==", id).orderBy("startTime").limit(50);
+const grants = db.collection("programStaffGrants")
+  .where("programId", "==", id).where("status", "==", "active")
+  .where("expiresAt", ">", now);
+`;
+  const result = validateContracts({
+    sources: [{path: "functions/src/programs/programStaff.ts", contents}],
+    indexConfig,
+  });
+  assert.equal(result.contractCount, 1);
+  assert.equal(result.errors.length, 1);
+  assert.match(result.errors[0], /programStaffGrants/u);
+});
+
+test("a same-field TypeScript range and order needs only a built-in index", () => {
+  const result = validateContracts({
+    sources: [{path: "functions/src/transport/flightRefresh.ts", contents: `
+const due = db.collection("programTravelLegs")
+  .where("flightNextRefreshAt", "<=", now).orderBy("flightNextRefreshAt");
+`}], indexConfig: {indexes: []},
+  });
+  assert.deepEqual(result.errors, []);
+});
+
+test("TypeScript direction changes cannot reuse an ascending contract", () => {
+  const result = validateContracts({
+    sources: [{path: "functions/src/programs/programs.ts", contents: `
+// firestore-index: events (marketId:ASCENDING,startTime:ASCENDING)
+const query = db.collection("events").where("marketId", "==", id)
+  .orderBy("startTime", "desc");
+`}], indexConfig,
+  });
+  assert.match(result.errors.join("\n"), /startTime:DESCENDING/u);
+});

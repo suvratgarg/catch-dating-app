@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-22",
+  "updated": "2026-09-23",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -842,6 +842,36 @@
       "priority": "P1",
       "canonicalRouteId": "hostAppEventManageScreen",
       "reason": "Restricted staff route reuses the canonical operational roster composition while removing every manager-only control."
+    },
+    {
+      "routeId": "hostWorkProgramScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Program work workspace lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkArrivalsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Arrivals roster lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkDispatchScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Dispatch desk lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkHotelScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Hotel desk lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkTripsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Trip ledger lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
       "routeId": "hostOrganizerScreen",

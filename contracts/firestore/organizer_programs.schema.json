@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_programs.schema.json",
+  "title": "OrganizerProgramDocument",
+  "description": "Server-owned private wedding/corporate program root. Holds organizer ownership, lifecycle, enabled capabilities and transport tuning. Never publicly readable; guest logistics live in program-scoped collections.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPrograms",
+  "x-firestore-path": "organizerPrograms/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "program management callables",
+  "required": [
+    "organizerId",
+    "kind",
+    "title",
+    "timezone",
+    "startsAt",
+    "endsAt",
+    "status",
+    "capabilities",
+    "transportSettings",
+    "createdBy",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programKind"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "description": "IANA timezone identifier used for display and time-band boundaries."
+    },
+    "startsAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "endsAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "status": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+      }
+    },
+    "transportSettings": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programTransportSettings"
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

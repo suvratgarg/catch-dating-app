@@ -1,0 +1,16 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "displayName": "Rohan Sharma",
+  "householdId": "household-1",
+  "contactId": null,
+  "phoneE164": null,
+  "email": null,
+  "externalReference": "guestlist-row-42",
+  "invitationStatus": "invited",
+  "rsvpStatus": "attending",
+  "source": "import",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}

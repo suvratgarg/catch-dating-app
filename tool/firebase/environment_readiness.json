@@ -377,6 +377,52 @@
       ]
     },
     {
+      "id": "functions.secret.aerodatabox-api-key",
+      "kind": "secret-version",
+      "name": "AERODATABOX_API_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:refreshProgramTravelLeg",
+          "functions:refreshProgramFlightStatuses"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "programs",
+      "sourcePaths": [
+        "functions/src/transport/aeroDataBox.ts"
+      ]
+    },
+    {
+      "id": "functions.secret.flight-webhook-secret",
+      "kind": "secret-version",
+      "name": "FLIGHT_WEBHOOK_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:flightAlertWebhook",
+          "functions:refreshProgramFlightStatuses"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "programs",
+      "sourcePaths": [
+        "functions/src/transport/flightProviderConfig.ts"
+      ]
+    },
+    {
       "id": "firestore.ttl.cross-paths-suggestion-exposures",
       "kind": "firestore-ttl",
       "collectionGroup": "crossPathsSuggestionExposures",
