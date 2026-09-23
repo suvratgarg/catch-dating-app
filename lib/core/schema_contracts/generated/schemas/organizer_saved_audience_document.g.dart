@@ -337,6 +337,51 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'segmentIds',
+                  'manualTagIds',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'directoryFilters',
+                  },
+                  'segmentIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 12,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'new_to_organizer',
+                        'past_attendee',
+                        'first_time_attendee',
+                        'repeat_attendee',
+                        'regular',
+                        'lapsed_regular',
+                        'reliable_attendee',
+                        'needs_confirmation',
+                        'advocate',
+                        'high_impact_advocate',
+                        'whatsapp_reachable',
+                        'sms_reachable',
+                      ],
+                    },
+                  },
+                  'manualTagIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{32}\$',
+                    },
+                  },
+                },
+              },
             ],
           },
         },
@@ -819,6 +864,51 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
                   },
                 },
               },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'kind',
+                  'segmentIds',
+                  'manualTagIds',
+                ],
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'const': 'directoryFilters',
+                  },
+                  'segmentIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 12,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'new_to_organizer',
+                        'past_attendee',
+                        'first_time_attendee',
+                        'repeat_attendee',
+                        'regular',
+                        'lapsed_regular',
+                        'reliable_attendee',
+                        'needs_confirmation',
+                        'advocate',
+                        'high_impact_advocate',
+                        'whatsapp_reachable',
+                        'sms_reachable',
+                      ],
+                    },
+                  },
+                  'manualTagIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{32}\$',
+                    },
+                  },
+                },
+              },
             ],
           },
         },
@@ -1083,7 +1173,97 @@ const schemaOrganizerSavedAudienceDocumentSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'segmentIds',
+            'manualTagIds',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'directoryFilters',
+            },
+            'segmentIds': <String, Object?>{
+              'type': 'array',
+              'maxItems': 12,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'new_to_organizer',
+                  'past_attendee',
+                  'first_time_attendee',
+                  'repeat_attendee',
+                  'regular',
+                  'lapsed_regular',
+                  'reliable_attendee',
+                  'needs_confirmation',
+                  'advocate',
+                  'high_impact_advocate',
+                  'whatsapp_reachable',
+                  'sms_reachable',
+                ],
+              },
+            },
+            'manualTagIds': <String, Object?>{
+              'type': 'array',
+              'maxItems': 20,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{32}\$',
+              },
+            },
+          },
+        },
       ],
+    },
+    'directoryFiltersPredicate': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'segmentIds',
+        'manualTagIds',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'directoryFilters',
+        },
+        'segmentIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 12,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'new_to_organizer',
+              'past_attendee',
+              'first_time_attendee',
+              'repeat_attendee',
+              'regular',
+              'lapsed_regular',
+              'reliable_attendee',
+              'needs_confirmation',
+              'advocate',
+              'high_impact_advocate',
+              'whatsapp_reachable',
+              'sms_reachable',
+            ],
+          },
+        },
+        'manualTagIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{32}\$',
+          },
+        },
+      },
     },
     'computedSegmentPredicate': <String, Object?>{
       'type': 'object',

@@ -44,5 +44,52 @@ const schemaExportOrganizerContactsCallablePayloadSchema = <String, Object?>{
         },
       ],
     },
+    'segmentIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 12,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'enum': <Object?>[
+          'new_to_organizer',
+          'past_attendee',
+          'first_time_attendee',
+          'repeat_attendee',
+          'regular',
+          'lapsed_regular',
+          'reliable_attendee',
+          'needs_confirmation',
+          'advocate',
+          'high_impact_advocate',
+          'whatsapp_reachable',
+          'sms_reachable',
+        ],
+      },
+      'description': 'OR within attendance, reliability, advocacy and reachable categories; AND across selected categories.',
+    },
+    'manualTagIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'pattern': '^[a-f0-9]{32}\$',
+      },
+      'description': 'Match any selected manual tag, combined with all selected segment categories.',
+    },
+    'query': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+    },
+    'manualTagId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[a-f0-9]{32}\$',
+    },
   },
 };

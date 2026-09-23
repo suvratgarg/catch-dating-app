@@ -334,6 +334,51 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentIds",
+                  "manualTagIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "directoryFilters"
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "new_to_organizer",
+                        "past_attendee",
+                        "first_time_attendee",
+                        "repeat_attendee",
+                        "regular",
+                        "lapsed_regular",
+                        "reliable_attendee",
+                        "needs_confirmation",
+                        "advocate",
+                        "high_impact_advocate",
+                        "whatsapp_reachable",
+                        "sms_reachable"
+                      ]
+                    }
+                  },
+                  "manualTagIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{32}$"
+                    }
+                  }
+                }
               }
             ]
           }
@@ -816,6 +861,51 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentIds",
+                  "manualTagIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "directoryFilters"
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "new_to_organizer",
+                        "past_attendee",
+                        "first_time_attendee",
+                        "repeat_attendee",
+                        "regular",
+                        "lapsed_regular",
+                        "reliable_attendee",
+                        "needs_confirmation",
+                        "advocate",
+                        "high_impact_advocate",
+                        "whatsapp_reachable",
+                        "sms_reachable"
+                      ]
+                    }
+                  },
+                  "manualTagIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{32}$"
+                    }
+                  }
+                }
               }
             ]
           }
@@ -1080,8 +1170,98 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
               }
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "segmentIds",
+            "manualTagIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "directoryFilters"
+            },
+            "segmentIds": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "new_to_organizer",
+                  "past_attendee",
+                  "first_time_attendee",
+                  "repeat_attendee",
+                  "regular",
+                  "lapsed_regular",
+                  "reliable_attendee",
+                  "needs_confirmation",
+                  "advocate",
+                  "high_impact_advocate",
+                  "whatsapp_reachable",
+                  "sms_reachable"
+                ]
+              }
+            },
+            "manualTagIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              }
+            }
+          }
         }
       ]
+    },
+    "directoryFiltersPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "segmentIds",
+        "manualTagIds"
+      ],
+      "properties": {
+        "kind": {
+          "const": "directoryFilters"
+        },
+        "segmentIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "past_attendee",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "manualTagIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          }
+        }
+      }
     },
     "computedSegmentPredicate": {
       "type": "object",
