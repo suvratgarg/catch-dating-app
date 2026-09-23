@@ -46,7 +46,7 @@ export const resolvePublicFormDomain = onRequest(
         async (hostname) => {
           const resolved = await resolveOrganizerFormDomain(
             admin.firestore(), hostname, () => probeFormDomain(hostname),
-            Date.now());
+            Date.now);
           return resolved?.publicFormId ?? null;
         }
       );

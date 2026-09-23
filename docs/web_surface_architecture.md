@@ -43,17 +43,25 @@ direct Catch link remains available if the site blocks scripts or if embedding
 is unsupported. Site-specific CSP, keyboard, mobile scroll, checkout popups,
 and browser storage need real browser validation before a client page goes live.
 
-`organizerFormDomainRegistry.ts` is the inactive server-side ownership and
+`organizerFormDomainRegistry.ts` is the server-side ownership and
 routing policy for a future Catch-served customer subdomain. It stores one
 exact hostname per record, binds it to a published organizer form, issues a
 fresh TXT challenge for every reservation, requires a matching CNAME and
 current DNS probe, and requires trusted certificate readiness before activation.
 Resolution also rechecks form ownership and publication. Revocation stops
 resolution; reassignment starts with a rotated challenge and generation.
-No custom hostname is enabled by this module alone. The hosting target, DNS
-and TLS provisioner, public endpoint/route, contract generation, Auth/App
-Check, upload CORS and payment return origins must be integrated and reviewed
-before activation. A client-owned `/apply` page can instead embed the Catch
+The public `/api/form-domain` endpoint resolves only active, still-owned
+bindings, and the React host gate shows only the bound form. Unknown or
+revoked hosts cannot render other marketing or form routes. Manager callables
+use Auth, App Check and per-user limits for reservation, verification and
+revocation. `FORM_DOMAIN_CNAME_TARGET` is deployment-owned and defaults to an
+unusable placeholder. Only the trusted hosting operator can mark certificate
+readiness and activate a verified record. No custom hostname is enabled by
+these source changes alone: DNS/TLS provisioning, the exact Firebase Hosting
+custom-domain binding, Auth/App Check allowed-domain setup, upload CORS and
+payment return origins require operator configuration and live validation.
+The canonical Firebase Hosting bypass is limited to configured Catch project
+site names and their preview channels. A client-owned `/apply` page can instead embed the Catch
 iframe without changing the form origin. Serving `/apply` directly on an
 existing client origin requires that site's supported proxy or native routing;
 DNS alone cannot select a URL path.

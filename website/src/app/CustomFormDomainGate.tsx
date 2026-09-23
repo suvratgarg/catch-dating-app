@@ -4,10 +4,16 @@ import {publicFormsCopy} from "../content/forms";
 import {WebsitePageMain} from "../shared/site";
 
 export function isCatchWebsiteHost(hostname: string): boolean {
+  const firebaseSite = hostname.match(
+    /^([a-z0-9-]+)\.(?:web\.app|firebaseapp\.com)$/u)?.[1];
+  const knownSite = firebaseSite === "catchdates-dev" ||
+    firebaseSite === "catchdates-staging" ||
+    firebaseSite === "catch-dating-app-64e51" ||
+    /^(?:catchdates-dev|catchdates-staging|catch-dating-app-64e51)--[a-z0-9-]+$/u
+      .test(firebaseSite ?? "");
   return hostname === "catchdates.com" || hostname === "www.catchdates.com" ||
     hostname === "localhost" || hostname === "127.0.0.1" ||
-    hostname === "[::1]" || hostname.endsWith(".web.app") ||
-    hostname.endsWith(".firebaseapp.com");
+    hostname === "[::1]" || knownSite;
 }
 
 export function publicFormIdForCustomHost(

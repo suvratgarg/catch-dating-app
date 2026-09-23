@@ -17,7 +17,9 @@ afterEach(() => {
 describe("custom form hostname gate", () => {
   it("keeps Catch and Firebase preview hosts on the canonical routes", () => {
     expect(isCatchWebsiteHost("catchdates.com")).toBe(true);
-    expect(isCatchWebsiteHost("preview.web.app")).toBe(true);
+    expect(isCatchWebsiteHost("catchdates-dev.web.app")).toBe(true);
+    expect(isCatchWebsiteHost("catchdates-dev--review.web.app")).toBe(true);
+    expect(isCatchWebsiteHost("preview.web.app")).toBe(false);
     expect(isCatchWebsiteHost("apply.client.example")).toBe(false);
   });
 

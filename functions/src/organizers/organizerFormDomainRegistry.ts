@@ -88,7 +88,7 @@ export async function reserveOrganizerFormDomain(
 /** Trusted backend operation. Never accepts browser-supplied TXT. */
 export async function verifyOrganizerFormDomain(
   db: firestore.Firestore, hostname: string, probe: DomainProbe | null,
-  nowMillis: number
+  nowMillis: number, expectedOrganizerId?: string
 ): Promise<OrganizerFormDomain> {
   requireHostname(hostname);
   return db.runTransaction(async (tx) => {
@@ -98,7 +98,10 @@ export async function verifyOrganizerFormDomain(
       throw new Error("Domain is not reserved or DNS is unavailable");
     }
     const record = parseOrganizerFormDomain(snap.data());
-    if (!record) throw new Error("Invalid domain record");
+    if (!record || (expectedOrganizerId &&
+        record.organizerId !== expectedOrganizerId)) {
+      throw new Error("Invalid domain owner or record");
+    }
     const verified = verifyFormDomain(record, probe,
       nowMillis);
     tx.set(ref, verified);
@@ -163,7 +166,7 @@ export async function revokeOrganizerFormDomain(
 export async function resolveOrganizerFormDomain(
   db: firestore.Firestore, requestHost: string,
   probeOrLoad: DomainProbe | null | (() => Promise<DomainProbe | null>),
-  nowMillis: number
+  nowOrClock: number | (() => number)
 ): Promise<{organizerId: string; publicFormId: string} | null> {
   const hostname = normalizeCustomFormHost(requestHost);
   if (!hostname) return null;
@@ -172,6 +175,10 @@ export async function resolveOrganizerFormDomain(
   if (!record || record.status !== "active") return null;
   const probe = typeof probeOrLoad === "function" ?
     await probeOrLoad() : probeOrLoad;
+  // A DNS probe timestamps completion. Capture now after it settles so normal
+  // network latency is not mistaken for a future-dated, untrusted probe.
+  const nowMillis = typeof nowOrClock === "function" ?
+    nowOrClock() : nowOrClock;
   if (!hasCurrentDomainOwnership(record, probe, nowMillis)) {
     return null;
   }

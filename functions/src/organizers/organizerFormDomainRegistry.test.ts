@@ -71,6 +71,8 @@ describe("organizer form domain registry", () => {
       db, input.hostname, probe, now), null);
     await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
       {...probe, txtValues: []}, now));
+    await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
+      probe, now, "organizer-b"));
     const verified = await verifyOrganizerFormDomain(
       db, input.hostname, probe, now);
     await assert.rejects(activateOrganizerFormDomain(
@@ -83,6 +85,17 @@ describe("organizer form domain registry", () => {
       organizerId: "organizer-a", publicFormId: "public-a",
     });
     assert.equal(dnsCalls, 1);
+    let afterDns = now;
+    assert.deepEqual(await resolveOrganizerFormDomain(
+      db, input.hostname, async () => {
+        afterDns = now + 500;
+        return {...probe, checkedAtMillis: afterDns};
+      }, () => afterDns), {
+      organizerId: "organizer-a", publicFormId: "public-a",
+    });
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, {...probe, checkedAtMillis: now + 500}, now),
+    null);
     assert.deepEqual(await resolveOrganizerFormDomain(
       db, input.hostname, probe, now), {
       organizerId: "organizer-a", publicFormId: "public-a",
