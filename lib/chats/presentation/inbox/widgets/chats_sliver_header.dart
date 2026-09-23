@@ -15,6 +15,8 @@ const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
 /// changes presentation because of process-global application configuration.
 enum ChatsBrowsePresentation { consumer, host }
 
+enum ConsumerChatScope { events, messages }
+
 double chatsBrowseHeaderHeight({
   required BuildContext context,
   required bool hasHostFilter,
@@ -42,6 +44,8 @@ class ChatsBrowseHeader extends StatefulWidget {
     this.subtitle,
     this.compactForPrimaryRail = false,
     this.actions = const [],
+    this.consumerScope,
+    this.onConsumerScopeChanged,
   });
 
   final ChatsBrowsePresentation presentation;
@@ -55,6 +59,8 @@ class ChatsBrowseHeader extends StatefulWidget {
   final String? subtitle;
   final bool compactForPrimaryRail;
   final List<Widget> actions;
+  final ConsumerChatScope? consumerScope;
+  final ValueChanged<ConsumerChatScope>? onConsumerScopeChanged;
 
   @override
   State<ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
@@ -75,7 +81,9 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
     final isHostApp = widget.presentation == ChatsBrowsePresentation.host;
     final hasHeaderSubtitle = isHostApp && widget.showHostSubtitle;
     final query = widget.searchValue;
-    final searchActive = _searchController.isSearchActive(query);
+    final searchActive =
+        widget.consumerScope != ConsumerChatScope.events &&
+        _searchController.isSearchActive(query);
 
     final title = isHostApp ? l10n.hostInboxTitle : l10n.consumerChatsTitle;
     final subtitle = hasHeaderSubtitle
@@ -112,6 +120,21 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
       mainAxisSize: MainAxisSize.min,
       children: [
         topBar,
+        if (widget.consumerScope != null)
+          CatchPageTabBar<ConsumerChatScope>(
+            options: [
+              CatchOption(
+                value: ConsumerChatScope.events,
+                label: l10n.eventChatsTab,
+              ),
+              CatchOption(
+                value: ConsumerChatScope.messages,
+                label: l10n.directMessagesTab,
+              ),
+            ],
+            selected: widget.consumerScope!,
+            onChanged: widget.onConsumerScopeChanged,
+          ),
         if (widget.hostFilter != null)
           CatchPageTabBar<HostInboxFilter>(
             options: [

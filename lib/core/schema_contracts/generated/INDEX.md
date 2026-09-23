@@ -215,6 +215,8 @@ Do not edit it by hand.
 | SetEventChatReactionCallableResponse | `callable_responses/set_event_chat_reaction_response.schema.json` | `functions/src/shared/generated/setEventChatReactionCallableResponse.ts` |
 | SetEventChatTypingCallablePayload | `callables/set_event_chat_typing_payload.schema.json` | `functions/src/shared/generated/setEventChatTypingCallablePayload.ts` |
 | SetEventChatTypingCallableResponse | `callable_responses/set_event_chat_typing_response.schema.json` | `functions/src/shared/generated/setEventChatTypingCallableResponse.ts` |
+| ListEventChatsCallablePayload | `callables/list_event_chats_payload.schema.json` | `functions/src/shared/generated/listEventChatsCallablePayload.ts` |
+| ListEventChatsCallableResponse | `callable_responses/list_event_chats_response.schema.json` | `functions/src/shared/generated/listEventChatsCallableResponse.ts` |
 | ListEventChatMessagesCallablePayload | `callables/list_event_chat_messages_payload.schema.json` | `functions/src/shared/generated/listEventChatMessagesCallablePayload.ts` |
 | ListEventChatMessagesCallableResponse | `callable_responses/list_event_chat_messages_response.schema.json` | `functions/src/shared/generated/listEventChatMessagesCallableResponse.ts` |
 | GetEventChatAccessCallablePayload | `callables/get_event_chat_access_payload.schema.json` | `functions/src/shared/generated/getEventChatAccessCallablePayload.ts` |
@@ -958,6 +960,8 @@ Do not edit it by hand.
 | `schemaSetEventChatReactionCallableResponseSchema` | SetEventChatReactionCallableResponse | `callable_responses/set_event_chat_reaction_response.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_chat_reaction_callable_response.g.dart` |
 | `schemaSetEventChatTypingCallablePayloadSchema` | SetEventChatTypingCallablePayload | `callables/set_event_chat_typing_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_chat_typing_callable_payload.g.dart` |
 | `schemaSetEventChatTypingCallableResponseSchema` | SetEventChatTypingCallableResponse | `callable_responses/set_event_chat_typing_response.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_chat_typing_callable_response.g.dart` |
+| `schemaListEventChatsCallablePayloadSchema` | ListEventChatsCallablePayload | `callables/list_event_chats_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_chats_callable_payload.g.dart` |
+| `schemaListEventChatsCallableResponseSchema` | ListEventChatsCallableResponse | `callable_responses/list_event_chats_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_chats_callable_response.g.dart` |
 | `schemaListEventChatMessagesCallablePayloadSchema` | ListEventChatMessagesCallablePayload | `callables/list_event_chat_messages_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_chat_messages_callable_payload.g.dart` |
 | `schemaListEventChatMessagesCallableResponseSchema` | ListEventChatMessagesCallableResponse | `callable_responses/list_event_chat_messages_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_chat_messages_callable_response.g.dart` |
 | `schemaGetEventChatAccessCallablePayloadSchema` | GetEventChatAccessCallablePayload | `callables/get_event_chat_access_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_chat_access_callable_payload.g.dart` |
@@ -1549,6 +1553,7 @@ Do not edit it by hand.
 | SendEventChatMessageCallableRequest | SendEventChatMessageCallablePayload | `callables/send_event_chat_message_payload.schema.json` | `lib/core/schema_contracts/generated/callables/send_event_chat_message_callable_request.g.dart` |
 | SetEventChatReactionCallableRequest | SetEventChatReactionCallablePayload | `callables/set_event_chat_reaction_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_chat_reaction_callable_request.g.dart` |
 | SetEventChatTypingCallableRequest | SetEventChatTypingCallablePayload | `callables/set_event_chat_typing_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_chat_typing_callable_request.g.dart` |
+| ListEventChatsCallableRequest | ListEventChatsCallablePayload | `callables/list_event_chats_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_chats_callable_request.g.dart` |
 | ListEventChatMessagesCallableRequest | ListEventChatMessagesCallablePayload | `callables/list_event_chat_messages_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_chat_messages_callable_request.g.dart` |
 | GetEventChatAccessCallableRequest | GetEventChatAccessCallablePayload | `callables/get_event_chat_access_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_chat_access_callable_request.g.dart` |
 | UpdateEventChatAccessCallableRequest | UpdateEventChatAccessCallablePayload | `callables/update_event_chat_access_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_event_chat_access_callable_request.g.dart` |

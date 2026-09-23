@@ -15,6 +15,7 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
@@ -6035,7 +6036,9 @@ List<Object> get _matchesPublicProfileOverrides {
 Widget _matchesListCapture({
   String searchQuery = '',
   AppRole role = AppRole.consumer,
-  Widget child = const ChatsListScreen(),
+  Widget child = const ChatsListScreen(
+    initialScope: ConsumerChatScope.messages,
+  ),
 }) {
   return _AppRoleCapture(
     role: role,
@@ -15604,7 +15607,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
           profile.uid,
         ).overrideWith((ref) => Stream.value(profile)),
     ],
-    builder: (context) => const ChatsListScreen(),
+    builder: (context) =>
+        const ChatsListScreen(initialScope: ConsumerChatScope.messages),
   ),
   ScreenCaptureEntry(
     id: 'host_customer_add',

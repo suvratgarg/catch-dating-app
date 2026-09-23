@@ -1069,6 +1069,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/setEventChatTypingCallableResponse.ts",
   },
   {
+    name: "ListEventChatsCallablePayload",
+    source: "callables/list_event_chats_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatsCallablePayload.ts",
+  },
+  {
+    name: "ListEventChatsCallableResponse",
+    source: "callable_responses/list_event_chats_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatsCallableResponse.ts",
+  },
+  {
     name: "ListEventChatMessagesCallablePayload",
     source: "callables/list_event_chat_messages_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listEventChatMessagesCallablePayload.ts",

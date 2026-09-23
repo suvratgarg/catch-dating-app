@@ -20637,4 +20637,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String eventChatTyping({required String names}) {
     return '$names typing…';
   }
+
+  @override
+  String get eventChatsTab => 'Events';
+
+  @override
+  String get directMessagesTab => 'Direct messages';
+
+  @override
+  String get eventChatsEmptyTitle => 'Your event conversations';
+
+  @override
+  String get eventChatsEmptyBody =>
+      'Event chats appear here when you are on the attendee list. You can review your profile and choose to join once the host opens the chat.';
+
+  @override
+  String get eventChatsWaiting => 'Waiting for the host to open the chat';
+
+  @override
+  String get eventChatsReviewProfile => 'Review your profile to join';
+
+  @override
+  String get eventChatsJoined => 'You joined this conversation';
+
+  @override
+  String get eventChatsReady => 'Ready to join';
+
+  @override
+  String get eventChatsLoadMore => 'Check more events';
 }

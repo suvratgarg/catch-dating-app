@@ -206,6 +206,8 @@ import {
   setEventChatReactionCallableResponseSchema,
   setEventChatTypingCallablePayloadSchema,
   setEventChatTypingCallableResponseSchema,
+  listEventChatsCallablePayloadSchema,
+  listEventChatsCallableResponseSchema,
   listEventChatMessagesCallablePayloadSchema,
   listEventChatMessagesCallableResponseSchema,
   getEventChatAccessCallablePayloadSchema,
@@ -968,6 +970,8 @@ export const validateSetEventChatReactionCallablePayload = ajv.compile(setEventC
 export const validateSetEventChatReactionCallableResponse = ajv.compile(setEventChatReactionCallableResponseSchema);
 export const validateSetEventChatTypingCallablePayload = ajv.compile(setEventChatTypingCallablePayloadSchema);
 export const validateSetEventChatTypingCallableResponse = ajv.compile(setEventChatTypingCallableResponseSchema);
+export const validateListEventChatsCallablePayload = ajv.compile(listEventChatsCallablePayloadSchema);
+export const validateListEventChatsCallableResponse = ajv.compile(listEventChatsCallableResponseSchema);
 export const validateListEventChatMessagesCallablePayload = ajv.compile(listEventChatMessagesCallablePayloadSchema);
 export const validateListEventChatMessagesCallableResponse = ajv.compile(listEventChatMessagesCallableResponseSchema);
 export const validateGetEventChatAccessCallablePayload = ajv.compile(getEventChatAccessCallablePayloadSchema);

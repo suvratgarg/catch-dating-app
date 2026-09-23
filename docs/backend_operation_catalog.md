@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.79.0
+version: 1.80.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -165,6 +165,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
+| `listEventChats` | Callable | Consumer event conversations | Bounded candidate directory over owned memberships, participations and linked attendees | UID-bound continuation; current admission per event; deleted-account fences; access metadata only. |
 | `getEventChatAccess` / `updateEventChatAccess` | Callable | Event chat access | Room availability, explicit participant memberships and replay receipts | Current canonical organizer/admission checks; claimed identity and phone verification for join; revision fences; no automatic admission, messages or card disclosure. |
 | `sendEventChatMessage` / `listEventChatMessages` | Callable | Event conversations | Ordered, idempotent messages with same-room reply pointers and bounded private projections | Rechecks current joined admission, claim, blocks and deletion; no copied quotes or private profile data; moderation before writes. |
 | `setEventChatReaction` / `setEventChatTyping` | Callable | Event conversations | Per-person reaction changes and expiring typing hints | Revision fences, payload-bound reaction retries, anonymous aggregates; typing contains no draft text and can be withdrawn after access revocation. |

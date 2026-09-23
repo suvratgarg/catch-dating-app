@@ -32937,6 +32937,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{names} typing…'**
   String eventChatTyping({required String names});
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get eventChatsTab;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct messages'**
+  String get directMessagesTab;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event conversations'**
+  String get eventChatsEmptyTitle;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event chats appear here when you are on the attendee list. You can review your profile and choose to join once the host opens the chat.'**
+  String get eventChatsEmptyBody;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the host to open the chat'**
+  String get eventChatsWaiting;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your profile to join'**
+  String get eventChatsReviewProfile;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You joined this conversation'**
+  String get eventChatsJoined;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to join'**
+  String get eventChatsReady;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check more events'**
+  String get eventChatsLoadMore;
 }
 
 class _AppLocalizationsDelegate

@@ -208,6 +208,8 @@ export {validateSetEventChatReactionCallablePayload} from "./validators/setEvent
 export {validateSetEventChatReactionCallableResponse} from "./validators/setEventChatReactionOutput";
 export {validateSetEventChatTypingCallablePayload} from "./validators/setEventChatTypingInput";
 export {validateSetEventChatTypingCallableResponse} from "./validators/setEventChatTypingOutput";
+export {validateListEventChatsCallablePayload} from "./validators/listEventChatsInput";
+export {validateListEventChatsCallableResponse} from "./validators/listEventChatsOutput";
 export {validateListEventChatMessagesCallablePayload} from "./validators/listEventChatMessagesInput";
 export {validateListEventChatMessagesCallableResponse} from "./validators/listEventChatMessagesOutput";
 export {validateGetEventChatAccessCallablePayload} from "./validators/getEventChatAccessInput";

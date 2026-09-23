@@ -208,6 +208,8 @@ export {setEventChatReactionCallablePayloadSchema} from "./schemas/setEventChatR
 export {setEventChatReactionCallableResponseSchema} from "./schemas/setEventChatReactionOutput";
 export {setEventChatTypingCallablePayloadSchema} from "./schemas/setEventChatTypingInput";
 export {setEventChatTypingCallableResponseSchema} from "./schemas/setEventChatTypingOutput";
+export {listEventChatsCallablePayloadSchema} from "./schemas/listEventChatsInput";
+export {listEventChatsCallableResponseSchema} from "./schemas/listEventChatsOutput";
 export {listEventChatMessagesCallablePayloadSchema} from "./schemas/listEventChatMessagesInput";
 export {listEventChatMessagesCallableResponseSchema} from "./schemas/listEventChatMessagesOutput";
 export {getEventChatAccessCallablePayloadSchema} from "./schemas/getEventChatAccessInput";

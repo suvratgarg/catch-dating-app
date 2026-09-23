@@ -12684,6 +12684,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Event chat',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'EventChatDirectoryRowList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty directory with more candidates',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatDirectoryEmptyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatDirectorySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Admitted event directory',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatDirectoryPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventChatEntrySection',
             useCases: [
               _widgetbook.WidgetbookUseCase(

@@ -57,6 +57,7 @@ void main() {
       '/you/forms',
       '/you/forms/response-1',
       '/events/event-1/chat',
+      '/chats',
     ]) {
       test('$path requires resolved auth but not a loaded profile', () {
         for (final profile in <AsyncValue<UserProfile?>>[
@@ -110,7 +111,8 @@ void main() {
         '/you/forms/response-1/other',
         '/events/event-1/chat/other',
         '/payment-history',
-        '/chats',
+        '/chats/match-1',
+        '/chats/unknown/other',
       ]) {
         expect(
           _redirect(
@@ -665,10 +667,10 @@ void main() {
         _redirect(
           uidAsync: const AsyncData(_testUid),
           userProfileAsync: const AsyncData(null),
-          location: '/chats',
-          matchedLocation: Routes.matchesListScreen.path,
+          location: '/chats/match-1',
+          matchedLocation: '/chats/match-1',
         ),
-        '/onboarding?from=%2Fchats',
+        '/onboarding?from=%2Fchats%2Fmatch-1',
       );
     });
 

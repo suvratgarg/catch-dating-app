@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.69.0
+version: 1.70.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1940,6 +1940,15 @@ the consumer event detail requests only room access metadata for its entry row.
 The screen uses the canonical route top bar and chat composer. Reply previews
 resolve against the current message snapshot, and opening reactions dismisses
 the keyboard and replaces the composer until the selection closes.
+
+Consumer `/chats` opens an Events directory independently of dating-profile
+setup and dating-match providers. Direct messages remain a separate tab, and
+individual direct-message routes retain their profile prerequisites. Host inbox
+composition is unchanged. `EventChatDirectoryController` deduplicates candidate
+pages by event ID and revalidates previously loaded windows on refresh or load
+more; errors and account changes discard old entries. The directory refreshes
+on returning from a room, resuming the app while visible, or explicit refresh.
+Empty filtered pages retain a continuation action until all sources are scanned.
 
 ## Controller And View-Model Contract
 

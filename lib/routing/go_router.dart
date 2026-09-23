@@ -1227,6 +1227,7 @@ String? appRedirect({
 
 bool _isOwnAccountRoute(String path) =>
     path == Routes.profileScreen.path ||
+    path == Routes.matchesListScreen.path ||
     path == Routes.settingsScreen.path ||
     path == Routes.messagingPermissionsScreen.path ||
     path == Routes.formProfilesScreen.path ||

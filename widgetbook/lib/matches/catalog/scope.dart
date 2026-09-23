@@ -5,6 +5,7 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -203,7 +204,8 @@ class _MatchesListRouter extends StatelessWidget {
         GoRoute(
           path: Routes.matchesListScreen.path,
           name: Routes.matchesListScreen.name,
-          builder: (_, _) => const ChatsListScreen(),
+          builder: (_, _) =>
+              const ChatsListScreen(initialScope: ConsumerChatScope.messages),
           routes: [
             GoRoute(
               path: ':matchId',
@@ -218,7 +220,8 @@ class _MatchesListRouter extends StatelessWidget {
         GoRoute(
           path: Routes.hostInboxScreen.path,
           name: Routes.hostInboxScreen.name,
-          builder: (_, _) => const ChatsListScreen(),
+          builder: (_, _) =>
+              const ChatsListScreen(initialScope: ConsumerChatScope.messages),
           routes: [
             GoRoute(
               path: ':matchId',

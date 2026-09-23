@@ -1,5 +1,8 @@
 import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
+import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_section.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_entry_section.dart';
@@ -186,4 +189,54 @@ class _Controller extends EventChatController {
     EventChatReaction? reaction, {
     required String reviewedUid,
   }) async => false;
+}
+
+@widgetbook.UseCase(
+  name: 'Admitted event directory',
+  type: EventChatDirectorySection,
+  path: '[P3 utility surfaces]/Event chat',
+)
+Widget eventChatDirectoryPreview(BuildContext context) =>
+    WidgetbookUtilityDeviceFrame(
+      child: WidgetbookFixtureScope(
+        overrides: [
+          eventChatDirectoryControllerProvider.overrideWith(_Directory.new),
+        ],
+        child: const CustomScrollView(slivers: [EventChatDirectorySection()]),
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Empty directory with more candidates',
+  type: EventChatDirectoryRowList,
+  path: '[P3 utility surfaces]/Event chat',
+)
+Widget eventChatDirectoryEmptyPreview(BuildContext context) =>
+    WidgetbookUtilityDeviceFrame(
+      child: CustomScrollView(
+        slivers: [
+          EventChatDirectoryRowList(
+            page: EventChatDirectoryPage(
+              items: const [],
+              nextCursor: const {
+                'source': 'attendees',
+                'after': null,
+                'accountUid': 'preview-person',
+              },
+            ),
+            onLoadMore: () {},
+            onSelected: (_) {},
+          ),
+        ],
+      ),
+    );
+
+class _Directory extends EventChatDirectoryController {
+  @override
+  Future<EventChatDirectoryPage> build() async =>
+      EventChatDirectoryPage(items: [_state().access], nextCursor: null);
+  @override
+  Future<void> refresh() async {}
+  @override
+  Future<void> loadMore() async {}
 }

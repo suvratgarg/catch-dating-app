@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.140.0
+version: 1.141.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2591,6 +2591,15 @@ records the participant's explicit join/leave choice and versioned room terms.
 `getEventChatAccess` and `updateEventChatAccess` own these records; all direct
 client access is denied. A room does not create event admission, a dating match,
 a public profile, or an organizer-card sharing grant.
+
+`listEventChats` discovers the caller's candidates from memberships, native
+participations and linked operational attendees in that order. Each request
+scans at most ten candidate records plus lookahead; a UID-bound cursor advances
+across sources, including empty pages after revoked candidates are filtered.
+Every returned event is active and passes the same current admission check.
+A membership row discovers an ID only and never preserves revoked access.
+Deleted-account checks cover even empty scans. Directory responses contain room
+access metadata, not messages, answers, participant profiles or private cards.
 
 Every access reads current organizer authority and current admission in the
 same transaction. Guests need a `signedUp`/`attended` participation or exactly

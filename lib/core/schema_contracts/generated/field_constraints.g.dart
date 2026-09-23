@@ -66783,6 +66783,159 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const listEventChatsCallablePayloadCursorAccountUid = CatchContractFieldConstraints(
+    path: 'listEventChatsCallablePayload.cursor.accountUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatsCallablePayloadCursorAfter = CatchContractFieldConstraints(
+    path: 'listEventChatsCallablePayload.cursor.after',
+    maxLength: 1500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const listEventChatsCallablePayloadCursorSource = CatchContractFieldConstraints(
+    path: 'listEventChatsCallablePayload.cursor.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['memberships', 'participations', 'attendees'],
+  );
+
+  static const listEventChatsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listEventChatsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const listEventChatsCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const listEventChatsCallableResponseItemsItemsCanJoin = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.canJoin',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsCanManage = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.canManage',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsCanReadMessages = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.canReadMessages',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsEventId = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsMembershipRevision = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.membership.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatsCallableResponseItemsItemsMembershipStatus = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.membership.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notJoined', 'joined', 'left'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsProfileClaimRequired = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.profileClaimRequired',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsRole = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'attendee'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsRoomRevision = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.room.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatsCallableResponseItemsItemsRoomStatus = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.room.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notCreated', 'open', 'closed'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsTermsVersion = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event-chat-v1'],
+  );
+
+  static const listEventChatsCallableResponseItemsItemsTitle = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.items.items.title',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatsCallableResponseNextCursorAccountUid = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.nextCursor.accountUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatsCallableResponseNextCursorAfter = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.nextCursor.after',
+    maxLength: 1500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const listEventChatsCallableResponseNextCursorSource = CatchContractFieldConstraints(
+    path: 'listEventChatsCallableResponse.nextCursor.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['memberships', 'participations', 'attendees'],
+  );
+
   static const listEventRcsPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'listEventRcsPreferencesCallablePayload.attendeeId',
     required: true,
@@ -113952,6 +114105,27 @@ abstract final class CatchContractConstraints {
     'listEventChatMessagesCallableResponse.typing.items.expiresAtMillis': listEventChatMessagesCallableResponseTypingItemsExpiresAtMillis,
     'listEventChatMessagesCallableResponse.typing.items.uid': listEventChatMessagesCallableResponseTypingItemsUid,
     'listEventChatMessagesCallableResponse.typingHasMore': listEventChatMessagesCallableResponseTypingHasMore,
+    'listEventChatsCallablePayload.cursor.accountUid': listEventChatsCallablePayloadCursorAccountUid,
+    'listEventChatsCallablePayload.cursor.after': listEventChatsCallablePayloadCursorAfter,
+    'listEventChatsCallablePayload.cursor.source': listEventChatsCallablePayloadCursorSource,
+    'listEventChatsCallablePayload.limit': listEventChatsCallablePayloadLimit,
+    'listEventChatsCallableResponse.items': listEventChatsCallableResponseItems,
+    'listEventChatsCallableResponse.items.items.canJoin': listEventChatsCallableResponseItemsItemsCanJoin,
+    'listEventChatsCallableResponse.items.items.canManage': listEventChatsCallableResponseItemsItemsCanManage,
+    'listEventChatsCallableResponse.items.items.canReadMessages': listEventChatsCallableResponseItemsItemsCanReadMessages,
+    'listEventChatsCallableResponse.items.items.eventId': listEventChatsCallableResponseItemsItemsEventId,
+    'listEventChatsCallableResponse.items.items.membership.revision': listEventChatsCallableResponseItemsItemsMembershipRevision,
+    'listEventChatsCallableResponse.items.items.membership.status': listEventChatsCallableResponseItemsItemsMembershipStatus,
+    'listEventChatsCallableResponse.items.items.organizerId': listEventChatsCallableResponseItemsItemsOrganizerId,
+    'listEventChatsCallableResponse.items.items.profileClaimRequired': listEventChatsCallableResponseItemsItemsProfileClaimRequired,
+    'listEventChatsCallableResponse.items.items.role': listEventChatsCallableResponseItemsItemsRole,
+    'listEventChatsCallableResponse.items.items.room.revision': listEventChatsCallableResponseItemsItemsRoomRevision,
+    'listEventChatsCallableResponse.items.items.room.status': listEventChatsCallableResponseItemsItemsRoomStatus,
+    'listEventChatsCallableResponse.items.items.termsVersion': listEventChatsCallableResponseItemsItemsTermsVersion,
+    'listEventChatsCallableResponse.items.items.title': listEventChatsCallableResponseItemsItemsTitle,
+    'listEventChatsCallableResponse.nextCursor.accountUid': listEventChatsCallableResponseNextCursorAccountUid,
+    'listEventChatsCallableResponse.nextCursor.after': listEventChatsCallableResponseNextCursorAfter,
+    'listEventChatsCallableResponse.nextCursor.source': listEventChatsCallableResponseNextCursorSource,
     'listEventRcsPreferencesCallablePayload.attendeeId': listEventRcsPreferencesCallablePayloadAttendeeId,
     'listEventRcsPreferencesCallablePayload.cursor': listEventRcsPreferencesCallablePayloadCursor,
     'listEventRcsPreferencesCallablePayload.eventId': listEventRcsPreferencesCallablePayloadEventId,
