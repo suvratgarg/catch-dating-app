@@ -1,7 +1,7 @@
 {
   "$schema": "./public_surface_behavior.schema.json",
   "version": 1,
-  "updated": "2026-07-24",
+  "updated": "2026-09-23",
   "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
   "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the design-parity state matrix; event eligibility remains owned by the viewer availability resolver.",
   "inventorySources": {
@@ -23,7 +23,8 @@
         "app.privateConsumerRoots",
         "app.eventSuccessCompanion",
         "app.socialConsumerRoutes",
-        "app.onboarding"
+        "app.onboarding",
+        "app.ownAccountRoutes"
       ],
       "evidence": {
         "path": "docs/design_parity/state_matrix.json",
@@ -4249,11 +4250,9 @@
       "id": "app.privateConsumerRoots",
       "platform": "app",
       "coverageKind": "routeGuard",
-      "coverageRationale": "Every consumer tab root other than Explore, plus adjacent viewer-owned history, remains absent from the guest shell and redirects direct guest links to sign-in.",
+      "coverageRationale": "Private consumer dashboard and adjacent history require authentication and booking-ready identity. Own-account profile, consent and submitted-form management are covered separately.",
       "routeIds": [
         "dashboardScreen",
-        "matchesListScreen",
-        "profileScreen",
         "calendarScreen",
         "reviewsHistoryScreen",
         "calendarEventDetailScreen",
@@ -4263,15 +4262,12 @@
         "swipeHubScreen",
         "chatScreen",
         "publicProfileScreen",
-        "settingsScreen",
         "launchAccessScreen",
         "paymentHistoryScreen",
         "paymentConfirmationScreen"
       ],
       "screenIds": [
         "screen.dashboard.home",
-        "screen.matches.list",
-        "screen.profile.self",
         "screen.calendar.home",
         "screen.reviews.history"
       ],
@@ -4383,6 +4379,141 @@
             "expect(find.text('Chats'), findsNothing)",
             "expect(find.text('Profile'), findsNothing)",
             "authenticated app shell loads Chats and Profile branches"
+          ]
+        }
+      ],
+      "excludedDecisionValues": {
+        "viewer.session": {},
+        "viewer.profileReadiness": {}
+      }
+    },
+    {
+      "id": "app.ownAccountRoutes",
+      "platform": "app",
+      "coverageKind": "routeGuard",
+      "coverageRationale": "Own profile, submitted forms, WhatsApp permissions and event chat require resolved authentication but remain reachable before booking or dating profile setup. Each destination retains its own data loading and authorization checks.",
+      "routeIds": [
+        "matchesListScreen",
+        "profileScreen",
+        "settingsScreen",
+        "formProfilesScreen",
+        "formProfileReviewScreen",
+        "messagingPermissionsScreen",
+        "eventChatScreen",
+        "eventProfileSharingScreen",
+        "eventChatParticipantsScreen",
+        "eventParticipantProfileScreen"
+      ],
+      "screenIds": [
+        "screen.matches.list",
+        "screen.profile.self"
+      ],
+      "decisionDimensions": [
+        "viewer.session",
+        "viewer.profileReadiness"
+      ],
+      "invariantDimensions": [
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "compositionIds": [
+        "designParity.appAsyncStates"
+      ],
+      "elements": [
+        {
+          "id": "route.access",
+          "kind": "routeGuard",
+          "description": "Resolved authentication gate independent of profile readiness; data reads and mutations retain their own account and admission checks."
+        }
+      ],
+      "configurations": [
+        {
+          "id": "app.ownAccountRoutes.resolving",
+          "values": {
+            "viewer.session": "resolving",
+            "viewer.profileReadiness": "notApplicable"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "routeLoadingRedirect"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "app.publicSurfaceBehavior"
+          ]
+        },
+        {
+          "id": "app.ownAccountRoutes.guest",
+          "values": {
+            "viewer.session": "guest",
+            "viewer.profileReadiness": "notApplicable"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "routeSignInRedirect"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "app.publicSurfaceBehavior"
+          ]
+        },
+        {
+          "id": "app.ownAccountRoutes.incomplete",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "incomplete"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "routeAllowed"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "app.publicSurfaceBehavior"
+          ]
+        },
+        {
+          "id": "app.ownAccountRoutes.bookingReady",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "bookingReady"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "routeAllowed"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "app.publicSurfaceBehavior"
+          ]
+        },
+        {
+          "id": "app.ownAccountRoutes.socialReady",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "socialReady"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "routeAllowed"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "app.publicSurfaceBehavior"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/routing/router_redirect_test.dart",
+          "contains": [
+            "own account access before profile setup",
+            "does not waive adjacent private or booking routes"
           ]
         }
       ],
@@ -6562,7 +6693,8 @@
         "app.privateConsumerRoots",
         "app.eventSuccessCompanion",
         "app.socialConsumerRoutes",
-        "app.onboarding"
+        "app.onboarding",
+        "app.ownAccountRoutes"
       ],
       "configurationIds": [
         "app.explore.authResolving",
@@ -6650,7 +6782,12 @@
         "app.onboarding.guest",
         "app.onboarding.incomplete",
         "app.onboarding.bookingReady",
-        "app.onboarding.socialReady"
+        "app.onboarding.socialReady",
+        "app.ownAccountRoutes.resolving",
+        "app.ownAccountRoutes.guest",
+        "app.ownAccountRoutes.incomplete",
+        "app.ownAccountRoutes.bookingReady",
+        "app.ownAccountRoutes.socialReady"
       ],
       "verificationMode": "dynamicMatrixEnumeration"
     },

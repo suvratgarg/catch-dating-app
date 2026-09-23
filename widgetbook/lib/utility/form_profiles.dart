@@ -22,7 +22,7 @@ Widget formProfilesScreenPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Account-owned form directory',
-  type: FormProfilesContent,
+  type: FormProfilesAsyncBoundary,
   path: '[P3 utility surfaces]/Form profiles',
 )
 Widget formProfilesContentPreview(BuildContext context) =>
@@ -33,7 +33,7 @@ Widget formProfilesContentPreview(BuildContext context) =>
           topBarBuilder: (_, _) =>
               const CatchTopBar.route(title: 'Forms & cards'),
           body: const CatchRouteBody.standardConstrained(
-            child: FormProfilesContent(),
+            child: FormProfilesAsyncBoundary(),
           ),
         ),
       ),
@@ -41,7 +41,7 @@ Widget formProfilesContentPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Private cards grouped by organizer',
-  type: FormProfilesList,
+  type: FormProfilesSectionList,
   path: '[P3 utility surfaces]/Form profiles',
 )
 Widget formProfilesListPreview(BuildContext context) =>
@@ -50,7 +50,7 @@ Widget formProfilesListPreview(BuildContext context) =>
         topBarBuilder: (_, _) =>
             const CatchTopBar.route(title: 'Forms & cards'),
         body: CatchRouteBody.standardConstrained(
-          child: FormProfilesList(
+          child: FormProfilesSectionList(
             state: _state(),
             onOpen: (_) {},
             onLoadMore: () {},

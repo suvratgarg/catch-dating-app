@@ -58,7 +58,7 @@ void main() {
       await tester.runAsync(() async {
         await precacheImage(
           MemoryImage(photo.bytes),
-          tester.element(find.byType(FormProfilePhotoSelection)),
+          tester.element(find.byType(FormProfilePhotoSelectionField)),
         );
       });
       await pumpFeatureUi(tester);
@@ -116,7 +116,7 @@ Future<void> _pump(
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: SingleChildScrollView(
-        child: FormProfilePhotoSelection(
+        child: FormProfilePhotoSelectionField(
           photo: photo,
           label: 'Your photo',
           selected: false,

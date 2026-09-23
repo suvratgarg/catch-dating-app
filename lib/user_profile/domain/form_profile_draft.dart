@@ -133,22 +133,24 @@ class FormProfileDraft {
                 : null)
           : int.tryParse('$value');
     }
-    if (key == 'city' && value is String) {
-      final candidate = value.trim().toLowerCase();
-      for (final city in defaultCityOptions) {
-        if ([
-          city.effectiveMarketId,
-          city.label,
-          city.name,
-          ...city.aliases,
-        ].any((v) => v.toLowerCase() == candidate)) {
-          return city.effectiveMarketId;
-        }
-      }
-      return RegExp(r'^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(candidate)
-          ? candidate
-          : null;
-    }
+    if (key == 'city' && value is String) return _normalizeCity(value);
     return value is String ? value.trim() : null;
+  }
+
+  static String? _normalizeCity(String value) {
+    final candidate = value.trim().toLowerCase();
+    for (final city in defaultCityOptions) {
+      if ([
+        city.effectiveMarketId,
+        city.label,
+        city.name,
+        ...city.aliases,
+      ].any((v) => v.toLowerCase() == candidate)) {
+        return city.effectiveMarketId;
+      }
+    }
+    return RegExp(r'^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(candidate)
+        ? candidate
+        : null;
   }
 }

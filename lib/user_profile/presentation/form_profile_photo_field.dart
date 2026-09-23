@@ -37,7 +37,7 @@ class FormProfilePhotoField extends ConsumerWidget {
       retainDataOn: const {},
       errorContext: AppErrorContext.profile,
       onRetry: () => ref.invalidate(provider),
-      builder: (context, photo) => FormProfilePhotoSelection(
+      builder: (context, photo) => FormProfilePhotoSelectionField(
         key: ObjectKey(photo),
         photo: photo,
         label: field.label,
@@ -51,8 +51,8 @@ class FormProfilePhotoField extends ConsumerWidget {
 
 /// Keep the private image in memory only and evict its decoder entry on leave.
 /// The selection remains disabled until the actual image has rendered.
-class FormProfilePhotoSelection extends StatefulWidget {
-  const FormProfilePhotoSelection({
+class FormProfilePhotoSelectionField extends StatefulWidget {
+  const FormProfilePhotoSelectionField({
     super.key,
     required this.photo,
     required this.label,
@@ -66,11 +66,12 @@ class FormProfilePhotoSelection extends StatefulWidget {
   final ValueChanged<bool>? onChanged;
   final VoidCallback onRetry;
   @override
-  State<FormProfilePhotoSelection> createState() =>
-      _FormProfilePhotoSelectionState();
+  State<FormProfilePhotoSelectionField> createState() =>
+      _FormProfilePhotoSelectionFieldState();
 }
 
-class _FormProfilePhotoSelectionState extends State<FormProfilePhotoSelection> {
+class _FormProfilePhotoSelectionFieldState
+    extends State<FormProfilePhotoSelectionField> {
   late MemoryImage _image;
   bool _decoded = false;
   bool _failed = false;
@@ -82,7 +83,7 @@ class _FormProfilePhotoSelectionState extends State<FormProfilePhotoSelection> {
   }
 
   @override
-  void didUpdateWidget(FormProfilePhotoSelection oldWidget) {
+  void didUpdateWidget(FormProfilePhotoSelectionField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.photo, widget.photo)) {
       unawaited(_image.evict());

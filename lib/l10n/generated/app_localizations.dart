@@ -32860,13 +32860,13 @@ abstract class AppLocalizations {
   /// **'Refresh chat'**
   String get eventChatRefresh;
 
-  /// No description provided for @eventChatReplyingTo.
+  /// Name of the participant whose message is being replied to.
   ///
   /// In en, this message translates to:
   /// **'Replying to {name}'**
   String eventChatReplyingTo({required String name});
 
-  /// No description provided for @eventChatTyping.
+  /// Names of participants currently typing.
   ///
   /// In en, this message translates to:
   /// **'{names} typing…'**

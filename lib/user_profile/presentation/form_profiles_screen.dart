@@ -25,15 +25,15 @@ class FormProfilesScreen extends StatelessWidget {
           : CatchTopBarEmphasis.plain,
     ),
     body: const CatchRouteBody.standardConstrained(
-      child: FormProfilesContent(),
+      child: FormProfilesAsyncBoundary(),
     ),
   );
 }
 
 /// The authenticated form directory can render inside the account pager before
 /// the applicant has a Consumer profile. It owns its independent async state.
-class FormProfilesContent extends ConsumerWidget {
-  const FormProfilesContent({super.key});
+class FormProfilesAsyncBoundary extends ConsumerWidget {
+  const FormProfilesAsyncBoundary({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
@@ -42,7 +42,7 @@ class FormProfilesContent extends ConsumerWidget {
         retainDataOn: const {},
         errorContext: AppErrorContext.profile,
         onRetry: () => ref.invalidate(formProfilesControllerProvider),
-        builder: (context, state) => FormProfilesList(
+        builder: (context, state) => FormProfilesSectionList(
           state: state,
           onOpen: (id) => context.pushNamed(
             Routes.formProfileReviewScreen.name,
@@ -54,8 +54,8 @@ class FormProfilesContent extends ConsumerWidget {
       );
 }
 
-class FormProfilesList extends StatelessWidget {
-  const FormProfilesList({
+class FormProfilesSectionList extends StatelessWidget {
+  const FormProfilesSectionList({
     super.key,
     required this.state,
     required this.onOpen,

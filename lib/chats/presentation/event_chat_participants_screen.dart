@@ -89,7 +89,7 @@ class _EventChatParticipantsScreenState
                 value: value,
                 retainDataOn: const {},
                 onRetry: () => unawaited(ref.read(provider.notifier).refresh()),
-                builder: (context, state) => EventChatParticipantsList(
+                builder: (context, state) => EventChatParticipantsRowList(
                   state: state,
                   onOpen: (uid) => context.pushNamed(
                     Routes.eventParticipantProfileScreen.name,
@@ -107,8 +107,8 @@ class _EventChatParticipantsScreenState
   }
 }
 
-class EventChatParticipantsList extends StatelessWidget {
-  const EventChatParticipantsList({
+class EventChatParticipantsRowList extends StatelessWidget {
+  const EventChatParticipantsRowList({
     super.key,
     required this.state,
     required this.onOpen,

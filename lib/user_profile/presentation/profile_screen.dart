@@ -254,7 +254,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 const _formProfilesPage = CatchRootScreenPageSpec.scroll(
   page: CatchRootScreenPageScrollView.standard(
     scrollKey: PageStorageKey('profile-forms-tab-scroll'),
-    children: [SliverToBoxAdapter(child: FormProfilesContent())],
+    children: [SliverToBoxAdapter(child: FormProfilesAsyncBoundary())],
   ),
 );
 

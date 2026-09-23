@@ -27915,60 +27915,290 @@
   "eventChatYou": "You",
   "eventChatRefresh": "Refresh chat",
   "eventChatReplyingTo": "Replying to {name}",
-  "@eventChatReplyingTo": {"placeholders": {"name": {"type": "String"}}},
+  "@eventChatReplyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Name of the participant whose message is being replied to.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatTyping": "{names} typing…",
-  "@eventChatTyping": {"placeholders": {"names": {"type": "String"}}},
-  "@eventChatTitle": {"description": "Event conversation interface copy."},
-  "@eventChatEntryBody": {"description": "Event conversation interface copy."},
-  "@eventChatOpen": {"description": "Event conversation interface copy."},
-  "@eventChatClose": {"description": "Event conversation interface copy."},
-  "@eventChatLeave": {"description": "Event conversation interface copy."},
-  "@eventChatJoin": {"description": "Event conversation interface copy."},
-  "@eventChatNotOpen": {"description": "Event conversation interface copy."},
-  "@eventChatHostSetup": {"description": "Event conversation interface copy."},
-  "@eventChatGuestWaiting": {"description": "Event conversation interface copy."},
-  "@eventChatJoinTitle": {"description": "Event conversation interface copy."},
-  "@eventChatJoinDisclosure": {"description": "Event conversation interface copy."},
-  "@eventChatProfileRequired": {"description": "Event conversation interface copy."},
-  "@eventChatProfileHelp": {"description": "Event conversation interface copy."},
-  "@eventChatReviewProfile": {"description": "Event conversation interface copy."},
-  "@eventChatProfileHostHelp": {"description": "Event conversation interface copy."},
-  "@eventChatEmptyTitle": {"description": "Event conversation interface copy."},
-  "@eventChatEmptyBody": {"description": "Event conversation interface copy."},
-  "@eventChatEarlier": {"description": "Event conversation interface copy."},
-  "@eventChatMessageActions": {"description": "Event conversation interface copy."},
-  "@eventChatReply": {"description": "Event conversation interface copy."},
-  "@eventChatReact": {"description": "Event conversation interface copy."},
-  "@eventChatClearReply": {"description": "Event conversation interface copy."},
-  "@eventChatUnavailable": {"description": "Event conversation interface copy."},
-  "@eventChatReactionLike": {"description": "Event conversation interface copy."},
-  "@eventChatReactionLove": {"description": "Event conversation interface copy."},
-  "@eventChatReactionLaugh": {"description": "Event conversation interface copy."},
-  "@eventChatReactionWow": {"description": "Event conversation interface copy."},
-  "@eventChatReactionSad": {"description": "Event conversation interface copy."},
-  "@eventChatReactionThanks": {"description": "Event conversation interface copy."},
-  "@eventChatReactionsTitle": {"description": "Event conversation interface copy."},
-  "@eventChatCloseReactions": {"description": "Event conversation interface copy."},
-  "@eventChatYou": {"description": "Event conversation interface copy."},
-  "@eventChatRefresh": {"description": "Event conversation interface copy."},
+  "@eventChatTyping": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    },
+    "description": "Names of participants currently typing.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEntryBody": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatOpen": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatClose": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatLeave": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatJoin": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatNotOpen": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatHostSetup": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatGuestWaiting": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatJoinTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatJoinDisclosure": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatProfileRequired": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatProfileHelp": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReviewProfile": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatProfileHostHelp": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEmptyTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEmptyBody": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEarlier": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatMessageActions": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReply": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReact": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatClearReply": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatUnavailable": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionLike": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionLove": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionLaugh": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionWow": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionSad": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionThanks": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionsTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatCloseReactions": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatYou": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatRefresh": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsTab": "Events",
-  "@eventChatsTab": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsTab": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "directMessagesTab": "Direct messages",
-  "@directMessagesTab": {"description": "Consumer event conversation directory copy."},
+  "@directMessagesTab": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsEmptyTitle": "Your event conversations",
-  "@eventChatsEmptyTitle": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsEmptyTitle": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsEmptyBody": "Event chats appear here when you are on the attendee list. You can review your profile and choose to join once the host opens the chat.",
-  "@eventChatsEmptyBody": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsEmptyBody": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsWaiting": "Waiting for the host to open the chat",
-  "@eventChatsWaiting": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsWaiting": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsReviewProfile": "Review your profile to join",
-  "@eventChatsReviewProfile": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsReviewProfile": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsJoined": "You joined this conversation",
-  "@eventChatsJoined": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsJoined": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsReady": "Ready to join",
-  "@eventChatsReady": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsReady": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "eventChatsLoadMore": "Check more events",
-  "@eventChatsLoadMore": {"description": "Consumer event conversation directory copy."},
+  "@eventChatsLoadMore": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
   "hostResponseSaveReviewNote": "Save review note",
   "@hostResponseSaveReviewNote": {"description": "Explicit save for an application review note without changing its status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostResponseStartReview": "Start application review",
@@ -27976,189 +28206,189 @@
   "eventProfileTitle": "Event profile",
   "@eventProfileTitle": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileMine": "My event profile",
   "@eventProfileMine": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileDisclosure": "Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.",
   "@eventProfileDisclosure": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileCardDisclosure": "Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.",
   "@eventProfileCardDisclosure": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileCore": "Catch profile details",
   "@eventProfileCore": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileCard": "Organizer card",
   "@eventProfileCard": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfilePhoto": "Profile photo",
   "@eventProfilePhoto": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileNoPhoto": "No photo shared",
   "@eventProfileNoPhoto": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileNoCard": "No card selected",
   "@eventProfileNoCard": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileChooseCard": "Choose a private card",
   "@eventProfileChooseCard": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileNoCards": "No claimed cards from this organizer are available. You can review your submitted forms from your account.",
   "@eventProfileNoCards": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileMoreCards": "Load more cards",
   "@eventProfileMoreCards": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileSave": "Save sharing choices",
   "@eventProfileSave": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileStop": "Stop sharing extra details",
   "@eventProfileStop": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileSaved": "Event profile updated",
   "@eventProfileSaved": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileCannotShare": "To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.",
   "@eventProfileCannotShare": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileEmpty": "Only their name is shared",
   "@eventProfileEmpty": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileEmptyBody": "This person has not shared extra profile details with this event chat.",
   "@eventProfileEmptyBody": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileSharedHere": "Shared with this event chat",
   "@eventProfileSharedHere": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileSelectedAnswers": "Selected organizer answers",
   "@eventProfileSelectedAnswers": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileReviewAgain": "Changed profile details or answers need to be selected again before sharing.",
   "@eventProfileReviewAgain": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileView": "View event profile",
   "@eventProfileView": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfileEditAgain": "After saving, review your choices here whenever you want to change or stop sharing.",
   "@eventProfileEditAgain": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfilePhotoLabel": "Photo {number}",
   "@eventProfilePhotoLabel": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
+    "x-owner": "product",
     "x-surface": "chats.presentation.event_profile",
     "placeholders": {
       "number": {
         "type": "int"
       }
-    }
+    },
+    "x-audience": "shared"
   },
   "eventProfileChoosePhoto": "Share this photo",
   "@eventProfileChoosePhoto": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "eventProfilePhotoUnavailable": "Photo preview unavailable. Reload before selecting it.",
   "@eventProfilePhotoUnavailable": {
     "description": "Participant-controlled event profile sharing.",
-    "x-owner": "chats",
-    "x-domain": "chats",
-    "x-surface": "chats.presentation.event_profile"
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
   },
   "formProfilesUnclaimed": "Not claimed · Review before using in Catch",
   "@formProfilesUnclaimed": {

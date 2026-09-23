@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/event_chat_entry_section.dart';
+import 'package:catch_dating_app/chats/chats.dart' show EventChatEntrySection;
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';

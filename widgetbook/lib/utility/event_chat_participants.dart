@@ -26,7 +26,7 @@ Widget eventChatParticipantsPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'People and their shared event profiles',
-  type: EventChatParticipantsList,
+  type: EventChatParticipantsRowList,
   path: '[P3 utility surfaces]/Event chat',
 )
 Widget eventChatParticipantsListPreview(BuildContext context) =>
@@ -34,7 +34,7 @@ Widget eventChatParticipantsListPreview(BuildContext context) =>
       child: CatchRouteScaffold(
         topBarBuilder: (_, _) => const CatchTopBar.route(title: 'Participants'),
         body: CatchRouteBody.standardConstrained(
-          child: EventChatParticipantsList(
+          child: EventChatParticipantsRowList(
             state: _state(),
             onOpen: (_) {},
             onLoadMore: () {},

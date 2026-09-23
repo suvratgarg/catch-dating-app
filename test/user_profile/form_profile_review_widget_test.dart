@@ -86,7 +86,7 @@ void main() {
           tester,
           UncontrolledProviderScope(
             container: container,
-            child: FormProfileReviewBody(
+            child: FormProfileReviewPageBody(
               review: review,
               onSave: (_) {},
               onReload: () {},
@@ -98,11 +98,11 @@ void main() {
         await tester.runAsync(() async {
           await precacheImage(
             MemoryImage(photo.bytes),
-            tester.element(find.byType(FormProfilePhotoSelection)),
+            tester.element(find.byType(FormProfilePhotoSelectionField)),
           );
         });
         await pumpFeatureUi(tester);
-        await tester.ensureVisible(find.byType(FormProfilePhotoSelection));
+        await tester.ensureVisible(find.byType(FormProfilePhotoSelectionField));
         await pumpFeatureUi(tester);
         _readable(tester);
         await _capture(tester, 'photo-${dark ? 'dark' : 'light'}-$scale');
@@ -112,7 +112,7 @@ void main() {
       ) async {
         await _pump(
           tester,
-          FormProfileReviewBody(
+          FormProfileReviewPageBody(
             review: _review(),
             onSave: (_) {},
             onReload: () {},
@@ -135,7 +135,7 @@ void main() {
       final saved = <ClaimParticipantFormProfileCallableRequest>[];
       await _pump(
         tester,
-        FormProfileReviewBody(
+        FormProfileReviewPageBody(
           review: _review(),
           onSave: saved.add,
           onReload: () {},
@@ -175,7 +175,7 @@ void main() {
     final opened = <String>[];
     await _pump(
       tester,
-      FormProfilesList(
+      FormProfilesSectionList(
         state: FormProfilesState(
           page: FormProfilePage(
             items: [
@@ -225,7 +225,7 @@ void main() {
       var loaded = false;
       await _pump(
         tester,
-        FormProfilesList(
+        FormProfilesSectionList(
           state: FormProfilesState(
             page: FormProfilePage(items: const [], nextCursor: 'withdrawn'),
           ),

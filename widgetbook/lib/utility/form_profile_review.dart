@@ -37,7 +37,7 @@ Widget formProfileReviewScreenPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Separate core fields and organizer answers',
-  type: FormProfileReviewBody,
+  type: FormProfileReviewPageBody,
   path: '[P3 utility surfaces]/Form profiles',
 )
 Widget formProfileReviewBodyPreview(BuildContext context) =>
@@ -46,7 +46,7 @@ Widget formProfileReviewBodyPreview(BuildContext context) =>
         topBarBuilder: (_, _) =>
             const CatchTopBar.route(title: 'Review profile'),
         body: CatchRouteBody.standardConstrained(
-          child: FormProfileReviewBody(
+          child: FormProfileReviewPageBody(
             review: _review(photo: false),
             onSave: (_) {},
             onReload: () {},
@@ -96,7 +96,7 @@ Widget formProfilePhotoFieldPreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Photo selection waits for decoding',
-  type: FormProfilePhotoSelection,
+  type: FormProfilePhotoSelectionField,
   path: '[P3 utility surfaces]/Form profiles',
 )
 Widget formProfilePhotoSelectionPreview(BuildContext context) =>

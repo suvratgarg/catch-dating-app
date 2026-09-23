@@ -54,7 +54,7 @@ class FormProfileReviewScreen extends ConsumerWidget {
               errorContext: AppErrorContext.profile,
               onRetry: () =>
                   ref.invalidate(formProfileReviewProvider(responseId)),
-              builder: (context, review) => FormProfileReviewBody(
+              builder: (context, review) => FormProfileReviewPageBody(
                 key: ValueKey(
                   '$uid:${review.responseId}:${review.profileRevision}:${review.intakeRevision}',
                 ),
@@ -83,8 +83,8 @@ class FormProfileReviewScreen extends ConsumerWidget {
   }
 }
 
-class FormProfileReviewBody extends StatefulWidget {
-  const FormProfileReviewBody({
+class FormProfileReviewPageBody extends StatefulWidget {
+  const FormProfileReviewPageBody({
     super.key,
     required this.review,
     required this.onSave,
@@ -96,10 +96,11 @@ class FormProfileReviewBody extends StatefulWidget {
   final VoidCallback onReload;
   final bool busy;
   @override
-  State<FormProfileReviewBody> createState() => _FormProfileReviewBodyState();
+  State<FormProfileReviewPageBody> createState() =>
+      _FormProfileReviewPageBodyState();
 }
 
-class _FormProfileReviewBodyState extends State<FormProfileReviewBody> {
+class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
   final _form = GlobalKey<FormState>();
   final _controllers = <String, TextEditingController>{};
   late final FormProfileDraft _draft;

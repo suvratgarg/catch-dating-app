@@ -247,7 +247,7 @@ void main() {
             topBarBuilder: (_, _) =>
                 const CatchTopBar.route(title: 'Participants'),
             body: CatchRouteBody.standardConstrained(
-              child: EventChatParticipantsList(
+              child: EventChatParticipantsRowList(
                 state: fixture(empty: true, more: true),
                 onOpen: (_) {},
                 onLoadMore: () => continued++,

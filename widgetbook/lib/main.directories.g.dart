@@ -12809,7 +12809,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventChatParticipantsList',
+            name: 'EventChatParticipantsRowList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'People and their shared event profiles',
@@ -12984,7 +12984,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'FormProfilePhotoSelection',
+            name: 'FormProfilePhotoSelectionField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Photo selection waits for decoding',
@@ -12994,7 +12994,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'FormProfileReviewBody',
+            name: 'FormProfileReviewPageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Separate core fields and organizer answers',
@@ -13024,22 +13024,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'FormProfilesContent',
+            name: 'FormProfilesAsyncBoundary',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Account-owned form directory',
                 builder: _widgetbook_workspace_utility_form_profiles
                     .formProfilesContentPreview,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'FormProfilesList',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Private cards grouped by organizer',
-                builder: _widgetbook_workspace_utility_form_profiles
-                    .formProfilesListPreview,
               ),
             ],
           ),
@@ -13050,6 +13040,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Organizer-scoped cards and unclaimed submissions',
                 builder: _widgetbook_workspace_utility_form_profiles
                     .formProfilesScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesSectionList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Private cards grouped by organizer',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesListPreview,
               ),
             ],
           ),

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-22",
+  "updated": "2026-09-23",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -1226,6 +1226,36 @@
       "status": "excluded",
       "priority": "P3",
       "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventChatScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Event conversation has production-widget light/dark, keyboard, reply, reaction and large-text review tests; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "eventChatParticipantsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Participant directory has light/dark and large-text production-widget review captures and authority tests; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "formProfilesScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Private organizer-card directory has synthetic grouped-card light/dark and large-text review captures; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "formProfileReviewScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Profile claim has synthetic production-widget review and protected-photo captures; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "messagingPermissionsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Own-account WhatsApp consent and withdrawal have focused controller/widget coverage; canonical marketing capture registration remains planned."
     }
   ]
 }

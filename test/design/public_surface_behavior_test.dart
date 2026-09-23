@@ -92,6 +92,7 @@ void main() {
           _verifyEventLocation(values, expectations);
         case 'app.savedEvents':
         case 'app.privateConsumerRoots':
+        case 'app.ownAccountRoutes':
         case 'app.eventSuccessCompanion':
         case 'app.socialConsumerRoutes':
         case 'app.onboarding':

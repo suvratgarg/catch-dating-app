@@ -51,7 +51,7 @@ void _registerProfileShellLayoutTests() {
       await pumpUntilFound(tester, find.text('RSVP Demo'));
       await tester.pump(pager.controller!.animationDuration);
       await tester.pump();
-      expect(find.byType(FormProfilesContent), findsOneWidget);
+      expect(find.byType(FormProfilesAsyncBoundary), findsOneWidget);
       expect(find.text('RSVP Demo'), findsOneWidget);
       expect(find.byType(CatchErrorState), findsNothing);
       expect(tester.takeException(), isNull);
