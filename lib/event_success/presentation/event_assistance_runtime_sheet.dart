@@ -58,9 +58,8 @@ class EventAssistanceRuntimeSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceRuntimeTitle,
-        mode: CatchSheetMode.scrollable,
         child: state is AssistanceRuntimeFormUnavailable
             ? CatchLocalizedErrorBanner(state.error)
             : CatchAsyncBoundary<AssistanceRuntimeSession>(

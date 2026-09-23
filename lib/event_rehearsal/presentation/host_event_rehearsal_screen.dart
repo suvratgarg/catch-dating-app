@@ -462,7 +462,7 @@ class _HostEventRehearsalScreenState
   Future<void> _showRunControls(EventRehearsalBootstrap rehearsal, bool busy) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (sheetContext) => CatchSheet(
+        builder: (sheetContext) => CatchSheet.standard(
           title: context.l10n.hostEventRehearsalRunTitle,
           subtitle: context.l10n.hostEventRehearsalRunSheetBody,
           badge: context.l10n.hostEventRehearsalBadge,
@@ -481,66 +481,65 @@ class _HostEventRehearsalScreenState
     bool busy,
   ) => showCatchBottomSheet<void>(
     context: context,
-    builder: (sheetContext) => CatchSheet(
+    builder: (sheetContext) => CatchSheet.standard(
       title: context.l10n.hostEventRehearsalPracticeTools,
       subtitle: context.l10n.hostEventRehearsalPracticeToolsBody,
       glyph: CatchIcons.scienceOutlined,
-      child: SizedBox(
-        height: MediaQuery.sizeOf(sheetContext).height * 0.72,
-        child: ListView(
-          children: [
-            EventRehearsalSetupSection(
-              session: rehearsal.session,
-              isLoading: busy,
-              onSave: (setup, scenario, actorCount) =>
-                  _saveSetup(rehearsal.session, setup, scenario, actorCount),
-            ),
-            gapH20,
-            if (rehearsal.staffReview != null) ...[
-              EventRehearsalPracticeRoleSection(
-                scope: (
-                  sessionId: rehearsal.session.id,
-                  clockId: rehearsal.staffReview!.clockId,
-                ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          EventRehearsalSetupSection(
+            session: rehearsal.session,
+            isLoading: busy,
+            onSave: (setup, scenario, actorCount) =>
+                _saveSetup(rehearsal.session, setup, scenario, actorCount),
+          ),
+          gapH20,
+          if (rehearsal.staffReview != null) ...[
+            EventRehearsalPracticeRoleSection(
+              scope: (
+                sessionId: rehearsal.session.id,
+                clockId: rehearsal.staffReview!.clockId,
               ),
-              gapH20,
-              EventRehearsalStaffSection(sessionId: rehearsal.session.id),
-              gapH20,
-            ],
-            EventRehearsalGuestLinkSection(
-              guestUrl: rehearsal.guestUrl,
-              isLoading: busy,
-              onCopy: () => _copyGuestLink(rehearsal.guestUrl),
-              onShare: () => _shareGuestLink(rehearsal.guestUrl),
-              onRotate: _rotateGuestLink,
             ),
             gapH20,
-            EventRehearsalRunSection(
-              session: rehearsal.session,
-              isLoading: busy,
-              onControl: (action, minutes) =>
-                  _control(rehearsal.session, action, minutes),
-            ),
+            EventRehearsalStaffSection(sessionId: rehearsal.session.id),
             gapH20,
-            EventRehearsalSimulator(
-              rehearsal: rehearsal,
-              isLoading: busy,
-              onBehavior: (actorId, behavior) =>
-                  _injectBehavior(rehearsal.session, actorId, behavior),
-              onFault: (fault) => _injectFault(rehearsal.session, fault),
-            ),
-            gapH20,
-            EventRehearsalRosterSection(rehearsal: rehearsal),
-            gapH20,
-            EventRehearsalRecapSection(
-              rehearsal: rehearsal,
-              isLoading: busy,
-              onReset: _reset,
-              onFork: _fork,
-              onExport: _export,
-            ),
           ],
-        ),
+          EventRehearsalGuestLinkSection(
+            guestUrl: rehearsal.guestUrl,
+            isLoading: busy,
+            onCopy: () => _copyGuestLink(rehearsal.guestUrl),
+            onShare: () => _shareGuestLink(rehearsal.guestUrl),
+            onRotate: _rotateGuestLink,
+          ),
+          gapH20,
+          EventRehearsalRunSection(
+            session: rehearsal.session,
+            isLoading: busy,
+            onControl: (action, minutes) =>
+                _control(rehearsal.session, action, minutes),
+          ),
+          gapH20,
+          EventRehearsalSimulator(
+            rehearsal: rehearsal,
+            isLoading: busy,
+            onBehavior: (actorId, behavior) =>
+                _injectBehavior(rehearsal.session, actorId, behavior),
+            onFault: (fault) => _injectFault(rehearsal.session, fault),
+          ),
+          gapH20,
+          EventRehearsalRosterSection(rehearsal: rehearsal),
+          gapH20,
+          EventRehearsalRecapSection(
+            rehearsal: rehearsal,
+            isLoading: busy,
+            onReset: _reset,
+            onFork: _fork,
+            onExport: _export,
+          ),
+        ],
       ),
     ),
   );

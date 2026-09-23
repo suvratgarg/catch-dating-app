@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-22",
   "sourceDigest": "sha256:1e81187819f603e812624cf806d2095d27f65ad4f7520e76de63f887d183e9c1",
-  "resolvedDigest": "sha256:34ff9724c321cc5b3b95d2a6c8941d0facd615d1a329c142186890c9670c421a",
+  "resolvedDigest": "sha256:0b0ee3b265e51876b3d5370e1270786a369f888912bea61f3297b83224cb9976",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6117,7 +6117,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

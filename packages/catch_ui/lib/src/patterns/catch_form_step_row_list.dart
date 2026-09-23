@@ -11,7 +11,7 @@ Future<int?> showCatchFormStepSheet({
 }) {
   return showCatchBottomSheet<int>(
     context: context,
-    builder: (context) => CatchSheet(
+    builder: (context) => CatchSheet.standard(
       title: title,
       subtitle: subtitle,
       child: CatchFormStepRowList(

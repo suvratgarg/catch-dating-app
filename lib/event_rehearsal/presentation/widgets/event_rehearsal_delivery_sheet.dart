@@ -55,11 +55,10 @@ class EventRehearsalDeliverySheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: context.l10n.eventAssistanceDeliveryTitle,
         badge: context.l10n.hostEventRehearsalBadge,
         badgeTone: CatchBadgeTone.danger,
-        mode: CatchSheetMode.scrollable,
         child: state is RehearsalDeliveryUnavailable
             ? CatchLocalizedErrorBanner(state.error)
             : CatchAsyncBoundary<RehearsalAssistanceReview>(

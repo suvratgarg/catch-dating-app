@@ -667,14 +667,16 @@ class HostCustomerRevenueBreakdown extends StatelessWidget {
   final ValueChanged<String> onOpenEvent;
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
     title: context.l10n.hostCustomersDetailRevenue,
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         HostCustomerRevenueCard(revenue: customer.revenue),
         gapH24,
         CatchSection.fieldRows(
+          first: true,
           title: context.l10n.hostCustomersSpendByEvent,
           children: [
             if (!customer.events.any((event) => event.revenues.isNotEmpty))

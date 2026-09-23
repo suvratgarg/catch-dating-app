@@ -28,6 +28,9 @@ enum CatchButtonStatus { idle, loading }
 
 enum CatchButtonTone { primary, neutral, danger }
 
+/// Meaning determines footer emphasis; features do not choose its paint.
+enum CatchButtonEmphasis { dismiss, alternative, commit }
+
 /// Canonical labelled action with command, selection and floating recipes.
 ///
 /// The default recipe owns CTA hierarchy, density, busy status and geometry.
@@ -70,6 +73,26 @@ class CatchButton extends StatefulWidget {
        _floatingIcon = null,
        value = null,
        count = null;
+
+  /// Full-width sheet action whose hierarchy follows its declared purpose.
+  const CatchButton.sheet({
+    Key? key,
+    required String label,
+    required VoidCallback? onPressed,
+    required CatchButtonEmphasis role,
+    Widget? leading,
+    CatchButtonStatus status = CatchButtonStatus.idle,
+  }) : this(
+         key: key,
+         label: label,
+         onPressed: onPressed,
+         variant: role == CatchButtonEmphasis.commit
+             ? CatchButtonVariant.primary
+             : CatchButtonVariant.secondary,
+         fullWidth: true,
+         leading: leading,
+         status: status,
+       );
 
   /// Bounded current-value trigger with a full-value tooltip and semantics.
   const CatchButton.selection({

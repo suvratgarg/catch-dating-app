@@ -240,10 +240,7 @@ void main() {
               .placeholder,
           'Search forms',
         );
-        expect(
-          find.byType(CatchChoiceInput<HostFormLifecycleStatus?>),
-          findsOneWidget,
-        );
+        expect(find.byType(CatchChoiceInput<String>), findsOneWidget);
 
         await tester.tap(find.text('Published'));
         await pumpFeatureUi(tester);
@@ -267,19 +264,79 @@ void main() {
         expect(responseRequests, isEmpty);
         await tester.tap(find.text('Filters'));
         await pumpFeatureUi(tester);
-        await tester.tap(find.text('All purposes'));
+        final sheet = find.byType(CatchSheet);
+        Finder chip(String label) => find.descendant(
+          of: sheet,
+          matching: find.widgetWithText(CatchChip, label),
+        );
+        for (final label in ['Application', 'Registration', 'Intake']) {
+          await tester.ensureVisible(chip(label));
+          await tester.tap(chip(label));
+          await pumpFeatureUi(tester);
+        }
+        expect(formRequests.last.purposes, {
+          HostFormPurpose.application,
+          HostFormPurpose.registration,
+          HostFormPurpose.intake,
+        });
+        await tester.ensureVisible(chip('Paused'));
+        await tester.tap(chip('Paused'));
         await pumpFeatureUi(tester);
-        await tester.tap(find.text('Waiver'));
-        await pumpFeatureUi(tester);
-        expect(formRequests.last.purposes, {HostFormPurpose.waiver});
-        expect(formRequests.last.statuses, {HostFormLifecycleStatus.published});
+        expect(formRequests.last.statuses, {
+          HostFormLifecycleStatus.published,
+          HostFormLifecycleStatus.paused,
+        });
         expect(formRequests.last.query, 'waiver');
-        await tester.tap(find.text('Waiver'));
+        expect(sheet, findsOneWidget, reason: 'Selections keep the sheet open');
+        for (final label in [
+          'Application',
+          'Registration',
+          'Intake',
+          'Published',
+          'Paused',
+        ]) {
+          expect(tester.widget<CatchChip>(chip(label)).selected, isTrue);
+          expect(
+            find.descendant(
+              of: chip(label),
+              matching: find.byIcon(CatchIcons.checkRounded),
+            ),
+            findsOneWidget,
+          );
+        }
+        await tester.ensureVisible(chip('Registration'));
+        await tester.tap(chip('Registration'));
         await pumpFeatureUi(tester);
-        await tester.tap(find.text('All purposes'));
+        expect(formRequests.last.purposes, {
+          HostFormPurpose.application,
+          HostFormPurpose.intake,
+        });
+        await tester.ensureVisible(find.text('Close'));
+        await tester.tap(find.text('Close'));
+        await pumpFeatureUi(tester);
+        expect(sheet, findsNothing);
+        final rail = tester.widget<CatchChoiceInput<String>>(
+          find.byType(CatchChoiceInput<String>),
+        );
+        expect(
+          rail.selected,
+          isEmpty,
+          reason: 'Multiple statuses must not falsely activate All',
+        );
+        await tester.tap(find.text('Filters'));
+        await pumpFeatureUi(tester);
+        expect(tester.widget<CatchChip>(chip('Intake')).selected, isTrue);
+        await tester.tap(find.text('Reset all'));
         await pumpFeatureUi(tester);
         expect(formRequests.last.purposes, isEmpty);
-        await tester.tap(find.text('Done'));
+        expect(
+          formRequests.last.statuses,
+          HostFormLifecycleStatus.values.toSet(),
+          reason: 'No selected status means all statuses, including archived',
+        );
+        expect(formRequests.last.query, 'waiver');
+        await tester.ensureVisible(find.text('Close'));
+        await tester.tap(find.text('Close'));
         await pumpFeatureUi(tester);
 
         await tester.tap(find.text('Responses'));

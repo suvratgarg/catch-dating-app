@@ -1,0 +1,186 @@
+part of 'host_form_responses_panel.dart';
+
+extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
+  Future<void> _openFilters() {
+    var formId = widget.formId;
+    var options = _filterOptions;
+    return showCatchBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, updateSheet) => Consumer(
+          builder: (context, ref, _) {
+            final responseState = ref.watch(
+              hostFormResponsesControllerProvider(_responseRequest(formId)),
+            );
+            final loaded = catchAsyncStateFromAsyncValue(responseState).value;
+            if (loaded != null) options = loaded.answerFilterOptions;
+            void changeForm(String? value) {
+              if (formId == value) return;
+              updateSheet(() {
+                formId = value;
+                options = const [];
+              });
+              _updateFilters(_answerFilters.clear);
+              widget.onFormChanged?.call(value);
+            }
+
+            return CatchSheet.filter(
+              title: context.l10n.hostCustomersFilters,
+              closeLabel: context.l10n.hostSheetClose,
+              onClose: () => Navigator.of(sheetContext).pop(),
+              trailing: CatchButton(
+                label: context.l10n.hostFiltersResetAll,
+                variant: CatchButtonVariant.ghost,
+                size: CatchButtonSize.sm,
+                onPressed:
+                    _answerFilters.isEmpty &&
+                        (formId == null || widget.onFormChanged == null)
+                    ? null
+                    : () {
+                        _updateFilters(_answerFilters.clear);
+                        if (widget.onFormChanged != null) changeForm(null);
+                        updateSheet(() {});
+                      },
+              ),
+              child: CatchSectionList(
+                emptyStateOmitted: true,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.showFormContext)
+                    CatchSection.choiceGroup(
+                      first: true,
+                      title: context.l10n.hostAudienceFormWorkspaceTitle,
+                      child: Consumer(
+                        builder: (context, ref, _) {
+                          final request = HostFormListRequest(
+                            organizerId: widget.organizerId,
+                          );
+                          final directory = ref.watch(
+                            hostFormsDirectoryControllerProvider(request),
+                          );
+                          final forms =
+                              catchAsyncStateFromAsyncValue(
+                                directory,
+                              ).value?.forms ??
+                              const <HostFormSummary>[];
+                          final labels = <String, String>{
+                            '': context.l10n.hostAudienceAllForms,
+                            for (final form in forms) form.formId: form.title,
+                            if (formId != null &&
+                                !forms.any((form) => form.formId == formId))
+                              formId!:
+                                  widget.formTitle ??
+                                  context.l10n.hostAudienceSelectedForm,
+                          };
+                          final choices = CatchChoiceInput<String>(
+                            values: labels.keys.toList(),
+                            selected: {formId ?? ''},
+                            itemLabelBuilder: (value) => labels[value]!,
+                            mode: CatchChipMode.single,
+                            onChanged: widget.onFormChanged == null
+                                ? null
+                                : (values) => changeForm(
+                                    values.single.isEmpty
+                                        ? null
+                                        : values.single,
+                                  ),
+                          );
+                          return CatchAsyncBoundary<HostFormsDirectoryState>(
+                            value: directory,
+                            onRetry: () => ref.invalidate(
+                              hostFormsDirectoryControllerProvider(request),
+                            ),
+                            loadingBuilder: (_) =>
+                                CatchSkeleton.content(child: choices),
+                            builder: (context, state) => Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                choices,
+                                if (state.canLoadMore || state.loadingMore)
+                                  CatchButton.command(
+                                    label: context.l10n.hostFormsLoadMore,
+                                    onPressed: state.loadingMore
+                                        ? null
+                                        : () => ref
+                                              .read(
+                                                hostFormsDirectoryControllerProvider(
+                                                  request,
+                                                ).notifier,
+                                              )
+                                              .loadMore(),
+                                  ),
+                                if (state.loadMoreError case final error?)
+                                  CatchLocalizedErrorState(
+                                    error,
+                                    context: AppErrorContext.forms,
+                                    mode: CatchErrorStateMode.compact,
+                                    onRetry: () => ref
+                                        .read(
+                                          hostFormsDirectoryControllerProvider(
+                                            request,
+                                          ).notifier,
+                                        )
+                                        .loadMore(),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  for (final filter in options)
+                    CatchSection.choiceGroup(
+                      first: true,
+                      title: filter.label,
+                      child: CatchChoiceInput<String>(
+                        values: filter.options.keys.toList(),
+                        selected: _answerFilters[filter.questionId] ?? const {},
+                        itemLabelBuilder: (value) => filter.options[value]!,
+                        itemKeyBuilder: (value) => ValueKey(
+                          'response-filter-${filter.questionId}-$value',
+                        ),
+                        mode: CatchChipMode.multiple,
+                        allowEmptySelection: true,
+                        onChanged:
+                            _answerFilters.containsKey(filter.questionId) ||
+                                _answerFilters.length <
+                                    CatchContractConstraints
+                                        .listOrganizerFormResponsesCallablePayloadAnswerFilters
+                                        .maxItems!
+                            ? (values) {
+                                final maximum = CatchContractConstraints
+                                    .listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValues
+                                    .maxItems!;
+                                if (values.length > maximum) {
+                                  showCatchSnackBar(
+                                    context,
+                                    context.l10n
+                                        .hostResponseFilterSelectionLimit(
+                                          count: maximum,
+                                        ),
+                                  );
+                                  return;
+                                }
+                                _updateFilters(() {
+                                  if (values.isEmpty) {
+                                    _answerFilters.remove(filter.questionId);
+                                  } else {
+                                    _answerFilters[filter.questionId] =
+                                        Set.unmodifiable(values);
+                                  }
+                                });
+                                updateSheet(() {});
+                              }
+                            : null,
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

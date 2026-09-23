@@ -46,11 +46,10 @@ class EventAssistanceVisitSheet extends ConsumerWidget {
     };
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: state is AccountabilityUnavailable
             ? context.l10n.eventAssistanceVisitReview
             : guestName,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           AccountabilityUnavailable(:final error) => CatchLocalizedErrorBanner(
             error,

@@ -60,6 +60,12 @@ class HostContactsRepository {
       sort: query.sort == HostAudienceSort.lastSeen
           ? null
           : query.sort.wireValue,
+      segmentIds: query.segments.isEmpty
+          ? null
+          : (query.segments.map((s) => s.wireValue).toList()..sort()),
+      manualTagIds: query.manualTagIds.isEmpty
+          ? null
+          : (query.manualTagIds.toList()..sort()),
       segmentId: query.segment?.wireValue,
       manualTagId: query.manualTagId,
     ).toJson(),
@@ -223,12 +229,21 @@ class HostContactsRepository {
   Future<HostAudienceExport> exportContacts(
     String organizerId, {
     HostAudienceSegment? segment,
+    HostAudienceQuery query = const HostAudienceQuery(),
   }) => callHostCrm(
     _functions,
     name: 'exportOrganizerContacts',
     payload: ExportOrganizerContactsCallableRequest(
       organizerId: organizerId,
-      segmentId: segment?.wireValue,
+      segmentId: (segment ?? query.segment)?.wireValue,
+      query: query.search,
+      manualTagId: query.manualTagId,
+      segmentIds: query.segments.isEmpty
+          ? null
+          : (query.segments.map((s) => s.wireValue).toList()..sort()),
+      manualTagIds: query.manualTagIds.isEmpty
+          ? null
+          : (query.manualTagIds.toList()..sort()),
     ).toJson(),
     action: 'export organizer audience',
     parse: HostAudienceExport.fromCallableData,

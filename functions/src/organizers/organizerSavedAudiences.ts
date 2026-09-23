@@ -1,3 +1,5 @@
+import {contactFilterSelection,
+  contactMatchesFilters} from "./organizerContactFilters";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -506,6 +508,9 @@ function savedAudiencePredicateMatches(
   case "formAnswer":
   case "attendedEvent":
     return row.sourcePredicateKeys?.has(JSON.stringify(predicate)) ?? false;
+  case "directoryFilters":
+    return contactMatchesFilters(predicate, row.contact.manualTagIds ?? [],
+      row.trait);
   case "computedSegment":
     return organizerContactTraitMatchesSegment(
       row.trait,
@@ -557,7 +562,9 @@ export function canonicalSavedAudienceDefinition(
   const predicates = definition.predicates
     .map((predicate) => predicate.kind === "staticMembers" ?
       {...predicate, contactIds: [...new Set(predicate.contactIds)].sort()} :
-      {...predicate})
+      predicate.kind === "directoryFilters" ?
+        {kind: predicate.kind, ...contactFilterSelection(predicate)} :
+        {...predicate})
     .sort((left, right) =>
       JSON.stringify(left).localeCompare(JSON.stringify(right)));
   const keys = predicates.map((predicate) => JSON.stringify(predicate));
@@ -603,7 +610,8 @@ async function assertManualTagsExist(
   definition: AudienceDefinition,
 ): Promise<void> {
   const requested = definition.predicates.flatMap((predicate) =>
-    predicate.kind === "manualTag" ? [predicate.manualTagId] : [],
+    predicate.kind === "manualTag" ? [predicate.manualTagId] :
+      predicate.kind === "directoryFilters" ? predicate.manualTagIds : [],
   );
   if (requested.length === 0) return;
   const snap = await db.collection("organizerContactTagVocabularies")
