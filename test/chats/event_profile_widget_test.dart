@@ -131,35 +131,39 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         if (scale == 2) {
-          for (final (key, label) in [
+          for (final (key, label, hint) in [
             (
               const ValueKey('event-profile-first-name'),
               'first name for this event',
+              'First name',
             ),
             (
               const ValueKey('event-profile-introduction'),
               'introduction for this event',
+              'About you',
             ),
           ]) {
-            final labels = tester
+            expect(
+              tester.widget<CatchField>(find.byKey(key)).title?.toLowerCase(),
+              label,
+              reason: 'The full event-specific label must remain configured',
+            );
+            final paragraphs = tester
                 .renderObjectList<RenderParagraph>(
                   find.descendant(
                     of: find.byKey(key),
                     matching: find.byType(RichText),
                   ),
                 )
-                .where(
-                  (paragraph) => paragraph.text
-                      .toPlainText()
-                      .toLowerCase()
-                      .contains(label),
-                )
                 .toList();
-            expect(labels, isNotEmpty, reason: label);
+            final hints = paragraphs.where(
+              (paragraph) => paragraph.text.toPlainText().startsWith(hint),
+            );
+            expect(hints, isNotEmpty, reason: hint);
             expect(
-              labels.every((paragraph) => !paragraph.didExceedMaxLines),
+              hints.every((paragraph) => !paragraph.didExceedMaxLines),
               isTrue,
-              reason: '$label must remain readable at 2× text',
+              reason: '$hint action must remain readable at 2× text',
             );
           }
         }
