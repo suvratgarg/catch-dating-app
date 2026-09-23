@@ -94,7 +94,9 @@ export function usePublicFormPayment(publicFormId: string,
               pendingRef.current?.uid === uid &&
               pendingRef.current.paymentId === latest.paymentId) {
             const found = await findOrganizerFormPayment({publicFormId});
-            if (found.payment && mountedRef.current && epoch === epochRef.current) {
+            if (found.payment && mountedRef.current && epoch === epochRef.current &&
+                pendingRef.current?.uid === uid &&
+                pendingRef.current.paymentId === latest.paymentId) {
               const owner = {uid, request: null, paymentId: found.payment.paymentId};
               persist(owner);
               apply(found.payment, owner, epoch);
