@@ -1049,7 +1049,7 @@
               "kind": "error",
               "status": "captured",
               "previewIds": [
-                "ExploreEventsSection/Feed states"
+                "ExploreFeedContentSliver/Feed states"
               ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
@@ -1081,7 +1081,7 @@
               "status": "captured",
               "previewIds": [
                 "CatchEmptyState/Empty states",
-                "ExploreEventsSection/Feed states",
+                "ExploreFeedContentSliver/Feed states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -1104,7 +1104,7 @@
               ],
               "previewIds": [
                 "ExploreScreen/Screen states",
-                "ExploreEventsSection/Feed states",
+                "ExploreFeedContentSliver/Feed states",
                 "ExploreEventTypeBrowseGrid/Activity states",
                 "CatchButton/Map launcher states"
               ],
@@ -1118,7 +1118,7 @@
               "kind": "populated",
               "status": "captured",
               "previewIds": [
-                "ExploreBrowseHeaderContent/Chrome states",
+                "ExploreDiscoveryCoverHeader/Cover header states",
                 "ExploreScreen/Screen states",
                 "CatchEmptyState/Empty states"
               ],
@@ -1174,7 +1174,7 @@
                 "explore_unclaimed_host_projection"
               ],
               "previewIds": [
-                "ExploreEventsSection/Feed states",
+                "ExploreFeedContentSliver/Feed states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -5841,7 +5841,7 @@
               "previewIds": [
                 "HostClubsScreen/Route states",
                 "hostTeamAddHostSheetStates",
-                "HostTeamHostActionDialog/Host action confirmation dialogs"
+                "CatchDialog/Host action confirmation dialogs"
               ],
               "captureIds": [
                 "host_clubs_team_pending",
@@ -5860,7 +5860,7 @@
               "previewIds": [
                 "HostClubsScreen/Route states",
                 "hostTeamAddHostSheetStates",
-                "HostTeamHostActionDialog/Host action confirmation dialogs"
+                "CatchDialog/Host action confirmation dialogs"
               ],
               "captureIds": [
                 "host_clubs_team_pending",
