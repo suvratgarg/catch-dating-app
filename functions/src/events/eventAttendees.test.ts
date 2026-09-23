@@ -6,6 +6,7 @@ import {
   assertPublicRegistrationEligibility,
   attendanceReceiptId,
   eventAttendeeId,
+  importEventAttendeesForHost,
   mergeOrganizerCommunicationPreference,
   normalizeRosterPhone,
   onboardingDraftSeed,
@@ -21,6 +22,9 @@ class FakeSnapshot {
     readonly ref: FakeDocRef,
     private readonly value: FakeData | undefined
   ) {}
+  get id() {
+    return this.ref.path.split("/").at(-1)!;
+  }
   get exists() {
     return this.value !== undefined;
   }
@@ -31,6 +35,9 @@ class FakeSnapshot {
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+  async get() {
+    return new FakeSnapshot(this, this.firestore.get(this.path));
+  }
 }
 
 class FakeCollectionRef {
@@ -42,9 +49,13 @@ class FakeCollectionRef {
 
 class FakeTransaction {
   private readonly writes: Array<() => void> = [];
+  private readonly reads = new Map<string, number>();
   constructor(private readonly firestore: FakeFirestore) {}
   async get(ref: FakeDocRef) {
-    return new FakeSnapshot(ref, this.firestore.get(ref.path));
+    const value = this.firestore.get(ref.path);
+    this.reads.set(ref.path, this.firestore.version(ref.path));
+    this.firestore.afterRead?.(ref.path);
+    return new FakeSnapshot(ref, value);
   }
   update(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.update(ref.path, data));
@@ -52,12 +63,24 @@ class FakeTransaction {
   create(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.create(ref.path, data));
   }
+  set(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => this.firestore.set(ref.path, data));
+  }
   commit() {
+    for (const [path, version] of this.reads) {
+      if (this.firestore.version(path) !== version) {
+        throw new TransactionConflict();
+      }
+    }
     for (const write of this.writes) write();
   }
 }
 
+class TransactionConflict extends Error {}
+
 class FakeFirestore {
+  afterRead: ((path: string) => void) | null = null;
+  private readonly versions = new Map<string, number>();
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
   collection(path: string) {
     return new FakeCollectionRef(this, path);
@@ -65,20 +88,39 @@ class FakeFirestore {
   get(path: string) {
     return this.docs[path];
   }
+  version(path: string) {
+    return this.versions.get(path) ?? 0;
+  }
+  private bump(path: string) {
+    this.versions.set(path, this.version(path) + 1);
+  }
   update(path: string, data: FakeData) {
     const existing = this.docs[path];
     if (!existing) throw new Error(`Document missing: ${path}`);
     this.docs[path] = {...existing, ...data};
+    this.bump(path);
   }
   create(path: string, data: FakeData) {
     if (this.docs[path]) throw new Error(`Document exists: ${path}`);
     this.docs[path] = {...data};
+    this.bump(path);
+  }
+  set(path: string, data: FakeData) {
+    this.docs[path] = {...data};
+    this.bump(path);
   }
   async runTransaction<T>(callback: (tx: FakeTransaction) => Promise<T>) {
-    const tx = new FakeTransaction(this);
-    const result = await callback(tx);
-    tx.commit();
-    return result;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const tx = new FakeTransaction(this);
+      const result = await callback(tx);
+      try {
+        tx.commit();
+        return result;
+      } catch (error) {
+        if (!(error instanceof TransactionConflict)) throw error;
+      }
+    }
+    throw new TransactionConflict();
   }
 }
 
@@ -339,6 +381,58 @@ test("manual rows may use an import-scoped row identity", () => {
   assert.equal(result.errors.length, 0);
   assert.equal(result.prepared.length, 1);
 });
+
+test("re-import cannot transfer a claimed attendee's verified endpoint",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const firestore = new FakeFirestore({
+      "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+        status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+    });
+    const deps = {firestore: () => firestore as unknown as
+      FirebaseFirestore.Firestore, checkRateLimit: async () => undefined,
+    timestamp: () => now};
+    const row = {rowId: "2", displayName: "Asha Shah",
+      phone: "+919876543210", email: "asha@example.com",
+      externalReference: "guest-7", arrivalGroup: "order-7",
+      ticketType: "General", status: "registered" as const};
+    const payload = {eventId: "event-1", importKey: "first-import",
+      fileName: "roster.csv", format: "csv" as const, rows: [row]};
+    const first = await importEventAttendeesForHost({hostUid: "host-1",
+      payload}, deps);
+    assert.equal(first.createdCount, 1);
+    const attendeePath = `eventAttendees/${eventAttendeeId("event-1",
+      "external:guest-7")}`;
+    firestore.update(attendeePath, {linkedUid: "person-1"});
+    const same = await importEventAttendeesForHost({hostUid: "host-1",
+      payload: {...payload, importKey: "same-contact-import"}}, deps);
+    assert.equal(same.updatedCount, 1);
+    const changed = {eventId: "event-1", importKey: "changed-import",
+      fileName: "roster.csv", format: "csv" as const,
+      rows: [{...row, phone: "+919000000001"}]};
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload: changed}, deps), /conflicts with a claimed attendee/u);
+    assert.equal(firestore.get(attendeePath)?.phoneE164, "+919876543210");
+    assert.equal(firestore.get(attendeePath)?.linkedUid, "person-1");
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload: {...changed, importKey: "changed-email-import",
+        rows: [{...row, email: "other@example.com"}]}}, deps),
+    /conflicts with a claimed attendee/u);
+
+    // The claim lands after the import transaction's first attendee read.
+    // Firestore retries that transaction; its second read must reject it.
+    firestore.update(attendeePath, {linkedUid: null});
+    firestore.afterRead = (path) => {
+      if (path !== attendeePath) return;
+      firestore.afterRead = null;
+      firestore.update(attendeePath, {linkedUid: "person-1"});
+    };
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload: changed}, deps), /conflicts with a claimed attendee/u);
+    assert.equal(firestore.get(attendeePath)?.phoneE164, "+919876543210");
+  });
 
 test("eventAttendeeId is stable and event-isolated", () => {
   const stable = eventAttendeeId("event-1", "email:asha@example.com");

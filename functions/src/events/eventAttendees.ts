@@ -159,21 +159,6 @@ export async function importEventAttendeesForHost(
     importKey: payload.importKey,
   });
   const importRef = db.collection("eventAttendeeImports").doc(importId);
-  const existingImportSnap = await importRef.get();
-  if (existingImportSnap.exists) {
-    const existing = requireDoc<EventAttendeeImportDocument>(
-      existingImportSnap,
-      "EventAttendeeImportDocument"
-    );
-    if (existing.payloadHash !== payloadHash) {
-      throw new HttpsError(
-        "failed-precondition",
-        "This import key was already used for different roster data."
-      );
-    }
-    return importResult(importId, existing, true);
-  }
-
   const {prepared, errors} = prepareImportRows({
     eventId: payload.eventId,
     importKey: payload.importKey,
@@ -183,98 +168,119 @@ export async function importEventAttendeesForHost(
   const attendeeRefs = prepared.map((row) =>
     db.collection("eventAttendees").doc(row.attendeeId)
   );
-  const existingAttendeeSnaps = attendeeRefs.length === 0 ? [] :
-    await db.getAll(...attendeeRefs);
-  const existingById = new Map(
-    existingAttendeeSnaps
+  return db.runTransaction(async (tx) => {
+    const existingImportSnap = await tx.get(importRef);
+    if (existingImportSnap.exists) {
+      const existing = requireDoc<EventAttendeeImportDocument>(
+        existingImportSnap, "EventAttendeeImportDocument");
+      if (existing.payloadHash !== payloadHash) {
+        throw new HttpsError("failed-precondition",
+          "This import key was already used for different roster data.");
+      }
+      return importResult(importId, existing, true);
+    }
+    const existingAttendeeSnaps = await Promise.all(attendeeRefs.map((ref) =>
+      tx.get(ref)));
+    const existingById = new Map(existingAttendeeSnaps
       .filter((snap) => snap.exists)
-      .map((snap) => [snap.id, snap.data() as EventAttendeeDocument])
-  );
+      .map((snap) => [snap.id, requireDoc<EventAttendeeDocument>(snap,
+        "EventAttendeeDocument")]));
+    // An identity claim and a re-import must serialize on the same attendee
+    // document. A changed endpoint cannot inherit its former UID grant.
+    for (const row of prepared) {
+      const existing = existingById.get(row.attendeeId);
+      if (existing?.linkedUid &&
+          ((row.phoneE164 && row.phoneE164 !== existing.phoneE164) ||
+          (row.email && row.email !== existing.email))) {
+        throw new HttpsError("failed-precondition",
+          `Imported contact conflicts with a claimed attendee (${row.rowId}).`);
+      }
+    }
 
-  const now = deps.timestamp();
-  const source = payload.format === "manual" ? "hostManual" : "hostImport";
-  const batch = db.batch();
-  for (let index = 0; index < prepared.length; index += 1) {
-    const row = prepared[index];
-    const attendeeRef = attendeeRefs[index];
-    const existing = existingById.get(row.attendeeId);
-    const status = existing?.status === "checkedIn" ? "checkedIn" : row.status;
-    const document: EventAttendeeDocument = {
+    const now = deps.timestamp();
+    const source = payload.format === "manual" ? "hostManual" : "hostImport";
+    for (let index = 0; index < prepared.length; index += 1) {
+      const row = prepared[index];
+      const attendeeRef = attendeeRefs[index];
+      const existing = existingById.get(row.attendeeId);
+      const status = existing?.status === "checkedIn" ?
+        "checkedIn" : row.status;
+      const document: EventAttendeeDocument = {
+        eventId: payload.eventId,
+        clubId: event.clubId,
+        organizerId: event.organizerId ?? event.clubId,
+        displayName: row.displayName,
+        searchName: row.searchName,
+        source: existing?.source === "catchBooking" ? "catchBooking" : source,
+        status,
+        linkedUid: existing?.linkedUid ?? null,
+        phoneE164: row.phoneE164 ?? existing?.phoneE164 ?? null,
+        email: row.email ?? existing?.email ?? null,
+        externalReference:
+          row.externalReference ?? existing?.externalReference ?? null,
+        arrivalGroup: row.arrivalGroup ?? existing?.arrivalGroup ?? null,
+        ticketType: row.ticketType ?? existing?.ticketType ?? null,
+        revenueAmountMinor:
+          row.revenueAmountMinor ?? existing?.revenueAmountMinor ?? null,
+        revenueCurrency:
+          row.revenueCurrency ?? existing?.revenueCurrency ?? null,
+        revenueSource: row.revenueSource ?? existing?.revenueSource ?? null,
+        revenueAllocation:
+          row.revenueAllocation ?? existing?.revenueAllocation ?? null,
+        revenueOrderReference:
+          row.revenueOrderReference ?? existing?.revenueOrderReference ?? null,
+        revenueOrderAmountMinor:
+          row.revenueOrderAmountMinor ??
+          existing?.revenueOrderAmountMinor ?? null,
+        importId,
+        sourceRowId: row.rowId,
+        createdAt: existing?.createdAt ?? now,
+        updatedAt: now,
+        registeredAt: status === "registered" ?
+          existing?.registeredAt ?? now : existing?.registeredAt ?? null,
+        waitlistedAt: status === "waitlisted" ?
+          existing?.waitlistedAt ?? now : existing?.waitlistedAt ?? null,
+        checkedInAt: existing?.checkedInAt ?? null,
+        cancelledAt: existing?.cancelledAt ?? null,
+        checkedInBy: existing?.checkedInBy ?? null,
+        linkedAt: existing?.linkedAt ?? null,
+        inviteLinkId: existing?.inviteLinkId ?? null,
+        inviteCapturedAt: existing?.inviteCapturedAt ?? null,
+        attendanceRevision: existing?.attendanceRevision ?? 0,
+        preCheckInStatus: existing?.preCheckInStatus ?? null,
+      };
+      tx.set(attendeeRef, document);
+    }
+
+    const createdCount = prepared.filter(
+      (row) => !existingById.has(row.attendeeId)
+    ).length;
+    const updatedCount = prepared.length - createdCount;
+    const skippedCount = payload.rows.length - prepared.length;
+    const status = prepared.length === 0 ? "failed" :
+      errors.length > 0 ? "partial" : "completed";
+    const receipt: EventAttendeeImportDocument = {
       eventId: payload.eventId,
       clubId: event.clubId,
       organizerId: event.organizerId ?? event.clubId,
-      displayName: row.displayName,
-      searchName: row.searchName,
-      source: existing?.source === "catchBooking" ? "catchBooking" : source,
+      uploadedBy: hostUid,
+      importKey: payload.importKey,
+      fileName: payload.fileName,
+      format: payload.format,
+      payloadHash,
       status,
-      linkedUid: existing?.linkedUid ?? null,
-      phoneE164: row.phoneE164 ?? existing?.phoneE164 ?? null,
-      email: row.email ?? existing?.email ?? null,
-      externalReference:
-        row.externalReference ?? existing?.externalReference ?? null,
-      arrivalGroup: row.arrivalGroup ?? existing?.arrivalGroup ?? null,
-      ticketType: row.ticketType ?? existing?.ticketType ?? null,
-      revenueAmountMinor:
-        row.revenueAmountMinor ?? existing?.revenueAmountMinor ?? null,
-      revenueCurrency:
-        row.revenueCurrency ?? existing?.revenueCurrency ?? null,
-      revenueSource: row.revenueSource ?? existing?.revenueSource ?? null,
-      revenueAllocation:
-        row.revenueAllocation ?? existing?.revenueAllocation ?? null,
-      revenueOrderReference:
-        row.revenueOrderReference ?? existing?.revenueOrderReference ?? null,
-      revenueOrderAmountMinor:
-        row.revenueOrderAmountMinor ??
-        existing?.revenueOrderAmountMinor ?? null,
-      importId,
-      sourceRowId: row.rowId,
-      createdAt: existing?.createdAt ?? now,
+      rowCount: payload.rows.length,
+      createdCount,
+      updatedCount,
+      skippedCount,
+      errors: errors.slice(0, 100),
+      createdAt: now,
       updatedAt: now,
-      registeredAt: status === "registered" ?
-        existing?.registeredAt ?? now : existing?.registeredAt ?? null,
-      waitlistedAt: status === "waitlisted" ?
-        existing?.waitlistedAt ?? now : existing?.waitlistedAt ?? null,
-      checkedInAt: existing?.checkedInAt ?? null,
-      cancelledAt: existing?.cancelledAt ?? null,
-      checkedInBy: existing?.checkedInBy ?? null,
-      linkedAt: existing?.linkedAt ?? null,
-      inviteLinkId: existing?.inviteLinkId ?? null,
-      inviteCapturedAt: existing?.inviteCapturedAt ?? null,
-      attendanceRevision: existing?.attendanceRevision ?? 0,
-      preCheckInStatus: existing?.preCheckInStatus ?? null,
+      completedAt: now,
     };
-    batch.set(attendeeRef, document);
-  }
-
-  const createdCount = prepared.filter(
-    (row) => !existingById.has(row.attendeeId)
-  ).length;
-  const updatedCount = prepared.length - createdCount;
-  const skippedCount = payload.rows.length - prepared.length;
-  const status = prepared.length === 0 ? "failed" :
-    errors.length > 0 ? "partial" : "completed";
-  const receipt: EventAttendeeImportDocument = {
-    eventId: payload.eventId,
-    clubId: event.clubId,
-    organizerId: event.organizerId ?? event.clubId,
-    uploadedBy: hostUid,
-    importKey: payload.importKey,
-    fileName: payload.fileName,
-    format: payload.format,
-    payloadHash,
-    status,
-    rowCount: payload.rows.length,
-    createdCount,
-    updatedCount,
-    skippedCount,
-    errors: errors.slice(0, 100),
-    createdAt: now,
-    updatedAt: now,
-    completedAt: now,
-  };
-  batch.create(importRef, receipt);
-  await batch.commit();
-  return importResult(importId, receipt, false);
+    tx.create(importRef, receipt);
+    return importResult(importId, receipt, false);
+  });
 }
 
 /** Toggles Host-managed check-in for an operational attendee. */
