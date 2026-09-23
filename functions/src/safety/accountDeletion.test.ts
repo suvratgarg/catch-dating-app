@@ -88,6 +88,34 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         uid: "runner-1",
         channel: "whatsapp",
       },
+      "eventChatMessages/message-1": {uid: "runner-1", text: "Private"},
+      "eventChatMessages/message-other": {uid: "runner-2", text: "Other"},
+      "eventChatReactions/reaction-1": {uid: "runner-1"},
+      "eventChatReactions/reaction-other": {uid: "runner-2"},
+      "eventChatProfileShares/share-1": {uid: "runner-1"},
+      "eventChatProfileShares/share-other": {uid: "runner-2"},
+      "eventChatPresence/presence-1": {uid: "runner-1"},
+      "eventChatPresence/presence-other": {uid: "runner-2"},
+      "eventChatMemberships/member-1": {uid: "runner-1"},
+      "eventChatMemberships/member-other": {uid: "runner-2"},
+      "eventChatAccessReceipts/action-1": {uid: "runner-1"},
+      "eventChatAccessReceipts/action-other": {uid: "runner-2"},
+      "participantOrganizerCards/response-1": {uid: "runner-1"},
+      "participantOrganizerCards/response-other": {uid: "runner-2"},
+      "participantProfileClaimReceipts/receipt-1": {uid: "runner-1"},
+      "participantProfileClaimReceipts/receipt-other": {uid: "runner-2"},
+      "participantFormProfileProposals/response-1": {
+        uid: "runner-1", organizerId: "club-1",
+      },
+      "participantFormProfileProposals/other-response": {
+        uid: "runner-2", organizerId: "club-1",
+      },
+      "catchCommunicationPreferences/runner-1": {
+        uid: "runner-1", whatsapp: {status: "optedIn"},
+      },
+      "catchCommunicationPermissionReceipts/catch-receipt-1": {
+        uid: "runner-1", channel: "whatsapp", sourceOrganizerId: "club-1",
+      },
       "organizerContactOrigins/origin-1": {
         organizerId: "club-1",
         actorUid: "runner-1",
@@ -343,6 +371,34 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "organizerCommunicationPermissionReceipts/receipt-1"
     )
   );
+  assert.ok(harness.updateWrites.some((write) =>
+    write.path === "eventChatMessages/message-1" && write.data.uid === null &&
+    write.data.text === null && write.data.status === "removed"));
+  assert.equal(harness.updateWrites.some((write) =>
+    write.path === "eventChatMessages/message-other"), false);
+  for (const path of ["eventChatProfileShares/share-1",
+    "eventChatReactions/reaction-1",
+    "eventChatPresence/presence-1", "eventChatMemberships/member-1",
+    "eventChatAccessReceipts/action-1", "participantOrganizerCards/response-1",
+    "participantProfileClaimReceipts/receipt-1"]) {
+    assert.ok(harness.deletedPublicDocs.includes(path));
+  }
+  for (const path of ["eventChatProfileShares/share-other",
+    "eventChatReactions/reaction-other",
+    "eventChatPresence/presence-other", "eventChatMemberships/member-other",
+    "eventChatAccessReceipts/action-other",
+    "participantOrganizerCards/response-other",
+    "participantProfileClaimReceipts/receipt-other"]) {
+    assert.equal(harness.deletedPublicDocs.includes(path), false);
+  }
+  assert.ok(harness.deletedPublicDocs.includes(
+    "participantFormProfileProposals/response-1"));
+  assert.equal(harness.deletedPublicDocs.includes(
+    "participantFormProfileProposals/other-response"), false);
+  assert.ok(harness.deletedPublicDocs.includes(
+    "catchCommunicationPreferences/runner-1"));
+  assert.ok(harness.deletedPublicDocs.includes(
+    "catchCommunicationPermissionReceipts/catch-receipt-1"));
   assert.ok(
     harness.updateWrites.some((write) =>
       write.path === "organizerContactOrigins/origin-1" &&

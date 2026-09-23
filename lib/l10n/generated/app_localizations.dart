@@ -5696,7 +5696,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/profile_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Finish onboarding or sign in again to load your profile.'**
+  /// **'You can review submitted details in Forms & cards before setting up the rest of your profile.'**
   String get userProfileProfileScreenMessageFinishOnboardingOrSign;
 
   /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_height.dart (tooltip).
@@ -7292,13 +7292,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Account unavailable'**
+  /// **'Review your form details'**
   String get safetySettingsScreenTitleAccountUnavailable;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Sign out and sign back in if this keeps happening.'**
+  /// **'Your Catch profile is not set up yet. Review your submitted details in Forms & cards. Profile preferences become available after setup.'**
   String get safetySettingsScreenMessageSignOutAndSign;
 
   /// Product copy used by lib/swipes/presentation/event_recap_screen.dart (title).
@@ -7462,12 +7462,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About you'**
   String get userProfileProfileTabSkeletonTitleAboutYou;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Running'**
-  String get userProfileProfileTabSkeletonTitleRunning;
 
   /// Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).
   ///
@@ -10913,19 +10907,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Preferred distances'**
+  /// **'Distances'**
   String get userProfileSelfProfileEditTabStateLabelPreferredDistances;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Why I event'**
+  /// **'Motivation'**
   String get userProfileSelfProfileEditTabStateLabelWhyIEvent;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Favorite event times'**
+  /// **'Run times'**
   String get userProfileSelfProfileEditTabStateLabelFavoriteEventTimes;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
@@ -27839,13 +27833,13 @@ abstract class AppLocalizations {
   /// Person-field mapping in the Host form builder.
   ///
   /// In en, this message translates to:
-  /// **'Use this answer as'**
+  /// **'Person field'**
   String get hostFormPersonField;
 
   /// Person-field mapping in the Host form builder.
   ///
   /// In en, this message translates to:
-  /// **'Identify contact and profile answers for review. Other answers stay with this response.'**
+  /// **'Classify this answer for your CRM. This label alone does not save or share a Catch profile field.'**
   String get hostFormPersonFieldHelp;
 
   /// Person-field mapping in the Host form builder.
@@ -31900,6 +31894,1038 @@ abstract class AppLocalizations {
   /// **'Selected person'**
   String get hostAudienceSelectedPerson;
 
+  /// Form payment setup: Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form payment'**
+  String get hostFormPaymentTitle;
+
+  /// Form payment setup: Free.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment required'**
+  String get hostFormPaymentFree;
+
+  /// Form payment setup: Help.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.'**
+  String get hostFormPaymentHelp;
+
+  /// Form payment setup: Unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Form payments are not available yet. Catch must finish its Razorpay connection setup. You can continue using free forms.'**
+  String get hostFormPaymentUnavailable;
+
+  /// Form payment setup: Connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Razorpay'**
+  String get hostFormPaymentConnect;
+
+  /// Form payment setup: ConnectHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorize your existing Razorpay account in your browser, then return and check the connection.'**
+  String get hostFormPaymentConnectHelp;
+
+  /// Form payment setup: Refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Check connection'**
+  String get hostFormPaymentRefresh;
+
+  /// Form payment setup: Ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for payments'**
+  String get hostFormPaymentReady;
+
+  /// Form payment setup: Connecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish connecting in your browser'**
+  String get hostFormPaymentConnecting;
+
+  /// Form payment setup: Attention.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Razorpay to restore payments'**
+  String get hostFormPaymentAttention;
+
+  /// Form payment setup: Disconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get hostFormPaymentDisconnected;
+
+  /// Form payment setup: Test.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode — no real money'**
+  String get hostFormPaymentTest;
+
+  /// Form payment setup: Live.
+  ///
+  /// In en, this message translates to:
+  /// **'Live payments'**
+  String get hostFormPaymentLive;
+
+  /// Form payment setup: Configure.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a submission fee'**
+  String get hostFormPaymentConfigure;
+
+  /// Form payment setup: Edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit submission fee'**
+  String get hostFormPaymentEdit;
+
+  /// Form payment setup: Remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove fee from draft'**
+  String get hostFormPaymentRemove;
+
+  /// Form payment setup: PhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose verified phone in Access before adding a fee. This lets applicants recover their payment and response securely.'**
+  String get hostFormPaymentPhoneRequired;
+
+  /// Form payment setup: ConnectionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect a ready Razorpay account before setting a fee.'**
+  String get hostFormPaymentConnectionRequired;
+
+  /// Form payment setup: Amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (INR)'**
+  String get hostFormPaymentAmount;
+
+  /// Form payment setup: AmountHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter ₹1 to ₹100,000, with up to two decimal places. For example, 100 or 200.'**
+  String get hostFormPaymentAmountHelp;
+
+  /// Form payment setup: Description.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the fee for?'**
+  String get hostFormPaymentDescription;
+
+  /// Form payment setup: DescriptionDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Application fee'**
+  String get hostFormPaymentDescriptionDefault;
+
+  /// Form payment setup: RefundPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund policy'**
+  String get hostFormPaymentRefundPolicy;
+
+  /// Form payment setup: RefundHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain when you will refund the fee, including if an application is declined. Applicants see this before paying.'**
+  String get hostFormPaymentRefundHelp;
+
+  /// Form payment setup: Save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save fee'**
+  String get hostFormPaymentSave;
+
+  /// Form payment setup: Disconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect account'**
+  String get hostFormPaymentDisconnect;
+
+  /// Form payment setup: DisconnectHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This stops new checkouts on every form using this account. Existing payments and refunds will still be reconciled.'**
+  String get hostFormPaymentDisconnectHelp;
+
+  /// Form payment setup: PublishHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This fee applies to new submissions after publishing. Previously started checkouts keep their original fee.'**
+  String get hostFormPaymentPublishHelp;
+
+  /// Connected merchant selector label.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay account'**
+  String get hostFormPaymentAccount;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostFormPaymentsTitle;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first. Payment confirmation and form submission are tracked separately. Test payments do not move real money.'**
+  String get hostFormPaymentsHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh payments'**
+  String get hostFormPaymentsRefresh;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get hostFormPaymentsPending;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get hostFormPaymentsRefunds;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get hostFormPaymentsAttention;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment records'**
+  String get hostFormPaymentsEmpty;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout attempts will appear here when someone starts paying for a submission.'**
+  String get hostFormPaymentsEmptyBody;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments in this stage'**
+  String get hostFormPaymentsNoMatches;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose All to see other payment stages.'**
+  String get hostFormPaymentsNoMatchesBody;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting checkout'**
+  String get hostFormPaymentsCreatingOrder;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming checkout'**
+  String get hostFormPaymentsOrderUnknown;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting payment'**
+  String get hostFormPaymentsCheckoutReady;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying payment'**
+  String get hostFormPaymentsVerifying;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid · submission pending'**
+  String get hostFormPaymentsCaptured;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid · submitted'**
+  String get hostFormPaymentsSubmitted;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment attempt failed'**
+  String get hostFormPaymentsFailed;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout expired'**
+  String get hostFormPaymentsExpired;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund pending'**
+  String get hostFormPaymentsRefundPending;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get hostFormPaymentsRefunded;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment needs review'**
+  String get hostFormPaymentsReviewRequired;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is confirmed. Catch is still completing the submission. Refresh to check its progress.'**
+  String get hostFormPaymentsCapturedHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is confirmed and the form response has been submitted. Acceptance and event admission are separate.'**
+  String get hostFormPaymentsSubmittedHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'This checkout is not confirmed as a completed payment. No form response has been submitted yet.'**
+  String get hostFormPaymentsPendingHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'This payment attempt failed. The applicant can retry while checkout is available.'**
+  String get hostFormPaymentsFailedHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'This checkout has expired. If a payment arrives late and cannot be submitted, Catch will attempt a refund.'**
+  String get hostFormPaymentsExpiredHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the refund in the connected Razorpay account using the references below. Withdrawing a response or declining an application does not automatically refund a fee.'**
+  String get hostFormPaymentsRefundHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic recovery needs attention. Check the connected Razorpay account using these references before taking further action.'**
+  String get hostFormPaymentsReviewHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission fee'**
+  String get hostFormPaymentsAmount;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed refunds'**
+  String get hostFormPaymentsRefundAmount;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout started'**
+  String get hostFormPaymentsStarted;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Last checked'**
+  String get hostFormPaymentsUpdated;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment captured'**
+  String get hostFormPaymentsCapturedAt;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Response submitted'**
+  String get hostFormPaymentsSubmittedAt;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment references'**
+  String get hostFormPaymentsReferences;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt reference'**
+  String get hostFormPaymentsReceipt;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay order'**
+  String get hostFormPaymentsOrderReference;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay payment'**
+  String get hostFormPaymentsPaymentReference;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay refund'**
+  String get hostFormPaymentsRefundReference;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Test payment. No real money was collected.'**
+  String get hostFormPaymentsTestHelp;
+
+  /// Host form payment history and verified payment details.
+  ///
+  /// In en, this message translates to:
+  /// **'Open submitted response'**
+  String get hostFormPaymentsOpenResponse;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional WhatsApp choices'**
+  String get hostFormMessagingTitle;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer updates from this organizer'**
+  String get hostFormMessagingOrganizer;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer updates from Catch'**
+  String get hostFormMessagingCatch;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings add separate, unchecked choices to the form. Applicants can choose either, both, or neither. Payment and submission never grant messaging permission. Publish to update the form.'**
+  String get hostFormMessagingHelp;
+
+  /// Host form optional messaging consent controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose verified phone in Access to offer WhatsApp updates.'**
+  String get hostFormMessagingPhoneRequired;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile use'**
+  String get hostFormAnswerDestinationLabel;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer only'**
+  String get hostFormAnswerOrganizerOnly;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch profile'**
+  String get hostFormAnswerCatchProfile;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer card'**
+  String get hostFormAnswerOrganizerCard;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays in your form response. A person-field label does not add it to a Catch profile. Choose a supported person field above to offer a Catch profile building block.'**
+  String get hostFormAnswerOrganizerOnlyHelp;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.'**
+  String get hostFormAnswerCatchProfileHelp;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.'**
+  String get hostFormAnswerOrganizerCardHelp;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp permissions'**
+  String get messagingPermissionsTitle;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose who can send you WhatsApp updates. Catch and each organizer have separate permissions. Stopping updates does not change your form submission, booking, or event-service messages.'**
+  String get messagingPermissionsDescription;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch'**
+  String get messagingPermissionsCatch;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates allowed'**
+  String get messagingPermissionsOn;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates stopped'**
+  String get messagingPermissionsOff;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No confirmed permission'**
+  String get messagingPermissionsUnknown;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Event recommendations and Catch updates.'**
+  String get messagingPermissionsCatchHelp;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Event announcements and updates from this organizer only.'**
+  String get messagingPermissionsOrganizerHelp;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop updates'**
+  String get messagingPermissionsStop;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh permissions'**
+  String get messagingPermissionsRefresh;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Catch and organizer WhatsApp updates separately.'**
+  String get messagingPermissionsSettingsHelp;
+
+  /// Own-profile tab for form submissions and private organizer cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms & cards'**
+  String get formProfilesTabLabel;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms & private cards'**
+  String get formProfilesTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your form details, grouped by organizer. Review unclaimed submissions and manage the answers saved to each private card. Other organizers cannot see these cards.'**
+  String get formProfilesDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No form profiles yet'**
+  String get formProfilesEmptyTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms with Catch profile fields or private card fields appear here after you submit with your verified phone number.'**
+  String get formProfilesEmptyBody;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get formProfilesLoadMore;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer'**
+  String get formProfilesOrganizerFallback;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your profile'**
+  String get formProfileReviewTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.'**
+  String get formProfileReviewDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch profile details'**
+  String get formProfileCoreTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your private organizer card'**
+  String get formProfileCardTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This card is private to you. Other organizers cannot see it. You can separately choose answers to share in an eligible event chat. The original organizer still has your form response; removing an answer here only removes it from your card.'**
+  String get formProfileCardDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep on my private card'**
+  String get formProfileKeepAnswer;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use for my Catch profile'**
+  String get formProfileUseAnswer;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your identity'**
+  String get formProfileBasicsTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your verified sign-in phone identifies your account. Review your name, date of birth and gender before saving.'**
+  String get formProfileBasicsDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get formProfileDisplayName;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get formProfileBirthDate;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get formProfileGender;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'YYYY-MM-DD · You must be 18 or older.'**
+  String get formProfileDateHint;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'I have reviewed these details'**
+  String get formProfileConfirmation;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch can store the profile details I choose. They remain subject to my sharing settings. My private organizer card stays private until I choose to share it.'**
+  String get formProfileConfirmationBody;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save reviewed details'**
+  String get formProfileSave;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reviewed details have been saved.'**
+  String get formProfileSaved;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get formProfileYes;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get formProfileNo;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No answer'**
+  String get formProfileEmptyAnswer;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted attachment'**
+  String get formProfileAttachment;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload latest details'**
+  String get formProfileReload;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign-in phone is verified separately. This form answer cannot change it.'**
+  String get formProfilePhoneAuthority;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This answer can stay in your private form submission. It cannot be copied into a Catch profile field here.'**
+  String get formProfileUnsupported;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the highlighted fields before saving.'**
+  String get formProfileInvalid;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value.'**
+  String get formProfileRequired;
+
+  /// Private form photo review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this photo for my Catch profile'**
+  String get formProfileUsePhoto;
+
+  /// Private form photo review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry photo preview'**
+  String get formProfilePhotoRetry;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event chat'**
+  String get eventChatTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet the people attending this event.'**
+  String get eventChatEntryBody;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event chat'**
+  String get eventChatOpen;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Close event chat'**
+  String get eventChatClose;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave chat'**
+  String get eventChatLeave;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Join event chat'**
+  String get eventChatJoin;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat is not open yet'**
+  String get eventChatNotOpen;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a shared conversation for people admitted to this event. Each person chooses whether to join.'**
+  String get eventChatHostSetup;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your host can open a shared conversation for people attending this event.'**
+  String get eventChatGuestWaiting;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet your fellow attendees'**
+  String get eventChatJoinTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.'**
+  String get eventChatJoinDisclosure;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your Catch profile before joining'**
+  String get eventChatProfileRequired;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the name you want other attendees to see. Your submitted form details stay private until you review them.'**
+  String get eventChatProfileHelp;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review my profile'**
+  String get eventChatReviewProfile;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your Catch profile in the consumer app, then return here to join. You can open or close this room as a host.'**
+  String get eventChatProfileHostHelp;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the conversation'**
+  String get eventChatEmptyTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello, ask a question or make a plan for the event.'**
+  String get eventChatEmptyBody;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier messages'**
+  String get eventChatEarlier;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message actions'**
+  String get eventChatMessageActions;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get eventChatReply;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'React'**
+  String get eventChatReact;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel reply'**
+  String get eventChatClearReply;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message unavailable'**
+  String get eventChatUnavailable;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Like'**
+  String get eventChatReactionLike;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Love'**
+  String get eventChatReactionLove;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Laugh'**
+  String get eventChatReactionLaugh;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Surprised'**
+  String get eventChatReactionWow;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get eventChatReactionSad;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks'**
+  String get eventChatReactionThanks;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reaction'**
+  String get eventChatReactionsTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Close reactions'**
+  String get eventChatCloseReactions;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get eventChatYou;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh chat'**
+  String get eventChatRefresh;
+
+  /// Name of the participant whose message is being replied to.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {name}'**
+  String eventChatReplyingTo({required String name});
+
+  /// Names of participants currently typing.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} typing…'**
+  String eventChatTyping({required String names});
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get eventChatsTab;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct messages'**
+  String get directMessagesTab;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event conversations'**
+  String get eventChatsEmptyTitle;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event chats appear here when you are on the attendee list. You can review your profile and choose to join once the host opens the chat.'**
+  String get eventChatsEmptyBody;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the host to open the chat'**
+  String get eventChatsWaiting;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your profile to join'**
+  String get eventChatsReviewProfile;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You joined this conversation'**
+  String get eventChatsJoined;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to join'**
+  String get eventChatsReady;
+
+  /// Consumer event conversation directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check more events'**
+  String get eventChatsLoadMore;
+
   /// Explicit save for an application review note without changing its status.
   ///
   /// In en, this message translates to:
@@ -31911,6 +32937,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start application review'**
   String get hostResponseStartReview;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Event profile'**
+  String get eventProfileTitle;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'My event profile'**
+  String get eventProfileMine;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.'**
+  String get eventProfileDisclosure;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.'**
+  String get eventProfileCardDisclosure;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch profile details'**
+  String get eventProfileCore;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer card'**
+  String get eventProfileCard;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get eventProfilePhoto;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No photo shared'**
+  String get eventProfileNoPhoto;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No card selected'**
+  String get eventProfileNoCard;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a private card'**
+  String get eventProfileChooseCard;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'No claimed cards from this organizer are available. You can review your submitted forms from your account.'**
+  String get eventProfileNoCards;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more cards'**
+  String get eventProfileMoreCards;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Save sharing choices'**
+  String get eventProfileSave;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop sharing extra details'**
+  String get eventProfileStop;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Event profile updated'**
+  String get eventProfileSaved;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.'**
+  String get eventProfileCannotShare;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Only their name is shared'**
+  String get eventProfileEmpty;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'This person has not shared extra profile details with this event chat.'**
+  String get eventProfileEmptyBody;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with this event chat'**
+  String get eventProfileSharedHere;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected organizer answers'**
+  String get eventProfileSelectedAnswers;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed profile details or answers need to be selected again before sharing.'**
+  String get eventProfileReviewAgain;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'View event profile'**
+  String get eventProfileView;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'After saving, review your choices here whenever you want to change or stop sharing.'**
+  String get eventProfileEditAgain;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {number}'**
+  String eventProfilePhotoLabel({required int number});
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this photo'**
+  String get eventProfileChoosePhoto;
+
+  /// Participant-controlled event profile sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo preview unavailable. Reload before selecting it.'**
+  String get eventProfilePhotoUnavailable;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Not claimed · Review before using in Catch'**
+  String get formProfilesUnclaimed;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed · No answers saved to a private card'**
+  String get formProfilesNoCardAnswers;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {1 answer saved to your private card} other {{count} answers saved to your private card}}'**
+  String formProfilesSavedAnswers({required int count});
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity preferences'**
+  String get profileActivityPreferencesTitle;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional pace, distances and run preferences.'**
+  String get profileActivityPreferencesBody;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Catch profile'**
+  String get profileCoreDetailsTitle;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.'**
+  String get profileCoreDetailsBody;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get eventChatParticipantsTitle;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'People who have joined this event chat. Open a profile to see the details they chose to share here.'**
+  String get eventChatParticipantsDescription;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No participants are available to show.'**
+  String get eventChatParticipantsEmpty;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No visible participants in this part of the list. Continue to check the remaining participants.'**
+  String get eventChatParticipantsContinue;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more participants'**
+  String get eventChatParticipantsMore;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get eventChatParticipantHost;
+
+  /// Event room participant directory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendee'**
+  String get eventChatParticipantAttendee;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Report message'**
+  String get eventChatReport;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Block sender'**
+  String get eventChatBlock;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove message'**
+  String get eventChatRemove;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reason to send this message to Catch for review. The sender will not see your report.'**
+  String get eventChatReportDisclosure;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment or abuse'**
+  String get eventChatReportHarassment;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or scam'**
+  String get eventChatReportSpam;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
+  String get eventChatReportInappropriate;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get eventChatReportOther;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You and this person will stop seeing each other’s messages and event profiles. They stay in the event, and other participants can still see them. You can unblock them in Settings.'**
+  String get eventChatBlockDisclosure;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This message and its reply previews will be hidden from everyone in the room. You cannot undo this. Catch may retain a private record for safety review.'**
+  String get eventChatRemoveDisclosure;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent to Catch.'**
+  String get eventChatReported;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender blocked.'**
+  String get eventChatBlocked;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message removed.'**
+  String get eventChatRemoved;
 
   /// Program operations copy: programsWorkShellTitle.
   ///

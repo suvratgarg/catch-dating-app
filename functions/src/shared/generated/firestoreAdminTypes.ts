@@ -3984,6 +3984,8 @@ export interface UserProfileDocument {
   gender: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
   countryCode?: string;
+  profileRevision?: number;
+  profileClaimedAt?: FirebaseFirestore.Timestamp;
   profileComplete: boolean;
   email: "" | string;
   instagramHandle?: string | null;
@@ -3999,7 +4001,7 @@ export interface UserProfileDocument {
   latitude?: number | null;
   longitude?: number | null;
   /**
-   * @minItems 1
+   * @minItems 0
    * @maxItems 8
    */
   interestedInGenders: ("man" | "woman" | "nonBinary" | "other")[];
@@ -4917,6 +4919,284 @@ export interface OrganizerFollowDocument {
 }
 
 /**
+ * Participant-owned selection of applicant-submitted organizer-card fields. No CRM content or event sharing permission.
+ */
+export interface ParticipantOrganizerCardDocument {
+  uid: string;
+  organizerId: string;
+  responseId: string;
+  /**
+   * @maxItems 100
+   */
+  questionIds: string[];
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency proof for a participant-reviewed form profile claim. Contains no submitted answers.
+ */
+export interface ParticipantProfileClaimReceiptDocument {
+  uid: string;
+  responseId: string;
+  payloadHash: string;
+  profileRevision: number;
+  organizerCardId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Private pointers to explicitly designated applicant-submitted profile and organizer-card answers. Submission prepares a proposal, never a claimed or public profile.
+ */
+export interface ParticipantFormProfileProposalDocument {
+  uid: string;
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  responseId: string;
+  /**
+   * @minItems 1
+   * @maxItems 100
+   */
+  fields: {
+    questionId: string;
+    destination: "catchProfile" | "organizerCard";
+    canonicalFieldId:
+      | (
+          | "givenName"
+          | "familyName"
+          | "displayName"
+          | "dateOfBirth"
+          | "age"
+          | "gender"
+          | "phoneNumber"
+          | "email"
+          | "instagramHandle"
+          | "linkedinUrl"
+          | "profilePhoto"
+          | "city"
+          | "heightCm"
+          | "occupation"
+          | "company"
+          | "education"
+          | "languages"
+          | "relationshipGoal"
+          | "interestedInGenders"
+          | "drinking"
+          | "smoking"
+          | "religion"
+          | "workout"
+          | "diet"
+          | "children"
+        )
+      | null;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  claimedAt?: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.
+ */
+export interface EventChatProfileShareDocument {
+  eventId: string;
+  uid: string;
+  organizerId: string | null;
+  revision: number;
+  selection: {
+    profileRevision: number;
+    membershipRevision: number;
+    /**
+     * @maxItems 14
+     */
+    coreFieldIds: (
+      | "age"
+      | "gender"
+      | "city"
+      | "heightCm"
+      | "occupation"
+      | "company"
+      | "education"
+      | "languages"
+      | "relationshipGoal"
+      | "drinking"
+      | "smoking"
+      | "workout"
+      | "diet"
+      | "children"
+    )[];
+    photoId: string | null;
+    card: {
+      responseId: string;
+      revision: number;
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      questionIds: string[];
+    } | null;
+    termsVersion: "event-profile-sharing-v1";
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Host-controlled event conversation availability. No attendee admission or profile data.
+ */
+export interface EventChatRoomDocument {
+  eventId: string;
+  organizerId: string;
+  status: "open" | "closed";
+  revision: number;
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastMessageSequence?: number;
+}
+
+/**
+ * Explicit room participation. Current admission and claimed identity must still be rechecked on every access.
+ */
+export interface EventChatMembershipDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  status: "joined" | "left";
+  revision: number;
+  termsVersion: "event-chat-v1";
+  joinedAt: FirebaseFirestore.Timestamp;
+  leftAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.
+ */
+export interface EventChatAccessReceiptDocument {
+  eventId: string;
+  uid: string;
+  payloadHash: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned event conversation message; replies are same-room references, never quoted copies.
+ */
+export interface EventChatMessageDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string | null;
+  sequence: number;
+  text: string | null;
+  replyToMessageId: string | null;
+  status: "visible" | "removed";
+  payloadHash: string;
+  reactionCounts: {
+    like: number;
+    love: number;
+    laugh: number;
+    wow: number;
+    sad: number;
+    thanks: number;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  removedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * One current reaction per account and message; separate from aggregated anonymous counts.
+ */
+export interface EventChatReactionDocument {
+  eventId: string;
+  messageId: string;
+  uid: string;
+  reaction: ("like" | "love" | "laugh" | "wow" | "sad" | "thanks") | null;
+  revision: number;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Bounded expiring typing indicator, never draft text.
+ */
+export interface EventChatPresenceDocument {
+  eventId: string;
+  uid: string;
+  revision: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.
+ */
+export interface CatchCommunicationPreferenceDocument {
+  uid: string;
+  whatsapp: {
+    status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
+    termsVersion: string | null;
+    source:
+      | null
+      | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
+      | "unsubscribeLink"
+      | "inboundStop"
+      | "providerWebhook"
+      | "legacyIncomplete";
+    sourceEventId: string | null;
+    updatedAt: FirebaseFirestore.Timestamp | null;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable participant evidence for Catch WhatsApp, separate from every organizer permission.
+ */
+export interface CatchCommunicationPermissionReceiptDocument {
+  uid: string;
+  channel: "whatsapp";
+  decision: "optedIn" | "optedOut";
+  evidenceStatus: "complete" | "incomplete";
+  termsVersion: string | null;
+  consentCopyHash: string | null;
+  source:
+    | "publicEventRegistration"
+    | "hostFormResponse"
+    | "participantSettings"
+    | "unsubscribeLink"
+    | "inboundStop"
+    | "providerWebhook"
+    | "legacyIncomplete";
+  sourceEventId: string | null;
+  sourceFormId: string | null;
+  sourceResponseId: string | null;
+  sourceProviderEventId: string | null;
+  actorClass: "participant" | "provider" | "system";
+  actorUid: string | null;
+  identityStrength:
+    | "unknown"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  grantedAt: FirebaseFirestore.Timestamp | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  supersedesReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  sourceOrganizerId: string | null;
+}
+
+/**
  * Server-owned, organizer-scoped channel consent stored at organizerCommunicationPreferences/{organizerId_uid}.
  */
 export interface OrganizerCommunicationPreferenceDocument {
@@ -5789,6 +6069,10 @@ export interface OrganizerApplicationFormVersionDocument {
  * Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.
  */
 export interface OrganizerFormDocument {
+  /**
+   * Unreleased form response reservations awaiting a fee. Legacy omitted means zero.
+   */
+  pendingPaymentCount?: number;
   organizerId: string;
   createdByUid: string;
   title: string;
@@ -5849,6 +6133,114 @@ export interface OrganizerFormDocument {
   pausedAt: FirebaseFirestore.Timestamp | null;
   archivedAt: FirebaseFirestore.Timestamp | null;
   lastResponseAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.
+ */
+export interface OrganizerPaymentConnectionDocument {
+  organizerId: string;
+  provider: "razorpay";
+  mode: "test" | "live";
+  status: "connecting" | "ready" | "needsAttention" | "disconnected";
+  accountId: string | null;
+  publicToken: string | null;
+  secretVersionResource: string | null;
+  tokenExpiresAt: FirebaseFirestore.Timestamp | null;
+  webhookId: string | null;
+  webhookUrl: string | null;
+  webhookVerifiedAt: FirebaseFirestore.Timestamp | null;
+  connectedByUid: string;
+  revision: number;
+  refreshLeaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
+ * Single-use hashed OAuth state bound to initiating user, organizer, connection and mode.
+ */
+export interface OrganizerPaymentOauthStateDocument {
+  organizerId: string;
+  connectionId: string;
+  actorUid: string;
+  mode: "test" | "live";
+  status: "pending" | "exchanging" | "completed" | "failed";
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.
+ */
+export interface OrganizerFormPaymentDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  draftId: string;
+  respondentUid: string;
+  connectionId: string;
+  accountId: string;
+  mode: "test" | "live";
+  draftRevision: number;
+  answersHash: string;
+  identity: {
+    displayName: string | null;
+    email: string | null;
+    phoneE164: string | null;
+    searchName: string | null;
+    origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+  };
+  amountPaise: number;
+  currency: "INR";
+  description: string;
+  refundPolicy: string;
+  receipt: string;
+  status:
+    | "creatingOrder"
+    | "orderUnknown"
+    | "checkoutReady"
+    | "verifying"
+    | "captured"
+    | "submitted"
+    | "failed"
+    | "expired"
+    | "refundPending"
+    | "refunded"
+    | "reviewRequired";
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  providerRefundId: string | null;
+  refundedAmountPaise: number;
+  responseId: string | null;
+  reservationReleased: boolean;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  checkoutExpiresAt: FirebaseFirestore.Timestamp;
+  capturedAt: FirebaseFirestore.Timestamp | null;
+  submittedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
+ * Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.
+ */
+export interface OrganizerFormPaymentWebhookDocument {
+  connectionId: string;
+  accountId: string;
+  providerEventId: string;
+  event: string;
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  status: "pending" | "processed" | "ignored";
+  createdAt: FirebaseFirestore.Timestamp;
+  processedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+  nextAttemptAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -5946,6 +6338,10 @@ export interface OrganizerFormDraftDocument {
             )
           | null;
         privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        /**
+         * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
+         */
+        answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6025,6 +6421,20 @@ export interface OrganizerFormDraftDocument {
       consentCopy: string;
       consentVersion: string;
       retentionCopy: string;
+    };
+    payment?: {
+      connectionId: string;
+      amountPaise: number;
+      currency: "INR";
+      description: string;
+      refundPolicy: string;
+    } | null;
+    /**
+     * Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.
+     */
+    messagingConsent?: {
+      organizerWhatsapp: boolean;
+      catchWhatsapp: boolean;
     };
     completion: {
       title: string;
@@ -6135,6 +6545,10 @@ export interface OrganizerFormVersionDocument {
             )
           | null;
         privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        /**
+         * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
+         */
+        answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6215,6 +6629,20 @@ export interface OrganizerFormVersionDocument {
       consentVersion: string;
       retentionCopy: string;
     };
+    payment?: {
+      connectionId: string;
+      amountPaise: number;
+      currency: "INR";
+      description: string;
+      refundPolicy: string;
+    } | null;
+    /**
+     * Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.
+     */
+    messagingConsent?: {
+      organizerWhatsapp: boolean;
+      catchWhatsapp: boolean;
+    };
     completion: {
       title: string;
       message: string | null;
@@ -6232,6 +6660,17 @@ export interface OrganizerFormVersionDocument {
  * Expiring version-bound respondent autosave state.
  */
 export interface OrganizerFormResponseDraftDocument {
+  messagingDecision?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: boolean;
+    catchWhatsapp: boolean;
+    organizerDecidedAt: FirebaseFirestore.Timestamp;
+    catchDecidedAt: FirebaseFirestore.Timestamp;
+  };
+  /**
+   * Server-only checkout lock; prevents edits while a fee is unresolved.
+   */
+  paymentAttemptId?: string | null;
   organizerId: string;
   formId: string;
   versionId: string;

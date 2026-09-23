@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_response.schema.json",
+  "title": "GetEventChatProfileCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "participantUid",
+    "displayName",
+    "coreFields",
+    "cardFields",
+    "photo"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "participantUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "$ref": "../shared/event_chat_profile_common.schema.json#/definitions/coreField"
+      }
+    },
+    "cardFields": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "../shared/event_chat_profile_common.schema.json#/definitions/cardField"
+      }
+    },
+    "photo": {
+      "anyOf": [
+        {
+          "$ref": "./get_participant_form_photo_response.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

@@ -6,6 +6,11 @@
  * Optimistically saves respondent answers without file bytes.
  */
 export interface SaveOrganizerFormResponseDraftCallablePayload {
+  messagingChoices?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: boolean;
+    catchWhatsapp: boolean;
+  };
   draftId: string;
   draftToken: string | null;
   expectedRevision: number;

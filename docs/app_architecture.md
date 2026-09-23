@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.67.2
+version: 1.73.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1974,6 +1974,80 @@ Candidate patterns:
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
 | Mutation subscriptions and error snackbar publication | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
 | Global error handlers | `lib/main.dart` |
+
+### Event conversation session ownership
+
+Event conversations use `EventChatRepository` and `EventChatController`; the
+existing dating-match repository is not an admission source. The repository
+uses generated callable requests with the reviewed account UID on mutations.
+The controller fences asynchronous results by UID, provider generation and read
+epoch. It clears visible history when backgrounded or when authority cannot be
+verified, and revalidates all loaded history windows rather than appending stale
+reply quotes. A new foreground read is required before sending again.
+
+Sending retains the request ID for the exact normalized draft and reply until
+acknowledged. Reaction changes retain the reviewed per-message revision.
+Typing never sends draft text, serializes start/stop acknowledgements, and stops
+after editing is idle even if an unsent draft remains. The controller owns
+refresh cadence and scales it with requested history depth; widgets own text
+editing, scrolling and app/route lifecycle signals. Account changes must also
+clear widget-owned drafts and reply selection before rendering another account.
+Mutation entrypoints also require the UID associated with the rendered controls;
+an old callback cannot become an action for a newly signed-in account.
+
+`EventChatScreen` is a shared authenticated route at `/events/:eventId/chat`.
+It is reachable before dating onboarding so admitted form applicants can review
+and claim a private profile first. Admission and explicit room membership still
+come from the callable authority. The Host event toolbar opens the same room;
+the consumer event detail requests only room access metadata for its entry row.
+The message menu contains reply/react plus permitted report, block and removal
+actions. Reporting requires a selected reason; blocking and removal require an
+explicit confirmation. The controller binds each action to the reviewed account
+and message sender, rechecks the current snapshot and reuses its request ID after
+a lost acknowledgement. The backend derives the target and checks current room
+authority. Profile navigation uses the sender name with a full-height touch target
+so even a manager menu stays within the five-command primitive limit.
+
+The screen uses the canonical route top bar and chat composer. Reply previews
+resolve against the current message snapshot, and opening reactions dismisses
+the keyboard and replaces the composer until the selection closes.
+
+Consumer `/chats` opens an Events directory independently of dating-profile
+setup and dating-match providers. Direct messages remain a separate tab, and
+individual direct-message routes retain their profile prerequisites. Host inbox
+composition is unchanged. `EventChatDirectoryController` deduplicates candidate
+pages by event ID and revalidates previously loaded windows on refresh or load
+more; errors and account changes discard old entries. The directory refreshes
+on returning from a room, resuming the app while visible, or explicit refresh.
+Empty filtered pages retain a continuation action until all sources are scanned.
+
+`EventProfileEditorController` owns account-bound sharing reads, card pagination,
+reviewed revisions and payload-bound save retries. Card choices retain organizer
+ownership from the private form directory and require a current claim and card
+revision; only selected applicant fields qualify. `EventProfileDraft` restores
+only unchanged saved selections, never preselecting newly edited core values or
+answers. Immutable requests separate an in-flight save from later editing.
+Revocation does not require current admission or successful card loading.
+
+`EventParticipantProfileController` rechecks the protected projection while
+visible and clears it on failed reads, backgrounding or account changes. Its
+result contains only selected fields and a bounded in-memory photo preview.
+`EventProfileScreen` owns the editor at `/events/:eventId/chat/profile` and the
+participant view at `/events/:eventId/chat/people/:participantUid`. Both are
+shared authenticated routes before dating onboarding; server-side admission,
+claim and sharing checks still control each read. The room app bar opens the
+editor and each message's sender name opens its protected profile. Backgrounding
+or covering either route clears visible details until a fresh foreground read.
+
+The editor exposes unchecked eligible values and only claimed applicant answers
+from the same organizer. Photo selection remains disabled until its owned preview
+has decoded; participant photos use only the bounded protected memory preview.
+Answer labels and values use natural-height text so a sharing choice never hides
+part of the reviewed answer behind an ellipsis.
+Card pagination retains unsaved choices while controls are disabled, provided
+the account, grant, profile and membership revisions remain unchanged. Changed
+card revisions discard local answer choices. Save and revocation use reviewed
+UID/revision snapshots; revocation remains available after admission ends.
 
 ## Controller And View-Model Contract
 

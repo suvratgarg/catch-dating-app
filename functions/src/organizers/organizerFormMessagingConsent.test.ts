@@ -1,0 +1,178 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
+import {createFormPaymentFixture} from
+  "../payments/formPayments/formPaymentTestStore";
+import {formMessagingOffer, formMessagingTerms,
+  normalizeFormMessagingDecision} from "./organizerFormMessagingConsent";
+import {submitOrganizerFormResponseHandler} from "./organizerFormResponses";
+import {organizerCommunicationPreferenceId,
+  unknownOrganizerCommunicationChannel} from
+  "../shared/organizerCommunicationPreferences";
+
+const chosenAt = Timestamp.fromMillis(500);
+const now = Timestamp.fromMillis(1000);
+
+function fixture(organizerWhatsapp: boolean, catchWhatsapp: boolean) {
+  const h = createFormPaymentFixture();
+  h.version.definition.messagingConsent = {
+    organizerWhatsapp: true, catchWhatsapp: true,
+  };
+  const decision = normalizeFormMessagingDecision({
+    choices: {termsVersion: "form-whatsapp-v1", organizerWhatsapp,
+      catchWhatsapp}, previous: undefined, definition: h.version.definition,
+    phoneVerified: true, now: chosenAt,
+  });
+  h.store.records.set("organizerFormResponseDrafts/draft",
+    {...h.draft, messagingDecision: decision});
+  const records = (collection: string) => [...h.store.records.entries()]
+    .filter(([path]) => path.startsWith(collection + "/"));
+  return {...h, decision: decision!, records};
+}
+
+test("offer is server copy, opt-in is optional, and destinations are distinct",
+  () => {
+    const h = fixture(false, false);
+    h.version.definition.messagingConsent!.catchWhatsapp = false;
+    assert.deepEqual(formMessagingOffer(h.version.definition), {
+      termsVersion: "form-whatsapp-v1",
+      organizerWhatsapp: formMessagingTerms.organizerWhatsapp,
+      catchWhatsapp: null,
+    });
+    assert.throws(() => normalizeFormMessagingDecision({
+      choices: {termsVersion: "form-whatsapp-v1",
+        organizerWhatsapp: false, catchWhatsapp: true},
+      previous: undefined, definition: h.version.definition,
+      phoneVerified: true, now,
+    }), /not offered/u);
+    assert.throws(() => normalizeFormMessagingDecision({
+      choices: {termsVersion: "form-whatsapp-v1",
+        organizerWhatsapp: true, catchWhatsapp: false},
+      previous: undefined, definition: h.version.definition,
+      phoneVerified: false, now,
+    }), /Verify your phone/u);
+  });
+
+test("autosave and changing one scope do not refresh the other grant time",
+  () => {
+    const h = fixture(true, false);
+    const same = normalizeFormMessagingDecision({
+      choices: {termsVersion: "form-whatsapp-v1",
+        organizerWhatsapp: true, catchWhatsapp: false},
+      previous: h.decision, definition: h.version.definition,
+      phoneVerified: true, now,
+    });
+    assert.equal(same, h.decision);
+    const changed = normalizeFormMessagingDecision({
+      choices: {termsVersion: "form-whatsapp-v1",
+        organizerWhatsapp: true, catchWhatsapp: true},
+      previous: h.decision, definition: h.version.definition,
+      phoneVerified: true, now,
+    })!;
+    assert.equal(changed.organizerDecidedAt.toMillis(), chosenAt.toMillis());
+    assert.equal(changed.catchDecidedAt.toMillis(), now.toMillis());
+  });
+
+test("payment and submission with unchecked choices grant neither scope",
+  async () => {
+    const h = fixture(false, false);
+    const {paymentId} = await h.reserve();
+    h.capture(paymentId);
+    assert.equal(await h.finalize(paymentId), "submitted");
+    assert.equal(
+      h.records("organizerCommunicationPermissionReceipts").length, 0);
+    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+  });
+
+test("captured form creates independent immutable receipts exactly once",
+  async () => {
+    const h = fixture(true, true);
+    const {paymentId} = await h.reserve();
+    assert.equal(
+      h.records("organizerCommunicationPermissionReceipts").length, 0);
+    h.capture(paymentId);
+    await Promise.all([h.finalize(paymentId), h.finalize(paymentId)]);
+    const org = h.records("organizerCommunicationPermissionReceipts");
+    const platform = h.records("catchCommunicationPermissionReceipts");
+    assert.equal(org.length, 1);
+    assert.equal(platform.length, 1);
+    assert.notEqual(org[0][0], platform[0][0]);
+    assert.notEqual(org[0][1].consentCopyHash, platform[0][1].consentCopyHash);
+    assert.equal(org[0][1].organizerId, "org");
+    assert.equal(platform[0][1].sourceOrganizerId, "org");
+    assert.equal(platform[0][1].organizerId, undefined);
+    assert.equal(org[0][1].uid, "person");
+    assert.equal(org[0][1].sourceResponseId,
+      h.records("organizerFormResponses")[0][0].split("/")[1]);
+    assert.equal(h.records("users").length, 0);
+  });
+
+test("free submissions share the same consent transaction without a payment",
+  async () => {
+    const h = fixture(true, false);
+    h.version.definition.payment = null;
+    const result = await submitOrganizerFormResponseHandler(h.request, {
+      firestore: () => h.db, timestamp: () => now,
+      checkRateLimit: async () => undefined,
+      storageBucket: () => {
+        throw new Error("No storage needed");
+      },
+    });
+    assert.equal(result.status, "submitted");
+    assert.equal(
+      h.records("organizerCommunicationPermissionReceipts").length, 1);
+    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+    assert.equal(h.records("organizerFormPayments").length, 0);
+  });
+
+test("delayed capture cannot overwrite a later organizer STOP or Catch opt-out",
+  async () => {
+    const h = fixture(true, true);
+    const {paymentId} = await h.reserve();
+    const withdrawal = {...unknownOrganizerCommunicationChannel(),
+      status: "optedOut", evidenceStatus: "complete",
+      currentReceiptId: "receipt_stop", termsVersion: null,
+      source: "inboundStop", updatedAt: Timestamp.fromMillis(800)};
+    const orgKey = "organizerCommunicationPreferences/" +
+      organizerCommunicationPreferenceId("org", "person");
+    const org = {organizerId: "org", uid: "person", whatsapp: withdrawal,
+      sms: unknownOrganizerCommunicationChannel(), createdAt: chosenAt,
+      updatedAt: withdrawal.updatedAt};
+    const platform = {uid: "person", whatsapp: withdrawal,
+      createdAt: chosenAt, updatedAt: withdrawal.updatedAt};
+    h.store.records.set(orgKey, org);
+    h.store.records.set("catchCommunicationPreferences/person", platform);
+    h.capture(paymentId);
+    await h.finalize(paymentId);
+    assert.deepEqual(h.store.records.get(orgKey), org);
+    assert.deepEqual(
+      h.store.records.get("catchCommunicationPreferences/person"), platform);
+    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+    assert.equal(
+      h.records("organizerCommunicationPermissionReceipts").length, 0);
+  });
+
+test("consent mutation after checkout invalidates frozen submission",
+  async () => {
+    const h = fixture(true, false);
+    const {paymentId} = await h.reserve();
+    const draft = h.store.records.get("organizerFormResponseDrafts/draft")!;
+    h.store.records.set("organizerFormResponseDrafts/draft", {...draft,
+      messagingDecision: {...h.decision, catchWhatsapp: true}});
+    h.capture(paymentId);
+    assert.equal(await h.finalize(paymentId), "refundPending");
+    assert.equal(h.records("organizerFormResponses").length, 0);
+    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+  });
+
+test("deleted participant cannot be re-subscribed by a delayed payment",
+  async () => {
+    const h = fixture(true, true);
+    const {paymentId} = await h.reserve();
+    h.store.records.set("deletedUsers/person", {status: "processing"});
+    h.capture(paymentId);
+    await h.finalize(paymentId);
+    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+    assert.equal(
+      h.records("organizerCommunicationPermissionReceipts").length, 0);
+  });

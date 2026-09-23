@@ -214,6 +214,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     final operationPending =
         state.mutations.operationPending || _pendingExternalLink != null;
+    final preferenceChangesBlocked =
+        operationPending ||
+        state.profile.status != SettingsProfileStatus.loaded;
 
     ref.listen(SettingsController.unblockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
@@ -261,6 +264,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onRetry: operationPending
                       ? null
                       : () => ref.invalidate(watchUserProfileProvider),
+                  onReviewForms: operationPending
+                      ? null
+                      : () => context.pushNamed(Routes.formProfilesScreen.name),
                 ),
                 children: [
                   CatchField.read(
@@ -340,6 +346,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               CatchSection.fieldRows(
                 title: context.l10n.safetySettingsScreenTitleNotifications,
                 children: [
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.messagingPermissionsTitle,
+                    body: context.l10n.messagingPermissionsSettingsHelp,
+                    bodyMaxLines: 4,
+                    onTap: operationPending
+                        ? null
+                        : () => context.pushNamed(
+                            Routes.messagingPermissionsScreen.name,
+                          ),
+                  ),
                   CatchField.toggle(
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.newCatchesSwitch,
@@ -349,7 +366,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         context.l10n.safetySettingsScreenTitlePushNotifications,
                     icon: CatchIcons.favoriteOutline,
                     value: state.preferences.newCatches,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.newCatches,
@@ -366,7 +383,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .safetySettingsScreenTitleCrossPathsInvitations,
                     icon: CatchIcons.personSearchOutlined,
                     value: state.preferences.crossPathsInvitations,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference:
@@ -382,7 +399,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleMessages,
                     icon: CatchIcons.chatBubbleOutlineRounded,
                     value: state.preferences.messages,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.messages,
@@ -397,7 +414,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleEventReminders,
                     icon: CatchIcons.directionsRunOutlined,
                     value: state.preferences.eventReminders,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.eventReminders,
@@ -414,7 +431,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .safetySettingsScreenTitleEventChangesAndCancellations,
                     icon: CatchIcons.eventRepeatOutlined,
                     value: state.preferences.eventStatusUpdates,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.eventStatusUpdates,
@@ -430,7 +447,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         context.l10n.safetySettingsScreenTitleClubAnnouncements,
                     icon: CatchIcons.notificationsActiveOutlined,
                     value: state.preferences.clubUpdates,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.clubUpdates,
@@ -445,7 +462,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleEmailUpdates,
                     icon: CatchIcons.markEmailReadOutlined,
                     value: state.preferences.weeklyDigest,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.weeklyDigest,
@@ -476,7 +493,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     body: context.l10n.safetySettingsScreenBodyShowInCrossPaths,
                     icon: CatchIcons.favoriteBorderRounded,
                     value: state.preferences.showInCrossPaths,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.showInCrossPaths,
@@ -504,7 +521,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleShowMeOnMap,
                     icon: CatchIcons.mapOutlined,
                     value: state.preferences.showOnMap,
-                    onChanged: operationPending
+                    onChanged: preferenceChangesBlocked
                         ? null
                         : (value) => _savePref(
                             preference: SettingsPreference.showOnMap,
@@ -648,10 +665,12 @@ class AccountProfileStatus extends StatelessWidget {
     super.key,
     required this.profile,
     required this.onRetry,
+    required this.onReviewForms,
   });
 
   final SettingsProfileState profile;
   final VoidCallback? onRetry;
+  final VoidCallback? onReviewForms;
 
   @override
   Widget build(BuildContext context) {
@@ -669,10 +688,14 @@ class AccountProfileStatus extends StatelessWidget {
     if (profile.isMissing) {
       return Padding(
         padding: CatchInsets.content,
-        child: CatchErrorState(
-          title: context.l10n.safetySettingsScreenTitleAccountUnavailable,
-          message: context.l10n.safetySettingsScreenMessageSignOutAndSign,
-          mode: CatchErrorStateMode.compact,
+        child: CatchFieldLanes.single(
+          child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.safetySettingsScreenTitleAccountUnavailable,
+            body: context.l10n.safetySettingsScreenMessageSignOutAndSign,
+            bodyMaxLines: 8,
+            onTap: onReviewForms,
+          ),
         ),
       );
     }

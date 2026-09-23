@@ -3,6 +3,81 @@
   "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
   "collections": [
     {
+      "id": "organizerPaymentConnections",
+      "path": "organizerPaymentConnections/{connectionId}",
+      "rulesMatch": "/organizerPaymentConnections/{connectionId}",
+      "typescriptInterface": "OrganizerPaymentConnectionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentOauthCallback"
+      ]
+    },
+    {
+      "id": "organizerPaymentOauthStates",
+      "path": "organizerPaymentOauthStates/{stateId}",
+      "rulesMatch": "/organizerPaymentOauthStates/{stateId}",
+      "typescriptInterface": "OrganizerPaymentOauthStateDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentOauthCallback"
+      ]
+    },
+    {
+      "id": "organizerFormPayments",
+      "path": "organizerFormPayments/{paymentId}",
+      "rulesMatch": "/organizerFormPayments/{paymentId}",
+      "typescriptInterface": "OrganizerFormPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "prepareOrganizerFormPayment",
+        "getOrganizerFormPayment",
+        "findOrganizerFormPayment",
+        "reconcileOrganizerFormPayments"
+      ]
+    },
+    {
+      "id": "organizerFormPaymentWebhooks",
+      "path": "organizerFormPaymentWebhooks/{receiptId}",
+      "rulesMatch": "/organizerFormPaymentWebhooks/{receiptId}",
+      "typescriptInterface": "OrganizerFormPaymentWebhookDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "organizerFormPaymentWebhook",
+        "onOrganizerFormPaymentWebhook",
+        "reconcileOrganizerFormPayments"
+      ]
+    },
+    {
       "id": "config_cities",
       "path": "config/cities",
       "rulesMatch": "/config/cities",
@@ -25,7 +100,8 @@
       "write": "owner initial create; profile edits via updateUserProfile; narrow runtime direct updates only",
       "exportedFunctions": [
         "updateUserProfile",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "claimParticipantFormProfile"
       ],
       "operations": [
         {
@@ -3042,6 +3118,124 @@
       ],
       "migrationNotes": [
         "Permanent completion survives session expiry, reset and fork. Legacy completed sessions are a bounded read-only fallback while retained."
+      ]
+    },
+    {
+      "id": "catchCommunicationPreferences",
+      "path": "catchCommunicationPreferences/{uid}",
+      "rulesMatch": "/catchCommunicationPreferences/{uid}",
+      "typescriptInterface": "CatchCommunicationPreferenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant form consent and account deletion",
+      "read": "server only; never organizer-visible",
+      "write": "server only",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+        "Delayed finalization cannot overwrite a newer withdrawal."
+      ]
+    },
+    {
+      "id": "catchCommunicationPermissionReceipts",
+      "path": "catchCommunicationPermissionReceipts/{receiptId}",
+      "rulesMatch": "/catchCommunicationPermissionReceipts/{receiptId}",
+      "typescriptInterface": "CatchCommunicationPermissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant form consent and account deletion",
+      "read": "server only; never organizer-visible",
+      "write": "server only",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+        "Delayed finalization cannot overwrite a newer withdrawal."
+      ]
+    },
+    {
+      "id": "participantFormProfileProposals",
+      "path": "participantFormProfileProposals/{responseId}",
+      "rulesMatch": "/participantFormProfileProposals/{responseId}",
+      "typescriptInterface": "ParticipantFormProfileProposalDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified form submission and participant profile claiming",
+      "read": "server only; participant claim review requires exact response ownership",
+      "write": "server only; never populated from CRM",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion",
+        "getParticipantFormProfile",
+        "getParticipantFormPhoto",
+        "listParticipantFormProfiles",
+        "claimParticipantFormProfile"
+      ],
+      "migrationNotes": [
+        "Only explicit Catch profile and organizer-card questions create private pointers after verified submission. Existing canonical CRM mappings remain organizer-only.",
+        "A proposal is not a profile claim, public projection or room membership. Dereferencing requires current response ownership and status."
+      ]
+    },
+    {
+      "id": "participantOrganizerCards",
+      "path": "participantOrganizerCards/{responseId}",
+      "rulesMatch": "/participantOrganizerCards/{responseId}",
+      "typescriptInterface": "ParticipantOrganizerCardDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant profile claiming",
+      "read": "server only; authenticated participant projection",
+      "write": "server only; explicit participant review",
+      "exportedFunctions": [
+        "listParticipantFormProfiles",
+        "claimParticipantFormProfile",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
+      ]
+    },
+    {
+      "id": "participantProfileClaimReceipts",
+      "path": "participantProfileClaimReceipts/{receiptId}",
+      "rulesMatch": "/participantProfileClaimReceipts/{receiptId}",
+      "typescriptInterface": "ParticipantProfileClaimReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant profile claiming",
+      "read": "server only; authenticated participant projection",
+      "write": "server only; explicit participant review",
+      "exportedFunctions": [
+        "claimParticipantFormProfile",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
+      ]
+    },
+    {
+      "id": "eventChatProfileShares",
+      "path": "eventChatProfileShares/{shareId}",
+      "rulesMatch": "/eventChatProfileShares/{shareId}",
+      "typescriptInterface": "EventChatProfileShareDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event participant profile sharing",
+      "read": "server only; current joined participants after scoped selection",
+      "write": "server only; verified participant choice or own revocation",
+      "exportedFunctions": [
+        "getEventChatProfileSharing",
+        "updateEventChatProfileSharing",
+        "getEventChatProfile",
+        "requestAccountDeletion"
       ]
     }
   ]

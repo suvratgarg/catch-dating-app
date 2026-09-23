@@ -49,6 +49,155 @@ void main() {
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  group('own account access before profile setup', () {
+    for (final path in [
+      '/you',
+      '/settings',
+      '/settings/whatsapp',
+      '/you/forms',
+      '/you/forms/response-1',
+      '/events/event-1/chat',
+      '/events/event-1/chat/profile',
+      '/events/event-1/chat/people',
+      '/events/event-1/chat/people/person-1',
+      '/chats',
+    ]) {
+      test('$path requires resolved auth but not a loaded profile', () {
+        for (final profile in <AsyncValue<UserProfile?>>[
+          const AsyncLoading(),
+          const AsyncData(null),
+          AsyncData(_identityIncompleteUser()),
+          AsyncError(StateError('profile unavailable'), StackTrace.empty),
+        ]) {
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: profile,
+              location: path,
+            ),
+            isNull,
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(null),
+              userProfileAsync: const AsyncData(null),
+              location: path,
+            ),
+            startsWith('/start'),
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncLoading(),
+              userProfileAsync: profile,
+              location: path,
+            ),
+            startsWith('/loading'),
+          );
+          for (final entry in ['/auth', '/loading', '/start', '/onboarding']) {
+            expect(
+              _redirect(
+                uidAsync: const AsyncData(_testUid),
+                userProfileAsync: profile,
+                location: '$entry?from=${Uri.encodeComponent(path)}',
+              ),
+              path,
+            );
+          }
+        }
+      });
+    }
+    test('does not waive adjacent private or booking routes', () {
+      for (final path in [
+        '/you/reviews',
+        '/you/unknown',
+        '/settings/launch-access',
+        '/you/forms/response-1/other',
+        '/events/event-1/chat/other',
+        '/events/event-1/chat/people/person-1/other',
+        '/payment-history',
+        '/chats/match-1',
+        '/chats/unknown/other',
+      ]) {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: path,
+          ),
+          startsWith('/onboarding'),
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncLoading(),
+            location: path,
+          ),
+          startsWith('/loading'),
+        );
+      }
+    });
+  });
+
+  group('form profile claim routes', () {
+    test('requires sign-in but not a dating or booking-ready profile', () {
+      for (final path in ['/you/forms', '/you/forms/response-1']) {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            location: path,
+          ),
+          startsWith('/start'),
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: path,
+          ),
+          isNull,
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: AsyncData(_identityIncompleteUser()),
+            location: path,
+          ),
+          isNull,
+        );
+      }
+    });
+    test(
+      'returns to form review after authentication, preserving other gates',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: '/auth?from=%2Fyou%2Fforms%2Fresponse-1',
+          ),
+          '/you/forms/response-1',
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: '/payment-history',
+          ),
+          startsWith('/onboarding'),
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: '/you/forms/response-1/other',
+          ),
+          startsWith('/onboarding'),
+        );
+      },
+    );
+  });
+
   group('route role boundary', () {
     test('host management routes are not available to consumer role', () {
       final hostRoutes = Routes.values.where(
@@ -522,10 +671,10 @@ void main() {
         _redirect(
           uidAsync: const AsyncData(_testUid),
           userProfileAsync: const AsyncData(null),
-          location: '/chats',
-          matchedLocation: Routes.matchesListScreen.path,
+          location: '/chats/match-1',
+          matchedLocation: '/chats/match-1',
         ),
-        '/onboarding?from=%2Fchats',
+        '/onboarding?from=%2Fchats%2Fmatch-1',
       );
     });
 

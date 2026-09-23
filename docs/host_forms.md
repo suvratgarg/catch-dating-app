@@ -1,6 +1,6 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.1.1
+version: 1.2.3
 updated: 2026-09-23
 owner: host_tooling
 status: active
@@ -72,13 +72,16 @@ A Host can complete this loop:
 - Response inbox, detail, search, filters, exports, and aggregate analytics.
 - Explicit automations and idempotent downstream conversion.
 - Application-review projection for application-purpose forms.
+- Optional organizer-connected form fees, separate from event admission.
+- Explicit participant-reviewed profile building blocks and organizer cards.
+- Independent optional organizer and Catch WhatsApp permissions.
 - Environment deployment and exact-route smoke verification.
 
 ### Not in scope
 
 - A general website builder or arbitrary custom CSS/JavaScript.
-- Payment collection inside arbitrary questions. Event checkout remains the
-  payment owner and may be linked only through an explicit completion action.
+- Payment collection inside arbitrary questions. A form fee is a governed
+  checkout step; event checkout remains the separate owner of event purchases.
 - Hidden enrichment from Consumer dating-profile fields.
 - Selling or uploading respondent data to advertising platforms without a
   separate policy and consent gate.
@@ -266,6 +269,151 @@ preset catalog, and exact phone/email/URL normalization. Host-authored error
 copy is optional and bounded; safe system copy is the fallback.
 
 ## Respondent Experience
+
+### Payment and profile extension acceptance
+
+The payment/profile/chat extension is in implementation. Merchant connections,
+payment recovery, submission finalization and webhook receipt processing live
+under `functions/src/payments/formPayments/`. Their presence alone does not
+enable paid forms. The full release requires the following end-to-end behavior
+and checks:
+
+- A Host connects their existing Razorpay merchant through Catch's Technology
+  Partner OAuth application. Test and live credentials are isolated. Server
+  credentials stay in Secret Manager, with pinned versions bound to organizer,
+  connection, account, and mode. No merchant secret is collected in a form or
+  shown to respondents.
+- Payment is optional per published form, in INR integer paise. The Host must
+  state the fee purpose and refund policy before publishing a paid form.
+  Checkout freezes the version, answers, verified identity, fee and disclosures.
+  Neither a browser redirect nor an authorization-only payment submits a
+  response. A verified capture against the stored order and amount finalizes
+  once. Webhooks and browser verification converge on that same finalization.
+- An uncertain provider request is reconciled before creating another order.
+  Duplicated, delayed, reordered, forged and foreign-account callbacks cannot
+  duplicate submission or change another organizer's records. Pending fees do
+  not enter the review inbox. Expired/closed form and refund recovery must be
+  explicit, including a captured fee whose application could not be finalized.
+- Ordinary custom questions remain organizer-only answers, including questions
+  named like a core profile field. A canonical mapping alone is not permission
+  to publish. Explicit Catch profile building blocks can prepare private data
+  for the verified respondent; OTP does not claim or publish their profile.
+- Only applicant-submitted answers can enter an organizer card. CRM notes,
+  internal tags and review deliberations never enter these cards. The person
+  can see their own cards; organizers cannot see another organizer's card.
+  Sharing selected core/card fields with an event room requires a claimed
+  profile and explicit participant sharing permission.
+- Organizer WhatsApp permission and Catch WhatsApp permission are separate,
+  optional, initially unchecked choices with versioned copy and identity-bound
+  receipts. Neither is inferred from OTP, payment, submission or acceptance.
+- Required/optional controls round-trip through builder, publication and both
+  client/server validation. Field-level and final disclosure identify the
+  recipient and visibility of answers, including the private pre-claim stage.
+- Event room access follows current admitted attendee membership, independently
+  of application approval, payment and CRM conversion. Replies, reactions and
+  expiring typing indicators require current conversation access. Unclaimed
+  profiles, unrelated organizers and revoked attendees cannot read room cards.
+
+Acceptance includes contract generation/fixtures, provider adapter and replay
+tests, authorization/rules tests, required/optional and consent round-trips,
+profile claim and cross-organizer denial tests, chat interaction tests, and
+rendered phone/desktop, light/dark and large-text review states. Existing free
+forms and legacy organizer-only mappings must retain their behavior. This work
+does not authorize sharing private CRM data or implicitly buying event admission.
+
+The Host builder places form payment setup under Settings, after Access, on
+phone and desktop. It distinguishes unavailable partner setup, an unfinished
+connection, a ready test/live merchant, reconnect-required state, and a
+disconnected account. Fee editing requires a ready account and verified-phone
+identity; the amount is entered as decimal INR and converted exactly to integer
+paise. Description and refund policy are mandatory. Removing a fee changes only
+the draft until publishing. Disconnecting requires confirmation because it stops
+new checkouts across all forms using that connection, while settlement recovery
+continues. Returning from OAuth only refreshes server status; it never marks a
+merchant ready locally.
+
+The manager-only fee ledger reads one owned form at a time. Its rows include
+unfinished checkout, captured/submitted, refund, and manual-review states with
+provider references and amounts. Response links appear only after finalization.
+The projection omits respondent identity, draft tokens, unsubmitted answers,
+credential bindings, and internal error details. Status-filtered cursors are
+bound to the organizer, form and filters, with document-id ordering to disambiguate
+payments created at the same instant. Payment history is separate from the
+application review inbox. The form workspace exposes it through a Payments tab,
+including forms whose current draft no longer charges a fee. Pending, submitted,
+refund and attention filters query the server. Refresh and retry preserve the
+selected form/filter; stale pagination responses cannot overwrite a refreshed
+list. Detail sheets identify test money, separate capture from submission,
+show selectable provider references, and only offer a response link when one
+exists. They do not imply that declining an application issues a refund.
+The unified response screen also shows its submission fee, current ledger
+status and test-mode label. Its row opens the same details sheet, without
+routing back to the response or introducing a second application screen.
+
+Returning respondents can recover their latest payment with the same verified
+phone account when browser storage is missing or unavailable. Closed and full
+forms expose **Check an existing payment**, including when the current version
+no longer charges a fee. Discovery is read-only; it does not open checkout or
+create a draft. An uncertain lookup blocks a fresh draft and offers retry without
+requiring another OTP when already signed in. Recovery uses the frozen version's
+receipt and preserves the distinction between refunds and application review.
+
+The question editor separates the CRM Person field classification from Profile
+use. Classification alone preserves organizer-only behavior. A Host explicitly
+chooses a supported Catch profile building block or an organizer-card field;
+acknowledgements/signatures cannot use either profile destination, and derived
+age cannot replace a date-of-birth source. Clearing a mapping or changing to an
+incompatible question type falls back to organizer-only use. A profile image
+starts with one JPEG, PNG or WebP up to 10 MB. Requiredness stays independently
+editable and round-trips without changing the destination. Publish validation
+requires verified-phone access for profile/card fields; submission only prepares
+private review pointers and does not claim, publish or share a profile.
+
+The Settings workspace can offer organizer and Catch WhatsApp choices
+independently; enabling either requires verified-phone identity. The public
+review step starts both unchecked and uses versioned server-owned copy. A
+respondent may choose either, both or neither without changing application or
+payment eligibility. Leaving a box unchecked does not revoke an existing
+permission. Draft choices resume with the same verified account, and switching
+accounts clears local answers and choices.
+
+Successful free submission or verified paid finalization atomically records only
+the selected permissions. Organizer receipts/preferences and Catch
+receipts/preferences are separate server-only collections. Each scope retains
+its own decision timestamp: a delayed payment cannot overwrite a later STOP or
+settings withdrawal, and changing one scope cannot renew the other. Checkout
+freezes the choices with the answers. Replays cannot create duplicate receipts;
+account deletion removes both scopes and its tombstone blocks late grants.
+Participant preference management must expose separate withdrawal controls
+before releasing this consent flow; form capture alone does not enable a Catch
+marketing sender.
+
+Live Razorpay setup remains external: create Catch's Technology Partner
+application, register the HTTPS callback, provision its client credentials and
+vault permissions, connect the organizer account, and create and verify the
+account-bound webhook. Verify capture and webhook replay with test payments
+before enabling live checkout. OAuth uses the merchant public token for Checkout
+and the partner client secret for Checkout signature verification; the merchant
+access token authorizes server APIs. See Razorpay's
+[OAuth integration](https://razorpay.com/docs/partners/technology-partners/onboard-businesses/integrate-oauth/integration-steps/)
+and [merchant webhook API](https://razorpay.com/docs/api/partners/webhooks/create/).
+Refund recovery uses the same saved amount and `X-Refund-Idempotency` key on
+every retry, following the
+[idempotent refund API](https://razorpay.com/docs/api/refunds/normal-refunds-idempotent).
+
+The deployment remains unconfigured unless its GitHub environment variable
+`FORM_RAZORPAY_PARTNER_CONFIG_VERSION` names a numeric Secret Manager version
+in that same Firebase project. The deploy materializer writes only this
+reference, never the credentials, and rejects cross-project references or
+`latest` aliases. The referenced secret contains exactly `schema`
+(`catch.form-razorpay-partner/v1`), `clientId`, `clientSecret`, `mode` (`test` or
+`live`), and `credentialSecretId` (the pre-created merchant credential vault).
+Grant the Functions runtime access to the partner secret and add/access/disable
+version permissions on that vault. The runtime derives the callback and webhook
+URLs from `https://asia-south1-<project>.cloudfunctions.net`, using
+`organizerFormPaymentOauthCallback` and `organizerFormPaymentWebhook` respectively.
+Register that exact callback in the partner application. The config loader
+limits credential caching to one minute and sanitizes load failures.
 
 ### Public route
 

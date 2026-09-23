@@ -1,4 +1,5 @@
 import {createHash} from "crypto";
+import {readResponsePayment} from "../payments/formPayments/formPaymentLedger";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -338,18 +339,20 @@ export async function getOrganizerFormResponseDetailHandler(
     signedUrls.set(assetId, url);
   }));
   const applicationId = genericFormApplicationId(data.responseId);
-  const [applicationSnap, originSnap] = await Promise.all([
+  const [applicationSnap, originSnap, payment] = await Promise.all([
     db.collection("organizerApplications").doc(applicationId).get(),
     db.collection("organizerContactOrigins").doc(organizerContactOriginId({
       organizerId: data.organizerId, sourceKind: "hostForm",
       sourceEntityKind: "hostFormResponse", sourceEntityId: data.responseId,
     })).get(),
+    readResponsePayment(db, data.responseId, response),
   ]);
   const application = applicationSnap.data() as
     OrganizerApplicationDocument | undefined;
   const origin = originSnap.data(
   ) as OrganizerContactOriginDocument | undefined;
   return {
+    payment,
     applicationId: application?.organizerId === data.organizerId ?
       applicationId : null,
     contactId: origin?.organizerId === data.organizerId ?

@@ -1,4 +1,10 @@
-enum HostFormWorkspaceView { overview, questions, responses, settings }
+enum HostFormWorkspaceView {
+  overview,
+  questions,
+  responses,
+  payments,
+  settings,
+}
 
 HostFormWorkspaceView? hostFormViewFromQuery(String? value) =>
     HostFormWorkspaceView.values

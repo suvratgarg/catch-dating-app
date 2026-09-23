@@ -136,9 +136,9 @@ void main() {
       ]);
       expect(state.runningRows.map((row) => row.label), [
         'Pace range',
-        'Preferred distances',
-        'Why I event',
-        'Favorite event times',
+        'Distances',
+        'Motivation',
+        'Run times',
       ]);
       expect(state.lifestyleRows.map((row) => row.label), [
         'Drinking',

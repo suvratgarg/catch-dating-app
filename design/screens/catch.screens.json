@@ -1207,6 +1207,118 @@
         }
       ],
       "reason": "Payment confirmation is a route coordinator whose loading, localized error, pending checkout, and completed celebration terminals each have deterministic standalone ownership."
+    },
+    "formProfilesScreen": {
+      "owners": [
+        {
+          "routes": [
+            "formProfilesScreen"
+          ],
+          "file": "lib/user_profile/presentation/form_profiles_screen.dart",
+          "symbol": "FormProfilesScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Authenticated participant form-profile review uses canonical pushed-route chrome and a single constrained body. Focused review tests cover selection, identity gating and large text."
+    },
+    "formProfileReviewScreen": {
+      "owners": [
+        {
+          "routes": [
+            "formProfileReviewScreen"
+          ],
+          "file": "lib/user_profile/presentation/form_profile_review_screen.dart",
+          "symbol": "FormProfileReviewScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Authenticated participant form-profile review uses canonical pushed-route chrome and a single constrained body. Focused review tests cover selection, identity gating and large text."
+    },
+    "eventChatParticipantsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventChatParticipantsScreen"
+          ],
+          "file": "lib/chats/presentation/event_chat_participants_screen.dart",
+          "symbol": "_EventChatParticipantsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Current admitted room participants use canonical route chrome, bounded directory rows and the existing protected profile view."
+    },
+    "eventChatScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventChatScreen"
+          ],
+          "file": "lib/chats/presentation/event_chat_screen.dart",
+          "symbol": "_EventChatScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Shared admitted event conversation with explicit profile review and join, canonical route chrome, and keyboard-aware message composer. Focused widget tests cover light, dark, large text and touch targets."
+    },
+    "messagingPermissionsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "messagingPermissionsScreen"
+          ],
+          "file": "lib/safety/presentation/messaging_permissions_screen.dart",
+          "symbol": "MessagingPermissionsScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Private account consent management uses canonical pushed-route chrome and one constrained body, with focused withdrawal, pagination and large-text tests."
+    },
+    "eventProfileSharingScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventProfileSharingScreen"
+          ],
+          "file": "lib/chats/presentation/event_profile_screen.dart",
+          "symbol": "_EventProfileScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Participant-controlled event profile sharing and protected mini-profile viewing use canonical route chrome and full-width sections, with focused privacy and rendered accessibility coverage."
+    },
+    "eventParticipantProfileScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventParticipantProfileScreen"
+          ],
+          "file": "lib/chats/presentation/event_profile_screen.dart",
+          "symbol": "_EventProfileScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Participant-controlled event profile sharing and protected mini-profile viewing use canonical route chrome and full-width sections, with focused privacy and rendered accessibility coverage."
     }
   },
   "imperativePageContracts": {
@@ -8736,7 +8848,7 @@
           "id": "edit_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfileTabSliverBody renders Photos, Prompts, About you, Running, and Lifestyle sections from SelfProfileEditTabState descriptors.",
+          "source": "ProfileTabSliverBody renders core profile guidance, Photos, Prompts, About you, Lifestyle, and collapsed optional activity preferences from SelfProfileEditTabState descriptors.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],

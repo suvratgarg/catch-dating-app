@@ -361,6 +361,15 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                                 "organizerCustom"
                               ]
                             },
+                            "answerDestination": {
+                              "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "catchProfile",
+                                "organizerCard"
+                              ]
+                            },
                             "prefillPolicy": {
                               "type": "string",
                               "enum": [
@@ -779,6 +788,67 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                     }
                   }
                 },
+                "payment": {
+                  "anyOf": [
+                    {
+                      "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "connectionId",
+                        "amountPaise",
+                        "currency",
+                        "description",
+                        "refundPolicy"
+                      ],
+                      "properties": {
+                        "connectionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "amountPaise": {
+                          "type": "integer",
+                          "minimum": 100,
+                          "maximum": 10000000
+                        },
+                        "currency": {
+                          "const": "INR"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "refundPolicy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "messagingConsent": {
+                  "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organizerWhatsapp",
+                    "catchWhatsapp"
+                  ],
+                  "properties": {
+                    "organizerWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "catchWhatsapp": {
+                      "type": "boolean"
+                    }
+                  }
+                },
                 "completion": {
                   "type": "object",
                   "additionalProperties": false,
@@ -829,6 +899,35 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                   }
                 }
               }
+            },
+            "messagingOffer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "termsVersion",
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "termsVersion": {
+                  "const": "form-whatsapp-v1",
+                  "type": "string"
+                },
+                "organizerWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
             }
           }
         },
@@ -876,6 +975,27 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
         },
         "consentAccepted": {
           "type": "boolean"
+        },
+        "messagingChoices": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
         },
         "identityKind": {
           "type": "string",

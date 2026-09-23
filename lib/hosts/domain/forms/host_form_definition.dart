@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/domain/forms/form_definition_fields.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
 import 'package:meta/meta.dart';
 
@@ -86,6 +87,37 @@ class HostFormDefinition {
   List<HostFormLogicRule> get logicRules => formDefinitionJsonList(
     _json['logicRules'],
   ).map(HostFormLogicRule.fromMap).toList(growable: false);
+
+  bool get offersOrganizerWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['organizerWhatsapp'] ==
+      true;
+  bool get offersCatchWhatsapp =>
+      formDefinitionDeepStringMap(_json['messagingConsent'])['catchWhatsapp'] ==
+      true;
+
+  HostFormDefinition withMessagingConsent({
+    bool? organizerWhatsapp,
+    bool? catchWhatsapp,
+  }) {
+    final next = toJson();
+    next['messagingConsent'] = {
+      'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,
+      'catchWhatsapp': catchWhatsapp ?? offersCatchWhatsapp,
+    };
+    return HostFormDefinition._(next);
+  }
+
+  HostFormPayment? get payment => _json['payment'] == null
+      ? null
+      : HostFormPayment.fromMap(formDefinitionDeepStringMap(_json['payment']));
+
+  HostFormDefinition withPayment(HostFormPayment? payment) {
+    final next = toJson();
+    next['payment'] = payment?.toJson();
+    return HostFormDefinition._(next);
+  }
 
   Map<String, Object?> toJson() => formDefinitionDeepStringMap(_json);
 

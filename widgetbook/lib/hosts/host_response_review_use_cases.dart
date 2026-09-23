@@ -115,6 +115,7 @@ class _ResponseReviewPreviewFrameState
         onConvert: (_, _) async {},
         onOpenAsset: (_) async {},
         onContact: (_) async {},
+        onOpenPayment: (_) {},
       ),
     ),
   );

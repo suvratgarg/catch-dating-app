@@ -175,6 +175,16 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         children: [
           CatchPageBody(
             padding: CatchInsets.pageHorizontal,
+            child: CatchSection.content(
+              title: context.l10n.profileCoreDetailsTitle,
+              child: Text(
+                context.l10n.profileCoreDetailsBody,
+                style: CatchTextStyles.supporting(context),
+              ),
+            ),
+          ),
+          CatchPageBody(
+            padding: CatchInsets.pageHorizontal,
             child: ProfilePhotosSection(
               first: true,
               state: editState.photoGrid,
@@ -262,9 +272,9 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           CatchPageBody(
             padding: CatchInsets.pageHorizontal,
             child: CatchSection.fieldRows(
-              title: context.l10n.userProfileProfileTabTitleRunning,
+              title: context.l10n.userProfileProfileTabTitleLifestyle,
               children: [
-                for (final row in editState.runningRows)
+                for (final row in editState.lifestyleRows)
                   ProfileFieldRow(
                     descriptor: row,
                     isExpanded: _fieldAccordion.isExpanded,
@@ -278,16 +288,32 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           CatchPageBody(
             padding: CatchInsets.pageHorizontal,
             child: CatchSection.fieldRows(
-              title: context.l10n.userProfileProfileTabTitleLifestyle,
+              title: context.l10n.profileActivityPreferencesTitle,
               children: [
-                for (final row in editState.lifestyleRows)
-                  ProfileFieldRow(
-                    descriptor: row,
-                    isExpanded: _fieldAccordion.isExpanded,
-                    onToggle: _fieldAccordion.toggle,
-                    onSaved: _fieldAccordion.collapse,
-                    onCancel: _fieldAccordion.collapse,
+                CatchField.control(
+                  key: const ValueKey('profile-running-preferences'),
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.userProfileProfileTabTitleRunning,
+                  emphasis: CatchFieldEmphasis.title,
+                  body: context.l10n.profileActivityPreferencesBody,
+                  titleMaxLines: 3,
+                  bodyMaxLines: 6,
+                  contractExemption:
+                      'Disclosure only; child editors own their activity-specific schema contracts.',
+                  child: CatchSection.fieldRows(
+                    first: true,
+                    children: [
+                      for (final row in editState.runningRows)
+                        ProfileFieldRow(
+                          descriptor: row,
+                          isExpanded: _fieldAccordion.isExpanded,
+                          onToggle: _fieldAccordion.toggle,
+                          onSaved: _fieldAccordion.collapse,
+                          onCancel: _fieldAccordion.collapse,
+                        ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),

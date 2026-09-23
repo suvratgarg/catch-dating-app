@@ -443,6 +443,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           onPressed: onBackToSuccess,
         ),
         actions: [
+          CatchIconAction.toolbar(
+            tooltip: context.l10n.eventChatTitle,
+            icon: CatchIcons.chatBubbleOutlineRounded,
+            onPressed: () => context.pushNamed(
+              Routes.eventChatScreen.name,
+              pathParameters: {'eventId': event.id},
+            ),
+          ),
           CatchTopBarPrimaryButton(
             label: context.l10n.hostsHostEventRosterDrawerTitle,
             icon: CatchIcons.groupsRounded,

@@ -954,6 +954,246 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
   },
   {
+    name: "ParticipantOrganizerCardDocument",
+    source: "firestore/participant_organizer_cards.schema.json",
+    typeOutput: "functions/src/shared/generated/participantOrganizerCardDocument.ts",
+  },
+  {
+    name: "ParticipantProfileClaimReceiptDocument",
+    source: "firestore/participant_profile_claim_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/participantProfileClaimReceiptDocument.ts",
+  },
+  {
+    name: "ClaimParticipantFormProfileCallablePayload",
+    source: "callables/claim_participant_form_profile_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallablePayload.ts",
+  },
+  {
+    name: "ClaimParticipantFormProfileCallableResponse",
+    source: "callable_responses/claim_participant_form_profile_response.schema.json",
+    typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
+  },
+  {
+    name: "ListParticipantFormProfilesCallablePayload",
+    source: "callables/list_participant_form_profiles_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantFormProfilesCallablePayload.ts",
+  },
+  {
+    name: "ListParticipantFormProfilesCallableResponse",
+    source: "callable_responses/list_participant_form_profiles_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantFormProfilesCallableResponse.ts",
+  },
+  {
+    name: "GetParticipantFormPhotoCallablePayload",
+    source: "callables/get_participant_form_photo_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormPhotoCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantFormPhotoCallableResponse",
+    source: "callable_responses/get_participant_form_photo_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormPhotoCallableResponse.ts",
+  },
+  {
+    name: "GetParticipantFormProfileCallablePayload",
+    source: "callables/get_participant_form_profile_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormProfileCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantFormProfileCallableResponse",
+    source: "callable_responses/get_participant_form_profile_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormProfileCallableResponse.ts",
+  },
+  {
+    name: "ParticipantFormProfileProposalDocument",
+    source: "firestore/participant_form_profile_proposals.schema.json",
+    typeOutput: "functions/src/shared/generated/participantFormProfileProposalDocument.ts",
+  },
+  {
+    name: "EventChatProfileShareDocument",
+    source: "firestore/event_chat_profile_shares.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatProfileShareDocument.ts",
+  },
+  {
+    name: "ActOnEventChatMessageCallablePayload",
+    source: "callables/act_on_event_chat_message_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/actOnEventChatMessageCallablePayload.ts",
+  },
+  {
+    name: "ActOnEventChatMessageCallableResponse",
+    source: "callable_responses/act_on_event_chat_message_response.schema.json",
+    typeOutput: "functions/src/shared/generated/actOnEventChatMessageCallableResponse.ts",
+  },
+  {
+    name: "ListEventChatParticipantsCallablePayload",
+    source: "callables/list_event_chat_participants_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatParticipantsCallablePayload.ts",
+  },
+  {
+    name: "ListEventChatParticipantsCallableResponse",
+    source: "callable_responses/list_event_chat_participants_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatParticipantsCallableResponse.ts",
+  },
+  {
+    name: "GetEventChatProfileSharingCallablePayload",
+    source: "callables/get_event_chat_profile_sharing_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileSharingCallablePayload.ts",
+  },
+  {
+    name: "UpdateEventChatProfileSharingCallablePayload",
+    source: "callables/update_event_chat_profile_sharing_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatProfileSharingCallablePayload.ts",
+  },
+  {
+    name: "GetEventChatProfileCallablePayload",
+    source: "callables/get_event_chat_profile_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileCallablePayload.ts",
+  },
+  {
+    name: "GetEventChatProfileSharingCallableResponse",
+    source: "callable_responses/get_event_chat_profile_sharing_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileSharingCallableResponse.ts",
+  },
+  {
+    name: "UpdateEventChatProfileSharingCallableResponse",
+    source: "callable_responses/update_event_chat_profile_sharing_response.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatProfileSharingCallableResponse.ts",
+  },
+  {
+    name: "GetEventChatProfileCallableResponse",
+    source: "callable_responses/get_event_chat_profile_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileCallableResponse.ts",
+  },
+  {
+    name: "EventChatRoomDocument",
+    source: "firestore/event_chat_rooms.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatRoomDocument.ts",
+  },
+  {
+    name: "EventChatMembershipDocument",
+    source: "firestore/event_chat_memberships.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatMembershipDocument.ts",
+  },
+  {
+    name: "EventChatAccessReceiptDocument",
+    source: "firestore/event_chat_access_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatAccessReceiptDocument.ts",
+  },
+  {
+    name: "EventChatMessageDocument",
+    source: "firestore/event_chat_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatMessageDocument.ts",
+  },
+  {
+    name: "EventChatReactionDocument",
+    source: "firestore/event_chat_reactions.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatReactionDocument.ts",
+  },
+  {
+    name: "EventChatPresenceDocument",
+    source: "firestore/event_chat_presence.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatPresenceDocument.ts",
+  },
+  {
+    name: "SendEventChatMessageCallablePayload",
+    source: "callables/send_event_chat_message_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/sendEventChatMessageCallablePayload.ts",
+  },
+  {
+    name: "SendEventChatMessageCallableResponse",
+    source: "callable_responses/send_event_chat_message_response.schema.json",
+    typeOutput: "functions/src/shared/generated/sendEventChatMessageCallableResponse.ts",
+  },
+  {
+    name: "SetEventChatReactionCallablePayload",
+    source: "callables/set_event_chat_reaction_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatReactionCallablePayload.ts",
+  },
+  {
+    name: "SetEventChatReactionCallableResponse",
+    source: "callable_responses/set_event_chat_reaction_response.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatReactionCallableResponse.ts",
+  },
+  {
+    name: "SetEventChatTypingCallablePayload",
+    source: "callables/set_event_chat_typing_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatTypingCallablePayload.ts",
+  },
+  {
+    name: "SetEventChatTypingCallableResponse",
+    source: "callable_responses/set_event_chat_typing_response.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatTypingCallableResponse.ts",
+  },
+  {
+    name: "ListEventChatsCallablePayload",
+    source: "callables/list_event_chats_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatsCallablePayload.ts",
+  },
+  {
+    name: "ListEventChatsCallableResponse",
+    source: "callable_responses/list_event_chats_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatsCallableResponse.ts",
+  },
+  {
+    name: "ListEventChatMessagesCallablePayload",
+    source: "callables/list_event_chat_messages_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatMessagesCallablePayload.ts",
+  },
+  {
+    name: "ListEventChatMessagesCallableResponse",
+    source: "callable_responses/list_event_chat_messages_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatMessagesCallableResponse.ts",
+  },
+  {
+    name: "GetEventChatAccessCallablePayload",
+    source: "callables/get_event_chat_access_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatAccessCallablePayload.ts",
+  },
+  {
+    name: "UpdateEventChatAccessCallablePayload",
+    source: "callables/update_event_chat_access_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatAccessCallablePayload.ts",
+  },
+  {
+    name: "GetEventChatAccessCallableResponse",
+    source: "callable_responses/get_event_chat_access_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatAccessCallableResponse.ts",
+  },
+  {
+    name: "UpdateEventChatAccessCallableResponse",
+    source: "callable_responses/update_event_chat_access_response.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatAccessCallableResponse.ts",
+  },
+  {
+    name: "ListParticipantMessagingPreferencesCallablePayload",
+    source: "callables/list_participant_messaging_preferences_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",
+  },
+  {
+    name: "ListParticipantMessagingPreferencesCallableResponse",
+    source: "callable_responses/list_participant_messaging_preferences_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallableResponse.ts",
+  },
+  {
+    name: "WithdrawParticipantMessagingPermissionCallablePayload",
+    source: "callables/withdraw_participant_messaging_permission_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallablePayload.ts",
+  },
+  {
+    name: "WithdrawParticipantMessagingPermissionCallableResponse",
+    source: "callable_responses/withdraw_participant_messaging_permission_response.schema.json",
+    typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse.ts",
+  },
+  {
+    name: "CatchCommunicationPreferenceDocument",
+    source: "firestore/catch_communication_preferences.schema.json",
+    typeOutput: "functions/src/shared/generated/catchCommunicationPreferenceDocument.ts",
+  },
+  {
+    name: "CatchCommunicationPermissionReceiptDocument",
+    source: "firestore/catch_communication_permission_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/catchCommunicationPermissionReceiptDocument.ts",
+  },
+  {
     name: "OrganizerCommunicationPreferenceDocument",
     source: "firestore/organizer_communication_preferences.schema.json",
     typeOutput:
@@ -1088,6 +1328,26 @@ const schemaSpecs = [
     name: "OrganizerFormDocument",
     source: "firestore/organizer_forms.schema.json",
     typeOutput: "functions/src/shared/generated/organizerFormDocument.ts",
+  },
+  {
+    name: "OrganizerPaymentConnectionDocument",
+    source: "firestore/organizer_payment_connections.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerPaymentConnectionDocument.ts",
+  },
+  {
+    name: "OrganizerPaymentOauthStateDocument",
+    source: "firestore/organizer_payment_oauth_states.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerPaymentOauthStateDocument.ts",
+  },
+  {
+    name: "OrganizerFormPaymentDocument",
+    source: "firestore/organizer_form_payments.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormPaymentDocument.ts",
+  },
+  {
+    name: "OrganizerFormPaymentWebhookDocument",
+    source: "firestore/organizer_form_payment_webhooks.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormPaymentWebhookDocument.ts",
   },
   {
     name: "OrganizerFormDraftDocument",
@@ -3574,6 +3834,56 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "finalizeOrganizerFormAssetCallableResponse.ts",
+  },
+  {
+    name: "PrepareOrganizerFormPaymentCallablePayload",
+    source: "callables/prepare_organizer_form_payment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload.ts",
+  },
+  {
+    name: "PrepareOrganizerFormPaymentCallableResponse",
+    source: "callable_responses/prepare_organizer_form_payment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/prepareOrganizerFormPaymentCallableResponse.ts",
+  },
+  {
+    name: "FindOrganizerFormPaymentCallablePayload",
+    source: "callables/find_organizer_form_payment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/findOrganizerFormPaymentCallablePayload.ts",
+  },
+  {
+    name: "FindOrganizerFormPaymentCallableResponse",
+    source: "callable_responses/find_organizer_form_payment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/findOrganizerFormPaymentCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerFormPaymentCallablePayload",
+    source: "callables/get_organizer_form_payment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getOrganizerFormPaymentCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerFormPaymentCallableResponse",
+    source: "callable_responses/get_organizer_form_payment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getOrganizerFormPaymentCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerFormPaymentsCallablePayload",
+    source: "callables/list_organizer_form_payments_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listOrganizerFormPaymentsCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerFormPaymentsCallableResponse",
+    source: "callable_responses/list_organizer_form_payments_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listOrganizerFormPaymentsCallableResponse.ts",
+  },
+  {
+    name: "ManageOrganizerFormPaymentConnectionCallablePayload",
+    source: "callables/manage_organizer_form_payment_connection_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageOrganizerFormPaymentConnectionCallablePayload.ts",
+  },
+  {
+    name: "ManageOrganizerFormPaymentConnectionCallableResponse",
+    source: "callable_responses/manage_organizer_form_payment_connection_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageOrganizerFormPaymentConnectionCallableResponse.ts",
   },
   {
     name: "SubmitOrganizerFormResponseCallablePayload",

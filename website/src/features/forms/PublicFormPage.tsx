@@ -24,18 +24,23 @@ import {
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
-import {publicFormsCopy} from "../../content/forms";
+import {publicFormsCopy, publicFormPaymentStatuses, formFeeLabel,
+  formFeePayLabel} from "../../content/forms";
 import {
   answerSummary,
   type PublicFormAnswer,
   type PublicFormQuestion as Question,
 } from "./publicFormModel";
+import {formProfileReviewUrl} from "./formProfileReviewLink";
 import {usePublicFormController} from "./usePublicFormController";
 
 export function PublicFormPage() {
   const {publicFormId = ""} = useParams<{publicFormId: string}>();
   const controller = usePublicFormController(publicFormId);
   const organizerName = controller.form?.organizer.name;
+  const hasProfileFields = controller.form?.definition.sections?.some((section) =>
+    section.questions.some((question) => question.answerDestination === "catchProfile" ||
+      question.answerDestination === "organizerCard")) ?? false;
 
   return (
     <PublicFormFrame
@@ -51,7 +56,7 @@ export function PublicFormPage() {
         brandWord={publicFormsCopy.brandWord}
         poweredByLabel={publicFormsCopy.poweredBy}
       >
-        {publicFormsCopy.privacyNote}
+        {hasProfileFields ? publicFormsCopy.profilePrivacyNote : publicFormsCopy.privacyNote}
       </PublicFormPrivacy>
     </PublicFormFrame>
   );
@@ -75,6 +80,13 @@ function PublicFormStage({
         body={controller.form?.availabilityMessage ?? publicFormsCopy.unavailableBody}
       >
         <FormStatus status={controller.status} />
+        {controller.form ? (
+          <PublicFormActions>
+            <Button type="button" variant="ghost" onClick={controller.recoverPayment}>
+              {publicFormsCopy.paymentRecoveryAction}
+            </Button>
+          </PublicFormActions>
+        ) : null}
       </PublicFormPanel>
     );
   }
@@ -89,15 +101,38 @@ function PublicFormStage({
   if (controller.stage === "review" && definition) {
     return <ReviewStage controller={controller} />;
   }
+  if (controller.stage === "payment") {
+    return <PaymentStage controller={controller} />;
+  }
   if (controller.stage === "complete" && controller.receipt) {
     const completion = controller.receipt.completion;
+    const reviewUrl = controller.receipt.profileReviewAvailable === true ?
+      formProfileReviewUrl(controller.receipt.responseId) : null;
     return (
       <PublicFormPanel
         kicker={publicFormsCopy.completionKicker}
         title={completion.title}
         body={completion.message}
       >
+        {controller.payments?.payment ? (
+          <>
+            {controller.payments.payment.status === "refunded" ? (
+              <FormStatus status={{message: publicFormsCopy.paymentReceiptRefunded, tone: ""}} />
+            ) : controller.payments.payment.status === "reviewRequired" ? (
+              <FormStatus status={{message: publicFormPaymentStatuses.reviewRequired, tone: ""}} />
+            ) : null}
+            <FormStatus status={{message: publicFormsCopy.paymentWithdrawNote, tone: ""}} />
+          </>
+        ) : null}
+        {reviewUrl ? (
+          <FormStatus status={{message: publicFormsCopy.profileReviewHelp, tone: ""}} />
+        ) : null}
         <PublicFormActions>
+          {reviewUrl ? (
+            <ButtonLink href={reviewUrl}>
+              {publicFormsCopy.profileReviewAction}
+            </ButtonLink>
+          ) : null}
           {completion.actionUrl && completion.actionLabel ? (
             <ButtonLink href={completion.actionUrl}>{completion.actionLabel}</ButtonLink>
           ) : null}
@@ -135,10 +170,10 @@ function IdentityStage({
   controller: ReturnType<typeof usePublicFormController>;
 }) {
   const policy = controller.form?.definition.identityPolicy;
-  const permitsPhone = policy === "phoneVerified" ||
+  const permitsPhone = controller.recoveringPayment || policy === "phoneVerified" ||
     policy === "emailOrPhoneVerified" || policy === "catchAccount";
-  const permitsEmail = policy === "emailVerified" ||
-    policy === "emailOrPhoneVerified" || policy === "catchAccount";
+  const permitsEmail = !controller.recoveringPayment && (policy === "emailVerified" ||
+    policy === "emailOrPhoneVerified" || policy === "catchAccount");
   if (controller.stage === "emailSent") {
     return (
       <PublicFormPanel
@@ -153,8 +188,8 @@ function IdentityStage({
   return (
     <PublicFormPanel
       kicker={publicFormsCopy.identityKicker}
-      title={publicFormsCopy.identityTitle}
-      body={publicFormsCopy.identityBody}
+      title={controller.recoveringPayment ? publicFormsCopy.paymentRecoveryTitle : publicFormsCopy.identityTitle}
+      body={controller.recoveringPayment ? publicFormsCopy.paymentRecoveryBody : publicFormsCopy.identityBody}
     >
       {controller.stage === "phoneCode" ? (
         <PublicFormForm
@@ -314,10 +349,16 @@ function QuestionField({
   question: Question;
   upload?: {status: "uploading" | "ready" | "error"; label: string};
 }) {
-  const requiredLabel = question.required ? publicFormsCopy.requiredSuffix : undefined;
+  const requiredLabel = question.required ? publicFormsCopy.requiredSuffix :
+    publicFormsCopy.optionalSuffix;
+  const disclosure = question.answerDestination === "catchProfile" ?
+    publicFormsCopy.profileFieldDisclosure :
+    question.answerDestination === "organizerCard" ?
+      publicFormsCopy.organizerCardFieldDisclosure : undefined;
   const common = {
     error,
     help: question.helpText,
+    disclosure,
     label: question.label,
     requiredLabel,
   };
@@ -509,6 +550,18 @@ function ReviewStage({
           />
         ))}
       </PublicFormReview>
+      {definition.payment ? (
+        <>
+          <PublicFormReview>
+            <PublicFormReviewAnswer
+              label={definition.payment.description || publicFormsCopy.paymentTitle}
+              answer={formFeeLabel(definition.payment.amountPaise)} />
+            <PublicFormReviewAnswer label={publicFormsCopy.paymentRefundPolicy}
+              answer={definition.payment.refundPolicy} />
+          </PublicFormReview>
+          <FormStatus status={{message: publicFormsCopy.paymentBody, tone: ""}} />
+        </>
+      ) : null}
       <PublicFormConsent>
         <h2>{publicFormsCopy.consentHeading}</h2>
         <p>{definition.consent.retentionCopy}</p>
@@ -519,6 +572,20 @@ function ReviewStage({
           {definition.consent.consentCopy}
         </CheckboxField>
       </PublicFormConsent>
+      {controller.form?.messagingOffer?.organizerWhatsapp ||
+          controller.form?.messagingOffer?.catchWhatsapp ? (
+        <PublicFormConsent>
+          <h2>{publicFormsCopy.messagingHeading}</h2>
+          <p>{publicFormsCopy.messagingHelp}</p>
+          {(["organizerWhatsapp", "catchWhatsapp"] as const).map((scope) => {
+            const label = controller.form?.messagingOffer?.[scope];
+            return label ? <CheckboxField key={scope}
+              checked={controller.messagingChoices[scope]}
+              onChange={(event) => controller.updateMessagingChoice(scope, event.target.checked)}
+            >{label}</CheckboxField> : null;
+          })}
+        </PublicFormConsent>
+      ) : null}
       <PublicFormActions>
         <Button
           onClick={() => {
@@ -536,9 +603,53 @@ function ReviewStage({
           onClick={() => void controller.submit()}
           type="button"
         >
-          {publicFormsCopy.submit}
+          {definition.payment ? publicFormsCopy.paymentContinue : publicFormsCopy.submit}
         </Button>
       </PublicFormActions>
+      <FormStatus status={controller.status} />
+    </PublicFormPanel>
+  );
+}
+
+function PaymentStage({controller}: {
+  controller: ReturnType<typeof usePublicFormController>;
+}) {
+  const {payment, pending, pay, refresh, status} = controller.payments;
+  const fee = controller.form?.definition.payment;
+  return (
+    <PublicFormPanel kicker={publicFormsCopy.paymentKicker}
+      title={payment ? formFeeLabel(payment.amountPaise) : publicFormsCopy.paymentTitle}
+      body={publicFormsCopy.paymentBody}>
+      <FormStatus status={{message: payment?.status === "failed" && !payment.checkout ?
+        publicFormsCopy.paymentUnavailable : payment ?
+        publicFormPaymentStatuses[payment.status] : publicFormsCopy.paymentPreparing,
+      tone: ""}} />
+      {payment?.mode === "test" ? (
+        <FormStatus status={{message: publicFormsCopy.paymentTestMode, tone: ""}} />
+      ) : null}
+      <PublicFormReview>
+        <PublicFormReviewAnswer label={publicFormsCopy.paymentRefundPolicy}
+          answer={payment?.refundPolicy ?? fee?.refundPolicy ?? ""} />
+      </PublicFormReview>
+      <PublicFormActions>
+        <Button loading={pending || controller.pending}
+          loadingLabel={publicFormsCopy.paymentChecking} type="button" variant="ghost"
+          onClick={() => void refresh()}>{publicFormsCopy.paymentCheck}</Button>
+        {payment && ["expired", "refunded"].includes(payment.status) ? (
+          <Button disabled={pending || controller.pending} type="button" variant="ghost"
+            onClick={() => void controller.restartAfterPayment()}>
+            {publicFormsCopy.paymentRestart}
+          </Button>
+        ) : null}
+        {payment?.checkout ? (
+          <Button loading={pending || controller.pending}
+            loadingLabel={publicFormsCopy.paymentChecking} type="button"
+            onClick={() => void pay(controller.form?.organizer.name ?? publicFormsCopy.brand)}>
+            {formFeePayLabel(payment.amountPaise)}
+          </Button>
+        ) : null}
+      </PublicFormActions>
+      <FormStatus status={status} />
       <FormStatus status={controller.status} />
     </PublicFormPanel>
   );

@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actio
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_viewport.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payments_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_questions_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
@@ -216,6 +217,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                     ),
                     Expanded(
                       child: HostFormEditorViewport(
+                        organizerId: widget.organizerId,
                         state: value,
                         notifier: notifier,
                         sectionIndex: sectionIndex,
@@ -265,20 +267,26 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   formTitle: value.editor.definition.title,
                   showFormContext: false,
                 ),
+                HostFormWorkspaceView.payments => HostFormPaymentsSectionList(
+                  organizerId: widget.organizerId,
+                  formId: widget.formId,
+                ),
                 HostFormWorkspaceView.settings => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     HostFormEditorNotice(state: value, notifier: notifier),
                     HostFormSettingsSectionList(
+                      organizerId: widget.organizerId,
                       definition: value.editor.definition,
                       notifier: notifier,
                     ),
                   ],
                 ),
               };
-              if (view == HostFormWorkspaceView.responses) {
+              if (view == HostFormWorkspaceView.responses ||
+                  view == HostFormWorkspaceView.payments) {
                 return CustomScrollView(
-                  key: const PageStorageKey('host-form-builder-responses'),
+                  key: PageStorageKey('host-form-builder-${view.name}'),
                   slivers: [
                     CatchPageBody.sliver(
                       child: SliverToBoxAdapter(child: header),
@@ -469,6 +477,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               title: context.l10n.hostFormMessagingPermissionTitle,
               body: context.l10n.hostFormConsequenceNoMessagingPermission,
               bodyMaxLines: 4,
+            ),
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostFormPaymentTitle,
+              body: definition.payment == null
+                  ? context.l10n.hostFormPaymentFree
+                  : '₹${definition.payment!.rupees} · ${definition.payment!.description}\n'
+                        '${definition.payment!.refundPolicy}\n'
+                        '${context.l10n.hostFormPaymentPublishHelp}',
+              bodyMaxLines: 12,
             ),
             CatchField.read(
               copy: catchFieldCopy(context.l10n),

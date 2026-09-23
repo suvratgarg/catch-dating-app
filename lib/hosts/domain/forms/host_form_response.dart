@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/hosts/domain/forms/form_operation_fields.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:meta/meta.dart';
 
@@ -390,6 +391,7 @@ class HostFormResponseDetail {
     required this.response,
     this.applicationId,
     this.contactId,
+    this.payment,
     required this.answers,
     required this.consentVersion,
     required this.completionMillis,
@@ -398,6 +400,11 @@ class HostFormResponseDetail {
   factory HostFormResponseDetail.fromCallableData(Object? data) {
     final map = formOperationRequiredMap(data, 'form response detail');
     return HostFormResponseDetail(
+      payment: map['payment'] == null
+          ? null
+          : HostFormPaymentRecord.fromMap(
+              formOperationRequiredMap(map['payment'], 'response payment'),
+            ),
       applicationId: formOperationNullableString(map['applicationId']),
       contactId: formOperationNullableString(map['contactId']),
       response: HostFormResponseSummary.fromMap(
@@ -413,6 +420,7 @@ class HostFormResponseDetail {
   }
 
   final HostFormResponseSummary response;
+  final HostFormPaymentRecord? payment;
   final String? applicationId;
   final String? contactId;
   final List<HostFormResponseAnswer> answers;

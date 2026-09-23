@@ -288,7 +288,7 @@ service cloud.firestore {
           // Server-owned lifecycle fields. These must be tolerated on existing
           // retained docs, but clients cannot create or change them.
           'deleted',
-          'deletedAt'
+          'deletedAt', 'profileRevision', 'profileClaimedAt'
         ])
         && data.keys().hasAll([
           'name', 'displayName', 'email', 'phoneNumber', 'dateOfBirth',
@@ -421,7 +421,9 @@ service cloud.firestore {
         && request.auth.uid == uid
         && !isDeletedUser(uid)
         && hasValidUserShape(request.resource.data)
-        && !request.resource.data.keys().hasAny(['deleted', 'deletedAt']);
+        && !request.resource.data.keys().hasAny([
+          'deleted', 'deletedAt', 'profileRevision', 'profileClaimedAt'
+        ]);
     }
 
     function userChangedKeys() {
@@ -1114,6 +1116,15 @@ service cloud.firestore {
     // Organizer-scoped WhatsApp/SMS grants are server-owned. Hosts receive
     // only aggregate reachability counts; attendee self-service will use a
     // callable rather than exposing this cross-organizer consent ledger.
+    // Catch platform permission is independent of organizer grants. All
+    // identity-bound decisions go through participant callables.
+    match /catchCommunicationPreferences/{uid} {
+      allow read, write: if false;
+    }
+    match /catchCommunicationPermissionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizerCommunicationPreferences/{preferenceId} {
       allow read, write: if false;
     }
@@ -1259,6 +1270,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Only server payment operations can access merchant bindings, OAuth
+    // state, financial ledgers and signed webhook receipts.
+    match /organizerPaymentConnections/{connectionId} {
+      allow read, write: if false;
+    }
+    match /organizerPaymentOauthStates/{stateId} {
+      allow read, write: if false;
+    }
+    match /organizerFormPayments/{paymentId} {
+      allow read, write: if false;
+    }
+    match /organizerFormPaymentWebhooks/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizerFormResponses/{responseId} {
       allow read, write: if false;
     }
@@ -1292,6 +1318,42 @@ service cloud.firestore {
     }
 
     match /organizerFormConversionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // Form submission prepares private review pointers, never a public profile.
+    match /participantFormProfileProposals/{responseId} {
+      allow read, write: if false;
+    }
+
+    // Event chat admission, membership and replay evidence are server-owned.
+    match /eventChatMessages/{id} {
+      allow read, write: if false;
+    }
+    match /eventChatReactions/{id} {
+      allow read, write: if false;
+    }
+    match /eventChatProfileShares/{shareId} {
+      allow read, write: if false;
+    }
+    match /eventChatPresence/{id} {
+      allow read, write: if false;
+    }
+    match /eventChatRooms/{eventId} {
+      allow read, write: if false;
+    }
+    match /eventChatMemberships/{membershipId} {
+      allow read, write: if false;
+    }
+    match /eventChatAccessReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /participantOrganizerCards/{responseId} {
+      allow read, write: if false;
+    }
+
+    match /participantProfileClaimReceipts/{receiptId} {
       allow read, write: if false;
     }
 

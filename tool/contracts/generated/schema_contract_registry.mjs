@@ -87455,6 +87455,33 @@ export const userProfileDocumentSchema = {
       "pattern": "^\\+\\d{1,4}$",
       "x-catch-ownership": "client-writable"
     },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "profileClaimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "profileComplete": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
@@ -87788,7 +87815,7 @@ export const userProfileDocumentSchema = {
     },
     "interestedInGenders": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 8,
       "uniqueItems": true,
       "items": {
@@ -94676,6 +94703,4889 @@ export const organizerFollowDocumentSchema = {
   }
 };
 
+export const participantOrganizerCardDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_organizer_cards.schema.json",
+  "title": "ParticipantOrganizerCardDocument",
+  "description": "Participant-owned selection of applicant-submitted organizer-card fields. No CRM content or event sharing permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "organizerId",
+    "responseId",
+    "questionIds",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "participantOrganizerCards",
+  "x-firestore-path": "participantOrganizerCards/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "participant form profile claim and card management"
+};
+
+export const participantProfileClaimReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_profile_claim_receipts.schema.json",
+  "title": "ParticipantProfileClaimReceiptDocument",
+  "description": "Idempotency proof for a participant-reviewed form profile claim. Contains no submitted answers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "responseId",
+    "payloadHash",
+    "profileRevision",
+    "organizerCardId",
+    "createdAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organizerCardId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "participantProfileClaimReceipts",
+  "x-firestore-path": "participantProfileClaimReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant form profile claim"
+};
+
+export const claimParticipantFormProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/claim_participant_form_profile_payload.schema.json",
+  "title": "ClaimParticipantFormProfileCallablePayload",
+  "description": "Claim reviewed form data for the authenticated participant without enabling dating discovery or event admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "expectedProfileRevision",
+    "requestId",
+    "termsVersion",
+    "selectedQuestionIds",
+    "profile",
+    "expectedIntakeRevision"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedProfileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,100}$"
+    },
+    "termsVersion": {
+      "type": "string",
+      "const": "form-profile-claim-v1"
+    },
+    "selectedQuestionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "profile": {
+      "description": "Explicit participant-reviewed core values. Phone identity comes from verified Auth, never a form answer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "dateOfBirth",
+        "gender"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "firstName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "lastName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": ".*\\S.*"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "man",
+            "woman",
+            "nonBinary",
+            "other"
+          ]
+        },
+        "email": {
+          "anyOf": [
+            {
+              "const": ""
+            },
+            {
+              "type": "string",
+              "format": "email",
+              "maxLength": 320
+            }
+          ]
+        },
+        "instagramHandle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "pattern": "^[A-Za-z0-9._]{1,30}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 120,
+          "maximum": 220
+        },
+        "occupation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "company": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "education": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "highSchool",
+            "someCollege",
+            "bachelors",
+            "masters",
+            "phd",
+            "tradeSchool",
+            "other",
+            null
+          ]
+        },
+        "religion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "hindu",
+            "muslim",
+            "christian",
+            "sikh",
+            "jain",
+            "buddhist",
+            "other",
+            "nonReligious",
+            null
+          ]
+        },
+        "languages": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "english",
+              "hindi",
+              "marathi",
+              "tamil",
+              "telugu",
+              "kannada",
+              "bengali",
+              "gujarati",
+              "punjabi",
+              "malayalam",
+              "odia",
+              "other"
+            ]
+          }
+        },
+        "relationshipGoal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "relationship",
+            "casual",
+            "marriage",
+            "friendship",
+            "unsure",
+            null
+          ]
+        },
+        "drinking": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "never",
+            "socially",
+            "often",
+            null
+          ]
+        },
+        "smoking": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "never",
+            "occasionally",
+            "often",
+            null
+          ]
+        },
+        "workout": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "never",
+            "sometimes",
+            "often",
+            "everyday",
+            null
+          ]
+        },
+        "diet": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "omnivore",
+            "vegetarian",
+            "vegan",
+            "jain",
+            "other",
+            null
+          ]
+        },
+        "children": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "dontHave",
+            "haveWantMore",
+            "haveNoMore",
+            "wantSomeday",
+            "dontWant",
+            null
+          ]
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date"
+        },
+        "interestedInGenders": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "man",
+              "woman",
+              "nonBinary",
+              "other"
+            ]
+          },
+          "x-catch-ownership": "client-writable"
+        }
+      }
+    },
+    "expectedIntakeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reviewedLinkedinUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "format": "uri",
+      "pattern": "^https://([a-z]{2,3}\\.)?(www\\.)?linkedin\\.com/in/[^\\s]+$"
+    }
+  }
+};
+
+export const claimParticipantFormProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/claim_participant_form_profile_response.schema.json",
+  "title": "ClaimParticipantFormProfileCallableResponse",
+  "description": "Private claim result. No public or room sharing is inferred.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profileRevision",
+    "organizerCardId",
+    "claimedAtMillis",
+    "replayed"
+  ],
+  "properties": {
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organizerCardId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claimedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listParticipantFormProfilesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_participant_form_profiles_payload.schema.json",
+  "title": "ListParticipantFormProfilesCallablePayload",
+  "description": "List only the verified participant’s active form profile proposals and private cards.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listParticipantFormProfilesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_form_profiles_response.schema.json",
+  "title": "ListParticipantFormProfilesCallableResponse",
+  "description": "Private summary metadata only; invalid or withdrawn response sources are omitted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseId",
+          "organizerId",
+          "organizerName",
+          "formTitle",
+          "submittedAtMillis",
+          "claimedAtMillis",
+          "cardFieldCount"
+        ],
+        "properties": {
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "formTitle": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "submittedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "claimedAtMillis": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cardFieldCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getParticipantFormPhotoCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callables/get_participant_form_photo_payload.schema.json",
+  "title": "GetParticipantFormPhotoCallablePayload",
+  "description": "Preview one image from the verified participant’s designated form-profile question.",
+  "required": [
+    "responseId",
+    "questionId",
+    "assetId"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getParticipantFormPhotoCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callable_responses/get_participant_form_photo_response.schema.json",
+  "title": "GetParticipantFormPhotoCallableResponse",
+  "description": "Bounded metadata-free JPEG bytes for private in-memory review; never an original upload URL.",
+  "required": [
+    "contentType",
+    "previewBase64",
+    "width",
+    "height"
+  ],
+  "properties": {
+    "contentType": {
+      "type": "string",
+      "const": "image/jpeg"
+    },
+    "previewBase64": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 349528,
+      "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 640
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 640
+    }
+  }
+};
+
+export const getParticipantFormProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_participant_form_profile_payload.schema.json",
+  "title": "GetParticipantFormProfileCallablePayload",
+  "description": "Read exact owned prepared form data for profile review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getParticipantFormProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_participant_form_profile_response.schema.json",
+  "title": "GetParticipantFormProfileCallableResponse",
+  "description": "Participant-only form review, with an optimistic profile revision and no unrelated CRM data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "organizerId",
+    "formId",
+    "formTitle",
+    "submittedAtMillis",
+    "fields",
+    "profileRevision",
+    "termsVersion",
+    "intakeRevision",
+    "organizerName",
+    "selectedCardQuestionIds",
+    "claimedAtMillis",
+    "currentProfile",
+    "currentLinkedinUrl",
+    "cardRevision"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formTitle": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "submittedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "fields": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "description": "Only explicitly designated applicant-submitted answers.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "destination",
+          "canonicalFieldId",
+          "label",
+          "kind",
+          "value",
+          "options"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destination": {
+            "type": "string",
+            "enum": [
+              "catchProfile",
+              "organizerCard"
+            ]
+          },
+          "canonicalFieldId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "x-catch-catalog": "../catalogs/person_fields.json",
+                "enum": [
+                  "givenName",
+                  "familyName",
+                  "displayName",
+                  "dateOfBirth",
+                  "age",
+                  "gender",
+                  "phoneNumber",
+                  "email",
+                  "instagramHandle",
+                  "linkedinUrl",
+                  "profilePhoto",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "interestedInGenders",
+                  "drinking",
+                  "smoking",
+                  "religion",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shortText",
+              "longText",
+              "singleChoice",
+              "multiChoice",
+              "date",
+              "phone",
+              "email",
+              "url",
+              "number",
+              "boolean",
+              "file",
+              "acknowledgement",
+              "signature"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number",
+                "minimum": -1000000000,
+                "maximum": 1000000000
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            ]
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "optionId",
+                "label",
+                "value"
+              ],
+              "properties": {
+                "optionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "termsVersion": {
+      "type": "string",
+      "const": "form-profile-claim-v1"
+    },
+    "intakeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organizerName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "selectedCardQuestionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "claimedAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currentProfile": {
+      "anyOf": [
+        {
+          "description": "Explicit participant-reviewed core values. Phone identity comes from verified Auth, never a form answer.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "displayName",
+            "dateOfBirth",
+            "gender"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "firstName": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "lastName": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": ".*\\S.*"
+            },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "man",
+                "woman",
+                "nonBinary",
+                "other"
+              ]
+            },
+            "email": {
+              "anyOf": [
+                {
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 320
+                }
+              ]
+            },
+            "instagramHandle": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 30,
+                  "pattern": "^[A-Za-z0-9._]{1,30}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "city": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 120,
+              "maximum": 220
+            },
+            "occupation": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "company": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "education": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "highSchool",
+                "someCollege",
+                "bachelors",
+                "masters",
+                "phd",
+                "tradeSchool",
+                "other",
+                null
+              ]
+            },
+            "religion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "hindu",
+                "muslim",
+                "christian",
+                "sikh",
+                "jain",
+                "buddhist",
+                "other",
+                "nonReligious",
+                null
+              ]
+            },
+            "languages": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "english",
+                  "hindi",
+                  "marathi",
+                  "tamil",
+                  "telugu",
+                  "kannada",
+                  "bengali",
+                  "gujarati",
+                  "punjabi",
+                  "malayalam",
+                  "odia",
+                  "other"
+                ]
+              }
+            },
+            "relationshipGoal": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "relationship",
+                "casual",
+                "marriage",
+                "friendship",
+                "unsure",
+                null
+              ]
+            },
+            "drinking": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "never",
+                "socially",
+                "often",
+                null
+              ]
+            },
+            "smoking": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "never",
+                "occasionally",
+                "often",
+                null
+              ]
+            },
+            "workout": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "never",
+                "sometimes",
+                "often",
+                "everyday",
+                null
+              ]
+            },
+            "diet": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "omnivore",
+                "vegetarian",
+                "vegan",
+                "jain",
+                "other",
+                null
+              ]
+            },
+            "children": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "dontHave",
+                "haveWantMore",
+                "haveNoMore",
+                "wantSomeday",
+                "dontWant",
+                null
+              ]
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date"
+            },
+            "interestedInGenders": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "man",
+                  "woman",
+                  "nonBinary",
+                  "other"
+                ]
+              },
+              "x-catch-ownership": "client-writable"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currentLinkedinUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "cardRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const participantFormProfileProposalDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_form_profile_proposals.schema.json",
+  "title": "ParticipantFormProfileProposalDocument",
+  "description": "Private pointers to explicitly designated applicant-submitted profile and organizer-card answers. Submission prepares a proposal, never a claimed or public profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "participantFormProfileProposals",
+  "x-firestore-path": "participantFormProfileProposals/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "verified form submission and participant profile claiming",
+  "required": [
+    "uid",
+    "organizerId",
+    "formId",
+    "versionId",
+    "responseId",
+    "fields",
+    "createdAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "destination",
+          "canonicalFieldId"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destination": {
+            "type": "string",
+            "enum": [
+              "catchProfile",
+              "organizerCard"
+            ]
+          },
+          "canonicalFieldId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "x-catch-catalog": "../catalogs/person_fields.json",
+                "enum": [
+                  "givenName",
+                  "familyName",
+                  "displayName",
+                  "dateOfBirth",
+                  "age",
+                  "gender",
+                  "phoneNumber",
+                  "email",
+                  "instagramHandle",
+                  "linkedinUrl",
+                  "profilePhoto",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "interestedInGenders",
+                  "drinking",
+                  "smoking",
+                  "religion",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "claimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const eventChatProfileShareDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_profile_shares.schema.json",
+  "title": "EventChatProfileShareDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "organizerId",
+    "revision",
+    "selection",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.",
+  "x-firestore-collection": "eventChatProfileShares",
+  "x-firestore-path": "eventChatProfileShares/{shareId}",
+  "x-document-id-field": "shareId",
+  "x-owner": "event profile sharing callables"
+};
+
+export const actOnEventChatMessageCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/act_on_event_chat_message_payload.schema.json",
+  "title": "ActOnEventChatMessageCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "messageId",
+    "action",
+    "reasonCode",
+    "requestId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "report",
+        "block",
+        "remove"
+      ]
+    },
+    "reasonCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "harassment",
+            "spam",
+            "inappropriate",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  }
+};
+
+export const actOnEventChatMessageCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/act_on_event_chat_message_response.schema.json",
+  "title": "ActOnEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applied",
+    "replayed"
+  ],
+  "properties": {
+    "applied": {
+      "const": true,
+      "type": "boolean"
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listEventChatParticipantsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chat_participants_payload.schema.json",
+  "title": "ListEventChatParticipantsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "accountUid",
+            "after"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "after": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    }
+  }
+};
+
+export const listEventChatParticipantsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_chat_participants_response.schema.json",
+  "title": "ListEventChatParticipantsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "role"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "host",
+              "attendee"
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "accountUid",
+            "after"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "after": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getEventChatProfileSharingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_profile_sharing_payload.schema.json",
+  "title": "GetEventChatProfileSharingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const updateEventChatProfileSharingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_chat_profile_sharing_payload.schema.json",
+  "title": "UpdateEventChatProfileSharingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "expectedRevision",
+    "requestId",
+    "selection"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getEventChatProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_profile_payload.schema.json",
+  "title": "GetEventChatProfileCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "participantUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "participantUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getEventChatProfileSharingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_sharing_response.schema.json",
+  "title": "GetEventChatProfileSharingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "revision",
+    "selection",
+    "canShare",
+    "profileRevision",
+    "membershipRevision",
+    "coreFields",
+    "photoIds"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "canShare": {
+      "type": "boolean"
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "membershipRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "value"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "photoIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    }
+  }
+};
+
+export const updateEventChatProfileSharingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_event_chat_profile_sharing_response.schema.json",
+  "title": "UpdateEventChatProfileSharingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const getEventChatProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_response.schema.json",
+  "title": "GetEventChatProfileCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "participantUid",
+    "displayName",
+    "coreFields",
+    "cardFields",
+    "photo"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "participantUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "value"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "cardFields": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "photo": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "GetParticipantFormPhotoCallableResponse",
+          "description": "Bounded metadata-free JPEG bytes for private in-memory review; never an original upload URL.",
+          "required": [
+            "contentType",
+            "previewBase64",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "contentType": {
+              "type": "string",
+              "const": "image/jpeg"
+            },
+            "previewBase64": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 349528,
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 640
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 640
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const eventChatRoomDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_rooms.schema.json",
+  "title": "EventChatRoomDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "status",
+    "revision",
+    "createdByUid",
+    "updatedByUid",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastMessageSequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "description": "Host-controlled event conversation availability. No attendee admission or profile data.",
+  "x-firestore-collection": "eventChatRooms",
+  "x-firestore-path": "eventChatRooms/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "event chat access callables"
+};
+
+export const eventChatMembershipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_memberships.schema.json",
+  "title": "EventChatMembershipDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "status",
+    "revision",
+    "termsVersion",
+    "joinedAt",
+    "leftAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "joined",
+        "left"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "termsVersion": {
+      "type": "string",
+      "enum": [
+        "event-chat-v1"
+      ]
+    },
+    "joinedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "leftAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Explicit room participation. Current admission and claimed identity must still be rechecked on every access.",
+  "x-firestore-collection": "eventChatMemberships",
+  "x-firestore-path": "eventChatMemberships/{membershipId}",
+  "x-document-id-field": "membershipId",
+  "x-owner": "event chat access callables"
+};
+
+export const eventChatAccessReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_access_receipts.schema.json",
+  "title": "EventChatAccessReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "payloadHash",
+    "revision",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.",
+  "x-firestore-collection": "eventChatAccessReceipts",
+  "x-firestore-path": "eventChatAccessReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event chat access callables"
+};
+
+export const eventChatMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_messages.schema.json",
+  "title": "EventChatMessageDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "sequence",
+    "text",
+    "replyToMessageId",
+    "status",
+    "payloadHash",
+    "reactionCounts",
+    "createdAt",
+    "removedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "text": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "replyToMessageId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "removed"
+      ]
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reactionCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "like",
+        "love",
+        "laugh",
+        "wow",
+        "sad",
+        "thanks"
+      ],
+      "properties": {
+        "like": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "love": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "laugh": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "wow": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sad": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "thanks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "removedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "description": "Server-owned event conversation message; replies are same-room references, never quoted copies.",
+  "x-firestore-collection": "eventChatMessages",
+  "x-firestore-path": "eventChatMessages/{id}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat callables"
+};
+
+export const eventChatReactionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_reactions.schema.json",
+  "title": "EventChatReactionDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "messageId",
+    "uid",
+    "reaction",
+    "revision",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reaction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "like",
+            "love",
+            "laugh",
+            "wow",
+            "sad",
+            "thanks"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "One current reaction per account and message; separate from aggregated anonymous counts.",
+  "x-firestore-collection": "eventChatReactions",
+  "x-firestore-path": "eventChatReactions/{id}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat callables"
+};
+
+export const eventChatPresenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_presence.schema.json",
+  "title": "EventChatPresenceDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "revision",
+    "expiresAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Bounded expiring typing indicator, never draft text.",
+  "x-firestore-collection": "eventChatPresence",
+  "x-firestore-path": "eventChatPresence/{id}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat callables"
+};
+
+export const sendEventChatMessageCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_event_chat_message_payload.schema.json",
+  "title": "SendEventChatMessageCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "requestId",
+    "text",
+    "replyToMessageId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "replyToMessageId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const sendEventChatMessageCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_event_chat_message_response.schema.json",
+  "title": "SendEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "messageId",
+    "sequence",
+    "replayed"
+  ],
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setEventChatReactionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_chat_reaction_payload.schema.json",
+  "title": "SetEventChatReactionCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "messageId",
+    "requestId",
+    "reaction",
+    "expectedRevision",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reaction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "like",
+            "love",
+            "laugh",
+            "wow",
+            "sad",
+            "thanks"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const setEventChatReactionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_event_chat_reaction_response.schema.json",
+  "title": "SetEventChatReactionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setEventChatTypingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_chat_typing_payload.schema.json",
+  "title": "SetEventChatTypingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "isTyping",
+    "expectedRevision",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "isTyping": {
+      "type": "boolean"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const setEventChatTypingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_event_chat_typing_response.schema.json",
+  "title": "SetEventChatTypingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const listEventChatsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chats_payload.schema.json",
+  "title": "ListEventChatsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "after",
+            "accountUid"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "memberships",
+                "participations",
+                "attendees"
+              ]
+            },
+            "after": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1500,
+                  "pattern": "^[^/]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    }
+  }
+};
+
+export const listEventChatsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_chats_response.schema.json",
+  "title": "ListEventChatsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "title": "GetEventChatAccessCallableResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "organizerId",
+          "title",
+          "role",
+          "room",
+          "membership",
+          "canManage",
+          "canJoin",
+          "canReadMessages",
+          "profileClaimRequired",
+          "termsVersion"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "host",
+              "attendee"
+            ]
+          },
+          "room": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "revision"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "notCreated",
+                  "open",
+                  "closed"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "membership": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "revision"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "notJoined",
+                  "joined",
+                  "left"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "canManage": {
+            "type": "boolean"
+          },
+          "canJoin": {
+            "type": "boolean"
+          },
+          "canReadMessages": {
+            "type": "boolean"
+          },
+          "profileClaimRequired": {
+            "type": "boolean"
+          },
+          "termsVersion": {
+            "type": "string",
+            "enum": [
+              "event-chat-v1"
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "after",
+            "accountUid"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "memberships",
+                "participations",
+                "attendees"
+              ]
+            },
+            "after": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1500,
+                  "pattern": "^[^/]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const listEventChatMessagesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chat_messages_payload.schema.json",
+  "title": "ListEventChatMessagesCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "beforeSequence",
+    "limit"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "beforeSequence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listEventChatMessagesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_chat_messages_response.schema.json",
+  "title": "ListEventChatMessagesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "messages",
+    "nextBeforeSequence",
+    "typing",
+    "typingHasMore",
+    "ownTypingRevision",
+    "serverTimeMillis"
+  ],
+  "properties": {
+    "messages": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "sequence",
+          "sentAtMillis",
+          "senderUid",
+          "senderName",
+          "available",
+          "text",
+          "reply",
+          "reactionCounts",
+          "myReaction",
+          "myReactionRevision"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "sentAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "senderUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "senderName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reply": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "messageId",
+                  "senderUid",
+                  "senderName",
+                  "available",
+                  "text"
+                ],
+                "properties": {
+                  "messageId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "senderUid": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "senderName": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 120
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "available": {
+                    "type": "boolean"
+                  },
+                  "text": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reactionCounts": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "like",
+              "love",
+              "laugh",
+              "wow",
+              "sad",
+              "thanks"
+            ],
+            "properties": {
+              "like": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "love": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "laugh": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "wow": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sad": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "thanks": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "myReaction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "like",
+                  "love",
+                  "laugh",
+                  "wow",
+                  "sad",
+                  "thanks"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "myReactionRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextBeforeSequence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "typing": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "typingHasMore": {
+      "type": "boolean"
+    },
+    "ownTypingRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const getEventChatAccessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_access_payload.schema.json",
+  "title": "GetEventChatAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const updateEventChatAccessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_chat_access_payload.schema.json",
+  "title": "UpdateEventChatAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "action",
+    "expectedRevision",
+    "requestId",
+    "termsVersion",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "open",
+        "close",
+        "join",
+        "leave"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "termsVersion": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "event-chat-v1"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getEventChatAccessCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_access_response.schema.json",
+  "title": "GetEventChatAccessCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "title",
+    "role",
+    "room",
+    "membership",
+    "canManage",
+    "canJoin",
+    "canReadMessages",
+    "profileClaimRequired",
+    "termsVersion"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "host",
+        "attendee"
+      ]
+    },
+    "room": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "revision"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "notCreated",
+            "open",
+            "closed"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "revision"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "notJoined",
+            "joined",
+            "left"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "canManage": {
+      "type": "boolean"
+    },
+    "canJoin": {
+      "type": "boolean"
+    },
+    "canReadMessages": {
+      "type": "boolean"
+    },
+    "profileClaimRequired": {
+      "type": "boolean"
+    },
+    "termsVersion": {
+      "type": "string",
+      "enum": [
+        "event-chat-v1"
+      ]
+    }
+  }
+};
+
+export const updateEventChatAccessCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_event_chat_access_response.schema.json",
+  "title": "UpdateEventChatAccessCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listParticipantMessagingPreferencesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_participant_messaging_preferences_payload.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallablePayload",
+  "description": "Read only the signed-in participant’s independent Catch and organizer WhatsApp permissions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listParticipantMessagingPreferencesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_messaging_preferences_response.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallableResponse",
+  "description": "Bounded participant-only WhatsApp permission directory; no contact endpoints or CRM fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catchPreference",
+    "organizers",
+    "nextCursor"
+  ],
+  "properties": {
+    "catchPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "organizers": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "preference"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "preference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "receiptId"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "optedIn",
+                  "optedOut"
+                ]
+              },
+              "receiptId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const withdrawParticipantMessagingPermissionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_participant_messaging_permission_payload.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallablePayload",
+  "description": "Withdraw exactly one sender’s WhatsApp permission using the reviewed receipt. Never grants consent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "organizerId",
+    "expectedReceiptId",
+    "requestId"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "catch",
+        "organizer"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const withdrawParticipantMessagingPermissionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/withdraw_participant_messaging_permission_response.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallableResponse",
+  "description": "Current permission after an idempotent withdrawal; later consent is never overwritten by an old retry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "preference",
+    "replayed"
+  ],
+  "properties": {
+    "preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const catchCommunicationPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_communication_preferences.schema.json",
+  "title": "CatchCommunicationPreferenceDocument",
+  "description": "Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchCommunicationPreferences",
+  "x-firestore-path": "catchCommunicationPreferences/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "participant consent handlers",
+  "required": [
+    "uid",
+    "whatsapp",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "currentReceiptId",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const catchCommunicationPermissionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_communication_permission_receipts.schema.json",
+  "title": "CatchCommunicationPermissionReceiptDocument",
+  "description": "Immutable participant evidence for Catch WhatsApp, separate from every organizer permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchCommunicationPermissionReceipts",
+  "x-firestore-path": "catchCommunicationPermissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant consent handlers",
+  "required": [
+    "uid",
+    "channel",
+    "decision",
+    "evidenceStatus",
+    "termsVersion",
+    "consentCopyHash",
+    "source",
+    "sourceEventId",
+    "sourceFormId",
+    "sourceResponseId",
+    "sourceProviderEventId",
+    "actorClass",
+    "actorUid",
+    "identityStrength",
+    "grantedAt",
+    "revokedAt",
+    "supersedesReceiptId",
+    "createdAt",
+    "sourceOrganizerId"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "const": "whatsapp",
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "evidenceStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "incomplete"
+      ]
+    },
+    "termsVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "consentCopyHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "publicEventRegistration",
+        "hostFormResponse",
+        "participantSettings",
+        "unsubscribeLink",
+        "inboundStop",
+        "providerWebhook",
+        "legacyIncomplete"
+      ]
+    },
+    "sourceEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceFormId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceProviderEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityStrength": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "grantedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersedesReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "sourceOrganizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedIn"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "consentCopyHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "grantedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "revokedAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedOut"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "grantedAt": {
+            "type": "null"
+          },
+          "revokedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "hostFormResponse"
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sourceOrganizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      }
+    }
+  ]
+};
+
 export const organizerCommunicationPreferenceDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_communication_preferences.schema.json",
@@ -101339,6 +106249,11 @@ export const organizerFormDocumentSchema = {
     "lastResponseAt"
   ],
   "properties": {
+    "pendingPaymentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unreleased form response reservations awaiting a fee. Legacy omitted means zero."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -101702,6 +106617,921 @@ export const organizerFormDocumentSchema = {
   }
 };
 
+export const organizerPaymentConnectionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_payment_connections.schema.json",
+  "title": "OrganizerPaymentConnectionDocument",
+  "description": "Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "provider",
+    "mode",
+    "status",
+    "accountId",
+    "publicToken",
+    "secretVersionResource",
+    "tokenExpiresAt",
+    "webhookId",
+    "webhookUrl",
+    "webhookVerifiedAt",
+    "connectedByUid",
+    "revision",
+    "refreshLeaseUntil",
+    "createdAt",
+    "updatedAt",
+    "disconnectedAt",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "provider": {
+      "const": "razorpay"
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "connecting",
+        "ready",
+        "needsAttention",
+        "disconnected"
+      ],
+      "type": "string"
+    },
+    "accountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "publicToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "secretVersionResource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^projects/[^/]+/secrets/[^/]+/versions/[1-9][0-9]*$"
+    },
+    "tokenExpiresAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "webhookId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "webhookUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "maxLength": 255
+    },
+    "webhookVerifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connectedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "refreshLeaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "disconnectedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  },
+  "x-firestore-collection": "organizerPaymentConnections",
+  "x-firestore-path": "organizerPaymentConnections/{connectionId}",
+  "x-document-id-field": "connectionId",
+  "x-owner": "organizer form payment server operations"
+};
+
+export const organizerPaymentOauthStateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_payment_oauth_states.schema.json",
+  "title": "OrganizerPaymentOauthStateDocument",
+  "description": "Single-use hashed OAuth state bound to initiating user, organizer, connection and mode.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "connectionId",
+    "actorUid",
+    "mode",
+    "status",
+    "createdAt",
+    "expiresAt",
+    "completedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "exchanging",
+        "completed",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "organizerPaymentOauthStates",
+  "x-firestore-path": "organizerPaymentOauthStates/{stateHash}",
+  "x-document-id-field": "stateHash",
+  "x-owner": "organizer form payment server operations"
+};
+
+export const organizerFormPaymentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_payments.schema.json",
+  "title": "OrganizerFormPaymentDocument",
+  "description": "Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "draftId",
+    "respondentUid",
+    "connectionId",
+    "accountId",
+    "mode",
+    "draftRevision",
+    "answersHash",
+    "identity",
+    "amountPaise",
+    "currency",
+    "description",
+    "refundPolicy",
+    "receipt",
+    "status",
+    "providerOrderId",
+    "providerPaymentId",
+    "providerRefundId",
+    "refundedAmountPaise",
+    "responseId",
+    "reservationReleased",
+    "leaseUntil",
+    "createdAt",
+    "updatedAt",
+    "checkoutExpiresAt",
+    "capturedAt",
+    "submittedAt",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "respondentUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "draftRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "answersHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "email",
+        "phoneE164",
+        "searchName",
+        "origin"
+      ],
+      "properties": {
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "searchName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "respondentGranted",
+            "organizerAcquired"
+          ]
+        }
+      }
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 10000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "refundPolicy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^cfp_[a-f0-9]{32}$"
+    },
+    "status": {
+      "enum": [
+        "creatingOrder",
+        "orderUnknown",
+        "checkoutReady",
+        "verifying",
+        "captured",
+        "submitted",
+        "failed",
+        "expired",
+        "refundPending",
+        "refunded",
+        "reviewRequired"
+      ],
+      "type": "string"
+    },
+    "providerOrderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "providerRefundId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^rfnd_[A-Za-z0-9]+$"
+    },
+    "refundedAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000
+    },
+    "responseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationReleased": {
+      "type": "boolean"
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "checkoutExpiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "capturedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "submittedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  },
+  "x-firestore-collection": "organizerFormPayments",
+  "x-firestore-path": "organizerFormPayments/{paymentId}",
+  "x-document-id-field": "paymentId",
+  "x-owner": "organizer form payment server operations"
+};
+
+export const organizerFormPaymentWebhookDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_payment_webhooks.schema.json",
+  "title": "OrganizerFormPaymentWebhookDocument",
+  "description": "Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionId",
+    "accountId",
+    "providerEventId",
+    "event",
+    "providerOrderId",
+    "providerPaymentId",
+    "status",
+    "createdAt",
+    "processedAt",
+    "expiresAt",
+    "nextAttemptAt"
+  ],
+  "properties": {
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "providerEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "event": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "providerOrderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "processed",
+        "ignored"
+      ],
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "processedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "nextAttemptAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormPaymentWebhooks",
+  "x-firestore-path": "organizerFormPaymentWebhooks/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer form payment server operations"
+};
+
 export const organizerFormDraftDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_drafts.schema.json",
@@ -101978,6 +107808,15 @@ export const organizerFormDraftDocumentSchema = {
                         "profile",
                         "sensitive",
                         "organizerCustom"
+                      ]
+                    },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
                       ]
                     },
                     "prefillPolicy": {
@@ -102395,6 +108234,67 @@ export const organizerFormDraftDocumentSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -102785,6 +108685,15 @@ export const organizerFormVersionDocumentSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -103203,6 +109112,67 @@ export const organizerFormVersionDocumentSchema = {
             }
           }
         },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
         "completion": {
           "type": "object",
           "additionalProperties": false,
@@ -103333,6 +109303,82 @@ export const organizerFormResponseDraftDocumentSchema = {
     "submittedResponseId"
   ],
   "properties": {
+    "messagingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp",
+        "organizerDecidedAt",
+        "catchDecidedAt"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "catchDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
+    },
+    "paymentAttemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-only checkout lock; prevents edits while a fee is unresolved."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -196023,6 +202069,15 @@ export const createOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -196441,6 +202496,67 @@ export const createOrganizerFormCallableResponseSchema = {
                 }
               }
             },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
             "completion": {
               "type": "object",
               "additionalProperties": false,
@@ -196808,6 +202924,15 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
                         "profile",
                         "sensitive",
                         "organizerCustom"
+                      ]
+                    },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
                       ]
                     },
                     "prefillPolicy": {
@@ -197225,6 +203350,67 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -197744,6 +203930,15 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -198159,6 +204354,67 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -198743,6 +204999,15 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -199158,6 +205423,67 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -199837,6 +206163,15 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -200252,6 +206587,67 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -201362,6 +207758,15 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -201777,6 +208182,67 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -202400,6 +208866,15 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -202818,6 +209293,67 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                 }
               }
             },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
             "completion": {
               "type": "object",
               "additionalProperties": false,
@@ -202866,6 +209402,35 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                   "maxLength": 500
                 }
               }
+            }
+          }
+        },
+        "messagingOffer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
             }
           }
         }
@@ -203262,6 +209827,15 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                                 "profile",
                                 "sensitive",
                                 "organizerCustom"
+                              ]
+                            },
+                            "answerDestination": {
+                              "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "catchProfile",
+                                "organizerCard"
                               ]
                             },
                             "prefillPolicy": {
@@ -203682,6 +210256,67 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                     }
                   }
                 },
+                "payment": {
+                  "anyOf": [
+                    {
+                      "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "connectionId",
+                        "amountPaise",
+                        "currency",
+                        "description",
+                        "refundPolicy"
+                      ],
+                      "properties": {
+                        "connectionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "amountPaise": {
+                          "type": "integer",
+                          "minimum": 100,
+                          "maximum": 10000000
+                        },
+                        "currency": {
+                          "const": "INR"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "refundPolicy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "messagingConsent": {
+                  "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organizerWhatsapp",
+                    "catchWhatsapp"
+                  ],
+                  "properties": {
+                    "organizerWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "catchWhatsapp": {
+                      "type": "boolean"
+                    }
+                  }
+                },
                 "completion": {
                   "type": "object",
                   "additionalProperties": false,
@@ -203732,6 +210367,35 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                   }
                 }
               }
+            },
+            "messagingOffer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "termsVersion",
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "termsVersion": {
+                  "const": "form-whatsapp-v1",
+                  "type": "string"
+                },
+                "organizerWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
             }
           }
         },
@@ -203780,6 +210444,27 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
         "consentAccepted": {
           "type": "boolean"
         },
+        "messagingChoices": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
         "identityKind": {
           "type": "string",
           "enum": [
@@ -203814,6 +210499,27 @@ export const saveOrganizerFormResponseDraftCallablePayloadSchema = {
     "consentAccepted"
   ],
   "properties": {
+    "messagingChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        }
+      }
+    },
     "draftId": {
       "type": "string",
       "minLength": 1,
@@ -204081,6 +210787,1175 @@ export const finalizeOrganizerFormAssetCallableResponseSchema = {
   }
 };
 
+export const prepareOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_organizer_form_payment_payload.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallablePayload",
+  "description": "Freezes a completed phone-verified draft and prepares its merchant checkout.",
+  "allOf": [
+    {
+      "title": "SubmitOrganizerFormResponseCallablePayload",
+      "description": "Idempotently submits one completed version-bound draft.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "draftToken",
+        "expectedRevision",
+        "requestId"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "draftToken": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{32,160}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{16,120}$"
+        }
+      }
+    }
+  ]
+};
+
+export const prepareOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/prepare_organizer_form_payment_response.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only safe payment projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "versionId",
+                "status",
+                "submittedAtMillis",
+                "withdrawalToken",
+                "completion"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawalToken": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "profileReviewAvailable": {
+                  "type": "boolean",
+                  "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const findOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/find_organizer_form_payment_payload.schema.json",
+  "title": "FindOrganizerFormPaymentCallablePayload",
+  "description": "Find the signed-in respondent's most recent payment for a public form without browser-local identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicFormId"
+  ],
+  "properties": {
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    }
+  }
+};
+
+export const findOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/find_organizer_form_payment_response.schema.json",
+  "title": "FindOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only latest payment projection; does not start checkout or depend on the current form version or availability.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payment"
+  ],
+  "properties": {
+    "payment": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "amountPaise",
+            "currency",
+            "mode",
+            "refundPolicy",
+            "refundedAmountPaise",
+            "checkout",
+            "receipt"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^fp_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "submitted",
+                "failed",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired"
+              ],
+              "type": "string"
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "refundPolicy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "checkout": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "publicToken",
+                    "orderId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "expiresAtMillis"
+                  ],
+                  "properties": {
+                    "publicToken": {
+                      "type": "string",
+                      "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "pattern": "^order_[A-Za-z0-9]+$"
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "receipt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "formId",
+                    "versionId",
+                    "status",
+                    "submittedAtMillis",
+                    "withdrawalToken",
+                    "completion"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "formId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "versionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "submitted",
+                        "withdrawn"
+                      ]
+                    },
+                    "submittedAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "withdrawalToken": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                    },
+                    "completion": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "title",
+                        "message",
+                        "actionKind",
+                        "actionLabel",
+                        "actionUrl"
+                      ],
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "message": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 1000
+                        },
+                        "actionKind": {
+                          "type": "string",
+                          "enum": [
+                            "none",
+                            "externalUrl",
+                            "event",
+                            "eventRuntime"
+                          ]
+                        },
+                        "actionLabel": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 80
+                        },
+                        "actionUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri",
+                          "maxLength": 500
+                        }
+                      }
+                    },
+                    "profileReviewAvailable": {
+                      "type": "boolean",
+                      "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_payment_payload.schema.json",
+  "title": "GetOrganizerFormPaymentCallablePayload",
+  "description": "Owner-only payment status or signed checkout callback; success still requires server capture verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "paymentId",
+    "callback"
+  ],
+  "properties": {
+    "paymentId": {
+      "type": "string",
+      "pattern": "^fp_[a-f0-9]{32}$"
+    },
+    "callback": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "signature"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^pay_[A-Za-z0-9]+$"
+            },
+            "signature": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_payment_response.schema.json",
+  "title": "GetOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only safe payment projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "versionId",
+                "status",
+                "submittedAtMillis",
+                "withdrawalToken",
+                "completion"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawalToken": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "profileReviewAvailable": {
+                  "type": "boolean",
+                  "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const listOrganizerFormPaymentsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_payments_payload.schema.json",
+  "title": "ListOrganizerFormPaymentsCallablePayload",
+  "description": "Manager-only bounded fee ledger for one owned form, independent of the response inbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "statuses",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "statuses": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 11,
+      "items": {
+        "enum": [
+          "creatingOrder",
+          "orderUnknown",
+          "checkoutReady",
+          "verifying",
+          "captured",
+          "submitted",
+          "failed",
+          "expired",
+          "refundPending",
+          "refunded",
+          "reviewRequired"
+        ],
+        "type": "string"
+      }
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const listOrganizerFormPaymentsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_payments_response.schema.json",
+  "title": "ListOrganizerFormPaymentsCallableResponse",
+  "description": "Minimal organizer fee records. No private credential, draft token, unsubmitted answers or respondent identity is exposed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "paymentId",
+          "status",
+          "mode",
+          "amountPaise",
+          "currency",
+          "refundedAmountPaise",
+          "createdAtMillis",
+          "updatedAtMillis",
+          "capturedAtMillis",
+          "submittedAtMillis",
+          "responseId",
+          "providerOrderId",
+          "providerPaymentId",
+          "providerRefundId",
+          "receipt"
+        ],
+        "properties": {
+          "paymentId": {
+            "type": "string",
+            "pattern": "^fp_[a-f0-9]{32}$"
+          },
+          "status": {
+            "enum": [
+              "creatingOrder",
+              "orderUnknown",
+              "checkoutReady",
+              "verifying",
+              "captured",
+              "submitted",
+              "failed",
+              "expired",
+              "refundPending",
+              "refunded",
+              "reviewRequired"
+            ],
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "test",
+              "live"
+            ]
+          },
+          "amountPaise": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 10000000
+          },
+          "currency": {
+            "const": "INR"
+          },
+          "refundedAmountPaise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "capturedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "submittedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "responseId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "providerOrderId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "providerPaymentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "providerRefundId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "receipt": {
+            "type": "string",
+            "pattern": "^cfp_[a-f0-9]{32}$"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const manageOrganizerFormPaymentConnectionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_form_payment_connection_payload.schema.json",
+  "title": "ManageOrganizerFormPaymentConnectionCallablePayload",
+  "description": "Manager-only merchant connection setup, safe listing, credential refresh, and local disconnection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "action",
+    "connectionId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "begin",
+        "list",
+        "disconnect",
+        "refresh"
+      ]
+    },
+    "connectionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^rpc_[a-f0-9]{32}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const manageOrganizerFormPaymentConnectionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_form_payment_connection_response.schema.json",
+  "title": "ManageOrganizerFormPaymentConnectionCallableResponse",
+  "description": "Safe connection status and one-use OAuth link. No merchant credentials.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "available",
+    "authorizationUrl",
+    "connectionId",
+    "expiresAtMillis",
+    "connections"
+  ],
+  "properties": {
+    "available": {
+      "type": "boolean"
+    },
+    "authorizationUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 4000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connectionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connections": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "status",
+          "mode",
+          "accountId",
+          "webhookVerified",
+          "lastErrorCode"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "connecting",
+              "ready",
+              "needsAttention",
+              "disconnected"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "test",
+              "live"
+            ]
+          },
+          "accountId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "webhookVerified": {
+            "type": "boolean"
+          },
+          "lastErrorCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
 export const submitOrganizerFormResponseCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/submit_organizer_form_response_payload.schema.json",
@@ -204220,6 +212095,10 @@ export const submitOrganizerFormResponseCallableResponseSchema = {
               "maxLength": 500
             }
           }
+        },
+        "profileReviewAvailable": {
+          "type": "boolean",
+          "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
         }
       }
     }
@@ -205714,6 +213593,140 @@ export const getOrganizerFormResponseDetailCallableResponseSchema = {
       ],
       "minLength": 1,
       "maxLength": 180
+    },
+    "payment": {
+      "description": "Authorized financial record linked to this submitted response; no draft or credential data.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "mode",
+            "amountPaise",
+            "currency",
+            "refundedAmountPaise",
+            "createdAtMillis",
+            "updatedAtMillis",
+            "capturedAtMillis",
+            "submittedAtMillis",
+            "responseId",
+            "providerOrderId",
+            "providerPaymentId",
+            "providerRefundId",
+            "receipt"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^fp_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "submitted",
+                "failed",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired"
+              ],
+              "type": "string"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000
+            },
+            "createdAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "capturedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "submittedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "responseId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "providerOrderId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "providerPaymentId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "providerRefundId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "receipt": {
+              "type": "string",
+              "pattern": "^cfp_[a-f0-9]{32}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };

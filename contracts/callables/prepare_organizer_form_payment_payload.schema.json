@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_organizer_form_payment_payload.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallablePayload",
+  "description": "Freezes a completed phone-verified draft and prepares its merchant checkout.",
+  "allOf": [
+    {
+      "$ref": "submit_organizer_form_response_payload.schema.json"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.134.1
-updated: 2026-09-21
+version: 1.147.0
+updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -2449,6 +2449,298 @@ Generic Forms is the source for application, registration, intake, waiver,
 feedback, and survey definitions. The existing application collections below
 remain the application-review projection and import compatibility boundary;
 they are not the generic response store.
+
+### Organizer-connected form payments
+
+`organizerPaymentConnections` binds one organizer to one Razorpay merchant,
+mode, verified merchant webhook and pinned Secret Manager credential version.
+`organizerPaymentOauthStates` stores only a hash of one-use, manager-bound,
+expiring OAuth state. Tokens and webhook secrets never enter Firestore or
+client projections. Refresh rotation has an exclusive durable lease; uncertain
+rotation requires reconnection. Disconnection blocks new checkouts while
+retaining server access to settle existing payments.
+
+`organizerFormPayments` freezes the fee, merchant, verified respondent,
+version, draft revision and answer hash before creating an order. The draft's
+`paymentAttemptId` prevents editing; `organizerForms.pendingPaymentCount`
+reserves capacity (legacy omission means zero). Finalization decrements the
+reservation and creates exactly one normal response in the same transaction.
+A late capture after release, or a missing/changed frozen submission, enters
+idempotent refund processing rather than creating an application.
+
+`organizerFormPaymentWebhooks` stores minimal signed-event receipts. Raw bytes
+are verified against the bound merchant secret and account before persistence;
+provider state is then re-read by a retrying worker or recovery sweep. Only a
+persisted response yields completion/redirect data. Checkout callbacks, fees,
+CRM conversion, review, event admission and room membership are separate.
+All four collections deny direct client reads and writes. The source and
+partner setup boundary is specified in [Host Forms](host_forms.md).
+Recovery isolates processing, reservation expiry and rescheduling errors per
+record. Four bounded workers prevent one slow merchant from serializing the
+batch; the sweep leaves unstarted work eligible when its run budget is spent.
+Manual-review payments release expired reservations without automatically
+retrying capture/refund or clearing their review status.
+Provider replays also preserve financial review: original-payment capture or
+refund updates cannot clear a duplicate-capture anomaly. Refund totals still
+advance for the original payment; another payment's refund never overwrites
+that identity or amount. A reviewed checkout cannot initiate another capture.
+
+The authorized response-detail projection includes its financial ledger row
+through one deterministic draft-to-payment point read. Organizer, form, version,
+draft, respondent and response links must all match before money or provider
+references are returned. Free responses have no payment row. Refund and manual
+review states remain financial facts and do not change application review.
+
+`findOrganizerFormPayment` resolves the public form id with a bounded unique
+lookup, then reads only the authenticated respondent's latest form payment.
+Discovery does not call the provider or depend on the current published version,
+fee, availability or browser storage. Ended attempts without a response do not
+block a fresh start; completed responses remain recoverable, including refunds.
+Client session generations discard late lookup, checkout and error results
+after account or form changes. Reading an ended or manual-review payment never
+retries financial mutations.
+
+
+### Form messaging decisions
+
+`organizerFormResponseDrafts.messagingDecision` stores separate organizer and
+Catch WhatsApp choices with versioned server copy and independent decision
+timestamps. Missing legacy choices grant nothing. Paid checkout includes the
+choices in its frozen-content hash; finalization and free submission write
+consent receipts atomically with the response. The submitted organizer response
+does not expose Catch's private preference.
+
+Organizer decisions use `organizerCommunicationPreferences` and
+`organizerCommunicationPermissionReceipts`. Catch decisions use separate
+server-only `catchCommunicationPreferences/{uid}` and
+`catchCommunicationPermissionReceipts/{receiptId}`. Neither can authorize the
+other sender. A newer withdrawal wins over a delayed submission/capture, while
+replayed finalization is idempotent. Account deletion removes these preferences
+and receipts, and a deletion tombstone prevents a late payment from granting
+consent again. `listParticipantMessagingPreferences` lists only the signed-in
+UID's permissions, with at most 30 organizer rows and a document-ID cursor.
+Confirmed opt-in requires matching grant evidence. The exact authenticated
+`/settings/whatsapp` route remains available before profile setup.
+`withdrawParticipantMessagingPermission` stops exactly one sender, preserves
+SMS and all other organizers, and writes an immutable `participantSettings`
+receipt. Catch withdrawal receipts have a null source organizer. The reviewed
+receipt is an optimistic fence; retries reuse their receipt and return current
+status without overwriting later consent. Withdrawal timestamps also fence
+older pending form payments. No profile or phone re-verification is needed to
+withdraw existing account permission. The UI discards results after account
+changes. Any Catch sender must use this same authority; collecting permission
+does not itself dispatch messages.
+
+### Private form profile preparation
+
+`participantFormProfileProposals/{responseId}` is a server-only, response-bound
+set of pointers to nonempty submitted answers explicitly designated
+`catchProfile` or `organizerCard` by the immutable form version. Ordinary custom
+questions and legacy canonical mappings do not create these pointers. Creation
+requires the verified respondent and current form disclosure and joins the free
+submission or captured-payment transaction. Pending payment does not prepare a
+profile. Duplicate core-field assignments and more than 100 designated fields
+are rejected before publishing.
+
+This collection is neither a claimed Consumer profile nor the reviewed portable
+`participantIntakeProfiles` cache. It does not write `users`, `publicProfiles`,
+CRM notes, grants or room membership. The immutable response and protected form
+uploads remain the answer source, avoiding copies of private data and public
+upload URLs. Participant review resolves only the designated pointers after
+checking UID, organizer, form/version, current response status and deletion
+tombstone in one transaction. Withdrawing the source response makes it
+unavailable; account deletion removes the pointers. Claimed profile updates,
+image transfer, participant-owned cards and explicit event sharing are separate
+operations and must not infer permission from these prepared pointers.
+
+`getParticipantFormProfile` resolves only the verified owner’s designated fields
+and returns current editable core values, core/intake revisions, and selected
+private-card question IDs. `listParticipantFormProfiles` queries the verified
+UID with a bounded document-ID cursor, then revalidates every source before
+projecting a summary. Withdrawn sources are skipped; an empty scanned page may
+still have a continuation cursor. No caller-supplied UID or organizer filter
+can expand this scope. `claimParticipantFormProfile`
+requires explicit reviewed core values, selected question IDs, and versioned
+claim terms. It atomically updates `users`, private `participantOrganizerCards`
+answer pointers and a payload-bound `participantProfileClaimReceipts` receipt.
+Concurrent retries reuse the receipt; a newer core/intake revision aborts stale
+review. Normal `updateUserProfile` edits increment the same core revision.
+LinkedIn retains its existing private `participantIntakeProfiles` destination.
+Verified phone always comes from Auth, never an editable answer.
+
+New claimed identities have `profileComplete=false`, empty dating preferences
+and discovery disabled. The server schema permits empty preferences for this
+path; existing client initial-create, booking and social-readiness gates remain
+unchanged. Claiming does not admit someone to an event or grant room sharing.
+Owner cards contain only selected applicant-answer pointers, never CRM notes,
+tags or private review fields. Card reads must revalidate the source response.
+Account deletion removes proposals, cards and claim receipts.
+
+A selected form photo must still match the owned response, form, version, draft
+and question. Its bytes and digest are verified, safety checked, stripped of
+metadata and copied to owned profile media with a thumbnail. Original private
+form URLs are never promoted. The commit rechecks response withdrawal, account
+deletion and profile revision after image processing. Consumer form review lives
+at `/you/forms/:responseId`; the authenticated directory is `/you/forms`.
+The own-profile Forms & cards tab uses the same directory, including when the
+Consumer profile document is missing, loading or failed. The exact authenticated
+`/you`, `/settings`, directory and response-review routes are available before
+dating setup; adjacent routes are not implicitly exempt. Booking and social
+gates remain unchanged. Selection is explicit, retries reuse a payload-bound key,
+and account changes discard retained review data. `getParticipantFormPhoto`
+returns only a bounded metadata-free JPEG preview in memory, never the original
+upload URL or a storage grant. It verifies the phone-authenticated owner and
+exact response/question/asset before reading pinned, digest-checked bytes, and
+rechecks ownership, withdrawal, deletion and expiry after processing. The UI
+enables photo selection only after successful image decoding and evicts its
+private decoder cache entry on disposal. Claim still independently validates
+and safety-checks the original source. Event-scoped card sharing requires the
+separate explicit grant described below.
+
+Free and paid submission receipts expose `profileReviewAvailable` only after
+revalidating the active owned proposal. The public completion page offers the
+Consumer web review route when true, alongside the organizer's completion
+action and withdrawal. The link contains only the response ID, never an answer,
+contact detail or authentication token; the destination requires sign-in and
+rechecks ownership. It does not bypass claiming, admission or sharing consent.
+Production uses the registered Consumer domain. Other environments require the
+build-owned `VITE_CONSUMER_APP_URL` origin (HTTPS or a local loopback HTTP URL);
+without one the completion page omits the link rather than crossing accounts
+into production.
+
+### Event chat access
+
+`eventChatRooms/{eventId}` is the organizer manager's explicit open/close
+switch for an event conversation. `eventChatMemberships/{sha256([eventId,uid])}`
+records the participant's explicit join/leave choice and versioned room terms.
+`getEventChatAccess` and `updateEventChatAccess` own these records; all direct
+client access is denied. A room does not create event admission, a dating match,
+a public profile, or an organizer-card sharing grant.
+
+`listEventChats` discovers the caller's candidates from memberships, native
+participations and linked operational attendees in that order. Each request
+scans at most ten candidate records plus lookahead; a UID-bound cursor advances
+across sources, including empty pages after revoked candidates are filtered.
+Every returned event is active and passes the same current admission check.
+A membership row discovers an ID only and never preserves revoked access.
+Deleted-account checks cover even empty scans. Directory responses contain room
+access metadata, not messages, answers, participant profiles or private cards.
+
+Every access reads current organizer authority and current admission in the
+same transaction. Guests need a `signedUp`/`attended` participation or exactly
+one linked `registered`/`checkedIn` operational attendee for this event and
+organizer. Contradictory projections, duplicate linked attendees, cancellation,
+waitlisting and foreign identity bindings fail closed. A runtime identity alone
+is not admission. Joining also requires verified phone identity and an
+intentionally created Consumer profile (completed onboarding or a reviewed
+profile claim timestamp); a revision number or private form proposal alone
+never qualifies. A claimed form
+profile may join without enabling dating discovery or completing dating setup.
+
+Organizer managers can open/close a room; guests cannot. Message access requires
+an active event, an open room and the caller's joined membership. A cancelled
+event or revoked admission disables access immediately, regardless of the
+membership record. Leaving remains possible after admission is revoked or the
+event is removed. Account deletion removes membership and private action
+receipts; its tombstone prevents replay from restoring access.
+
+Mutations bind `expectedUid` to the authenticated account before any reads or
+writes. A token/account change during an outgoing request cannot send a previous
+account's draft, reaction, typing state or join decision as the new account.
+Mutations also use a reviewed revision and UID-bound request ID.
+`eventChatAccessReceipts` prevents an old join or open retry from reversing a
+later leave or close. Replay results report the originally applied revision;
+clients must refresh current access, not interpret replay as current permission.
+`sendEventChatMessage`, `listEventChatMessages`, `setEventChatReaction` and
+`setEventChatTyping` read that same current authority on every active operation.
+All message, reaction and presence documents are server-only. The chat reader
+returns only a claimed display name and message fields, never an entire user
+profile, private organizer card, CRM record or form submission. Explicit card
+sharing needs a separate grant and is not implied by joining or sending.
+
+`eventChatMessages` has a monotonically increasing per-room sequence. Sending
+uses a UID/event/request-bound ID and payload hash; duplicate retries neither
+send twice nor overwrite another payload. Room close/reopen preserves sequence.
+Replies store a same-room message ID, never a copied quote. Reads resolve each
+parent again, hiding removed messages, deleted accounts and both directions of
+a block from message bodies, names and reply previews. Message pagination is
+bounded to 30 rows plus a lookahead with a sequence cursor. Prior messages from
+a participant who leaves remain history; account deletion redacts their text
+and identity. Existing text moderation blocks prohibited writes or atomically
+creates a review flag while leaving flagged text visible.
+
+`actOnEventChatMessage` offers separate report, block and remove actions. The
+server derives the target from an immutable, currently readable room message;
+`expectedUid` fences account changes. Reporting requires a reason and writes a
+source-bound reference into the existing Catch safety queue, without a public
+report or copied message body. Blocking creates the existing global block edge;
+all event projections check it, and the existing block trigger closes matches.
+Removal is available only to the sender or a current organizer manager and hides
+both the message and reply previews. Its original server-only content may remain
+for safety review until account deletion anonymizes it. A namespaced receipt and
+payload hash make retries idempotent; replay after unblocking never restores the
+block. Deleted-account fences apply even to replays. None of these actions changes
+event admission or removes another participant from the event.
+
+`eventChatReactions/{sha256([messageId,uid])}` stores one optional reaction per
+person; the message stores six anonymous aggregate counts. Revision checks and
+namespaced payload-bound `eventChatAccessReceipts` prevent retries or late edits
+from double-counting or restoring a replaced reaction. Deletion removes the
+person's reaction record; anonymous historical counts on other people's
+messages remain. Their own removed messages expose neither text nor counts.
+
+`eventChatPresence/{sha256([eventId,uid])}` stores only a revision and timestamps,
+never draft text. Typing expires after 10 seconds and readers recheck current
+membership, claimed identity, tombstones and blocks before showing a name.
+Compare-and-set revisions prevent delayed starts from undoing newer stops.
+Stopping one's own indicator remains possible after admission is revoked;
+account deletion removes presence and its tombstone fences subsequent writes.
+The reader returns at most 10 visible typing names from a bounded 11-row
+candidate query; this is a presence hint, not a member census. Client transport
+and UI must discard cached room content when access fails or identity changes.
+
+`listEventChatParticipants` scans at most ten room membership candidates plus
+lookahead in one transaction. Viewer and every visible subject must still be
+admitted, joined and claimed; both block directions and account deletion hide
+identities. The projection contains only UID, claimed display name and current
+host/attendee role. No contacts, form answers or CRM fields are returned. Cursors
+bind the viewer and event, and may advance over empty filtered pages. The client
+revalidates every loaded page and discards names on failed authority checks,
+account changes and backgrounding. Opening a person uses the separately gated
+profile projection below, including that person's explicit sharing choices.
+
+### Event participant profile sharing
+
+The private form review returns the current `cardRevision` alongside organizer
+ownership and claim time. Sharing clients must preserve these fields rather than
+infer ownership from a form title or organizer display name.
+
+Joining shares the claimed display name only. `getEventChatProfileSharing`
+returns the caller's private choices and eligible core field/photo identifiers.
+`updateEventChatProfileSharing` saves an explicit event-specific selection in
+server-only `eventChatProfileShares`, with verified phone identity, reviewed
+profile/card/membership revisions and a payload-bound replay receipt. Records
+store selected identifiers, not copied answers. Leaving and rejoining cannot
+revive a previous selection. Own settings and revocation remain available after
+admission cancellation, room closure or event removal; deleted-account fences
+still apply. Account deletion removes the sharing record.
+
+`getEventChatProfile` requires both viewer and subject to be currently admitted,
+joined, claimed and unblocked in either direction. Its bounded projection can
+include selected core fields, a reviewed owned profile photo, and selected
+applicant-submitted answers from this event organizer's claimed card. Contact
+information, date of birth, dating preferences, CRM notes and other organizers'
+cards never enter this projection. Core fields/photo require the reviewed user
+profile revision; card answers require the reviewed card revision and an active,
+owned, claimed form source. Changed or withdrawn sources disappear, without
+fallback to another answer or cached copy. Custom file answers remain private;
+only approved owned core profile photos can be shared through this reader.
+
+Photo reads pin the Storage generation, cap input size, strip metadata and
+return a bounded JPEG preview rather than a reusable download URL. A second
+transaction rechecks all permissions and selected source revisions after image
+processing. Selection and viewing interfaces must discard stale cached values
+when the signed-in account changes or current permission fails.
 
 ### Organizer Application Intake
 

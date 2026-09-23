@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_payment_webhooks.schema.json",
+  "title": "OrganizerFormPaymentWebhookDocument",
+  "description": "Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionId",
+    "accountId",
+    "providerEventId",
+    "event",
+    "providerOrderId",
+    "providerPaymentId",
+    "status",
+    "createdAt",
+    "processedAt",
+    "expiresAt",
+    "nextAttemptAt"
+  ],
+  "properties": {
+    "connectionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "providerEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "event": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "providerOrderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "processed",
+        "ignored"
+      ],
+      "type": "string"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "processedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "nextAttemptAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "x-firestore-collection": "organizerFormPaymentWebhooks",
+  "x-firestore-path": "organizerFormPaymentWebhooks/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer form payment server operations"
+}

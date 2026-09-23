@@ -206,6 +206,7 @@ async function queueRelationshipCleanup(params: {
     queueEventBroadcastCleanup(db, uid, writer),
     queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
+    queueParticipantPrivateStateCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -277,16 +278,20 @@ async function queueOrganizerCommunicationPreferenceCleanup(
   uid: string,
   writer: BatchQueue
 ) {
-  const [preferences, receipts, origins] = await Promise.all([
+  const [preferences, receipts, origins, catchReceipts] = await Promise.all([
     db.collection("organizerCommunicationPreferences")
       .where("uid", "==", uid).get(),
     db.collection("organizerCommunicationPermissionReceipts")
       .where("uid", "==", uid).get(),
     db.collection("organizerContactOrigins")
       .where("actorUid", "==", uid).get(),
+    db.collection("catchCommunicationPermissionReceipts")
+      .where("uid", "==", uid).get(),
   ]);
   preferences.forEach((doc) => writer.delete(doc.ref));
   receipts.forEach((doc) => writer.delete(doc.ref));
+  catchReceipts.forEach((doc) => writer.delete(doc.ref));
+  writer.delete(db.collection("catchCommunicationPreferences").doc(uid));
   origins.forEach((doc) => writer.update(doc.ref, {actorUid: null}));
 }
 
@@ -319,6 +324,29 @@ async function queueHostAnalyticsSnapshotCleanup(
     .where("uid", "==", uid)
     .get();
   snapshots.forEach((doc) => writer.delete(doc.ref));
+}
+
+/** Deletes private form and room decisions without touching organizer CRM. */
+async function queueParticipantPrivateStateCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  for (const collection of ["participantFormProfileProposals",
+    "participantOrganizerCards", "participantProfileClaimReceipts",
+    "eventChatMemberships", "eventChatAccessReceipts",
+    "eventChatReactions", "eventChatPresence", "eventChatProfileShares"]) {
+    const records = await db.collection(collection)
+      .where("uid", "==", uid).get();
+    records.forEach((doc) => writer.delete(doc.ref));
+  }
+  const messages = await db.collection("eventChatMessages")
+    .where("uid", "==", uid).get();
+  messages.forEach((doc) => writer.update(doc.ref, {
+    uid: null, text: null, replyToMessageId: null, status: "removed",
+    removedAt: admin.firestore.FieldValue.serverTimestamp(),
+    reactionCounts: {like: 0, love: 0, laugh: 0, wow: 0, sad: 0, thanks: 0},
+  }));
 }
 
 /**

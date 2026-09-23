@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.23.0
-updated: 2026-09-09
+version: 0.23.1
+updated: 2026-09-23
 owner: web_platform
 status: active
 ---
@@ -136,10 +136,13 @@ The decision inputs are independent unless the matrix says otherwise:
 
 The app matrix also owns every consumer route exactly once. Explore, Explore
 Map, public Organizer Detail, public Event Detail, and exact Event Location are
-guest-readable. Saved Events and the remaining account routes require a
-booking-ready profile; social routes and social actions require a social-ready
-profile; Event Success companion routes keep their own protected class; and
-onboarding owns the incomplete-profile resume path. The guest shell therefore
+guest-readable. Own-profile, form-review, WhatsApp-permission and event-chat
+routes require resolved authentication but remain accessible before profile setup;
+their data and mutations retain account, claim and admission checks. Saved Events
+and private booking/history routes require a booking-ready profile; social routes
+and social actions require a social-ready profile; Event Success companion routes
+keep their own protected class; and onboarding owns the incomplete-profile resume
+path. The guest shell therefore
 shows only Explore navigation, but private deep links are still classified and
 guarded instead of relying on a hidden tab.
 
@@ -173,7 +176,7 @@ row against production decision helpers, and
 `website/src/features/organizers/publicSurfaceBehavior.test.ts` executes every
 website row against the generated-listing policy and the same claim/review
 presentation adapters consumed by the rendered sections. The current contract
-contains 118 configurations across 15 surfaces, including source-aware
+contains 123 configurations across 16 surfaces, including source-aware
 read-only website event detail. Adding a configuration without both
 implementation and proof fails strict mode.
 

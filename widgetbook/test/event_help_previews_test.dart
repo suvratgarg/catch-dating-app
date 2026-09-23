@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/event_success/event_help_preview_repositories.dart';
 import 'package:widgetbook_workspace/event_success/event_help_use_cases.dart';
 
+import '../../test/test_pump_helpers.dart';
+
 void main() {
   testWidgets(
     'help previews mount the actual live and practice controls without Firebase',
@@ -28,9 +30,7 @@ void main() {
           ),
         );
         await tester.runAsync(loadHelpPreviewFixtures);
-        for (var i = 0; i < 10; i++) {
-          await tester.pump(const Duration(milliseconds: 50));
-        }
+        await pumpFeatureUi(tester);
         expect(tester.takeException(), isNull);
         expect(
           preview == assistanceLiveHelpEntry ||

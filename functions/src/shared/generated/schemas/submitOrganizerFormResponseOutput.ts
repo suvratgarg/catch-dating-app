@@ -103,6 +103,10 @@ export const submitOrganizerFormResponseCallableResponseSchema: Record<string, u
               "maxLength": 500
             }
           }
+        },
+        "profileReviewAvailable": {
+          "type": "boolean",
+          "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
         }
       }
     }

@@ -2,6 +2,9 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
+import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart'; // ChatsListScreen
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
@@ -65,6 +68,7 @@ import 'package:catch_dating_app/public_profile/presentation/public_profile_scre
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
@@ -72,6 +76,8 @@ import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profile_review_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -81,9 +87,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'route_contract.dart';
 
-part 'go_router.g.dart';
-
 part 'detail_route_pages.dart';
+part 'go_router.g.dart';
 part 'host_inbox_route.dart';
 part 'route_destinations.dart';
 
@@ -300,6 +305,33 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
         ),
       ],
       GoRoute(
+        path: Routes.eventProfileSharingScreen.path,
+        name: Routes.eventProfileSharingScreen.name,
+        builder: (context, state) =>
+            EventProfileScreen(eventId: state.pathParameters['eventId']!),
+      ),
+      GoRoute(
+        path: Routes.eventChatParticipantsScreen.path,
+        name: Routes.eventChatParticipantsScreen.name,
+        builder: (context, state) => EventChatParticipantsScreen(
+          eventId: state.pathParameters['eventId']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.eventParticipantProfileScreen.path,
+        name: Routes.eventParticipantProfileScreen.name,
+        builder: (context, state) => EventProfileScreen(
+          eventId: state.pathParameters['eventId']!,
+          participantUid: state.pathParameters['participantUid']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.eventChatScreen.path,
+        name: Routes.eventChatScreen.name,
+        builder: (context, state) =>
+            EventChatScreen(eventId: state.pathParameters['eventId']!),
+      ),
+      GoRoute(
         path: Routes.eventLocationMapScreen.path,
         name: Routes.eventLocationMapScreen.name,
         builder: (context, state) => EventLocationMapRouteScreen(
@@ -311,6 +343,11 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           path: Routes.settingsScreen.path,
           name: Routes.settingsScreen.name,
           builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: Routes.messagingPermissionsScreen.path,
+          name: Routes.messagingPermissionsScreen.name,
+          builder: (context, state) => const MessagingPermissionsScreen(),
         ),
         GoRoute(
           path: Routes.launchAccessScreen.path,
@@ -465,6 +502,22 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                   path: Routes.profileScreen.path,
                   name: Routes.profileScreen.name,
                   builder: (context, state) => const ProfileScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'forms',
+                      name: Routes.formProfilesScreen.name,
+                      builder: (context, state) => const FormProfilesScreen(),
+                      routes: [
+                        GoRoute(
+                          path: ':responseId',
+                          name: Routes.formProfileReviewScreen.name,
+                          builder: (context, state) => FormProfileReviewScreen(
+                            responseId: state.pathParameters['responseId']!,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1045,189 +1098,6 @@ StatefulShellRoute _hostShellRoute(
       ),
     ],
   );
-}
-
-String _initialLocationFromPlatform() {
-  if (_initialRouteOverride.startsWith('/')) {
-    return _initialRouteOverride;
-  }
-
-  final defaultRouteName =
-      WidgetsBinding.instance.platformDispatcher.defaultRouteName;
-  if (defaultRouteName.isNotEmpty &&
-      defaultRouteName != Navigator.defaultRouteName) {
-    if (AppConfig.appRole.isHost) {
-      final routePath = Uri.tryParse(defaultRouteName)?.path;
-      if (_isHostRoute(routePath) ||
-          routePath == Routes.authScreen.path ||
-          routePath == Routes.loadingScreen.path) {
-        return defaultRouteName;
-      }
-      return Routes.hostTodayScreen.path;
-    }
-    return defaultRouteName;
-  }
-  return AppConfig.appRole.isHost
-      ? Routes.hostTodayScreen.path
-      : Routes.startScreen.path;
-}
-
-/// Routes that unauthenticated users may access for read-only browsing.
-///
-/// Keep this matcher explicit: nested account-only routes must not become public
-/// merely because their parent organizer route is public.
-@visibleForTesting
-bool isGuestPublicRoute(String matchedLocation) {
-  if (matchedLocation == Routes.startScreen.path) return true;
-  if (matchedLocation == Routes.authScreen.path) return true;
-  if (matchedLocation == Routes.exploreScreen.path) return true;
-  if (matchedLocation == Routes.exploreMapScreen.path) return true;
-
-  final segments = Uri.parse(matchedLocation).pathSegments;
-  if (segments.length == 2 &&
-      segments.first == 'organizers' &&
-      segments.last != 'map') {
-    return true;
-  }
-
-  if (segments.length == 4 &&
-      segments[0] == 'organizers' &&
-      segments[2] == 'events') {
-    return true;
-  }
-
-  if (segments.length == 3 &&
-      segments.first == 'events' &&
-      segments.last == 'location') {
-    return true;
-  }
-
-  return false;
-}
-
-String? appRedirect({
-  required AsyncValue<String?> uidAsync,
-  required AsyncValue<UserProfile?> userProfileAsync,
-  required bool hasPendingAuthVerification,
-  required String matchedLocation,
-  required Uri uri,
-}) {
-  final onLoading = matchedLocation == Routes.loadingScreen.path;
-  final onStart = matchedLocation == Routes.startScreen.path;
-  final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
-  final onAuth = matchedLocation == Routes.authScreen.path;
-  final isHostApp = AppConfig.appRole.isHost;
-
-  final isWaitingOnAuth = uidAsync.isLoading;
-  final isWaitingOnProfile =
-      !isHostApp &&
-      uidAsync.hasValue &&
-      uidAsync.value != null &&
-      userProfileAsync.isLoading;
-
-  if (isWaitingOnAuth || isWaitingOnProfile) {
-    if (!isHostApp &&
-        isGuestPublicRoute(matchedLocation) &&
-        !_isTransientRoute(matchedLocation)) {
-      return null;
-    }
-    if (onLoading) return null;
-    return _locationWithFrom(
-      Routes.loadingScreen.path,
-      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
-    );
-  }
-
-  final uid = uidAsync.value;
-  final userProfile = userProfileAsync.value;
-
-  if (uid == null) {
-    if (isHostApp) {
-      if (onAuth) return null;
-      return _locationWithFrom(
-        Routes.authScreen.path,
-        from: _hostPendingDestination(
-          uri: uri,
-          matchedLocation: matchedLocation,
-        ),
-      );
-    }
-
-    if (hasPendingAuthVerification && !onAuth) {
-      if (!isGuestPublicRoute(matchedLocation) ||
-          _isTransientRoute(matchedLocation)) {
-        return _locationWithFrom(
-          Routes.authScreen.path,
-          from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
-        );
-      }
-    }
-    if (isGuestPublicRoute(matchedLocation)) return null;
-    return _locationWithFrom(
-      Routes.startScreen.path,
-      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
-    );
-  }
-
-  if (isHostApp) {
-    if (onLoading || onStart || onAuth || onOnboarding) {
-      return _resumeDestination(uri);
-    }
-    return null;
-  }
-
-  final onProfileCompletionOnboarding =
-      onOnboarding &&
-      uri.queryParameters[_onboardingIntentQueryParam] ==
-          _completeProfileIntent;
-  final onRunPreferencesOnboarding =
-      onOnboarding &&
-      uri.queryParameters[_onboardingIntentQueryParam] ==
-          _completeRunPreferencesIntent;
-  final today = DateTime.now();
-
-  if (userProfile == null || !userProfile.hasBookingReadyIdentityOn(today)) {
-    if (onOnboarding) return null;
-    // Public discovery remains readable for a signed-in viewer whose profile
-    // is incomplete. Only the action that needs profile data is gated.
-    if (!isHostApp &&
-        isGuestPublicRoute(matchedLocation) &&
-        !_isTransientRoute(matchedLocation)) {
-      return null;
-    }
-    return _locationWithFrom(
-      Routes.onboardingScreen.path,
-      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
-    );
-  }
-
-  if (onProfileCompletionOnboarding) {
-    if (!userProfile.hasSocialReadyProfileOn(today)) return null;
-    return _resumeDestination(uri);
-  }
-
-  if (onRunPreferencesOnboarding) {
-    if (!userProfile.hasCurrentRunPreferences) return null;
-    return _resumeDestination(uri);
-  }
-
-  if (_requiresSocialProfile(matchedLocation) &&
-      !userProfile.hasSocialReadyProfileOn(today)) {
-    return profileCompletionLocation(
-      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
-    );
-  }
-
-  if (onLoading || onStart || onAuth || onOnboarding) {
-    return _resumeDestination(uri);
-  }
-
-  return null;
-}
-
-bool _requiresSocialProfile(String matchedLocation) {
-  return matchedLocation == Routes.filtersScreen.path ||
-      matchedLocation.startsWith('/catches/');
 }
 
 EventDetailScreen _eventDetailScreen(GoRouterState state) {

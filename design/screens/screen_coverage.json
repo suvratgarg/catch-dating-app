@@ -75,6 +75,30 @@
       "reason": "Covered by screen.event.detail as the alias route for Event Detail."
     },
     {
+      "routeId": "eventChatScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Shared admission-checked event conversation covered by typed route layout ownership, Widgetbook and focused keyboard, theme and large-text tests."
+    },
+    {
+      "routeId": "eventProfileSharingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventChatParticipantsScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Current event participant directory uses a typed pushed-route owner, Widgetbook previews and focused light/dark/large-text captures plus admission, account and block-boundary tests rather than a baseline screen-parity contract."
+    },
+    {
+      "routeId": "eventParticipantProfileScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
       "routeId": "eventLocationMapScreen",
       "status": "contracted",
       "priority": "P3",
@@ -180,6 +204,18 @@
       "screenId": "screen.profile.self"
     },
     {
+      "routeId": "formProfilesScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private account forms directory covered by typed route layout ownership and participant form-profile widget tests."
+    },
+    {
+      "routeId": "formProfileReviewScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private profile claim review covered by typed route layout ownership and participant form-profile widget tests."
+    },
+    {
       "routeId": "reviewsHistoryScreen",
       "status": "contracted",
       "priority": "P3",
@@ -199,6 +235,12 @@
       "priority": "P3",
       "reason": "Covered by screen.settings.account as the consumer account, notification, privacy, safety, and sign-out settings route.",
       "screenId": "screen.settings.account"
+    },
+    {
+      "routeId": "messagingPermissionsScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private account consent management covered by canonical route chrome and focused permission withdrawal widget tests."
     },
     {
       "routeId": "launchAccessScreen",

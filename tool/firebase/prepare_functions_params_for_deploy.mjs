@@ -15,6 +15,7 @@ function assert(condition, message) {
 export const materializedNonSecretParams = [
   "ALGOLIA_APPLICATION_ID",
   "RAZORPAY_PUBLIC_KEY_ID",
+  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION",
   "META_WHATSAPP_APP_ID",
   "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID",
   "META_WHATSAPP_GRAPH_VERSION",
@@ -38,13 +39,20 @@ function normalizedBooleanParam(environment, name) {
   return value;
 }
 
-function normalizedProviderParams(environment = process.env) {
+function normalizedProviderParams(environment = process.env, projectId) {
   const algoliaApplicationId = environment.ALGOLIA_APPLICATION_ID?.trim() ?? "";
   const razorpayPublicKeyId = environment.RAZORPAY_PUBLIC_KEY_ID?.trim() ?? "";
   assert(/^[A-Za-z0-9]{10}$/.test(algoliaApplicationId),
     "ALGOLIA_APPLICATION_ID must be a 10-character application identifier");
   assert(/^rzp_(test|live)_[A-Za-z0-9]+$/.test(razorpayPublicKeyId),
     "RAZORPAY_PUBLIC_KEY_ID must be a Razorpay test or live public key id");
+  const formPartnerVersion = environment.FORM_RAZORPAY_PARTNER_CONFIG_VERSION
+    ?.trim() || "";
+  const secretPrefix = `projects/${projectId}/secrets/`;
+  assert(!formPartnerVersion || (formPartnerVersion.startsWith(secretPrefix) &&
+    /^[A-Za-z0-9_-]{1,255}\/versions\/[1-9][0-9]*$/.test(
+      formPartnerVersion.slice(secretPrefix.length))),
+  "FORM_RAZORPAY_PARTNER_CONFIG_VERSION must pin a secret in this project");
   const enabled = normalizedBooleanParam(environment, "META_WHATSAPP_ENABLED");
 
   const appId = environment.META_WHATSAPP_APP_ID?.trim() ?? "";
@@ -82,6 +90,7 @@ function normalizedProviderParams(environment = process.env) {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,
+    FORM_RAZORPAY_PARTNER_CONFIG_VERSION: formPartnerVersion || " ",
     // Quoted whitespace satisfies legacy Firebase parameter discovery while
     // remaining unconfigured under the source-owned trim checks.
     META_WHATSAPP_APP_ID: appId || " ",
@@ -110,7 +119,7 @@ export function prepareFunctionsParamsForDeploy({
     "Functions deploy path must be a directory");
   assert(fs.existsSync(path.join(resolvedFunctionsDir, "package.json")),
     "Functions deploy path must contain package.json");
-  const params = normalizedProviderParams(environment);
+  const params = normalizedProviderParams(environment, projectId);
   const outputPath = path.join(resolvedFunctionsDir, `.env.${projectId}`);
   const contents = Object.entries(params)
     .map(([key, value]) => `${key}=${JSON.stringify(value)}`)

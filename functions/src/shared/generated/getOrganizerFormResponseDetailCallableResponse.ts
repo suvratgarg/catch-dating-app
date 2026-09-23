@@ -88,4 +88,35 @@ export interface GetOrganizerFormResponseDetailCallableResponse {
   completionMillis: number;
   applicationId?: string | null;
   contactId?: string | null;
+  /**
+   * Authorized financial record linked to this submitted response; no draft or credential data.
+   */
+  payment?: {
+    paymentId: string;
+    status:
+      | "creatingOrder"
+      | "orderUnknown"
+      | "checkoutReady"
+      | "verifying"
+      | "captured"
+      | "submitted"
+      | "failed"
+      | "expired"
+      | "refundPending"
+      | "refunded"
+      | "reviewRequired";
+    mode: "test" | "live";
+    amountPaise: number;
+    currency: "INR";
+    refundedAmountPaise: number;
+    createdAtMillis: number;
+    updatedAtMillis: number;
+    capturedAtMillis: number | null;
+    submittedAtMillis: number | null;
+    responseId: string | null;
+    providerOrderId: string | null;
+    providerPaymentId: string | null;
+    providerRefundId: string | null;
+    receipt: string;
+  } | null;
 }

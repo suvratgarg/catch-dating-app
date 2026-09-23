@@ -4,7 +4,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-enum SelfProfileTab { edit, preview, insights }
+enum SelfProfileTab { edit, preview, insights, forms }
 
 class ProfileTabBar extends StatelessWidget
     implements CatchPrimaryRail, CatchScaledPreferredSize {
@@ -35,6 +35,10 @@ class ProfileTabBar extends StatelessWidget
         CatchOption(
           value: SelfProfileTab.insights,
           label: context.l10n.userProfileProfileSliverHeaderLabelInsights,
+        ),
+        CatchOption(
+          value: SelfProfileTab.forms,
+          label: context.l10n.formProfilesTabLabel,
         ),
       ],
     );

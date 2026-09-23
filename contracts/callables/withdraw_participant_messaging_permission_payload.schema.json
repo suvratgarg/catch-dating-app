@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_participant_messaging_permission_payload.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallablePayload",
+  "description": "Withdraw exactly one sender\u2019s WhatsApp permission using the reviewed receipt. Never grants consent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "organizerId",
+    "expectedReceiptId",
+    "requestId"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "catch",
+        "organizer"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedReceiptId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    }
+  }
+}

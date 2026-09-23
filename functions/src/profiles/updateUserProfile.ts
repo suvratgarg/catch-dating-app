@@ -101,7 +101,8 @@ export async function updateUserProfileHandler(
       currentData.profilePhotos,
       updateFields.profilePhotos
     );
-    tx.update(userRef, updateFields);
+    tx.update(userRef, {...updateFields,
+      profileRevision: Number(currentData.profileRevision ?? 0) + 1});
     return removedPaths;
   });
   if (removedStoragePaths.length > 0) {

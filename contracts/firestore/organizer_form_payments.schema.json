@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_payments.schema.json",
+  "title": "OrganizerFormPaymentDocument",
+  "description": "Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "draftId",
+    "respondentUid",
+    "connectionId",
+    "accountId",
+    "mode",
+    "draftRevision",
+    "answersHash",
+    "identity",
+    "amountPaise",
+    "currency",
+    "description",
+    "refundPolicy",
+    "receipt",
+    "status",
+    "providerOrderId",
+    "providerPaymentId",
+    "providerRefundId",
+    "refundedAmountPaise",
+    "responseId",
+    "reservationReleased",
+    "leaseUntil",
+    "createdAt",
+    "updatedAt",
+    "checkoutExpiresAt",
+    "capturedAt",
+    "submittedAt",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "versionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "draftId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "respondentUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "connectionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "draftRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "answersHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identity": {
+      "$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseIdentitySnapshot"
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 10000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "refundPolicy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^cfp_[a-f0-9]{32}$"
+    },
+    "status": {
+      "enum": [
+        "creatingOrder",
+        "orderUnknown",
+        "checkoutReady",
+        "verifying",
+        "captured",
+        "submitted",
+        "failed",
+        "expired",
+        "refundPending",
+        "refunded",
+        "reviewRequired"
+      ],
+      "type": "string"
+    },
+    "providerOrderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "providerRefundId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^rfnd_[A-Za-z0-9]+$"
+    },
+    "refundedAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000
+    },
+    "responseId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationReleased": {
+      "type": "boolean"
+    },
+    "leaseUntil": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "checkoutExpiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "capturedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "submittedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  },
+  "x-firestore-collection": "organizerFormPayments",
+  "x-firestore-path": "organizerFormPayments/{paymentId}",
+  "x-document-id-field": "paymentId",
+  "x-owner": "organizer form payment server operations"
+}

@@ -57,7 +57,7 @@ final class HostFormResponsesControllerProvider
 }
 
 String _$hostFormResponsesControllerHash() =>
-    r'3de8ef9d072010b0ec1308435fadd94212739ff0';
+    r'00ded72368b8dc1be71b5ddfe704999f872c23df';
 
 final class HostFormResponsesControllerFamily extends $Family
     with

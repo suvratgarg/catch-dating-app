@@ -1,6 +1,63 @@
 part of 'profile_widgets_test.dart';
 
 void _registerProfileShellLayoutTests() {
+  for (final status in SelfProfileRouteStatus.values) {
+    testWidgets('Forms tab is reachable with profile ${status.name}', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final user = _profilePreviewScrollFixture();
+      final ready = SelfProfileScreenState.fromAsync(
+        profileState: CatchAsyncState.data(user),
+        today: DateTime(2026, 9, 23),
+        uploadState: const PhotoUploadState(),
+        uploadMutationPending: false,
+        saveMutationPending: false,
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            selfProfileScreenStateProvider.overrideWithValue(
+              status == SelfProfileRouteStatus.ready
+                  ? ready
+                  : SelfProfileScreenState(
+                      status: status,
+                      error: status == SelfProfileRouteStatus.error
+                          ? StateError('profile unavailable')
+                          : null,
+                      uploadState: const PhotoUploadState(),
+                      mutationMode: SelfProfileMutationMode.idle,
+                    ),
+            ),
+            formProfilesControllerProvider.overrideWith(
+              _AccountFormProfilesController.new,
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ProfileScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+      final pager = tester.widget<TabBarView>(find.byType(TabBarView));
+      expect(pager.children, hasLength(SelfProfileTab.values.length));
+      pager.controller!.animateTo(SelfProfileTab.forms.index);
+      // The loading profile's skeleton keeps animating while the independent
+      // form directory settles; wait for the directory rather than all tickers.
+      await pumpUntilFound(tester, find.text('RSVP Demo'));
+      await tester.pump(pager.controller!.animationDuration);
+      await tester.pump();
+      expect(find.byType(FormProfilesAsyncBoundary), findsOneWidget);
+      expect(find.text('RSVP Demo'), findsOneWidget);
+      expect(find.byType(CatchErrorState), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets(
     'Profile terminal empty and error branches use shell-aware placement',
     (tester) async {

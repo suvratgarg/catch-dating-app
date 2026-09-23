@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -19,9 +20,12 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
@@ -45,6 +49,13 @@ import '../test_pump_helpers.dart';
 part 'profile_shell_layout_tests.dart';
 part 'profile_editing_prompts_tests.dart';
 part 'profile_choice_editors_tests.dart';
+
+Future<void> _openRunningPreferences(WidgetTester tester) async {
+  final disclosure = find.byKey(const ValueKey('profile-running-preferences'));
+  await _dragProfileTabUntilTappable(tester, disclosure);
+  await tester.tap(disclosure);
+  await _pumpProfileSheet(tester);
+}
 
 Widget _profileTab(UserProfile user) {
   return ProviderScope(
@@ -495,4 +506,24 @@ class _SilentErrorLogger extends ErrorLogger {
     StackTrace? stackTrace,
     Map<String, String>? context,
   }) {}
+}
+
+class _AccountFormProfilesController extends FormProfilesController {
+  @override
+  Future<FormProfilesState> build() async => FormProfilesState(
+    page: FormProfilePage(
+      items: [
+        FormProfileSummary(
+          organizerId: 'org',
+          responseId: 'owned-response',
+          formTitle: 'Application',
+          organizerName: 'RSVP Demo',
+          submittedAt: DateTime(2026, 9, 23),
+          claimedAt: null,
+          cardFieldCount: 1,
+        ),
+      ],
+      nextCursor: null,
+    ),
+  );
 }

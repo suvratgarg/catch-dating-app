@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_profile_shares.schema.json",
+  "title": "EventChatProfileShareDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "organizerId",
+    "revision",
+    "selection",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_chat_profile_common.schema.json#/definitions/selection"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "description": "Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.",
+  "x-firestore-collection": "eventChatProfileShares",
+  "x-firestore-path": "eventChatProfileShares/{shareId}",
+  "x-document-id-field": "shareId",
+  "x-owner": "event profile sharing callables"
+}
