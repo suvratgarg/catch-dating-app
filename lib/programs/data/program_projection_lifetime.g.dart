@@ -116,7 +116,7 @@ final class ProgramProjectionActiveProvider
 }
 
 String _$programProjectionActiveHash() =>
-    r'b9999cd3b6966a2d4d94d6ff8e7f86d0a2523e01';
+    r'02f7b72450e180cba9ad6d1e3640bc900d7fa94b';
 
 final class ProgramProjectionActiveFamily extends $Family
     with $FunctionalFamilyOverride<bool, DateTime?> {

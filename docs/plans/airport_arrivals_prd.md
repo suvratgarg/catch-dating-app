@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.4
+version: 0.3.5
 updated: 2026-09-23
 owner: product
 status: draft
@@ -618,7 +618,8 @@ carry `accessExpiresAtMillis`: the earliest expiry among assignments that can
 contribute to that projection (null for organizer managers). This is a read
 lifetime, not a new grant or permission source. A narrower remaining assignment
 requires a fresh projection. The client shares one exact-deadline provider
-across reads and dispatch sheets, discards retained rows during reload, and
+across reads and dispatch sheets, rechecks wall time on app resume,
+discards retained rows during reload, and
 rejects responses that arrive after their deadline. Saved-operation review
 stops resolving guest names from a roster while it reloads. A dispatch sheet
 checks both its captured route deadline and the current roster before queuing.

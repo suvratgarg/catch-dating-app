@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_projection_lifetime.g.dart';
@@ -16,6 +17,11 @@ bool isProgramProjectionActive(DateTime? expiresAt, DateTime now) =>
 @riverpod
 bool programProjectionActive(Ref ref, DateTime? expiresAt) {
   if (expiresAt == null) return true;
+  // Recheck wall time on resume even if a suspended timer has not fired yet.
+  final lifecycle = AppLifecycleListener(
+    onResume: () => ref.invalidateSelf(asReload: true),
+  );
+  ref.onDispose(lifecycle.dispose);
   final remaining = expiresAt.difference(
     ref.watch(programProjectionClockProvider)(),
   );

@@ -139,4 +139,35 @@ void main() {
     h.close();
     container.dispose();
   });
+  testWidgets('resuming after expiry rechecks before a suspended timer fires', (
+    tester,
+  ) async {
+    var now = DateTime(2026);
+    final expiry = now.add(const Duration(hours: 1));
+    final provider = programProjectionActiveProvider(expiry);
+    final container = ProviderContainer(
+      overrides: [programProjectionClockProvider.overrideWithValue(() => now)],
+    );
+    final subscription = container.listen(provider, (_, _) {});
+    expect(container.read(provider), isTrue);
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    now = expiry;
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump();
+    expect(container.read(provider), isFalse);
+    subscription.close();
+    container.dispose();
+  });
 }
