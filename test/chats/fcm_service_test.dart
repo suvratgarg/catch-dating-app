@@ -59,7 +59,17 @@ void main() {
     });
 
     test('fails closed on missing or unsafe event id, even with match id', () {
-      for (final eventId in [null, '', '.', '..', '../other', 'a/b']) {
+      for (final eventId in [
+        null,
+        '',
+        '.',
+        '..',
+        '../other',
+        'a/b',
+        ' event-7',
+        'event-7 ',
+        'event\\7',
+      ]) {
         expect(
           routeFromMessageData({
             'type': 'eventChatMessage',

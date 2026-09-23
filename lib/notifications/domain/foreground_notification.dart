@@ -95,16 +95,16 @@ class ForegroundNotification {
       value is String && value.trim().isNotEmpty ? value.trim() : null;
 
   static String? _safeDocumentId(Object? value) {
-    final id = _text(value);
-    if (id == null ||
-        id.length > 180 ||
-        id.trim() != id ||
-        id == '.' ||
-        id == '..' ||
-        id.contains('/') ||
-        id.contains('\\')) {
+    if (value is! String ||
+        value.isEmpty ||
+        value.length > 180 ||
+        value.trim() != value ||
+        value == '.' ||
+        value == '..' ||
+        value.contains('/') ||
+        value.contains('\\')) {
       return null;
     }
-    return id;
+    return value;
   }
 }

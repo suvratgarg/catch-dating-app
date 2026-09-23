@@ -105,8 +105,11 @@ export async function dispatchEventChatNotification(
 }
 
 /** Bounded post-commit seam. Disabled by default; no queue or provider is
- * activated by a message write. Synthetic sinks are at-most-once: if a sink
- * fails after the receipt commits, retry does not replay that preview. */
+ * activated by a message write. The 100-row limit counts historical left,
+ * removed and banned memberships as well as joined members; a room exceeding
+ * that total fails closed until a joined-only indexed query is provisioned.
+ * Synthetic sinks are at-most-once: if a sink fails after the receipt commits,
+ * retry does not replay that preview. */
 export async function dispatchEventChatNotificationCandidates(
   message: {eventId: string; messageId: string},
   deps: Deps = defaults

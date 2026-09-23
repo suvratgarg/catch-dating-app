@@ -65,6 +65,16 @@ void main() {
       }),
       isNull,
     );
+    for (final id in [' event-7', 'event-7 ', 'event\\7']) {
+      expect(
+        parse({
+          'type': 'eventChatMessage',
+          'eventId': id,
+          'messageId': 'room-message-1',
+        }),
+        isNull,
+      );
+    }
     expect(
       parse({
         'type': 'eventChatMessage',
