@@ -414,6 +414,7 @@ export {
   syncHostProfile,
   syncPublicProfile,
 } from "./profiles/syncPublicProfile";
+export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
 export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";

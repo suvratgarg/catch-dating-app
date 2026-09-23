@@ -5,7 +5,13 @@ import {createFormPaymentFixture} from
   "../payments/formPayments/formPaymentTestStore";
 import {prepareFormProfileProposal, readParticipantFormProfileProposal} from
   "./organizerFormProfileProposals";
-import {submitOrganizerFormResponseHandler} from "./organizerFormResponses";
+import {submitOrganizerFormResponseHandler, organizerFormResponseReceipt} from
+  "./organizerFormResponses";
+import {projectFormPayment} from
+  "../payments/formPayments/formPaymentProjection";
+import type {OrganizerFormPaymentDocument as Payment,
+  OrganizerFormResponseDocument as Response} from
+  "../shared/generated/firestoreAdminTypes";
 import {validateOrganizerFormDefinition} from "./organizerForms";
 
 function fixture() {
@@ -65,6 +71,7 @@ test("free forms prepare the same private proposal in their submit transaction",
         throw new Error("No upload");
       },
     });
+    assert.equal(result.profileReviewAvailable, true);
     assert.equal(h.proposals()[0][1].responseId, result.responseId);
     assert.equal(h.proposals().length, 1);
   });
@@ -213,3 +220,49 @@ test("a forged pointer cannot promote an organizer-only response answer",
       uid: "person", responseId: proposal.responseId as string}),
     /unavailable/u);
   });
+
+
+test("captured receipt offers claim only while the owned proposal is active",
+  async () => {
+    const h = fixture();
+    const {paymentId} = await h.reserve();
+    h.capture(paymentId);
+    await h.finalize(paymentId);
+    const payment = h.store.records.get(
+      `organizerFormPayments/${paymentId}`) as unknown as Payment;
+    const project = () => projectFormPayment({db: h.db, paymentId, payment,
+      respondentUid: "person"});
+    assert.equal((await project()).receipt?.profileReviewAvailable, true);
+    const responsePath = `organizerFormResponses/${payment.responseId}`;
+    const response = h.store.records.get(responsePath)!;
+    for (const change of ["withdraw", "delete", "missingProposal"]) {
+      if (change === "withdraw") {
+        h.store.records.set(responsePath,
+          {...response, status: "withdrawn", withdrawnAt: Timestamp.now()});
+      }
+      if (change === "delete") {
+        h.store.records.set(responsePath, response);
+        h.store.records.set("deletedUsers/person", {status: "processing"});
+      }
+      if (change === "missingProposal") {
+        h.store.records.delete("deletedUsers/person");
+        h.store.records.delete(
+          `participantFormProfileProposals/${payment.responseId}`);
+      }
+      assert.equal((await project()).receipt?.profileReviewAvailable, false);
+    }
+  });
+
+test("ordinary forms do not advertise profile claiming", async () => {
+  const h = createFormPaymentFixture();
+  const {paymentId} = await h.reserve();
+  h.capture(paymentId);
+  await h.finalize(paymentId);
+  const payment = h.store.records.get(
+    `organizerFormPayments/${paymentId}`) as unknown as Payment;
+  const response = h.store.records.get(
+    `organizerFormResponses/${payment.responseId}`) as unknown as Response;
+  const receipt = await organizerFormResponseReceipt(h.db, payment.responseId!,
+    response, h.version, null);
+  assert.equal(receipt.profileReviewAvailable, false);
+});

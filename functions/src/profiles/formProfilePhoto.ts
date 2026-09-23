@@ -29,19 +29,7 @@ export async function copyFormProfilePhoto(input: FormProfilePhotoInput):
   const asset = requireDoc<Asset>(assetSnap, "OrganizerFormAssetDocument");
   assertClaimPhotoAsset({uid, questionId, assetId, response, asset, now});
   const bucket = admin.storage().bucket();
-  const source = bucket.file(asset.storagePath);
-  const [metadata] = await source.getMetadata();
-  if (Number(metadata.size) !== asset.sizeBytes ||
-      metadata.contentType !== asset.contentType) throw unavailable();
-  // Pin the inspected object generation and cap the transfer, including
-  // one extra byte so a replaced/oversized object cannot pass the length check.
-  if (!metadata.generation) throw unavailable();
-  const [bytes] = await bucket.file(asset.storagePath, {
-    generation: metadata.generation,
-  }).download({start: 0, end: asset.sizeBytes!});
-  if (bytes.length !== asset.sizeBytes ||
-      createHash("sha256").update(bytes).digest("hex") !==
-        asset.declaredSha256) throw unavailable();
+  const bytes = await readFormPhotoBytes(asset);
   const [checked] = await new ImageAnnotatorClient().safeSearchDetection({
     image: {content: bytes},
   });
@@ -91,6 +79,35 @@ export async function copyFormProfilePhoto(input: FormProfilePhotoInput):
       reviewedAt: moderationStatus === "approved" ? now : null}};
 }
 
+/** Read the pinned, digest-checked source after caller ownership validation. */
+export async function readFormPhotoBytes(asset: Asset): Promise<Buffer> {
+  const bucket = admin.storage().bucket();
+  const source = bucket.file(asset.storagePath);
+  const [metadata] = await source.getMetadata();
+  if (Number(metadata.size) !== asset.sizeBytes ||
+      metadata.contentType !== asset.contentType) throw unavailable();
+  // Pin the inspected object generation and cap the transfer, including
+  // one extra byte so a replaced/oversized object cannot pass the length check.
+  if (!metadata.generation) throw unavailable();
+  const [bytes] = await bucket.file(asset.storagePath, {
+    generation: metadata.generation,
+  }).download({start: 0, end: asset.sizeBytes!});
+  if (bytes.length !== asset.sizeBytes ||
+      createHash("sha256").update(bytes).digest("hex") !==
+        asset.declaredSha256) throw unavailable();
+  return bytes;
+}
+
+export async function normalizeFormPhotoPreview(bytes: Buffer) {
+  const {data, info} = await sharp(bytes, {limitInputPixels: 40_000_000})
+    .rotate().resize(640, 640, {fit: "inside", withoutEnlargement: true})
+    .jpeg({quality: 72}).toBuffer({resolveWithObject: true});
+  if (data.length > 256 * 1024) throw unavailable();
+  return {contentType: "image/jpeg" as const,
+    previewBase64: data.toString("base64"), width: info.width,
+    height: info.height};
+}
+
 /** Remove copied media after account deletion. */
 export async function removeDeletedClaimPhoto(input: {
   db: FirebaseFirestore.Firestore; uid: string;
@@ -130,12 +147,14 @@ export function assertFormPhotoSafety(safety: {
 export function assertClaimPhotoAsset(input: {
   uid: string; questionId: string; assetId: string; response: Response;
   asset: Asset; now: FirebaseFirestore.Timestamp;
+  allowMultiple?: boolean;
 }): void {
   const {uid, questionId, assetId, response, asset, now} = input;
   const answer = response.answers[questionId];
   if (response.respondentUid !== uid || response.status !== "submitted" ||
       response.withdrawnAt !== null || !Array.isArray(answer) ||
-      answer.length !== 1 || answer[0] !== assetId ||
+      (!input.allowMultiple && answer.length !== 1) ||
+      !answer.includes(assetId) ||
       asset.respondentUid !== uid ||
       asset.organizerId !== response.organizerId ||
       asset.formId !== response.formId ||

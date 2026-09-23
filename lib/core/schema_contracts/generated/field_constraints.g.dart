@@ -62641,6 +62641,61 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getParticipantFormPhotoCallablePayloadAssetId = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallablePayload.assetId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantFormPhotoCallablePayloadQuestionId = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallablePayload.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantFormPhotoCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantFormPhotoCallableResponseContentType = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallableResponse.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getParticipantFormPhotoCallableResponseHeight = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallableResponse.height',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 640,
+  );
+
+  static const getParticipantFormPhotoCallableResponsePreviewBase64 = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallableResponse.previewBase64',
+    maxLength: 349528,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9+/]+={0,2}\$',
+  );
+
+  static const getParticipantFormPhotoCallableResponseWidth = CatchContractFieldConstraints(
+    path: 'getParticipantFormPhotoCallableResponse.width',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 640,
+  );
+
   static const getParticipantFormProfileCallablePayloadResponseId = CatchContractFieldConstraints(
     path: 'getParticipantFormProfileCallablePayload.responseId',
     maxLength: 180,
@@ -112167,6 +112222,13 @@ abstract final class CatchContractConstraints {
     'getOrganizerWhatsappThreadCallableResponse.serviceWindowExpiresAtMillis': getOrganizerWhatsappThreadCallableResponseServiceWindowExpiresAtMillis,
     'getOrganizerWhatsappThreadCallableResponse.serviceWindowOpen': getOrganizerWhatsappThreadCallableResponseServiceWindowOpen,
     'getOrganizerWhatsappThreadCallableResponse.threadId': getOrganizerWhatsappThreadCallableResponseThreadId,
+    'getParticipantFormPhotoCallablePayload.assetId': getParticipantFormPhotoCallablePayloadAssetId,
+    'getParticipantFormPhotoCallablePayload.questionId': getParticipantFormPhotoCallablePayloadQuestionId,
+    'getParticipantFormPhotoCallablePayload.responseId': getParticipantFormPhotoCallablePayloadResponseId,
+    'getParticipantFormPhotoCallableResponse.contentType': getParticipantFormPhotoCallableResponseContentType,
+    'getParticipantFormPhotoCallableResponse.height': getParticipantFormPhotoCallableResponseHeight,
+    'getParticipantFormPhotoCallableResponse.previewBase64': getParticipantFormPhotoCallableResponsePreviewBase64,
+    'getParticipantFormPhotoCallableResponse.width': getParticipantFormPhotoCallableResponseWidth,
     'getParticipantFormProfileCallablePayload.responseId': getParticipantFormProfileCallablePayloadResponseId,
     'getParticipantFormProfileCallableResponse.claimedAtMillis': getParticipantFormProfileCallableResponseClaimedAtMillis,
     'getParticipantFormProfileCallableResponse.currentLinkedinUrl': getParticipantFormProfileCallableResponseCurrentLinkedinUrl,

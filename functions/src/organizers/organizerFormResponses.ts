@@ -2,7 +2,8 @@ import {formMessagingOffer, formMessagingChoices,
   normalizeFormMessagingDecision, prepareFormMessagingGrants} from
   "./organizerFormMessagingConsent";
 import {createHash} from "crypto";
-import {prepareFormProfileProposal} from "./organizerFormProfileProposals";
+import {prepareFormProfileProposal, readParticipantFormProfileProposal} from
+  "./organizerFormProfileProposals";
 import {requireFreeFormSubmission} from "./organizerFormCapabilities";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -692,8 +693,8 @@ export async function submitOrganizerFormResponseHandler(
     });
     return {response, version};
   });
-  return responseReceipt(
-    responseId,
+  return organizerFormResponseReceipt(
+    db, responseId,
     result.response,
     result.version,
     result.response.respondentUid === null ? withdrawalToken : null
@@ -1464,12 +1465,28 @@ function answerSnapshots(
     }));
 }
 
-function responseReceipt(
+export async function organizerFormResponseReceipt(
+  db: FirebaseFirestore.Firestore,
   responseId: string,
   response: OrganizerFormResponseDocument,
   version: OrganizerFormVersionDocument,
   withdrawalToken: string | null
-): SubmitOrganizerFormResponseCallableResponse {
+): Promise<SubmitOrganizerFormResponseCallableResponse> {
+  let profileReviewAvailable = false;
+  if (response.status === "submitted" && response.respondentUid &&
+      response.identityKind === "phoneVerified") {
+    try {
+      await readParticipantFormProfileProposal({db,
+        uid: response.respondentUid, responseId});
+      profileReviewAvailable = true;
+    } catch (error) {
+      // Old receipts and ordinary forms have no proposal. Never mask a real
+      // operational error as a completed ownership check.
+      if (!(error instanceof HttpsError) || error.code !== "not-found") {
+        throw error;
+      }
+    }
+  }
   return {
     responseId,
     formId: response.formId,
@@ -1478,6 +1495,7 @@ function responseReceipt(
     submittedAtMillis: response.submittedAt.toMillis(),
     withdrawalToken,
     completion: version.definition.completion,
+    profileReviewAvailable,
   };
 }
 

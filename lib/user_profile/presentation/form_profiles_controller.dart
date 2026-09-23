@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/user_profile/data/form_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/form_profile_photo_preview.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -102,4 +103,22 @@ class FormProfileClaimController extends _$FormProfileClaimController {
     ref.invalidate(formProfilesControllerProvider);
     ref.invalidate(formProfileReviewProvider(request.responseId));
   }
+}
+
+@riverpod
+Future<FormProfilePhotoPreview> formProfilePhotoPreview(
+  Ref ref,
+  String responseId,
+  String questionId,
+  String assetId,
+) async {
+  final uid = await ref.watch(uidProvider.future);
+  if (uid == null) throw const SignInRequiredException('preview form photo');
+  return ref
+      .watch(formProfileRepositoryProvider)
+      .photoPreview(
+        responseId: responseId,
+        questionId: questionId,
+        assetId: assetId,
+      );
 }

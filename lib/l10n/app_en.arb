@@ -27886,5 +27886,19 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileUsePhoto": "Use this photo for my Catch profile",
+  "@formProfileUsePhoto": {
+    "description": "Private form photo review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilePhotoRetry": "Retry photo preview",
+  "@formProfilePhotoRetry": {
+    "description": "Private form photo review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
   }
 }

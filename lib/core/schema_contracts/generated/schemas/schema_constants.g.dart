@@ -378,6 +378,8 @@ export 'get_organizer_form_share_assets_callable_response.g.dart';
 export 'get_organizer_provider_setup_callable_payload.g.dart';
 export 'get_organizer_whatsapp_thread_callable_payload.g.dart';
 export 'get_organizer_whatsapp_thread_callable_response.g.dart';
+export 'get_participant_form_photo_callable_payload.g.dart';
+export 'get_participant_form_photo_callable_response.g.dart';
 export 'get_participant_form_profile_callable_payload.g.dart';
 export 'get_participant_form_profile_callable_response.g.dart';
 export 'get_participant_organizer_application_form_callable_payload.g.dart';

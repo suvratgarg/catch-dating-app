@@ -19,6 +19,34 @@ FormProfileReview reviewFixture({
 );
 
 void main() {
+  test('photo selection sends a reviewed source pointer, never a raw URL', () {
+    final field = FormProfileField(
+      questionId: 'photo',
+      destination: FormProfileDestination.catchProfile,
+      canonicalFieldId: 'profilePhoto',
+      label: 'Your photo',
+      kind: 'file',
+      value: const ['asset'],
+    );
+    final draft = FormProfileDraft(reviewFixture(fields: [field]));
+    draft.select(field, true);
+    expect(draft.request('request-0000000003').selectedQuestionIds, ['photo']);
+    expect(draft.profile.containsKey('profilePhotos'), false);
+    draft.select(field, false);
+    expect(draft.selected, isEmpty);
+  });
+  test(
+    'fractional heights are not silently changed into a different answer',
+    () {
+      expect(FormProfileDraft.normalizeValue('height', 170.8, {}), isNull);
+      expect(
+        FormProfileDraft.normalizeValue('height', double.infinity, {}),
+        isNull,
+      );
+      expect(FormProfileDraft.normalizeValue('height', 170.0, {}), 170);
+    },
+  );
+
   test(
     'custom labels never become core bindings and cards contain selected pointers only',
     () {

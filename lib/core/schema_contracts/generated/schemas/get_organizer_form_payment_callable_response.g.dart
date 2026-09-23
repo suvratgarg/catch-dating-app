@@ -213,6 +213,10 @@ const schemaGetOrganizerFormPaymentCallableResponseSchema = <String, Object?>{
                     },
                   },
                 },
+                'profileReviewAvailable': <String, Object?>{
+                  'type': 'boolean',
+                  'description': 'True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant.',
+                },
               },
             },
             <String, Object?>{

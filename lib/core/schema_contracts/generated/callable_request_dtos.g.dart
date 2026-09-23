@@ -144,6 +144,7 @@ export 'callables/get_organizer_form_response_detail_callable_request.g.dart';
 export 'callables/get_organizer_form_share_assets_callable_request.g.dart';
 export 'callables/get_organizer_provider_setup_callable_request.g.dart';
 export 'callables/get_organizer_whatsapp_thread_callable_request.g.dart';
+export 'callables/get_participant_form_photo_callable_request.g.dart';
 export 'callables/get_participant_form_profile_callable_request.g.dart';
 export 'callables/get_participant_organizer_application_form_callable_request.g.dart';
 export 'callables/get_public_organizer_form_callable_request.g.dart';

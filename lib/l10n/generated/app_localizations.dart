@@ -32649,6 +32649,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid value.'**
   String get formProfileRequired;
+
+  /// Private form photo review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this photo for my Catch profile'**
+  String get formProfileUsePhoto;
+
+  /// Private form photo review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry photo preview'**
+  String get formProfilePhotoRetry;
 }
 
 class _AppLocalizationsDelegate

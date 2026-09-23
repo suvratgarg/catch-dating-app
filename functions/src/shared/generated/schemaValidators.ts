@@ -191,6 +191,8 @@ export {validateClaimParticipantFormProfileCallablePayload} from "./validators/c
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
 export {validateListParticipantFormProfilesCallablePayload} from "./validators/listParticipantFormProfilesInput";
 export {validateListParticipantFormProfilesCallableResponse} from "./validators/listParticipantFormProfilesOutput";
+export {validateGetParticipantFormPhotoCallablePayload} from "./validators/getParticipantFormPhotoInput";
+export {validateGetParticipantFormPhotoCallableResponse} from "./validators/getParticipantFormPhotoOutput";
 export {validateGetParticipantFormProfileCallablePayload} from "./validators/getParticipantFormProfileInput";
 export {validateGetParticipantFormProfileCallableResponse} from "./validators/getParticipantFormProfileOutput";
 export {validateParticipantFormProfileProposalDocument} from "./validators/participantFormProfileProposalDocument";

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.134.1
-updated: 2026-09-21
+version: 1.135.0
+updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -2548,8 +2548,26 @@ deletion and profile revision after image processing. Consumer form review lives
 at `/you/forms/:responseId`; the authenticated directory is `/you/forms`.
 These routes are available before dating setup, while booking and social gates
 remain unchanged. Selection is explicit, retries reuse a payload-bound key,
-and account changes discard retained review data. Event-scoped card sharing
-and uploaded-photo preview remain separate delivery work.
+and account changes discard retained review data. `getParticipantFormPhoto`
+returns only a bounded metadata-free JPEG preview in memory, never the original
+upload URL or a storage grant. It verifies the phone-authenticated owner and
+exact response/question/asset before reading pinned, digest-checked bytes, and
+rechecks ownership, withdrawal, deletion and expiry after processing. The UI
+enables photo selection only after successful image decoding and evicts its
+private decoder cache entry on disposal. Claim still independently validates
+and safety-checks the original source. Event-scoped card sharing remains
+separate delivery work.
+
+Free and paid submission receipts expose `profileReviewAvailable` only after
+revalidating the active owned proposal. The public completion page offers the
+Consumer web review route when true, alongside the organizer's completion
+action and withdrawal. The link contains only the response ID, never an answer,
+contact detail or authentication token; the destination requires sign-in and
+rechecks ownership. It does not bypass claiming, admission or sharing consent.
+Production uses the registered Consumer domain. Other environments require the
+build-owned `VITE_CONSUMER_APP_URL` origin (HTTPS or a local loopback HTTP URL);
+without one the completion page omits the link rather than crossing accounts
+into production.
 
 ### Organizer Application Intake
 

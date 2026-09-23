@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_CONSUMER_APP_URL?: string;
   readonly VITE_GTM_ID?: string;
   readonly VITE_STORE_LINKS_MODE?: "prelaunch" | "live";
   readonly VITE_APP_STORE_URL?: string;

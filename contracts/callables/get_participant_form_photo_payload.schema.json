@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callables/get_participant_form_photo_payload.schema.json",
+  "title": "GetParticipantFormPhotoCallablePayload",
+  "description": "Preview one image from the verified participant\u2019s designated form-profile question.",
+  "required": [
+    "responseId",
+    "questionId",
+    "assetId"
+  ],
+  "properties": {
+    "responseId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "questionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "assetId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    }
+  }
+}

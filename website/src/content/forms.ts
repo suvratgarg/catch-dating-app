@@ -1,5 +1,7 @@
 export const publicFormsCopy = {
   brand: "Catch Forms",
+  profileReviewAction: "Review my profile in Catch",
+  profileReviewHelp: "Sign in to Catch with the same verified phone number to review your profile and private organizer card. Nothing is shared with other attendees by opening this link.",
   brandWord: "catch",
   loading: "Opening form",
   unavailableTitle: "This form is unavailable",

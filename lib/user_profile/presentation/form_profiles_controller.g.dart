@@ -34,7 +34,7 @@ final class FormProfilesControllerProvider
 }
 
 String _$formProfilesControllerHash() =>
-    r'd20730ede9958f93a88d371974e3d93b22ca78e0';
+    r'e54a658e612ca03b85094fc0fe5340623347caa8';
 
 abstract class _$FormProfilesController
     extends $AsyncNotifier<FormProfilesState> {
@@ -167,7 +167,7 @@ final class FormProfileClaimControllerProvider
 }
 
 String _$formProfileClaimControllerHash() =>
-    r'2b78923aa2b3470a5b0862cf1dd755b0caa3bd59';
+    r'1a411748fc84c0f4243ca4b5d9f273a86c453002';
 
 abstract class _$FormProfileClaimController extends $Notifier<void> {
   void build();
@@ -185,4 +185,93 @@ abstract class _$FormProfileClaimController extends $Notifier<void> {
             >;
     return element.handleCreate(ref, build);
   }
+}
+
+@ProviderFor(formProfilePhotoPreview)
+final formProfilePhotoPreviewProvider = FormProfilePhotoPreviewFamily._();
+
+final class FormProfilePhotoPreviewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<FormProfilePhotoPreview>,
+          FormProfilePhotoPreview,
+          FutureOr<FormProfilePhotoPreview>
+        >
+    with
+        $FutureModifier<FormProfilePhotoPreview>,
+        $FutureProvider<FormProfilePhotoPreview> {
+  FormProfilePhotoPreviewProvider._({
+    required FormProfilePhotoPreviewFamily super.from,
+    required (String, String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'formProfilePhotoPreviewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$formProfilePhotoPreviewHash();
+
+  @override
+  String toString() {
+    return r'formProfilePhotoPreviewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<FormProfilePhotoPreview> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<FormProfilePhotoPreview> create(Ref ref) {
+    final argument = this.argument as (String, String, String);
+    return formProfilePhotoPreview(ref, argument.$1, argument.$2, argument.$3);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FormProfilePhotoPreviewProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$formProfilePhotoPreviewHash() =>
+    r'12dd91ef17a48739c08e46f4df1ce91397398528';
+
+final class FormProfilePhotoPreviewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<FormProfilePhotoPreview>,
+          (String, String, String)
+        > {
+  FormProfilePhotoPreviewFamily._()
+    : super(
+        retry: null,
+        name: r'formProfilePhotoPreviewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  FormProfilePhotoPreviewProvider call(
+    String responseId,
+    String questionId,
+    String assetId,
+  ) => FormProfilePhotoPreviewProvider._(
+    argument: (responseId, questionId, assetId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'formProfilePhotoPreviewProvider';
 }

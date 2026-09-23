@@ -984,6 +984,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/listParticipantFormProfilesCallableResponse.ts",
   },
   {
+    name: "GetParticipantFormPhotoCallablePayload",
+    source: "callables/get_participant_form_photo_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormPhotoCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantFormPhotoCallableResponse",
+    source: "callable_responses/get_participant_form_photo_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormPhotoCallableResponse.ts",
+  },
+  {
     name: "GetParticipantFormProfileCallablePayload",
     source: "callables/get_participant_form_profile_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getParticipantFormProfileCallablePayload.ts",

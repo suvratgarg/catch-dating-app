@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -11,6 +12,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile_draft.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profile_photo_field.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -163,7 +165,15 @@ class _FormProfileReviewBodyState extends State<FormProfileReviewBody> {
               title: l10n.formProfileCoreTitle,
               children: [
                 for (final field in core) ...[
-                  if (_draft.canUse(field)) ...[
+                  if (field.isProfilePhoto && _draft.canUse(field))
+                    FormProfilePhotoField(
+                      responseId: widget.review.responseId,
+                      field: field,
+                      selected: _draft.selected.contains(field.questionId),
+                      busy: widget.busy,
+                      onChanged: (value) => _select(field, value),
+                    )
+                  else if (_draft.canUse(field)) ...[
                     CatchField.toggle(
                       copy: catchFieldCopy(l10n),
                       key: ValueKey('use-${field.questionId}'),

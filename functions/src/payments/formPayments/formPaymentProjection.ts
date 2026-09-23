@@ -7,6 +7,8 @@ import type {OrganizerFormPaymentDocument as Payment,
   OrganizerFormVersionDocument as Version} from
   "../../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../../shared/validation";
+import {organizerFormResponseReceipt} from
+  "../../organizers/organizerFormResponses";
 
 /** Never expose an order unless this caller owns its frozen submission. */
 export async function projectFormPayment(input: {
@@ -36,10 +38,8 @@ export async function projectFormPayment(input: {
         version.formId !== payment.formId) {
       throw new HttpsError("internal", "Payment receipt unavailable.");
     }
-    receipt = {responseId: payment.responseId, formId: payment.formId,
-      versionId: payment.versionId, status: response.status,
-      submittedAtMillis: response.submittedAt.toMillis(), withdrawalToken: null,
-      completion: version.definition.completion};
+    receipt = await organizerFormResponseReceipt(db, payment.responseId,
+      response, version, null);
   } else if (["checkoutReady", "failed"].includes(payment.status) &&
       payment.providerOrderId &&
       !payment.reservationReleased &&

@@ -21,6 +21,10 @@ class FormProfileDraft {
 
   bool canUse(FormProfileField field) {
     if (field.destination == FormProfileDestination.organizerCard) return true;
+    if (field.isProfilePhoto) {
+      return field.value is List<String> &&
+          (field.value! as List<String>).length == 1;
+    }
     final definition = field.definition;
     if (definition == null) return false;
     return definition.id == 'linkedinUrl' ||
@@ -36,7 +40,10 @@ class FormProfileDraft {
     } else {
       selected.remove(field.questionId);
     }
-    if (field.destination == FormProfileDestination.organizerCard) return;
+    if (field.destination == FormProfileDestination.organizerCard ||
+        field.isProfilePhoto) {
+      return;
+    }
     if (field.canonicalFieldId == 'linkedinUrl') {
       linkedinUrl = keep ? field.value as String? : review.currentLinkedinUrl;
       return;
@@ -120,7 +127,11 @@ class FormProfileDraft {
     }
     if (values.isNotEmpty) return choice(value);
     if (key == 'height') {
-      return value is num ? value.toInt() : int.tryParse('$value');
+      return value is num
+          ? (value.isFinite && value == value.truncateToDouble()
+                ? value.toInt()
+                : null)
+          : int.tryParse('$value');
     }
     if (key == 'city' && value is String) {
       final candidate = value.trim().toLowerCase();

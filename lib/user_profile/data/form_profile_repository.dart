@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/form_profile_photo_preview.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -32,6 +33,21 @@ class FormProfileRepository {
           ).toJson(),
         ),
       );
+
+  Future<FormProfilePhotoPreview> photoPreview({
+    required String responseId,
+    required String questionId,
+    required String assetId,
+  }) async => FormProfilePhotoPreview.fromMap(
+    await _call(
+      'getParticipantFormPhoto',
+      GetParticipantFormPhotoCallableRequest(
+        responseId: responseId,
+        questionId: questionId,
+        assetId: assetId,
+      ).toJson(),
+    ),
+  );
 
   Future<void> claim(ClaimParticipantFormProfileCallableRequest request) async {
     await _call('claimParticipantFormProfile', request.toJson());

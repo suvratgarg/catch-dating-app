@@ -20479,4 +20479,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfileRequired => 'Enter a valid value.';
+
+  @override
+  String get formProfileUsePhoto => 'Use this photo for my Catch profile';
+
+  @override
+  String get formProfilePhotoRetry => 'Retry photo preview';
 }

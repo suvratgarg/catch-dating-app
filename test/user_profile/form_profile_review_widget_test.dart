@@ -1,16 +1,21 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/form_profile_photo_preview.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profile_photo_field.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profile_review_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'form_profile_draft_test.dart' show reviewFixture;
@@ -46,6 +51,58 @@ void main() {
   setUpAll(loadCatchTestFonts);
   for (final dark in [false, true]) {
     for (final scale in [1.0, 2.0]) {
+      testWidgets('owned photo can be reviewed before selection $dark $scale', (
+        tester,
+      ) async {
+        final photo = FormProfilePhotoPreview(
+          bytes: File('test/goldens/fixtures/portrait.jpg').readAsBytesSync(),
+          width: 160,
+          height: 200,
+        );
+        final review = reviewFixture(
+          current: _review().currentProfile,
+          fields: [
+            FormProfileField(
+              questionId: 'photo',
+              destination: FormProfileDestination.catchProfile,
+              canonicalFieldId: 'profilePhoto',
+              label: 'Your photo',
+              kind: 'file',
+              value: const ['asset'],
+            ),
+          ],
+        );
+        await _pump(
+          tester,
+          ProviderScope(
+            overrides: [
+              formProfilePhotoPreviewProvider(
+                'response',
+                'photo',
+                'asset',
+              ).overrideWith((ref) async => photo),
+            ],
+            child: FormProfileReviewBody(
+              review: review,
+              onSave: (_) {},
+              onReload: () {},
+            ),
+          ),
+          dark: dark,
+          scale: scale,
+        );
+        await tester.runAsync(() async {
+          await precacheImage(
+            MemoryImage(photo.bytes),
+            tester.element(find.byType(FormProfilePhotoSelection)),
+          );
+        });
+        await pumpFeatureUi(tester);
+        await tester.ensureVisible(find.byType(FormProfilePhotoSelection));
+        await pumpFeatureUi(tester);
+        _readable(tester);
+        await _capture(tester, 'photo-${dark ? 'dark' : 'light'}-$scale');
+      });
       testWidgets('review and private card have no clipped copy $dark $scale', (
         tester,
       ) async {

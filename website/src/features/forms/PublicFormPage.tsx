@@ -31,6 +31,7 @@ import {
   type PublicFormAnswer,
   type PublicFormQuestion as Question,
 } from "./publicFormModel";
+import {formProfileReviewUrl} from "./formProfileReviewLink";
 import {usePublicFormController} from "./usePublicFormController";
 
 export function PublicFormPage() {
@@ -98,6 +99,8 @@ function PublicFormStage({
   }
   if (controller.stage === "complete" && controller.receipt) {
     const completion = controller.receipt.completion;
+    const reviewUrl = controller.receipt.profileReviewAvailable === true ?
+      formProfileReviewUrl(controller.receipt.responseId) : null;
     return (
       <PublicFormPanel
         kicker={publicFormsCopy.completionKicker}
@@ -107,7 +110,15 @@ function PublicFormStage({
         {controller.payments?.payment ? (
           <FormStatus status={{message: publicFormsCopy.paymentWithdrawNote, tone: ""}} />
         ) : null}
+        {reviewUrl ? (
+          <FormStatus status={{message: publicFormsCopy.profileReviewHelp, tone: ""}} />
+        ) : null}
         <PublicFormActions>
+          {reviewUrl ? (
+            <ButtonLink href={reviewUrl}>
+              {publicFormsCopy.profileReviewAction}
+            </ButtonLink>
+          ) : null}
           {completion.actionUrl && completion.actionLabel ? (
             <ButtonLink href={completion.actionUrl}>{completion.actionLabel}</ButtonLink>
           ) : null}

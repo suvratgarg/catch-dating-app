@@ -94,6 +94,11 @@ class FormProfileField {
   final Object? value;
   final Map<String, String> options;
 
+  bool get isProfilePhoto =>
+      destination == FormProfileDestination.catchProfile &&
+      canonicalFieldId == 'profilePhoto' &&
+      kind == 'file';
+
   /// Only catalog bindings can write core profile fields. A custom question's
   /// label is never used to infer a binding, even if it says "First name".
   SchemaPersonFieldDefinition? get definition {

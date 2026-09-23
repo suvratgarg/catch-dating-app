@@ -88,7 +88,8 @@
         "status": {"$ref": "#/definitions/responseStatus"},
         "submittedAtMillis": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
         "withdrawalToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
-        "completion": {"$ref": "organizer_form_common.schema.json#/definitions/formCompletion"}
+        "completion": {"$ref": "organizer_form_common.schema.json#/definitions/formCompletion"},
+        "profileReviewAvailable": {"type": "boolean", "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."}
       }
     },
     "messagingChoices": {

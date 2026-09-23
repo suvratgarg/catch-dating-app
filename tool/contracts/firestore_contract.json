@@ -2972,6 +2972,7 @@
         "getOrganizerFormPayment",
         "requestAccountDeletion",
         "getParticipantFormProfile",
+        "getParticipantFormPhoto",
         "listParticipantFormProfiles",
         "claimParticipantFormProfile"
       ],

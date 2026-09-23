@@ -191,6 +191,8 @@ export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimP
 export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
 export {listParticipantFormProfilesCallablePayloadSchema} from "./schemas/listParticipantFormProfilesInput";
 export {listParticipantFormProfilesCallableResponseSchema} from "./schemas/listParticipantFormProfilesOutput";
+export {getParticipantFormPhotoCallablePayloadSchema} from "./schemas/getParticipantFormPhotoInput";
+export {getParticipantFormPhotoCallableResponseSchema} from "./schemas/getParticipantFormPhotoOutput";
 export {getParticipantFormProfileCallablePayloadSchema} from "./schemas/getParticipantFormProfileInput";
 export {getParticipantFormProfileCallableResponseSchema} from "./schemas/getParticipantFormProfileOutput";
 export {participantFormProfileProposalDocumentSchema} from "./schemas/participantFormProfileProposalDocument";

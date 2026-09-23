@@ -19,4 +19,8 @@ export type SubmitOrganizerFormResponseCallableResponse = {
     actionLabel: string | null;
     actionUrl: string | null;
   };
+  /**
+   * True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant.
+   */
+  profileReviewAvailable?: boolean;
 };

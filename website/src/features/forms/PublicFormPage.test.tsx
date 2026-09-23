@@ -7,7 +7,7 @@ const usePublicFormController = vi.hoisted(() => vi.fn());
 vi.mock("./usePublicFormController", () => ({usePublicFormController}));
 import {PublicFormPage} from "./PublicFormPage";
 
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 
 const cities = ["Mumbai", "Bangalore", "Hyderabad", "Ahmedabad", "Dubai"];
 const city = {
@@ -134,5 +134,33 @@ describe("review messaging choices", () => {
     fireEvent.click(screen.getByRole("checkbox", {name: "From Catch on WhatsApp (optional)"}));
     expect(updateMessagingChoice).toHaveBeenCalledWith("catchWhatsapp", true);
     expect(screen.getByText(/These choices do not affect your application or payment/u)).not.toBeNull();
+  });
+});
+
+describe("profile review after submission", () => {
+  function complete(profileReviewAvailable?: boolean) {
+    vi.stubEnv("VITE_FIREBASE_PROJECT_ID", "catch-dating-app-64e51");
+    usePublicFormController.mockReturnValue({stage: "complete",
+      form: {organizer: {name: "RSVP"}, definition: {
+        appearance: {preset: "minimal"}, sections: [],
+      }}, pending: false, status: {message: "", tone: ""},
+      receipt: {responseId: "response-id", profileReviewAvailable,
+        completion: {title: "Received", message: "Thank you",
+          actionUrl: "https://example.test/next", actionLabel: "Organizer next step"}},
+      withdraw: vi.fn(),
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+  }
+  it("offers owned review alongside the organizer action and withdrawal", () => {
+    complete(true);
+    expect(screen.getByRole("link", {name: "Review my profile in Catch"})
+      .getAttribute("href")).toBe("https://app.catchdates.com/#/you/forms/response-id");
+    expect(screen.getByText(/same verified phone number/u)).not.toBeNull();
+    expect(screen.getByRole("link", {name: "Organizer next step"})).not.toBeNull();
+    expect(screen.getByRole("button", {name: "Withdraw response"})).not.toBeNull();
+  });
+  it.each([false, undefined])("does not offer a claim for a missing proposal: %s", (available) => {
+    complete(available);
+    expect(screen.queryByRole("link", {name: "Review my profile in Catch"})).toBeNull();
   });
 });
