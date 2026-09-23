@@ -79,7 +79,6 @@ export 'presentation/host_report/event_success_report_empty_state.dart'; // publ
 export 'presentation/host_report/event_success_report_quality_section.dart'; // public-api: Host presentation contract used outside this feature
 export 'presentation/host_setup/event_success_host_setup_page_body.dart'; // public-api: Host presentation contract used outside this feature
 export 'presentation/host_setup/event_success_readiness_field.dart'; // public-api: Host presentation contract used outside this feature
-// public-api: Host presentation contract used outside this feature
 export 'presentation/host_setup/event_success_target_attendees_field.dart'; // public-api: Host presentation contract used outside this feature
 export 'presentation/reveal/event_success_attendee_reveal_surface.dart'; // public-api: attendee reveal component
 export 'presentation/reveal/event_success_host_reveal_surface.dart'; // public-api: host reveal component
