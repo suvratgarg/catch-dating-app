@@ -5,7 +5,12 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _hostRoots = ['lib/hosts/', 'lib/event_success/', 'lib/event_rehearsal/'];
+const _hostRoots = [
+  'lib/hosts/',
+  'lib/event_success/',
+  'lib/event_rehearsal/',
+  'lib/programs/',
+];
 const _rawPresenters = {
   'showModalBottomSheet',
   'showBottomSheet',

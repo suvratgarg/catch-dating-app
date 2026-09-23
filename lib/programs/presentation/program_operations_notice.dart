@@ -153,11 +153,23 @@ class _ProgramJournalRecoverySheetState
   Widget build(BuildContext context) {
     final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
     final current = uid.isSettledData && uid.value == widget.accountId;
-    return CatchSheet(
+    return CatchSheet.standard(
+      footer: Builder(
+        builder: (buttonContext) => CatchButton(
+          fullWidth: true,
+          label: context.l10n.programsRecoveryExport,
+          status: _exporting
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
+          onPressed: current && !_exporting
+              ? () => _export(buttonContext)
+              : null,
+        ),
+      ),
       title: context.l10n.programsRecoveryTitle,
       subtitle: context.l10n.programsRecoveryBody,
-      mode: CatchSheetMode.scrollable,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (!current)
@@ -171,17 +183,6 @@ class _ProgramJournalRecoverySheetState
             CatchBanner.error(
               message: appErrorMessage(_error!, l10n: context.l10n),
             ),
-          Builder(
-            builder: (buttonContext) => CatchButton(
-              label: context.l10n.programsRecoveryExport,
-              status: _exporting
-                  ? CatchButtonStatus.loading
-                  : CatchButtonStatus.idle,
-              onPressed: current && !_exporting
-                  ? () => _export(buttonContext)
-                  : null,
-            ),
-          ),
         ],
       ),
     );
@@ -273,11 +274,11 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
                   .toList() ??
               <ProgramOperationOutboxEntry>[]
         : <ProgramOperationOutboxEntry>[];
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.programsOperationsReviewTitle,
       subtitle: context.l10n.programsOperationsReviewBody,
-      mode: CatchSheetMode.scrollable,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (entries.isEmpty)

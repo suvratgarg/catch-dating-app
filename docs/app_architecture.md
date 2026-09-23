@@ -791,7 +791,8 @@ chrome on the root navigator. Raw Material sheet calls belong only in that
 shared presenter; Cupertino date/time popups belong only in the shared adaptive
 picker. `test/core/catch_bottom_sheet_policy_test.dart` enforces these boundaries.
 
-Host, Event Assistance and rehearsal use `CatchSheet.standard`. Natural-height
+Host, private-program operations, Event Assistance and rehearsal use
+`CatchSheet.standard`. Natural-height
 content shrinks for short sheets and scrolls as one unit (header, body, footer)
 within 90% of the available viewport. The shell owns clipping, width, keyboard
 obstruction and terminal device clearance. Do not nest a vertical scroll view,

@@ -317,12 +317,19 @@ class _ProgramTripVoidSheetState extends State<ProgramTripVoidSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
+    return CatchSheet.standard(
+      footer: CatchButton(
+        label: context.l10n.programsTripsVoidConfirm,
+        fullWidth: true,
+        onPressed: _controller.text.trim().isEmpty
+            ? null
+            : () => Navigator.of(context).pop(_controller.text.trim()),
+      ),
       title: context.l10n.programsTripsVoidSheetTitle,
       subtitle: context.l10n.programsTripsVoidSheetSubtitle,
       glyph: CatchIcons.warningAmberRounded,
-      keyboardSafe: true,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchTextInput(
@@ -333,14 +340,6 @@ class _ProgramTripVoidSheetState extends State<ProgramTripVoidSheet> {
             textCapitalization: TextCapitalization.sentences,
             maxLines: 2,
             onChanged: (_) => setState(() {}),
-          ),
-          gapH20,
-          CatchButton(
-            label: context.l10n.programsTripsVoidConfirm,
-            fullWidth: true,
-            onPressed: _controller.text.trim().isEmpty
-                ? null
-                : () => Navigator.of(context).pop(_controller.text.trim()),
           ),
         ],
       ),
