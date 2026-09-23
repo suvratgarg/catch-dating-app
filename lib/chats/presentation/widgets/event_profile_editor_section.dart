@@ -245,8 +245,10 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                               }
                             }),
                     ),
-                    Text(l.eventProfileQuestionAudience,
-                      style: CatchTextStyles.supporting(context)),
+                    Text(
+                      l.eventProfileQuestionAudience,
+                      style: CatchTextStyles.supporting(context),
+                    ),
                   ],
                 ),
             ],

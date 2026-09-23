@@ -27,7 +27,8 @@ import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'event_chat_profile_test.dart';
 import 'event_chat_widget_test.dart' show fixture;
-import 'event_profile_controller_test.dart' show CardsRepository, ProfileRepository, miniProfile;
+import 'event_profile_controller_test.dart'
+    show CardsRepository, ProfileRepository, miniProfile;
 
 final pixel = File('test/goldens/fixtures/portrait.jpg').readAsBytesSync();
 const captureKey = ValueKey('event-profile-capture');
@@ -130,8 +131,10 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         await capture(tester, 'editor-${dark ? 'dark' : 'light'}-$scale');
-        final save = find.widgetWithText(CatchButton,
-          'Preview what event members can see');
+        final save = find.widgetWithText(
+          CatchButton,
+          'Preview what event members can see',
+        );
         await tester.ensureVisible(save);
         await pumpFeatureUi(tester);
         expect(tester.getSize(save).height, greaterThanOrEqualTo(44));
@@ -191,8 +194,10 @@ void main() {
       await tester.ensureVisible(age);
       await tester.tap(age);
       await pumpFeatureUi(tester);
-      final save = find.widgetWithText(CatchButton,
-        'Preview what event members can see');
+      final save = find.widgetWithText(
+        CatchButton,
+        'Preview what event members can see',
+      );
       await tester.ensureVisible(save);
       await tester.tap(save);
       expect(saved.single!.coreFieldIds, {'age'});
@@ -220,8 +225,10 @@ void main() {
       await pumpProfile(tester, editor(editorState(), onSave: saved.add));
       expect(tester.widget<CatchToggleInput>(toggle('Age')).value, true);
       expect(tester.widget<CatchToggleInput>(toggle('drink')).value, false);
-      final save = find.widgetWithText(CatchButton,
-        'Preview what event members can see');
+      final save = find.widgetWithText(
+        CatchButton,
+        'Preview what event members can see',
+      );
       await tester.ensureVisible(save);
       await tester.tap(save);
       expect(saved.single!.coreFieldIds, {'age'});
@@ -268,7 +275,10 @@ void main() {
     expect(find.text('First name'), findsOneWidget);
     expect(find.text('Introduction'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'Mira');
-    await tester.enterText(find.byType(TextField).last, 'Happy to meet everyone');
+    await tester.enterText(
+      find.byType(TextField).last,
+      'Happy to meet everyone',
+    );
     final preview = find.widgetWithText(
       CatchButton,
       'Preview what event members can see',
@@ -286,9 +296,8 @@ void main() {
     tester,
   ) async {
     final repo = ProfileRepository()
-      ..readPreview = (_) async => settingsFixture(
-        preview: miniProfile(name: 'Mira'),
-      );
+      ..readPreview = (_) async =>
+          settingsFixture(preview: miniProfile(name: 'Mira'));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -328,9 +337,8 @@ void main() {
     final accounts = StreamController<String?>()..add('person');
     addTearDown(accounts.close);
     final repo = ProfileRepository()
-      ..readPreview = (_) async => settingsFixture(
-        preview: miniProfile(name: 'Mira'),
-      );
+      ..readPreview = (_) async =>
+          settingsFixture(preview: miniProfile(name: 'Mira'));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -360,6 +368,49 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.text('Mira'), findsNothing);
     expect(repo.writes, isEmpty);
+  });
+  testWidgets('backgrounding hides an open preview and cannot restore it', (
+    tester,
+  ) async {
+    final repo = ProfileRepository()
+      ..readPreview = (_) async => settingsFixture(
+        preview: miniProfile(name: 'Mira'),
+      );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((_) => Stream.value('person')),
+          eventChatRepositoryProvider.overrideWithValue(repo),
+          formProfileRepositoryProvider.overrideWithValue(CardsRepository()),
+          watchUserProfileProvider.overrideWith((_) => Stream.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const EventProfileScreen(eventId: 'event'),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final preview = find.widgetWithText(
+      CatchButton,
+      'Preview what event members can see',
+    );
+    await tester.ensureVisible(preview);
+    await tester.tap(preview);
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsOneWidget);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsNothing);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsNothing);
+    expect(repo.writes, isEmpty);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await pumpFeatureUi(tester);
   });
   testWidgets(
     'photo selection waits for a decoded preview and resets on replacement',
