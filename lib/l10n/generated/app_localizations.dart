@@ -32259,10 +32259,10 @@ abstract class AppLocalizations {
   /// **'Only hosts can post announcements right now. You can still read messages.'**
   String get eventChatAnnouncementsReadOnly;
 
-  /// Removed or banned room access state.
+  /// Event room message safety action copy.
   ///
   /// In en, this message translates to:
-  /// **'Your room membership is unavailable. Contact the host if you need help.'**
+  /// **'Message removed.'**
   String get eventChatRemoved;
 
   /// Manager member removal action.
@@ -32883,11 +32883,11 @@ abstract class AppLocalizations {
   /// **'Sender blocked.'**
   String get eventChatBlocked;
 
-  /// Event room message safety action copy.
+  /// Removed or banned room access state.
   ///
   /// In en, this message translates to:
-  /// **'Message removed.'**
-  String get eventChatRemoved;
+  /// **'Your room membership is unavailable. Contact the host if you need help.'**
+  String get eventChatMembershipRemoved;
 
   /// Program operations copy: programsWorkShellTitle.
   ///
@@ -33804,6 +33804,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose up to {count} options per question.'**
   String hostResponseFilterSelectionLimit({required int count});
+
+  /// Participant choice heading for separate event-local answer use.
+  ///
+  /// In en, this message translates to:
+  /// **'Use form answers for event matching'**
+  String get eventMatchingTitle;
+
+  /// Participant matching consent boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether Catch may use each reviewed answer as a soft matching preference for this event. This does not change admission or safety rules.'**
+  String get eventMatchingDisclosure;
+
+  /// Participant-reviewed answer choice label.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer to use'**
+  String get eventMatchingAnswerLabel;
+
+  /// Participant grants one answer's use for matching.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow for this event'**
+  String get eventMatchingAllow;
+
+  /// Participant withdraws matching answer use.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop using this answer'**
+  String get eventMatchingWithdraw;
+
+  /// Matching answer source or permission is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This answer is no longer available for event matching.'**
+  String get eventMatchingUnavailable;
+
+  /// Empty participant matching choice state.
+  ///
+  /// In en, this message translates to:
+  /// **'The Host has not chosen any form questions for this event.'**
+  String get eventMatchingNoChoices;
+
+  /// Participant matching permission save confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice is saved for this event.'**
+  String get eventMatchingSaved;
+
+  /// Participant reminder about event-local answer permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Only answers you allow for this event can be used. You can withdraw permission later.'**
+  String get eventMatchingCoverageNote;
+
+  /// Host matching setup section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form answer matching'**
+  String get eventMatchingHostTitle;
+
+  /// Host matching setup explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose published custom questions as soft preferences. Guest permission is separate, and safety and admission rules always apply.'**
+  String get eventMatchingHostDescription;
+
+  /// Unsupported assignment topology message.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured answer matching is not available for sequence layouts.'**
+  String get eventMatchingHostUnsupported;
+
+  /// Select source form for matching editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a published form'**
+  String get eventMatchingHostSelectForm;
+
+  /// Empty source form chooser.
+  ///
+  /// In en, this message translates to:
+  /// **'No published forms are available for this organizer.'**
+  String get eventMatchingHostNoForms;
+
+  /// No eligible published question source.
+  ///
+  /// In en, this message translates to:
+  /// **'This published version has no custom choice or number questions.'**
+  String get eventMatchingHostNoQuestions;
+
+  /// Pagination action for source forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more forms'**
+  String get eventMatchingHostLoadMore;
+
+  /// Add a published question as a soft feature.
+  ///
+  /// In en, this message translates to:
+  /// **'Add matching question'**
+  String get eventMatchingHostAddQuestion;
+
+  /// Current event-local feature rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching preferences'**
+  String get eventMatchingHostSavedRules;
+
+  /// Categorical transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choice category'**
+  String get eventMatchingHostCategory;
+
+  /// Multiple-choice transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choice set'**
+  String get eventMatchingHostSet;
+
+  /// Numeric transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get eventMatchingHostNumber;
+
+  /// Ordinal transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered choices'**
+  String get eventMatchingHostOrdinal;
+
+  /// Soft similarity preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer similar answers'**
+  String get eventMatchingHostSimilar;
+
+  /// Soft difference preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer different answers'**
+  String get eventMatchingHostDifferent;
+
+  /// Group-level balancing preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance answers across groups'**
+  String get eventMatchingHostBalance;
+
+  /// Soft feature weight control.
+  ///
+  /// In en, this message translates to:
+  /// **'Preference strength'**
+  String get eventMatchingHostWeight;
+
+  /// Numeric matching lower bound.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum answer'**
+  String get eventMatchingHostMinimum;
+
+  /// Numeric matching upper bound.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum answer'**
+  String get eventMatchingHostMaximum;
+
+  /// Numeric source validation bound warning.
+  ///
+  /// In en, this message translates to:
+  /// **'This form did not publish a number range. Set a finite minimum and maximum before using this question.'**
+  String get eventMatchingHostMissingBounds;
+
+  /// Aggregate coverage preview action.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview roster coverage'**
+  String get eventMatchingHostPreview;
+
+  /// Aggregate current-roster usable matching coverage, not final eligibility.
+  ///
+  /// In en, this message translates to:
+  /// **'{usable} of {roster} current roster members have usable permitted answers'**
+  String eventMatchingHostCoverage({required int usable, required int roster});
+
+  /// Host aggregate preview basis and live-eligibility caveat.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage uses the current event roster; live assignment eligibility may differ.'**
+  String get eventMatchingHostCoverageNote;
+
+  /// Revision-fenced Host feature configuration save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save matching preferences'**
+  String get eventMatchingHostSave;
+
+  /// Remove one soft feature mapping.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove question'**
+  String get eventMatchingHostRemove;
+
+  /// Reload latest revision and published source catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh matching setup'**
+  String get eventMatchingHostRefresh;
+
+  /// Revision conflict without silent overwrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching setup changed elsewhere. Review the latest version before saving again.'**
+  String get eventMatchingHostConflict;
+
+  /// Invalid Host matching transform or numeric bounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the question mapping before previewing or saving.'**
+  String get eventMatchingHostValidation;
+
+  /// Source form version label.
+  ///
+  /// In en, this message translates to:
+  /// **'Active published version'**
+  String get eventMatchingHostActiveVersion;
+
+  /// Maximum feature rule count.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to eight matching questions for this event.'**
+  String get eventMatchingHostLimit;
+
+  /// Host question transform selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer type'**
+  String get eventMatchingHostTransform;
+
+  /// Host soft-mode selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching preference'**
+  String get eventMatchingHostPreference;
+
+  /// Ordinal score order action.
+  ///
+  /// In en, this message translates to:
+  /// **'Move this choice earlier'**
+  String get eventMatchingHostMoveEarlier;
+
+  /// Weight stepper decrease accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease preference strength'**
+  String get eventMatchingHostDecreaseWeight;
+
+  /// Weight stepper increase accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase preference strength'**
+  String get eventMatchingHostIncreaseWeight;
+
+  /// Optional Host roster import city mapping field.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get hostsOperationalRosterFieldCity;
+
+  /// Unsupported imported city is shown as a row-specific issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: choose a supported city or leave it blank.'**
+  String hostsOperationalRosterIssueInvalidCity({required int row});
 }
 
 class _AppLocalizationsDelegate

@@ -87,6 +87,8 @@ import 'package:widgetbook_workspace/event_success/companion/route.dart'
     as _widgetbook_workspace_event_success_companion_route;
 import 'package:widgetbook_workspace/event_success/companion/screen.dart'
     as _widgetbook_workspace_event_success_companion_screen;
+import 'package:widgetbook_workspace/event_success/event_assignment_feature_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_assignment_feature_use_cases;
 import 'package:widgetbook_workspace/event_success/event_assistance_use_cases.dart'
     as _widgetbook_workspace_event_success_event_assistance_use_cases;
 import 'package:widgetbook_workspace/event_success/event_checkpoint_use_cases.dart'
@@ -107,6 +109,8 @@ import 'package:widgetbook_workspace/event_success/event_success_module_consolid
     as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
 import 'package:widgetbook_workspace/event_success/host_assignment_components_use_cases.dart'
     as _widgetbook_workspace_event_success_host_assignment_components_use_cases;
+import 'package:widgetbook_workspace/event_success/host_assignment_feature_use_cases.dart'
+    as _widgetbook_workspace_event_success_host_assignment_feature_use_cases;
 import 'package:widgetbook_workspace/event_success/host_live_components_use_cases.dart'
     as _widgetbook_workspace_event_success_host_live_components_use_cases;
 import 'package:widgetbook_workspace/event_success/host_reveal_components_use_cases.dart'
@@ -6141,8 +6145,57 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Event Success',
         children: [
           _widgetbook.WidgetbookFolder(
+            name: 'Answer matching consent',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssignmentFeatureChoicesPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Own answer and withdrawal controls',
+                    builder:
+                        _widgetbook_workspace_event_success_event_assignment_feature_use_cases
+                            .eventAssignmentFeatureChoicesPageBody,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssignmentFeatureSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Participant answer permission sheet',
+                    builder:
+                        _widgetbook_workspace_event_success_event_assignment_feature_use_cases
+                            .eventAssignmentFeatureSheet,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Assignment components',
             children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessAssignmentFeatureRuleSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Published question transform',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_feature_use_cases
+                            .eventSuccessAssignmentFeatureRuleSheet,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessAssignmentFeaturesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Current roster coverage',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_feature_use_cases
+                            .eventSuccessAssignmentFeaturesSection,
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessAssignmentReasonNotice',
                 useCases: [

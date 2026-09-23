@@ -20206,8 +20206,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only hosts can post announcements right now. You can still read messages.';
 
   @override
-  String get eventChatRemoved =>
-      'Your room membership is unavailable. Contact the host if you need help.';
+  String get eventChatRemoved => 'Message removed.';
 
   @override
   String get eventChatRemoveMember => 'Remove from room';
@@ -20562,7 +20561,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatBlocked => 'Sender blocked.';
 
   @override
-  String get eventChatRemoved => 'Message removed.';
+  String get eventChatMembershipRemoved =>
+      'Your room membership is unavailable. Contact the host if you need help.';
 
   @override
   String get programsWorkShellTitle => 'Program operations';
@@ -21123,5 +21123,160 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostResponseFilterSelectionLimit({required int count}) {
     return 'Choose up to $count options per question.';
+  }
+
+  @override
+  String get eventMatchingTitle => 'Use form answers for event matching';
+
+  @override
+  String get eventMatchingDisclosure =>
+      'Choose whether Catch may use each reviewed answer as a soft matching preference for this event. This does not change admission or safety rules.';
+
+  @override
+  String get eventMatchingAnswerLabel => 'Answer to use';
+
+  @override
+  String get eventMatchingAllow => 'Allow for this event';
+
+  @override
+  String get eventMatchingWithdraw => 'Stop using this answer';
+
+  @override
+  String get eventMatchingUnavailable =>
+      'This answer is no longer available for event matching.';
+
+  @override
+  String get eventMatchingNoChoices =>
+      'The Host has not chosen any form questions for this event.';
+
+  @override
+  String get eventMatchingSaved => 'Your choice is saved for this event.';
+
+  @override
+  String get eventMatchingCoverageNote =>
+      'Only answers you allow for this event can be used. You can withdraw permission later.';
+
+  @override
+  String get eventMatchingHostTitle => 'Form answer matching';
+
+  @override
+  String get eventMatchingHostDescription =>
+      'Choose published custom questions as soft preferences. Guest permission is separate, and safety and admission rules always apply.';
+
+  @override
+  String get eventMatchingHostUnsupported =>
+      'Structured answer matching is not available for sequence layouts.';
+
+  @override
+  String get eventMatchingHostSelectForm => 'Choose a published form';
+
+  @override
+  String get eventMatchingHostNoForms =>
+      'No published forms are available for this organizer.';
+
+  @override
+  String get eventMatchingHostNoQuestions =>
+      'This published version has no custom choice or number questions.';
+
+  @override
+  String get eventMatchingHostLoadMore => 'Load more forms';
+
+  @override
+  String get eventMatchingHostAddQuestion => 'Add matching question';
+
+  @override
+  String get eventMatchingHostSavedRules => 'Matching preferences';
+
+  @override
+  String get eventMatchingHostCategory => 'Choice category';
+
+  @override
+  String get eventMatchingHostSet => 'Choice set';
+
+  @override
+  String get eventMatchingHostNumber => 'Number';
+
+  @override
+  String get eventMatchingHostOrdinal => 'Ordered choices';
+
+  @override
+  String get eventMatchingHostSimilar => 'Prefer similar answers';
+
+  @override
+  String get eventMatchingHostDifferent => 'Prefer different answers';
+
+  @override
+  String get eventMatchingHostBalance => 'Balance answers across groups';
+
+  @override
+  String get eventMatchingHostWeight => 'Preference strength';
+
+  @override
+  String get eventMatchingHostMinimum => 'Minimum answer';
+
+  @override
+  String get eventMatchingHostMaximum => 'Maximum answer';
+
+  @override
+  String get eventMatchingHostMissingBounds =>
+      'This form did not publish a number range. Set a finite minimum and maximum before using this question.';
+
+  @override
+  String get eventMatchingHostPreview => 'Preview roster coverage';
+
+  @override
+  String eventMatchingHostCoverage({required int usable, required int roster}) {
+    return '$usable of $roster current roster members have usable permitted answers';
+  }
+
+  @override
+  String get eventMatchingHostCoverageNote =>
+      'Coverage uses the current event roster; live assignment eligibility may differ.';
+
+  @override
+  String get eventMatchingHostSave => 'Save matching preferences';
+
+  @override
+  String get eventMatchingHostRemove => 'Remove question';
+
+  @override
+  String get eventMatchingHostRefresh => 'Refresh matching setup';
+
+  @override
+  String get eventMatchingHostConflict =>
+      'Matching setup changed elsewhere. Review the latest version before saving again.';
+
+  @override
+  String get eventMatchingHostValidation =>
+      'Review the question mapping before previewing or saving.';
+
+  @override
+  String get eventMatchingHostActiveVersion => 'Active published version';
+
+  @override
+  String get eventMatchingHostLimit =>
+      'Choose up to eight matching questions for this event.';
+
+  @override
+  String get eventMatchingHostTransform => 'Answer type';
+
+  @override
+  String get eventMatchingHostPreference => 'Matching preference';
+
+  @override
+  String get eventMatchingHostMoveEarlier => 'Move this choice earlier';
+
+  @override
+  String get eventMatchingHostDecreaseWeight => 'Decrease preference strength';
+
+  @override
+  String get eventMatchingHostIncreaseWeight => 'Increase preference strength';
+
+  @override
+  String get hostsOperationalRosterFieldCity => 'City';
+
+  @override
+  String hostsOperationalRosterIssueInvalidCity({required int row}) {
+    return 'Row $row: choose a supported city or leave it blank.';
   }
 }
