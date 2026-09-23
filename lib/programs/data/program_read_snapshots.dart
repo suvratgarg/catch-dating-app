@@ -24,6 +24,8 @@ class ProgramReadSnapshot {
 /// greeter who loses connectivity mid-shift still sees the last roster —
 /// always rendered with its capture timestamp, never presented as live.
 abstract interface class ProgramReadSnapshotStore {
+  static const maxAge = Duration(hours: 24);
+
   /// Returns the accepted authority generation, or null for a stale response.
   /// Persistence failure does not invalidate an otherwise current live read.
   Future<int?> save(
@@ -44,7 +46,6 @@ class SharedPreferencesProgramReadSnapshotStore
   final _lock = AsyncKeyedLock();
   final _generations = <String, int>{};
   final _blockedPrograms = <String>{};
-  static const maxAge = Duration(hours: 24);
 
   @override
   int generation(String accountId, String programId) =>
@@ -131,7 +132,9 @@ class SharedPreferencesProgramReadSnapshotStore
       acceptedGeneration = generation(accountId, programId) + 1;
       _generations['$accountId:$programId'] = acceptedGeneration;
     }
-    final cutoff = DateTime.now().subtract(maxAge).millisecondsSinceEpoch;
+    final cutoff = DateTime.now()
+        .subtract(ProgramReadSnapshotStore.maxAge)
+        .millisecondsSinceEpoch;
     entries.removeWhere(
       (_, entry) =>
           entry['savedAtMillis'] is! int ||
@@ -175,7 +178,7 @@ class SharedPreferencesProgramReadSnapshotStore
     if (!entry.containsKey('data') || savedAtMillis is! int) return null;
     final savedAt = DateTime.fromMillisecondsSinceEpoch(savedAtMillis);
     final age = DateTime.now().difference(savedAt);
-    if (age.isNegative || age > maxAge) return null;
+    if (age.isNegative || age >= ProgramReadSnapshotStore.maxAge) return null;
     return ProgramReadSnapshot(data: entry['data'], savedAt: savedAt);
   }
 

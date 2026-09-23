@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.6
+version: 0.3.7
 updated: 2026-09-23
 owner: product
 status: draft
@@ -628,7 +628,11 @@ persistence: a concurrent revocation or narrower bootstrap discards an older
 response before display, without clearing the newer verified access. A
 bootstrap may advance its own generation; persistence failure alone does not
 turn a successful live read into an error. Mutation receipts retain their
-server outcome across a concurrent access change.
+server outcome across a concurrent access change. Offline projections also
+expire at 24 hours from the older of their access and view snapshots, including
+an already-open manager view. Dispatch uses the shared work-entry read and
+carries both snapshot deadlines into its sheet; no separate access provider
+may discard that freshness metadata.
 Missing deadlines in legacy operational snapshots fail parsing; they are never
 interpreted as manager access.
 

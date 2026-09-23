@@ -57,83 +57,6 @@ final class ProgramWorkRepositoryProvider
 String _$programWorkRepositoryHash() =>
     r'1afd99f8840d6c75a4c222e78cf1b1ab9211f42b';
 
-@ProviderFor(programWorkAccess)
-final programWorkAccessProvider = ProgramWorkAccessFamily._();
-
-final class ProgramWorkAccessProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramWorkAccess>,
-          ProgramWorkAccess,
-          FutureOr<ProgramWorkAccess>
-        >
-    with
-        $FutureModifier<ProgramWorkAccess>,
-        $FutureProvider<ProgramWorkAccess> {
-  ProgramWorkAccessProvider._({
-    required ProgramWorkAccessFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'programWorkAccessProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programWorkAccessHash();
-
-  @override
-  String toString() {
-    return r'programWorkAccessProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramWorkAccess> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramWorkAccess> create(Ref ref) {
-    final argument = this.argument as String;
-    return programWorkAccess(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramWorkAccessProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programWorkAccessHash() => r'fc83d202376d96a432425eeac7e15ec706189e3b';
-
-final class ProgramWorkAccessFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProgramWorkAccess>, String> {
-  ProgramWorkAccessFamily._()
-    : super(
-        retry: null,
-        name: r'programWorkAccessProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  ProgramWorkAccessProvider call(String programId) =>
-      ProgramWorkAccessProvider._(argument: programId, from: this);
-
-  @override
-  String toString() => r'programWorkAccessProvider';
-}
-
 /// An invitation must be claimed online; an existing program may reopen from
 /// a bounded snapshot of its previously verified access.
 
@@ -199,7 +122,7 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'3fe718addde6415ab059cdb36ba7bfe8354f33d0';
+String _$programWorkEntryHash() => r'50b7414a9ad3e95964a784acc5674c5edca7c87f';
 
 /// An invitation must be claimed online; an existing program may reopen from
 /// a bounded snapshot of its previously verified access.
@@ -373,7 +296,7 @@ final class ProgramArrivalsRosterViewProvider
 }
 
 String _$programArrivalsRosterViewHash() =>
-    r'ff1bacf167281acc2edd2be4fa6e8aa246badf59';
+    r'2470c347251f19f5058c89a09668a537136db621';
 
 final class ProgramArrivalsRosterViewFamily extends $Family
     with
@@ -546,7 +469,7 @@ final class ProgramTransportPlanViewProvider
 }
 
 String _$programTransportPlanViewHash() =>
-    r'59fcfea8d52fb4c2f20b8fee9657d5417d771bf0';
+    r'6f540e5a517673c0de74270e7d52aec3fcedc594';
 
 final class ProgramTransportPlanViewFamily extends $Family
     with

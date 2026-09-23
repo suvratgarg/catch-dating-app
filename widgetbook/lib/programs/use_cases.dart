@@ -279,11 +279,9 @@ List<Override> _programOverrides() {
       ProgramOperationsOutbox(_previewJournal(), _PreviewMutator()),
     ),
     isObviouslyOfflineProvider.overrideWithValue(false),
-    programWorkAccessProvider(_programId).overrideWithValue(AsyncData(_access)),
-    programWorkEntryProvider(
-      _programId,
-      null,
-    ).overrideWithValue(AsyncData((value: _access, snapshotAt: null))),
+    programWorkEntryProvider(_programId, null).overrideWithValue(
+      AsyncData((value: _access, snapshotAt: null, snapshotExpiresAt: null)),
+    ),
     programArrivalsRosterProvider(
       _programId,
       _pickupPointId,

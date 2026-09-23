@@ -14,6 +14,18 @@ DateTime Function() programProjectionClock(Ref ref) => DateTime.now;
 bool isProgramProjectionActive(DateTime? expiresAt, DateTime now) =>
     expiresAt == null || expiresAt.isAfter(now);
 
+/// Server authority and offline freshness independently bound a visible view.
+DateTime? programProjectionDeadline(
+  DateTime? accessExpiresAt,
+  DateTime? snapshotExpiresAt,
+) {
+  if (accessExpiresAt == null) return snapshotExpiresAt;
+  if (snapshotExpiresAt == null) return accessExpiresAt;
+  return accessExpiresAt.isBefore(snapshotExpiresAt)
+      ? accessExpiresAt
+      : snapshotExpiresAt;
+}
+
 @riverpod
 bool programProjectionActive(Ref ref, DateTime? expiresAt) {
   if (expiresAt == null) return true;

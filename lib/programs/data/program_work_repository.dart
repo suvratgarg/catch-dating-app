@@ -458,26 +458,6 @@ Future<ProgramReadView<T>> _readView<T>(
   now: ref.read(programProjectionClockProvider),
 );
 
-@riverpod
-Future<ProgramWorkAccess> programWorkAccess(Ref ref, String programId) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('work', programId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getWorkAccess(programId, snapshotAccountId: accountId),
-    ProgramWorkAccess.fromCallableData,
-  );
-  retainProgramProjection(
-    ref,
-    result.value.nextAccessChangeAt(ref.read(programProjectionClockProvider)()),
-  );
-  return result.value;
-}
-
 /// An invitation must be claimed online; an existing program may reopen from
 /// a bounded snapshot of its previously verified access.
 @riverpod
@@ -505,7 +485,12 @@ Future<ProgramReadView<ProgramWorkAccess>> programWorkEntry(
   );
   retainProgramProjection(
     ref,
-    result.value.nextAccessChangeAt(ref.read(programProjectionClockProvider)()),
+    programProjectionDeadline(
+      result.value.nextAccessChangeAt(
+        ref.read(programProjectionClockProvider)(),
+      ),
+      result.snapshotExpiresAt,
+    ),
   );
   return result;
 }
@@ -552,7 +537,10 @@ Future<ProgramReadView<ProgramArrivalsRoster>> programArrivalsRosterView(
   );
   retainProgramProjection(
     ref,
-    result.value.accessExpiresAt,
+    programProjectionDeadline(
+      result.value.accessExpiresAt,
+      result.snapshotExpiresAt,
+    ),
     onExpiry: () => ref.invalidate(
       programArrivalsRosterProvider(programId, pickupPointId),
       asReload: true,
@@ -603,7 +591,10 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
   );
   retainProgramProjection(
     ref,
-    result.value.accessExpiresAt,
+    programProjectionDeadline(
+      result.value.accessExpiresAt,
+      result.snapshotExpiresAt,
+    ),
     onExpiry: () => ref.invalidate(
       programTransportPlanProvider(programId, pickupPointId),
       asReload: true,

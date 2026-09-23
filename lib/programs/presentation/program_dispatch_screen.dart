@@ -45,16 +45,18 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
 
   Future<void> _openDispatchSheet(
     TransportGroupSuggestion group,
-    ProgramTransportPlan plan,
+    ProgramReadView<ProgramTransportPlan> view,
     String? accountId,
   ) async {
     if (accountId == null || ref.read(uidProvider).asData?.value != accountId) {
       return;
     }
     try {
-      final access = await ref.read(
-        programWorkAccessProvider(widget.programId).future,
+      final accessView = await ref.read(
+        programWorkEntryProvider(widget.programId, null).future,
       );
+      final access = accessView.value;
+      final plan = view.value;
       if (!mounted || ref.read(uidProvider).asData?.value != accountId) return;
       final authority = programDispatchAccess(
         access,
@@ -70,6 +72,8 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
       final deadlines = [
         authority.expiresAt,
         plan.accessExpiresAt,
+        accessView.snapshotExpiresAt,
+        view.snapshotExpiresAt,
       ].whereType<DateTime>();
       final expiresAt = deadlines.isEmpty
           ? null
@@ -209,7 +213,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
                   ? _openingError
                   : null,
               onDispatch: (group) =>
-                  _openDispatchSheet(group, result.value, accountId),
+                  _openDispatchSheet(group, result, accountId),
             ),
           ],
         ),
@@ -403,7 +407,10 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         throw const SignInRequiredException('dispatch this saved manifest');
       }
       if (!isProgramProjectionActive(
-        view.value.accessExpiresAt,
+        programProjectionDeadline(
+          view.value.accessExpiresAt,
+          view.snapshotExpiresAt,
+        ),
         ref.read(programProjectionClockProvider)(),
       )) {
         throw const PermissionException(

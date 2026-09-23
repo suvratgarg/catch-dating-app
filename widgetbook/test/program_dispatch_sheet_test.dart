@@ -60,6 +60,7 @@ void main() {
                 vehicleClasses: const [],
               ),
               snapshotAt: null,
+              snapshotExpiresAt: null,
             )),
           ),
         ],

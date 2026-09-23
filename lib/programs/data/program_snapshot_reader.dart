@@ -2,7 +2,11 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 
-typedef ProgramReadView<T> = ({T value, DateTime? snapshotAt});
+typedef ProgramReadView<T> = ({
+  T value,
+  DateTime? snapshotAt,
+  DateTime? snapshotExpiresAt,
+});
 
 /// A saved projection is usable only during connectivity failures, within its
 /// cache lifetime and the last verified grant, for the same signed-in account.
@@ -27,7 +31,7 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
   try {
     final value = await live();
     requireAccount();
-    return (value: value, snapshotAt: null);
+    return (value: value, snapshotAt: null, snapshotExpiresAt: null);
   } on AppException catch (error) {
     if (error is PermissionException ||
         error is SignInRequiredException ||
@@ -65,6 +69,19 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
     if (allowsAccess != null && !allowsAccess(access)) rethrow;
     final snapshot = await store.load(accountId, scope);
     if (snapshot == null) rethrow;
+    // Offline access is bounded by both the authority and projection capture.
+    final oldestCapture = work.savedAt.isBefore(snapshot.savedAt)
+        ? work.savedAt
+        : snapshot.savedAt;
+    final snapshotExpiresAt = oldestCapture.add(
+      ProgramReadSnapshotStore.maxAge,
+    );
+    final instant = (now ?? DateTime.now)();
+    if (!snapshotExpiresAt.isAfter(instant) ||
+        work.savedAt.isAfter(instant) ||
+        snapshot.savedAt.isAfter(instant)) {
+      rethrow;
+    }
     final payload = requiredMap(snapshot.data, 'saved program data');
     if (payload['programId'] != programId) rethrow;
     requireAccount();
@@ -74,6 +91,10 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
         (allowsAccess != null && !allowsAccess(access))) {
       rethrow;
     }
-    return (value: parse(payload), snapshotAt: snapshot.savedAt);
+    return (
+      value: parse(payload),
+      snapshotAt: snapshot.savedAt,
+      snapshotExpiresAt: snapshotExpiresAt,
+    );
   }
 }
