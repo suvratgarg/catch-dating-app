@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
@@ -449,6 +450,43 @@ test("import rejects unsupported city values before writing a row", () => {
   assert.equal(result.prepared.length, 0);
   assert.deepEqual(result.errors.map((error) => error.code), ["invalid-city"]);
 });
+
+test("pre-city import receipts replay but cannot acquire new city data",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const firestore = new FakeFirestore({
+      "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+        status: "active"},
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+    });
+    const deps = {firestore: () => firestore as unknown as
+      FirebaseFirestore.Firestore, checkRateLimit: async () => undefined,
+    timestamp: () => now};
+    const row = {rowId: "2", displayName: "Asha Shah",
+      phone: "+919876543210", email: null, externalReference: null,
+      arrivalGroup: null, ticketType: null, status: "registered" as const};
+    const payload = {eventId: "event-1", importKey: "legacy-import",
+      fileName: "roster.csv", format: "csv" as const, rows: [row]};
+    const imported = await importEventAttendeesForHost({hostUid: "host-1",
+      payload}, deps);
+    const oldRow = {rowId: row.rowId, displayName: row.displayName,
+      phone: row.phone, email: null, externalReference: null,
+      arrivalGroup: null, ticketType: null, revenueAmountMinor: null,
+      revenueCurrency: null, revenueSource: null, status: row.status};
+    const oldHash = createHash("sha256").update(JSON.stringify({
+      eventId: payload.eventId, importKey: payload.importKey,
+      fileName: payload.fileName, format: payload.format, rows: [oldRow],
+    })).digest("hex");
+    assert.equal(firestore.get(`eventAttendeeImports/${imported.importId}`)
+      ?.payloadHash, oldHash);
+    assert.equal((await importEventAttendeesForHost({hostUid: "host-1",
+      payload}, deps)).replayed, true);
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload: {...payload, rows: [{...row,
+        cityMarketId: "in-ka-bengaluru"}]}}, deps),
+    /already used for different roster data/u);
+  });
 
 test("eventAttendeeId is stable and event-isolated", () => {
   const stable = eventAttendeeId("event-1", "email:asha@example.com");

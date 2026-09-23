@@ -1084,7 +1084,7 @@ function canonicalImportPayload(
       displayName: row.displayName,
       phone: row.phone ?? null,
       email: row.email ?? null,
-      cityMarketId: row.cityMarketId ?? null,
+      ...(row.cityMarketId == null ? {} : {cityMarketId: row.cityMarketId}),
       externalReference: row.externalReference ?? null,
       arrivalGroup: row.arrivalGroup ?? null,
       ticketType: row.ticketType ?? null,
