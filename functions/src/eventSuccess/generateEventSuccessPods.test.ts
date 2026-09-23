@@ -6,6 +6,8 @@ import {
   overrideEventSuccessGroupsHandler,
 } from "./generateEventSuccessPods";
 import {isHttpsError} from "../shared/testUtils";
+import {assignmentFeatureConsentId} from
+  "./assignmentFeatureConsent";
 
 type FakeData = Record<string, unknown>;
 
@@ -53,7 +55,8 @@ class FakeCollectionRef {
       field: string;
       operator: string;
       value: unknown;
-    }> = []
+    }> = [],
+    private readonly cap = Infinity
   ) {}
 
   doc(docId: string) {
@@ -64,13 +67,31 @@ class FakeCollectionRef {
     return new FakeCollectionRef(this.firestore, this.path, [
       ...this.filters,
       {field, operator, value},
-    ]);
+    ], this.cap);
+  }
+
+  limit(count: number) {
+    return new FakeCollectionRef(this.firestore, this.path,
+      this.filters, count);
   }
 
   async get() {
-    return {
-      docs: this.firestore.query(this.path, this.filters),
-    };
+    const docs = this.firestore.query(this.path, this.filters)
+      .slice(0, this.cap);
+    return {docs, size: docs.length};
+  }
+}
+
+class FakeTransaction {
+  constructor(private readonly firestore: FakeFirestore) {}
+  async get(ref: {get: () => Promise<unknown>}) {
+    return ref.get();
+  }
+  set(ref: FakeDocRef, data: FakeData) {
+    this.firestore.set(ref.path, data);
+  }
+  delete(ref: FakeDocRef) {
+    this.firestore.delete(ref.path);
   }
 }
 
@@ -101,6 +122,7 @@ class FakeBatch {
 }
 
 class FakeFirestore {
+  beforeTransaction?: () => void;
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
   collection(collectionPath: string) {
@@ -109,6 +131,17 @@ class FakeFirestore {
 
   batch() {
     return new FakeBatch(this);
+  }
+
+  async getAll(...refs: FakeDocRef[]): Promise<FakeSnapshot[]> {
+    return Promise.all(refs.map((ref) => ref.get()));
+  }
+
+  async runTransaction<T>(
+    callback: (transaction: FakeTransaction) => Promise<T>
+  ): Promise<T> {
+    this.beforeTransaction?.();
+    return callback(new FakeTransaction(this));
   }
 
   get(path: string): FakeData | undefined {
@@ -550,6 +583,80 @@ test("uses profile cohorts as pod balancing tie-breakers", async () => {
     ["runner-4"]
   );
 });
+
+test("configured consented answers influence published pod groups",
+  async () => {
+    const ids = ["runner-1", "runner-2", "runner-3", "runner-4"];
+    const stamp = {_seconds: 1, _nanoseconds: 0};
+    const rule = {featureId: "pace", formId: "form-1",
+      versionId: "version-1", questionId: "question-1",
+      transformVersion: 1, kind: "category", mode: "preferSimilar",
+      weight: 100, optionIds: ["option-a", "option-b"]};
+    const source = Object.fromEntries(ids.flatMap((uid) => {
+      const choice = ["runner-1", "runner-3"].includes(uid) ? "a" : "b";
+      return [
+        [`eventParticipations/event-1_${uid}`, participation(uid)],
+        [`organizerFormResponses/response-${uid}`, {
+          organizerId: "club-1", formId: "form-1",
+          versionId: "version-1", status: "submitted",
+          respondentUid: uid, identityKind: "phoneVerified",
+          withdrawnAt: null, answers: {"question-1": choice},
+        }],
+        [`eventAssignmentFeatureConsents/${assignmentFeatureConsentId(
+          "event-1", uid, "pace")}`, {
+          eventId: "event-1", organizerId: "club-1", uid,
+          responseId: `response-${uid}`, featureId: "pace",
+          formId: "form-1", versionId: "version-1",
+          questionId: "question-1", transformVersion: 1,
+          purpose: "eventAssignmentMatching", status: "granted",
+          receiptId: `receipt-${uid}`, revision: 1,
+          lastRequestId: `grant-${uid}`, createdAt: stamp,
+          updatedAt: stamp,
+        }],
+      ];
+    }));
+    const {firestore, deps} = harness({
+      ...source,
+      "organizerFormVersions/version-1": {organizerId: "club-1",
+        formId: "form-1", definition: {sections: [{questions: [{
+          questionId: "question-1", privacyClass: "organizerCustom",
+          kind: "singleChoice", options: [
+            {optionId: "option-a", value: "a"},
+            {optionId: "option-b", value: "b"},
+          ],
+        }]}]}},
+      "eventSuccessPlans/event-1": {eventId: "event-1",
+        organizerId: "club-1", selectedModuleIds: ["micro_pods"],
+        assignmentFeatureRules: [rule], assignmentFeatureRevision: 1,
+        assignmentFeatureConfigHash: "hash-1",
+        structureConfig: {unitKind: "pods", unitSize: 2, unitCount: 2}},
+    });
+    await generateEventSuccessPodsHandler(callableRequest("host-1"), deps);
+    const runnerOne = firestore.get(
+      "eventSuccessAssignments/event-1_micro_pods_runner-1");
+    assert.deepEqual(runnerOne?.peerUids, ["runner-3"]);
+    assert.equal(JSON.stringify(runnerOne).includes("answer"), false);
+
+    firestore.beforeTransaction = () => firestore.merge(
+      `eventAssignmentFeatureConsents/${assignmentFeatureConsentId(
+        "event-1", "runner-1", "pace")}`,
+      {status: "withdrawn", receiptId: "withdrawn-2"});
+    await assert.rejects(() => generateEventSuccessPodsHandler(
+      callableRequest("host-1"), deps), (error) => {
+      isHttpsError(error, "aborted", "consent or source changed");
+      return true;
+    });
+    firestore.beforeTransaction = () => firestore.merge(
+      "eventSuccessPlans/event-1", {assignmentFeatureConfigHash: "new-hash"});
+    firestore.merge(`eventAssignmentFeatureConsents/${
+      assignmentFeatureConsentId("event-1", "runner-1", "pace")}`,
+    {status: "granted", receiptId: "receipt-runner-1"});
+    await assert.rejects(() => generateEventSuccessPodsHandler(
+      callableRequest("host-1"), deps), (error) => {
+      isHttpsError(error, "aborted", "setup changed");
+      return true;
+    });
+  });
 
 test("rejects unimplemented custom team formats honestly", async () => {
   const {firestore, deps} = harness({

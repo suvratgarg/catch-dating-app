@@ -295,7 +295,8 @@ export async function generateEventSuccessPodsHandler(
     );
   }
 
-  const roster = await loadEventSuccessRoster(db, eventId);
+  const roster = await loadEventSuccessRoster(db, eventId,
+    plan.assignmentFeatureRules?.length ? 1000 : undefined);
   const optedOutUids = await fetchMicroPodsOptOutUids(db, eventId);
   const participants = roster
     .map((participant): ActiveParticipant => ({

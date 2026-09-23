@@ -307,6 +307,7 @@ export async function prepareEventSuccessRotationDraft(
   if (liveControlRevision !== input.expectedRevision) {
     throw staleLiveControlError();
   }
+  const featureRules = plan.assignmentFeatureRules ?? [];
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
@@ -314,9 +315,9 @@ export async function prepareEventSuccessRotationDraft(
       input.eventId,
       questionnaireMode !== "icebreaker",
       deps.nowMillis?.() ?? Date.now(),
-      eventSuccessPresencePolicy(deps.environment ?? process.env)
+      eventSuccessPresencePolicy(deps.environment ?? process.env),
+      featureRules.length ? 1000 : undefined
     );
-  const featureRules = plan.assignmentFeatureRules ?? [];
   const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
     eventId: input.eventId,
     organizerId: event.organizerId ?? event.clubId,
@@ -650,13 +651,14 @@ async function loadEligibleRotationParticipants(
   eventId: string,
   compatibilityAffectsRanking: boolean,
   nowMillis: number,
-  presencePolicy: ReturnType<typeof eventSuccessPresencePolicy>
+  presencePolicy: ReturnType<typeof eventSuccessPresencePolicy>,
+  maxEntries?: number
 ): Promise<{
   participants: RotationParticipant[];
   blockedPairs: Set<string>;
 }> {
   const [roster, optedOutUids] = await Promise.all([
-    loadEventSuccessRoster(db, eventId),
+    loadEventSuccessRoster(db, eventId, maxEntries),
     fetchGuidedRotationOptOutUids(db, eventId),
   ]);
   const activeEdges = roster
