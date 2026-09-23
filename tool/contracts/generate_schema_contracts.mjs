@@ -1174,6 +1174,54 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/manageEventChatMemberCallableResponse.ts",
   },
   {
+    name: "SetEventAssignmentFeatureConsentCallablePayload",
+    source: "callables/set_event_assignment_feature_consent_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "setEventAssignmentFeatureConsentCallablePayload.ts",
+  },
+  {
+    name: "SetEventAssignmentFeatureConsentCallableResponse",
+    source: "callable_responses/set_event_assignment_feature_consent_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "setEventAssignmentFeatureConsentCallableResponse.ts",
+  },
+  {
+    name: "ConfigureEventAssignmentFeaturesCallablePayload",
+    source: "callables/configure_event_assignment_features_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "configureEventAssignmentFeaturesCallablePayload.ts",
+  },
+  {
+    name: "ConfigureEventAssignmentFeaturesCallableResponse",
+    source: "callable_responses/configure_event_assignment_features_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "configureEventAssignmentFeaturesCallableResponse.ts",
+  },
+  {
+    name: "PreviewEventAssignmentFeaturesCallablePayload",
+    source: "callables/preview_event_assignment_features_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "previewEventAssignmentFeaturesCallablePayload.ts",
+  },
+  {
+    name: "PreviewEventAssignmentFeaturesCallableResponse",
+    source: "callable_responses/preview_event_assignment_features_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "previewEventAssignmentFeaturesCallableResponse.ts",
+  },
+  {
+    name: "ListEventAssignmentFeatureChoicesCallablePayload",
+    source: "callables/list_event_assignment_feature_choices_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "listEventAssignmentFeatureChoicesCallablePayload.ts",
+  },
+  {
+    name: "ListEventAssignmentFeatureChoicesCallableResponse",
+    source: "callable_responses/list_event_assignment_feature_choices_response.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "listEventAssignmentFeatureChoicesCallableResponse.ts",
+  },
+  {
     name: "ListParticipantMessagingPreferencesCallablePayload",
     source: "callables/list_participant_messaging_preferences_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",
@@ -2208,6 +2256,12 @@ const schemaSpecs = [
     source: "firestore/event_success_plans.schema.json",
     typeOutput:
       "functions/src/shared/generated/eventSuccessPlanDocument.ts",
+  },
+  {
+    name: "EventAssignmentFeatureConsentDocument",
+    source: "firestore/event_assignment_feature_consents.schema.json",
+    typeOutput: "functions/src/shared/generated/" +
+      "eventAssignmentFeatureConsentDocument.ts",
   },
   {
     name: "EventSuccessConversationGraphDocument",

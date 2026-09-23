@@ -40,7 +40,9 @@
     },
     "moduleId": {
       "type": "string",
-      "enum": ["guided_rotations"],
+      "enum": [
+        "guided_rotations"
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "roundIndex": {
@@ -65,6 +67,35 @@
     },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureGuard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "configHash",
+        "snapshots"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "configHash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "snapshots": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "../shared/assignment_feature_common.schema.json#/definitions/featureSnapshot"
+          }
+        }
+      },
       "x-catch-ownership": "callable-owned"
     }
   }

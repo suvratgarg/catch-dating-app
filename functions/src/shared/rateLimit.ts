@@ -167,6 +167,18 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   publishEventLivePosition: {maxRequests: 30, windowMs: 60 * 1000},
   getEventSuccessPresenceSummary: {maxRequests: 6, windowMs: 60 * 1000},
   resolveEventSuccessLateArrival: {maxRequests: 30, windowMs: 60 * 1000},
+  configureEventAssignmentFeatures: {
+    maxRequests: 20, windowMs: 60 * 60 * 1000,
+  },
+  previewEventAssignmentFeatures: {
+    maxRequests: 30, windowMs: 60 * 1000,
+  },
+  listEventAssignmentFeatureChoices: {
+    maxRequests: 30, windowMs: 60 * 1000,
+  },
+  setEventAssignmentFeatureConsent: {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  },
   setEventSuccessAccountabilityResolution: {
     maxRequests: 120,
     windowMs: 60 * 1000,

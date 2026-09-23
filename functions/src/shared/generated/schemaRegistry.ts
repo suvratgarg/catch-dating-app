@@ -229,6 +229,14 @@ export {getEventChatAccessCallableResponseSchema} from "./schemas/getEventChatAc
 export {updateEventChatAccessCallableResponseSchema} from "./schemas/updateEventChatAccessOutput";
 export {manageEventChatMemberCallablePayloadSchema} from "./schemas/manageEventChatMemberInput";
 export {manageEventChatMemberCallableResponseSchema} from "./schemas/manageEventChatMemberOutput";
+export {setEventAssignmentFeatureConsentCallablePayloadSchema} from "./schemas/setEventAssignmentFeatureConsentInput";
+export {setEventAssignmentFeatureConsentCallableResponseSchema} from "./schemas/setEventAssignmentFeatureConsentOutput";
+export {configureEventAssignmentFeaturesCallablePayloadSchema} from "./schemas/configureEventAssignmentFeaturesInput";
+export {configureEventAssignmentFeaturesCallableResponseSchema} from "./schemas/configureEventAssignmentFeaturesOutput";
+export {previewEventAssignmentFeaturesCallablePayloadSchema} from "./schemas/previewEventAssignmentFeaturesInput";
+export {previewEventAssignmentFeaturesCallableResponseSchema} from "./schemas/previewEventAssignmentFeaturesOutput";
+export {listEventAssignmentFeatureChoicesCallablePayloadSchema} from "./schemas/listEventAssignmentFeatureChoicesInput";
+export {listEventAssignmentFeatureChoicesCallableResponseSchema} from "./schemas/listEventAssignmentFeatureChoicesOutput";
 export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schemas/listParticipantMessagingPreferencesInput";
 export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
 export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";
@@ -401,6 +409,7 @@ export {crossPathsPairHoldDocumentSchema} from "./schemas/crossPathsPairHoldDocu
 export {eventBroadcastDocumentSchema} from "./schemas/eventBroadcastDocument";
 export {eventWaitlistOfferDocumentSchema} from "./schemas/eventWaitlistOfferDocument";
 export {eventSuccessPlanDocumentSchema} from "./schemas/eventSuccessPlanDocument";
+export {eventAssignmentFeatureConsentDocumentSchema} from "./schemas/eventAssignmentFeatureConsentDocument";
 export {eventSuccessConversationGraphDocumentSchema} from "./schemas/eventSuccessConversationGraphDocument";
 export {organizerEventSuccessLayoutDocumentSchema} from "./schemas/organizerEventSuccessLayoutDocument";
 export {organizerEventVenueDocumentSchema} from "./schemas/organizerEventVenueDocument";

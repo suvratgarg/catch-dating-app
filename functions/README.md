@@ -144,6 +144,8 @@ options when specific functions need higher or lower limits.
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
+| `configureEventAssignmentFeatures` / `previewEventAssignmentFeatures` / `setEventAssignmentFeatureConsent` | `src/eventSuccess/assignmentFeatureActions.ts` | Map exact published custom questions to bounded soft matching rules, preview aggregate roster coverage and trusted source labels, and independently grant or withdraw verified respondent answer use. Preview reveals no answers or participant identities; sequence topology is unsupported. |
+| `listEventAssignmentFeatureChoices` | `src/eventSuccess/assignmentFeatureActions.ts` | Show a verified respondent their own eligible answer labels and retained historical matching grants for withdrawal, including grants whose Host mapping was removed. |
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override revision-fenced Host-only rotation drafts |
 | `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state and confirmed, idempotent prepared-round publication |
 | `upsertEventSuccessLayout` / `getEventSuccessSpatialLayout` / `controlEventSuccessSpatial` | `src/eventSuccess/layoutAssets.ts` | Persist reusable room layouts, resolve event spatial state, and control revision-fenced live reveal placement |

@@ -4086,6 +4086,25 @@ describe("firestore.rules", () => {
       }));
     });
 
+    it("keeps event matching answer decisions callable-only", async () => {
+      await seed(["eventAssignmentFeatureConsents", "consent-1"], {
+        eventId: "event-1",
+        organizerId: "club-1",
+        uid: "runner-1",
+        featureId: "feature-1",
+        status: "granted",
+      });
+      for (const uid of ["runner-1", "host-1", "other-1"]) {
+        const ref = doc(authedDb(uid),
+          "eventAssignmentFeatureConsents", "consent-1");
+        await assertFails(getDoc(ref));
+        await assertFails(setDoc(ref, {status: "withdrawn"}));
+        await assertFails(deleteDoc(ref));
+      }
+      await assertFails(getDocs(collection(authedDb("runner-1"),
+        "eventAssignmentFeatureConsents")));
+    });
+
     it("keeps presence private and scopes late-arrival outcomes", async () => {
       await seed(["organizers", "club-1"], club());
       await seed(["events", "event-1"], event());

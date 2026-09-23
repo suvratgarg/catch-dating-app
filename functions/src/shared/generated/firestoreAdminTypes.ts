@@ -8750,6 +8750,11 @@ export interface EventAttendeeDocument {
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
+  /**
+   * Private organizer-reported roster city; never a verified participant profile or eligibility input.
+   */
+  cityMarketId?: string | null;
+  citySource?: "hostImport" | "hostManual" | null;
   externalReference: string | null;
   /**
    * Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together.
@@ -11495,6 +11500,31 @@ export interface EventSuccessPlanDocument {
   structureConfig?: {
     [k: string]: unknown;
   };
+  /**
+   * @maxItems 8
+   */
+  assignmentFeatureRules?: {
+    featureId: string;
+    formId: string;
+    versionId: string;
+    questionId: string;
+    transformVersion: number;
+    kind: "category" | "set" | "number" | "ordinal";
+    mode: "preferSimilar" | "preferDifferent" | "balanceAcrossGroups";
+    weight: number;
+    /**
+     * @maxItems 40
+     */
+    optionIds?: string[];
+    scoreByOptionId?: {
+      [k: string]: number;
+    };
+    minimum?: number;
+    maximum?: number;
+  }[];
+  assignmentFeatureRevision?: number;
+  assignmentFeatureRequestId?: string;
+  assignmentFeatureConfigHash?: string;
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
   contextualOpenersEnabled: boolean;
@@ -11536,6 +11566,28 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Private participant-owned decision for one event and immutable form answer. Not implied by form submission, profile sharing, messaging consent, or host configuration.
+ */
+export interface EventAssignmentFeatureConsentDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  responseId: string;
+  featureId: string;
+  formId: string;
+  versionId: string;
+  questionId: string;
+  transformVersion: number;
+  purpose: "eventAssignmentMatching";
+  status: "granted" | "withdrawn";
+  receiptId: string;
+  revision: number;
+  lastRequestId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -11623,6 +11675,42 @@ export interface EventSuccessAssignmentDraftDocument {
   assignment: EventSuccessAssignmentDocument;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  assignmentFeatureGuard?: {
+    revision: number;
+    configHash: string;
+    /**
+     * @maxItems 8
+     */
+    snapshots: {
+      eventId: string;
+      organizerId: string;
+      uid: string;
+      featureId: string;
+      formId: string;
+      versionId: string;
+      questionId: string;
+      transformVersion: number;
+      consentReceiptId: string;
+      responseId: string;
+      value:
+        | {
+            kind: "category" | "ordinal";
+            optionId: string;
+          }
+        | {
+            kind: "set";
+            /**
+             * @minItems 1
+             * @maxItems 40
+             */
+            optionIds: string[];
+          }
+        | {
+            kind: "number";
+            value: number;
+          };
+    }[];
+  };
 }
 
 /**
@@ -11858,6 +11946,14 @@ export interface EventSuccessAssignmentDocument {
     )[];
   }[];
   source: "server_v1" | "host_override_v1" | "server";
+  /**
+   * Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.
+   */
+  assignmentFeatureAudit?: {
+    algorithmVersion: "typed-soft-features-v1";
+    configHash: string;
+    inputSnapshotId: string;
+  };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

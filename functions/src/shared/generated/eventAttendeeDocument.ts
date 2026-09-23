@@ -21,6 +21,11 @@ export interface EventAttendeeDocument {
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
+  /**
+   * Private organizer-reported roster city; never a verified participant profile or eligibility input.
+   */
+  cityMarketId?: string | null;
+  citySource?: "hostImport" | "hostManual" | null;
   externalReference: string | null;
   /**
    * Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together.

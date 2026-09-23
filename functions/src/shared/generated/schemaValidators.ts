@@ -229,6 +229,14 @@ export {validateGetEventChatAccessCallableResponse} from "./validators/getEventC
 export {validateUpdateEventChatAccessCallableResponse} from "./validators/updateEventChatAccessOutput";
 export {validateManageEventChatMemberCallablePayload} from "./validators/manageEventChatMemberInput";
 export {validateManageEventChatMemberCallableResponse} from "./validators/manageEventChatMemberOutput";
+export {validateSetEventAssignmentFeatureConsentCallablePayload} from "./validators/setEventAssignmentFeatureConsentInput";
+export {validateSetEventAssignmentFeatureConsentCallableResponse} from "./validators/setEventAssignmentFeatureConsentOutput";
+export {validateConfigureEventAssignmentFeaturesCallablePayload} from "./validators/configureEventAssignmentFeaturesInput";
+export {validateConfigureEventAssignmentFeaturesCallableResponse} from "./validators/configureEventAssignmentFeaturesOutput";
+export {validatePreviewEventAssignmentFeaturesCallablePayload} from "./validators/previewEventAssignmentFeaturesInput";
+export {validatePreviewEventAssignmentFeaturesCallableResponse} from "./validators/previewEventAssignmentFeaturesOutput";
+export {validateListEventAssignmentFeatureChoicesCallablePayload} from "./validators/listEventAssignmentFeatureChoicesInput";
+export {validateListEventAssignmentFeatureChoicesCallableResponse} from "./validators/listEventAssignmentFeatureChoicesOutput";
 export {validateListParticipantMessagingPreferencesCallablePayload} from "./validators/listParticipantMessagingPreferencesInput";
 export {validateListParticipantMessagingPreferencesCallableResponse} from "./validators/listParticipantMessagingPreferencesOutput";
 export {validateWithdrawParticipantMessagingPermissionCallablePayload} from "./validators/withdrawParticipantMessagingPermissionInput";
@@ -401,6 +409,7 @@ export {validateCrossPathsPairHoldDocument} from "./validators/crossPathsPairHol
 export {validateEventBroadcastDocument} from "./validators/eventBroadcastDocument";
 export {validateEventWaitlistOfferDocument} from "./validators/eventWaitlistOfferDocument";
 export {validateEventSuccessPlanDocument} from "./validators/eventSuccessPlanDocument";
+export {validateEventAssignmentFeatureConsentDocument} from "./validators/eventAssignmentFeatureConsentDocument";
 export {validateEventSuccessConversationGraphDocument} from "./validators/eventSuccessConversationGraphDocument";
 export {validateOrganizerEventSuccessLayoutDocument} from "./validators/organizerEventSuccessLayoutDocument";
 export {validateOrganizerEventVenueDocument} from "./validators/organizerEventVenueDocument";

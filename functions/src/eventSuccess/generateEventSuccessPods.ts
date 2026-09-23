@@ -56,6 +56,12 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {loadAuthorizedAssignmentFeatures,
+  recheckAssignmentFeatureSnapshots} from "./assignmentFeatureConsent";
+import type {AssignmentFeatureRule,
+  EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+import {buildAssignmentFeatureAudit,
+  type AssignmentFeatureAudit} from "./assignmentFeatureAudit";
 import {
   applyEventSuccessSpatialLayout,
   assignmentConstraintsForSpatialPlan,
@@ -81,6 +87,9 @@ interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
+  assignmentFeatureRules?: AssignmentFeatureRule[];
+  assignmentFeatureRevision?: number;
+  assignmentFeatureConfigHash?: string;
   layoutId?: string | null;
   affinityConstraints?: Array<{
     aUid: string;
@@ -179,6 +188,7 @@ interface GeneratedAssignment {
   rotationFairness?: RotationFairnessSummary;
   groupRotationSlots?: GeneratedGroupRotationSlot[];
   source: string;
+  assignmentFeatureAudit?: AssignmentFeatureAudit;
   createdAt: FirebaseFirestore.FieldValue;
   updatedAt: FirebaseFirestore.FieldValue;
 }
@@ -288,7 +298,8 @@ export async function generateEventSuccessPodsHandler(
     );
   }
 
-  const roster = await loadEventSuccessRoster(db, eventId);
+  const roster = await loadEventSuccessRoster(db, eventId,
+    plan.assignmentFeatureRules?.length ? 1000 : undefined);
   const optedOutUids = await fetchMicroPodsOptOutUids(db, eventId);
   const participants = roster
     .map((participant): ActiveParticipant => ({
@@ -302,6 +313,12 @@ export async function generateEventSuccessPodsHandler(
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);
   const eligibleParticipants = preferCheckedInParticipants(participants);
+
+  const featureRules = plan.assignmentFeatureRules ?? [];
+  const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
+    eventId, organizerId: event.organizerId ?? event.clubId,
+    eligibleUids: eligibleParticipants.map((person) => person.uid),
+    rules: featureRules});
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
   const constraints = assignmentConstraintsForSpatialPlan(
@@ -320,6 +337,10 @@ export async function generateEventSuccessPodsHandler(
     }
   );
   const timing = topology.rotationsEnabled ? eventTimingFor(event) : undefined;
+  if (featureRules.length && topology.topology === "sequence") {
+    throw new HttpsError("failed-precondition",
+      "Structured matching is unavailable for sequence assignments.");
+  }
   const builtPods = buildPods({
     participants: eligibleParticipants,
     blockedPairs,
@@ -330,6 +351,8 @@ export async function generateEventSuccessPodsHandler(
     constraints,
     rotationPolicy,
     timing,
+    softFeatures: {eventId, organizerId: event.organizerId ?? event.clubId,
+      rules: featureRules, snapshots: featureSnapshots},
   });
   const assignments = buildAssignments({
     eventId,
@@ -350,7 +373,21 @@ export async function generateEventSuccessPodsHandler(
     plan
   );
   applyEventSuccessSpatialLayout(assignments, layout, plan, 0);
-  await writeAssignments(db, eventId, assignments);
+  if (featureRules.length) {
+    const audit = buildAssignmentFeatureAudit({eventId,
+      organizerId: event.organizerId ?? event.clubId,
+      configHash: plan.assignmentFeatureConfigHash ?? "",
+      snapshots: featureSnapshots});
+    for (const assignment of assignments.values()) {
+      assignment.assignmentFeatureAudit = audit;
+    }
+  }
+  await writeAssignments(db, eventId, assignments, featureRules.length ? {
+    organizerId: event.organizerId ?? event.clubId, rules: featureRules,
+    snapshots: featureSnapshots,
+    revision: plan.assignmentFeatureRevision ?? 0,
+    configHash: plan.assignmentFeatureConfigHash ?? "",
+  } : undefined);
 
   return {
     assignmentCount: assignments.size,
@@ -640,6 +677,9 @@ function buildPods(params: {
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
   timing?: EventTiming;
+  softFeatures?: {eventId: string; organizerId: string;
+    rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[]};
 }): BuiltPods {
   if (params.participants.length === 0) {
     return {groups: [], groupRounds: [], podCount: 0};
@@ -663,6 +703,7 @@ function buildPods(params: {
     rotationRoundCount,
     constraints: params.constraints,
     rotationPolicy: params.rotationPolicy,
+    softFeatures: params.softFeatures,
   });
   const groupRounds = [
     ...plan.groupRounds,
@@ -1220,13 +1261,53 @@ function uniqueSorted(values: string[]): string[] {
 async function writeAssignments(
   db: FirebaseFirestore.Firestore,
   eventId: string,
-  assignments: Map<string, GeneratedAssignment>
+  assignments: Map<string, GeneratedAssignment>,
+  featureGuard?: {organizerId: string; rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[];
+    revision: number; configHash: string}
 ): Promise<void> {
-  const existingSnap = await db
-    .collection("eventSuccessAssignments")
+  const existingQuery = db.collection("eventSuccessAssignments")
     .where("eventId", "==", eventId)
-    .where("moduleId", "==", MICRO_PODS_MODULE_ID)
-    .get();
+    .where("moduleId", "==", MICRO_PODS_MODULE_ID);
+  if (featureGuard) {
+    if (assignments.size > 400 || !featureGuard.configHash) {
+      throw new HttpsError("failed-precondition",
+        "Structured matching exceeds the supported publication size.");
+    }
+    await db.runTransaction(async (tx) => {
+      const planRef = db.collection("eventSuccessPlans").doc(eventId);
+      const [planSnap, existingSnap] = await Promise.all([
+        tx.get(planRef), tx.get(existingQuery.limit(401)),
+      ]);
+      const staleDocs = existingSnap.docs.filter((doc) =>
+        !assignments.has(doc.id));
+      if (existingSnap.size > 400 ||
+          staleDocs.length + assignments.size > 400) {
+        throw new HttpsError("failed-precondition",
+          "Structured matching exceeds the supported publication size.");
+      }
+      if (!planSnap.exists) {
+        throw new HttpsError("aborted",
+          "Assignment feature setup changed.");
+      }
+      const plan = planSnap.data() as EventSuccessPlanDocument;
+      if (plan.assignmentFeatureRevision !== featureGuard.revision ||
+          plan.assignmentFeatureConfigHash !== featureGuard.configHash) {
+        throw new HttpsError("aborted", "Assignment feature setup changed.");
+      }
+      await recheckAssignmentFeatureSnapshots({tx, db, eventId,
+        organizerId: featureGuard.organizerId,
+        rules: featureGuard.rules,
+        snapshots: featureGuard.snapshots});
+      for (const doc of staleDocs) tx.delete(doc.ref);
+      for (const [docId, assignment] of assignments.entries()) {
+        tx.set(db.collection("eventSuccessAssignments").doc(docId),
+          assignment);
+      }
+    });
+    return;
+  }
+  const existingSnap = await existingQuery.get();
   const batch = db.batch();
   for (const doc of existingSnap.docs) {
     if (!assignments.has(doc.id)) {

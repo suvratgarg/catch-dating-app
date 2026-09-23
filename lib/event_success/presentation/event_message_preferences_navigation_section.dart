@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assignment_feature_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_preferences_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -23,6 +24,17 @@ class EventMessagePreferencesNavigationSection extends StatelessWidget {
         onTap: () => showCatchBottomSheet<void>(
           context: context,
           builder: (_) => EventMessagePreferencesSheet(eventId: eventId),
+        ),
+      ),
+      CatchField.nav(
+        key: const ValueKey('event.matching.open'),
+        copy: catchFieldCopy(context.l10n),
+        title: context.l10n.eventMatchingTitle,
+        emphasis: CatchFieldEmphasis.title,
+        body: context.l10n.eventMatchingDisclosure,
+        onTap: () => showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => EventAssignmentFeatureSheet(eventId: eventId),
         ),
       ),
     ],
