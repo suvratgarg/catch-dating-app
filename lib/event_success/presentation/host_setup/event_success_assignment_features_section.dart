@@ -481,7 +481,9 @@ class _EventSuccessAssignmentFeaturesSectionState
   ) {
     for (final source in sources) {
       if (source.formId != rule.formId ||
-          source.versionId != rule.versionId) continue;
+          source.versionId != rule.versionId) {
+        continue;
+      }
       for (final question in source.questions) {
         if (question.questionId == rule.questionId) {
           return question.label;
