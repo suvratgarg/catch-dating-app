@@ -481,14 +481,26 @@ the same enum — widen both), `programHouseholds.side`, campaign
 `recipientSource`.
 
 W0 progress: schema edits, fixtures and manifest registration are committed
-on `codex/w0-program-contract-corrections` (`68c378c`, schemas verified with
-ajv: all compile, fixtures accept/reject correctly). Deferred while the RSVP
-integration claim holds the toolchain: `firestore.rules` match blocks,
-`firestore.indexes.json` composite entry (`programId + functionId`),
+on `codex/w0-program-contract-corrections` (schemas verified with ajv: all
+compile, fixtures accept/reject correctly). Deferred while the RSVP
+integration claim holds the toolchain: the `firestore.rules` block,
 generated outputs regen, `docs/data_contracts.md` rows, and the
 `programSelection` recipient resolver inside the campaign dispatcher
 (`organizerCampaigns.ts` is claimed). Finish via `worktree_guard.mjs scope`
 on the W0 worktree, then run `./tool/check_data_contract.sh`.
+
+Exact rules block to insert between `programGuests` and `programHouseholds`
+matches (same deny-by-default pattern as every program collection):
+
+```
+    match /programFunctionGuests/{functionGuestId} {
+      allow read, write: if false;
+    }
+```
+
+No composite index is needed: planned queries are equality-only
+(`programId`, `functionId`, `guestId`) and no program collection carries an
+indexes entry.
 
 Current blockers (claims measured 2026-09-23):
 
