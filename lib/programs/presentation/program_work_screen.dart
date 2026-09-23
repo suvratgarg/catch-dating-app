@@ -20,7 +20,7 @@ import 'package:go_router/go_router.dart';
 /// desks and the trip ledger. The callable response is the access contract —
 /// the shell renders exactly the scopes the server returned, and every
 /// destination is re-checked server-side.
-class ProgramWorkScreen extends ConsumerWidget {
+class ProgramWorkScreen extends ConsumerStatefulWidget {
   const ProgramWorkScreen({
     super.key,
     required this.programId,
@@ -36,15 +36,74 @@ class ProgramWorkScreen extends ConsumerWidget {
   final String? inviteId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProgramWorkScreen> createState() => _ProgramWorkScreenState();
+}
+
+class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
+  ProviderSubscription<AsyncValue<ProgramReadView<ProgramWorkAccess>>>?
+  _inviteSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _listenForInvite();
+  }
+
+  @override
+  void didUpdateWidget(ProgramWorkScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.programId != widget.programId ||
+        oldWidget.inviteId != widget.inviteId) {
+      _listenForInvite();
+    }
+  }
+
+  void _listenForInvite() {
+    _inviteSubscription?.close();
+    _inviteSubscription = null;
+    final inviteId = widget.inviteId;
+    if (inviteId == null || inviteId.isEmpty) return;
+    final provider = programWorkEntryProvider(widget.programId, inviteId);
+    _inviteSubscription = ref.listenManual(provider, (_, next) {
+      final result = next.asData?.value;
+      if (next.isLoading || result == null) return;
+      // A claim is an online entry action, not a permanent workspace URL.
+      // Wait until the access read settles and navigation is outside build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted ||
+            widget.inviteId != inviteId ||
+            provider !=
+                programWorkEntryProvider(widget.programId, widget.inviteId) ||
+            ref.read(provider).isLoading ||
+            ref.read(provider).asData?.value != result ||
+            ModalRoute.of(context)?.isCurrent != true) {
+          return;
+        }
+        context.replaceNamed(
+          Routes.hostWorkProgramScreen.name,
+          pathParameters: {'programId': result.value.programId},
+        );
+      });
+    }, fireImmediately: true);
+  }
+
+  @override
+  void dispose() {
+    _inviteSubscription?.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final accessAsync = ref.watch(
-      programWorkEntryProvider(programId, inviteId),
+      programWorkEntryProvider(widget.programId, widget.inviteId),
     );
     return CatchAsyncBoundary<ProgramReadView<ProgramWorkAccess>>(
       retainDataOn: const {},
       value: accessAsync,
-      onRetry: () =>
-          ref.invalidate(programWorkEntryProvider(programId, inviteId)),
+      onRetry: () => ref.invalidate(
+        programWorkEntryProvider(widget.programId, widget.inviteId),
+      ),
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.programsWorkShellTitle,
@@ -79,7 +138,7 @@ class ProgramWorkScreen extends ConsumerWidget {
       ),
       builder: (context, result) => ProgramWorkPageBody(
         access: result.value,
-        now: now?.call() ?? DateTime.now(),
+        now: widget.now?.call() ?? DateTime.now(),
         snapshotAt: result.snapshotAt,
       ),
     );

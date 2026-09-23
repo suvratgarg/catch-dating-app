@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.10
+version: 0.3.11
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1379,6 +1379,12 @@ to the authorized program and query only active vendors assigned to that
 program before enforcing the 100-result cap. Organizer-wide inventory remains
 manager-only; a cap overflow is explicit rather than silently truncated.
 
+
+Successful staff-invite entry replaces the claim URL with the resolved program
+workspace URL after access settles. The replacement preserves Back navigation;
+reopening that canonical URL can use the existing bounded offline snapshot
+without attempting to claim the invite again. Failed claims retain their URL
+for retry, and a late result cannot navigate after the user leaves the route.
 
 ### Offline observation fences
 
