@@ -28560,6 +28560,8 @@
     "x-surface": "chats.presentation.event_chat"
   },
   "eventChatRemoved": "Message removed.",
+  "eventChatMembershipRemoved": "Your room membership is unavailable. Contact the host if you need help.",
+  "@eventChatMembershipRemoved": {"description": "Removed or banned room access state.", "x-audience": "shared", "x-owner": "product", "x-surface": "chats.presentation.event_chat"},
   "@eventChatRemoved": {
     "description": "Event room message safety action copy.",
     "x-audience": "shared",
@@ -28935,7 +28937,7 @@
   "@eventMatchingHostRefresh": {"description": "Reload latest revision and published source catalog.", "x-audience": "host", "x-owner": "event_success", "x-surface": "event_success.presentation"},
   "eventMatchingHostConflict": "Matching setup changed elsewhere. Review the latest version before saving again.",
   "@eventMatchingHostConflict": {"description": "Revision conflict without silent overwrite.", "x-audience": "host", "x-owner": "event_success", "x-surface": "event_success.presentation"},
-  "eventMatchingHostValidation": "Review this question's mapping before previewing or saving.",
+  "eventMatchingHostValidation": "Review the question mapping before previewing or saving.",
   "@eventMatchingHostValidation": {"description": "Invalid Host matching transform or numeric bounds.", "x-audience": "host", "x-owner": "event_success", "x-surface": "event_success.presentation"},
   "eventMatchingHostActiveVersion": "Active published version",
   "@eventMatchingHostActiveVersion": {"description": "Source form version label.", "x-audience": "host", "x-owner": "event_success", "x-surface": "event_success.presentation"},
