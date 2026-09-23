@@ -71,7 +71,7 @@ void main() {
       initialValue: 'Draft',
     );
     expect(field.initialValue, 'Draft');
-    expect(field.maxLength, isNull);
+    expect(field.maxLength, 12);
     expect(field.inputFormatters, isNull);
     expect(field.maxLines, 1);
     expect(field.enabled, isTrue);

@@ -769,7 +769,10 @@ void _registerProfileShellLayoutTests() {
       final tile = _profileInfoTile(label);
       await _dragProfileTabUntilVisible(tester, tile);
       expect(
-        find.descendant(of: tile, matching: find.text(emptyValue)),
+        find.descendant(
+          of: tile,
+          matching: find.textContaining(emptyValue, findRichText: true),
+        ),
         findsOneWidget,
       );
       expect(

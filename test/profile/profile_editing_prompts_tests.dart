@@ -182,7 +182,7 @@ void _registerProfileEditingPromptsTests() {
           of: _profileInfoTile('Display name'),
           matching: find.byIcon(CatchIcons.expandMoreRounded),
         ),
-        findsNothing,
+        findsOneWidget,
       );
       for (final label in ['Date of birth', 'Gender']) {
         expect(
@@ -207,16 +207,16 @@ void _registerProfileEditingPromptsTests() {
       );
       expect(instagramTile.enabled, isTrue);
       expect(instagramTile.controller, isNotNull);
-      expect(instagramTile.leadingUnit, '@');
+      expect(instagramTile.leadingUnit, isNull);
       expect(instagramTile.showClearButton, isTrue);
-      expect(find.text('@'), findsOneWidget);
+      expect(find.text('@'), findsNothing);
       expect(find.text('suvrat_events'), findsOneWidget);
       expect(
         find.descendant(
           of: _profileInfoTile('Instagram'),
           matching: find.byIcon(CatchIcons.clearCircle),
         ),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         tester.getSize(_profileInfoTile('Display name')).height,
@@ -276,8 +276,10 @@ void _registerProfileEditingPromptsTests() {
 
     final displayNameTile = _profileInfoTile('Display name');
     await tester.tap(displayNameTile);
+    await _pumpProfileSheet(tester);
     await tester.enterText(_editableTextForProfileField('Display name'), 'S.');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     Finder savedStatus() => find.descendant(

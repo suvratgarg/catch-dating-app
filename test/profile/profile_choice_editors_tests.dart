@@ -108,11 +108,13 @@ void _registerProfileChoiceEditorsTests() {
     final collapsedTileHeight = tester.getSize(emailTile).height;
 
     await tester.tap(emailTile);
+    await _pumpProfileSheet(tester);
     await tester.enterText(
       _editableTextForProfileField('Email'),
       'hi@catch.app',
     );
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     final expandedTileHeight = tester.getSize(emailTile).height;
