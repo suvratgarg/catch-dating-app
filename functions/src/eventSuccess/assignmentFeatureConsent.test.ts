@@ -32,7 +32,8 @@ function resolve(overrides: Partial<Parameters<
   typeof authorizedAssignmentFeatureSnapshot>[0]> = {}) {
   return authorizedAssignmentFeatureSnapshot({eventId: "event",
     organizerId: "organizer", uid: "person", rule, decision,
-    responseId: "response", response, version, ...overrides});
+    responseId: "response", response, versionId: "version",
+    version, ...overrides});
 }
 
 test("exact owned submitted answer maps versioned value to option ID", () => {
@@ -49,6 +50,7 @@ test("withdrawal, foreign event, foreign subject and changed source deny use",
     assert.equal(resolve({eventId: "other-event"}), null);
     assert.equal(resolve({uid: "other-person"}), null);
     assert.equal(resolve({decision: {...decision, versionId: "other"}}), null);
+    assert.equal(resolve({versionId: "other"}), null);
     assert.equal(resolve({response: {...response, status: "withdrawn"}}), null);
     assert.equal(resolve({response: {...response, respondentUid: null}}), null);
     assert.equal(resolve({response: {...response,

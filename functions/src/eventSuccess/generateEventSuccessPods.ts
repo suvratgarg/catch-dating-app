@@ -56,6 +56,9 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {loadAuthorizedAssignmentFeatures} from "./assignmentFeatureConsent";
+import type {AssignmentFeatureRule,
+  EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
 import {
   applyEventSuccessSpatialLayout,
   assignmentConstraintsForSpatialPlan,
@@ -81,6 +84,7 @@ interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
+  assignmentFeatureRules?: AssignmentFeatureRule[];
   layoutId?: string | null;
   affinityConstraints?: Array<{
     aUid: string;
@@ -303,6 +307,12 @@ export async function generateEventSuccessPodsHandler(
     .sort(compareParticipants);
   const eligibleParticipants = preferCheckedInParticipants(participants);
 
+  const featureRules = plan.assignmentFeatureRules ?? [];
+  const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
+    eventId, organizerId: event.organizerId ?? event.clubId,
+    eligibleUids: eligibleParticipants.map((person) => person.uid),
+    rules: featureRules});
+
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
   const constraints = assignmentConstraintsForSpatialPlan(
     assignmentConstraintsForStructureConfig(plan.structureConfig),
@@ -320,6 +330,10 @@ export async function generateEventSuccessPodsHandler(
     }
   );
   const timing = topology.rotationsEnabled ? eventTimingFor(event) : undefined;
+  if (featureRules.length && topology.topology === "sequence") {
+    throw new HttpsError("failed-precondition",
+      "Structured matching is unavailable for sequence assignments.");
+  }
   const builtPods = buildPods({
     participants: eligibleParticipants,
     blockedPairs,
@@ -330,6 +344,8 @@ export async function generateEventSuccessPodsHandler(
     constraints,
     rotationPolicy,
     timing,
+    softFeatures: {eventId, organizerId: event.organizerId ?? event.clubId,
+      rules: featureRules, snapshots: featureSnapshots},
   });
   const assignments = buildAssignments({
     eventId,
@@ -640,6 +656,9 @@ function buildPods(params: {
   constraints?: AssignmentConstraintConfig;
   rotationPolicy?: AssignmentRotationPolicy;
   timing?: EventTiming;
+  softFeatures?: {eventId: string; organizerId: string;
+    rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[]};
 }): BuiltPods {
   if (params.participants.length === 0) {
     return {groups: [], groupRounds: [], podCount: 0};
@@ -663,6 +682,7 @@ function buildPods(params: {
     rotationRoundCount,
     constraints: params.constraints,
     rotationPolicy: params.rotationPolicy,
+    softFeatures: params.softFeatures,
   });
   const groupRounds = [
     ...plan.groupRounds,

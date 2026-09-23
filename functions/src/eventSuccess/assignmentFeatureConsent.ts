@@ -1,8 +1,11 @@
 import type {OrganizerFormResponseDocument as Response,
   OrganizerFormVersionDocument as Version} from
   "../shared/generated/firestoreAdminTypes";
+import {createHash} from "node:crypto";
+import {requireDoc} from "../shared/validation";
 import type {AssignmentFeatureRule, AssignmentFeatureValue,
   EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+import {validateAssignmentFeatureRules} from "./assignmentFeatureScoring";
 
 /** A participant decision is bound to one event and one immutable answer. */
 export interface AssignmentFeatureConsentDecision {
@@ -20,6 +23,79 @@ export interface AssignmentFeatureConsentDecision {
   receiptId: string;
 }
 
+/** Stable event/subject/feature key; no answer material appears in paths. */
+export function assignmentFeatureConsentId(
+  eventId: string, uid: string, featureId: string
+): string {
+  return "afc_" + createHash("sha256").update(
+    [eventId, uid, featureId].join("|"))
+    .digest("hex").slice(0, 48);
+}
+
+/** Reads only current, participant-granted answers for the eligible pool. */
+export async function loadAuthorizedAssignmentFeatures(params: {
+  db: FirebaseFirestore.Firestore;
+  eventId: string;
+  organizerId: string;
+  eligibleUids: string[];
+  rules: AssignmentFeatureRule[];
+}): Promise<EventAssignmentFeatureSnapshot[]> {
+  const {db, eventId, organizerId} = params;
+  const rules = validateAssignmentFeatureRules(params.rules);
+  if (rules.length === 0 || params.eligibleUids.length === 0) return [];
+  const eligible = new Set(params.eligibleUids);
+  if (eligible.size > 1000) {
+    throw new Error("Assignment feature pool exceeds supported cohort.");
+  }
+  const decisions = await db.collection("eventAssignmentFeatureConsents")
+    .where("eventId", "==", eventId).get();
+  const byFeature = new Map(rules.map((rule) => [rule.featureId, rule]));
+  const selected: Array<{decision: AssignmentFeatureConsentDecision;
+    rule: AssignmentFeatureRule}> = [];
+  const seen = new Set<string>();
+  for (const doc of decisions.docs) {
+    const decision = doc.data() as AssignmentFeatureConsentDecision;
+    const rule = byFeature.get(decision.featureId);
+    if (!rule || !eligible.has(decision.uid)) continue;
+    const key = `${decision.uid}|${decision.featureId}`;
+    if (seen.has(key) || doc.id !== assignmentFeatureConsentId(
+      eventId, decision.uid, decision.featureId)) {
+      throw new Error("Assignment feature consent is inconsistent.");
+    }
+    seen.add(key);
+    if (decision.status === "granted") selected.push({decision, rule});
+  }
+  const versionSnaps = await Promise.all([...new Set(rules.map((rule) =>
+    rule.versionId))].map((id) => db.collection("organizerFormVersions")
+    .doc(id).get()));
+  const versions = new Map(versionSnaps.filter((snap) => snap.exists)
+    .map((snap) => [snap.id, requireDoc<Version>(snap,
+      "OrganizerFormVersionDocument")]));
+  const responseIds = [...new Set(selected.map((entry) =>
+    entry.decision.responseId))];
+  const responses = new Map<string, Response>();
+  for (let offset = 0; offset < responseIds.length; offset += 200) {
+    const refs = responseIds.slice(offset, offset + 200).map((id) =>
+      db.collection("organizerFormResponses").doc(id));
+    const snaps = await db.getAll(...refs);
+    for (const snap of snaps) {
+      if (snap.exists) {
+        responses.set(snap.id, requireDoc<Response>(snap,
+          "OrganizerFormResponseDocument"));
+      }
+    }
+  }
+  return selected.flatMap(({decision, rule}) => {
+    const snapshot = authorizedAssignmentFeatureSnapshot({eventId,
+      organizerId, uid: decision.uid, rule, decision,
+      responseId: decision.responseId,
+      response: responses.get(decision.responseId) ?? null,
+      versionId: rule.versionId,
+      version: versions.get(rule.versionId) ?? null});
+    return snapshot ? [snapshot] : [];
+  });
+}
+
 /** Host rules and responses alone never grant answer use. */
 export function authorizedAssignmentFeatureSnapshot(params: {
   eventId: string;
@@ -29,10 +105,11 @@ export function authorizedAssignmentFeatureSnapshot(params: {
   decision: AssignmentFeatureConsentDecision | null;
   responseId: string;
   response: Response | null;
+  versionId: string;
   version: Version | null;
 }): EventAssignmentFeatureSnapshot | null {
   const {eventId, organizerId, uid, rule, decision, responseId,
-    response, version} = params;
+    response, versionId, version} = params;
   if (!decision || decision.purpose !== "eventAssignmentMatching" ||
       decision.status !== "granted" || !decision.receiptId ||
       decision.eventId !== eventId || decision.organizerId !== organizerId ||
@@ -42,7 +119,8 @@ export function authorizedAssignmentFeatureSnapshot(params: {
       decision.versionId !== rule.versionId ||
       decision.questionId !== rule.questionId ||
       decision.transformVersion !== rule.transformVersion ||
-      !response || !version || response.status !== "submitted" ||
+      !response || !version || versionId !== rule.versionId ||
+      response.status !== "submitted" ||
       response.withdrawnAt !== null || response.respondentUid !== uid ||
       response.identityKind !== "phoneVerified" ||
       response.organizerId !== organizerId ||
