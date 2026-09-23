@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/catch_test_fonts.dart';
+import '../../test_pump_helpers.dart';
 
 final _copy = catchFieldCopy(AppLocalizationsEn());
 const _required = CatchContractFieldConstraints(
@@ -77,17 +78,17 @@ Future<void> _boot(
       ),
     ),
   );
-  await t.pumpAndSettle();
+  await pumpFeatureUi(t);
 }
 
 Future<void> _open(WidgetTester t, String id) async {
   await t.tap(find.text(id));
-  await t.pumpAndSettle();
+  await pumpFeatureUi(t);
 }
 
 Future<void> _end(WidgetTester t) async {
   await t.pumpWidget(const SizedBox());
-  await t.pump(const Duration(seconds: 3));
+  await pumpFeatureUi(t);
   expect(t.takeException(), isNull);
 }
 
@@ -120,14 +121,14 @@ void main() {
       );
       await _open(t, 'Name');
       await t.tap(find.byTooltip(_copy.clearTooltip('Name')));
-      await t.pumpAndSettle();
+      await pumpFeatureUi(t);
       final owner = find.byKey(const ValueKey('catch-form-text-Name'));
       final height = t.getSize(owner).height;
       final counter = find.byKey(const ValueKey('catch-field-action-counter'));
       final done = find.byKey(const ValueKey('catch-field-done'));
       expect(t.getCenter(counter).dy, closeTo(t.getCenter(done).dy, 1));
       await t.tap(find.text('Done'));
-      await t.pumpAndSettle();
+      await pumpFeatureUi(t);
       expect(
         find.text(_copy.validation.requiredMessage('Name')),
         findsOneWidget,
@@ -139,7 +140,7 @@ void main() {
         findsNothing,
       );
       await t.tap(find.text('Cancel'));
-      await t.pumpAndSettle();
+      await pumpFeatureUi(t);
       expect(t.widget<TextField>(_input('Name')).controller!.text, 'Maya');
       await _end(t);
     },
@@ -157,21 +158,21 @@ void main() {
     );
     await _open(t, 'Nickname');
     await t.enterText(_input('Nickname'), '   ');
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(find.text('Clear'), findsOneWidget);
     await t.enterText(_input('Nickname'), 'Replacement');
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(find.text('Done'), findsOneWidget);
     await t.enterText(_input('Nickname'), '');
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     await t.tap(find.text('Clear'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(values, [null]);
     // Parent data can lag the successful save. Null must remain a committed value.
     await t.tap(find.byKey(const ValueKey('catch-form-text-Nickname')));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     await t.tap(find.text('Done'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(values, [null]);
     await _end(t);
   });
@@ -189,9 +190,9 @@ void main() {
     );
     await _open(t, 'Email');
     await t.enterText(_input('Email'), '');
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     await t.tap(find.text('Clear'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(values, ['']);
     await _end(t);
   });
@@ -201,16 +202,16 @@ void main() {
     await _boot(t, save: (_) => Future.error(StateError('offline')));
     await _open(t, 'Nickname');
     await t.enterText(_input('Nickname'), '');
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     await t.tap(find.text('Clear'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(
       find.text('Could not save. Your draft is kept. Try again.'),
       findsOneWidget,
     );
     expect(t.widget<TextField>(_input('Nickname')).controller!.text, '');
     await t.tap(find.text('Cancel'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(t.widget<TextField>(_input('Nickname')).controller!.text, 'May');
     await _end(t);
   });
@@ -232,7 +233,7 @@ void main() {
     await t.pump();
     expect(saves, 1);
     expect(t.widget<TextField>(_input('Name')).enabled, isFalse);
-    await t.tap(find.text('Nickname'), warnIfMissed: false);
+    await t.tapAt(t.getCenter(find.text('Nickname')));
     await t.pump();
     expect(
       t
@@ -247,7 +248,7 @@ void main() {
     );
     pending.complete(true);
     await t.pump();
-    await t.pump(const Duration(milliseconds: 400));
+    await pumpUntilFound(t, find.byKey(const ValueKey('catch-field-saved')));
     expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
     await _end(t);
   });
@@ -267,7 +268,7 @@ void main() {
     await _open(t, 'Nickname');
     expect(t.widget<TextField>(_input('Name')).controller!.text, 'Maya');
     await t.tap(find.text('Done'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     expect(saves, 0);
     await _end(t);
   });
@@ -287,7 +288,7 @@ void main() {
       TextInputAction.newline,
     );
     await t.tap(find.text('Done'));
-    await t.pumpAndSettle();
+    await pumpFeatureUi(t);
     final error = find.text('Could not save. Your draft is kept. Try again.');
     expect(error, findsOneWidget);
     expect(t.widget<Text>(error).maxLines, isNull);
