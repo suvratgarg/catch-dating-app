@@ -21,9 +21,12 @@ test("Firestore serializes payment reservations, finalization and late capture",
     const collections = ["organizerForms", "organizerFormVersions",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
       "organizerFormPayments", "organizerFormResponses",
+      "participantFormProfileProposals",
       "organizerCommunicationPreferences",
       "organizerCommunicationPermissionReceipts",
       "catchCommunicationPreferences", "catchCommunicationPermissionReceipts"];
+    fixture.version.definition.sections[0].questions[0].answerDestination =
+      "catchProfile";
     fixture.version.definition.messagingConsent = {
       organizerWhatsapp: true, catchWhatsapp: true,
     };
@@ -78,6 +81,13 @@ test("Firestore serializes payment reservations, finalization and late capture",
         assert.equal(receipts.docs[0].get("uid"), "person");
         assert.equal(receipts.docs[0].get("grantedAt").toMillis(), 500);
       }
+
+      const proposals = await db.collection("participantFormProfileProposals")
+        .get();
+      assert.equal(proposals.size, 1);
+      assert.equal(proposals.docs[0].get("uid"), "person");
+      assert.equal(proposals.docs[0].get("fields")[0].destination,
+        "catchProfile");
 
       // A separate frozen checkout expires. Later captured funds must not
       // create another response, even if two recovery workers race.

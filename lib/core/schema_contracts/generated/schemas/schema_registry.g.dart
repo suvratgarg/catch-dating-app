@@ -917,6 +917,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaOrganizerFollowDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'ParticipantFormProfileProposalDocument',
+    source: 'firestore/participant_form_profile_proposals.schema.json',
+    schema: schemaParticipantFormProfileProposalDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CatchCommunicationPreferenceDocument',
     source: 'firestore/catch_communication_preferences.schema.json',
     schema: schemaCatchCommunicationPreferenceDocumentSchema,
@@ -3724,6 +3729,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerPostDeliveryRecipientDocument': schemaOrganizerPostDeliveryRecipientDocumentSchema,
   'OrganizerTeamMembershipDocument': schemaOrganizerTeamMembershipDocumentSchema,
   'OrganizerFollowDocument': schemaOrganizerFollowDocumentSchema,
+  'ParticipantFormProfileProposalDocument': schemaParticipantFormProfileProposalDocumentSchema,
   'CatchCommunicationPreferenceDocument': schemaCatchCommunicationPreferenceDocumentSchema,
   'CatchCommunicationPermissionReceiptDocument': schemaCatchCommunicationPermissionReceiptDocumentSchema,
   'OrganizerCommunicationPreferenceDocument': schemaOrganizerCommunicationPreferenceDocumentSchema,
@@ -4432,6 +4438,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/organizer_post_delivery_recipients.schema.json': schemaOrganizerPostDeliveryRecipientDocumentSchema,
   'firestore/organizer_team_memberships.schema.json': schemaOrganizerTeamMembershipDocumentSchema,
   'firestore/organizer_follows.schema.json': schemaOrganizerFollowDocumentSchema,
+  'firestore/participant_form_profile_proposals.schema.json': schemaParticipantFormProfileProposalDocumentSchema,
   'firestore/catch_communication_preferences.schema.json': schemaCatchCommunicationPreferenceDocumentSchema,
   'firestore/catch_communication_permission_receipts.schema.json': schemaCatchCommunicationPermissionReceiptDocumentSchema,
   'firestore/organizer_communication_preferences.schema.json': schemaOrganizerCommunicationPreferenceDocumentSchema,

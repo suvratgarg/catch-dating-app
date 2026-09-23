@@ -954,6 +954,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
   },
   {
+    name: "ParticipantFormProfileProposalDocument",
+    source: "firestore/participant_form_profile_proposals.schema.json",
+    typeOutput: "functions/src/shared/generated/participantFormProfileProposalDocument.ts",
+  },
+  {
     name: "CatchCommunicationPreferenceDocument",
     source: "firestore/catch_communication_preferences.schema.json",
     typeOutput: "functions/src/shared/generated/catchCommunicationPreferenceDocument.ts",

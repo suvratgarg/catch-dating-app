@@ -27,6 +27,22 @@ export function requireFreeFormSubmission(definition: Pick<Definition,
 export function validateFormCapabilities(definition: Definition,
   add: AddIssue): void {
   const questions = definition.sections.flatMap((section) => section.questions);
+  const profileQuestions = questions.filter((question) =>
+    formAnswerDestination(question) !== "organizerOnly");
+  if (profileQuestions.length > 100) {
+    add("tooManyProfileFields", "sections",
+      "Use at most 100 Catch profile and organizer card fields in one form.");
+  }
+  const profileFields = new Set<string>();
+  for (const question of profileQuestions) {
+    if (formAnswerDestination(question) !== "catchProfile" ||
+        !question.canonicalFieldId) continue;
+    if (profileFields.has(question.canonicalFieldId)) {
+      add("duplicateProfileField", "sections",
+        "Use each Catch profile building block once in a form.");
+    }
+    profileFields.add(question.canonicalFieldId);
+  }
   const preparesProfile = questions.some((question) =>
     formAnswerDestination(question) !== "organizerOnly");
   const asksWhatsapp =

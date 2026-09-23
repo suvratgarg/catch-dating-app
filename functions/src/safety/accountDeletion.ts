@@ -206,6 +206,7 @@ async function queueRelationshipCleanup(params: {
     queueEventBroadcastCleanup(db, uid, writer),
     queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
+    queueFormProfileProposalCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -323,6 +324,17 @@ async function queueHostAnalyticsSnapshotCleanup(
     .where("uid", "==", uid)
     .get();
   snapshots.forEach((doc) => writer.delete(doc.ref));
+}
+
+/** Deletes unclaimed private form pointers without touching organizer CRM. */
+async function queueFormProfileProposalCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const proposals = await db.collection("participantFormProfileProposals")
+    .where("uid", "==", uid).get();
+  proposals.forEach((doc) => writer.delete(doc.ref));
 }
 
 /**

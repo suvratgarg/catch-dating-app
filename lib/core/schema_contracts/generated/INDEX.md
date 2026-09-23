@@ -192,6 +192,7 @@ Do not edit it by hand.
 | OrganizerPostDeliveryRecipientDocument | `firestore/organizer_post_delivery_recipients.schema.json` | `functions/src/shared/generated/organizerPostDeliveryRecipientDocument.ts` |
 | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `functions/src/shared/generated/organizerTeamMembershipDocument.ts` |
 | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `functions/src/shared/generated/organizerFollowDocument.ts` |
+| ParticipantFormProfileProposalDocument | `firestore/participant_form_profile_proposals.schema.json` | `functions/src/shared/generated/participantFormProfileProposalDocument.ts` |
 | CatchCommunicationPreferenceDocument | `firestore/catch_communication_preferences.schema.json` | `functions/src/shared/generated/catchCommunicationPreferenceDocument.ts` |
 | CatchCommunicationPermissionReceiptDocument | `firestore/catch_communication_permission_receipts.schema.json` | `functions/src/shared/generated/catchCommunicationPermissionReceiptDocument.ts` |
 | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `functions/src/shared/generated/organizerCommunicationPreferenceDocument.ts` |
@@ -902,6 +903,7 @@ Do not edit it by hand.
 | `schemaOrganizerPostDeliveryRecipientDocumentSchema` | OrganizerPostDeliveryRecipientDocument | `firestore/organizer_post_delivery_recipients.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_post_delivery_recipient_document.g.dart` |
 | `schemaOrganizerTeamMembershipDocumentSchema` | OrganizerTeamMembershipDocument | `firestore/organizer_team_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_team_membership_document.g.dart` |
 | `schemaOrganizerFollowDocumentSchema` | OrganizerFollowDocument | `firestore/organizer_follows.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_follow_document.g.dart` |
+| `schemaParticipantFormProfileProposalDocumentSchema` | ParticipantFormProfileProposalDocument | `firestore/participant_form_profile_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/participant_form_profile_proposal_document.g.dart` |
 | `schemaCatchCommunicationPreferenceDocumentSchema` | CatchCommunicationPreferenceDocument | `firestore/catch_communication_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_communication_preference_document.g.dart` |
 | `schemaCatchCommunicationPermissionReceiptDocumentSchema` | CatchCommunicationPermissionReceiptDocument | `firestore/catch_communication_permission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_communication_permission_receipt_document.g.dart` |
 | `schemaOrganizerCommunicationPreferenceDocumentSchema` | OrganizerCommunicationPreferenceDocument | `firestore/organizer_communication_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_communication_preference_document.g.dart` |

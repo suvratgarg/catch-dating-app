@@ -538,6 +538,7 @@ export 'organizer_whatsapp_reply_operation_document.g.dart';
 export 'organizer_whatsapp_thread_document.g.dart';
 export 'override_event_success_groups_callable_payload.g.dart';
 export 'override_event_success_rotations_callable_payload.g.dart';
+export 'participant_form_profile_proposal_document.g.dart';
 export 'participant_intake_profile_document.g.dart';
 export 'participant_organizer_data_grant_document.g.dart';
 export 'payment_document.g.dart';

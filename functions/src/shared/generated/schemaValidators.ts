@@ -185,6 +185,7 @@ export {validateOrganizerPostDeliveryOperationDocument} from "./validators/organ
 export {validateOrganizerPostDeliveryRecipientDocument} from "./validators/organizerPostDeliveryRecipientDocument";
 export {validateOrganizerTeamMembershipDocument} from "./validators/organizerTeamMembershipDocument";
 export {validateOrganizerFollowDocument} from "./validators/organizerFollowDocument";
+export {validateParticipantFormProfileProposalDocument} from "./validators/participantFormProfileProposalDocument";
 export {validateCatchCommunicationPreferenceDocument} from "./validators/catchCommunicationPreferenceDocument";
 export {validateCatchCommunicationPermissionReceiptDocument} from "./validators/catchCommunicationPermissionReceiptDocument";
 export {validateOrganizerCommunicationPreferenceDocument} from "./validators/organizerCommunicationPreferenceDocument";

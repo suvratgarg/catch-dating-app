@@ -86790,6 +86790,90 @@ abstract final class CatchContractConstraints {
     maximum: 31,
   );
 
+  static const participantFormProfileProposalDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const participantFormProfileProposalDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const participantFormProfileProposalDocumentFields = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.fields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 100,
+  );
+
+  static const participantFormProfileProposalDocumentFieldsItemsCanonicalFieldId = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.fields.items.canonicalFieldId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['givenName', 'familyName', 'displayName', 'dateOfBirth', 'age', 'gender', 'phoneNumber', 'email', 'instagramHandle', 'linkedinUrl', 'profilePhoto', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'interestedInGenders', 'drinking', 'smoking', 'religion', 'workout', 'diet', 'children'],
+  );
+
+  static const participantFormProfileProposalDocumentFieldsItemsDestination = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.fields.items.destination',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchProfile', 'organizerCard'],
+  );
+
+  static const participantFormProfileProposalDocumentFieldsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.fields.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const participantFormProfileProposalDocumentFormId = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const participantFormProfileProposalDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const participantFormProfileProposalDocumentResponseId = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const participantFormProfileProposalDocumentUid = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const participantFormProfileProposalDocumentVersionId = CatchContractFieldConstraints(
+    path: 'participantFormProfileProposalDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const participantIntakeProfileDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'participantIntakeProfileDocument.createdAt._nanoseconds',
     required: true,
@@ -114582,6 +114666,17 @@ abstract final class CatchContractConstraints {
     'overrideEventSuccessRotationsCallablePayload.rounds.items.pairings.items.uidA': overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
     'overrideEventSuccessRotationsCallablePayload.rounds.items.pairings.items.uidB': overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB,
     'overrideEventSuccessRotationsCallablePayload.rounds.items.roundIndex': overrideEventSuccessRotationsCallablePayloadRoundsItemsRoundIndex,
+    'participantFormProfileProposalDocument.createdAt._nanoseconds': participantFormProfileProposalDocumentCreatedAtNanoseconds,
+    'participantFormProfileProposalDocument.createdAt._seconds': participantFormProfileProposalDocumentCreatedAtSeconds,
+    'participantFormProfileProposalDocument.fields': participantFormProfileProposalDocumentFields,
+    'participantFormProfileProposalDocument.fields.items.canonicalFieldId': participantFormProfileProposalDocumentFieldsItemsCanonicalFieldId,
+    'participantFormProfileProposalDocument.fields.items.destination': participantFormProfileProposalDocumentFieldsItemsDestination,
+    'participantFormProfileProposalDocument.fields.items.questionId': participantFormProfileProposalDocumentFieldsItemsQuestionId,
+    'participantFormProfileProposalDocument.formId': participantFormProfileProposalDocumentFormId,
+    'participantFormProfileProposalDocument.organizerId': participantFormProfileProposalDocumentOrganizerId,
+    'participantFormProfileProposalDocument.responseId': participantFormProfileProposalDocumentResponseId,
+    'participantFormProfileProposalDocument.uid': participantFormProfileProposalDocumentUid,
+    'participantFormProfileProposalDocument.versionId': participantFormProfileProposalDocumentVersionId,
     'participantIntakeProfileDocument.createdAt._nanoseconds': participantIntakeProfileDocumentCreatedAtNanoseconds,
     'participantIntakeProfileDocument.createdAt._seconds': participantIntakeProfileDocumentCreatedAtSeconds,
     'participantIntakeProfileDocument.fields': participantIntakeProfileDocumentFields,

@@ -2,6 +2,7 @@ import {formMessagingOffer, formMessagingChoices,
   normalizeFormMessagingDecision, prepareFormMessagingGrants} from
   "./organizerFormMessagingConsent";
 import {createHash} from "crypto";
+import {prepareFormProfileProposal} from "./organizerFormProfileProposals";
 import {requireFreeFormSubmission} from "./organizerFormCapabilities";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -720,6 +721,10 @@ export async function persistOrganizerFormSubmission(params: {
   const writeMessagingGrants = await prepareFormMessagingGrants({
     tx, db, draft, definition: version.definition, responseId, now,
   });
+  const writeProfileProposal = await prepareFormProfileProposal({
+    tx, db, draft, definition: version.definition,
+    answers: submittedAnswers, responseId, now,
+  });
   const response: OrganizerFormResponseDocument = {
     organizerId: draft.organizerId,
     formId: draft.formId,
@@ -746,6 +751,7 @@ export async function persistOrganizerFormSubmission(params: {
     withdrawnAt: null,
   };
   writeMessagingGrants();
+  writeProfileProposal();
   tx.create(responseRef, response);
   for (const assetRef of submittedAssetRefs) {
     tx.update(assetRef, {

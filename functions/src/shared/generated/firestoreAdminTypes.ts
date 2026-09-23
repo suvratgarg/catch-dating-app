@@ -4917,6 +4917,55 @@ export interface OrganizerFollowDocument {
 }
 
 /**
+ * Private pointers to explicitly designated applicant-submitted profile and organizer-card answers. Submission prepares a proposal, never a claimed or public profile.
+ */
+export interface ParticipantFormProfileProposalDocument {
+  uid: string;
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  responseId: string;
+  /**
+   * @minItems 1
+   * @maxItems 100
+   */
+  fields: {
+    questionId: string;
+    destination: "catchProfile" | "organizerCard";
+    canonicalFieldId:
+      | (
+          | "givenName"
+          | "familyName"
+          | "displayName"
+          | "dateOfBirth"
+          | "age"
+          | "gender"
+          | "phoneNumber"
+          | "email"
+          | "instagramHandle"
+          | "linkedinUrl"
+          | "profilePhoto"
+          | "city"
+          | "heightCm"
+          | "occupation"
+          | "company"
+          | "education"
+          | "languages"
+          | "relationshipGoal"
+          | "interestedInGenders"
+          | "drinking"
+          | "smoking"
+          | "religion"
+          | "workout"
+          | "diet"
+          | "children"
+        )
+      | null;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.
  */
 export interface CatchCommunicationPreferenceDocument {

@@ -1315,6 +1315,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Form submission prepares private review pointers, never a public profile.
+    match /participantFormProfileProposals/{responseId} {
+      allow read, write: if false;
+    }
+
     match /participantIntakeProfiles/{uid} {
       allow read, write: if false;
     }

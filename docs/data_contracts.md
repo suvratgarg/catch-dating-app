@@ -2495,6 +2495,28 @@ and receipts, and a deletion tombstone prevents a late payment from granting
 consent again. Participant withdrawal controls and any Catch sender must use this
 same authority; collecting permission does not itself dispatch messages.
 
+### Private form profile preparation
+
+`participantFormProfileProposals/{responseId}` is a server-only, response-bound
+set of pointers to nonempty submitted answers explicitly designated
+`catchProfile` or `organizerCard` by the immutable form version. Ordinary custom
+questions and legacy canonical mappings do not create these pointers. Creation
+requires the verified respondent and current form disclosure and joins the free
+submission or captured-payment transaction. Pending payment does not prepare a
+profile. Duplicate core-field assignments and more than 100 designated fields
+are rejected before publishing.
+
+This collection is neither a claimed Consumer profile nor the reviewed portable
+`participantIntakeProfiles` cache. It does not write `users`, `publicProfiles`,
+CRM notes, grants or room membership. The immutable response and protected form
+uploads remain the answer source, avoiding copies of private data and public
+upload URLs. Participant review resolves only the designated pointers after
+checking UID, organizer, form/version, current response status and deletion
+tombstone in one transaction. Withdrawing the source response makes it
+unavailable; account deletion removes the pointers. Claimed profile updates,
+image transfer, participant-owned cards and explicit event sharing are separate
+operations and must not infer permission from these prepared pointers.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,

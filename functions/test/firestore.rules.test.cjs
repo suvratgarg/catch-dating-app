@@ -1881,6 +1881,7 @@ describe("firestore.rules", () => {
         ["organizerProviderConnections", "connection-1"],
         ["organizerCommunicationPermissionReceipts", "permission-1"],
         ["catchCommunicationPreferences", "runner-1"],
+        ["participantFormProfileProposals", "response-1"],
         ["catchCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],
