@@ -273,6 +273,13 @@ jobs:
         env:
           SHARD_INDEX: ${{ matrix.shard_index }}
           SHARD_TOTAL: ${{ matrix.shard_total }}
+          CATCH_EVENT_PARTICIPANTS_CAPTURE_DIR: /tmp/catch-event-participants-review
+          CATCH_HOST_RESPONSE_REVIEW_DIR: /tmp/catch-host-response-review
+          CATCH_RESPONSE_PAYMENT_REVIEW_DIR: /tmp/catch-response-payment-review
+          CATCH_FORM_PAYMENT_CAPTURE_DIR: /tmp/catch-form-payment-review
+          CATCH_FORM_PROFILE_CAPTURE_DIR: /tmp/catch-form-profile-review
+          CATCH_MESSAGING_CAPTURE_DIR: /tmp/catch-messaging-permissions-review
+          CATCH_CHAT_SAFETY_CAPTURE_DIR: /tmp/catch-chat-safety-review
         run: |
           jq -er --arg sha "$GITHUB_SHA" --argjson index "$SHARD_INDEX" \
             '.sourceSha == $sha and (.shards[$index].files | length > 0)' \
@@ -295,6 +302,74 @@ jobs:
           # Two file workers use the hosted runner without unbounded compiler
           # processes; shard coverage is still owned by this single invocation.
           flutter test --concurrency=2 --exclude-tags=golden --coverage "${files[@]}"
+
+      - name: Label synthetic RSVP widget captures
+        if: always()
+        env:
+          CAPTURE_OUTPUT_DIR: ${{ runner.temp }}/rsvp-widget-captures
+          CAPTURE_SHARD_INDEX: ${{ matrix.shard_index }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+
+          sources = {
+              'event-profile': ('/tmp/catch-event-profile-review', 'test/chats/event_profile_widget_test.dart'),
+              'event-chat': ('/tmp/catch-event-chat-review', 'test/chats/event_chat_widget_test.dart'),
+              'event-participants': ('/tmp/catch-event-participants-review', 'test/chats/event_chat_participants_widget_test.dart'),
+              'host-response-review': ('/tmp/catch-host-response-review', 'test/hosts/forms/host_form_response_detail_screen_test.dart'),
+              'response-payment': ('/tmp/catch-response-payment-review', 'test/hosts/forms/host_form_response_detail_screen_test.dart'),
+              'form-payment': ('/tmp/catch-form-payment-review', 'test/hosts/forms/host_form_payments_section_list_test.dart'),
+              'form-profile-question': ('/tmp/catch-form-profile-review', 'test/hosts/forms/host_form_profile_question_section_test.dart'),
+              'messaging-permissions': ('/tmp/catch-messaging-permissions-review', 'test/safety/messaging_permissions_widget_test.dart'),
+              'chat-safety': ('/tmp/catch-chat-safety-review', 'test/chats/event_chat_message_actions_widget_test.dart'),
+          }
+          output = Path(os.environ['CAPTURE_OUTPUT_DIR'])
+          captures = []
+          for group, (directory, source_test) in sources.items():
+              root = Path(directory)
+              if not root.is_dir():
+                  continue
+              for image in sorted(root.iterdir()):
+                  if image.suffix != '.png' or not image.is_file() or image.is_symlink():
+                      continue
+                  target = output / group / image.name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(image, target)
+                  capture_source = source_test
+                  if group == 'event-chat' and image.name.startswith('directory-'):
+                      capture_source = 'test/chats/event_chat_directory_widget_test.dart'
+                  if group == 'host-response-review' and image.name.startswith('filters-'):
+                      capture_source = 'test/hosts/forms/host_form_response_filters_test.dart'
+                  if group == 'form-payment' and image.name.startswith(('unavailable-', 'configure-fee-', 'ready-large-')):
+                      capture_source = 'test/hosts/forms/host_form_payment_settings_test.dart'
+                  captures.append({
+                      'path': str(target.relative_to(output)),
+                      'sourceTest': capture_source,
+                      'sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+                  })
+          if captures:
+              (output / 'manifest.json').write_text(json.dumps({
+                  'label': 'synthetic Flutter widget fixture; not live or visually reviewed',
+                  'sourceSha': os.environ['GITHUB_SHA'],
+                  'runId': os.environ['GITHUB_RUN_ID'],
+                  'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                  'shardIndex': os.environ['CAPTURE_SHARD_INDEX'],
+                  'captures': captures,
+              }, indent=2) + '\n')
+          PY
+
+      - name: Retain synthetic RSVP widget captures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rsvp-synthetic-widget-captures-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}-${{ matrix.shard_index }}
+          path: ${{ runner.temp }}/rsvp-widget-captures/
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Upload test-shard coverage
         uses: actions/upload-artifact@v7
