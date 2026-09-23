@@ -105,6 +105,12 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
         ),
         if (!current.settings.canShare) ...[
           gapH24,
+          Text(
+            l.eventProfileCannotShare,
+            style: CatchTextStyles.recordBody(context),
+          ),
+        ] else ...[
+          gapH24,
           CatchSection.fieldRows(
             title: l.eventProfilePersonalize,
             children: [
@@ -113,10 +119,13 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 title: l.eventProfileFirstName,
                 initialValue: _draft.firstName,
                 maxLength: 80,
+                states: disabled ? const {WidgetState.disabled} : const {},
                 labelMode: CatchFieldLabelTextMode.optional,
                 contractExemption:
                     'Event-scoped chosen name is capped by the sharing contract.',
-                onChanged: (value) => _draft.firstName = value,
+                onChanged: disabled
+                    ? null
+                    : (value) => _draft.firstName = value,
               ),
               CatchField.input(
                 copy: catchFieldCopy(l),
@@ -124,19 +133,16 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 initialValue: _draft.introduction,
                 maxLength: 500,
                 maxLines: 5,
+                states: disabled ? const {WidgetState.disabled} : const {},
                 labelMode: CatchFieldLabelTextMode.optional,
                 contractExemption:
                     'Event-scoped introduction is capped by the sharing contract.',
-                onChanged: (value) => _draft.introduction = value,
+                onChanged: disabled
+                    ? null
+                    : (value) => _draft.introduction = value,
               ),
             ],
           ),
-          gapH24,
-          Text(
-            l.eventProfileCannotShare,
-            style: CatchTextStyles.recordBody(context),
-          ),
-        ] else ...[
           gapH24,
           CatchSection.fieldRows(
             title: l.eventProfileCore,
