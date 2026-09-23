@@ -9,6 +9,7 @@ import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
@@ -187,6 +188,7 @@ void main() {
         ),
         HostFormInboxEntry.fromResponse(ordinary),
       ];
+      HostResponseReviewQueue? openedQueue;
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -200,16 +202,22 @@ void main() {
           GoRoute(
             path: '/applications/:applicationId',
             name: Routes.hostApplicationDetailScreen.name,
-            builder: (_, state) => Scaffold(
-              body: Text('Review ${state.pathParameters['applicationId']}'),
-            ),
+            builder: (_, state) {
+              openedQueue = state.extra as HostResponseReviewQueue?;
+              return Scaffold(
+                body: Text('Review ${state.pathParameters['applicationId']}'),
+              );
+            },
           ),
           GoRoute(
             path: '/responses/:responseId',
             name: Routes.hostFormResponseDetailScreen.name,
-            builder: (_, state) => Scaffold(
-              body: Text('Response ${state.pathParameters['responseId']}'),
-            ),
+            builder: (_, state) {
+              openedQueue = state.extra as HostResponseReviewQueue?;
+              return Scaffold(
+                body: Text('Response ${state.pathParameters['responseId']}'),
+              );
+            },
           ),
         ],
       );
@@ -249,14 +257,17 @@ void main() {
         ),
         findsNothing,
       );
-      for (final (name, expected) in [
+      for (final (index, (name, expected)) in [
         ('Maya', 'Review application-native'),
         ('Asha', 'Review application-import'),
         ('Noor', 'Response ordinary'),
-      ]) {
+      ].indexed) {
         await tester.tap(find.text(name));
         await pumpFeatureUi(tester);
         expect(find.text(expected), findsOneWidget);
+        expect(openedQueue?.index, index);
+        expect(openedQueue?.entryId, entries[index].entryId);
+        expect(openedQueue?.request, requests.last);
         router.pop();
         await pumpFeatureUi(tester);
       }
@@ -300,6 +311,32 @@ void main() {
       request,
       isNot(const HostFormResponseListRequest(organizerId: 'org')),
     );
+  });
+
+  test('review queue targets the shifted neighbor when the current row leaves', () {
+    final entries = [
+      for (final id in ['a', 'b', 'c'])
+        HostFormInboxEntry.fromResponse(_response(id, id)),
+    ];
+    const queue = HostResponseReviewQueue(
+      request: HostFormResponseListRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v2',
+        answerFilters: {'city': {'Mumbai', 'Delhi'}},
+      ),
+      entryId: 'response:b',
+      index: 1,
+    );
+    expect(queue.targetIndex(entries, -1), 0);
+    expect(queue.targetIndex(entries, 1), 2);
+    final afterReview = [entries.first, entries.last];
+    expect(queue.targetIndex(afterReview, -1), 0);
+    expect(queue.targetIndex(afterReview, 1), 1);
+    expect(queue.targetIndex([entries.first], -1, hasMore: false), 0);
+    expect(queue.targetIndex([entries.first], 1, hasMore: false), 1);
+    expect(queue.request.versionId, 'form_v2');
+    expect(queue.request.answerFilters['city'], {'Mumbai', 'Delhi'});
   });
 }
 

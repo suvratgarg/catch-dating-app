@@ -792,6 +792,9 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostApplicationDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           applicationId: state.pathParameters['applicationId']!,
+          queue: state.extra is HostResponseReviewQueue
+              ? state.extra! as HostResponseReviewQueue
+              : null,
         ),
       ),
       GoRoute(
@@ -838,6 +841,9 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormResponseDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           responseId: state.pathParameters['responseId']!,
+          queue: state.extra is HostResponseReviewQueue
+              ? state.extra! as HostResponseReviewQueue
+              : null,
         ),
       ),
       GoRoute(

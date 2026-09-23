@@ -160,7 +160,8 @@ export async function listOrganizerFormResponsesHandler(
   validateResponseFilters(answerFilters, answerFilterOptions);
   // Older clients omit versionId. Their answer filters still belong to the
   // active immutable version whose options were returned above.
-  const filterVersionId = answerFilters.length ? answerVersionId : data.versionId;
+  const filterVersionId = answerFilters.length ?
+    answerVersionId : data.versionId;
   const filterHash = hashJson({
     formId: data.formId,
     versionId: filterVersionId,

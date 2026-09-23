@@ -15,6 +15,57 @@ import '../../test_pump_helpers.dart';
 import 'support/response_filter_fixtures.dart';
 
 void main() {
+  testWidgets('published version is selected and switching clears answer filters', (
+    tester,
+  ) async {
+    final requests = <HostFormResponseListRequest>[];
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _VersionedResponses(requests),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                HostFormResponsesPanel(
+                  organizerId: 'org',
+                  formId: 'form',
+                  showFormContext: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v2');
+    expect(find.text('Published version 2'), findsWidgets);
+    await tester.tap(find.text('Filters'));
+    await pumpFeatureUi(tester);
+    final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
+    await tester.ensureVisible(city);
+    await tester.tap(city);
+    await pumpFeatureUi(tester);
+    expect(requests.last.answerFilters['city'], {'Mumbai'});
+    final firstVersion =
+        find.byKey(const ValueKey('response-version-form_v1'));
+    await tester.ensureVisible(firstVersion);
+    await tester.tap(firstVersion);
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v1');
+    expect(requests.last.answerFilters, isEmpty);
+    final allVersions = find.byKey(const ValueKey('response-version-'));
+    await tester.ensureVisible(allVersions);
+    await tester.tap(allVersions);
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, isNull);
+    expect(requests.last.answerFilters, isEmpty);
+  });
   testWidgets(
     'city filters remain available during loading and empty scan pages',
     (tester) async {
@@ -293,6 +344,32 @@ class _ScopedResponses extends HostFormResponsesController {
       answerFilterOptions: request.formId == null
           ? const []
           : responseFilterQuestions,
+    );
+  }
+}
+
+class _VersionedResponses extends HostFormResponsesController {
+  _VersionedResponses(this.requests);
+  final List<HostFormResponseListRequest> requests;
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async {
+    requests.add(request);
+    return const HostFormResponsesState(
+      responses: [],
+      nextCursor: null,
+      versionScope: HostFormResponseVersionScope(
+        activeVersionId: 'form_v2',
+        publishedVersion: 2,
+      ),
+      answerFilterOptions: [
+        HostFormResponseFilterOption(
+          questionId: 'city',
+          label: 'City',
+          options: {'Mumbai': 'Mumbai'},
+        ),
+      ],
     );
   }
 }
