@@ -32,6 +32,7 @@ const schemaListEventChatMessagesCallableResponseSchema = <String, Object?>{
           'senderUid',
           'senderName',
           'available',
+          'kind',
           'text',
           'reply',
           'reactionCounts',
@@ -79,6 +80,12 @@ const schemaListEventChatMessagesCallableResponseSchema = <String, Object?>{
           },
           'available': <String, Object?>{
             'type': 'boolean',
+          },
+          'kind': <String, Object?>{
+            'enum': <Object?>[
+              'text',
+              'announcement',
+            ],
           },
           'text': <String, Object?>{
             'anyOf': <Object?>[

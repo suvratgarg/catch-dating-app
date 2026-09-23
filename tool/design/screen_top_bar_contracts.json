@@ -589,13 +589,6 @@
       "reason": "Paper-ticket copy is theatrical event content inside the companion route."
     },
     {
-      "path": "lib/event_success/presentation/event_success_block_header.dart",
-      "symbol": "BlockHeader",
-      "role": "content",
-      "owner": "CatchTextStyles.titleL",
-      "reason": "Event Success block headings label content modules and do not own navigation."
-    },
-    {
       "path": "lib/event_success/presentation/reveal/event_success_reveal_header.dart",
       "symbol": "EventSuccessRevealHeader",
       "role": "content",

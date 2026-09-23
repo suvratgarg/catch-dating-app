@@ -4,17 +4,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-/// Maps a [CatchBadgeTone] to its functional colour for roster tiles.
-Color _rosterToneColor(CatchTokens t, CatchBadgeTone tone) => switch (tone) {
-  CatchBadgeTone.success => t.success,
-  CatchBadgeTone.warning => t.warning,
-  CatchBadgeTone.danger => t.danger,
-  CatchBadgeTone.gold => t.gold,
-  CatchBadgeTone.affinity => t.affinityText,
-  CatchBadgeTone.neutral || CatchBadgeTone.brand => t.ink2,
-};
-
-/// One count tile in a [CatchRosterTiles] row.
+/// One count tile for host roster filters.
 class CatchRosterTile {
   const CatchRosterTile({
     required this.id,
@@ -27,109 +17,6 @@ class CatchRosterTile {
   final String value;
   final String label;
   final CatchBadgeTone tone;
-}
-
-/// Design-system `RosterTiles` (`components/hosting/RosterTiles`): the selectable
-/// count-tile row that filters a roster board. Each tile is a labelled count in a
-/// functional tone; the selected tile flips to the ink fill.
-class CatchRosterTiles extends StatelessWidget {
-  const CatchRosterTiles({
-    super.key,
-    required this.items,
-    this.selected,
-    this.onSelect,
-  });
-
-  final List<CatchRosterTile> items;
-  final String? selected;
-  final ValueChanged<String>? onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        for (var i = 0; i < items.length; i++) ...[
-          if (i > 0) const SizedBox(width: CatchSpacing.micro6),
-          Expanded(
-            child: CatchRosterTileCell(
-              tile: items[i],
-              selected: items[i].id == selected,
-              onTap: onSelect == null ? null : () => onSelect!(items[i].id),
-              toneColor: _rosterToneColor(t, items[i].tone),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class CatchRosterTileCell extends StatelessWidget {
-  const CatchRosterTileCell({
-    super.key,
-    required this.tile,
-    required this.selected,
-    required this.onTap,
-    required this.toneColor,
-  });
-
-  final CatchRosterTile tile;
-  final bool selected;
-  final VoidCallback? onTap;
-  final Color toneColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final fill = selected
-        ? t.ink
-        : Color.alphaBlend(
-            toneColor.withValues(alpha: CatchOpacity.calloutFill),
-            t.surface,
-          );
-    final border = selected
-        ? t.ink
-        : toneColor.withValues(alpha: CatchOpacity.subtleBorder);
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: CatchLayout.rosterFilterTileMinHeight,
-        ),
-        child: CatchSurface(
-          onTap: onTap,
-          radius: CatchRadius.md,
-          backgroundColor: fill,
-          borderColor: border,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                tile.value,
-                style: CatchTextStyles.numericLarge(
-                  context,
-                  color: selected ? t.primaryInk : toneColor,
-                ).copyWith(height: 1),
-              ),
-              const SizedBox(height: CatchSpacing.micro6),
-              Text(
-                tile.label.toUpperCase(),
-                style: CatchTextStyles.monoLabel(
-                  context,
-                  color: selected
-                      ? t.primaryInk.withValues(alpha: CatchOpacity.onFillMuted)
-                      : t.ink2,
-                ).copyWith(fontSize: 8.5),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// The action cell of a [CatchRosterRow] — button / decide pair / badge / text.

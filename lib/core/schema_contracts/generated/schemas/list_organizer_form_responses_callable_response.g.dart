@@ -22,6 +22,41 @@ const schemaListOrganizerFormResponsesCallableResponseSchema = <String, Object?>
       'minLength': 1,
       'maxLength': 180,
     },
+    'versionScope': <String, Object?>{
+      'description': 'Published native form version scope; null for all forms or imported forms. Version IDs are formId_vN for N from 1 through publishedVersion.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'activeVersionId',
+            'publishedVersion',
+          ],
+          'properties': <String, Object?>{
+            'activeVersionId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'publishedVersion': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 1000000,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
     'items': <String, Object?>{
       'type': 'array',
       'maxItems': 100,

@@ -1,6 +1,18 @@
 import 'package:meta/meta.dart';
 
-enum EventChatAction { open, close, join, leave }
+enum EventChatAction {
+  open,
+  close,
+  join,
+  leave,
+  mute,
+  unmute,
+  pause,
+  announcementsOnly,
+  resume,
+  archive,
+  schedule,
+}
 
 enum EventChatSafetyAction { report, block, remove }
 
@@ -31,9 +43,13 @@ class EventChatAccess {
     required this.canManage,
     required this.canJoin,
     required this.canReadMessages,
+    bool? canPostMessages,
+    this.notificationsMuted = false,
+    this.opensAtMillis,
+    this.closesAtMillis,
     required this.profileClaimRequired,
     required this.termsVersion,
-  });
+  }) : canPostMessages = canPostMessages ?? canReadMessages;
   factory EventChatAccess.fromMap(Map<Object?, Object?> json) {
     final room = json['room']! as Map;
     final member = json['membership']! as Map;
@@ -48,6 +64,10 @@ class EventChatAccess {
       canManage: json['canManage']! as bool,
       canJoin: json['canJoin']! as bool,
       canReadMessages: json['canReadMessages']! as bool,
+      canPostMessages: json['canPostMessages']! as bool,
+      notificationsMuted: member['notificationsMuted'] == true,
+      opensAtMillis: (room['opensAtMillis'] as num?)?.toInt(),
+      closesAtMillis: (room['closesAtMillis'] as num?)?.toInt(),
       profileClaimRequired: json['profileClaimRequired']! as bool,
       termsVersion: json['termsVersion']! as String,
     );
@@ -55,13 +75,25 @@ class EventChatAccess {
   final String eventId, title, organizerId, roomStatus, membershipStatus;
   final String termsVersion;
   final int roomRevision, membershipRevision;
-  final bool canManage, canJoin, canReadMessages, profileClaimRequired;
-  bool get isRoomOpen => roomStatus == 'open';
+  final int? opensAtMillis, closesAtMillis;
+  final bool canManage, canJoin, canReadMessages, canPostMessages;
+  final bool notificationsMuted, profileClaimRequired;
+  bool get isRoomOpen =>
+      roomStatus == 'open' ||
+      roomStatus == 'paused' ||
+      roomStatus == 'announcementsOnly';
   bool get hasJoined => membershipStatus == 'joined';
+  bool get membershipUnavailable =>
+      membershipStatus == 'removed' || membershipStatus == 'banned';
+  bool get announcementsOnly => roomStatus == 'announcementsOnly';
 
   int revisionFor(EventChatAction action) => switch (action) {
-    EventChatAction.open || EventChatAction.close => roomRevision,
-    EventChatAction.join || EventChatAction.leave => membershipRevision,
+    EventChatAction.open || EventChatAction.close ||
+    EventChatAction.pause || EventChatAction.announcementsOnly ||
+    EventChatAction.resume || EventChatAction.archive ||
+    EventChatAction.schedule => roomRevision,
+    EventChatAction.join || EventChatAction.leave ||
+    EventChatAction.mute || EventChatAction.unmute => membershipRevision,
   };
 }
 
@@ -100,6 +132,7 @@ class EventChatMessage {
     required Map<EventChatReaction, int> reactionCounts,
     required this.myReaction,
     required this.myReactionRevision,
+    this.kind = 'text',
   }) : reactionCounts = Map.unmodifiable(reactionCounts);
   factory EventChatMessage.fromMap(Map<Object?, Object?> json) {
     final available = json['available']! as bool;
@@ -128,6 +161,7 @@ class EventChatMessage {
       myReactionRevision: available
           ? (json['myReactionRevision']! as num).toInt()
           : 0,
+      kind: available ? (json['kind'] as String? ?? 'text') : 'text',
     );
   }
   final String messageId;
@@ -139,6 +173,7 @@ class EventChatMessage {
   final Map<EventChatReaction, int> reactionCounts;
   final EventChatReaction? myReaction;
   final int myReactionRevision;
+  final String kind;
 }
 
 @immutable

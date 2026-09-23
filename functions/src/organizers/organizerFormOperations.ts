@@ -107,6 +107,9 @@ export async function listOrganizerFormResponsesHandler(
   const sortDirection = data.sortDirection ?? "desc";
   const versions = new Map<string, OrganizerFormVersionDocument>();
   let answerFilterOptions: ReturnType<typeof responseFilterOptions> = [];
+  let answerVersionId: string | null = null;
+  let versionScope: {activeVersionId: string | null;
+    publishedVersion: number} | null = null;
   if (data.formId) {
     const formSnap = await db.collection("organizerForms")
       .doc(data.formId).get();
@@ -137,6 +140,8 @@ export async function listOrganizerFormResponsesHandler(
       }
     } else {
       const form = requireOwnedForm(formSnap, data.organizerId);
+      versionScope = {activeVersionId: form.activeVersionId,
+        publishedVersion: form.publishedVersion};
       const versionId = data.versionId ?? form.activeVersionId;
       if (versionId) {
         const version = requireOwnedVersion(await db
@@ -144,6 +149,7 @@ export async function listOrganizerFormResponsesHandler(
         data.organizerId, data.formId);
         versions.set(versionId, version);
         answerFilterOptions = responseFilterOptions(version.definition);
+        answerVersionId = versionId;
       }
     }
   } else if (answerFilters.length > 0) {
@@ -152,9 +158,13 @@ export async function listOrganizerFormResponsesHandler(
     );
   }
   validateResponseFilters(answerFilters, answerFilterOptions);
+  // Older clients omit versionId. Their answer filters still belong to the
+  // active immutable version whose options were returned above.
+  const filterVersionId = answerFilters.length ?
+    answerVersionId : data.versionId;
   const filterHash = hashJson({
     formId: data.formId,
-    versionId: data.versionId,
+    versionId: filterVersionId,
     statuses: [...data.statuses].sort(),
     identityKinds: [...data.identityKinds].sort(),
     sourceLinkId: data.sourceLinkId,
@@ -168,11 +178,13 @@ export async function listOrganizerFormResponsesHandler(
     })),
   });
   if (data.includeApplications) {
-    return listUnifiedResponses({db, data, filterHash, answerFilterOptions,
+    const result = await listUnifiedResponses({db, data, filterHash,
+      answerFilterOptions,
       project: (docs) => responseRows(db, docs),
       matches: async (response) => {
         if (!matchesResponse(response, data)) return false;
         if (!answerFilters.length) return true;
+        if (response.versionId !== filterVersionId) return false;
         let version = versions.get(response.versionId);
         if (!version) {
           version = requireOwnedVersion(await db
@@ -184,6 +196,7 @@ export async function listOrganizerFormResponsesHandler(
           answerFilters);
       },
     });
+    return Object.assign(result, {versionScope});
   }
   if (data.reviewStatus || data.contactId) {
     throw new HttpsError("invalid-argument",
@@ -224,15 +237,18 @@ export async function listOrganizerFormResponsesHandler(
       if (matchesResponse(response, data)) {
         let matches = true;
         if (answerFilters.length > 0) {
-          let version = versions.get(response.versionId);
-          if (!version) {
-            version = requireOwnedVersion(await db
-              .collection("organizerFormVersions").doc(response.versionId)
-              .get(), data.organizerId, response.formId);
-            versions.set(response.versionId, version);
+          matches = response.versionId === filterVersionId;
+          if (matches) {
+            let version = versions.get(response.versionId);
+            if (!version) {
+              version = requireOwnedVersion(await db
+                .collection("organizerFormVersions").doc(response.versionId)
+                .get(), data.organizerId, response.formId);
+              versions.set(response.versionId, version);
+            }
+            matches = matchesAnswerFilters(response, version.definition,
+              answerFilters);
           }
-          matches = matchesAnswerFilters(response, version.definition,
-            answerFilters);
         }
         if (matches) matched.push(doc);
       }
@@ -245,7 +261,7 @@ export async function listOrganizerFormResponsesHandler(
     if (page.size < responseScanPageSize) break;
   }
   const items = await responseRows(db, matched);
-  return {
+  return Object.assign({
     organizerId: data.organizerId,
     items,
     answerFilterOptions,
@@ -257,7 +273,7 @@ export async function listOrganizerFormResponsesHandler(
         FirebaseFirestore.Timestamp).toMillis(),
       responseId: lastScanned.id,
     }) : null,
-  };
+  }, {versionScope});
 }
 
 /** Returns immutable answers plus expiring private upload links. */

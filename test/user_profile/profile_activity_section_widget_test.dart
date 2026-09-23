@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,9 +41,14 @@ void main() {
                   child: child!,
                 ),
                 home: Scaffold(
-                  body: ProfileTab(
+                  body: ProfileTabContent(
                     user: buildUser(name: 'Sara Demo'),
                     uploadState: const PhotoUploadState(),
+                    builder: (context, children) => ListView(
+                      key: const ValueKey('profile-tab-scroll-view'),
+                      padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+                      children: children,
+                    ),
                   ),
                 ),
               ),
@@ -57,7 +63,7 @@ void main() {
         );
         await tester.dragUntilVisible(
           activity,
-          find.byKey(ProfileTab.scrollViewKey),
+          find.byKey(const ValueKey('profile-tab-scroll-view')),
           const Offset(0, -300),
         );
         await tester.ensureVisible(activity);

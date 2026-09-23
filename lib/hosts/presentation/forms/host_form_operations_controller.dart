@@ -18,6 +18,7 @@ class HostFormResponsesState {
     this.entries,
     required this.nextCursor,
     this.answerFilterOptions = const [],
+    this.versionScope,
     this.loadingMore = false,
     this.loadMoreError,
   });
@@ -29,6 +30,7 @@ class HostFormResponsesState {
       responses.map(HostFormInboxEntry.fromResponse).toList(growable: false);
   final String? nextCursor;
   final List<HostFormResponseFilterOption> answerFilterOptions;
+  final HostFormResponseVersionScope? versionScope;
   final bool loadingMore;
   final Object? loadMoreError;
 
@@ -45,6 +47,7 @@ class HostFormResponsesState {
     responses: responses ?? this.responses,
     entries: entries,
     answerFilterOptions: answerFilterOptions,
+    versionScope: versionScope,
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
     loadingMore: loadingMore ?? this.loadingMore,
     loadMoreError: clearLoadMoreError
@@ -67,6 +70,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
       responses: page.items,
       entries: page.entries,
       answerFilterOptions: page.answerFilterOptions,
+      versionScope: page.versionScope,
       nextCursor: page.nextCursor,
     );
   }
@@ -96,6 +100,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
           responses: List.unmodifiable(byId.values),
           entries: List.unmodifiable(entries.values),
           answerFilterOptions: page.answerFilterOptions,
+          versionScope: page.versionScope ?? current.versionScope,
           nextCursor: page.nextCursor,
         ),
       );

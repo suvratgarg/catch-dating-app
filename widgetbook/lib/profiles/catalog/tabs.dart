@@ -30,30 +30,6 @@ Widget previewTabStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Edit tab states',
-  type: ProfileTab,
-  path: '[P1 product surfaces]/Profiles/Sections',
-)
-Widget profileTabStates(BuildContext context) {
-  return WidgetbookProfileProfileCatalog(
-    title: 'ProfileTab',
-    contractId: 'screen.profile.edit_tab',
-    children: [
-      WidgetbookProfileStateCard(
-        label: 'complete profile',
-        child: WidgetbookProfileSectionFrame(
-          height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
-          child: ProfileTab(
-            user: widgetbookProfileViewer,
-            uploadState: widgetbookProfileIdlePhotoUploadState,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Edit tab content states',
   type: ProfileTabContent,
   path: '[P1 product surfaces]/Profiles/Sections',

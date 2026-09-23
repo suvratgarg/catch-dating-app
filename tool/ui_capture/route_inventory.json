@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "4002950dde111af195d7ccb82a5cee4fa378739836c2645c78d032260409da59",
-    "routeContractSha256": "e898fe86d9b0ea45f5dac20c6b6f72bc2ee8d0c42a755a2d4d28a622ca9b8f5a",
+    "normalizedFileSha256": "af2994297424c7d2600d96ce3e88af82ed1a095491be31520833335e3f21e8a8",
+    "routeContractSha256": "63d0df815f3a46282a3e1f83ab50a9b7086bf7325e72f7f24fe4fe3c96667aff",
     "goRouteCount": 99,
     "shellBranchCount": 9,
     "enumRouteCount": 84,
@@ -782,7 +782,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'responses/:responseId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormResponseDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',responseId:state.pathParameters['responseId']!)",
+      "presentationExpression": "(context,state)=>HostFormResponseDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',responseId:state.pathParameters['responseId']!,queue:_responseReviewQueue(state.extra))",
       "presentationTarget": "HostFormResponseDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -914,7 +914,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'applications/:applicationId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostApplicationDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!)",
+      "presentationExpression": "(context,state)=>HostApplicationDetailScreen(organizerId:state.uri.queryParameters['organizerId']??'',applicationId:state.pathParameters['applicationId']!,queue:_responseReviewQueue(state.extra))",
       "presentationTarget": "HostApplicationDetailScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true

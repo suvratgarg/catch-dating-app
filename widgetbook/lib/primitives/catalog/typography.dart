@@ -42,44 +42,6 @@ Widget catchMetadataTextCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchSectionHeaderTitle,
-  path: '[Core catalog]/Typography',
-)
-Widget catchSectionHeaderTitleCatalogStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return WidgetbookCatalogFrame(
-    title: 'CatchSectionHeaderTitle',
-    catalogId: 'core.widgets.catch_section_header_title',
-    children: [
-      WidgetbookCatalogStateCard(
-        label: 'plain / icon / truncated',
-        child: CatchSectionList(
-          emptyStateOmitted: true,
-          gap: CatchSpacing.s3,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CatchSectionHeaderTitle(label: 'How it works'),
-            CatchSectionHeaderTitle(
-              label: 'Social run format',
-              icon: CatchIcons.directionsRunRounded,
-              accentColor: t.primary,
-            ),
-            SizedBox(
-              width: WidgetbookPreviewLayout.compactControlWidth,
-              child: CatchSectionHeaderTitle(
-                label: 'A very long activity section label',
-                icon: CatchIcons.sparkle,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
   type: CatchMetricTile,
   path: '[Core catalog]/Data display',
 )

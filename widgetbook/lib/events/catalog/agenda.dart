@@ -12,26 +12,6 @@ import '../../support/contract_preview.dart';
 import 'fixtures.dart';
 
 @widgetbook.UseCase(
-  name: 'Agenda list',
-  type: EventAgendaList,
-  path: '[Events]/Lists',
-)
-Widget eventAgendaListState(BuildContext context) {
-  return SizedBox(
-    height: WidgetbookPreviewLayout.exploreRoutePreviewHeight,
-    child: EventAgendaList(
-      events: widgetbookEventsAgendaEvents(),
-      today: DateUtils.dateOnly(widgetbookEventsNow),
-      showClubName: true,
-      clubNameBuilder: (_) => widgetbookEventsClub.name,
-      statusBuilder: (_) => EventTileStatus.saved,
-      badgeLabel: 'SAVED',
-      onEventSelected: (_) {},
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Agenda sliver list',
   type: EventAgendaSliverList,
   path: '[Events]/Lists',

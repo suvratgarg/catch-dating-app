@@ -276,10 +276,28 @@ class HostFormResponseFilterOption {
 }
 
 @immutable
+class HostFormResponseVersionScope {
+  const HostFormResponseVersionScope({
+    required this.activeVersionId,
+    required this.publishedVersion,
+  });
+
+  factory HostFormResponseVersionScope.fromMap(Map<Object?, Object?> map) =>
+      HostFormResponseVersionScope(
+        activeVersionId: formOperationNullableString(map['activeVersionId']),
+        publishedVersion: formOperationRequiredInt(map, 'publishedVersion'),
+      );
+
+  final String? activeVersionId;
+  final int publishedVersion;
+}
+
+@immutable
 class HostFormResponsePage {
   const HostFormResponsePage({
     this.answerFilterOptions = const [],
     this.entries,
+    this.versionScope,
     required this.organizerId,
     required this.items,
     required this.nextCursor,
@@ -306,6 +324,11 @@ class HostFormResponsePage {
         'form responses',
       ).map(HostFormResponseSummary.fromMap).toList(growable: false),
       nextCursor: formOperationNullableString(map['nextCursor']),
+      versionScope: map['versionScope'] == null
+          ? null
+          : HostFormResponseVersionScope.fromMap(
+              formOperationRequiredMap(map['versionScope'], 'version scope'),
+            ),
       answerFilterOptions: formOperationMapList(
         map['answerFilterOptions'] ?? const [],
         'answer filter options',
@@ -317,6 +340,7 @@ class HostFormResponsePage {
   final List<HostFormResponseSummary> items;
   final List<HostFormInboxEntry>? entries;
   final List<HostFormResponseFilterOption> answerFilterOptions;
+  final HostFormResponseVersionScope? versionScope;
   final String? nextCursor;
 }
 

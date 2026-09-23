@@ -208,24 +208,6 @@ Widget moreActivityTypesRowStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Activity skeleton states',
-  type: EventTypeBrowseSkeleton,
-  path: '[Explore]/Sections',
-)
-Widget eventTypeBrowseSkeletonStates(BuildContext context) {
-  return const WidgetbookScrollCatalogFrame(
-    title: 'EventTypeBrowseSkeleton',
-    catalogId: 'section.explore.activity_grid.skeleton',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'loading rows',
-        child: EventTypeBrowseSkeleton(),
-      ),
-    ],
-  );
-}
-
 void _ignoreActivityKind(ActivityKind _) {}
 
 const _socialRunActivityEntry = ActivityEntry(

@@ -109,6 +109,31 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
       'format': 'email',
       'maxLength': 320,
     },
+    'cityMarketId': <String, Object?>{
+      'description': 'Private organizer-reported roster city; never a verified participant profile or eligibility input.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+          'pattern': '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'citySource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'hostImport',
+        'hostManual',
+        null,
+      ],
+    },
     'externalReference': <String, Object?>{
       'type': <Object?>[
         'string',

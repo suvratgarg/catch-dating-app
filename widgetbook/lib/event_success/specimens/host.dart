@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -16,19 +15,5 @@ Widget eventSuccessStrictEventSuccessHostSection(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.host,
     componentName: "EventSuccessHostSection",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessSkeletonSurface",
-  type: EventSuccessSkeletonSurface,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessSkeletonSurface(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "EventSuccessSkeletonSurface",
   );
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -53,6 +55,9 @@ class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
   HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
+  String? _versionId;
+  bool _versionResolved = false;
+  HostFormResponseVersionScope? _versionScope;
   final Map<String, Set<String>> _answerFilters = {};
   List<HostFormResponseFilterOption> _filterOptions = const [];
 
@@ -63,6 +68,9 @@ class _HostFormResponsesPanelState
         oldWidget.organizerId != widget.organizerId) {
       _answerFilters.clear();
       _filterOptions = const [];
+      _versionId = null;
+      _versionResolved = false;
+      _versionScope = null;
     }
   }
 
@@ -71,16 +79,47 @@ class _HostFormResponsesPanelState
     final request = _responseRequest(widget.formId);
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
     final loaded = catchAsyncStateFromAsyncValue(responses).value;
+    if (loaded?.versionScope != null) _versionScope = loaded!.versionScope;
+    final resolvingVersion = widget.formId != null &&
+        loaded?.versionScope?.activeVersionId != null &&
+        !_versionResolved;
+    if (resolvingVersion) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _versionResolved || widget.formId != request.formId) {
+          return;
+        }
+        setState(() {
+          _versionId = loaded!.versionScope!.activeVersionId;
+          _versionResolved = true;
+        });
+      });
+    }
     if (loaded != null) _filterOptions = loaded.answerFilterOptions;
+    final visibleVersionId = _versionResolved
+        ? _versionId
+        : _versionScope?.activeVersionId;
+    final versionLabel = _versionScope == null
+        ? null
+        : visibleVersionId == null
+        ? context.l10n.hostAudienceResponsesAllVersions
+        : context.l10n.hostAudienceResultsVersion(
+            version: _versionNumber(visibleVersionId),
+          );
     final activeFilters = [
       if (widget.showFormContext && widget.formId != null)
         _formLabel(context, loaded),
       if (widget.contactId != null) context.l10n.hostAudienceSelectedPerson,
-      for (final entry in _answerFilters.entries)
+      if (widget.formId != null &&
+          _versionScope != null &&
+          _versionResolved &&
+          _versionId != _versionScope!.activeVersionId)
+        versionLabel!,
+      for (final entry in (_answerFilters.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key))))
         for (final option in _filterOptions.where(
           (item) => item.questionId == entry.key,
         ))
-          '${option.label}: ${entry.value.map((value) => option.options[value] ?? value).join(', ')}',
+          '${option.label}: ${(entry.value.toList()..sort()).map((value) => option.options[value] ?? value).join(', ')}',
     ];
     return SliverMainAxisGroup(
       slivers: [
@@ -110,6 +149,13 @@ class _HostFormResponsesPanelState
                   scrollable: true,
                   showDivider: false,
                 ),
+                if (widget.formId != null && versionLabel != null) ...[
+                  gapH8,
+                  Text(
+                    versionLabel,
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                ],
                 gapH16,
               ],
             ),
@@ -136,6 +182,9 @@ class _HostFormResponsesPanelState
                 : () {
                     setState(() {
                       _answerFilters.clear();
+                      _versionId = _versionScope?.activeVersionId;
+                      _versionResolved = true;
+                      _filterOptions = const [];
                     });
                     widget.onClearContactFilter?.call();
                     if (widget.showFormContext) {
@@ -164,6 +213,16 @@ class _HostFormResponsesPanelState
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, state) {
+            if (resolvingVersion) {
+              return CatchSection.sliverLoadingRows(
+                itemCount: 6,
+                layoutBuilder: (_, _) => const CatchPersonLayout.placeholder(
+                  hasSupportingText: true,
+                  hasContext: true,
+                  hasBadge: true,
+                ),
+              );
+            }
             if (state.inboxEntries.isEmpty &&
                 !state.canLoadMore &&
                 !state.loadingMore &&
@@ -228,6 +287,11 @@ class _HostFormResponsesPanelState
                         ],
                       ),
                       onActivate: () async {
+                        final queue = HostResponseReviewQueue(
+                          request: request,
+                          entryId: entry.entryId,
+                          index: index,
+                        );
                         if (application != null) {
                           await context.pushNamed(
                             Routes.hostApplicationDetailScreen.name,
@@ -237,6 +301,7 @@ class _HostFormResponsesPanelState
                             queryParameters: {
                               'organizerId': widget.organizerId,
                             },
+                            extra: queue,
                           );
                         } else {
                           await context.pushNamed(
@@ -247,10 +312,8 @@ class _HostFormResponsesPanelState
                             queryParameters: {
                               'organizerId': widget.organizerId,
                             },
+                            extra: queue,
                           );
-                        }
-                        if (mounted) {
-                          ref.invalidate(hostFormResponsesControllerProvider);
                         }
                       },
                     );
@@ -325,10 +388,24 @@ class _HostFormResponsesPanelState
 
   void _updateFilters(VoidCallback update) => setState(update);
 
+  int _versionNumber(String id) =>
+      int.tryParse(id.split('_v').last) ?? 0;
+
+  void _selectVersion(String? id) {
+    if (_versionId == id && _versionResolved) return;
+    setState(() {
+      _versionId = id;
+      _versionResolved = true;
+      _answerFilters.clear();
+      _filterOptions = const [];
+    });
+  }
+
   HostFormResponseListRequest _responseRequest(String? formId) =>
       HostFormResponseListRequest(
         organizerId: widget.organizerId,
         formId: formId,
+        versionId: formId == widget.formId ? _versionId : null,
         includeApplications: true,
         reviewStatus: _status,
         contactId: widget.contactId,

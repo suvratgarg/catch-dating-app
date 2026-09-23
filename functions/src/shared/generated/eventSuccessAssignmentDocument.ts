@@ -179,6 +179,14 @@ export interface EventSuccessAssignmentDocument {
   }[];
   source: "server_v1" | "host_override_v1" | "server";
   /**
+   * Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.
+   */
+  assignmentFeatureAudit?: {
+    algorithmVersion: "typed-soft-features-v1";
+    configHash: string;
+    inputSnapshotId: string;
+  };
+  /**
    * Serialized Firestore Timestamp fixture shape.
    */
   createdAt: {

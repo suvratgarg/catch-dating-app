@@ -34,7 +34,7 @@ void main() {
                 home: MediaQuery(
                   data: MediaQueryData(textScaler: TextScaler.linear(scale)),
                   child: Scaffold(
-                    body: ExploreBrowseHeaderContent(
+                    body: ExploreDiscoveryCoverHeader(
                       cityPickerState: ExploreCityPickerState.from(
                         selectedCity: city,
                         cities: [city],

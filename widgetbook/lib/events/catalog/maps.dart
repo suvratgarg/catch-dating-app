@@ -7,7 +7,6 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
-import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -197,41 +196,11 @@ Widget mapOverlayControlsState(BuildContext context) {
         ),
         MapOverlayControls(
           trailing: Icon(CatchIcons.locationOnOutlined),
-          below: const MapPinTile(
-            startingPoint: _mapCenter,
-            selectedLabel: 'Carter Road Jetty',
-            onTap: widgetbookNoop,
-          ),
+          below: const Text('Carter Road Jetty'),
           onBack: widgetbookNoop,
         ),
       ],
     ),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Pin tile states',
-  type: MapPinTile,
-  path: '[Events]/Map',
-)
-Widget mapPinTileStates(BuildContext context) {
-  return const WidgetbookScrollCatalogFrame(
-    title: 'MapPinTile',
-    catalogId: 'control.events.map_pin',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'selected',
-        child: MapPinTile(
-          startingPoint: _mapCenter,
-          selectedLabel: 'Carter Road Jetty',
-          onTap: widgetbookNoop,
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'empty',
-        child: MapPinTile(startingPoint: null, onTap: widgetbookNoop),
-      ),
-    ],
   );
 }
 

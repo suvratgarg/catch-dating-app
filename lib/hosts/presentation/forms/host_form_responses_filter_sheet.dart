@@ -14,6 +14,12 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
             );
             final loaded = catchAsyncStateFromAsyncValue(responseState).value;
             if (loaded != null) options = loaded.answerFilterOptions;
+            final scope = loaded?.versionScope ??
+                (formId == widget.formId ? _versionScope : null);
+            final hasVersionOverride = formId == widget.formId &&
+                scope != null &&
+                _versionResolved &&
+                _versionId != scope.activeVersionId;
             void changeForm(String? value) {
               if (formId == value) return;
               updateSheet(() {
@@ -34,9 +40,13 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                 size: CatchButtonSize.sm,
                 onPressed:
                     _answerFilters.isEmpty &&
+                        !hasVersionOverride &&
                         (formId == null || widget.onFormChanged == null)
                     ? null
                     : () {
+                        if (hasVersionOverride) {
+                          _selectVersion(scope.activeVersionId);
+                        }
                         _updateFilters(_answerFilters.clear);
                         if (widget.onFormChanged != null) changeForm(null);
                         updateSheet(() {});
@@ -129,7 +139,71 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                         },
                       ),
                     ),
+                  if (formId != null &&
+                      scope != null &&
+                      scope.activeVersionId != null)
+                    CatchSection.choiceGroup(
+                      title: context.l10n.hostAudienceResultsVersion(
+                        version: scope.publishedVersion,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          CatchChoiceInput<String>(
+                            values: [
+                              '',
+                              for (var number = scope.publishedVersion;
+                                  number >= 1 &&
+                                      number > scope.publishedVersion - 50;
+                                  number--)
+                                '${formId}_v$number',
+                              if (_versionId != null &&
+                                  _versionNumber(_versionId!) <=
+                                      scope.publishedVersion - 50)
+                                _versionId!,
+                            ],
+                            selected: {_versionId ?? ''},
+                            itemLabelBuilder: (id) => id.isEmpty
+                                ? context.l10n.hostAudienceResponsesAllVersions
+                                : context.l10n.hostAudienceResultsVersion(
+                                    version: _versionNumber(id),
+                                  ),
+                            itemKeyBuilder: (id) =>
+                                ValueKey('response-version-$id'),
+                            mode: CatchChipMode.single,
+                            onChanged: (values) {
+                              _selectVersion(
+                                values.single.isEmpty ? null : values.single,
+                              );
+                              updateSheet(() => options = const []);
+                            },
+                          ),
+                          if (scope.publishedVersion > 50)
+                            CatchField.input(
+                              copy: catchFieldCopy(context.l10n),
+                              title: context.l10n.hostAudienceResultsVersion(
+                                version: scope.publishedVersion,
+                              ),
+                              keyboardType: TextInputType.number,
+                              maxLength: 7,
+                              contractExemption:
+                                  'Historical published version number is bounded by the form contract.',
+                              onSubmitted: (value) {
+                                final number = int.tryParse(value);
+                                if (number == null ||
+                                    number < 1 ||
+                                    number > scope.publishedVersion) {
+                                  return;
+                                }
+                                _selectVersion('${formId}_v$number');
+                                updateSheet(() => options = const []);
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
                   for (final filter in options)
+                    if (scope == null || _versionId != null)
                     CatchSection.choiceGroup(
                       first: true,
                       title: filter.label,

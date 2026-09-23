@@ -82,6 +82,14 @@ const schemaEventChatMessageDocumentSchema = <String, Object?>{
         'removed',
       ],
     },
+    'kind': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'text',
+        'announcement',
+      ],
+      'description': 'Legacy omission means text.',
+    },
     'payloadHash': <String, Object?>{
       'type': 'string',
       'pattern': '^[a-f0-9]{64}\$',

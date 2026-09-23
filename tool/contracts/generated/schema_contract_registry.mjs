@@ -96496,7 +96496,9 @@ export const listEventChatParticipantsCallableResponseSchema = {
         "required": [
           "uid",
           "displayName",
-          "role"
+          "role",
+          "membershipStatus",
+          "membershipRevision"
         ],
         "properties": {
           "uid": {
@@ -96515,6 +96517,18 @@ export const listEventChatParticipantsCallableResponseSchema = {
               "host",
               "attendee"
             ]
+          },
+          "membershipStatus": {
+            "enum": [
+              "joined",
+              "removed",
+              "banned"
+            ]
+          },
+          "membershipRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
@@ -97555,7 +97569,10 @@ export const eventChatRoomDocumentSchema = {
       "type": "string",
       "enum": [
         "open",
-        "closed"
+        "announcementsOnly",
+        "paused",
+        "closed",
+        "archived"
       ]
     },
     "revision": {
@@ -97617,6 +97634,20 @@ export const eventChatRoomDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "opensAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "closesAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
     }
   },
   "description": "Host-controlled event conversation availability. No attendee admission or profile data.",
@@ -97664,7 +97695,9 @@ export const eventChatMembershipDocumentSchema = {
       "type": "string",
       "enum": [
         "joined",
-        "left"
+        "left",
+        "removed",
+        "banned"
       ]
     },
     "revision": {
@@ -97764,6 +97797,48 @@ export const eventChatMembershipDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "notificationsMuted": {
+      "type": "boolean"
+    },
+    "removedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "removedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "description": "Explicit room participation. Current admission and claimed identity must still be rechecked on every access.",
@@ -97911,6 +97986,14 @@ export const eventChatMessageDocumentSchema = {
         "visible",
         "removed"
       ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement"
+      ],
+      "description": "Legacy omission means text."
     },
     "payloadHash": {
       "type": "string",
@@ -98218,6 +98301,13 @@ export const sendEventChatMessageCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement"
+      ]
     }
   }
 };
@@ -98482,6 +98572,7 @@ export const listEventChatsCallableResponseSchema = {
           "canManage",
           "canJoin",
           "canReadMessages",
+          "canPostMessages",
           "profileClaimRequired",
           "termsVersion"
         ],
@@ -98519,14 +98610,32 @@ export const listEventChatsCallableResponseSchema = {
                 "type": "string",
                 "enum": [
                   "notCreated",
+                  "scheduled",
                   "open",
-                  "closed"
+                  "announcementsOnly",
+                  "paused",
+                  "closed",
+                  "archived"
                 ]
               },
               "revision": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "opensAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "closesAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
               }
             }
           },
@@ -98543,13 +98652,18 @@ export const listEventChatsCallableResponseSchema = {
                 "enum": [
                   "notJoined",
                   "joined",
-                  "left"
+                  "left",
+                  "removed",
+                  "banned"
                 ]
               },
               "revision": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "notificationsMuted": {
+                "type": "boolean"
               }
             }
           },
@@ -98560,6 +98674,9 @@ export const listEventChatsCallableResponseSchema = {
             "type": "boolean"
           },
           "canReadMessages": {
+            "type": "boolean"
+          },
+          "canPostMessages": {
             "type": "boolean"
           },
           "profileClaimRequired": {
@@ -98686,6 +98803,7 @@ export const listEventChatMessagesCallableResponseSchema = {
           "senderUid",
           "senderName",
           "available",
+          "kind",
           "text",
           "reply",
           "reactionCounts",
@@ -98733,6 +98851,12 @@ export const listEventChatMessagesCallableResponseSchema = {
           },
           "available": {
             "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "announcement"
+            ]
           },
           "text": {
             "anyOf": [
@@ -98980,7 +99104,14 @@ export const updateEventChatAccessCallablePayloadSchema = {
         "open",
         "close",
         "join",
-        "leave"
+        "leave",
+        "mute",
+        "unmute",
+        "pause",
+        "announcementsOnly",
+        "resume",
+        "schedule",
+        "archive"
       ]
     },
     "expectedRevision": {
@@ -99010,6 +99141,14 @@ export const updateEventChatAccessCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "opensAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "closesAtMillis": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 };
@@ -99030,6 +99169,7 @@ export const getEventChatAccessCallableResponseSchema = {
     "canManage",
     "canJoin",
     "canReadMessages",
+    "canPostMessages",
     "profileClaimRequired",
     "termsVersion"
   ],
@@ -99067,14 +99207,32 @@ export const getEventChatAccessCallableResponseSchema = {
           "type": "string",
           "enum": [
             "notCreated",
+            "scheduled",
             "open",
-            "closed"
+            "announcementsOnly",
+            "paused",
+            "closed",
+            "archived"
           ]
         },
         "revision": {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "opensAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "closesAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
         }
       }
     },
@@ -99091,13 +99249,18 @@ export const getEventChatAccessCallableResponseSchema = {
           "enum": [
             "notJoined",
             "joined",
-            "left"
+            "left",
+            "removed",
+            "banned"
           ]
         },
         "revision": {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "notificationsMuted": {
+          "type": "boolean"
         }
       }
     },
@@ -99108,6 +99271,9 @@ export const getEventChatAccessCallableResponseSchema = {
       "type": "boolean"
     },
     "canReadMessages": {
+      "type": "boolean"
+    },
+    "canPostMessages": {
       "type": "boolean"
     },
     "profileClaimRequired": {
@@ -99140,6 +99306,855 @@ export const updateEventChatAccessCallableResponseSchema = {
     },
     "replayed": {
       "type": "boolean"
+    }
+  }
+};
+
+export const manageEventChatMemberCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_chat_member_payload.schema.json",
+  "title": "ManageEventChatMemberCallablePayload",
+  "description": "Organizer manager removes, bans or explicitly reinstates a room member. Reinstatement never joins on the participant's behalf.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "targetUid",
+    "action",
+    "expectedRevision",
+    "requestId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "enum": [
+        "remove",
+        "ban",
+        "reinstate"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const manageEventChatMemberCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_chat_member_response.schema.json",
+  "title": "ManageEventChatMemberCallableResponse",
+  "description": "Revisioned manager moderation receipt, not a current access grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setEventAssignmentFeatureConsentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_assignment_feature_consent_payload.schema.json",
+  "title": "SetEventAssignmentFeatureConsentCallablePayload",
+  "description": "Verified participant grants or withdraws assignment-only use of one exact submitted answer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "featureId",
+    "responseId",
+    "decision",
+    "expectedRevision",
+    "requestId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "featureId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "enum": [
+        "grant",
+        "withdraw"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const setEventAssignmentFeatureConsentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_event_assignment_feature_consent_response.schema.json",
+  "title": "SetEventAssignmentFeatureConsentCallableResponse",
+  "description": "Current exact-purpose participant decision, including replay status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "featureId",
+    "status",
+    "revision",
+    "receiptId",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "featureId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "enum": [
+        "granted",
+        "withdrawn"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const configureEventAssignmentFeaturesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/configure_event_assignment_features_payload.schema.json",
+  "title": "ConfigureEventAssignmentFeaturesCallablePayload",
+  "description": "Organizer maps reviewed versioned form questions to bounded soft assignment features; it does not grant answer use.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "requestId",
+    "rules"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const configureEventAssignmentFeaturesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/configure_event_assignment_features_response.schema.json",
+  "title": "ConfigureEventAssignmentFeaturesCallableResponse",
+  "description": "Saved soft-feature configuration revision, never a participant authorization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const previewEventAssignmentFeaturesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/preview_event_assignment_features_payload.schema.json",
+  "title": "PreviewEventAssignmentFeaturesCallablePayload",
+  "description": "Manager-only aggregate coverage preview for unsaved event-local structured matching rules.",
+  "x-callable-aliases": [
+    "previewEventAssignmentFeatures"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "rules"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "sourceFormIds": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    }
+  }
+};
+
+export const previewEventAssignmentFeaturesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_event_assignment_features_response.schema.json",
+  "title": "PreviewEventAssignmentFeaturesCallableResponse",
+  "description": "No answer values or participant identities: current roster coverage for an unsaved mapping.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "revision",
+    "rosterCount",
+    "coverageBasis",
+    "rows",
+    "sources",
+    "savedRules"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "rosterCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "coverageBasis": {
+      "const": "currentEventRoster"
+    },
+    "savedRules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "formId",
+          "formTitle",
+          "versionId",
+          "isActiveVersion",
+          "questions"
+        ],
+        "properties": {
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "isActiveVersion": {
+            "type": "boolean"
+          },
+          "questions": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "questionId",
+                "label",
+                "kind",
+                "options",
+                "minNumber",
+                "maxNumber"
+              ],
+              "properties": {
+                "questionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "kind": {
+                  "enum": [
+                    "singleChoice",
+                    "multiChoice",
+                    "number"
+                  ]
+                },
+                "minNumber": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "maxNumber": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "options": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "optionId",
+                      "label"
+                    ],
+                    "properties": {
+                      "optionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "kind",
+          "mode",
+          "weight",
+          "grantedCount",
+          "usableCount",
+          "missingCount"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "grantedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "usableCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "missingCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        }
+      }
+    }
+  }
+};
+
+export const listEventAssignmentFeatureChoicesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_assignment_feature_choices_payload.schema.json",
+  "title": "ListEventAssignmentFeatureChoicesCallablePayload",
+  "description": "Private participant discovery of exact event matching answers and prior grants.",
+  "x-callable-aliases": [
+    "listEventAssignmentFeatureChoices"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listEventAssignmentFeatureChoicesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_assignment_feature_choices_response.schema.json",
+  "title": "ListEventAssignmentFeatureChoicesCallableResponse",
+  "description": "Only the authenticated respondent's reviewed answer labels and purpose-specific decisions; old grants remain withdrawable after mapping/source changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "choices"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "choices": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "responseId",
+          "questionLabel",
+          "answerLabel",
+          "status",
+          "revision",
+          "canGrant"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "answerLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "status": {
+            "enum": [
+              "notGranted",
+              "granted",
+              "withdrawn"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "canGrant": {
+            "type": "boolean"
+          }
+        }
+      }
     }
   }
 };
@@ -123863,6 +124878,31 @@ export const eventAttendeeDocumentSchema = {
       ],
       "format": "email",
       "maxLength": 320
+    },
+    "cityMarketId": {
+      "description": "Private organizer-reported roster city; never a verified participant profile or eligibility input.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "hostImport",
+        "hostManual",
+        null
+      ]
     },
     "externalReference": {
       "type": [
@@ -149291,6 +150331,117 @@ export const eventSuccessPlanDocumentSchema = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "assignmentFeatureRules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureConfigHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300,
@@ -149610,6 +150761,148 @@ export const eventSuccessPlanDocumentSchema = {
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
     }
   }
+};
+
+export const eventAssignmentFeatureConsentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assignment_feature_consents.schema.json",
+  "title": "EventAssignmentFeatureConsentDocument",
+  "description": "Private participant-owned decision for one event and immutable form answer. Not implied by form submission, profile sharing, messaging consent, or host configuration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "responseId",
+    "featureId",
+    "formId",
+    "versionId",
+    "questionId",
+    "transformVersion",
+    "purpose",
+    "status",
+    "receiptId",
+    "revision",
+    "lastRequestId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "featureId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "transformVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "purpose": {
+      "const": "eventAssignmentMatching"
+    },
+    "status": {
+      "enum": [
+        "granted",
+        "withdrawn"
+      ]
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "eventAssignmentFeatureConsents",
+  "x-firestore-path": "eventAssignmentFeatureConsents/{consentId}",
+  "x-document-id-field": "consentId",
+  "x-owner": "participant consent callable; private server read"
 };
 
 export const eventSuccessConversationGraphDocumentSchema = {
@@ -150666,6 +151959,31 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
           ],
           "x-catch-ownership": "callable-owned"
         },
+        "assignmentFeatureAudit": {
+          "description": "Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "algorithmVersion",
+            "configHash",
+            "inputSnapshotId"
+          ],
+          "properties": {
+            "algorithmVersion": {
+              "const": "typed-soft-features-v1"
+            },
+            "configHash": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "inputSnapshotId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
         "createdAt": {
           "type": "object",
           "description": "Serialized Firestore Timestamp fixture shape.",
@@ -150781,6 +152099,166 @@ export const eventSuccessAssignmentDraftDocumentSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureGuard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "configHash",
+        "snapshots"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "configHash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "snapshots": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "eventId",
+              "organizerId",
+              "uid",
+              "featureId",
+              "formId",
+              "versionId",
+              "questionId",
+              "transformVersion",
+              "responseId",
+              "consentReceiptId",
+              "value"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "featureId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "formId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "versionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "questionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "transformVersion": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "consentReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "responseId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "optionId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "category",
+                          "ordinal"
+                        ]
+                      },
+                      "optionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "optionIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "set"
+                      },
+                      "optionIds": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 40,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "number"
+                      },
+                      "value": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
         }
       },
       "x-catch-ownership": "callable-owned"
@@ -152179,6 +153657,31 @@ export const eventSuccessAssignmentDocumentSchema = {
         "host_override_v1",
         "server"
       ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureAudit": {
+      "description": "Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithmVersion",
+        "configHash",
+        "inputSnapshotId"
+      ],
+      "properties": {
+        "algorithmVersion": {
+          "const": "typed-soft-features-v1"
+        },
+        "configHash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "inputSnapshotId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
       "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
@@ -178427,6 +179930,19 @@ export const importEventAttendeesCallablePayloadSchema = {
               "null"
             ],
             "maxLength": 320
+          },
+          "cityMarketId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "externalReference": {
             "type": [
@@ -215747,6 +217263,41 @@ export const listOrganizerFormResponsesCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "versionScope": {
+      "description": "Published native form version scope; null for all forms or imported forms. Version IDs are formId_vN for N from 1 through publishedVersion.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "activeVersionId",
+            "publishedVersion"
+          ],
+          "properties": {
+            "activeVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "publishedVersion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "items": {
       "type": "array",

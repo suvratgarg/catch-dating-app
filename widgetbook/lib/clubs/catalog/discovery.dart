@@ -1,10 +1,8 @@
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../../preview_layout_contracts.dart';
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -29,32 +27,6 @@ Widget clubAvatarRailStates(BuildContext context) {
         label: 'joined clubs',
         child: ClubAvatarRail(
           clubs: [widgetbookClubClub, widgetbookClubMinimalClub],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Discover list states',
-  type: ClubDiscoverList,
-  path: '[Club Discovery]/Sections',
-)
-Widget clubDiscoverListStates(BuildContext context) {
-  return WidgetbookScrollCatalogFrame(
-    title: 'ClubDiscoverList',
-    catalogId: 'section.club.discover_list',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'directory sliver',
-        child: WidgetbookClubSliverFrame(
-          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          slivers: [
-            ClubDiscoverList(
-              clubs: [widgetbookClubClub, widgetbookClubMinimalClub],
-              joinedClubIds: {widgetbookClubClub.id},
-            ),
-          ],
         ),
       ),
     ],
