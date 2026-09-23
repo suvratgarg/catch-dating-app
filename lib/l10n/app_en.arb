@@ -17120,13 +17120,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.create_event_photo_picker"
   },
-  "hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft": "Could not delete draft.",
-  "@hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
-  },
   "hostsEventDetailsStepVisiblecopyRequired": "Required",
   "@hostsEventDetailsStepVisiblecopyRequired": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).",

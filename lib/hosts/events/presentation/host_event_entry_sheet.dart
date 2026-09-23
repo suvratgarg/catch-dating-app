@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -65,12 +66,9 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
     try {
       await widget.onDeleteDraft!(draft);
       if (mounted) setState(() => _drafts.removeWhere((d) => d.id == draft.id));
-    } catch (_) {
+    } catch (error) {
       if (mounted) {
-        showCatchSnackBar(
-          context,
-          context.l10n.hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft,
-        );
+        showCatchErrorSnackBar(context, error);
       }
     } finally {
       if (mounted) setState(() => _deletingDraftId = null);

@@ -14792,12 +14792,6 @@ abstract class AppLocalizations {
   /// **'Add photos'**
   String get hostsCreateEventPhotoPickerVisiblecopyAddPhotos;
 
-  /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Could not delete draft.'**
-  String get hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft;
-
   /// Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:

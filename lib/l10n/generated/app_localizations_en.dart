@@ -9432,10 +9432,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventPhotoPickerVisiblecopyAddPhotos => 'Add photos';
 
   @override
-  String get hostsDraftPickerSheetVisiblecopyCouldNotDeleteDraft =>
-      'Could not delete draft.';
-
-  @override
   String get hostsEventDetailsStepVisiblecopyRequired => 'Required';
 
   @override
