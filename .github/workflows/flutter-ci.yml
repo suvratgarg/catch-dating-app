@@ -249,7 +249,9 @@ jobs:
           # Exact PNG goldens are generated against the local desktop renderer and
           # are intentionally tagged out of Ubuntu CI to avoid cross-platform font
           # antialiasing noise. Run them locally with `flutter test test/goldens`.
-          flutter test --concurrency=1 --exclude-tags=golden --coverage "${files[@]}"
+          # Two file workers use the hosted runner without unbounded compiler
+          # processes; shard coverage is still owned by this single invocation.
+          flutter test --concurrency=2 --exclude-tags=golden --coverage "${files[@]}"
 
       - name: Upload test-shard coverage
         uses: actions/upload-artifact@v7
