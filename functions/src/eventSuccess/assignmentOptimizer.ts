@@ -1807,6 +1807,9 @@ function buildGroupUnitsForOptimizer<
     }
   }
 
+  rebalanceGroupsForSoftFeatures(groups, params.blockedPairs,
+    params.constraints, params.seenPairs === undefined);
+
   return groups
     .map((group, index) => groupSummary({
       group,
@@ -1816,6 +1819,57 @@ function buildGroupUnitsForOptimizer<
       matchingObjective: params.matchingObjective,
     }))
     .filter((group) => group.participants.length > 0);
+}
+
+/** Bounded deterministic local improvement for a true group objective. */
+function rebalanceGroupsForSoftFeatures<T extends AssignmentParticipant>(
+  groups: T[][],
+  blockedPairs: Set<string>,
+  constraints: NormalizedAssignmentConstraints,
+  staticGroups: boolean
+): void {
+  const features = constraints.softFeatures;
+  const size = groups.reduce((sum, group) => sum + group.length, 0);
+  if (!staticGroups || !features?.rules.some((rule) =>
+    rule.mode === "balanceAcrossGroups") || size > 80) return;
+  for (let pass = 0; pass < Math.min(20, size); pass++) {
+    let improved = false;
+    for (let i = 0; i < groups.length && !improved; i++) {
+      for (let j = i + 1; j < groups.length && !improved; j++) {
+        const before = assignmentFeatureGroupBalanceCost(features,
+          groups[i].map((person) => person.uid)) +
+          assignmentFeatureGroupBalanceCost(features,
+            groups[j].map((person) => person.uid));
+        for (let a = 0; a < groups[i].length && !improved; a++) {
+          for (let b = 0; b < groups[j].length; b++) {
+            const left = groups[i][a];
+            const right = groups[j][b];
+            if (constraints.anchorGroupByUid.has(left.uid) ||
+                constraints.anchorGroupByUid.has(right.uid) ||
+                constraints.keepTogetherPeersByUid.has(left.uid) ||
+                constraints.keepTogetherPeersByUid.has(right.uid)) continue;
+            const nextLeft = groups[i].filter((_, index) => index !== a);
+            const nextRight = groups[j].filter((_, index) => index !== b);
+            if (!canJoinGroup(right, nextLeft, blockedPairs, constraints) ||
+                !canJoinGroup(left, nextRight, blockedPairs, constraints)) {
+              continue;
+            }
+            const after = assignmentFeatureGroupBalanceCost(features,
+              [...nextLeft, right].map((person) => person.uid)) +
+              assignmentFeatureGroupBalanceCost(features,
+                [...nextRight, left].map((person) => person.uid));
+            if (after < before - 1e-9) {
+              groups[i][a] = right;
+              groups[j][b] = left;
+              improved = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (!improved) break;
+  }
 }
 
 /**
@@ -2447,6 +2501,9 @@ function groupPlacementCost<T extends AssignmentParticipant>(params: {
   const featureBalanceCost = assignmentFeatureGroupBalanceCost(
     params.constraints.softFeatures,
     [...params.group, params.participant].map((member) => member.uid)
+  ) - assignmentFeatureGroupBalanceCost(
+    params.constraints.softFeatures,
+    params.group.map((member) => member.uid)
   );
   if (params.group.length === 0) {
     return hostPlacementCost + activityPlacementCost + featureBalanceCost;

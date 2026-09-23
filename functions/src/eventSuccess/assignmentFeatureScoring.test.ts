@@ -72,6 +72,12 @@ test("missing consent, foreign source and unmapped values are neutral", () => {
 
 test("invalid ranges, weights and ordinal options fail", () => {
   assert.throws(() => validateAssignmentFeatureRules([
+    {...ordinal, kind: "other" as "ordinal"},
+  ]));
+  assert.throws(() => validateAssignmentFeatureRules([
+    {...ordinal, mode: "other" as "preferSimilar"},
+  ]));
+  assert.throws(() => validateAssignmentFeatureRules([
     {...ordinal, scoreByOptionId: {easy: 1, medium: 1, fast: 1}},
   ]));
   assert.throws(() => validateAssignmentFeatureRules([
@@ -83,6 +89,10 @@ test("invalid ranges, weights and ordinal options fail", () => {
   assert.throws(() => validateAssignmentFeatureRules([
     {...lineage, kind: "number", mode: "preferSimilar", weight: 10,
       minimum: 2, maximum: 2},
+  ]));
+  assert.throws(() => validateAssignmentFeatureRules([
+    {...lineage, kind: "number", mode: "preferSimilar", weight: 10,
+      minimum: -Number.MAX_VALUE, maximum: Number.MAX_VALUE},
   ]));
 });
 

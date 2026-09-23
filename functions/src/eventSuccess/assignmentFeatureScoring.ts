@@ -132,7 +132,10 @@ export function validateAssignmentFeatureRules(
   }
   const ids = new Set<string>();
   for (const rule of rules) {
-    if (!nonempty(rule.featureId) || !nonempty(rule.formId) ||
+    if (!["category", "set", "number", "ordinal"].includes(rule.kind) ||
+        !["preferSimilar", "preferDifferent", "balanceAcrossGroups"]
+          .includes(rule.mode) ||
+        !nonempty(rule.featureId) || !nonempty(rule.formId) ||
         !nonempty(rule.versionId) || !nonempty(rule.questionId) ||
         !Number.isSafeInteger(rule.transformVersion) ||
         rule.transformVersion < 1 || ids.has(rule.featureId) ||
@@ -149,7 +152,9 @@ export function validateAssignmentFeatureRules(
       if (bounds.length < 2 || bounds.some((v) =>
         typeof v !== "number" || !Number.isFinite(v)) ||
           Math.min(...bounds as number[]) ===
-          Math.max(...bounds as number[])) {
+          Math.max(...bounds as number[]) ||
+          !Number.isFinite(Math.max(...bounds as number[]) -
+            Math.min(...bounds as number[]))) {
         throw new Error("Invalid assignment feature range.");
       }
       if (rule.kind === "number" &&

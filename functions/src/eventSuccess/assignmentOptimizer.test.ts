@@ -56,10 +56,48 @@ test("typed answer feature changes pair order without relaxing blocked pairs",
       ["a", "b"]);
     const withoutConfig = runAssignmentEngine({...params,
       softFeatures: undefined, blockedPairs: new Set()});
-    const old = runAssignmentEngine({...params,
-      softFeatures: undefined, blockedPairs: new Set()});
-    assert.deepEqual(withoutConfig.rotationRounds, old.rotationRounds);
+    assert.deepEqual(pairUids(withoutConfig.rotationRounds[0].pairs[0]),
+      ["a", "b"]);
+    const empty = runAssignmentEngine({...params,
+      softFeatures: {...params.softFeatures, rules: [], snapshots: []},
+      blockedPairs: new Set()});
+    assert.deepEqual(empty.rotationRounds, withoutConfig.rotationRounds);
+    const allMissing = runAssignmentEngine({...params,
+      softFeatures: {...params.softFeatures, snapshots: []},
+      blockedPairs: new Set()});
+    assert.deepEqual(allMissing.rotationRounds, withoutConfig.rotationRounds);
   });
+
+test("typed group balance distributes present categories across pods", () => {
+  const rule: AssignmentFeatureRule = {
+    featureId: "experience", formId: "form", versionId: "version-1",
+    questionId: "question", transformVersion: 1, kind: "category",
+    mode: "balanceAcrossGroups", weight: 100, optionIds: ["new", "old"],
+  };
+  const snapshots: EventAssignmentFeatureSnapshot[] = [
+    ["a", "new"], ["b", "new"], ["c", "old"], ["d", "old"],
+  ].map(([uid, optionId]) => ({eventId: "event", organizerId: "org",
+    uid, featureId: "experience", formId: "form",
+    versionId: "version-1", questionId: "question", transformVersion: 1,
+    consentReceiptId: `${uid}-grant`, value: {kind: "category", optionId}}));
+  const plan = runAssignmentEngine({
+    participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
+    blockedPairs: new Set(),
+    topology: {unitKind: "pods", unitSize: 2, groupCount: 2,
+      maxGroupSize: 2, rotationIntervalMinutes: null,
+      rotationsEnabled: false},
+    assignmentAlgorithm: "socialPods", compatibilityPolicy: "none",
+    matchingObjective: "coverage",
+    softFeatures: {eventId: "event", organizerId: "org",
+      rules: [rule], snapshots},
+  });
+  assert.equal(plan.groups.length, 2);
+  for (const group of plan.groups) {
+    const uids = group.participants.map((person) => person.uid);
+    assert.equal(uids.filter((uid) => ["a", "b"].includes(uid)).length, 1);
+    assert.equal(uids.filter((uid) => ["c", "d"].includes(uid)).length, 1);
+  }
+});
 
 test("minimizes maximum exclusion time ahead of assignment score", () => {
   const plan = runAssignmentEngine({
