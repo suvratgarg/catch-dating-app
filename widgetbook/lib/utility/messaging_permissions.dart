@@ -97,7 +97,11 @@ class _MessagingPreviewController extends MessagingPermissionsController {
   Future<MessagingPermissionsState> build() async => _state();
 
   @override
-  Future<void> withdraw(String uid, MessagingPermission permission) async {}
+  Future<void> withdraw(
+    String uid,
+    MessagingPermission permission, {
+    MessagingPermissionPurpose? purpose,
+  }) async {}
 
   @override
   Future<void> loadMore() async {}

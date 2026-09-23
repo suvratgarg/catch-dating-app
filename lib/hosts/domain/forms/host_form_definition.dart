@@ -146,25 +146,6 @@ class HostFormDefinition {
     }
     return HostFormDefinition._(next);
   }
-  bool get usesPurposeMessaging {
-    final settings = formDefinitionDeepStringMap(_json['messagingConsent']);
-    return settings.containsKey('organizerOperationsWhatsapp') ||
-        settings.containsKey('organizerMarketingWhatsapp') ||
-        settings.containsKey('catchMarketingWhatsapp');
-  }
-  bool get offersOrganizerOperationsWhatsapp =>
-      formDefinitionDeepStringMap(
-        _json['messagingConsent'],
-      )['organizerOperationsWhatsapp'] == true;
-  bool get offersOrganizerMarketingWhatsapp =>
-      formDefinitionDeepStringMap(
-        _json['messagingConsent'],
-      )['organizerMarketingWhatsapp'] == true;
-  bool get offersCatchMarketingWhatsapp =>
-      formDefinitionDeepStringMap(
-        _json['messagingConsent'],
-      )['catchMarketingWhatsapp'] == true;
-
   HostFormDefinition withMessagingConsent({
     bool? organizerWhatsapp,
     bool? catchWhatsapp,
