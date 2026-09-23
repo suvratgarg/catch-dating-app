@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.141.0
+version: 1.142.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2569,8 +2569,8 @@ exact response/question/asset before reading pinned, digest-checked bytes, and
 rechecks ownership, withdrawal, deletion and expiry after processing. The UI
 enables photo selection only after successful image decoding and evicts its
 private decoder cache entry on disposal. Claim still independently validates
-and safety-checks the original source. Event-scoped card sharing remains
-separate delivery work.
+and safety-checks the original source. Event-scoped card sharing requires the
+separate explicit grant described below.
 
 Free and paid submission receipts expose `profileReviewAvailable` only after
 revalidating the active owned proposal. The public completion page offers the
@@ -2660,6 +2660,35 @@ account deletion removes presence and its tombstone fences subsequent writes.
 The reader returns at most 10 visible typing names from a bounded 11-row
 candidate query; this is a presence hint, not a member census. Client transport
 and UI must discard cached room content when access fails or identity changes.
+
+### Event participant profile sharing
+
+Joining shares the claimed display name only. `getEventChatProfileSharing`
+returns the caller's private choices and eligible core field/photo identifiers.
+`updateEventChatProfileSharing` saves an explicit event-specific selection in
+server-only `eventChatProfileShares`, with verified phone identity, reviewed
+profile/card/membership revisions and a payload-bound replay receipt. Records
+store selected identifiers, not copied answers. Leaving and rejoining cannot
+revive a previous selection. Own settings and revocation remain available after
+admission cancellation, room closure or event removal; deleted-account fences
+still apply. Account deletion removes the sharing record.
+
+`getEventChatProfile` requires both viewer and subject to be currently admitted,
+joined, claimed and unblocked in either direction. Its bounded projection can
+include selected core fields, a reviewed owned profile photo, and selected
+applicant-submitted answers from this event organizer's claimed card. Contact
+information, date of birth, dating preferences, CRM notes and other organizers'
+cards never enter this projection. Core fields/photo require the reviewed user
+profile revision; card answers require the reviewed card revision and an active,
+owned, claimed form source. Changed or withdrawn sources disappear, without
+fallback to another answer or cached copy. Custom file answers remain private;
+only approved owned core profile photos can be shared through this reader.
+
+Photo reads pin the Storage generation, cap input size, strip metadata and
+return a bounded JPEG preview rather than a reusable download URL. A second
+transaction rechecks all permissions and selected source revisions after image
+processing. Selection and viewing interfaces must discard stale cached values
+when the signed-in account changes or current permission fails.
 
 ### Organizer Application Intake
 

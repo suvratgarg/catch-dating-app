@@ -96101,6 +96101,840 @@ export const participantFormProfileProposalDocumentSchema = {
   }
 };
 
+export const eventChatProfileShareDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_profile_shares.schema.json",
+  "title": "EventChatProfileShareDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "organizerId",
+    "revision",
+    "selection",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.",
+  "x-firestore-collection": "eventChatProfileShares",
+  "x-firestore-path": "eventChatProfileShares/{shareId}",
+  "x-document-id-field": "shareId",
+  "x-owner": "event profile sharing callables"
+};
+
+export const getEventChatProfileSharingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_profile_sharing_payload.schema.json",
+  "title": "GetEventChatProfileSharingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const updateEventChatProfileSharingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_chat_profile_sharing_payload.schema.json",
+  "title": "UpdateEventChatProfileSharingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "expectedRevision",
+    "requestId",
+    "selection"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getEventChatProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_profile_payload.schema.json",
+  "title": "GetEventChatProfileCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "participantUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "participantUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getEventChatProfileSharingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_sharing_response.schema.json",
+  "title": "GetEventChatProfileSharingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "revision",
+    "selection",
+    "canShare",
+    "profileRevision",
+    "membershipRevision",
+    "coreFields",
+    "photoIds"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "canShare": {
+      "type": "boolean"
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "membershipRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "value"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "photoIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    }
+  }
+};
+
+export const updateEventChatProfileSharingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_event_chat_profile_sharing_response.schema.json",
+  "title": "UpdateEventChatProfileSharingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const getEventChatProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_response.schema.json",
+  "title": "GetEventChatProfileCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "participantUid",
+    "displayName",
+    "coreFields",
+    "cardFields",
+    "photo"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "participantUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "value"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "cardFields": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "photo": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "GetParticipantFormPhotoCallableResponse",
+          "description": "Bounded metadata-free JPEG bytes for private in-memory review; never an original upload URL.",
+          "required": [
+            "contentType",
+            "previewBase64",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "contentType": {
+              "type": "string",
+              "const": "image/jpeg"
+            },
+            "previewBase64": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 349528,
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 640
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 640
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
 export const eventChatRoomDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_chat_rooms.schema.json",

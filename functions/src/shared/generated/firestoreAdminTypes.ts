@@ -4997,6 +4997,52 @@ export interface ParticipantFormProfileProposalDocument {
 }
 
 /**
+ * Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.
+ */
+export interface EventChatProfileShareDocument {
+  eventId: string;
+  uid: string;
+  organizerId: string | null;
+  revision: number;
+  selection: {
+    profileRevision: number;
+    membershipRevision: number;
+    /**
+     * @maxItems 14
+     */
+    coreFieldIds: (
+      | "age"
+      | "gender"
+      | "city"
+      | "heightCm"
+      | "occupation"
+      | "company"
+      | "education"
+      | "languages"
+      | "relationshipGoal"
+      | "drinking"
+      | "smoking"
+      | "workout"
+      | "diet"
+      | "children"
+    )[];
+    photoId: string | null;
+    card: {
+      responseId: string;
+      revision: number;
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      questionIds: string[];
+    } | null;
+    termsVersion: "event-profile-sharing-v1";
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Host-controlled event conversation availability. No attendee admission or profile data.
  */
 export interface EventChatRoomDocument {

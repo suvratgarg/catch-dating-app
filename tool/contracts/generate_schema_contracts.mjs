@@ -1009,6 +1009,41 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/participantFormProfileProposalDocument.ts",
   },
   {
+    name: "EventChatProfileShareDocument",
+    source: "firestore/event_chat_profile_shares.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatProfileShareDocument.ts",
+  },
+  {
+    name: "GetEventChatProfileSharingCallablePayload",
+    source: "callables/get_event_chat_profile_sharing_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileSharingCallablePayload.ts",
+  },
+  {
+    name: "UpdateEventChatProfileSharingCallablePayload",
+    source: "callables/update_event_chat_profile_sharing_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatProfileSharingCallablePayload.ts",
+  },
+  {
+    name: "GetEventChatProfileCallablePayload",
+    source: "callables/get_event_chat_profile_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileCallablePayload.ts",
+  },
+  {
+    name: "GetEventChatProfileSharingCallableResponse",
+    source: "callable_responses/get_event_chat_profile_sharing_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileSharingCallableResponse.ts",
+  },
+  {
+    name: "UpdateEventChatProfileSharingCallableResponse",
+    source: "callable_responses/update_event_chat_profile_sharing_response.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatProfileSharingCallableResponse.ts",
+  },
+  {
+    name: "GetEventChatProfileCallableResponse",
+    source: "callable_responses/get_event_chat_profile_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatProfileCallableResponse.ts",
+  },
+  {
     name: "EventChatRoomDocument",
     source: "firestore/event_chat_rooms.schema.json",
     typeOutput: "functions/src/shared/generated/eventChatRoomDocument.ts",

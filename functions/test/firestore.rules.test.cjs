@@ -1886,6 +1886,7 @@ describe("firestore.rules", () => {
         ["eventChatMessages", "message-1"],
         ["eventChatReactions", "reaction-1"],
         ["eventChatPresence", "presence-1"],
+        ["eventChatProfileShares", "share-1"],
         ["eventChatRooms", "event-1"],
         ["eventChatMemberships", "member-1"],
         ["eventChatAccessReceipts", "receipt-1"],

@@ -194,6 +194,13 @@ import {
   getParticipantFormProfileCallablePayloadSchema,
   getParticipantFormProfileCallableResponseSchema,
   participantFormProfileProposalDocumentSchema,
+  eventChatProfileShareDocumentSchema,
+  getEventChatProfileSharingCallablePayloadSchema,
+  updateEventChatProfileSharingCallablePayloadSchema,
+  getEventChatProfileCallablePayloadSchema,
+  getEventChatProfileSharingCallableResponseSchema,
+  updateEventChatProfileSharingCallableResponseSchema,
+  getEventChatProfileCallableResponseSchema,
   eventChatRoomDocumentSchema,
   eventChatMembershipDocumentSchema,
   eventChatAccessReceiptDocumentSchema,
@@ -958,6 +965,13 @@ export const validateGetParticipantFormPhotoCallableResponse = ajv.compile(getPa
 export const validateGetParticipantFormProfileCallablePayload = ajv.compile(getParticipantFormProfileCallablePayloadSchema);
 export const validateGetParticipantFormProfileCallableResponse = ajv.compile(getParticipantFormProfileCallableResponseSchema);
 export const validateParticipantFormProfileProposalDocument = ajv.compile(participantFormProfileProposalDocumentSchema);
+export const validateEventChatProfileShareDocument = ajv.compile(eventChatProfileShareDocumentSchema);
+export const validateGetEventChatProfileSharingCallablePayload = ajv.compile(getEventChatProfileSharingCallablePayloadSchema);
+export const validateUpdateEventChatProfileSharingCallablePayload = ajv.compile(updateEventChatProfileSharingCallablePayloadSchema);
+export const validateGetEventChatProfileCallablePayload = ajv.compile(getEventChatProfileCallablePayloadSchema);
+export const validateGetEventChatProfileSharingCallableResponse = ajv.compile(getEventChatProfileSharingCallableResponseSchema);
+export const validateUpdateEventChatProfileSharingCallableResponse = ajv.compile(updateEventChatProfileSharingCallableResponseSchema);
+export const validateGetEventChatProfileCallableResponse = ajv.compile(getEventChatProfileCallableResponseSchema);
 export const validateEventChatRoomDocument = ajv.compile(eventChatRoomDocumentSchema);
 export const validateEventChatMembershipDocument = ajv.compile(eventChatMembershipDocumentSchema);
 export const validateEventChatAccessReceiptDocument = ajv.compile(eventChatAccessReceiptDocumentSchema);

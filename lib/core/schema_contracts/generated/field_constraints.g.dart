@@ -29481,6 +29481,146 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventChatProfileShareDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatProfileShareDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatProfileShareDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatProfileShareDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatProfileShareDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatProfileShareDocumentSelectionCardQuestionIds = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.card.questionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const eventChatProfileShareDocumentSelectionCardQuestionIdsItems = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.card.questionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatProfileShareDocumentSelectionCardResponseId = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.card.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatProfileShareDocumentSelectionCardRevision = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.card.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatProfileShareDocumentSelectionCoreFieldIds = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.coreFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+    maxItems: 14,
+    uniqueItems: true,
+  );
+
+  static const eventChatProfileShareDocumentSelectionCoreFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.coreFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const eventChatProfileShareDocumentSelectionMembershipRevision = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.membershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatProfileShareDocumentSelectionPhotoId = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.photoId',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const eventChatProfileShareDocumentSelectionProfileRevision = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatProfileShareDocumentSelectionTermsVersion = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.selection.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatProfileShareDocumentUid = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatProfileShareDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatProfileShareDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatProfileShareDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventChatReactionDocumentEventId = CatchContractFieldConstraints(
     path: 'eventChatReactionDocument.eventId',
     maxLength: 180,
@@ -59454,6 +59594,315 @@ abstract final class CatchContractConstraints {
   static const getEventChatAccessCallableResponseTitle = CatchContractFieldConstraints(
     path: 'getEventChatAccessCallableResponse.title',
     maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallablePayloadParticipantUid = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallablePayload.participantUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallableResponseCardFields = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.cardFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const getEventChatProfileCallableResponseCardFieldsItemsLabel = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.cardFields.items.label',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallableResponseCardFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.cardFields.items.value',
+    maxLength: 10000,
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const getEventChatProfileCallableResponseCoreFields = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.coreFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 14,
+  );
+
+  static const getEventChatProfileCallableResponseCoreFieldsItemsFieldId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.coreFields.items.fieldId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const getEventChatProfileCallableResponseCoreFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.coreFields.items.value',
+    maxLength: 10000,
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const getEventChatProfileCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallableResponseParticipantUid = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.participantUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallableResponsePhotoContentType = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.photo.contentType',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileCallableResponsePhotoHeight = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.photo.height',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 640,
+  );
+
+  static const getEventChatProfileCallableResponsePhotoPreviewBase64 = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.photo.previewBase64',
+    maxLength: 349528,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9+/]+={0,2}\$',
+  );
+
+  static const getEventChatProfileCallableResponsePhotoWidth = CatchContractFieldConstraints(
+    path: 'getEventChatProfileCallableResponse.photo.width',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 640,
+  );
+
+  static const getEventChatProfileSharingCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseCanShare = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.canShare',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseCoreFields = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.coreFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 14,
+  );
+
+  static const getEventChatProfileSharingCallableResponseCoreFieldsItemsFieldId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.coreFields.items.fieldId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseCoreFieldsItemsValue = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.coreFields.items.value',
+    maxLength: 10000,
+    required: true,
+    valueTypes: <String>['string', 'number', 'boolean', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 100,
+  );
+
+  static const getEventChatProfileSharingCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseMembershipRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.membershipRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponsePhotoIds = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.photoIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const getEventChatProfileSharingCallableResponsePhotoIdsItems = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.photoIds.items',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseProfileRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionCardQuestionIds = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.card.questionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionCardQuestionIdsItems = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.card.questionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionCardResponseId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.card.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionCardRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.card.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionCoreFieldIds = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.coreFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+    maxItems: 14,
+    uniqueItems: true,
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionCoreFieldIdsItems = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.coreFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionMembershipRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.membershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionPhotoId = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.photoId',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionProfileRevision = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatProfileSharingCallableResponseSelectionTermsVersion = CatchContractFieldConstraints(
+    path: 'getEventChatProfileSharingCallableResponse.selection.termsVersion',
     required: true,
     valueTypes: <String>['string'],
   );
@@ -98828,6 +99277,133 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const updateEventChatProfileSharingCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionCardQuestionIds = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.card.questionIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionCardQuestionIdsItems = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.card.questionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionCardResponseId = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.card.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionCardRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.card.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionCoreFieldIds = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.coreFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+    maxItems: 14,
+    uniqueItems: true,
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionCoreFieldIdsItems = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.coreFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['age', 'gender', 'city', 'heightCm', 'occupation', 'company', 'education', 'languages', 'relationshipGoal', 'drinking', 'smoking', 'workout', 'diet', 'children'],
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionMembershipRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.membershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionPhotoId = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.photoId',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionProfileRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const updateEventChatProfileSharingCallablePayloadSelectionTermsVersion = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallablePayload.selection.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatProfileSharingCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventChatProfileSharingCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatProfileSharingCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const updateEventRehearsalSetupCallablePayloadActorCount = CatchContractFieldConstraints(
     path: 'updateEventRehearsalSetupCallablePayload.actorCount',
     required: true,
@@ -109075,6 +109651,24 @@ abstract final class CatchContractConstraints {
     'eventChatPresenceDocument.uid': eventChatPresenceDocumentUid,
     'eventChatPresenceDocument.updatedAt._nanoseconds': eventChatPresenceDocumentUpdatedAtNanoseconds,
     'eventChatPresenceDocument.updatedAt._seconds': eventChatPresenceDocumentUpdatedAtSeconds,
+    'eventChatProfileShareDocument.createdAt._nanoseconds': eventChatProfileShareDocumentCreatedAtNanoseconds,
+    'eventChatProfileShareDocument.createdAt._seconds': eventChatProfileShareDocumentCreatedAtSeconds,
+    'eventChatProfileShareDocument.eventId': eventChatProfileShareDocumentEventId,
+    'eventChatProfileShareDocument.organizerId': eventChatProfileShareDocumentOrganizerId,
+    'eventChatProfileShareDocument.revision': eventChatProfileShareDocumentRevision,
+    'eventChatProfileShareDocument.selection.card.questionIds': eventChatProfileShareDocumentSelectionCardQuestionIds,
+    'eventChatProfileShareDocument.selection.card.questionIds.items': eventChatProfileShareDocumentSelectionCardQuestionIdsItems,
+    'eventChatProfileShareDocument.selection.card.responseId': eventChatProfileShareDocumentSelectionCardResponseId,
+    'eventChatProfileShareDocument.selection.card.revision': eventChatProfileShareDocumentSelectionCardRevision,
+    'eventChatProfileShareDocument.selection.coreFieldIds': eventChatProfileShareDocumentSelectionCoreFieldIds,
+    'eventChatProfileShareDocument.selection.coreFieldIds.items': eventChatProfileShareDocumentSelectionCoreFieldIdsItems,
+    'eventChatProfileShareDocument.selection.membershipRevision': eventChatProfileShareDocumentSelectionMembershipRevision,
+    'eventChatProfileShareDocument.selection.photoId': eventChatProfileShareDocumentSelectionPhotoId,
+    'eventChatProfileShareDocument.selection.profileRevision': eventChatProfileShareDocumentSelectionProfileRevision,
+    'eventChatProfileShareDocument.selection.termsVersion': eventChatProfileShareDocumentSelectionTermsVersion,
+    'eventChatProfileShareDocument.uid': eventChatProfileShareDocumentUid,
+    'eventChatProfileShareDocument.updatedAt._nanoseconds': eventChatProfileShareDocumentUpdatedAtNanoseconds,
+    'eventChatProfileShareDocument.updatedAt._seconds': eventChatProfileShareDocumentUpdatedAtSeconds,
     'eventChatReactionDocument.eventId': eventChatReactionDocumentEventId,
     'eventChatReactionDocument.messageId': eventChatReactionDocumentMessageId,
     'eventChatReactionDocument.reaction': eventChatReactionDocumentReaction,
@@ -113099,6 +113693,45 @@ abstract final class CatchContractConstraints {
     'getEventChatAccessCallableResponse.room.status': getEventChatAccessCallableResponseRoomStatus,
     'getEventChatAccessCallableResponse.termsVersion': getEventChatAccessCallableResponseTermsVersion,
     'getEventChatAccessCallableResponse.title': getEventChatAccessCallableResponseTitle,
+    'getEventChatProfileCallablePayload.eventId': getEventChatProfileCallablePayloadEventId,
+    'getEventChatProfileCallablePayload.expectedUid': getEventChatProfileCallablePayloadExpectedUid,
+    'getEventChatProfileCallablePayload.participantUid': getEventChatProfileCallablePayloadParticipantUid,
+    'getEventChatProfileCallableResponse.cardFields': getEventChatProfileCallableResponseCardFields,
+    'getEventChatProfileCallableResponse.cardFields.items.label': getEventChatProfileCallableResponseCardFieldsItemsLabel,
+    'getEventChatProfileCallableResponse.cardFields.items.value': getEventChatProfileCallableResponseCardFieldsItemsValue,
+    'getEventChatProfileCallableResponse.coreFields': getEventChatProfileCallableResponseCoreFields,
+    'getEventChatProfileCallableResponse.coreFields.items.fieldId': getEventChatProfileCallableResponseCoreFieldsItemsFieldId,
+    'getEventChatProfileCallableResponse.coreFields.items.value': getEventChatProfileCallableResponseCoreFieldsItemsValue,
+    'getEventChatProfileCallableResponse.displayName': getEventChatProfileCallableResponseDisplayName,
+    'getEventChatProfileCallableResponse.eventId': getEventChatProfileCallableResponseEventId,
+    'getEventChatProfileCallableResponse.participantUid': getEventChatProfileCallableResponseParticipantUid,
+    'getEventChatProfileCallableResponse.photo.contentType': getEventChatProfileCallableResponsePhotoContentType,
+    'getEventChatProfileCallableResponse.photo.height': getEventChatProfileCallableResponsePhotoHeight,
+    'getEventChatProfileCallableResponse.photo.previewBase64': getEventChatProfileCallableResponsePhotoPreviewBase64,
+    'getEventChatProfileCallableResponse.photo.width': getEventChatProfileCallableResponsePhotoWidth,
+    'getEventChatProfileSharingCallablePayload.eventId': getEventChatProfileSharingCallablePayloadEventId,
+    'getEventChatProfileSharingCallablePayload.expectedUid': getEventChatProfileSharingCallablePayloadExpectedUid,
+    'getEventChatProfileSharingCallableResponse.canShare': getEventChatProfileSharingCallableResponseCanShare,
+    'getEventChatProfileSharingCallableResponse.coreFields': getEventChatProfileSharingCallableResponseCoreFields,
+    'getEventChatProfileSharingCallableResponse.coreFields.items.fieldId': getEventChatProfileSharingCallableResponseCoreFieldsItemsFieldId,
+    'getEventChatProfileSharingCallableResponse.coreFields.items.value': getEventChatProfileSharingCallableResponseCoreFieldsItemsValue,
+    'getEventChatProfileSharingCallableResponse.eventId': getEventChatProfileSharingCallableResponseEventId,
+    'getEventChatProfileSharingCallableResponse.membershipRevision': getEventChatProfileSharingCallableResponseMembershipRevision,
+    'getEventChatProfileSharingCallableResponse.organizerId': getEventChatProfileSharingCallableResponseOrganizerId,
+    'getEventChatProfileSharingCallableResponse.photoIds': getEventChatProfileSharingCallableResponsePhotoIds,
+    'getEventChatProfileSharingCallableResponse.photoIds.items': getEventChatProfileSharingCallableResponsePhotoIdsItems,
+    'getEventChatProfileSharingCallableResponse.profileRevision': getEventChatProfileSharingCallableResponseProfileRevision,
+    'getEventChatProfileSharingCallableResponse.revision': getEventChatProfileSharingCallableResponseRevision,
+    'getEventChatProfileSharingCallableResponse.selection.card.questionIds': getEventChatProfileSharingCallableResponseSelectionCardQuestionIds,
+    'getEventChatProfileSharingCallableResponse.selection.card.questionIds.items': getEventChatProfileSharingCallableResponseSelectionCardQuestionIdsItems,
+    'getEventChatProfileSharingCallableResponse.selection.card.responseId': getEventChatProfileSharingCallableResponseSelectionCardResponseId,
+    'getEventChatProfileSharingCallableResponse.selection.card.revision': getEventChatProfileSharingCallableResponseSelectionCardRevision,
+    'getEventChatProfileSharingCallableResponse.selection.coreFieldIds': getEventChatProfileSharingCallableResponseSelectionCoreFieldIds,
+    'getEventChatProfileSharingCallableResponse.selection.coreFieldIds.items': getEventChatProfileSharingCallableResponseSelectionCoreFieldIdsItems,
+    'getEventChatProfileSharingCallableResponse.selection.membershipRevision': getEventChatProfileSharingCallableResponseSelectionMembershipRevision,
+    'getEventChatProfileSharingCallableResponse.selection.photoId': getEventChatProfileSharingCallableResponseSelectionPhotoId,
+    'getEventChatProfileSharingCallableResponse.selection.profileRevision': getEventChatProfileSharingCallableResponseSelectionProfileRevision,
+    'getEventChatProfileSharingCallableResponse.selection.termsVersion': getEventChatProfileSharingCallableResponseSelectionTermsVersion,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,
@@ -118509,6 +119142,22 @@ abstract final class CatchContractConstraints {
     'updateEventChatAccessCallablePayload.termsVersion': updateEventChatAccessCallablePayloadTermsVersion,
     'updateEventChatAccessCallableResponse.replayed': updateEventChatAccessCallableResponseReplayed,
     'updateEventChatAccessCallableResponse.revision': updateEventChatAccessCallableResponseRevision,
+    'updateEventChatProfileSharingCallablePayload.eventId': updateEventChatProfileSharingCallablePayloadEventId,
+    'updateEventChatProfileSharingCallablePayload.expectedRevision': updateEventChatProfileSharingCallablePayloadExpectedRevision,
+    'updateEventChatProfileSharingCallablePayload.expectedUid': updateEventChatProfileSharingCallablePayloadExpectedUid,
+    'updateEventChatProfileSharingCallablePayload.requestId': updateEventChatProfileSharingCallablePayloadRequestId,
+    'updateEventChatProfileSharingCallablePayload.selection.card.questionIds': updateEventChatProfileSharingCallablePayloadSelectionCardQuestionIds,
+    'updateEventChatProfileSharingCallablePayload.selection.card.questionIds.items': updateEventChatProfileSharingCallablePayloadSelectionCardQuestionIdsItems,
+    'updateEventChatProfileSharingCallablePayload.selection.card.responseId': updateEventChatProfileSharingCallablePayloadSelectionCardResponseId,
+    'updateEventChatProfileSharingCallablePayload.selection.card.revision': updateEventChatProfileSharingCallablePayloadSelectionCardRevision,
+    'updateEventChatProfileSharingCallablePayload.selection.coreFieldIds': updateEventChatProfileSharingCallablePayloadSelectionCoreFieldIds,
+    'updateEventChatProfileSharingCallablePayload.selection.coreFieldIds.items': updateEventChatProfileSharingCallablePayloadSelectionCoreFieldIdsItems,
+    'updateEventChatProfileSharingCallablePayload.selection.membershipRevision': updateEventChatProfileSharingCallablePayloadSelectionMembershipRevision,
+    'updateEventChatProfileSharingCallablePayload.selection.photoId': updateEventChatProfileSharingCallablePayloadSelectionPhotoId,
+    'updateEventChatProfileSharingCallablePayload.selection.profileRevision': updateEventChatProfileSharingCallablePayloadSelectionProfileRevision,
+    'updateEventChatProfileSharingCallablePayload.selection.termsVersion': updateEventChatProfileSharingCallablePayloadSelectionTermsVersion,
+    'updateEventChatProfileSharingCallableResponse.replayed': updateEventChatProfileSharingCallableResponseReplayed,
+    'updateEventChatProfileSharingCallableResponse.revision': updateEventChatProfileSharingCallableResponseRevision,
     'updateEventRehearsalSetupCallablePayload.actorCount': updateEventRehearsalSetupCallablePayloadActorCount,
     'updateEventRehearsalSetupCallablePayload.expectedRevision': updateEventRehearsalSetupCallablePayloadExpectedRevision,
     'updateEventRehearsalSetupCallablePayload.scenarioId': updateEventRehearsalSetupCallablePayloadScenarioId,

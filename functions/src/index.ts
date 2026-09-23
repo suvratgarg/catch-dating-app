@@ -610,3 +610,6 @@ export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
 export {listEventChatMessages} from "./chats/listEventChatMessages";
 
 export {listEventChats} from "./chats/listEventChats";
+
+export {getEventChatProfileSharing, updateEventChatProfileSharing,
+  getEventChatProfile} from "./chats/eventChatProfiles";

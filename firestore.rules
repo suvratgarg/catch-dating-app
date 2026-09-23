@@ -1329,6 +1329,9 @@ service cloud.firestore {
     match /eventChatReactions/{id} {
       allow read, write: if false;
     }
+    match /eventChatProfileShares/{shareId} {
+      allow read, write: if false;
+    }
     match /eventChatPresence/{id} {
       allow read, write: if false;
     }

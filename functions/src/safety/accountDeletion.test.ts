@@ -92,6 +92,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "eventChatMessages/message-other": {uid: "runner-2", text: "Other"},
       "eventChatReactions/reaction-1": {uid: "runner-1"},
       "eventChatReactions/reaction-other": {uid: "runner-2"},
+      "eventChatProfileShares/share-1": {uid: "runner-1"},
+      "eventChatProfileShares/share-other": {uid: "runner-2"},
       "eventChatPresence/presence-1": {uid: "runner-1"},
       "eventChatPresence/presence-other": {uid: "runner-2"},
       "eventChatMemberships/member-1": {uid: "runner-1"},
@@ -374,13 +376,15 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     write.data.text === null && write.data.status === "removed"));
   assert.equal(harness.updateWrites.some((write) =>
     write.path === "eventChatMessages/message-other"), false);
-  for (const path of ["eventChatReactions/reaction-1",
+  for (const path of ["eventChatProfileShares/share-1",
+    "eventChatReactions/reaction-1",
     "eventChatPresence/presence-1", "eventChatMemberships/member-1",
     "eventChatAccessReceipts/action-1", "participantOrganizerCards/response-1",
     "participantProfileClaimReceipts/receipt-1"]) {
     assert.ok(harness.deletedPublicDocs.includes(path));
   }
-  for (const path of ["eventChatReactions/reaction-other",
+  for (const path of ["eventChatProfileShares/share-other",
+    "eventChatReactions/reaction-other",
     "eventChatPresence/presence-other", "eventChatMemberships/member-other",
     "eventChatAccessReceipts/action-other",
     "participantOrganizerCards/response-other",

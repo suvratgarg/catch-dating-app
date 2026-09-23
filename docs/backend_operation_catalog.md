@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.80.0
+version: 1.81.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -168,6 +168,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `listEventChats` | Callable | Consumer event conversations | Bounded candidate directory over owned memberships, participations and linked attendees | UID-bound continuation; current admission per event; deleted-account fences; access metadata only. |
 | `getEventChatAccess` / `updateEventChatAccess` | Callable | Event chat access | Room availability, explicit participant memberships and replay receipts | Current canonical organizer/admission checks; claimed identity and phone verification for join; revision fences; no automatic admission, messages or card disclosure. |
 | `sendEventChatMessage` / `listEventChatMessages` | Callable | Event conversations | Ordered, idempotent messages with same-room reply pointers and bounded private projections | Rechecks current joined admission, claim, blocks and deletion; no copied quotes or private profile data; moderation before writes. |
+| `getEventChatProfileSharing` / `updateEventChatProfileSharing` | Callable | Participant event profile choices | Event-specific selected field/photo/card pointers and replay receipts | Verified identity for sharing; reviewed membership/profile/card revisions; own revocation survives lost admission and removed events. No copied answers or implicit sharing on join. |
+| `getEventChatProfile` | Callable | Event participant mini-profile | None | Current admission, joined membership, claim and both block directions for viewer and subject; explicit selected core and same-organizer applicant answers only; bounded photo preview with permission recheck after processing. |
 | `setEventChatReaction` / `setEventChatTyping` | Callable | Event conversations | Per-person reaction changes and expiring typing hints | Revision fences, payload-bound reaction retries, anonymous aggregates; typing contains no draft text and can be withdrawn after access revocation. |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | Callable | Participant WhatsApp permissions | Own Catch/organizer preferences and immutable permission receipts | UID-scoped bounded reads; separate sender scopes; optimistic receipt fence and idempotent withdrawal. No opt-in, dispatch, booking, or profile mutation. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |
