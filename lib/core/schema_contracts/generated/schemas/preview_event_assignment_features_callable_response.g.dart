@@ -18,6 +18,7 @@ const schemaPreviewEventAssignmentFeaturesCallableResponseSchema = <String, Obje
     'coverageBasis',
     'rows',
     'sources',
+    'savedRules',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -37,6 +38,99 @@ const schemaPreviewEventAssignmentFeaturesCallableResponseSchema = <String, Obje
     },
     'coverageBasis': <String, Object?>{
       'const': 'currentEventRoster',
+    },
+    'savedRules': <String, Object?>{
+      'type': 'array',
+      'maxItems': 8,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'featureId',
+          'formId',
+          'versionId',
+          'questionId',
+          'transformVersion',
+          'kind',
+          'mode',
+          'weight',
+        ],
+        'properties': <String, Object?>{
+          'featureId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'formId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'versionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'questionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'transformVersion': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 1000000,
+          },
+          'kind': <String, Object?>{
+            'enum': <Object?>[
+              'category',
+              'set',
+              'number',
+              'ordinal',
+            ],
+          },
+          'mode': <String, Object?>{
+            'enum': <Object?>[
+              'preferSimilar',
+              'preferDifferent',
+              'balanceAcrossGroups',
+            ],
+          },
+          'weight': <String, Object?>{
+            'type': 'number',
+            'minimum': 0,
+            'maximum': 100,
+          },
+          'optionIds': <String, Object?>{
+            'type': 'array',
+            'maxItems': 40,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+          },
+          'scoreByOptionId': <String, Object?>{
+            'type': 'object',
+            'maxProperties': 40,
+            'propertyNames': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'additionalProperties': <String, Object?>{
+              'type': 'number',
+            },
+          },
+          'minimum': <String, Object?>{
+            'type': 'number',
+          },
+          'maximum': <String, Object?>{
+            'type': 'number',
+          },
+        },
+      },
     },
     'sources': <String, Object?>{
       'type': 'array',
@@ -81,6 +175,8 @@ const schemaPreviewEventAssignmentFeaturesCallableResponseSchema = <String, Obje
                 'label',
                 'kind',
                 'options',
+                'minNumber',
+                'maxNumber',
               ],
               'properties': <String, Object?>{
                 'questionId': <String, Object?>{
@@ -98,6 +194,18 @@ const schemaPreviewEventAssignmentFeaturesCallableResponseSchema = <String, Obje
                     'singleChoice',
                     'multiChoice',
                     'number',
+                  ],
+                },
+                'minNumber': <String, Object?>{
+                  'type': <Object?>[
+                    'number',
+                    'null',
+                  ],
+                },
+                'maxNumber': <String, Object?>{
+                  'type': <Object?>[
+                    'number',
+                    'null',
                   ],
                 },
                 'options': <String, Object?>{
@@ -142,6 +250,7 @@ const schemaPreviewEventAssignmentFeaturesCallableResponseSchema = <String, Obje
           'mode',
           'weight',
           'grantedCount',
+          'usableCount',
           'missingCount',
         ],
         'properties': <String, Object?>{
@@ -171,6 +280,11 @@ const schemaPreviewEventAssignmentFeaturesCallableResponseSchema = <String, Obje
             'maximum': 100,
           },
           'grantedCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 1000,
+          },
+          'usableCount': <String, Object?>{
             'type': 'integer',
             'minimum': 0,
             'maximum': 1000,

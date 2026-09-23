@@ -13,6 +13,28 @@ export interface PreviewEventAssignmentFeaturesCallableResponse {
   /**
    * @maxItems 8
    */
+  savedRules: {
+    featureId: string;
+    formId: string;
+    versionId: string;
+    questionId: string;
+    transformVersion: number;
+    kind: "category" | "set" | "number" | "ordinal";
+    mode: "preferSimilar" | "preferDifferent" | "balanceAcrossGroups";
+    weight: number;
+    /**
+     * @maxItems 40
+     */
+    optionIds?: string[];
+    scoreByOptionId?: {
+      [k: string]: number;
+    };
+    minimum?: number;
+    maximum?: number;
+  }[];
+  /**
+   * @maxItems 8
+   */
   sources: {
     formId: string;
     formTitle: string;
@@ -25,6 +47,8 @@ export interface PreviewEventAssignmentFeaturesCallableResponse {
       questionId: string;
       label: string;
       kind: "singleChoice" | "multiChoice" | "number";
+      minNumber: number | null;
+      maxNumber: number | null;
       /**
        * @maxItems 40
        */
@@ -43,6 +67,7 @@ export interface PreviewEventAssignmentFeaturesCallableResponse {
     mode: "preferSimilar" | "preferDifferent" | "balanceAcrossGroups";
     weight: number;
     grantedCount: number;
+    usableCount: number;
     missingCount: number;
   }[];
 }
