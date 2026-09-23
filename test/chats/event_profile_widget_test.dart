@@ -130,6 +130,39 @@ void main() {
           scale: scale,
         );
         expect(tester.takeException(), isNull);
+        if (scale == 2) {
+          for (final (key, label) in [
+            (
+              const ValueKey('event-profile-first-name'),
+              'first name for this event',
+            ),
+            (
+              const ValueKey('event-profile-introduction'),
+              'introduction for this event',
+            ),
+          ]) {
+            final labels = tester
+                .renderObjectList<RenderParagraph>(
+                  find.descendant(
+                    of: find.byKey(key),
+                    matching: find.byType(RichText),
+                  ),
+                )
+                .where(
+                  (paragraph) => paragraph.text
+                      .toPlainText()
+                      .toLowerCase()
+                      .contains(label),
+                )
+                .toList();
+            expect(labels, isNotEmpty, reason: label);
+            expect(
+              labels.every((paragraph) => !paragraph.didExceedMaxLines),
+              isTrue,
+              reason: '$label must remain readable at 2× text',
+            );
+          }
+        }
         await capture(tester, 'editor-${dark ? 'dark' : 'light'}-$scale');
         final save = find.widgetWithText(
           CatchButton,
