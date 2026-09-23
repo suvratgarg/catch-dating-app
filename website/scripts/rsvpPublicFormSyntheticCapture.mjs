@@ -70,15 +70,20 @@ const audienceSection = {sectionId: "audience", title: "Your running profile", d
   {questionId: "pace", kind: "singleChoice", label: "Comfortable pace", required: false, answerDestination: "catchProfile", options: [{optionId: "relaxed", label: "Relaxed", value: "Relaxed"}, {optionId: "brisk", label: "Brisk", value: "Brisk"}], validation: {}},
   {questionId: "note", kind: "longText", label: "Note for this organizer", required: false, answerDestination: "organizerCard", options: [], validation: {maxLength: 250}},
 ]};
+const review = {...base, form: {...fixture, definition: {...fixture.definition,
+  sections: [audienceSection]}}, visibleSections: [audienceSection],
+answers: {pace: "Relaxed", note: "I enjoy easy social runs."}};
 const scenarios = [
   {name: "audience-form-desktop", state: {...base, stage: "form", embed: false, form: {...fixture, definition: {...fixture.definition, sections: [audienceSection]}}, activeSection: audienceSection, visibleSections: [audienceSection], answers: {pace: "Relaxed", note: "I enjoy easy social runs."}, updateAnswer: noop, uploadAnswer: noop, nextSection: noop}, width: 1280, height: 900},
-  {name: "purpose-review-desktop", state: {...base, stage: "review", embed: false}, width: 1280, height: 900},
-  {name: "purpose-review-mobile", state: {...base, stage: "review", embed: false}, width: 390, height: 844},
+  {name: "purpose-review-desktop", state: {...review, stage: "review", embed: false}, width: 1280, height: 900},
+  {name: "purpose-review-mobile", state: {...review, stage: "review", embed: false}, width: 390, height: 844},
   {name: "payment-test-mobile", state: {...base, stage: "payment", embed: false, payments: {payment: {status: "pending", amountPaise: 20000, refundPolicy: "Refunded if cancelled", mode: "test", checkout: null}, pending: false, status: {message: "", tone: ""}, refresh: noop, pay: noop}}, width: 390, height: 844},
-  {name: "embedded-purpose-mobile", state: {...base, stage: "review", embed: true}, width: 390, height: 844, wrapper: true},
+  {name: "embedded-purpose-mobile", state: {...review, stage: "review", embed: true}, width: 390, height: 844, wrapper: true},
 ];
+const selected = process.env.RSVP_CAPTURE_SCENARIOS?.split(",") ?? null;
 try {
   for (const scenario of scenarios) {
+    if (selected && !selected.includes(scenario.name)) continue;
     const context = await browser.newContext({viewport: {width: scenario.width, height: scenario.height}, deviceScaleFactor: 1});
     await context.route("**/*", (route) => route.request().url().startsWith(`http://127.0.0.1:${port}/`) ? route.continue() : route.abort());
     await context.addInitScript((state) => {window.__rsvpController = state;}, scenario.state);
@@ -105,7 +110,7 @@ try {
     if (errors.length) throw new Error(`${scenario.name}: ${errors.join("; ")}`);
     await context.close();
   }
-  await writeFile(path.join(output, "manifest.json"), JSON.stringify({kind: "synthetic-browser-fixture", sourceSha, sourcePath: pageSource, fixture: "Actual pinned React page and embed installer with mocked controller; no API, applicant, or payment provider. Captures are visual evidence, not end-to-end submission proof.", scenarios: scenarios.map(({name, width, height}) => ({name, width, height}))}, null, 2));
+  if (!selected) await writeFile(path.join(output, "manifest.json"), JSON.stringify({kind: "synthetic-browser-fixture", sourceSha, sourcePath: pageSource, fixture: "Actual pinned React page and embed installer with mocked controller; no API, applicant, or payment provider. Captures are visual evidence, not end-to-end submission proof.", scenarios: scenarios.map(({name, width, height}) => ({name, width, height}))}, null, 2));
 } finally {
   await browser.close();
   await server.close();
