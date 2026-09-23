@@ -1,7 +1,3 @@
-import {defineSecret} from "firebase-functions/params";
-
-export const aeroDataBoxApiKey = defineSecret("AERODATABOX_API_KEY");
-
 const endpoint = "https://api.aerodatabox.com/flights/number";
 
 import {FlightStatusSnapshot, TravelLegFlightStatus,
