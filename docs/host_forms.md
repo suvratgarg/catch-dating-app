@@ -511,8 +511,9 @@ submission time, completion/review state, source, and permitted mapped fields.
 Answer detail renders from the immutable snapshot and clearly distinguishes
 anonymous, respondent-granted, organizer-acquired, and revoked data.
 
-The response inbox exposes published categorical questions promoted as
-filterable or sortable. Selection uses stable question IDs and option values,
+The response inbox exposes published categorical questions explicitly promoted
+as filterable and excludes sensitive, detail-only and sort-only questions.
+Selection uses stable question IDs and option values,
 AND across questions and OR within a question, with each response checked
 against its immutable version. Detail-only and withdrawn answers never satisfy
 an answer filter. Changing answer filters or chronological order starts a new
