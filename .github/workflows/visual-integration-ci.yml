@@ -30,12 +30,16 @@ jobs:
           # A clean filtered build deletes tracked outputs outside its filter.
           # Restore those unchanged outputs before downstream package analysis.
           python3 - <<'PY'
+          from pathlib import Path
           import subprocess
+          target = 'lib/event_success/data/event_assignment_feature_choice_repository.g.dart'
+          if not Path(target).is_file():
+              raise SystemExit(f'Provider generation did not emit {target}; refusing restoration')
           deleted = subprocess.check_output([
               'git', 'diff', '--name-only', '--diff-filter=D', '-z', '--',
               '*.g.dart', '*.freezed.dart',
           ]).decode().split('\0')
-          deleted = [path for path in deleted if path]
+          deleted = [path for path in deleted if path and path != target]
           if deleted:
               subprocess.run(['git', 'restore', '--worktree', '--', *deleted], check=True)
           print(f'Restored {len(deleted)} unchanged generated files outside the target filter')
