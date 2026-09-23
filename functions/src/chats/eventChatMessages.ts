@@ -6,7 +6,7 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {moderateText} from "../moderation/textFilter";
 import {eventChatMembershipId, requireEventChatMember,
-  readEventChatAccount} from "./eventChatAccess";
+  readEventChatAccount, requireEventChatActor} from "./eventChatAccess";
 import {chatHash, chatIdentityReader, emptyReactionCounts, eventChatReactionId,
   messageDefaults, messageUnavailable, nextChatRevision, readableChatMessage,
   type EventChatMessageDeps} from "./eventChatMessageShared";
@@ -34,6 +34,7 @@ export async function sendEventChatMessageHandler(
   const uid = requireAuth(request);
   const data = validateCallableWithAjv(request,
     validateSendEventChatMessageCallablePayload);
+  requireEventChatActor(uid, data.expectedUid);
   const text = data.text.trim();
   if (!text) throw new HttpsError("invalid-argument", "Write a message first.");
   const moderation = moderateText(text);
@@ -99,6 +100,7 @@ export async function setEventChatReactionHandler(
   const uid = requireAuth(request);
   const data = validateCallableWithAjv(request,
     validateSetEventChatReactionCallablePayload);
+  requireEventChatActor(uid, data.expectedUid);
   const db = deps.db();
   await deps.rateLimit(db, uid, "setEventChatReaction");
   const receiptRef = db.collection("eventChatAccessReceipts").doc(chatHash([
@@ -160,6 +162,7 @@ export async function setEventChatTypingHandler(
   const uid = requireAuth(request);
   const data = validateCallableWithAjv(request,
     validateSetEventChatTypingCallablePayload);
+  requireEventChatActor(uid, data.expectedUid);
   const db = deps.db();
   await deps.rateLimit(db, uid, "setEventChatTyping");
   const presenceRef = db.collection("eventChatPresence")

@@ -6,4 +6,5 @@ export interface SetEventChatTypingCallablePayload {
   eventId: string;
   isTyping: boolean;
   expectedRevision: number;
+  expectedUid: string;
 }

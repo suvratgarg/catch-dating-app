@@ -9,7 +9,8 @@
     "action",
     "expectedRevision",
     "requestId",
-    "termsVersion"
+    "termsVersion",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -44,6 +45,9 @@
           "type": "null"
         }
       ]
+    },
+    "expectedUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     }
   }
 }

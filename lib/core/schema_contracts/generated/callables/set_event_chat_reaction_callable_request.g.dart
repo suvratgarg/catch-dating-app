@@ -12,6 +12,7 @@ final class SetEventChatReactionCallableRequest {
     required this.requestId,
     required this.reaction,
     required this.expectedRevision,
+    required this.expectedUid,
   });
 
   final String eventId;
@@ -19,6 +20,7 @@ final class SetEventChatReactionCallableRequest {
   final String requestId;
   final String? reaction;
   final int expectedRevision;
+  final String expectedUid;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
@@ -26,5 +28,6 @@ final class SetEventChatReactionCallableRequest {
     'requestId': requestId,
     'reaction': reaction,
     'expectedRevision': expectedRevision,
+    'expectedUid': expectedUid,
   };
 }

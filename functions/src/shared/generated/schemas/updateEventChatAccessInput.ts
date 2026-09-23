@@ -13,7 +13,8 @@ export const updateEventChatAccessCallablePayloadSchema: Record<string, unknown>
     "action",
     "expectedRevision",
     "requestId",
-    "termsVersion"
+    "termsVersion",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -52,6 +53,11 @@ export const updateEventChatAccessCallablePayloadSchema: Record<string, unknown>
           "type": "null"
         }
       ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

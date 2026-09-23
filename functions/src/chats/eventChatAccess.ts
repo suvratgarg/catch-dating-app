@@ -24,6 +24,13 @@ import {validateGetEventChatAccessCallablePayload} from
 import {validateUpdateEventChatAccessCallablePayload} from
   "../shared/generated/validators/updateEventChatAccessInput";
 
+export function requireEventChatActor(uid: string, expectedUid: string) {
+  if (uid !== expectedUid) {
+    throw new HttpsError("permission-denied",
+      "Your account changed. Reopen this conversation.");
+  }
+}
+
 export const eventChatTermsVersion = "event-chat-v1";
 const hash = (value: unknown) => createHash("sha256")
   .update(JSON.stringify(value)).digest("hex");
@@ -142,6 +149,7 @@ export async function updateEventChatAccessHandler(
   const uid = requireAuth(request);
   const data = validateCallableWithAjv(request,
     validateUpdateEventChatAccessCallablePayload);
+  requireEventChatActor(uid, data.expectedUid);
   if (data.action === "join") {
     requireVerifiedParticipant(request);
     if (data.termsVersion !== eventChatTermsVersion) {

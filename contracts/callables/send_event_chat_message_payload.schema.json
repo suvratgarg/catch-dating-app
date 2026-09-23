@@ -8,7 +8,8 @@
     "eventId",
     "requestId",
     "text",
-    "replyToMessageId"
+    "replyToMessageId",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -31,6 +32,9 @@
           "type": "null"
         }
       ]
+    },
+    "expectedUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     }
   }
 }

@@ -11,17 +11,20 @@ final class SendEventChatMessageCallableRequest {
     required this.requestId,
     required this.text,
     required this.replyToMessageId,
+    required this.expectedUid,
   });
 
   final String eventId;
   final String requestId;
   final String text;
   final String? replyToMessageId;
+  final String expectedUid;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'requestId': requestId,
     'text': text,
     'replyToMessageId': replyToMessageId,
+    'expectedUid': expectedUid,
   };
 }

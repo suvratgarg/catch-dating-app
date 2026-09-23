@@ -8,4 +8,5 @@ export interface UpdateEventChatAccessCallablePayload {
   expectedRevision: number;
   requestId: string;
   termsVersion: "event-chat-v1" | null;
+  expectedUid: string;
 }

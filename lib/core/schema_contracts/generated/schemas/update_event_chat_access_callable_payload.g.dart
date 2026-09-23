@@ -16,6 +16,7 @@ const schemaUpdateEventChatAccessCallablePayloadSchema = <String, Object?>{
     'expectedRevision',
     'requestId',
     'termsVersion',
+    'expectedUid',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -54,6 +55,11 @@ const schemaUpdateEventChatAccessCallablePayloadSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'expectedUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

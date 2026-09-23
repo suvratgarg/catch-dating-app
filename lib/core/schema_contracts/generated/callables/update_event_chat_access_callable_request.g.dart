@@ -12,6 +12,7 @@ final class UpdateEventChatAccessCallableRequest {
     required this.expectedRevision,
     required this.requestId,
     required this.termsVersion,
+    required this.expectedUid,
   });
 
   final String eventId;
@@ -19,6 +20,7 @@ final class UpdateEventChatAccessCallableRequest {
   final int expectedRevision;
   final String requestId;
   final String? termsVersion;
+  final String expectedUid;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
@@ -26,5 +28,6 @@ final class UpdateEventChatAccessCallableRequest {
     'expectedRevision': expectedRevision,
     'requestId': requestId,
     'termsVersion': termsVersion,
+    'expectedUid': expectedUid,
   };
 }

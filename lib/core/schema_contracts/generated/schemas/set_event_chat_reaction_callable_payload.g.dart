@@ -16,6 +16,7 @@ const schemaSetEventChatReactionCallablePayloadSchema = <String, Object?>{
     'requestId',
     'reaction',
     'expectedRevision',
+    'expectedUid',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -55,6 +56,11 @@ const schemaSetEventChatReactionCallablePayloadSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 9007199254740991,
+    },
+    'expectedUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

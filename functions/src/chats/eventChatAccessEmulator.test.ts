@@ -32,13 +32,15 @@ test("Firestore room access follows current authority and explicit choices",
     const ref = (collection: string, id: string) => db.collection(collection)
       .doc(id);
     const request = (uid: string, data: unknown) => ({auth: {uid,
-      token: {phone_number: "+919000000001"}}, data}) as
+      token: {phone_number: "+919000000001"}},
+    data: {expectedUid: uid, ...data as object}}) as
       unknown as CallableRequest<unknown>;
     const change = (uid: string, action: string, expectedRevision: number,
       requestId = randomUUID()) => request(uid, {eventId, action,
       expectedRevision, requestId,
       termsVersion: action === "join" ? "event-chat-v1" : null});
-    const view = (uid: string) => get(request(uid, {eventId}), deps);
+    const view = (uid: string) => get({...request(uid, {}),
+      data: {eventId}}, deps);
     const member = (uid: string) => ref("eventChatMemberships",
       eventChatMembershipId(eventId, uid));
     const participation = ref("eventParticipations", `${eventId}_${person}`);

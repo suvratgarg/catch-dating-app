@@ -39,7 +39,8 @@ test("event messages fence retries, protect replies and expire typing",
     const ref = (collection: string, id: string) => db.collection(collection)
       .doc(id);
     const request = (uid: string, data: object) => ({auth: {uid,
-      token: {phone_number: "+919000000001"}}, data: {eventId, ...data}}) as
+      token: {phone_number: "+919000000001"}}, data: {eventId,
+      ...("limit" in data ? {} : {expectedUid: uid}), ...data}}) as
       unknown as CallableRequest<unknown>;
     const change = (uid: string, action: string, expectedRevision: number) =>
       access(request(uid, {action, expectedRevision, requestId: randomUUID(),

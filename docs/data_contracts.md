@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.139.0
+version: 1.140.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2610,7 +2610,10 @@ membership record. Leaving remains possible after admission is revoked or the
 event is removed. Account deletion removes membership and private action
 receipts; its tombstone prevents replay from restoring access.
 
-Mutations use a reviewed room/membership revision and UID-bound request ID.
+Mutations bind `expectedUid` to the authenticated account before any reads or
+writes. A token/account change during an outgoing request cannot send a previous
+account's draft, reaction, typing state or join decision as the new account.
+Mutations also use a reviewed revision and UID-bound request ID.
 `eventChatAccessReceipts` prevents an old join or open retry from reversing a
 later leave or close. Replay results report the originally applied revision;
 clients must refresh current access, not interpret replay as current permission.

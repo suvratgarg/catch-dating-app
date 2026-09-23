@@ -10,15 +10,18 @@ final class SetEventChatTypingCallableRequest {
     required this.eventId,
     required this.isTyping,
     required this.expectedRevision,
+    required this.expectedUid,
   });
 
   final String eventId;
   final bool isTyping;
   final int expectedRevision;
+  final String expectedUid;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'isTyping': isTyping,
     'expectedRevision': expectedRevision,
+    'expectedUid': expectedUid,
   };
 }

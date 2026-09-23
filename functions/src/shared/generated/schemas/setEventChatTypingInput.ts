@@ -11,7 +11,8 @@ export const setEventChatTypingCallablePayloadSchema: Record<string, unknown> = 
   "required": [
     "eventId",
     "isTyping",
-    "expectedRevision"
+    "expectedRevision",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -26,6 +27,11 @@ export const setEventChatTypingCallablePayloadSchema: Record<string, unknown> = 
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

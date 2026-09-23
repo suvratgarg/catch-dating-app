@@ -15,6 +15,7 @@ const schemaSendEventChatMessageCallablePayloadSchema = <String, Object?>{
     'requestId',
     'text',
     'replyToMessageId',
+    'expectedUid',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -43,6 +44,11 @@ const schemaSendEventChatMessageCallablePayloadSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'expectedUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

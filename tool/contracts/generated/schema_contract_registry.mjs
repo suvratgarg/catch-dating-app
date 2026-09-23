@@ -96760,7 +96760,8 @@ export const sendEventChatMessageCallablePayloadSchema = {
     "eventId",
     "requestId",
     "text",
-    "replyToMessageId"
+    "replyToMessageId",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -96789,6 +96790,11 @@ export const sendEventChatMessageCallablePayloadSchema = {
           "type": "null"
         }
       ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -96832,7 +96838,8 @@ export const setEventChatReactionCallablePayloadSchema = {
     "messageId",
     "requestId",
     "reaction",
-    "expectedRevision"
+    "expectedRevision",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -96872,6 +96879,11 @@ export const setEventChatReactionCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -96907,7 +96919,8 @@ export const setEventChatTypingCallablePayloadSchema = {
   "required": [
     "eventId",
     "isTyping",
-    "expectedRevision"
+    "expectedRevision",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -96922,6 +96935,11 @@ export const setEventChatTypingCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -97294,7 +97312,8 @@ export const updateEventChatAccessCallablePayloadSchema = {
     "action",
     "expectedRevision",
     "requestId",
-    "termsVersion"
+    "termsVersion",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -97333,6 +97352,11 @@ export const updateEventChatAccessCallablePayloadSchema = {
           "type": "null"
         }
       ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };

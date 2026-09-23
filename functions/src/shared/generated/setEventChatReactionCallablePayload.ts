@@ -8,4 +8,5 @@ export interface SetEventChatReactionCallablePayload {
   requestId: string;
   reaction: ("like" | "love" | "laugh" | "wow" | "sad" | "thanks") | null;
   expectedRevision: number;
+  expectedUid: string;
 }

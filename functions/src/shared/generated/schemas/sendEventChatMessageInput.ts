@@ -12,7 +12,8 @@ export const sendEventChatMessageCallablePayloadSchema: Record<string, unknown> 
     "eventId",
     "requestId",
     "text",
-    "replyToMessageId"
+    "replyToMessageId",
+    "expectedUid"
   ],
   "properties": {
     "eventId": {
@@ -41,6 +42,11 @@ export const sendEventChatMessageCallablePayloadSchema: Record<string, unknown> 
           "type": "null"
         }
       ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

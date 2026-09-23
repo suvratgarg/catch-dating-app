@@ -19,6 +19,9 @@ abstract final class ReadLimitPolicy {
   /// Message, notification, payment, and audit histories.
   static const int historyPage = 50;
 
+  /// Server-projected event messages with identity and block checks.
+  static const int eventChatPage = 30;
+
   /// Contract-bounded operational sets such as event rosters (max 1,000).
   /// These reads must also be listed in the reviewed exception registry.
   static const int boundedWorkingSet = 1000;

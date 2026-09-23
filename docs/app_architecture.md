@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.67.0
-updated: 2026-09-21
+version: 1.68.0
+updated: 2026-09-23
 owner: app_architecture
 status: active
 ---
@@ -1911,6 +1911,24 @@ Candidate patterns:
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
 | Mutation subscriptions and error snackbar publication | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
 | Global error handlers | `lib/main.dart` |
+
+### Event conversation session ownership
+
+Event conversations use `EventChatRepository` and `EventChatController`; the
+existing dating-match repository is not an admission source. The repository
+uses generated callable requests with the reviewed account UID on mutations.
+The controller fences asynchronous results by UID, provider generation and read
+epoch. It clears visible history when backgrounded or when authority cannot be
+verified, and revalidates all loaded history windows rather than appending stale
+reply quotes. A new foreground read is required before sending again.
+
+Sending retains the request ID for the exact normalized draft and reply until
+acknowledged. Reaction changes retain the reviewed per-message revision.
+Typing never sends draft text, serializes start/stop acknowledgements, and stops
+after editing is idle even if an unsent draft remains. The controller owns
+refresh cadence and scales it with requested history depth; widgets own text
+editing, scrolling and app/route lifecycle signals. Account changes must also
+clear widget-owned drafts and reply selection before rendering another account.
 
 ## Controller And View-Model Contract
 

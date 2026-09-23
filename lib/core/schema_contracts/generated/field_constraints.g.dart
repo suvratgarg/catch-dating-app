@@ -94369,6 +94369,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const sendEventChatMessageCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const sendEventChatMessageCallablePayloadReplyToMessageId = CatchContractFieldConstraints(
     path: 'sendEventChatMessageCallablePayload.replyToMessageId',
     maxLength: 180,
@@ -95425,6 +95433,14 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const setEventChatReactionCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const setEventChatReactionCallablePayloadMessageId = CatchContractFieldConstraints(
     path: 'setEventChatReactionCallablePayload.messageId',
     maxLength: 180,
@@ -95475,6 +95491,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const setEventChatTypingCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'setEventChatTypingCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const setEventChatTypingCallablePayloadIsTyping = CatchContractFieldConstraints(
@@ -98613,6 +98637,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const updateEventChatAccessCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const updateEventChatAccessCallablePayloadRequestId = CatchContractFieldConstraints(
@@ -117719,6 +117751,7 @@ abstract final class CatchContractConstraints {
     'sendEventBroadcastCallableResponse.recipientCount': sendEventBroadcastCallableResponseRecipientCount,
     'sendEventBroadcastCallableResponse.status': sendEventBroadcastCallableResponseStatus,
     'sendEventChatMessageCallablePayload.eventId': sendEventChatMessageCallablePayloadEventId,
+    'sendEventChatMessageCallablePayload.expectedUid': sendEventChatMessageCallablePayloadExpectedUid,
     'sendEventChatMessageCallablePayload.replyToMessageId': sendEventChatMessageCallablePayloadReplyToMessageId,
     'sendEventChatMessageCallablePayload.requestId': sendEventChatMessageCallablePayloadRequestId,
     'sendEventChatMessageCallablePayload.text': sendEventChatMessageCallablePayloadText,
@@ -117859,6 +117892,7 @@ abstract final class CatchContractConstraints {
     'setEventAttendeeAttendanceCallableResponse.replayed': setEventAttendeeAttendanceCallableResponseReplayed,
     'setEventChatReactionCallablePayload.eventId': setEventChatReactionCallablePayloadEventId,
     'setEventChatReactionCallablePayload.expectedRevision': setEventChatReactionCallablePayloadExpectedRevision,
+    'setEventChatReactionCallablePayload.expectedUid': setEventChatReactionCallablePayloadExpectedUid,
     'setEventChatReactionCallablePayload.messageId': setEventChatReactionCallablePayloadMessageId,
     'setEventChatReactionCallablePayload.reaction': setEventChatReactionCallablePayloadReaction,
     'setEventChatReactionCallablePayload.requestId': setEventChatReactionCallablePayloadRequestId,
@@ -117866,6 +117900,7 @@ abstract final class CatchContractConstraints {
     'setEventChatReactionCallableResponse.revision': setEventChatReactionCallableResponseRevision,
     'setEventChatTypingCallablePayload.eventId': setEventChatTypingCallablePayloadEventId,
     'setEventChatTypingCallablePayload.expectedRevision': setEventChatTypingCallablePayloadExpectedRevision,
+    'setEventChatTypingCallablePayload.expectedUid': setEventChatTypingCallablePayloadExpectedUid,
     'setEventChatTypingCallablePayload.isTyping': setEventChatTypingCallablePayloadIsTyping,
     'setEventChatTypingCallableResponse.expiresAtMillis': setEventChatTypingCallableResponseExpiresAtMillis,
     'setEventChatTypingCallableResponse.revision': setEventChatTypingCallableResponseRevision,
@@ -118295,6 +118330,7 @@ abstract final class CatchContractConstraints {
     'updateEventChatAccessCallablePayload.action': updateEventChatAccessCallablePayloadAction,
     'updateEventChatAccessCallablePayload.eventId': updateEventChatAccessCallablePayloadEventId,
     'updateEventChatAccessCallablePayload.expectedRevision': updateEventChatAccessCallablePayloadExpectedRevision,
+    'updateEventChatAccessCallablePayload.expectedUid': updateEventChatAccessCallablePayloadExpectedUid,
     'updateEventChatAccessCallablePayload.requestId': updateEventChatAccessCallablePayloadRequestId,
     'updateEventChatAccessCallablePayload.termsVersion': updateEventChatAccessCallablePayloadTermsVersion,
     'updateEventChatAccessCallableResponse.replayed': updateEventChatAccessCallableResponseReplayed,
