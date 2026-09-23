@@ -40,7 +40,7 @@ final _vehicleClasses = <ProgramVehicleClass>[
     label: 'Innova',
     passengerCapacity: 6,
     luggageCapacity: 8,
-    capabilities: {ProgramVehicleCapability.premium},
+    capabilities: {ProgramVehicleCapability.extraLuggage},
     sortOrder: 1,
   ),
 ];

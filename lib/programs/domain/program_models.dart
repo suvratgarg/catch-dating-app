@@ -5,9 +5,9 @@
 /// operational projections never carry contact data.
 library;
 
-enum ProgramKind { wedding, corporateOffsite, other }
+enum ProgramKind { wedding, corporate, social, other }
 
-enum ProgramStatus { draft, active, completed, cancelled }
+enum ProgramStatus { draft, active, completed, archived }
 
 enum ProgramActorRole { manager, staff }
 
@@ -19,12 +19,7 @@ enum ProgramStaffDuty {
   reconciliationViewer,
 }
 
-enum ProgramVehicleCapability {
-  wheelchairAccessible,
-  extraLuggage,
-  childSeat,
-  premium,
-}
+enum ProgramVehicleCapability { wheelchairAccessible, extraLuggage, childSeat }
 
 class ProgramVehicleClass {
   const ProgramVehicleClass({
@@ -234,7 +229,14 @@ class ProgramWorkAccess {
   }
 }
 
-enum TravelLegReadiness { expected, ready, disrupted, dispatched, arrived }
+enum TravelLegReadiness {
+  expected,
+  ready,
+  disrupted,
+  dispatched,
+  arrived,
+  noShow,
+}
 
 enum TravelLegFlightStatus {
   scheduled,
@@ -773,21 +775,34 @@ String requiredString(Map<Object?, Object?> map, String field) {
 }
 
 int requiredInt(Map<Object?, Object?> map, String field) {
-  final value = map[field];
-  if (value is int) return value;
-  if (value is num) return value.toInt();
+  return _integer(map[field], field);
+}
+
+int _integer(Object? value, String field) {
+  // Callable numbers also arrive as doubles on web. Accept exact integers only.
+  if (value is num &&
+      value.isFinite &&
+      value.abs() <= 9007199254740991 &&
+      value == value.truncateToDouble()) {
+    return value.toInt();
+  }
   throw FormatException('Invalid $field.');
 }
 
 DateTime requiredDateTime(Map<Object?, Object?> map, String field) =>
-    DateTime.fromMillisecondsSinceEpoch(requiredInt(map, field));
+    _dateTime(map[field], field);
+
+DateTime _dateTime(Object? value, String field) {
+  final millis = _integer(value, field);
+  if (millis.abs() > 8640000000000000) {
+    throw FormatException('Invalid $field.');
+  }
+  return DateTime.fromMillisecondsSinceEpoch(millis);
+}
 
 DateTime? nullableDateTime(Object? value) {
   if (value == null) return null;
-  if (value is num) {
-    return DateTime.fromMillisecondsSinceEpoch(value.toInt());
-  }
-  throw const FormatException('Invalid nullable date.');
+  return _dateTime(value, 'nullable date');
 }
 
 T? nullableEnum<T extends Enum>(Object? value, List<T> values) {

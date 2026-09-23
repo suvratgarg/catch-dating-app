@@ -393,6 +393,10 @@ class ProgramArrivalReadinessBadge extends StatelessWidget {
         context.l10n.programsArrivalsDispatchedBadge,
         CatchBadgeTone.success,
       ),
+      TravelLegReadiness.noShow => (
+        context.l10n.programsArrivalsNoShowBadge,
+        CatchBadgeTone.danger,
+      ),
       TravelLegReadiness.arrived => (
         context.l10n.programsArrivalsArrivedBadge,
         CatchBadgeTone.success,

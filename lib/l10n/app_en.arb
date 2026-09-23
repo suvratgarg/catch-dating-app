@@ -27376,6 +27376,8 @@
   "@programsArrivalsDisruptedBadge": {"description": "Program operations copy: programsArrivalsDisruptedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
   "programsArrivalsDispatchedBadge": "Dispatched",
   "@programsArrivalsDispatchedBadge": {"description": "Program operations copy: programsArrivalsDispatchedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsNoShowBadge": "No-show",
+  "@programsArrivalsNoShowBadge": {"description": "A guest marked as a no-show for this travel leg.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
   "programsArrivalsArrivedBadge": "Arrived",
   "@programsArrivalsArrivedBadge": {"description": "Program operations copy: programsArrivalsArrivedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
   "programsArrivalsRowActions": "Arrival actions",

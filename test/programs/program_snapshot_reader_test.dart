@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
@@ -338,5 +340,98 @@ void main() {
         isNull,
       );
     },
+  );
+  test(
+    'a cached projection cannot outlive a concurrent authority change',
+    () async {
+      await seed();
+      final paused = _PausedSnapshotStore(store, scope);
+      const offline = NetworkException('connection-failed', 'Offline');
+      final reading = readProgramWithSnapshot(
+        accountId: 'account',
+        programId: 'p1',
+        scope: scope,
+        store: paused,
+        isCurrentAccount: () => true,
+        live: () async => throw offline,
+        parse: (value) => requiredMap(value, 'test snapshot'),
+      );
+      final rejected = expectLater(reading, throwsA(same(offline)));
+      await paused.loaded.future;
+      final narrowed = access();
+      (narrowed['duties']! as List<Map<String, Object?>>).first['hotelIds'] = [
+        'hotel',
+      ];
+      await store.save('account', programSnapshotScope('work', 'p1'), narrowed);
+      paused.resume.complete();
+      await rejected;
+      // Rejecting the stale read must preserve the newly saved authority.
+      expect(
+        await store.load('account', programSnapshotScope('work', 'p1')),
+        isNotNull,
+      );
+    },
+  );
+
+  test('grant expiry during snapshot loading withholds the result', () async {
+    await seed();
+    final paused = _PausedSnapshotStore(store, scope);
+    var now = DateTime.now();
+    const offline = NetworkException('connection-failed', 'Offline');
+    final reading = readProgramWithSnapshot(
+      accountId: 'account',
+      programId: 'p1',
+      scope: scope,
+      store: paused,
+      isCurrentAccount: () => true,
+      live: () async => throw offline,
+      parse: (value) => requiredMap(value, 'test snapshot'),
+      now: () => now,
+    );
+    final rejected = expectLater(reading, throwsA(same(offline)));
+    await paused.loaded.future;
+    now = now.add(const Duration(hours: 2));
+    paused.resume.complete();
+    await rejected;
+  });
+}
+
+class _PausedSnapshotStore implements ProgramReadSnapshotStore {
+  _PausedSnapshotStore(this.delegate, this.pausedScope);
+  final ProgramReadSnapshotStore delegate;
+  final String pausedScope;
+  final loaded = Completer<void>();
+  final resume = Completer<void>();
+
+  @override
+  Future<ProgramReadSnapshot?> load(String accountId, String scope) async {
+    final snapshot = await delegate.load(accountId, scope);
+    if (scope == pausedScope) {
+      loaded.complete();
+      await resume.future;
+    }
+    return snapshot;
+  }
+
+  @override
+  int generation(String accountId, String programId) =>
+      delegate.generation(accountId, programId);
+  @override
+  Future<void> clearAccount(String accountId) =>
+      delegate.clearAccount(accountId);
+  @override
+  Future<void> clearProgram(String accountId, String programId) =>
+      delegate.clearProgram(accountId, programId);
+  @override
+  Future<void> save(
+    String accountId,
+    String scope,
+    Object? data, {
+    int? expectedGeneration,
+  }) => delegate.save(
+    accountId,
+    scope,
+    data,
+    expectedGeneration: expectedGeneration,
   );
 }

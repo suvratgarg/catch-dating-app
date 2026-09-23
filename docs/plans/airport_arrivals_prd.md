@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.2
+version: 0.3.3
 updated: 2026-09-23
 owner: product
 status: draft
@@ -600,9 +600,16 @@ Work bootstrap loads assigned resource IDs before applying its 32-pickup and
 and active state; overflow is explicit. Hotel-only staff receive no airport
 pickup inventory.
 
+Client program kind/status, travel readiness, staff duty and vehicle capability
+enums are checked against generated callable constraints. Unsupported numeric
+values (fractional counts/revisions, non-finite values and invalid timestamps)
+fail parsing rather than being rounded into different operational facts.
+
 Offline access checks the individual deadlines. A cached station projection
 must refresh after any of its applicable scope tuples expires. Other valid
-work access is retained. Refreshing a changed access scope clears older program
+work access is retained. Cached projection reads recheck the authority generation
+and grant deadline after loading, so a concurrent narrower bootstrap cannot
+release a roster captured under older permissions. Refreshing a changed access scope clears older program
 projections and fences in-flight cache writes. The v2 cache removes old v1
 private entries instead of interpreting their missing deadlines as permission.
 

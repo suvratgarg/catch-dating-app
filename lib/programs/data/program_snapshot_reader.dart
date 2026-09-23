@@ -15,6 +15,7 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
   required Future<T> Function() live,
   required T Function(Object?) parse,
   bool Function(ProgramWorkAccess)? allowsAccess,
+  DateTime Function()? now,
 }) async {
   void requireAccount() {
     if (!isCurrentAccount()) {
@@ -39,18 +40,24 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
       rethrow;
     }
     requireAccount();
+    final generation = store.generation(accountId, programId);
     final work = await store.load(
       accountId,
       programSnapshotScope('work', programId),
     );
     if (work == null) rethrow;
     final access = ProgramWorkAccess.fromCallableData(work.data);
-    final now = DateTime.now();
-    if (access.programId != programId ||
-        (!access.isManager &&
-            (access.grantExpiresAt == null ||
-                !access.grantExpiresAt!.isAfter(now) ||
-                access.activeDutiesAt(now).isEmpty))) {
+    bool grantIsCurrent() {
+      final instant = (now ?? DateTime.now)();
+      return access.programId == programId &&
+          (access.isManager ||
+              (access.grantExpiresAt != null &&
+                  access.grantExpiresAt!.isAfter(instant) &&
+                  access.activeDutiesAt(instant).isNotEmpty));
+    }
+
+    if (generation != store.generation(accountId, programId)) rethrow;
+    if (!grantIsCurrent()) {
       await store.clearProgram(accountId, programId);
       rethrow;
     }
@@ -61,6 +68,12 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
     final payload = requiredMap(snapshot.data, 'saved program data');
     if (payload['programId'] != programId) rethrow;
     requireAccount();
+    // Loading the projection yields: authority may narrow or expire meanwhile.
+    if (generation != store.generation(accountId, programId) ||
+        !grantIsCurrent() ||
+        (allowsAccess != null && !allowsAccess(access))) {
+      rethrow;
+    }
     return (value: parse(payload), snapshotAt: snapshot.savedAt);
   }
 }

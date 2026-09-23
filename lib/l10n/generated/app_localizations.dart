@@ -32332,6 +32332,12 @@ abstract class AppLocalizations {
   /// **'Dispatched'**
   String get programsArrivalsDispatchedBadge;
 
+  /// A guest marked as a no-show for this travel leg.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
+  String get programsArrivalsNoShowBadge;
+
   /// Program operations copy: programsArrivalsArrivedBadge.
   ///
   /// In en, this message translates to:

@@ -20308,6 +20308,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get programsArrivalsDispatchedBadge => 'Dispatched';
 
   @override
+  String get programsArrivalsNoShowBadge => 'No-show';
+
+  @override
   String get programsArrivalsArrivedBadge => 'Arrived';
 
   @override
