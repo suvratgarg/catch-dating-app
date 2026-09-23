@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
@@ -133,3 +134,10 @@ class EventChatRepository {
 @riverpod
 EventChatRepository eventChatRepository(Ref ref) =>
     EventChatRepository(ref.watch(firebaseFunctionsProvider));
+
+@riverpod
+Future<EventChatAccess> eventChatAccess(Ref ref, String eventId) async {
+  final uid = await ref.watch(uidProvider.future);
+  if (uid == null) throw const SignInRequiredException('open event chat');
+  return ref.watch(eventChatRepositoryProvider).access(eventId);
+}

@@ -132,14 +132,14 @@ void main() {
   test('lost send acknowledgement retries the exact payload ID once', () async {
     await container.read(provider.future);
     final controller = container.read(provider.notifier);
-    final first = controller.send(' Hello ');
-    expect(await controller.send('Hello'), false);
+    final first = controller.send(' Hello ', reviewedUid: 'person');
+    expect(await controller.send('Hello', reviewedUid: 'person'), false);
     expect(repository.sends, hasLength(1));
     repository.sends.last.$4.completeError(StateError('connection lost'));
     expect(await first, false);
     expect(container.read(provider).hasError, true);
     await controller.refresh();
-    final retry = controller.send('Hello');
+    final retry = controller.send('Hello', reviewedUid: 'person');
     expect(repository.sends.last.$3, repository.sends.first.$3);
     repository.sends.last.$4.complete();
     expect(await retry, true);
@@ -154,7 +154,10 @@ void main() {
       repository.readError = StateError('access denied');
       await controller.refresh();
       expect(container.read(provider).asData, isNull);
-      expect(await controller.send('Cannot leak'), false);
+      expect(
+        await controller.send('Cannot leak', reviewedUid: 'person'),
+        false,
+      );
       expect(repository.sends, isEmpty);
       repository.readError = null;
       repository.available = roomAccess(admitted: false);
@@ -176,7 +179,7 @@ void main() {
     deferred.complete(page('Late private content'));
     await refresh;
     expect(container.read(provider).asData, isNull);
-    expect(await controller.send('No'), false);
+    expect(await controller.send('No', reviewedUid: 'person'), false);
     controller.setForeground(true);
     await flushTestEventQueue();
     expect(
@@ -200,10 +203,24 @@ void main() {
         typingHasMore: false,
       );
       await controller.refresh();
-      expect(await controller.react(old, EventChatReaction.love), false);
+      expect(
+        await controller.react(
+          old,
+          EventChatReaction.love,
+          reviewedUid: 'person',
+        ),
+        false,
+      );
       expect(repository.reactions, isEmpty);
       final current = container.read(provider).requireValue.messages.single;
-      expect(await controller.react(current, EventChatReaction.love), true);
+      expect(
+        await controller.react(
+          current,
+          EventChatReaction.love,
+          reviewedUid: 'person',
+        ),
+        true,
+      );
       expect(repository.reactions.single.$1.myReactionRevision, 2);
     },
   );
@@ -311,7 +328,10 @@ void main() {
       await flushTestEventQueue();
       await container.read(provider.future);
       final controller = container.read(provider.notifier);
-      final pending = controller.send('Only account one');
+      final pending = controller.send(
+        'Only account one',
+        reviewedUid: 'person',
+      );
       accounts.add('other');
       repository.currentPage = page('Account two');
       await flushTestEventQueue();
@@ -319,6 +339,26 @@ void main() {
       repository.sends.last.$4.complete();
       expect(await pending, false);
       expect(container.read(provider).requireValue.uid, 'other');
+      expect(
+        await controller.send('Old screen draft', reviewedUid: 'person'),
+        false,
+      );
+      expect(
+        await controller.updateAccess(
+          EventChatAction.leave,
+          reviewedUid: 'person',
+        ),
+        false,
+      );
+      expect(
+        await controller.react(
+          container.read(provider).requireValue.messages.single,
+          EventChatReaction.love,
+          reviewedUid: 'person',
+        ),
+        false,
+      );
+      expect(repository.sends, hasLength(1));
       expect(
         container.read(provider).requireValue.messages.single.text,
         'Account two',

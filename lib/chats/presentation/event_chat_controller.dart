@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
+import 'package:catch_dating_app/chats/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -154,7 +155,7 @@ class EventChatController extends _$EventChatController {
     _timer?.cancel();
     if (!_foreground || !ref.mounted) return;
     // Keep request volume bounded as the person expands older history.
-    _timer = Timer(Duration(seconds: 3 * _pageCount), () {
+    _timer = Timer(EventChatTiming.refreshPerHistoryPage * _pageCount, () {
       unawaited(refresh());
     });
   }
@@ -238,7 +239,7 @@ class EventChatController extends _$EventChatController {
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return;
     if (_lastDraftActivity != null &&
-        _now().difference(_lastDraftActivity!) > const Duration(seconds: 6)) {
+        _now().difference(_lastDraftActivity!) > EventChatTiming.idleTyping) {
       _typingWanted = false;
     }
     if (_typingWanted && state.asData?.value.canSend != true) return;
@@ -246,7 +247,7 @@ class EventChatController extends _$EventChatController {
     final now = _now();
     if (_typingWanted &&
         _lastTypingWrite != null &&
-        now.difference(_lastTypingWrite!) < const Duration(seconds: 4)) {
+        now.difference(_lastTypingWrite!) < EventChatTiming.typingHeartbeat) {
       return;
     }
     final generation = _generation;
@@ -309,9 +310,12 @@ class EventChatController extends _$EventChatController {
     }
   }
 
-  Future<bool> updateAccess(EventChatAction action) async {
+  Future<bool> updateAccess(
+    EventChatAction action, {
+    required String reviewedUid,
+  }) async {
     final current = state.asData?.value;
-    if (current == null) return false;
+    if (current == null || current.uid != reviewedUid) return false;
     final access = current.access;
     return _mutate(
       jsonEncode([
@@ -325,11 +329,19 @@ class EventChatController extends _$EventChatController {
     );
   }
 
-  Future<bool> send(String text, {String? replyToMessageId}) async {
+  Future<bool> send(
+    String text, {
+    required String reviewedUid,
+    String? replyToMessageId,
+  }) async {
     final current = state.asData?.value;
-    if (current?.canSend != true || text.trim().isEmpty) return false;
+    if (current?.canSend != true ||
+        current!.uid != reviewedUid ||
+        text.trim().isEmpty) {
+      return false;
+    }
     if (replyToMessageId != null &&
-        !current!.messages.any(
+        !current.messages.any(
           (message) =>
               message.messageId == replyToMessageId && message.available,
         )) {
@@ -339,7 +351,7 @@ class EventChatController extends _$EventChatController {
     final sent = await _mutate(
       jsonEncode(['send', normalized, replyToMessageId]),
       (repository, requestId) => repository.send(
-        current!.uid,
+        current.uid,
         eventId,
         normalized,
         replyToMessageId,
@@ -352,11 +364,12 @@ class EventChatController extends _$EventChatController {
 
   Future<bool> react(
     EventChatMessage reviewed,
-    EventChatReaction? reaction,
-  ) async {
+    EventChatReaction? reaction, {
+    required String reviewedUid,
+  }) async {
     final current = state.asData?.value;
-    if (current?.canSend != true) return false;
-    final message = current!.messages
+    if (current?.canSend != true || current!.uid != reviewedUid) return false;
+    final message = current.messages
         .where((row) => row.messageId == reviewed.messageId)
         .firstOrNull;
     if (message == null ||

@@ -20521,4 +20521,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfilePhotoRetry => 'Retry photo preview';
+
+  @override
+  String get eventChatTitle => 'Event chat';
+
+  @override
+  String get eventChatEntryBody => 'Meet the people attending this event.';
+
+  @override
+  String get eventChatOpen => 'Open event chat';
+
+  @override
+  String get eventChatClose => 'Close event chat';
+
+  @override
+  String get eventChatLeave => 'Leave chat';
+
+  @override
+  String get eventChatJoin => 'Join event chat';
+
+  @override
+  String get eventChatNotOpen => 'The chat is not open yet';
+
+  @override
+  String get eventChatHostSetup =>
+      'Open a shared conversation for people admitted to this event. Each person chooses whether to join.';
+
+  @override
+  String get eventChatGuestWaiting =>
+      'Your host can open a shared conversation for people attending this event.';
+
+  @override
+  String get eventChatJoinTitle => 'Meet your fellow attendees';
+
+  @override
+  String get eventChatJoinDisclosure =>
+      'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.';
+
+  @override
+  String get eventChatProfileRequired =>
+      'Review your Catch profile before joining';
+
+  @override
+  String get eventChatProfileHelp =>
+      'Choose the name you want other attendees to see. Your submitted form details stay private until you review them.';
+
+  @override
+  String get eventChatReviewProfile => 'Review my profile';
+
+  @override
+  String get eventChatProfileHostHelp =>
+      'Review your Catch profile in the consumer app, then return here to join. You can open or close this room as a host.';
+
+  @override
+  String get eventChatEmptyTitle => 'Start the conversation';
+
+  @override
+  String get eventChatEmptyBody =>
+      'Say hello, ask a question or make a plan for the event.';
+
+  @override
+  String get eventChatEarlier => 'Earlier messages';
+
+  @override
+  String get eventChatMessageActions => 'Message actions';
+
+  @override
+  String get eventChatReply => 'Reply';
+
+  @override
+  String get eventChatReact => 'React';
+
+  @override
+  String get eventChatClearReply => 'Cancel reply';
+
+  @override
+  String get eventChatUnavailable => 'Message unavailable';
+
+  @override
+  String get eventChatReactionLike => 'Like';
+
+  @override
+  String get eventChatReactionLove => 'Love';
+
+  @override
+  String get eventChatReactionLaugh => 'Laugh';
+
+  @override
+  String get eventChatReactionWow => 'Surprised';
+
+  @override
+  String get eventChatReactionSad => 'Sad';
+
+  @override
+  String get eventChatReactionThanks => 'Thanks';
+
+  @override
+  String get eventChatReactionsTitle => 'Choose a reaction';
+
+  @override
+  String get eventChatCloseReactions => 'Close reactions';
+
+  @override
+  String get eventChatYou => 'You';
+
+  @override
+  String get eventChatRefresh => 'Refresh chat';
+
+  @override
+  String eventChatReplyingTo({required String name}) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String eventChatTyping({required String names}) {
+    return '$names typing…';
+  }
 }

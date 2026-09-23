@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.68.0
+version: 1.69.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1929,6 +1929,17 @@ after editing is idle even if an unsent draft remains. The controller owns
 refresh cadence and scales it with requested history depth; widgets own text
 editing, scrolling and app/route lifecycle signals. Account changes must also
 clear widget-owned drafts and reply selection before rendering another account.
+Mutation entrypoints also require the UID associated with the rendered controls;
+an old callback cannot become an action for a newly signed-in account.
+
+`EventChatScreen` is a shared authenticated route at `/events/:eventId/chat`.
+It is reachable before dating onboarding so admitted form applicants can review
+and claim a private profile first. Admission and explicit room membership still
+come from the callable authority. The Host event toolbar opens the same room;
+the consumer event detail requests only room access metadata for its entry row.
+The screen uses the canonical route top bar and chat composer. Reply previews
+resolve against the current message snapshot, and opening reactions dismisses
+the keyboard and replaces the composer until the selection closes.
 
 ## Controller And View-Model Contract
 

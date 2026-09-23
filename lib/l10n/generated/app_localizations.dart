@@ -32727,6 +32727,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry photo preview'**
   String get formProfilePhotoRetry;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event chat'**
+  String get eventChatTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet the people attending this event.'**
+  String get eventChatEntryBody;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event chat'**
+  String get eventChatOpen;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Close event chat'**
+  String get eventChatClose;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave chat'**
+  String get eventChatLeave;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Join event chat'**
+  String get eventChatJoin;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat is not open yet'**
+  String get eventChatNotOpen;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a shared conversation for people admitted to this event. Each person chooses whether to join.'**
+  String get eventChatHostSetup;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your host can open a shared conversation for people attending this event.'**
+  String get eventChatGuestWaiting;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet your fellow attendees'**
+  String get eventChatJoinTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.'**
+  String get eventChatJoinDisclosure;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your Catch profile before joining'**
+  String get eventChatProfileRequired;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the name you want other attendees to see. Your submitted form details stay private until you review them.'**
+  String get eventChatProfileHelp;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review my profile'**
+  String get eventChatReviewProfile;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your Catch profile in the consumer app, then return here to join. You can open or close this room as a host.'**
+  String get eventChatProfileHostHelp;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the conversation'**
+  String get eventChatEmptyTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello, ask a question or make a plan for the event.'**
+  String get eventChatEmptyBody;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier messages'**
+  String get eventChatEarlier;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message actions'**
+  String get eventChatMessageActions;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get eventChatReply;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'React'**
+  String get eventChatReact;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel reply'**
+  String get eventChatClearReply;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message unavailable'**
+  String get eventChatUnavailable;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Like'**
+  String get eventChatReactionLike;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Love'**
+  String get eventChatReactionLove;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Laugh'**
+  String get eventChatReactionLaugh;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Surprised'**
+  String get eventChatReactionWow;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get eventChatReactionSad;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks'**
+  String get eventChatReactionThanks;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reaction'**
+  String get eventChatReactionsTitle;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Close reactions'**
+  String get eventChatCloseReactions;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get eventChatYou;
+
+  /// Event conversation interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh chat'**
+  String get eventChatRefresh;
+
+  /// No description provided for @eventChatReplyingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {name}'**
+  String eventChatReplyingTo({required String name});
+
+  /// No description provided for @eventChatTyping.
+  ///
+  /// In en, this message translates to:
+  /// **'{names} typing…'**
+  String eventChatTyping({required String names});
 }
 
 class _AppLocalizationsDelegate

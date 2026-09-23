@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/event_chat_entry_section.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -377,8 +378,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           heroTag: widget.heroTag,
           enableMapNetworkTiles: widget.enableMapNetworkTiles,
           crossPathsConsentState: crossPathsConsentState,
-          messagePreferencesSection:
-              !isHostApp && vm.isAuthenticated && vm.participation != null
+          messagePreferencesSection: !isHostApp && vm.isAuthenticated
               ? Theme(
                   data: Theme.of(context).copyWith(
                     extensions: [
@@ -386,8 +386,14 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                       if (style.isDark) CatchTokens.editorialDark,
                     ],
                   ),
-                  child: EventMessagePreferencesNavigationSection(
-                    eventId: vm.event.id,
+                  child: Column(
+                    children: [
+                      EventChatEntrySection(eventId: vm.event.id),
+                      if (vm.participation != null)
+                        EventMessagePreferencesNavigationSection(
+                          eventId: vm.event.id,
+                        ),
+                    ],
                   ),
                 )
               : null,

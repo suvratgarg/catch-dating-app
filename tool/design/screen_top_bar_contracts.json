@@ -466,6 +466,22 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
+    },
+    {
+      "path": "lib/chats/presentation/event_chat_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
+    },
+    {
+      "path": "lib/safety/presentation/messaging_permissions_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back"
     }
   ],
   "rawChromeExceptions": [

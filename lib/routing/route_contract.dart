@@ -23,6 +23,7 @@ enum Routes {
     '/dashboard/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
   ),
+  eventChatScreen('/events/:eventId/chat', AppRouteAudience.shared),
   eventLocationMapScreen('/events/:eventId/location', AppRouteAudience.shared),
   dashboardScreen('/', AppRouteAudience.consumer),
   notificationsScreen('/notifications', AppRouteAudience.consumer),

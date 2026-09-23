@@ -527,6 +527,8 @@ import 'package:widgetbook_workspace/utility/auth.dart'
     as _widgetbook_workspace_utility_auth;
 import 'package:widgetbook_workspace/utility/calendar.dart'
     as _widgetbook_workspace_utility_calendar;
+import 'package:widgetbook_workspace/utility/event_chat.dart'
+    as _widgetbook_workspace_utility_event_chat;
 import 'package:widgetbook_workspace/utility/force_update.dart'
     as _widgetbook_workspace_utility_force_update;
 import 'package:widgetbook_workspace/utility/launch_access.dart'
@@ -12673,6 +12675,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .calendarWeekStripSkeletonStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Event chat',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatEntrySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Admitted event entry',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatEntryPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatMessageTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Reply and reactions',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatMessagePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review and explicit join',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatJoinPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatReactionSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Six accessible reactions',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatReactionsPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Admitted attendee conversation',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatScreenPreview,
               ),
             ],
           ),

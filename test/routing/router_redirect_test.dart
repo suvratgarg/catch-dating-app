@@ -56,6 +56,7 @@ void main() {
       '/settings/whatsapp',
       '/you/forms',
       '/you/forms/response-1',
+      '/events/event-1/chat',
     ]) {
       test('$path requires resolved auth but not a loaded profile', () {
         for (final profile in <AsyncValue<UserProfile?>>[
@@ -107,6 +108,7 @@ void main() {
         '/you/unknown',
         '/settings/launch-access',
         '/you/forms/response-1/other',
+        '/events/event-1/chat/other',
         '/payment-history',
         '/chats',
       ]) {
