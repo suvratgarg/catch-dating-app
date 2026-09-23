@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
 import 'package:flutter/material.dart';
@@ -54,9 +53,12 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
   @override
   void initState() {
     super.initState();
+    _saveState.addListener(_saveChanged);
     _controller = TextEditingController(text: widget.descriptor.currentValue)
       ..addListener(_clearErrors);
   }
+
+  void _saveChanged() => setState(() {});
 
   @override
   void didUpdateWidget(CatchFormTextField<P> oldWidget) {
@@ -139,46 +141,14 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
       if (_usesExplicitCommit) widget.scope.collapse();
       return;
     }
-    setState(() {
-      _saveState
-        ..saving = true
-        ..error = null
-        ..status = CatchFieldStatus.saving;
-    });
-    try {
-      final saved = await widget.scope.save(descriptor.patchForValue(value));
-      if (!mounted) return;
-      if (!saved) {
-        setState(() {
-          _saveState
-            ..saving = false
-            ..status = CatchFieldStatus.idle;
-        });
-        return;
-      }
-      _lastCommittedValue = value;
-      _hasCommittedValue = true;
-      _lastCommittedText = normalized;
-      setState(() {
-        _saveState
-          ..saving = false
-          ..status = CatchFieldStatus.saved;
-      });
-      _saveState.savedTimer = Timer(CatchFieldTokens.savedStatusHold, () {
-        if (mounted) {
-          setState(() => _saveState.status = CatchFieldStatus.idle);
-        }
-      });
-      if (_usesExplicitCommit) widget.scope.collapse();
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _saveState
-          ..saving = false
-          ..status = CatchFieldStatus.idle
-          ..error = error;
-      });
-    }
+    final saved = await _saveState.submit(
+      () => widget.scope.save(descriptor.patchForValue(value)),
+    );
+    if (!saved || !mounted) return;
+    _lastCommittedValue = value;
+    _hasCommittedValue = true;
+    _lastCommittedText = normalized;
+    if (_usesExplicitCommit) widget.scope.collapse();
   }
 
   @override
