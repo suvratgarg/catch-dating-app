@@ -90,6 +90,7 @@ export 'route_contract.dart';
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';
 part 'host_inbox_route.dart';
+part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
@@ -785,18 +786,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         name: Routes.hostApplicationsScreen.name,
         redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
       ),
-      GoRoute(
-        path: 'applications/:applicationId',
-        name: Routes.hostApplicationDetailScreen.name,
-        parentNavigatorKey: keys.root,
-        builder: (context, state) => HostApplicationDetailScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          applicationId: state.pathParameters['applicationId']!,
-          queue: state.extra is HostResponseReviewQueue
-              ? state.extra! as HostResponseReviewQueue
-              : null,
-        ),
-      ),
+      _hostApplicationReviewRoute(keys),
       GoRoute(
         path: 'people/new',
         name: Routes.hostAddCustomerScreen.name,
@@ -834,18 +824,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
         ),
       ),
-      GoRoute(
-        path: 'responses/:responseId',
-        name: Routes.hostFormResponseDetailScreen.name,
-        parentNavigatorKey: keys.root,
-        builder: (context, state) => HostFormResponseDetailScreen(
-          organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          responseId: state.pathParameters['responseId']!,
-          queue: state.extra is HostResponseReviewQueue
-              ? state.extra! as HostResponseReviewQueue
-              : null,
-        ),
-      ),
+      _hostFormResponseReviewRoute(keys),
       GoRoute(
         path: 'forms/:formId/preview',
         name: Routes.hostFormPreviewScreen.name,
