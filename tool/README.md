@@ -26,6 +26,47 @@ node tool/run.mjs affected-tools --base origin/main --check
 node tool/run.mjs run demo:ops --help
 ```
 
+## Retirement Review Without Model Sweeps
+
+Reuse the existing parsers and fingerprint tools to produce a disposable review
+queue. These scans do not call a model or modify source:
+
+```sh
+node tool/docs/check_doc_metadata.mjs --retirement --json
+# First install the small tool package: (cd tool/widget_dedupe && dart pub get)
+dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json tool/widget_dedupe/bin/extract_fingerprints.dart --retirement
+```
+
+The Dart report indexes authored identifiers once, separates production from
+Widgetbook/tests, and follows widgets referenced only by other candidates. Own
+state classes are folded into their widget. Same-file/part-library uses,
+ambiguous names, generated references and unrooted cycles conservatively retain
+code. Generated files use lexical identifiers, including comments and strings,
+so unsupported generated syntax cannot hide a caller. Any authored parse error
+or missing part suppresses all candidates. The report includes coverage, source
+digest, callers and physical declaration lines; it is not semantic resolution,
+external-package usage proof, or a promise of net deletions.
+
+Non-widget classes and top-level functions with no production references appear
+in a separate advisory queue; test helpers, generated annotation callbacks, and
+public package APIs still need deliberate ownership review.
+
+The Markdown report flags explicit retirement states, completed-checklist
+signals, missing literal paths and duplicate bodies. Historical documents and
+generated content are protected. No inbound Markdown links means only that:
+code, CI, external readers and human navigation still require review. Missing
+paths can describe planned or removed work, so they are not automatic fixes.
+
+Work in bounded batches: inspect the candidate and its callers, preserve live
+API/catalog contracts and unresolved documentation decisions, remove or migrate
+consumers, regenerate owned outputs, then run the checks selected by the impact
+plan. For visual alternatives use the existing fingerprint/similarity tools to
+rank likely duplicates before reviewing behavior and design. Add a known-bad
+and known-good regression example when a new recurring pattern needs a scanner;
+do not add one scanner or model pass per file. Reports belong in ignored local
+output or expiring CI artifacts, never a tracked retirement ledger. Measure
+actual Git additions/deletions separately from candidate line counts.
+
 Filtered `list` and `check` commands fail with exit 64 when no active tool
 matches, and a mixed valid/unknown id selection fails before any check runs; an
 empty category can never count as a successful CI lane. Tools CI
