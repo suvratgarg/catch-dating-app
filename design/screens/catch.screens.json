@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-15",
+  "updated": "2026-09-23",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -1000,28 +1000,17 @@
       "owners": [
         {
           "routes": [
-            "hostApplicationsScreen"
-          ],
-          "file": "lib/hosts/presentation/applications/host_applications_screen.dart",
-          "symbol": "_HostApplicationsScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        },
-        {
-          "routes": [
             "hostApplicationDetailScreen"
           ],
-          "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-          "symbol": "_HostApplicationDetailScreenState",
+          "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+          "symbol": "_HostFormResponseDetailScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Host application list and detail are independent canonical pushed routes."
+      "reason": "Existing application links render the unified response detail; the application directory redirects into Audience Responses."
     },
     "screen.host.event.rehearsal": {
       "owners": [
@@ -1060,6 +1049,97 @@
         }
       ],
       "reason": "Rehearsal setup and live rehearsal are canonical pushed routes with shared title treatment."
+    },
+    "screen.programs.work": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkProgramScreen"
+          ],
+          "file": "lib/programs/presentation/program_work_screen.dart",
+          "symbol": "_ProgramWorkScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostWorkProgramScreen"
+          ],
+          "file": "lib/programs/presentation/program_work_screen.dart",
+          "symbol": "ProgramWorkPageBody",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.arrivals": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkArrivalsScreen"
+          ],
+          "file": "lib/programs/presentation/program_arrivals_screen.dart",
+          "symbol": "ProgramArrivalsScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Pushed arrivals roster route rendered by ProgramArrivalsScreen with CatchRouteScaffold."
+    },
+    "screen.programs.dispatch": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkDispatchScreen"
+          ],
+          "file": "lib/programs/presentation/program_dispatch_screen.dart",
+          "symbol": "_ProgramDispatchScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Pushed dispatch route rendered by CatchRouteScaffold through ProgramDispatchScaffold."
+    },
+    "screen.programs.hotel_desk": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkHotelScreen"
+          ],
+          "file": "lib/programs/presentation/program_hotel_desk_screen.dart",
+          "symbol": "_ProgramHotelDeskScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.trips": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkTripsScreen"
+          ],
+          "file": "lib/programs/presentation/program_trips_screen.dart",
+          "symbol": "_ProgramTripsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     }
   },
   "layoutOnlyRoutes": {
@@ -1127,6 +1207,118 @@
         }
       ],
       "reason": "Payment confirmation is a route coordinator whose loading, localized error, pending checkout, and completed celebration terminals each have deterministic standalone ownership."
+    },
+    "formProfilesScreen": {
+      "owners": [
+        {
+          "routes": [
+            "formProfilesScreen"
+          ],
+          "file": "lib/user_profile/presentation/form_profiles_screen.dart",
+          "symbol": "FormProfilesScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Authenticated participant form-profile review uses canonical pushed-route chrome and a single constrained body. Focused review tests cover selection, identity gating and large text."
+    },
+    "formProfileReviewScreen": {
+      "owners": [
+        {
+          "routes": [
+            "formProfileReviewScreen"
+          ],
+          "file": "lib/user_profile/presentation/form_profile_review_screen.dart",
+          "symbol": "FormProfileReviewScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Authenticated participant form-profile review uses canonical pushed-route chrome and a single constrained body. Focused review tests cover selection, identity gating and large text."
+    },
+    "eventChatParticipantsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventChatParticipantsScreen"
+          ],
+          "file": "lib/chats/presentation/event_chat_participants_screen.dart",
+          "symbol": "_EventChatParticipantsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Current admitted room participants use canonical route chrome, bounded directory rows and the existing protected profile view."
+    },
+    "eventChatScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventChatScreen"
+          ],
+          "file": "lib/chats/presentation/event_chat_screen.dart",
+          "symbol": "_EventChatScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "full-bleed",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Shared admitted event conversation with explicit profile review and join, canonical route chrome, and keyboard-aware message composer. Focused widget tests cover light, dark, large text and touch targets."
+    },
+    "messagingPermissionsScreen": {
+      "owners": [
+        {
+          "routes": [
+            "messagingPermissionsScreen"
+          ],
+          "file": "lib/safety/presentation/messaging_permissions_screen.dart",
+          "symbol": "MessagingPermissionsScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Private account consent management uses canonical pushed-route chrome and one constrained body, with focused withdrawal, pagination and large-text tests."
+    },
+    "eventProfileSharingScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventProfileSharingScreen"
+          ],
+          "file": "lib/chats/presentation/event_profile_screen.dart",
+          "symbol": "_EventProfileScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Participant-controlled event profile sharing and protected mini-profile viewing use canonical route chrome and full-width sections, with focused privacy and rendered accessibility coverage."
+    },
+    "eventParticipantProfileScreen": {
+      "owners": [
+        {
+          "routes": [
+            "eventParticipantProfileScreen"
+          ],
+          "file": "lib/chats/presentation/event_profile_screen.dart",
+          "symbol": "_EventProfileScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "Participant-controlled event profile sharing and protected mini-profile viewing use canonical route chrome and full-width sections, with focused privacy and rendered accessibility coverage."
     }
   },
   "imperativePageContracts": {
@@ -8418,7 +8610,7 @@
         {
           "id": "DS-MATCHES-CHAT-004",
           "status": "closed",
-          "nextAction": "Closed. Populated Messaging thread and Messaging \u00b7 New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
+          "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
         }
       ]
     },
@@ -8656,7 +8848,7 @@
           "id": "edit_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfileTabSliverBody renders Photos, Prompts, About you, Running, and Lifestyle sections from SelfProfileEditTabState descriptors.",
+          "source": "ProfileTabSliverBody renders core profile guidance, Photos, Prompts, About you, Lifestyle, and collapsed optional activity preferences from SelfProfileEditTabState descriptors.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],
@@ -9247,7 +9439,7 @@
           "kind": "repo",
           "status": "available",
           "path": "design/reference_screens/manifest.json",
-          "notes": "Public-profile PNG reference is regenerated from the current Profile \u00b7 other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
+          "notes": "Public-profile PNG reference is regenerated from the current Profile · other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
         }
       ],
       "captures": [
@@ -9398,7 +9590,7 @@
             "test/public_profile/public_profile_screen_test.dart",
             "test/swipes/profile_card_widget_test.dart"
           ],
-          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile \u00b7 other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
+          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile · other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ]
@@ -27213,36 +27405,30 @@
       "shell": {
         "owner": "host",
         "nestedScaffoldAllowed": true,
-        "reason": "Both pushed routes cover the Host shell on the root navigator and own their route scaffold."
+        "reason": "Application detail covers the Host shell on the root navigator and owns its route scaffold."
       },
       "topBar": {
         "role": "compact",
         "expression": "CatchTopBar",
-        "owner": "HostApplicationsScreen and HostApplicationDetailScreen",
-        "reason": "The queue and nested detail route share the canonical compact Host top bar with an explicit back action."
+        "owner": "HostFormResponseDetailScreen",
+        "reason": "Saved application URLs delegate to the unified response detail route and its canonical back action."
       },
       "statePolicy": {
         "requiredStates": [
           "data",
-          "empty",
           "error",
           "loading",
           "mutation",
           "offline",
           "permission"
         ],
-        "owner": "HostApplicationsDirectoryController, HostApplicationsController, and hostApplicationDetailProvider"
+        "owner": "hostResponseReviewDetailProvider and HostApplicationsController"
       },
-      "name": "Host Applications",
+      "name": "Host Application Detail",
       "owner": "hosts",
       "priority": "P1",
       "status": "in_progress",
       "routes": [
-        {
-          "id": "hostApplicationsScreen",
-          "path": "/host/audience/applications",
-          "role": "host"
-        },
         {
           "id": "hostApplicationDetailScreen",
           "path": "/host/audience/applications/:applicationId",
@@ -27250,15 +27436,15 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/applications/host_applications_screen.dart",
-        "symbol": "HostApplicationsScreen"
+        "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+        "symbol": "HostFormResponseDetailScreen"
       },
       "stateController": {
-        "primary": "hostApplicationsDirectoryControllerProvider + hostApplicationDetailProvider + hostApplicationsControllerProvider",
+        "primary": "hostResponseReviewDetailProvider + hostApplicationsControllerProvider",
         "files": [
           {
-            "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
-            "symbol": "HostApplicationsDirectoryController"
+            "file": "lib/hosts/presentation/forms/host_response_review_detail.dart",
+            "symbol": "hostResponseReviewDetail"
           },
           {
             "file": "lib/hosts/data/host_application_repository.dart",
@@ -27271,7 +27457,7 @@
             "symbol": "HostApplicationsController"
           }
         ],
-        "notes": "The presentation layer never reaches the repository directly; import and review mutations cross the controller boundary."
+        "notes": "The presentation layer never reaches the repository directly; review mutations cross the controller boundary. Unified listing and import belong to Audience Responses."
       },
       "designRefs": [],
       "captures": [],
@@ -27280,42 +27466,25 @@
           "id": "host_applications_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "CatchSkeletonRows queue branch",
+          "source": "HostFormResponseDetailScreen typed async loading branch",
           "nextAction": "Add a deterministic full-route capture."
         },
         {
-          "id": "host_applications_empty",
-          "kind": "empty",
-          "status": "implemented",
-          "source": "CatchEmptyState queue branch",
-          "nextAction": "Capture the first-import path."
-        },
-        {
-          "id": "host_applications_populated",
+          "id": "host_application_detail",
           "kind": "populated",
           "status": "implemented",
-          "source": "HostApplicationsDirectoryController and application list frame",
-          "tests": [
-            "test/hosts/host_application_import_test.dart"
+          "source": "HostFormResponseDetailScreen immutable answers and review controls",
+          "captureIds": [
+            "host_application_detail"
           ],
-          "nextAction": "Add rendered queue interaction coverage."
+          "nextAction": "Maintain the deterministic detail capture while lifecycle list coverage belongs to Audience Responses."
         },
         {
           "id": "host_applications_error",
           "kind": "error",
           "status": "implemented",
-          "source": "CatchErrorState queue and detail branches",
+          "source": "HostFormResponseDetailScreen typed async error branch",
           "nextAction": "Add deterministic callable-error capture."
-        },
-        {
-          "id": "host_applications_import",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "HostApplicationsController provider-neutral import",
-          "tests": [
-            "test/hosts/host_application_import_test.dart"
-          ],
-          "nextAction": "Add mapping-sheet interaction coverage."
         },
         {
           "id": "host_application_review",
@@ -27343,37 +27512,9 @@
         }
       ],
       "composition": {
-        "currentLayout": "A canonical Host route presents search, status filters, global sorting, a flat application queue, and a provider-neutral CSV/XLSX mapping review. A nested canonical route presents immutable answers, validated outreach actions, a private note, and explicit review states.",
-        "targetLayout": "Keep providers at the ingestion edge while Catch owns one application queue, answer model, privacy boundary, and review language across imported and future native submissions.",
+        "currentLayout": "A canonical detail route presents immutable answers, validated outreach actions, a private note, and explicit review states. The unified queue, lifecycle filters, and import action live in Audience Responses.",
+        "targetLayout": "Keep one response review workflow with detailed submitted answers and server-authorized review actions.",
         "sections": [
-          {
-            "id": "section.host.applications.queue",
-            "name": "Application review queue and tabular import",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [],
-            "flutter": {
-              "file": "lib/hosts/presentation/applications/host_applications_screen.dart",
-              "symbol": "HostApplicationsScreen"
-            },
-            "currentOwner": "hosts.presentation.applications",
-            "targetOwner": "hosts.presentation.applications",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.search_field",
-              "catch.chip",
-              "catch.surface",
-              "catch.sheet"
-            ],
-            "states": [
-              "host_applications_loading",
-              "host_applications_empty",
-              "host_applications_populated",
-              "host_applications_error",
-              "host_applications_import"
-            ],
-            "migration": "Keep CSV/XLSX parsing local, publish immutable provider-neutral form versions, and send all writes through HostApplicationsController."
-          },
           {
             "id": "section.host.applications.detail",
             "name": "Application answers, outreach, and review",
@@ -27381,11 +27522,11 @@
             "layer": "screen-adapter",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-              "symbol": "HostApplicationDetailScreen"
+              "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+              "symbol": "HostFormResponseDetailScreen"
             },
-            "currentOwner": "hosts.presentation.applications",
-            "targetOwner": "hosts.presentation.applications",
+            "currentOwner": "hosts.presentation.forms",
+            "targetOwner": "hosts.presentation.forms",
             "dependencies": [
               "catch.top_bar",
               "catch.section",
@@ -27640,6 +27781,842 @@
         ]
       },
       "openGaps": []
+    },
+    {
+      "id": "screen.programs.work",
+      "name": "Program work workspace",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkProgramScreen",
+          "path": "/host/work/:programId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_work_screen.dart",
+        "symbol": "ProgramWorkScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programWorkEntryProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_work_screen.dart",
+            "symbol": "ProgramWorkScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programWorkEntry"
+          }
+        ],
+        "mutationOwners": [],
+        "notes": "The shell renders exactly the scopes the server returns; nothing client-side widens access."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "access_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramWorkScreen renders the canonical loading viewport while programWorkEntryProvider resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkScreen/Screen states"
+          ]
+        },
+        {
+          "id": "access_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Access failures render CatchLocalizedErrorState with event-scoped retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkScreen/Screen states"
+          ]
+        },
+        {
+          "id": "workspaces",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Resolved access renders only the duty-scoped sections returned by the callable; the server re-checks every destination.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkScreen/Screen states"
+          ]
+        },
+        {
+          "id": "no_duties",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Staff without duties get an explicit grant-request empty state.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramWorkScreen resolves program access once and composes duty-scoped section links to arrivals, dispatch, hotel and ledger workspaces.",
+        "targetLayout": "Program work continues pushing duty and scope resolution into typed display data.",
+        "sections": [
+          {
+            "id": "section.programs_work.adapter",
+            "name": "Program work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramWorkScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_work_screen.dart",
+              "symbol": "ProgramWorkScreen"
+            },
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free program work body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field"
+            ],
+            "states": [
+              "access_loading",
+              "access_error",
+              "workspaces",
+              "no_duties"
+            ],
+            "migration": "Keep section composition provider-free once the access payload is resolved.",
+            "previewIds": [
+              "ProgramWorkScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-WORK-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.arrivals",
+      "name": "Program arrivals roster",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkArrivalsScreen",
+          "path": "/host/work/:programId/arrivals/:pickupPointId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_arrivals_screen.dart",
+        "symbol": "ProgramArrivalsScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading",
+          "mutation",
+          "offline"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programArrivalsRosterProvider + programOperationsControllerProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_arrivals_screen.dart",
+            "symbol": "ProgramArrivalsScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programArrivalsRoster"
+          },
+          {
+            "file": "lib/programs/data/program_operations_outbox.dart",
+            "symbol": "programOperationsOutbox"
+          },
+          {
+            "file": "lib/programs/presentation/program_operations_controller.dart",
+            "symbol": "ProgramOperationsController"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_operations_controller.dart",
+            "symbol": "ProgramOperationsController"
+          }
+        ],
+        "notes": "Every greeter write is an idempotent outbox operation; claims are exclusive server-side."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "roster_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the roster resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramArrivalsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "roster_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Roster failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramArrivalsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "roster_groups",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Ready and expected lanes sort by curb estimate with claim, readiness and disruption badges.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramArrivalsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "offline_queue",
+          "kind": "offline",
+          "status": "implemented",
+          "source": "Queued observations surface in the offline banner and replay with stable clientOperationIds.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramArrivalsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "claim_mutation",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "Claim, unclaim, mark-ready and disruption writes enqueue through the outbox and refresh the roster.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramArrivalsScreen/Screen states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramArrivalsScreen composes attention, ready and expected lanes from the scoped roster response and enqueues claims and readiness observations through the offline outbox.",
+        "targetLayout": "Arrivals rows continue moving toward provider-free display data with widgetbook state coverage.",
+        "sections": [
+          {
+            "id": "section.programs_arrivals.adapter",
+            "name": "Arrivals route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramArrivalsScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_arrivals_screen.dart",
+              "symbol": "ProgramArrivalsScreen"
+            },
+            "currentOwner": "ProgramArrivalsScreen + programArrivalsRosterProvider + programOperationsControllerProvider",
+            "targetOwner": "provider-free arrivals lanes",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.field",
+              "catch.badge",
+              "catch.banner",
+              "catch.menu"
+            ],
+            "states": [
+              "roster_loading",
+              "roster_error",
+              "roster_groups",
+              "offline_queue",
+              "claim_mutation"
+            ],
+            "migration": "Keep row rendering provider-free; mutations stay behind the outbox.",
+            "previewIds": [
+              "ProgramArrivalsScreen/Screen states",
+              "ProgramArrivalRow/Row states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-ARRIVALS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.dispatch",
+      "name": "Program dispatch desk",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkDispatchScreen",
+          "path": "/host/work/:programId/dispatch/:pickupPointId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_dispatch_screen.dart",
+        "symbol": "ProgramDispatchScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading",
+          "mutation"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programTransportPlanProvider + programOperationsControllerProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_dispatch_screen.dart",
+            "symbol": "ProgramDispatchScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programTransportPlan"
+          },
+          {
+            "file": "lib/programs/data/program_operations_outbox.dart",
+            "symbol": "programOperationsOutbox"
+          },
+          {
+            "file": "lib/programs/presentation/program_operations_controller.dart",
+            "symbol": "ProgramOperationsController"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_operations_controller.dart",
+            "symbol": "ProgramOperationsController"
+          }
+        ],
+        "notes": "Dispatch is the reconciliation atom: plate, vendor and class are captured at departure inside one transactional write."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "plan_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the transport plan resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramDispatchScreen/Screen states"
+          ]
+        },
+        {
+          "id": "plan_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Plan failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramDispatchScreen/Screen states"
+          ]
+        },
+        {
+          "id": "suggested_groups",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Deterministic group cards show the window, destination, capacity and ready-wait deadline.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramDispatchScreen/Screen states"
+          ]
+        },
+        {
+          "id": "unassigned",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Unbatchable legs surface an explicit unassigned section with reasons.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramDispatchScreen/Screen states"
+          ]
+        },
+        {
+          "id": "dispatch_mutation",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "The dispatch sheet captures plate, vendor and class; writes queue offline through the outbox.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramDispatchSheet/Sheet states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramDispatchScreen renders grouped suggestions and an unassigned lane, then captures dispatch through a plate/vendor/class sheet queued for offline replay.",
+        "targetLayout": "Dispatch cards keep the human-in-the-loop merge seam visible without widening client authority.",
+        "sections": [
+          {
+            "id": "section.programs_dispatch.adapter",
+            "name": "Dispatch route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramDispatchScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_dispatch_screen.dart",
+              "symbol": "ProgramDispatchScreen"
+            },
+            "currentOwner": "ProgramDispatchScreen + programTransportPlanProvider + programOperationsControllerProvider",
+            "targetOwner": "provider-free dispatch cards",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.surface",
+              "catch.badge",
+              "catch.button",
+              "catch.sheet",
+              "catch.field"
+            ],
+            "states": [
+              "plan_loading",
+              "plan_error",
+              "suggested_groups",
+              "unassigned",
+              "dispatch_mutation"
+            ],
+            "migration": "Keep suggestion cards provider-free; dispatch writes stay behind the outbox.",
+            "previewIds": [
+              "ProgramDispatchScreen/Screen states",
+              "ProgramDispatchSheet/Sheet states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-DISPATCH-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.hotel_desk",
+      "name": "Program hotel desk",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkHotelScreen",
+          "path": "/host/work/:programId/hotel/:hotelId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_hotel_desk_screen.dart",
+        "symbol": "ProgramHotelDeskScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading",
+          "mutation"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programHotelInboundProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_hotel_desk_screen.dart",
+            "symbol": "ProgramHotelDeskScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programHotelInbound"
+          },
+          {
+            "file": "lib/programs/presentation/program_trip_actions_controller.dart",
+            "symbol": "ProgramTripActions"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_trip_actions_controller.dart",
+            "symbol": "ProgramTripActions"
+          }
+        ],
+        "notes": "The hotel view is a scoped projection — names, party size, plates and ETAs only."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "inbound_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while hotel inbound resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramHotelDeskScreen/Screen states"
+          ]
+        },
+        {
+          "id": "inbound_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Inbound failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramHotelDeskScreen/Screen states"
+          ]
+        },
+        {
+          "id": "en_route",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "En-route trip tiles show plate, manifest names, departed time and ETA.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramHotelDeskScreen/Screen states"
+          ]
+        },
+        {
+          "id": "expected",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Expected parties show headcount and curb estimate without contact fields.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramHotelDeskScreen/Screen states"
+          ]
+        },
+        {
+          "id": "mark_arrived",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "Hotel staff mark trips arrived within their hotel scope through ProgramTripActions.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramHotelInboundTripTile/Tile states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramHotelDeskScreen renders en-route vehicles with mark-arrived plus still-expected parties for one hotel.",
+        "targetLayout": "The hotel desk keeps arrival marking hotel-scoped and adds no contact or cross-hotel fields.",
+        "sections": [
+          {
+            "id": "section.programs_hotel.adapter",
+            "name": "Hotel desk route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramHotelDeskScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_hotel_desk_screen.dart",
+              "symbol": "ProgramHotelDeskScreen"
+            },
+            "currentOwner": "ProgramHotelDeskScreen + programHotelInboundProvider",
+            "targetOwner": "provider-free hotel desk lanes",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.surface",
+              "catch.badge",
+              "catch.button"
+            ],
+            "states": [
+              "inbound_loading",
+              "inbound_error",
+              "en_route",
+              "expected",
+              "mark_arrived"
+            ],
+            "migration": "Keep the inbound projection provider-free and redacted to the hotel scope.",
+            "previewIds": [
+              "ProgramHotelDeskScreen/Screen states",
+              "ProgramHotelInboundTripTile/Tile states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-HOTEL-DESK-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.trips",
+      "name": "Program trip ledger",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkTripsScreen",
+          "path": "/host/work/:programId/trips",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_trips_screen.dart",
+        "symbol": "ProgramTripsScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading",
+          "mutation"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programTripListProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_trips_screen.dart",
+            "symbol": "ProgramTripsScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programTripList"
+          },
+          {
+            "file": "lib/programs/presentation/program_trip_actions_controller.dart",
+            "symbol": "ProgramTripActions"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_trip_actions_controller.dart",
+            "symbol": "ProgramTripActions"
+          }
+        ],
+        "notes": "The ledger is the vendor reconciliation record — voided rows stay visible with reasons."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "trips_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the ledger resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTripsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "trips_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Ledger failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTripsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "ledger",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Each departure renders plate, vendor, class, manifest and outcome.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTripsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "void_mutation",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "Voided trips keep their ledger row; the void sheet requires a reason.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTripVoidSheet/Sheet states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramTripsScreen renders dispatched vehicles newest-first with status badges and a reasoned void action.",
+        "targetLayout": "The ledger stays read-focused for reconciliation viewers while void remains a scoped mutation.",
+        "sections": [
+          {
+            "id": "section.programs_trips.adapter",
+            "name": "Trip ledger route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramTripsScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_trips_screen.dart",
+              "symbol": "ProgramTripsScreen"
+            },
+            "currentOwner": "ProgramTripsScreen + programTripListProvider",
+            "targetOwner": "provider-free ledger rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.surface",
+              "catch.badge",
+              "catch.button",
+              "catch.sheet"
+            ],
+            "states": [
+              "trips_loading",
+              "trips_error",
+              "ledger",
+              "void_mutation"
+            ],
+            "migration": "Keep ledger rows provider-free; void stays dispatcher-scoped and audited.",
+            "previewIds": [
+              "ProgramTripsScreen/Screen states",
+              "ProgramTripLedgerRow/Row states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-TRIPS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
     }
   ]
 }

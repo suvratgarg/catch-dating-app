@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-21",
+  "updated": "2026-09-23",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for future design-parity work, or explicitly excluded from baseline design parity. The schema admits planned as a lifecycle value, but the zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
   "routes": [
@@ -73,6 +73,30 @@
       "priority": "P1",
       "screenId": "screen.event.detail",
       "reason": "Covered by screen.event.detail as the alias route for Event Detail."
+    },
+    {
+      "routeId": "eventChatScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Shared admission-checked event conversation covered by typed route layout ownership, Widgetbook and focused keyboard, theme and large-text tests."
+    },
+    {
+      "routeId": "eventProfileSharingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventChatParticipantsScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Current event participant directory uses a typed pushed-route owner, Widgetbook previews and focused light/dark/large-text captures plus admission, account and block-boundary tests rather than a baseline screen-parity contract."
+    },
+    {
+      "routeId": "eventParticipantProfileScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
     },
     {
       "routeId": "eventLocationMapScreen",
@@ -180,6 +204,18 @@
       "screenId": "screen.profile.self"
     },
     {
+      "routeId": "formProfilesScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private account forms directory covered by typed route layout ownership and participant form-profile widget tests."
+    },
+    {
+      "routeId": "formProfileReviewScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private profile claim review covered by typed route layout ownership and participant form-profile widget tests."
+    },
+    {
       "routeId": "reviewsHistoryScreen",
       "status": "contracted",
       "priority": "P3",
@@ -199,6 +235,12 @@
       "priority": "P3",
       "reason": "Covered by screen.settings.account as the consumer account, notification, privacy, safety, and sign-out settings route.",
       "screenId": "screen.settings.account"
+    },
+    {
+      "routeId": "messagingPermissionsScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private account consent management covered by canonical route chrome and focused permission withdrawal widget tests."
     },
     {
       "routeId": "launchAccessScreen",
@@ -334,10 +376,10 @@
     },
     {
       "routeId": "hostApplicationsScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.host.applications as the provider-neutral organizer application review queue and tabular import route.",
-      "screenId": "screen.host.applications"
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "The retired Applications directory redirects to Audience Responses while preserving organizer, form, and contact scope."
     },
     {
       "routeId": "hostApplicationDetailScreen",
@@ -373,6 +415,41 @@
       "priority": "P1",
       "screenId": "screen.host.event.manage",
       "reason": "Covered by screen.host.event.manage as the rendered least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
+    },
+    {
+      "routeId": "hostWorkProgramScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.work",
+      "reason": "Covered by screen.programs.work as the scoped program workspace landing route."
+    },
+    {
+      "routeId": "hostWorkArrivalsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.arrivals",
+      "reason": "Covered by screen.programs.arrivals as the station-scoped greeter roster."
+    },
+    {
+      "routeId": "hostWorkDispatchScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.dispatch",
+      "reason": "Covered by screen.programs.dispatch as the station-scoped dispatch desk."
+    },
+    {
+      "routeId": "hostWorkHotelScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.hotel_desk",
+      "reason": "Covered by screen.programs.hotel_desk as the hotel-scoped inbound view."
+    },
+    {
+      "routeId": "hostWorkTripsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.trips",
+      "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
     },
     {
       "routeId": "hostOrganizerScreen",

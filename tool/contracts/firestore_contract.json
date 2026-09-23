@@ -3,6 +3,81 @@
   "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
   "collections": [
     {
+      "id": "organizerPaymentConnections",
+      "path": "organizerPaymentConnections/{connectionId}",
+      "rulesMatch": "/organizerPaymentConnections/{connectionId}",
+      "typescriptInterface": "OrganizerPaymentConnectionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentOauthCallback"
+      ]
+    },
+    {
+      "id": "organizerPaymentOauthStates",
+      "path": "organizerPaymentOauthStates/{stateId}",
+      "rulesMatch": "/organizerPaymentOauthStates/{stateId}",
+      "typescriptInterface": "OrganizerPaymentOauthStateDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentOauthCallback"
+      ]
+    },
+    {
+      "id": "organizerFormPayments",
+      "path": "organizerFormPayments/{paymentId}",
+      "rulesMatch": "/organizerFormPayments/{paymentId}",
+      "typescriptInterface": "OrganizerFormPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "prepareOrganizerFormPayment",
+        "getOrganizerFormPayment",
+        "findOrganizerFormPayment",
+        "reconcileOrganizerFormPayments"
+      ]
+    },
+    {
+      "id": "organizerFormPaymentWebhooks",
+      "path": "organizerFormPaymentWebhooks/{receiptId}",
+      "rulesMatch": "/organizerFormPaymentWebhooks/{receiptId}",
+      "typescriptInterface": "OrganizerFormPaymentWebhookDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "organizerFormPaymentWebhook",
+        "onOrganizerFormPaymentWebhook",
+        "reconcileOrganizerFormPayments"
+      ]
+    },
+    {
       "id": "config_cities",
       "path": "config/cities",
       "rulesMatch": "/config/cities",
@@ -25,7 +100,8 @@
       "write": "owner initial create; profile edits via updateUserProfile; narrow runtime direct updates only",
       "exportedFunctions": [
         "updateUserProfile",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "claimParticipantFormProfile"
       ],
       "operations": [
         {
@@ -1986,6 +2062,208 @@
       ]
     },
     {
+      "id": "organizerPrograms",
+      "path": "organizerPrograms/{programId}",
+      "rulesMatch": "/organizerPrograms/{programId}",
+      "typescriptInterface": "OrganizerProgramDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program management callables",
+      "read": "server only; managers and scoped staff receive callable projections",
+      "write": "server only",
+      "migrationNotes": [
+        "Private wedding/corporate program root; deliberately separate from publicly readable events documents.",
+        "transportSettings owns per-program band window and ready-wait tuning used by grouping suggestions."
+      ]
+    },
+    {
+      "id": "programFunctions",
+      "path": "programFunctions/{functionId}",
+      "rulesMatch": "/programFunctions/{functionId}",
+      "typescriptInterface": "ProgramFunctionDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program management callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Private program sub-events (ceremony, reception, offsite sessions); no public read surface."
+      ]
+    },
+    {
+      "id": "programGuests",
+      "path": "programGuests/{guestId}",
+      "rulesMatch": "/programGuests/{guestId}",
+      "typescriptInterface": "ProgramGuestDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program guest management and reviewed conversion callables",
+      "read": "server only; duty-scoped callables return field-redacted projections",
+      "write": "server only",
+      "migrationNotes": [
+        "One document per invited person; householdId links party membership and contactId optionally links a CRM contact.",
+        "A shared phone or email never merges two guest records."
+      ]
+    },
+    {
+      "id": "programHouseholds",
+      "path": "programHouseholds/{householdId}",
+      "rulesMatch": "/programHouseholds/{householdId}",
+      "typescriptInterface": "ProgramHouseholdDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program guest management callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "deliveryPreference is a delivery hint only and never implies messaging consent."
+      ]
+    },
+    {
+      "id": "programStaffGrants",
+      "path": "programStaffGrants/{grantId}",
+      "rulesMatch": "/programStaffGrants/{grantId}",
+      "typescriptInterface": "ProgramStaffGrantDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program staff access callables",
+      "read": "a staff member may get only their own grant document",
+      "write": "server only",
+      "migrationNotes": [
+        "Deterministic id programId__uid mirrors event staff grants; duties carry independent station scopes.",
+        "Duties never confer organizer, CRM, messaging or cross-program authority."
+      ]
+    },
+    {
+      "id": "programStaffInvites",
+      "path": "programStaffInvites/{inviteId}",
+      "rulesMatch": "/programStaffInvites/{inviteId}",
+      "typescriptInterface": "ProgramStaffInviteDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program staff invite callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Single-use, phone-bound invite redeemable only by a signed-in account whose verified phone matches phoneE164.",
+        "Invite ids are unguessable server-generated tokens; redemption materializes a programStaffGrants document."
+      ]
+    },
+    {
+      "id": "programPickupPoints",
+      "path": "programPickupPoints/{pickupPointId}",
+      "rulesMatch": "/programPickupPoints/{pickupPointId}",
+      "typescriptInterface": "ProgramPickupPointDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program resource setup callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Airport/railway/venue pickup stations that scope greeter duties and grouping."
+      ]
+    },
+    {
+      "id": "programHotels",
+      "path": "programHotels/{hotelId}",
+      "rulesMatch": "/programHotels/{hotelId}",
+      "typescriptInterface": "ProgramHotelDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program resource setup callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Accommodation properties that scope hotel-desk duties and dispatch destinations."
+      ]
+    },
+    {
+      "id": "programTravelLegs",
+      "path": "programTravelLegs/{legId}",
+      "rulesMatch": "/programTravelLegs/{legId}",
+      "typescriptInterface": "ProgramTravelLegDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program travel and dispatch callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "One leg per guest journey; readyAt and manualCurbAt outrank provider estimates.",
+        "flightInstanceId links future provider facts without overwriting manual observations."
+      ]
+    },
+    {
+      "id": "programTravelParties",
+      "path": "programTravelParties/{partyId}",
+      "rulesMatch": "/programTravelParties/{partyId}",
+      "typescriptInterface": "ProgramTravelPartyDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program travel callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Ride-together parties are atomic in grouping suggestions."
+      ]
+    },
+    {
+      "id": "transportVendors",
+      "path": "transportVendors/{vendorId}",
+      "rulesMatch": "/transportVendors/{vendorId}",
+      "typescriptInterface": "TransportVendorDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "organizer transport vendor callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Organizer-level vendor identity; programIds binds the vendor to specific programs.",
+        "Rate cards and commercial terms are deferred to the reconciliation slice."
+      ]
+    },
+    {
+      "id": "transportTrips",
+      "path": "transportTrips/{tripId}",
+      "rulesMatch": "/transportTrips/{tripId}",
+      "typescriptInterface": "TransportTripDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program dispatch and arrival callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Dispatch snapshots plate, vendor, class and manifest at departure; the trip is the reconciliation atom."
+      ]
+    },
+    {
+      "id": "transportActiveAssignments",
+      "path": "transportActiveAssignments/{assignmentId}",
+      "rulesMatch": "/transportActiveAssignments/{assignmentId}",
+      "typescriptInterface": "TransportActiveAssignmentDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program dispatch transaction",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Unique leg-to-active-trip binding written inside the dispatch transaction."
+      ]
+    },
+    {
+      "id": "transportVehicleAssignments",
+      "path": "transportVehicleAssignments/{assignmentId}",
+      "rulesMatch": "/transportVehicleAssignments/{assignmentId}",
+      "typescriptInterface": "TransportVehicleAssignmentDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program dispatch transaction",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Organizer-wide occupancy keyed by SHA-256 of organizer id and normalized plate.",
+        "Active assignments do not expire; arrival or void releases only the current trip."
+      ]
+    },
+    {
+      "id": "transportOperationReceipts",
+      "path": "transportOperationReceipts/{receiptId}",
+      "rulesMatch": "/transportOperationReceipts/{receiptId}",
+      "typescriptInterface": "TransportOperationReceiptDocument",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "program transport mutation callables",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Idempotency receipts for offline-replayed transport mutations; same-id different-payload replays fail closed."
+      ]
+    },
+    {
       "id": "eventAssistanceParticipationReceipts",
       "path": "eventAssistanceParticipationReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceParticipationReceipts/{receiptId}",
@@ -2840,6 +3118,124 @@
       ],
       "migrationNotes": [
         "Permanent completion survives session expiry, reset and fork. Legacy completed sessions are a bounded read-only fallback while retained."
+      ]
+    },
+    {
+      "id": "catchCommunicationPreferences",
+      "path": "catchCommunicationPreferences/{uid}",
+      "rulesMatch": "/catchCommunicationPreferences/{uid}",
+      "typescriptInterface": "CatchCommunicationPreferenceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant form consent and account deletion",
+      "read": "server only; never organizer-visible",
+      "write": "server only",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+        "Delayed finalization cannot overwrite a newer withdrawal."
+      ]
+    },
+    {
+      "id": "catchCommunicationPermissionReceipts",
+      "path": "catchCommunicationPermissionReceipts/{receiptId}",
+      "rulesMatch": "/catchCommunicationPermissionReceipts/{receiptId}",
+      "typescriptInterface": "CatchCommunicationPermissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant form consent and account deletion",
+      "read": "server only; never organizer-visible",
+      "write": "server only",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+        "Delayed finalization cannot overwrite a newer withdrawal."
+      ]
+    },
+    {
+      "id": "participantFormProfileProposals",
+      "path": "participantFormProfileProposals/{responseId}",
+      "rulesMatch": "/participantFormProfileProposals/{responseId}",
+      "typescriptInterface": "ParticipantFormProfileProposalDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified form submission and participant profile claiming",
+      "read": "server only; participant claim review requires exact response ownership",
+      "write": "server only; never populated from CRM",
+      "exportedFunctions": [
+        "submitOrganizerFormResponse",
+        "getOrganizerFormPayment",
+        "requestAccountDeletion",
+        "getParticipantFormProfile",
+        "getParticipantFormPhoto",
+        "listParticipantFormProfiles",
+        "claimParticipantFormProfile"
+      ],
+      "migrationNotes": [
+        "Only explicit Catch profile and organizer-card questions create private pointers after verified submission. Existing canonical CRM mappings remain organizer-only.",
+        "A proposal is not a profile claim, public projection or room membership. Dereferencing requires current response ownership and status."
+      ]
+    },
+    {
+      "id": "participantOrganizerCards",
+      "path": "participantOrganizerCards/{responseId}",
+      "rulesMatch": "/participantOrganizerCards/{responseId}",
+      "typescriptInterface": "ParticipantOrganizerCardDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant profile claiming",
+      "read": "server only; authenticated participant projection",
+      "write": "server only; explicit participant review",
+      "exportedFunctions": [
+        "listParticipantFormProfiles",
+        "claimParticipantFormProfile",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
+      ]
+    },
+    {
+      "id": "participantProfileClaimReceipts",
+      "path": "participantProfileClaimReceipts/{receiptId}",
+      "rulesMatch": "/participantProfileClaimReceipts/{receiptId}",
+      "typescriptInterface": "ParticipantProfileClaimReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "participant profile claiming",
+      "read": "server only; authenticated participant projection",
+      "write": "server only; explicit participant review",
+      "exportedFunctions": [
+        "claimParticipantFormProfile",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
+      ]
+    },
+    {
+      "id": "eventChatProfileShares",
+      "path": "eventChatProfileShares/{shareId}",
+      "rulesMatch": "/eventChatProfileShares/{shareId}",
+      "typescriptInterface": "EventChatProfileShareDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event participant profile sharing",
+      "read": "server only; current joined participants after scoped selection",
+      "write": "server only; verified participant choice or own revocation",
+      "exportedFunctions": [
+        "getEventChatProfileSharing",
+        "updateEventChatProfileSharing",
+        "getEventChatProfile",
+        "requestAccountDeletion"
       ]
     }
   ]

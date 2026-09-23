@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-15",
+  "updated": "2026-09-23",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -5601,13 +5601,11 @@
         },
         {
           "id": "host.applications",
-          "routeId": "hostApplicationsScreen",
+          "routeId": "hostApplicationDetailScreen",
           "routeIds": [
-            "hostApplicationsScreen",
             "hostApplicationDetailScreen"
           ],
           "implementationPaths": [
-            "lib/hosts/presentation/applications/host_applications_screen.dart",
             "lib/hosts/presentation/applications/host_application_detail_screen.dart",
             "lib/hosts/presentation/applications/host_applications_controller.dart",
             "lib/hosts/data/host_application_repository.dart",
@@ -5626,44 +5624,28 @@
             "catch.surface",
             "catch.top_bar"
           ],
-          "captureIds": [],
+          "captureIds": [
+            "host_application_detail"
+          ],
           "designRefs": [],
           "states": [
             {
               "id": "host_applications_loading",
               "kind": "loading",
               "status": "implemented",
-              "notes": "The queue and nested detail routes use deterministic shared skeleton rows while their organizer-scoped callables resolve."
+              "notes": "The application detail route uses a typed loading state while its organizer-scoped callable resolves."
             },
             {
-              "id": "host_applications_empty",
-              "kind": "empty",
-              "status": "implemented",
-              "notes": "An empty organizer queue explains that no applications match the current search and review-status scope."
-            },
-            {
-              "id": "host_applications_populated",
+              "id": "host_application_detail",
               "kind": "populated",
-              "status": "tested",
-              "tests": [
-                "test/hosts/host_application_import_test.dart"
-              ],
-              "notes": "The organizer-scoped queue owns search, review filters, sorting, pagination, and navigation to immutable submitted answers."
+              "status": "implemented",
+              "notes": "Immutable submitted answers and review actions remain on the detail route; the review queue and import live in Audience Responses."
             },
             {
               "id": "host_applications_error",
               "kind": "error",
               "status": "implemented",
               "notes": "Queue and detail callable failures use the shared customer-context error state with route-scoped retry."
-            },
-            {
-              "id": "host_applications_import",
-              "kind": "mutation",
-              "status": "tested",
-              "tests": [
-                "test/hosts/host_application_import_test.dart"
-              ],
-              "notes": "Provider-neutral CSV and XLSX import maps canonical reusable fields separately from organizer-only questions before committing rows."
             },
             {
               "id": "host_application_review",
@@ -12609,6 +12591,341 @@
           "id": "DP-UTILITY-PREVIEW-001",
           "status": "open",
           "nextAction": "Add Widgetbook states and deterministic captures for map, notifications, reviews, settings, and payments utility surfaces before pixel comparison."
+        }
+      ]
+    },
+    {
+      "id": "programs_arrivals_ops",
+      "name": "Program arrivals operations",
+      "priority": "P1",
+      "status": "in_progress",
+      "nextPass": "programs-arrivals-design-parity-01",
+      "screens": [
+        {
+          "id": "programs.work",
+          "routeId": "hostWorkProgramScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_work_screen.dart",
+            "lib/programs/data/program_work_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-prd",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program workspace authority and composition decisions are recorded in the airport arrivals PRD."
+            }
+          ],
+          "states": [
+            {
+              "id": "access_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while program access resolves."
+            },
+            {
+              "id": "access_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "workspaces",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Duty-scoped workspace links resolved from the access payload."
+            },
+            {
+              "id": "no_duties",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Explicit grant-request empty state for staff without duties."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-001",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surfaces currently carry widgetbook previews only."
+            }
+          ]
+        },
+        {
+          "id": "programs.arrivals",
+          "routeId": "hostWorkArrivalsScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_arrivals_screen.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_operations_outbox.dart",
+            "lib/programs/domain/program_models.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.banner",
+            "catch.field",
+            "catch.menu",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-prd",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program workspace authority and composition decisions are recorded in the airport arrivals PRD."
+            }
+          ],
+          "states": [
+            {
+              "id": "roster_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the roster resolves."
+            },
+            {
+              "id": "roster_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "roster_groups",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Attention, ready and expected lanes sorted by curb estimate."
+            },
+            {
+              "id": "offline_queue",
+              "kind": "offline",
+              "status": "implemented",
+              "notes": "Queued observations render an outbox banner and replay idempotently."
+            },
+            {
+              "id": "claim_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Claim, unclaim, ready and disruption writes enqueue through the outbox."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-002",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surfaces currently carry widgetbook previews only."
+            }
+          ]
+        },
+        {
+          "id": "programs.dispatch",
+          "routeId": "hostWorkDispatchScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_dispatch_screen.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_operations_outbox.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.banner",
+            "catch.button",
+            "catch.field",
+            "catch.section",
+            "catch.sheet",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-prd",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program workspace authority and composition decisions are recorded in the airport arrivals PRD."
+            }
+          ],
+          "states": [
+            {
+              "id": "plan_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the transport plan resolves."
+            },
+            {
+              "id": "plan_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "suggested_groups",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Deterministic group tiles with window, destination, capacity and dispatch-by."
+            },
+            {
+              "id": "unassigned",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "Unbatchable legs surface reasons in a dedicated section."
+            },
+            {
+              "id": "dispatch_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Plate, vendor and class capture queues through the offline outbox."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-003",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surfaces currently carry widgetbook previews only."
+            }
+          ]
+        },
+        {
+          "id": "programs.hotel_desk",
+          "routeId": "hostWorkHotelScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_hotel_desk_screen.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/presentation/program_trip_actions_controller.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.field",
+            "catch.section",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-prd",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program workspace authority and composition decisions are recorded in the airport arrivals PRD."
+            }
+          ],
+          "states": [
+            {
+              "id": "inbound_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while hotel inbound resolves."
+            },
+            {
+              "id": "inbound_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "en_route",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "En-route trip tiles show plate, manifest names and ETA."
+            },
+            {
+              "id": "expected",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Expected parties show headcount and curb estimate without contact fields."
+            },
+            {
+              "id": "mark_arrived",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Hotel-scoped mark-arrived goes through ProgramTripActions."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-004",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surfaces currently carry widgetbook previews only."
+            }
+          ]
+        },
+        {
+          "id": "programs.trips",
+          "routeId": "hostWorkTripsScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_trips_screen.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/presentation/program_trip_actions_controller.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.section",
+            "catch.sheet",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-prd",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program workspace authority and composition decisions are recorded in the airport arrivals PRD."
+            }
+          ],
+          "states": [
+            {
+              "id": "trips_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the ledger resolves."
+            },
+            {
+              "id": "trips_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "ledger",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Departure ledger rows with plate, vendor, manifest and outcome."
+            },
+            {
+              "id": "void_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Void requires a reason and keeps the ledger row."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-005",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surfaces currently carry widgetbook previews only."
+            }
+          ]
+        }
+      ],
+      "lintCandidates": [],
+      "previewPlan": [
+        {
+          "id": "DP-PROGRAMS-PREVIEW-001",
+          "status": "closed",
+          "nextAction": "Widgetbook cases cover the five program screens and their row/tile/sheet widgets under '[P1 product surfaces]/Program *'."
         }
       ]
     }

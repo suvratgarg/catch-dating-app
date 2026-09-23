@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {validateOrganizerFormDefinition} from "./organizerForms";
+import {formAnswerDestination, requireFreeFormSubmission} from
+  "./organizerFormCapabilities";
 
 type Definition = Parameters<typeof validateOrganizerFormDefinition>[0];
 type Question = Definition["sections"][number]["questions"][number];
@@ -9,6 +11,103 @@ type Question = Definition["sections"][number]["questions"][number];
 test("form validator accepts a minimal publishable survey", () => {
   assert.deepEqual(validateOrganizerFormDefinition(definition()), []);
 });
+
+test("legacy canonical fields remain organizer-only", () => {
+  const value = definition();
+  value.sections[0].questions[0].canonicalFieldId = "givenName";
+  value.sections[0].questions[0].label = "Catch first name";
+  assert.equal(formAnswerDestination(value.sections[0].questions[0]),
+    "organizerOnly");
+  assert.deepEqual(validateOrganizerFormDefinition(value), []);
+});
+
+test("the free submission endpoint cannot bypass a published fee", () => {
+  assert.doesNotThrow(() => requireFreeFormSubmission({}));
+  assert.doesNotThrow(() => requireFreeFormSubmission({payment: null}));
+  assert.throws(() => requireFreeFormSubmission({payment: {
+    connectionId: "connection", amountPaise: 20000, currency: "INR",
+    description: "Application fee", refundPolicy: "Refunded on cancellation.",
+  }}), /Complete the form payment/u);
+});
+
+test("new consent, profile and payment features require phone verification",
+  () => {
+    const mutations: Array<(value: Definition) => void> = [
+      (value) => {
+        value.messagingConsent = {organizerWhatsapp: true,
+          catchWhatsapp: false};
+      },
+      (value) => {
+        value.messagingConsent = {organizerWhatsapp: false,
+          catchWhatsapp: true};
+      },
+      (value) => {
+        value.sections[0].questions[0].answerDestination = "organizerCard";
+      },
+      (value) => {
+        value.payment = {connectionId: "connection", amountPaise: 10000,
+          currency: "INR", description: "Application fee",
+          refundPolicy: "Refunded if the event is cancelled."};
+      },
+    ];
+    for (const mutate of mutations) {
+      const value = definition();
+      mutate(value);
+      assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+        issue.code === "verifiedPhoneRequired"));
+      value.identityPolicy = "phoneVerified";
+      assert.deepEqual(validateOrganizerFormDefinition(value), []);
+    }
+  });
+
+test("Catch profile fields require explicit compatible building blocks", () => {
+  const value = definition();
+  value.identityPolicy = "phoneVerified";
+  const field = value.sections[0].questions[0];
+  field.answerDestination = "catchProfile";
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "profileFieldRequired"));
+  field.canonicalFieldId = "givenName";
+  assert.deepEqual(validateOrganizerFormDefinition(value), []);
+  field.kind = "signature";
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "privateResponseOnly"));
+});
+
+test("profile photo cannot promote arbitrary uploads or image collections",
+  () => {
+    const value = definition();
+    value.identityPolicy = "phoneVerified";
+    const field = value.sections[0].questions[0];
+    field.answerDestination = "catchProfile";
+    field.canonicalFieldId = "profilePhoto";
+    field.kind = "file";
+    const hasImageError = () => validateOrganizerFormDefinition(value)
+      .some((issue) => issue.code === "profileImageOnly");
+    assert.equal(hasImageError(), true);
+    field.validation.maxFileCount = 1;
+    field.validation.maxFileSizeBytes = 5 * 1024 * 1024;
+    field.validation.allowedMimeTypes = ["image/jpeg", "image/png"];
+    assert.equal(hasImageError(), false);
+    field.validation.allowedMimeTypes = ["image/*"];
+    assert.equal(hasImageError(), true);
+    field.validation.allowedMimeTypes = ["image/jpeg"];
+    field.validation.maxFileCount = 2;
+    assert.equal(hasImageError(), true);
+  });
+
+test("form fee needs integer paise and a stated purpose and refund policy",
+  () => {
+    const value = definition();
+    value.identityPolicy = "phoneVerified";
+    value.payment = {connectionId: "connection", amountPaise: 100.5,
+      currency: "INR", description: " ", refundPolicy: " "};
+    const codes = validateOrganizerFormDefinition(value).map((issue) =>
+      issue.code);
+    assert.ok(codes.includes("invalidFormFee"));
+    assert.ok(codes.includes("missingFeeDescription"));
+    assert.ok(codes.includes("missingRefundPolicy"));
+  });
 
 test("form validator rejects identity, option, and range conflicts", () => {
   const value = definition();

@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 class HostFormEditorViewport extends StatelessWidget {
   const HostFormEditorViewport({
     super.key,
+    required this.organizerId,
     required this.state,
     required this.notifier,
     required this.sectionIndex,
@@ -23,6 +24,7 @@ class HostFormEditorViewport extends StatelessWidget {
     required this.onSelectionChanged,
   });
 
+  final String organizerId;
   final HostFormEditorState state;
   final HostFormEditorController notifier;
   final int? sectionIndex;
@@ -76,6 +78,7 @@ class HostFormEditorViewport extends StatelessWidget {
                 child: SingleChildScrollView(
                   padding: CatchInsets.pageBody,
                   child: HostFormInspectorSection(
+                    organizerId: organizerId,
                     definition: definition,
                     sectionIndex: sectionIndex,
                     questionIndex: questionIndex,
@@ -238,12 +241,14 @@ class HostFormOutlineMenu extends StatelessWidget {
 class HostFormInspectorSection extends StatelessWidget {
   const HostFormInspectorSection({
     super.key,
+    required this.organizerId,
     required this.definition,
     required this.sectionIndex,
     required this.questionIndex,
     required this.notifier,
   });
 
+  final String organizerId;
   final HostFormDefinition definition;
   final int? sectionIndex;
   final int? questionIndex;
@@ -253,6 +258,7 @@ class HostFormInspectorSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (sectionIndex == null) {
       return HostFormSettingsSectionList(
+        organizerId: organizerId,
         definition: definition,
         notifier: notifier,
       );

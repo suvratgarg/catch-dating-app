@@ -3984,6 +3984,8 @@ export interface UserProfileDocument {
   gender: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
   countryCode?: string;
+  profileRevision?: number;
+  profileClaimedAt?: FirebaseFirestore.Timestamp;
   profileComplete: boolean;
   email: "" | string;
   instagramHandle?: string | null;
@@ -3999,7 +4001,7 @@ export interface UserProfileDocument {
   latitude?: number | null;
   longitude?: number | null;
   /**
-   * @minItems 1
+   * @minItems 0
    * @maxItems 8
    */
   interestedInGenders: ("man" | "woman" | "nonBinary" | "other")[];
@@ -4917,6 +4919,284 @@ export interface OrganizerFollowDocument {
 }
 
 /**
+ * Participant-owned selection of applicant-submitted organizer-card fields. No CRM content or event sharing permission.
+ */
+export interface ParticipantOrganizerCardDocument {
+  uid: string;
+  organizerId: string;
+  responseId: string;
+  /**
+   * @maxItems 100
+   */
+  questionIds: string[];
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency proof for a participant-reviewed form profile claim. Contains no submitted answers.
+ */
+export interface ParticipantProfileClaimReceiptDocument {
+  uid: string;
+  responseId: string;
+  payloadHash: string;
+  profileRevision: number;
+  organizerCardId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Private pointers to explicitly designated applicant-submitted profile and organizer-card answers. Submission prepares a proposal, never a claimed or public profile.
+ */
+export interface ParticipantFormProfileProposalDocument {
+  uid: string;
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  responseId: string;
+  /**
+   * @minItems 1
+   * @maxItems 100
+   */
+  fields: {
+    questionId: string;
+    destination: "catchProfile" | "organizerCard";
+    canonicalFieldId:
+      | (
+          | "givenName"
+          | "familyName"
+          | "displayName"
+          | "dateOfBirth"
+          | "age"
+          | "gender"
+          | "phoneNumber"
+          | "email"
+          | "instagramHandle"
+          | "linkedinUrl"
+          | "profilePhoto"
+          | "city"
+          | "heightCm"
+          | "occupation"
+          | "company"
+          | "education"
+          | "languages"
+          | "relationshipGoal"
+          | "interestedInGenders"
+          | "drinking"
+          | "smoking"
+          | "religion"
+          | "workout"
+          | "diet"
+          | "children"
+        )
+      | null;
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  claimedAt?: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.
+ */
+export interface EventChatProfileShareDocument {
+  eventId: string;
+  uid: string;
+  organizerId: string | null;
+  revision: number;
+  selection: {
+    profileRevision: number;
+    membershipRevision: number;
+    /**
+     * @maxItems 14
+     */
+    coreFieldIds: (
+      | "age"
+      | "gender"
+      | "city"
+      | "heightCm"
+      | "occupation"
+      | "company"
+      | "education"
+      | "languages"
+      | "relationshipGoal"
+      | "drinking"
+      | "smoking"
+      | "workout"
+      | "diet"
+      | "children"
+    )[];
+    photoId: string | null;
+    card: {
+      responseId: string;
+      revision: number;
+      /**
+       * @minItems 1
+       * @maxItems 20
+       */
+      questionIds: string[];
+    } | null;
+    termsVersion: "event-profile-sharing-v1";
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Host-controlled event conversation availability. No attendee admission or profile data.
+ */
+export interface EventChatRoomDocument {
+  eventId: string;
+  organizerId: string;
+  status: "open" | "closed";
+  revision: number;
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  lastMessageSequence?: number;
+}
+
+/**
+ * Explicit room participation. Current admission and claimed identity must still be rechecked on every access.
+ */
+export interface EventChatMembershipDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  status: "joined" | "left";
+  revision: number;
+  termsVersion: "event-chat-v1";
+  joinedAt: FirebaseFirestore.Timestamp;
+  leftAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.
+ */
+export interface EventChatAccessReceiptDocument {
+  eventId: string;
+  uid: string;
+  payloadHash: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned event conversation message; replies are same-room references, never quoted copies.
+ */
+export interface EventChatMessageDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string | null;
+  sequence: number;
+  text: string | null;
+  replyToMessageId: string | null;
+  status: "visible" | "removed";
+  payloadHash: string;
+  reactionCounts: {
+    like: number;
+    love: number;
+    laugh: number;
+    wow: number;
+    sad: number;
+    thanks: number;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  removedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * One current reaction per account and message; separate from aggregated anonymous counts.
+ */
+export interface EventChatReactionDocument {
+  eventId: string;
+  messageId: string;
+  uid: string;
+  reaction: ("like" | "love" | "laugh" | "wow" | "sad" | "thanks") | null;
+  revision: number;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Bounded expiring typing indicator, never draft text.
+ */
+export interface EventChatPresenceDocument {
+  eventId: string;
+  uid: string;
+  revision: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.
+ */
+export interface CatchCommunicationPreferenceDocument {
+  uid: string;
+  whatsapp: {
+    status: "unknown" | "optedIn" | "optedOut";
+    /**
+     * Only complete evidence may make an opted-in channel eligible for managed delivery.
+     */
+    evidenceStatus: "notApplicable" | "complete" | "incomplete";
+    currentReceiptId: string | null;
+    termsVersion: string | null;
+    source:
+      | null
+      | "publicEventRegistration"
+      | "hostFormResponse"
+      | "participantSettings"
+      | "unsubscribeLink"
+      | "inboundStop"
+      | "providerWebhook"
+      | "legacyIncomplete";
+    sourceEventId: string | null;
+    updatedAt: FirebaseFirestore.Timestamp | null;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable participant evidence for Catch WhatsApp, separate from every organizer permission.
+ */
+export interface CatchCommunicationPermissionReceiptDocument {
+  uid: string;
+  channel: "whatsapp";
+  decision: "optedIn" | "optedOut";
+  evidenceStatus: "complete" | "incomplete";
+  termsVersion: string | null;
+  consentCopyHash: string | null;
+  source:
+    | "publicEventRegistration"
+    | "hostFormResponse"
+    | "participantSettings"
+    | "unsubscribeLink"
+    | "inboundStop"
+    | "providerWebhook"
+    | "legacyIncomplete";
+  sourceEventId: string | null;
+  sourceFormId: string | null;
+  sourceResponseId: string | null;
+  sourceProviderEventId: string | null;
+  actorClass: "participant" | "provider" | "system";
+  actorUid: string | null;
+  identityStrength:
+    | "unknown"
+    | "emailVerified"
+    | "phoneVerified"
+    | "catchAccount";
+  grantedAt: FirebaseFirestore.Timestamp | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  supersedesReceiptId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  sourceOrganizerId: string | null;
+}
+
+/**
  * Server-owned, organizer-scoped channel consent stored at organizerCommunicationPreferences/{organizerId_uid}.
  */
 export interface OrganizerCommunicationPreferenceDocument {
@@ -5789,6 +6069,10 @@ export interface OrganizerApplicationFormVersionDocument {
  * Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.
  */
 export interface OrganizerFormDocument {
+  /**
+   * Unreleased form response reservations awaiting a fee. Legacy omitted means zero.
+   */
+  pendingPaymentCount?: number;
   organizerId: string;
   createdByUid: string;
   title: string;
@@ -5849,6 +6133,114 @@ export interface OrganizerFormDocument {
   pausedAt: FirebaseFirestore.Timestamp | null;
   archivedAt: FirebaseFirestore.Timestamp | null;
   lastResponseAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.
+ */
+export interface OrganizerPaymentConnectionDocument {
+  organizerId: string;
+  provider: "razorpay";
+  mode: "test" | "live";
+  status: "connecting" | "ready" | "needsAttention" | "disconnected";
+  accountId: string | null;
+  publicToken: string | null;
+  secretVersionResource: string | null;
+  tokenExpiresAt: FirebaseFirestore.Timestamp | null;
+  webhookId: string | null;
+  webhookUrl: string | null;
+  webhookVerifiedAt: FirebaseFirestore.Timestamp | null;
+  connectedByUid: string;
+  revision: number;
+  refreshLeaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
+ * Single-use hashed OAuth state bound to initiating user, organizer, connection and mode.
+ */
+export interface OrganizerPaymentOauthStateDocument {
+  organizerId: string;
+  connectionId: string;
+  actorUid: string;
+  mode: "test" | "live";
+  status: "pending" | "exchanging" | "completed" | "failed";
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.
+ */
+export interface OrganizerFormPaymentDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  draftId: string;
+  respondentUid: string;
+  connectionId: string;
+  accountId: string;
+  mode: "test" | "live";
+  draftRevision: number;
+  answersHash: string;
+  identity: {
+    displayName: string | null;
+    email: string | null;
+    phoneE164: string | null;
+    searchName: string | null;
+    origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+  };
+  amountPaise: number;
+  currency: "INR";
+  description: string;
+  refundPolicy: string;
+  receipt: string;
+  status:
+    | "creatingOrder"
+    | "orderUnknown"
+    | "checkoutReady"
+    | "verifying"
+    | "captured"
+    | "submitted"
+    | "failed"
+    | "expired"
+    | "refundPending"
+    | "refunded"
+    | "reviewRequired";
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  providerRefundId: string | null;
+  refundedAmountPaise: number;
+  responseId: string | null;
+  reservationReleased: boolean;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  checkoutExpiresAt: FirebaseFirestore.Timestamp;
+  capturedAt: FirebaseFirestore.Timestamp | null;
+  submittedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
+ * Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.
+ */
+export interface OrganizerFormPaymentWebhookDocument {
+  connectionId: string;
+  accountId: string;
+  providerEventId: string;
+  event: string;
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  status: "pending" | "processed" | "ignored";
+  createdAt: FirebaseFirestore.Timestamp;
+  processedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+  nextAttemptAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -5946,6 +6338,10 @@ export interface OrganizerFormDraftDocument {
             )
           | null;
         privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        /**
+         * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
+         */
+        answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6025,6 +6421,20 @@ export interface OrganizerFormDraftDocument {
       consentCopy: string;
       consentVersion: string;
       retentionCopy: string;
+    };
+    payment?: {
+      connectionId: string;
+      amountPaise: number;
+      currency: "INR";
+      description: string;
+      refundPolicy: string;
+    } | null;
+    /**
+     * Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.
+     */
+    messagingConsent?: {
+      organizerWhatsapp: boolean;
+      catchWhatsapp: boolean;
     };
     completion: {
       title: string;
@@ -6135,6 +6545,10 @@ export interface OrganizerFormVersionDocument {
             )
           | null;
         privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        /**
+         * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
+         */
+        answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -6215,6 +6629,20 @@ export interface OrganizerFormVersionDocument {
       consentVersion: string;
       retentionCopy: string;
     };
+    payment?: {
+      connectionId: string;
+      amountPaise: number;
+      currency: "INR";
+      description: string;
+      refundPolicy: string;
+    } | null;
+    /**
+     * Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.
+     */
+    messagingConsent?: {
+      organizerWhatsapp: boolean;
+      catchWhatsapp: boolean;
+    };
     completion: {
       title: string;
       message: string | null;
@@ -6232,6 +6660,17 @@ export interface OrganizerFormVersionDocument {
  * Expiring version-bound respondent autosave state.
  */
 export interface OrganizerFormResponseDraftDocument {
+  messagingDecision?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: boolean;
+    catchWhatsapp: boolean;
+    organizerDecidedAt: FirebaseFirestore.Timestamp;
+    catchDecidedAt: FirebaseFirestore.Timestamp;
+  };
+  /**
+   * Server-only checkout lock; prevents edits while a fee is unresolved.
+   */
+  paymentAttemptId?: string | null;
   organizerId: string;
   formId: string;
   versionId: string;
@@ -8191,6 +8630,607 @@ export interface EventStaffGrantDocument {
     grantedBy: string;
     grantedAtMillis: number;
   }[];
+}
+
+/**
+ * Server-owned private wedding/corporate program root. Holds organizer ownership, lifecycle, enabled capabilities and transport tuning. Never publicly readable; guest logistics live in program-scoped collections.
+ */
+export interface OrganizerProgramDocument {
+  organizerId: string;
+  kind: "wedding" | "corporate" | "social" | "other";
+  title: string;
+  /**
+   * IANA timezone identifier used for display and time-band boundaries.
+   */
+  timezone: string;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp;
+  status: "draft" | "active" | "completed" | "archived";
+  /**
+   * @maxItems 8
+   */
+  capabilities: (
+    | "arrivalsTransport"
+    | "accommodation"
+    | "forms"
+    | "messaging"
+  )[];
+  transportSettings: {
+    /**
+     * Anchored curb-time window used by grouping suggestions. Default 30 minutes.
+     */
+    bandWindowMillis: number;
+    /**
+     * Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events.
+     */
+    maxReadyWaitMillis: number;
+    /**
+     * Default landing-to-curb lag for domestic arrivals.
+     */
+    domesticExitLagMillis: number;
+    /**
+     * Default landing-to-curb lag for international arrivals.
+     */
+    internationalExitLagMillis: number;
+    /**
+     * Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program.
+     *
+     * @maxItems 16
+     */
+    vehicleClasses: {
+      id: string;
+      label: string;
+      passengerCapacity: number;
+      luggageCapacity: number;
+      /**
+       * @maxItems 12
+       */
+      capabilities: ("wheelchairAccessible" | "extraLuggage" | "childSeat")[];
+      sortOrder: number;
+    }[];
+  };
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned private function (ceremony, reception, offsite session) inside a program. Separate from public events documents; no public read surface exists.
+ */
+export interface ProgramFunctionDocument {
+  programId: string;
+  organizerId: string;
+  name: string;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp;
+  venueName: string;
+  venueNotes?: string | null;
+  status: "scheduled" | "completed" | "cancelled";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned person-level wedding/corporate guest record. One document per invited person; household membership and optional CRM contact links are explicit. A shared phone number never merges two guests.
+ */
+export interface ProgramGuestDocument {
+  programId: string;
+  organizerId: string;
+  displayName: string;
+  householdId: string | null;
+  /**
+   * Optional link to organizerContacts. Absence never blocks guest operations.
+   */
+  contactId: string | null;
+  /**
+   * Optional reachable phone for this person. Shared family phones do not merge identities.
+   */
+  phoneE164: string | null;
+  email: string | null;
+  /**
+   * Planner-side reference such as a spreadsheet id or invitation code.
+   */
+  externalReference: string | null;
+  invitationStatus: "notInvited" | "invited" | "delivered" | "responded";
+  rsvpStatus: "pending" | "attending" | "declined" | "maybe";
+  source: "manual" | "import" | "formResponse";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned household invitation grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.
+ */
+export interface ProgramHouseholdDocument {
+  programId: string;
+  organizerId: string;
+  /**
+   * Human label such as 'The Sharma family' used on invitations and rosters.
+   */
+  label: string;
+  primaryContactName: string;
+  primaryPhoneE164: string | null;
+  primaryEmail: string | null;
+  /**
+   * @minItems 0
+   * @maxItems 50
+   */
+  memberGuestIds: string[];
+  /**
+   * Invitation delivery preference; does not grant messaging consent by itself.
+   */
+  deliveryPreference: "whatsapp" | "sms" | "email" | "none";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned, expiring program staff access. Duties are named and station-scoped; a grant never confers organizer, CRM, messaging or cross-program authority.
+ */
+export interface ProgramStaffGrantDocument {
+  organizerId: string;
+  programId: string;
+  uid: string;
+  displayName: string;
+  phoneLastFour: string;
+  /**
+   * Up to eight independently expiring scope tuples. Identical tuples may be renewed; different tuples remain separate.
+   *
+   * @minItems 1
+   * @maxItems 8
+   */
+  duties: {
+    duty:
+      | "programCoordinator"
+      | "airportGreeter"
+      | "hotelDesk"
+      | "transportDispatcher"
+      | "reconciliationViewer";
+    /**
+     * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
+     *
+     * @maxItems 32
+     */
+    pickupPointIds: string[];
+    /**
+     * Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.
+     *
+     * @maxItems 64
+     */
+    hotelIds: string[];
+    /**
+     * Exclusive expiry of this exact duty and resource scope. Independent of other assignments.
+     */
+    expiresAtMillis: number;
+  }[];
+  status: "active" | "revoked";
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  revokedBy: string | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned single-use staff invite bound to a phone number. Redeeming the invite requires a signed-in account whose verified phone matches; redemption materializes a programStaffGrants document.
+ */
+export interface ProgramStaffInviteDocument {
+  organizerId: string;
+  programId: string;
+  /**
+   * Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite.
+   */
+  phoneE164: string;
+  displayName: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  duties: {
+    duty:
+      | "programCoordinator"
+      | "airportGreeter"
+      | "hotelDesk"
+      | "transportDispatcher"
+      | "reconciliationViewer";
+    /**
+     * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
+     *
+     * @maxItems 32
+     */
+    pickupPointIds: string[];
+    /**
+     * Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.
+     *
+     * @maxItems 64
+     */
+    hotelIds: string[];
+  }[];
+  status: "pending" | "claimed" | "revoked";
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  claimedByUid: string | null;
+  claimedAt: FirebaseFirestore.Timestamp | null;
+  revokedBy: string | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned program pickup station such as an airport terminal arrivals zone. Scopes greeter and dispatcher duties and transport grouping.
+ */
+export interface ProgramPickupPointDocument {
+  programId: string;
+  organizerId: string;
+  kind: "airport" | "railway" | "venue" | "other";
+  /**
+   * Station label such as 'DEL T3 arrivals exit 4'.
+   */
+  label: string;
+  iataCode: string | null;
+  terminal: string | null;
+  meetingZone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  /**
+   * Guest-facing pickup instructions shown on travel confirmations.
+   */
+  instructions: string | null;
+  active: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned program accommodation property. Scopes hotel-desk duties, guest stays and transport destinations.
+ */
+export interface ProgramHotelDocument {
+  programId: string;
+  organizerId: string;
+  name: string;
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  receptionContact: string | null;
+  notes: string | null;
+  active: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned per-guest travel leg. Carries itinerary facts, flight status snapshots, readiness/claim state and reviewed manual overrides. Provider facts are linked, never copied over manual observations.
+ */
+export interface ProgramTravelLegDocument {
+  programId: string;
+  organizerId: string;
+  /**
+   * Exactly one guest per leg; companions get their own legs sharing a party.
+   */
+  guestId: string;
+  /**
+   * Server-maintained membership index of the canonical party legIds. Only party membership commands and manifest import may change it.
+   */
+  partyId: string | null;
+  kind: "inbound" | "outbound" | "ground";
+  flightNumber: string | null;
+  carrierCode: string | null;
+  originIata: string | null;
+  destinationIata: string | null;
+  scheduledArrivalAt: FirebaseFirestore.Timestamp | null;
+  estimatedArrivalAt: FirebaseFirestore.Timestamp | null;
+  actualArrivalAt: FirebaseFirestore.Timestamp | null;
+  flightStatus:
+    | "scheduled"
+    | "enroute"
+    | "landed"
+    | "delayed"
+    | "cancelled"
+    | "diverted"
+    | "unknown";
+  /**
+   * Resolved flight identity for enrichment: flight number, airports and scheduled arrival instant. Shared across passengers on that flight.
+   */
+  flightInstanceId: string | null;
+  /**
+   * True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag.
+   */
+  international?: boolean | null;
+  pickupPointId: string | null;
+  destinationHotelId: string | null;
+  /**
+   * Free-text destination when the drop is not a configured hotel.
+   */
+  destinationLabel: string | null;
+  readiness:
+    | "expected"
+    | "ready"
+    | "dispatched"
+    | "arrived"
+    | "disrupted"
+    | "noShow";
+  /**
+   * Observed curb-ready timestamp; outranks every estimate.
+   */
+  readyAt: FirebaseFirestore.Timestamp | null;
+  claimedByUid: string | null;
+  claimedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Reviewed manual curb estimate; outranks flight-derived timing.
+   */
+  manualCurbAt: FirebaseFirestore.Timestamp | null;
+  manualCurbNote: string | null;
+  /**
+   * Seats this leg consumes, including children without their own guest record.
+   */
+  passengers: number;
+  luggageUnits: number;
+  /**
+   * @maxItems 12
+   */
+  requiredCapabilities: (
+    | "wheelchairAccessible"
+    | "extraLuggage"
+    | "childSeat"
+  )[];
+  /**
+   * VIP/private transfers never share a suggested vehicle.
+   */
+  dedicatedVehicle: boolean;
+  source: "manual" | "import" | "formResponse" | "planner";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  /**
+   * Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId.
+   */
+  arrivalTerminal: string | null;
+  /**
+   * Last successful provider refresh; null when the leg has never been enriched.
+   */
+  flightRefreshedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Scheduler cursor for flight polling and subscription reconciliation. Null only when no polling or provider cleanup remains.
+   */
+  flightNextRefreshAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Attached provider subscription, retained until deletion is confirmed. A pending create is represented by flightAlertFlightNumber even before its id is known.
+   */
+  flightAlertSubscriptionId?: string | null;
+  /**
+   * Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts.
+   */
+  flightProviderUpdatedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Provider subject for the attached or pending subscription. Retained across failures and rebooking until reconciled.
+   */
+  flightAlertFlightNumber?: string | null;
+  /**
+   * Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered.
+   */
+  flightAlertLease?: null | {
+    token: string;
+    expiresAt: FirebaseFirestore.Timestamp;
+  };
+}
+
+/**
+ * Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.
+ */
+export interface ProgramTravelPartyDocument {
+  programId: string;
+  organizerId: string;
+  label: string | null;
+  dedicatedVehicle: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  /**
+   * Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members.
+   *
+   * @minItems 0
+   * @maxItems 50
+   */
+  legIds: string[];
+}
+
+/**
+ * Server-owned organizer-level taxi/coach subcontractor identity. Program use requires an explicit binding; rate cards and commercial terms ship with the reconciliation slice.
+ */
+export interface TransportVendorDocument {
+  organizerId: string;
+  name: string;
+  contactName: string | null;
+  phoneE164: string | null;
+  /**
+   * Programs this vendor is bound to; dispatch may only snapshot bound vendors.
+   *
+   * @maxItems 100
+   */
+  programIds: string[];
+  active: boolean;
+  notes: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned dispatched vehicle record. The dispatch act is the reconciliation atom: plate, vendor, class and manifest are snapshotted at departure. Airport, hotel and finance surfaces read field-redacted projections.
+ */
+export interface TransportTripDocument {
+  programId: string;
+  organizerId: string;
+  kind: "guestTransfer" | "repositioning";
+  pickupPointId: string;
+  destinationHotelId: string | null;
+  destinationLabel: string | null;
+  /**
+   * Program vehicle-class catalog id snapshotted at dispatch.
+   */
+  vehicleClassId: string;
+  vendorId: string | null;
+  vendorNameSnapshot: string | null;
+  /**
+   * Uppercased plate with separators stripped; the reconciliation join key.
+   */
+  plateNormalized: string;
+  plateDisplay: string;
+  /**
+   * @maxItems 50
+   */
+  partyIds: string[];
+  /**
+   * @minItems 1
+   * @maxItems 50
+   */
+  legIds: string[];
+  passengerCount: number;
+  status: "enRoute" | "arrived" | "cancelled" | "voided";
+  departedAt: FirebaseFirestore.Timestamp;
+  departedByUid: string;
+  arrivedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Dispatcher/manager who voided the trip.
+   */
+  voidedByUid: string | null;
+  /**
+   * Required reason recorded when a dispatch is voided; reviewed in reconciliation.
+   */
+  voidReason: string | null;
+  arrivedByUid: string | null;
+  /**
+   * Optional agreed rate frozen at dispatch; commercial terms ship with the reconciliation slice.
+   */
+  rateSnapshot: {
+    currency: string;
+    amountMinor: number;
+    pricingKind: "perTrip" | "perVehicleDay" | "custom";
+  } | null;
+  /**
+   * Idempotent dispatch key; a replay returns the original trip.
+   */
+  clientOperationId: string;
+  notes: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  /**
+   * Facts captured atomically when dispatch is recorded, including offline departures recorded later. Absent only on legacy trips; never reconstructed as historical evidence from current records.
+   */
+  dispatchSnapshot?: {
+    recordedAt: FirebaseFirestore.Timestamp;
+    vehicleClass: {
+      id: string;
+      label: string;
+      passengerCapacity: number;
+      luggageCapacity: number;
+      /**
+       * @maxItems 12
+       */
+      capabilities: ("wheelchairAccessible" | "extraLuggage" | "childSeat")[];
+      sortOrder: number;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 50
+     */
+    manifest: {
+      legId: string;
+      guestId: string;
+      guestDisplayName: string;
+      partyId: string | null;
+      passengers: number;
+      luggageUnits: number;
+    }[];
+  };
+}
+
+/**
+ * Server-owned unique binding from a travel leg to its active trip. Created in the same transaction as dispatch so two staff cannot board one leg twice.
+ */
+export interface TransportActiveAssignmentDocument {
+  programId: string;
+  legId: string;
+  tripId: string;
+  status: "active" | "released";
+  assignedAt: FirebaseFirestore.Timestamp;
+  releasedAt: FirebaseFirestore.Timestamp | null;
+  revision: number;
+}
+
+/**
+ * Server-owned organizer-wide occupancy of a normalized vehicle plate. Dispatch reserves the vehicle atomically with its passenger assignments. Arrival or void releases only the matching trip; active reservations never expire by age.
+ */
+export interface TransportVehicleAssignmentDocument {
+  programId: string;
+  tripId: string;
+  status: "active" | "released";
+  assignedAt: FirebaseFirestore.Timestamp;
+  releasedAt: FirebaseFirestore.Timestamp | null;
+  revision: number;
+  organizerId: string;
+  plateNormalized: string;
+}
+
+/**
+ * Server-owned idempotency receipt for offline-replayed transport mutations. An exact retry returns the original result; a conflicting reuse of the client operation id fails closed.
+ */
+export interface TransportOperationReceiptDocument {
+  programId: string;
+  operationKind:
+    | "markReady"
+    | "claim"
+    | "unclaim"
+    | "markDisrupted"
+    | "dispatch"
+    | "markArrived"
+    | "voidTrip"
+    | "manifestImport";
+  clientOperationId: string;
+  actorUid: string;
+  /**
+   * Stable hash of the mutation payload; a same-id different-payload replay is rejected.
+   */
+  requestHash: string;
+  tripId: string | null;
+  legId: string | null;
+  /**
+   * Committed entity revision returned to a replayed caller.
+   */
+  resultRevision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations.
+   */
+  resultJson: string | null;
+  /**
+   * For manifestImport only: number of input rows already resolved. With completedRowIndices, rows may finish out of order so a whole travel party fits one transaction; older partial receipts use a contiguous input prefix.
+   */
+  completedRows?: number;
+  /**
+   * Guests already applied by a resumable manifest import; prevents two source rows updating one person across chunks.
+   *
+   * @maxItems 500
+   */
+  importedGuestIds?: string[];
+  /**
+   * For manifestImport only: original input indices atomically resolved with their complete travel party. Includes explicitly rejected rows; its length equals completedRows.
+   *
+   * @maxItems 500
+   */
+  completedRowIndices?: number[];
 }
 
 /**

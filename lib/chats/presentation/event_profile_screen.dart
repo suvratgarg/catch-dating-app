@@ -1,0 +1,191 @@
+import 'dart:async';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
+import 'package:catch_dating_app/chats/presentation/event_profile_controller.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/event_profile_editor_section.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/event_profile_identity_section.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Account-bound editor and protected participant view for one event chat.
+class EventProfileScreen extends ConsumerStatefulWidget {
+  const EventProfileScreen({
+    super.key,
+    required this.eventId,
+    this.participantUid,
+  });
+  final String eventId;
+  final String? participantUid;
+  @override
+  ConsumerState<EventProfileScreen> createState() => _EventProfileScreenState();
+}
+
+class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
+    with WidgetsBindingObserver {
+  bool _resumed = true;
+  bool? _active;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _resumed =
+        WidgetsBinding.instance.lifecycleState == null ||
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() => _resumed = state == AppLifecycleState.resumed);
+  }
+
+  void _syncActive(bool active) {
+    if (_active == active) return;
+    _active = active;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _active != active) return;
+      if (widget.participantUid case final uid?) {
+        ref
+            .read(
+              eventParticipantProfileControllerProvider(
+                widget.eventId,
+                uid,
+              ).notifier,
+            )
+            .setForeground(active);
+      } else {
+        ref
+            .read(eventProfileEditorControllerProvider(widget.eventId).notifier)
+            .setForeground(active);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final own = widget.participantUid == null;
+    final editor = eventProfileEditorControllerProvider(widget.eventId);
+    final viewer = eventParticipantProfileControllerProvider(
+      widget.eventId,
+      widget.participantUid ?? '',
+    );
+    final editorValue = own ? ref.watch(editor) : null;
+    final editorDisplay = editorValue == null
+        ? null
+        : catchAsyncStateFromAsyncValue(editorValue);
+    final busy =
+        editorDisplay?.isSettledData == true &&
+        editorDisplay?.value?.busy == true;
+    final active = _resumed && (ModalRoute.isCurrentOf(context) ?? true);
+    _syncActive(active);
+    final profileDisplay = own
+        ? catchAsyncStateFromAsyncValue(ref.watch(watchUserProfileProvider))
+        : null;
+    final profile = profileDisplay?.isSettledData == true
+        ? profileDisplay?.value
+        : null;
+    final account = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final uid = account.isSettledData ? account.value : null;
+    return PopScope(
+      canPop: !busy,
+      child: AbsorbPointer(
+        absorbing: busy,
+        child: CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            title: own
+                ? context.l10n.eventProfileMine
+                : context.l10n.eventProfileTitle,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+            ),
+            emphasis: scrolledUnder
+                ? CatchTopBarEmphasis.divided
+                : CatchTopBarEmphasis.plain,
+            actions: [
+              CatchIconAction.toolbar(
+                tooltip: context.l10n.eventChatRefresh,
+                icon: CatchIcons.refreshRounded,
+                onPressed: !active || busy
+                    ? null
+                    : () => unawaited(
+                        own
+                            ? ref.read(editor.notifier).refresh()
+                            : ref.read(viewer.notifier).refresh(),
+                      ),
+              ),
+            ],
+          ),
+          body: CatchRouteBody.standardConstrained(
+            child: !active
+                ? const SizedBox.shrink()
+                : own
+                ? CatchAsyncBoundary<EventProfileEditorState>(
+                    value: editorValue!,
+                    retainDataOn: const {},
+                    onRetry: () =>
+                        unawaited(ref.read(editor.notifier).refresh()),
+                    builder: (context, state) => EventProfileEditorSection(
+                      key: ValueKey(state.uid),
+                      state: state,
+                      photos: {
+                        if (profile != null &&
+                            profile.uid == state.uid &&
+                            uid == state.uid)
+                          for (final photo in profile.profilePhotos)
+                            if (state.settings.photoIds.contains(photo.id))
+                              photo.id: NetworkImage(photo.thumbnailUrl),
+                      },
+                      onSave: (selection) async {
+                        final saved = await ref
+                            .read(editor.notifier)
+                            .save(
+                              selection,
+                              reviewedUid: state.uid,
+                              reviewedRevision: state.settings.revision,
+                            );
+                        if (context.mounted &&
+                            ref.read(uidProvider).asData?.value == state.uid &&
+                            saved) {
+                          showCatchSnackBar(
+                            context,
+                            context.l10n.eventProfileSaved,
+                          );
+                        }
+                      },
+                      onChooseCard: (id) => unawaited(
+                        ref
+                            .read(editor.notifier)
+                            .chooseCard(id, reviewedUid: state.uid),
+                      ),
+                      onLoadMore: () =>
+                          unawaited(ref.read(editor.notifier).loadMore()),
+                      onReload: () =>
+                          unawaited(ref.read(editor.notifier).refresh()),
+                    ),
+                  )
+                : CatchAsyncBoundary<EventParticipantProfile>(
+                    value: ref.watch(viewer),
+                    retainDataOn: const {},
+                    onRetry: () =>
+                        unawaited(ref.read(viewer.notifier).refresh()),
+                    builder: (context, value) => EventProfileIdentitySection(
+                      key: ValueKey(uid),
+                      profile: value,
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}

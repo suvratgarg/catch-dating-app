@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.67.0
-updated: 2026-09-21
+version: 1.73.0
+updated: 2026-09-23
 owner: app_architecture
 status: active
 ---
@@ -1803,6 +1803,69 @@ Foreground payload validation cannot retract an OS notification already handed
 off before logout. Real-device background/terminated delivery remains a release
 verification step, not something widget tests prove.
 
+### Durable Local Commands
+
+`core/persistence/local_command_journal.dart` owns the offline command policy for
+both event attendance and private-program operations. Feature adapters own typed
+payload validation, resource keys and callable execution; neither domain owns a
+second persistence or retry algorithm. Account-scoped journals retain immutable
+operation IDs, payload hashes, expected revisions and dependencies. Append,
+claim, acknowledge and conflict transitions are storage transactions. Short
+persisted replay leases prevent two tabs from concurrently draining the same
+scope; server operation receipts remain the cross-device idempotency authority.
+Current account identity is checked before each replay. Reconnect always uses the
+server's current authorization, never a cached grant.
+
+Journal format version 2 hashes the immutable creation time as well as the
+payload and validates that command and envelope timestamps agree. Program
+adapters send this time as the observation/departure fact; all adapters use it
+to bound replay age. Version 1 journals upgrade in one storage transaction only
+after every existing hash and envelope passes validation. Migration preserves
+original timestamps, dependencies, leases and terminal states. Invalid or
+quarantined records remain stored and cannot replay. Migration cannot establish
+the historical integrity of a timestamp that version 1 did not hash.
+
+The storage interface wraps native SQLite (`sqlite3`, FULL synchronous commits)
+and browser IndexedDB (`idb_shim`, awaited transaction completion). Native writes
+are synchronous and bounded by a 1 MiB journal limit; profile a full journal on
+pilot devices before expanding that limit. IndexedDB has browser-controlled
+quota, eviction and power-loss guarantees; private/ephemeral browsing is not a
+durable shift recorder. There is no in-memory production fallback. The explicit
+memory implementation exists for tests and Widgetbook only.
+
+SharedPreferences was rejected for commands because a read/list/write sequence
+can lose concurrent work and does not provide transactional durability. A plain
+Sembast file was rejected for its lazy file writes and single-process boundary.
+Drift remains a reasonable future choice for relational local data, but this
+bounded key/value journal needs no ORM or SQLite web worker/WASM deployment.
+The selected platform bindings delegate persistence to established databases and
+keep the domain replay algorithm shared. See the
+[SQLite binding](https://pub.dev/packages/sqlite3) and
+[IndexedDB binding](https://pub.dev/packages/idb_shim) for platform constraints.
+
+Pending or conflicted observations never expire or get trimmed to make room.
+After seven days, unresolved observations require explicit review. Capacity
+rejects new writes visibly; it never discards accepted work. Commands touching a
+shared resource depend on earlier unresolved commands. Conflicted predecessors
+quarantine their dependents without rebasing immutable revision fences. Explicit
+dismissal hides a reviewed observation but retains it for recovery. Acknowledged
+and dismissed records may be pruned after 30 days only when no retained command
+depends on them. Corrupt legacy payloads remain quarantined; healthy migration
+commits before deleting the legacy copy. Account changes never expose another
+account's queue. Read-only snapshots have a separate bounded lease and are not
+command storage.
+
+Recovery export uses a read-only raw-value storage API so even malformed JSON
+can be copied without initialization, migration or replay. The versioned export
+contains this account and namespace's original journal string plus its original
+legacy string. It does not filter by feature scope because damaged records may
+have unreadable scope identities. Authentication is checked across every await;
+storage errors omit raw payloads. The operator explicitly chooses the file's
+destination through the existing platform share/save adapter. Export success
+never clears, dismisses or marks records repaired. Database-level damage that
+prevents reading still requires device/support recovery; an export is not an
+automatic repair or proof of a completed backup.
+
 ### Logging And Telemetry
 
 Current reporting path:
@@ -1911,6 +1974,80 @@ Candidate patterns:
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
 | Mutation subscriptions and error snackbar publication | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
 | Global error handlers | `lib/main.dart` |
+
+### Event conversation session ownership
+
+Event conversations use `EventChatRepository` and `EventChatController`; the
+existing dating-match repository is not an admission source. The repository
+uses generated callable requests with the reviewed account UID on mutations.
+The controller fences asynchronous results by UID, provider generation and read
+epoch. It clears visible history when backgrounded or when authority cannot be
+verified, and revalidates all loaded history windows rather than appending stale
+reply quotes. A new foreground read is required before sending again.
+
+Sending retains the request ID for the exact normalized draft and reply until
+acknowledged. Reaction changes retain the reviewed per-message revision.
+Typing never sends draft text, serializes start/stop acknowledgements, and stops
+after editing is idle even if an unsent draft remains. The controller owns
+refresh cadence and scales it with requested history depth; widgets own text
+editing, scrolling and app/route lifecycle signals. Account changes must also
+clear widget-owned drafts and reply selection before rendering another account.
+Mutation entrypoints also require the UID associated with the rendered controls;
+an old callback cannot become an action for a newly signed-in account.
+
+`EventChatScreen` is a shared authenticated route at `/events/:eventId/chat`.
+It is reachable before dating onboarding so admitted form applicants can review
+and claim a private profile first. Admission and explicit room membership still
+come from the callable authority. The Host event toolbar opens the same room;
+the consumer event detail requests only room access metadata for its entry row.
+The message menu contains reply/react plus permitted report, block and removal
+actions. Reporting requires a selected reason; blocking and removal require an
+explicit confirmation. The controller binds each action to the reviewed account
+and message sender, rechecks the current snapshot and reuses its request ID after
+a lost acknowledgement. The backend derives the target and checks current room
+authority. Profile navigation uses the sender name with a full-height touch target
+so even a manager menu stays within the five-command primitive limit.
+
+The screen uses the canonical route top bar and chat composer. Reply previews
+resolve against the current message snapshot, and opening reactions dismisses
+the keyboard and replaces the composer until the selection closes.
+
+Consumer `/chats` opens an Events directory independently of dating-profile
+setup and dating-match providers. Direct messages remain a separate tab, and
+individual direct-message routes retain their profile prerequisites. Host inbox
+composition is unchanged. `EventChatDirectoryController` deduplicates candidate
+pages by event ID and revalidates previously loaded windows on refresh or load
+more; errors and account changes discard old entries. The directory refreshes
+on returning from a room, resuming the app while visible, or explicit refresh.
+Empty filtered pages retain a continuation action until all sources are scanned.
+
+`EventProfileEditorController` owns account-bound sharing reads, card pagination,
+reviewed revisions and payload-bound save retries. Card choices retain organizer
+ownership from the private form directory and require a current claim and card
+revision; only selected applicant fields qualify. `EventProfileDraft` restores
+only unchanged saved selections, never preselecting newly edited core values or
+answers. Immutable requests separate an in-flight save from later editing.
+Revocation does not require current admission or successful card loading.
+
+`EventParticipantProfileController` rechecks the protected projection while
+visible and clears it on failed reads, backgrounding or account changes. Its
+result contains only selected fields and a bounded in-memory photo preview.
+`EventProfileScreen` owns the editor at `/events/:eventId/chat/profile` and the
+participant view at `/events/:eventId/chat/people/:participantUid`. Both are
+shared authenticated routes before dating onboarding; server-side admission,
+claim and sharing checks still control each read. The room app bar opens the
+editor and each message's sender name opens its protected profile. Backgrounding
+or covering either route clears visible details until a fresh foreground read.
+
+The editor exposes unchecked eligible values and only claimed applicant answers
+from the same organizer. Photo selection remains disabled until its owned preview
+has decoded; participant photos use only the bounded protected memory preview.
+Answer labels and values use natural-height text so a sharing choice never hides
+part of the reviewed answer behind an ellipsis.
+Card pagination retains unsaved choices while controls are disabled, provided
+the account, grant, profile and membership revisions remain unchanged. Changed
+card revisions discard local answer choices. Save and revocation use reviewed
+UID/revision snapshots; revocation remains available after admission ends.
 
 ## Controller And View-Model Contract
 

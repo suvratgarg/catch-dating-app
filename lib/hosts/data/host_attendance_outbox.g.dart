@@ -55,7 +55,7 @@ final class HostAttendanceOutboxStoreProvider
 }
 
 String _$hostAttendanceOutboxStoreHash() =>
-    r'53812177ec56223c8eedbc6361949d8b811226c2';
+    r'd9203c59d5bc5766a2f1b3548e5b612f1bab485e';
 
 @ProviderFor(hostAttendanceOutbox)
 final hostAttendanceOutboxProvider = HostAttendanceOutboxProvider._();

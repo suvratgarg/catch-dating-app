@@ -87455,6 +87455,33 @@ export const userProfileDocumentSchema = {
       "pattern": "^\\+\\d{1,4}$",
       "x-catch-ownership": "client-writable"
     },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "profileClaimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "profileComplete": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
@@ -87788,7 +87815,7 @@ export const userProfileDocumentSchema = {
     },
     "interestedInGenders": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 8,
       "uniqueItems": true,
       "items": {
@@ -94676,6 +94703,4889 @@ export const organizerFollowDocumentSchema = {
   }
 };
 
+export const participantOrganizerCardDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_organizer_cards.schema.json",
+  "title": "ParticipantOrganizerCardDocument",
+  "description": "Participant-owned selection of applicant-submitted organizer-card fields. No CRM content or event sharing permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "organizerId",
+    "responseId",
+    "questionIds",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "participantOrganizerCards",
+  "x-firestore-path": "participantOrganizerCards/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "participant form profile claim and card management"
+};
+
+export const participantProfileClaimReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_profile_claim_receipts.schema.json",
+  "title": "ParticipantProfileClaimReceiptDocument",
+  "description": "Idempotency proof for a participant-reviewed form profile claim. Contains no submitted answers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "responseId",
+    "payloadHash",
+    "profileRevision",
+    "organizerCardId",
+    "createdAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organizerCardId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "participantProfileClaimReceipts",
+  "x-firestore-path": "participantProfileClaimReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant form profile claim"
+};
+
+export const claimParticipantFormProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/claim_participant_form_profile_payload.schema.json",
+  "title": "ClaimParticipantFormProfileCallablePayload",
+  "description": "Claim reviewed form data for the authenticated participant without enabling dating discovery or event admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "expectedProfileRevision",
+    "requestId",
+    "termsVersion",
+    "selectedQuestionIds",
+    "profile",
+    "expectedIntakeRevision"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedProfileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,100}$"
+    },
+    "termsVersion": {
+      "type": "string",
+      "const": "form-profile-claim-v1"
+    },
+    "selectedQuestionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "profile": {
+      "description": "Explicit participant-reviewed core values. Phone identity comes from verified Auth, never a form answer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "dateOfBirth",
+        "gender"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "firstName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "lastName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": ".*\\S.*"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "man",
+            "woman",
+            "nonBinary",
+            "other"
+          ]
+        },
+        "email": {
+          "anyOf": [
+            {
+              "const": ""
+            },
+            {
+              "type": "string",
+              "format": "email",
+              "maxLength": 320
+            }
+          ]
+        },
+        "instagramHandle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "pattern": "^[A-Za-z0-9._]{1,30}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 120,
+          "maximum": 220
+        },
+        "occupation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "company": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "education": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "highSchool",
+            "someCollege",
+            "bachelors",
+            "masters",
+            "phd",
+            "tradeSchool",
+            "other",
+            null
+          ]
+        },
+        "religion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "hindu",
+            "muslim",
+            "christian",
+            "sikh",
+            "jain",
+            "buddhist",
+            "other",
+            "nonReligious",
+            null
+          ]
+        },
+        "languages": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "english",
+              "hindi",
+              "marathi",
+              "tamil",
+              "telugu",
+              "kannada",
+              "bengali",
+              "gujarati",
+              "punjabi",
+              "malayalam",
+              "odia",
+              "other"
+            ]
+          }
+        },
+        "relationshipGoal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "relationship",
+            "casual",
+            "marriage",
+            "friendship",
+            "unsure",
+            null
+          ]
+        },
+        "drinking": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "never",
+            "socially",
+            "often",
+            null
+          ]
+        },
+        "smoking": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "never",
+            "occasionally",
+            "often",
+            null
+          ]
+        },
+        "workout": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "never",
+            "sometimes",
+            "often",
+            "everyday",
+            null
+          ]
+        },
+        "diet": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "omnivore",
+            "vegetarian",
+            "vegan",
+            "jain",
+            "other",
+            null
+          ]
+        },
+        "children": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "dontHave",
+            "haveWantMore",
+            "haveNoMore",
+            "wantSomeday",
+            "dontWant",
+            null
+          ]
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date"
+        },
+        "interestedInGenders": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "man",
+              "woman",
+              "nonBinary",
+              "other"
+            ]
+          },
+          "x-catch-ownership": "client-writable"
+        }
+      }
+    },
+    "expectedIntakeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reviewedLinkedinUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "format": "uri",
+      "pattern": "^https://([a-z]{2,3}\\.)?(www\\.)?linkedin\\.com/in/[^\\s]+$"
+    }
+  }
+};
+
+export const claimParticipantFormProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/claim_participant_form_profile_response.schema.json",
+  "title": "ClaimParticipantFormProfileCallableResponse",
+  "description": "Private claim result. No public or room sharing is inferred.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profileRevision",
+    "organizerCardId",
+    "claimedAtMillis",
+    "replayed"
+  ],
+  "properties": {
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organizerCardId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claimedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listParticipantFormProfilesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_participant_form_profiles_payload.schema.json",
+  "title": "ListParticipantFormProfilesCallablePayload",
+  "description": "List only the verified participant’s active form profile proposals and private cards.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listParticipantFormProfilesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_form_profiles_response.schema.json",
+  "title": "ListParticipantFormProfilesCallableResponse",
+  "description": "Private summary metadata only; invalid or withdrawn response sources are omitted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseId",
+          "organizerId",
+          "organizerName",
+          "formTitle",
+          "submittedAtMillis",
+          "claimedAtMillis",
+          "cardFieldCount"
+        ],
+        "properties": {
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "formTitle": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "submittedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "claimedAtMillis": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cardFieldCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getParticipantFormPhotoCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callables/get_participant_form_photo_payload.schema.json",
+  "title": "GetParticipantFormPhotoCallablePayload",
+  "description": "Preview one image from the verified participant’s designated form-profile question.",
+  "required": [
+    "responseId",
+    "questionId",
+    "assetId"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "assetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getParticipantFormPhotoCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callable_responses/get_participant_form_photo_response.schema.json",
+  "title": "GetParticipantFormPhotoCallableResponse",
+  "description": "Bounded metadata-free JPEG bytes for private in-memory review; never an original upload URL.",
+  "required": [
+    "contentType",
+    "previewBase64",
+    "width",
+    "height"
+  ],
+  "properties": {
+    "contentType": {
+      "type": "string",
+      "const": "image/jpeg"
+    },
+    "previewBase64": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 349528,
+      "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 640
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 640
+    }
+  }
+};
+
+export const getParticipantFormProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_participant_form_profile_payload.schema.json",
+  "title": "GetParticipantFormProfileCallablePayload",
+  "description": "Read exact owned prepared form data for profile review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getParticipantFormProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_participant_form_profile_response.schema.json",
+  "title": "GetParticipantFormProfileCallableResponse",
+  "description": "Participant-only form review, with an optimistic profile revision and no unrelated CRM data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "organizerId",
+    "formId",
+    "formTitle",
+    "submittedAtMillis",
+    "fields",
+    "profileRevision",
+    "termsVersion",
+    "intakeRevision",
+    "organizerName",
+    "selectedCardQuestionIds",
+    "claimedAtMillis",
+    "currentProfile",
+    "currentLinkedinUrl",
+    "cardRevision"
+  ],
+  "properties": {
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formTitle": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "submittedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "fields": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "description": "Only explicitly designated applicant-submitted answers.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "destination",
+          "canonicalFieldId",
+          "label",
+          "kind",
+          "value",
+          "options"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destination": {
+            "type": "string",
+            "enum": [
+              "catchProfile",
+              "organizerCard"
+            ]
+          },
+          "canonicalFieldId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "x-catch-catalog": "../catalogs/person_fields.json",
+                "enum": [
+                  "givenName",
+                  "familyName",
+                  "displayName",
+                  "dateOfBirth",
+                  "age",
+                  "gender",
+                  "phoneNumber",
+                  "email",
+                  "instagramHandle",
+                  "linkedinUrl",
+                  "profilePhoto",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "interestedInGenders",
+                  "drinking",
+                  "smoking",
+                  "religion",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shortText",
+              "longText",
+              "singleChoice",
+              "multiChoice",
+              "date",
+              "phone",
+              "email",
+              "url",
+              "number",
+              "boolean",
+              "file",
+              "acknowledgement",
+              "signature"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number",
+                "minimum": -1000000000,
+                "maximum": 1000000000
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            ]
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "optionId",
+                "label",
+                "value"
+              ],
+              "properties": {
+                "optionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "termsVersion": {
+      "type": "string",
+      "const": "form-profile-claim-v1"
+    },
+    "intakeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "organizerName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "selectedCardQuestionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "claimedAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currentProfile": {
+      "anyOf": [
+        {
+          "description": "Explicit participant-reviewed core values. Phone identity comes from verified Auth, never a form answer.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "displayName",
+            "dateOfBirth",
+            "gender"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "firstName": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "lastName": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": ".*\\S.*"
+            },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "man",
+                "woman",
+                "nonBinary",
+                "other"
+              ]
+            },
+            "email": {
+              "anyOf": [
+                {
+                  "const": ""
+                },
+                {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 320
+                }
+              ]
+            },
+            "instagramHandle": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 30,
+                  "pattern": "^[A-Za-z0-9._]{1,30}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "city": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "height": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 120,
+              "maximum": 220
+            },
+            "occupation": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "company": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "education": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "highSchool",
+                "someCollege",
+                "bachelors",
+                "masters",
+                "phd",
+                "tradeSchool",
+                "other",
+                null
+              ]
+            },
+            "religion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "hindu",
+                "muslim",
+                "christian",
+                "sikh",
+                "jain",
+                "buddhist",
+                "other",
+                "nonReligious",
+                null
+              ]
+            },
+            "languages": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "english",
+                  "hindi",
+                  "marathi",
+                  "tamil",
+                  "telugu",
+                  "kannada",
+                  "bengali",
+                  "gujarati",
+                  "punjabi",
+                  "malayalam",
+                  "odia",
+                  "other"
+                ]
+              }
+            },
+            "relationshipGoal": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "relationship",
+                "casual",
+                "marriage",
+                "friendship",
+                "unsure",
+                null
+              ]
+            },
+            "drinking": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "never",
+                "socially",
+                "often",
+                null
+              ]
+            },
+            "smoking": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "never",
+                "occasionally",
+                "often",
+                null
+              ]
+            },
+            "workout": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "never",
+                "sometimes",
+                "often",
+                "everyday",
+                null
+              ]
+            },
+            "diet": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "omnivore",
+                "vegetarian",
+                "vegan",
+                "jain",
+                "other",
+                null
+              ]
+            },
+            "children": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "dontHave",
+                "haveWantMore",
+                "haveNoMore",
+                "wantSomeday",
+                "dontWant",
+                null
+              ]
+            },
+            "dateOfBirth": {
+              "type": "string",
+              "format": "date"
+            },
+            "interestedInGenders": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "man",
+                  "woman",
+                  "nonBinary",
+                  "other"
+                ]
+              },
+              "x-catch-ownership": "client-writable"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currentLinkedinUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2048
+    },
+    "cardRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const participantFormProfileProposalDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_form_profile_proposals.schema.json",
+  "title": "ParticipantFormProfileProposalDocument",
+  "description": "Private pointers to explicitly designated applicant-submitted profile and organizer-card answers. Submission prepares a proposal, never a claimed or public profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "participantFormProfileProposals",
+  "x-firestore-path": "participantFormProfileProposals/{responseId}",
+  "x-document-id-field": "responseId",
+  "x-owner": "verified form submission and participant profile claiming",
+  "required": [
+    "uid",
+    "organizerId",
+    "formId",
+    "versionId",
+    "responseId",
+    "fields",
+    "createdAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "destination",
+          "canonicalFieldId"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destination": {
+            "type": "string",
+            "enum": [
+              "catchProfile",
+              "organizerCard"
+            ]
+          },
+          "canonicalFieldId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "x-catch-catalog": "../catalogs/person_fields.json",
+                "enum": [
+                  "givenName",
+                  "familyName",
+                  "displayName",
+                  "dateOfBirth",
+                  "age",
+                  "gender",
+                  "phoneNumber",
+                  "email",
+                  "instagramHandle",
+                  "linkedinUrl",
+                  "profilePhoto",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "interestedInGenders",
+                  "drinking",
+                  "smoking",
+                  "religion",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "claimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const eventChatProfileShareDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_profile_shares.schema.json",
+  "title": "EventChatProfileShareDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "organizerId",
+    "revision",
+    "selection",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Explicit event-specific mini-profile selection. Pointers only; current membership, profile and card revisions must still match.",
+  "x-firestore-collection": "eventChatProfileShares",
+  "x-firestore-path": "eventChatProfileShares/{shareId}",
+  "x-document-id-field": "shareId",
+  "x-owner": "event profile sharing callables"
+};
+
+export const actOnEventChatMessageCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/act_on_event_chat_message_payload.schema.json",
+  "title": "ActOnEventChatMessageCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "messageId",
+    "action",
+    "reasonCode",
+    "requestId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "report",
+        "block",
+        "remove"
+      ]
+    },
+    "reasonCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "harassment",
+            "spam",
+            "inappropriate",
+            "other"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  }
+};
+
+export const actOnEventChatMessageCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/act_on_event_chat_message_response.schema.json",
+  "title": "ActOnEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applied",
+    "replayed"
+  ],
+  "properties": {
+    "applied": {
+      "const": true,
+      "type": "boolean"
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listEventChatParticipantsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chat_participants_payload.schema.json",
+  "title": "ListEventChatParticipantsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "accountUid",
+            "after"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "after": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    }
+  }
+};
+
+export const listEventChatParticipantsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_chat_participants_response.schema.json",
+  "title": "ListEventChatParticipantsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "role"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "host",
+              "attendee"
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "accountUid",
+            "after"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "after": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getEventChatProfileSharingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_profile_sharing_payload.schema.json",
+  "title": "GetEventChatProfileSharingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const updateEventChatProfileSharingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_chat_profile_sharing_payload.schema.json",
+  "title": "UpdateEventChatProfileSharingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "expectedRevision",
+    "requestId",
+    "selection"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getEventChatProfileCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_profile_payload.schema.json",
+  "title": "GetEventChatProfileCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "participantUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "participantUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getEventChatProfileSharingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_sharing_response.schema.json",
+  "title": "GetEventChatProfileSharingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "revision",
+    "selection",
+    "canShare",
+    "profileRevision",
+    "membershipRevision",
+    "coreFields",
+    "photoIds"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileRevision",
+            "membershipRevision",
+            "coreFieldIds",
+            "photoId",
+            "card",
+            "termsVersion"
+          ],
+          "properties": {
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coreFieldIds": {
+              "type": "array",
+              "maxItems": 14,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "age",
+                  "gender",
+                  "city",
+                  "heightCm",
+                  "occupation",
+                  "company",
+                  "education",
+                  "languages",
+                  "relationshipGoal",
+                  "drinking",
+                  "smoking",
+                  "workout",
+                  "diet",
+                  "children"
+                ]
+              }
+            },
+            "photoId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "card": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "revision",
+                    "questionIds"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "questionIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "minItems": 1
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "termsVersion": {
+              "type": "string",
+              "const": "event-profile-sharing-v1"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "canShare": {
+      "type": "boolean"
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "membershipRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "value"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "photoIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    }
+  }
+};
+
+export const updateEventChatProfileSharingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_event_chat_profile_sharing_response.schema.json",
+  "title": "UpdateEventChatProfileSharingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const getEventChatProfileCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_profile_response.schema.json",
+  "title": "GetEventChatProfileCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "participantUid",
+    "displayName",
+    "coreFields",
+    "cardFields",
+    "photo"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "participantUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "coreFields": {
+      "type": "array",
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "value"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "enum": [
+              "age",
+              "gender",
+              "city",
+              "heightCm",
+              "occupation",
+              "company",
+              "education",
+              "languages",
+              "relationshipGoal",
+              "drinking",
+              "smoking",
+              "workout",
+              "diet",
+              "children"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "cardFields": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "photo": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "GetParticipantFormPhotoCallableResponse",
+          "description": "Bounded metadata-free JPEG bytes for private in-memory review; never an original upload URL.",
+          "required": [
+            "contentType",
+            "previewBase64",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "contentType": {
+              "type": "string",
+              "const": "image/jpeg"
+            },
+            "previewBase64": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 349528,
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 640
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 640
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const eventChatRoomDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_rooms.schema.json",
+  "title": "EventChatRoomDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "status",
+    "revision",
+    "createdByUid",
+    "updatedByUid",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastMessageSequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "description": "Host-controlled event conversation availability. No attendee admission or profile data.",
+  "x-firestore-collection": "eventChatRooms",
+  "x-firestore-path": "eventChatRooms/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "event chat access callables"
+};
+
+export const eventChatMembershipDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_memberships.schema.json",
+  "title": "EventChatMembershipDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "status",
+    "revision",
+    "termsVersion",
+    "joinedAt",
+    "leftAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "joined",
+        "left"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "termsVersion": {
+      "type": "string",
+      "enum": [
+        "event-chat-v1"
+      ]
+    },
+    "joinedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "leftAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Explicit room participation. Current admission and claimed identity must still be rechecked on every access.",
+  "x-firestore-collection": "eventChatMemberships",
+  "x-firestore-path": "eventChatMemberships/{membershipId}",
+  "x-document-id-field": "membershipId",
+  "x-owner": "event chat access callables"
+};
+
+export const eventChatAccessReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_access_receipts.schema.json",
+  "title": "EventChatAccessReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "payloadHash",
+    "revision",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Payload-bound idempotency receipt for an explicit room availability, membership, reaction or message safety action.",
+  "x-firestore-collection": "eventChatAccessReceipts",
+  "x-firestore-path": "eventChatAccessReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event chat access callables"
+};
+
+export const eventChatMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_messages.schema.json",
+  "title": "EventChatMessageDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "sequence",
+    "text",
+    "replyToMessageId",
+    "status",
+    "payloadHash",
+    "reactionCounts",
+    "createdAt",
+    "removedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "text": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "replyToMessageId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "removed"
+      ]
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reactionCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "like",
+        "love",
+        "laugh",
+        "wow",
+        "sad",
+        "thanks"
+      ],
+      "properties": {
+        "like": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "love": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "laugh": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "wow": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sad": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "thanks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "removedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "description": "Server-owned event conversation message; replies are same-room references, never quoted copies.",
+  "x-firestore-collection": "eventChatMessages",
+  "x-firestore-path": "eventChatMessages/{id}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat callables"
+};
+
+export const eventChatReactionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_reactions.schema.json",
+  "title": "EventChatReactionDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "messageId",
+    "uid",
+    "reaction",
+    "revision",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reaction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "like",
+            "love",
+            "laugh",
+            "wow",
+            "sad",
+            "thanks"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "One current reaction per account and message; separate from aggregated anonymous counts.",
+  "x-firestore-collection": "eventChatReactions",
+  "x-firestore-path": "eventChatReactions/{id}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat callables"
+};
+
+export const eventChatPresenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_chat_presence.schema.json",
+  "title": "EventChatPresenceDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "uid",
+    "revision",
+    "expiresAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "description": "Bounded expiring typing indicator, never draft text.",
+  "x-firestore-collection": "eventChatPresence",
+  "x-firestore-path": "eventChatPresence/{id}",
+  "x-document-id-field": "id",
+  "x-owner": "event chat callables"
+};
+
+export const sendEventChatMessageCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/send_event_chat_message_payload.schema.json",
+  "title": "SendEventChatMessageCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "requestId",
+    "text",
+    "replyToMessageId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "replyToMessageId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const sendEventChatMessageCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_event_chat_message_response.schema.json",
+  "title": "SendEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "messageId",
+    "sequence",
+    "replayed"
+  ],
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setEventChatReactionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_chat_reaction_payload.schema.json",
+  "title": "SetEventChatReactionCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "messageId",
+    "requestId",
+    "reaction",
+    "expectedRevision",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reaction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "like",
+            "love",
+            "laugh",
+            "wow",
+            "sad",
+            "thanks"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const setEventChatReactionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_event_chat_reaction_response.schema.json",
+  "title": "SetEventChatReactionCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setEventChatTypingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_chat_typing_payload.schema.json",
+  "title": "SetEventChatTypingCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "isTyping",
+    "expectedRevision",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "isTyping": {
+      "type": "boolean"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const setEventChatTypingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_event_chat_typing_response.schema.json",
+  "title": "SetEventChatTypingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const listEventChatsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chats_payload.schema.json",
+  "title": "ListEventChatsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "after",
+            "accountUid"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "memberships",
+                "participations",
+                "attendees"
+              ]
+            },
+            "after": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1500,
+                  "pattern": "^[^/]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    }
+  }
+};
+
+export const listEventChatsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_chats_response.schema.json",
+  "title": "ListEventChatsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "title": "GetEventChatAccessCallableResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "organizerId",
+          "title",
+          "role",
+          "room",
+          "membership",
+          "canManage",
+          "canJoin",
+          "canReadMessages",
+          "profileClaimRequired",
+          "termsVersion"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "host",
+              "attendee"
+            ]
+          },
+          "room": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "revision"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "notCreated",
+                  "open",
+                  "closed"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "membership": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "revision"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "notJoined",
+                  "joined",
+                  "left"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "canManage": {
+            "type": "boolean"
+          },
+          "canJoin": {
+            "type": "boolean"
+          },
+          "canReadMessages": {
+            "type": "boolean"
+          },
+          "profileClaimRequired": {
+            "type": "boolean"
+          },
+          "termsVersion": {
+            "type": "string",
+            "enum": [
+              "event-chat-v1"
+            ]
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "after",
+            "accountUid"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "memberships",
+                "participations",
+                "attendees"
+              ]
+            },
+            "after": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1500,
+                  "pattern": "^[^/]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "accountUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const listEventChatMessagesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chat_messages_payload.schema.json",
+  "title": "ListEventChatMessagesCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "beforeSequence",
+    "limit"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "beforeSequence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listEventChatMessagesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_event_chat_messages_response.schema.json",
+  "title": "ListEventChatMessagesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "messages",
+    "nextBeforeSequence",
+    "typing",
+    "typingHasMore",
+    "ownTypingRevision",
+    "serverTimeMillis"
+  ],
+  "properties": {
+    "messages": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "sequence",
+          "sentAtMillis",
+          "senderUid",
+          "senderName",
+          "available",
+          "text",
+          "reply",
+          "reactionCounts",
+          "myReaction",
+          "myReactionRevision"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "sentAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "senderUid": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "senderName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reply": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "messageId",
+                  "senderUid",
+                  "senderName",
+                  "available",
+                  "text"
+                ],
+                "properties": {
+                  "messageId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "senderUid": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "senderName": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 120
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "available": {
+                    "type": "boolean"
+                  },
+                  "text": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reactionCounts": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "like",
+              "love",
+              "laugh",
+              "wow",
+              "sad",
+              "thanks"
+            ],
+            "properties": {
+              "like": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "love": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "laugh": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "wow": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sad": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "thanks": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "myReaction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "like",
+                  "love",
+                  "laugh",
+                  "wow",
+                  "sad",
+                  "thanks"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "myReactionRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "nextBeforeSequence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "typing": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      }
+    },
+    "typingHasMore": {
+      "type": "boolean"
+    },
+    "ownTypingRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const getEventChatAccessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_chat_access_payload.schema.json",
+  "title": "GetEventChatAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const updateEventChatAccessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_chat_access_payload.schema.json",
+  "title": "UpdateEventChatAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "action",
+    "expectedRevision",
+    "requestId",
+    "termsVersion",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "open",
+        "close",
+        "join",
+        "leave"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "termsVersion": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "event-chat-v1"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const getEventChatAccessCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_event_chat_access_response.schema.json",
+  "title": "GetEventChatAccessCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "title",
+    "role",
+    "room",
+    "membership",
+    "canManage",
+    "canJoin",
+    "canReadMessages",
+    "profileClaimRequired",
+    "termsVersion"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "host",
+        "attendee"
+      ]
+    },
+    "room": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "revision"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "notCreated",
+            "open",
+            "closed"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "revision"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "notJoined",
+            "joined",
+            "left"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "canManage": {
+      "type": "boolean"
+    },
+    "canJoin": {
+      "type": "boolean"
+    },
+    "canReadMessages": {
+      "type": "boolean"
+    },
+    "profileClaimRequired": {
+      "type": "boolean"
+    },
+    "termsVersion": {
+      "type": "string",
+      "enum": [
+        "event-chat-v1"
+      ]
+    }
+  }
+};
+
+export const updateEventChatAccessCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_event_chat_access_response.schema.json",
+  "title": "UpdateEventChatAccessCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const listParticipantMessagingPreferencesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_participant_messaging_preferences_payload.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallablePayload",
+  "description": "Read only the signed-in participant’s independent Catch and organizer WhatsApp permissions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listParticipantMessagingPreferencesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_messaging_preferences_response.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallableResponse",
+  "description": "Bounded participant-only WhatsApp permission directory; no contact endpoints or CRM fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catchPreference",
+    "organizers",
+    "nextCursor"
+  ],
+  "properties": {
+    "catchPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "organizers": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "preference"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "preference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "receiptId"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "optedIn",
+                  "optedOut"
+                ]
+              },
+              "receiptId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const withdrawParticipantMessagingPermissionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_participant_messaging_permission_payload.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallablePayload",
+  "description": "Withdraw exactly one sender’s WhatsApp permission using the reviewed receipt. Never grants consent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "organizerId",
+    "expectedReceiptId",
+    "requestId"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "catch",
+        "organizer"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const withdrawParticipantMessagingPermissionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/withdraw_participant_messaging_permission_response.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallableResponse",
+  "description": "Current permission after an idempotent withdrawal; later consent is never overwritten by an old retry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "preference",
+    "replayed"
+  ],
+  "properties": {
+    "preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const catchCommunicationPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_communication_preferences.schema.json",
+  "title": "CatchCommunicationPreferenceDocument",
+  "description": "Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchCommunicationPreferences",
+  "x-firestore-path": "catchCommunicationPreferences/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "participant consent handlers",
+  "required": [
+    "uid",
+    "whatsapp",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "currentReceiptId",
+        "termsVersion",
+        "source",
+        "sourceEventId",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "complete",
+            "incomplete"
+          ],
+          "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+          "x-catch-ownership": "server-only"
+        },
+        "currentReceiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "termsVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "x-catch-ownership": "server-only"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "publicEventRegistration",
+            "hostFormResponse",
+            "participantSettings",
+            "unsubscribeLink",
+            "inboundStop",
+            "providerWebhook",
+            "legacyIncomplete"
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "sourceEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-catch-ownership": "server-only"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const catchCommunicationPermissionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_communication_permission_receipts.schema.json",
+  "title": "CatchCommunicationPermissionReceiptDocument",
+  "description": "Immutable participant evidence for Catch WhatsApp, separate from every organizer permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchCommunicationPermissionReceipts",
+  "x-firestore-path": "catchCommunicationPermissionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "participant consent handlers",
+  "required": [
+    "uid",
+    "channel",
+    "decision",
+    "evidenceStatus",
+    "termsVersion",
+    "consentCopyHash",
+    "source",
+    "sourceEventId",
+    "sourceFormId",
+    "sourceResponseId",
+    "sourceProviderEventId",
+    "actorClass",
+    "actorUid",
+    "identityStrength",
+    "grantedAt",
+    "revokedAt",
+    "supersedesReceiptId",
+    "createdAt",
+    "sourceOrganizerId"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "const": "whatsapp",
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "optedIn",
+        "optedOut"
+      ]
+    },
+    "evidenceStatus": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "incomplete"
+      ]
+    },
+    "termsVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "consentCopyHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "publicEventRegistration",
+        "hostFormResponse",
+        "participantSettings",
+        "unsubscribeLink",
+        "inboundStop",
+        "providerWebhook",
+        "legacyIncomplete"
+      ]
+    },
+    "sourceEventId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceFormId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceResponseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceProviderEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "actorClass": {
+      "type": "string",
+      "enum": [
+        "participant",
+        "provider",
+        "system"
+      ]
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "identityStrength": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "emailVerified",
+        "phoneVerified",
+        "catchAccount"
+      ]
+    },
+    "grantedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersedesReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "sourceOrganizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedIn"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "consentCopyHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "grantedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "revokedAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "optedOut"
+          },
+          "evidenceStatus": {
+            "const": "complete"
+          }
+        },
+        "required": [
+          "decision",
+          "evidenceStatus"
+        ]
+      },
+      "then": {
+        "properties": {
+          "grantedAt": {
+            "type": "null"
+          },
+          "revokedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "hostFormResponse"
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sourceOrganizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      }
+    }
+  ]
+};
+
 export const organizerCommunicationPreferenceDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_communication_preferences.schema.json",
@@ -101339,6 +106249,11 @@ export const organizerFormDocumentSchema = {
     "lastResponseAt"
   ],
   "properties": {
+    "pendingPaymentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unreleased form response reservations awaiting a fee. Legacy omitted means zero."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -101702,6 +106617,921 @@ export const organizerFormDocumentSchema = {
   }
 };
 
+export const organizerPaymentConnectionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_payment_connections.schema.json",
+  "title": "OrganizerPaymentConnectionDocument",
+  "description": "Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "provider",
+    "mode",
+    "status",
+    "accountId",
+    "publicToken",
+    "secretVersionResource",
+    "tokenExpiresAt",
+    "webhookId",
+    "webhookUrl",
+    "webhookVerifiedAt",
+    "connectedByUid",
+    "revision",
+    "refreshLeaseUntil",
+    "createdAt",
+    "updatedAt",
+    "disconnectedAt",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "provider": {
+      "const": "razorpay"
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "connecting",
+        "ready",
+        "needsAttention",
+        "disconnected"
+      ],
+      "type": "string"
+    },
+    "accountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "publicToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "secretVersionResource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^projects/[^/]+/secrets/[^/]+/versions/[1-9][0-9]*$"
+    },
+    "tokenExpiresAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "webhookId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "webhookUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "maxLength": 255
+    },
+    "webhookVerifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connectedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "refreshLeaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "disconnectedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  },
+  "x-firestore-collection": "organizerPaymentConnections",
+  "x-firestore-path": "organizerPaymentConnections/{connectionId}",
+  "x-document-id-field": "connectionId",
+  "x-owner": "organizer form payment server operations"
+};
+
+export const organizerPaymentOauthStateDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_payment_oauth_states.schema.json",
+  "title": "OrganizerPaymentOauthStateDocument",
+  "description": "Single-use hashed OAuth state bound to initiating user, organizer, connection and mode.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "connectionId",
+    "actorUid",
+    "mode",
+    "status",
+    "createdAt",
+    "expiresAt",
+    "completedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "exchanging",
+        "completed",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-firestore-collection": "organizerPaymentOauthStates",
+  "x-firestore-path": "organizerPaymentOauthStates/{stateHash}",
+  "x-document-id-field": "stateHash",
+  "x-owner": "organizer form payment server operations"
+};
+
+export const organizerFormPaymentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_payments.schema.json",
+  "title": "OrganizerFormPaymentDocument",
+  "description": "Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "draftId",
+    "respondentUid",
+    "connectionId",
+    "accountId",
+    "mode",
+    "draftRevision",
+    "answersHash",
+    "identity",
+    "amountPaise",
+    "currency",
+    "description",
+    "refundPolicy",
+    "receipt",
+    "status",
+    "providerOrderId",
+    "providerPaymentId",
+    "providerRefundId",
+    "refundedAmountPaise",
+    "responseId",
+    "reservationReleased",
+    "leaseUntil",
+    "createdAt",
+    "updatedAt",
+    "checkoutExpiresAt",
+    "capturedAt",
+    "submittedAt",
+    "lastErrorCode"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "draftId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "respondentUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "mode": {
+      "enum": [
+        "test",
+        "live"
+      ],
+      "type": "string"
+    },
+    "draftRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "answersHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "email",
+        "phoneE164",
+        "searchName",
+        "origin"
+      ],
+      "properties": {
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "phoneE164": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "searchName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "anonymous",
+            "respondentGranted",
+            "organizerAcquired"
+          ]
+        }
+      }
+    },
+    "amountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 10000000
+    },
+    "currency": {
+      "const": "INR"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "refundPolicy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^cfp_[a-f0-9]{32}$"
+    },
+    "status": {
+      "enum": [
+        "creatingOrder",
+        "orderUnknown",
+        "checkoutReady",
+        "verifying",
+        "captured",
+        "submitted",
+        "failed",
+        "expired",
+        "refundPending",
+        "refunded",
+        "reviewRequired"
+      ],
+      "type": "string"
+    },
+    "providerOrderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "providerRefundId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^rfnd_[A-Za-z0-9]+$"
+    },
+    "refundedAmountPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000
+    },
+    "responseId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationReleased": {
+      "type": "boolean"
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "checkoutExpiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "capturedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "submittedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastErrorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  },
+  "x-firestore-collection": "organizerFormPayments",
+  "x-firestore-path": "organizerFormPayments/{paymentId}",
+  "x-document-id-field": "paymentId",
+  "x-owner": "organizer form payment server operations"
+};
+
+export const organizerFormPaymentWebhookDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_payment_webhooks.schema.json",
+  "title": "OrganizerFormPaymentWebhookDocument",
+  "description": "Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionId",
+    "accountId",
+    "providerEventId",
+    "event",
+    "providerOrderId",
+    "providerPaymentId",
+    "status",
+    "createdAt",
+    "processedAt",
+    "expiresAt",
+    "nextAttemptAt"
+  ],
+  "properties": {
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acc_[A-Za-z0-9]+$"
+    },
+    "providerEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "event": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "providerOrderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^order_[A-Za-z0-9]+$"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^pay_[A-Za-z0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "processed",
+        "ignored"
+      ],
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "processedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "nextAttemptAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerFormPaymentWebhooks",
+  "x-firestore-path": "organizerFormPaymentWebhooks/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer form payment server operations"
+};
+
 export const organizerFormDraftDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_drafts.schema.json",
@@ -101978,6 +107808,15 @@ export const organizerFormDraftDocumentSchema = {
                         "profile",
                         "sensitive",
                         "organizerCustom"
+                      ]
+                    },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
                       ]
                     },
                     "prefillPolicy": {
@@ -102395,6 +108234,67 @@ export const organizerFormDraftDocumentSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -102785,6 +108685,15 @@ export const organizerFormVersionDocumentSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -103203,6 +109112,67 @@ export const organizerFormVersionDocumentSchema = {
             }
           }
         },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
         "completion": {
           "type": "object",
           "additionalProperties": false,
@@ -103333,6 +109303,82 @@ export const organizerFormResponseDraftDocumentSchema = {
     "submittedResponseId"
   ],
   "properties": {
+    "messagingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp",
+        "organizerDecidedAt",
+        "catchDecidedAt"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        },
+        "organizerDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "catchDecidedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      }
+    },
+    "paymentAttemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-only checkout lock; prevents edits while a fee is unresolved."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -116355,6 +122401,7246 @@ export const eventStaffGrantDocumentSchema = {
         }
       },
       "description": "At most one independently expiring duty per configured event/group. No implied event-wide roster or check-in permission."
+    }
+  }
+};
+
+export const organizerProgramDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_programs.schema.json",
+  "title": "OrganizerProgramDocument",
+  "description": "Server-owned private wedding/corporate program root. Holds organizer ownership, lifecycle, enabled capabilities and transport tuning. Never publicly readable; guest logistics live in program-scoped collections.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPrograms",
+  "x-firestore-path": "organizerPrograms/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "program management callables",
+  "required": [
+    "organizerId",
+    "kind",
+    "title",
+    "timezone",
+    "startsAt",
+    "endsAt",
+    "status",
+    "capabilities",
+    "transportSettings",
+    "createdBy",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "wedding",
+        "corporate",
+        "social",
+        "other"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "description": "IANA timezone identifier used for display and time-band boundaries."
+    },
+    "startsAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "endsAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "transportSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bandWindowMillis",
+        "maxReadyWaitMillis",
+        "domesticExitLagMillis",
+        "internationalExitLagMillis",
+        "vehicleClasses"
+      ],
+      "properties": {
+        "bandWindowMillis": {
+          "type": "integer",
+          "minimum": 300000,
+          "maximum": 7200000,
+          "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+        },
+        "maxReadyWaitMillis": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 3600000,
+          "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+        },
+        "domesticExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7200000,
+          "description": "Default landing-to-curb lag for domestic arrivals."
+        },
+        "internationalExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 14400000,
+          "description": "Default landing-to-curb lag for international arrivals."
+        },
+        "vehicleClasses": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "passengerCapacity",
+              "luggageCapacity",
+              "capabilities",
+              "sortOrder"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "passengerCapacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageCapacity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              },
+              "capabilities": {
+                "type": "array",
+                "maxItems": 12,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "wheelchairAccessible",
+                    "extraLuggage",
+                    "childSeat"
+                  ]
+                }
+              },
+              "sortOrder": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            }
+          },
+          "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+        }
+      }
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programFunctionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_functions.schema.json",
+  "title": "ProgramFunctionDocument",
+  "description": "Server-owned private function (ceremony, reception, offsite session) inside a program. Separate from public events documents; no public read surface exists.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programFunctions",
+  "x-firestore-path": "programFunctions/{functionId}",
+  "x-document-id-field": "functionId",
+  "x-owner": "program management callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "name",
+    "startsAt",
+    "endsAt",
+    "venueName",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "startsAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "endsAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "venueName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "venueNotes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programGuestDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_guests.schema.json",
+  "title": "ProgramGuestDocument",
+  "description": "Server-owned person-level wedding/corporate guest record. One document per invited person; household membership and optional CRM contact links are explicit. A shared phone number never merges two guests.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programGuests",
+  "x-firestore-path": "programGuests/{guestId}",
+  "x-document-id-field": "guestId",
+  "x-owner": "program guest management and reviewed conversion callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "displayName",
+    "householdId",
+    "contactId",
+    "phoneE164",
+    "email",
+    "externalReference",
+    "invitationStatus",
+    "rsvpStatus",
+    "source",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "householdId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Optional link to organizerContacts. Absence never blocks guest operations."
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20,
+      "description": "Optional reachable phone for this person. Shared family phones do not merge identities."
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "externalReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "description": "Planner-side reference such as a spreadsheet id or invitation code."
+    },
+    "invitationStatus": {
+      "type": "string",
+      "enum": [
+        "notInvited",
+        "invited",
+        "delivered",
+        "responded"
+      ]
+    },
+    "rsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "import",
+        "formResponse"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programHouseholdDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_households.schema.json",
+  "title": "ProgramHouseholdDocument",
+  "description": "Server-owned household invitation grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programHouseholds",
+  "x-firestore-path": "programHouseholds/{householdId}",
+  "x-document-id-field": "householdId",
+  "x-owner": "program guest management callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "label",
+    "primaryContactName",
+    "primaryPhoneE164",
+    "primaryEmail",
+    "memberGuestIds",
+    "deliveryPreference",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Human label such as 'The Sharma family' used on invitations and rosters."
+    },
+    "primaryContactName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "primaryPhoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "primaryEmail": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "memberGuestIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "deliveryPreference": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "sms",
+        "email",
+        "none"
+      ],
+      "description": "Invitation delivery preference; does not grant messaging consent by itself."
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programStaffGrantDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_staff_grants.schema.json",
+  "title": "ProgramStaffGrantDocument",
+  "description": "Server-owned, expiring program staff access. Duties are named and station-scoped; a grant never confers organizer, CRM, messaging or cross-program authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programStaffGrants",
+  "x-firestore-path": "programStaffGrants/{grantId}",
+  "x-document-id-field": "grantId",
+  "x-owner": "program staff access callables",
+  "required": [
+    "organizerId",
+    "programId",
+    "uid",
+    "displayName",
+    "phoneLastFour",
+    "duties",
+    "status",
+    "createdBy",
+    "createdAt",
+    "expiresAt",
+    "revokedBy",
+    "revokedAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "phoneLastFour": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Exclusive expiry of this exact duty and resource scope. Independent of other assignments."
+          }
+        }
+      },
+      "description": "Up to eight independently expiring scope tuples. Identical tuples may be renewed; different tuples remain separate."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Maximum assignment expiry for indexed grant inventory; authorization also checks each assignment expiry.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revokedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programStaffInviteDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_staff_invites.schema.json",
+  "title": "ProgramStaffInviteDocument",
+  "description": "Server-owned single-use staff invite bound to a phone number. Redeeming the invite requires a signed-in account whose verified phone matches; redemption materializes a programStaffGrants document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programStaffInvites",
+  "x-firestore-path": "programStaffInvites/{inviteId}",
+  "x-document-id-field": "inviteId",
+  "x-owner": "program staff invite callables",
+  "required": [
+    "organizerId",
+    "programId",
+    "phoneE164",
+    "displayName",
+    "duties",
+    "status",
+    "createdBy",
+    "createdAt",
+    "expiresAt",
+    "claimedByUid",
+    "claimedAt",
+    "revokedBy",
+    "revokedAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32,
+      "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "claimed",
+        "revoked"
+      ]
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Invite redemption deadline. The resulting grant uses its own expiry.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "claimedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "claimedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programPickupPointDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_pickup_points.schema.json",
+  "title": "ProgramPickupPointDocument",
+  "description": "Server-owned program pickup station such as an airport terminal arrivals zone. Scopes greeter and dispatcher duties and transport grouping.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programPickupPoints",
+  "x-firestore-path": "programPickupPoints/{pickupPointId}",
+  "x-document-id-field": "pickupPointId",
+  "x-owner": "program resource setup callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "kind",
+    "label",
+    "iataCode",
+    "terminal",
+    "meetingZone",
+    "latitude",
+    "longitude",
+    "instructions",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "airport",
+        "railway",
+        "venue",
+        "other"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140,
+      "description": "Station label such as 'DEL T3 arrivals exit 4'."
+    },
+    "iataCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "terminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "meetingZone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "instructions": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "description": "Guest-facing pickup instructions shown on travel confirmations."
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programHotelDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_hotels.schema.json",
+  "title": "ProgramHotelDocument",
+  "description": "Server-owned program accommodation property. Scopes hotel-desk duties, guest stays and transport destinations.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programHotels",
+  "x-firestore-path": "programHotels/{hotelId}",
+  "x-document-id-field": "hotelId",
+  "x-owner": "program resource setup callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "name",
+    "address",
+    "latitude",
+    "longitude",
+    "receptionContact",
+    "notes",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "address": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "receptionContact": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programTravelLegDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_travel_legs.schema.json",
+  "title": "ProgramTravelLegDocument",
+  "description": "Server-owned per-guest travel leg. Carries itinerary facts, flight status snapshots, readiness/claim state and reviewed manual overrides. Provider facts are linked, never copied over manual observations.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTravelLegs",
+  "x-firestore-path": "programTravelLegs/{legId}",
+  "x-document-id-field": "legId",
+  "x-owner": "program travel and dispatch callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "guestId",
+    "partyId",
+    "kind",
+    "flightNumber",
+    "carrierCode",
+    "originIata",
+    "destinationIata",
+    "scheduledArrivalAt",
+    "estimatedArrivalAt",
+    "actualArrivalAt",
+    "flightStatus",
+    "flightInstanceId",
+    "pickupPointId",
+    "destinationHotelId",
+    "destinationLabel",
+    "readiness",
+    "readyAt",
+    "claimedByUid",
+    "claimedAt",
+    "manualCurbAt",
+    "manualCurbNote",
+    "passengers",
+    "luggageUnits",
+    "requiredCapabilities",
+    "dedicatedVehicle",
+    "source",
+    "createdAt",
+    "updatedAt",
+    "revision",
+    "arrivalTerminal",
+    "flightRefreshedAt",
+    "flightNextRefreshAt"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Exactly one guest per leg; companions get their own legs sharing a party."
+    },
+    "partyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Server-maintained membership index of the canonical party legIds. Only party membership commands and manifest import may change it."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "ground"
+      ]
+    },
+    "flightNumber": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carrierCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 3
+    },
+    "originIata": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "destinationIata": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scheduledArrivalAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "estimatedArrivalAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actualArrivalAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "flightStatus": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "enroute",
+        "landed",
+        "delayed",
+        "cancelled",
+        "diverted",
+        "unknown"
+      ]
+    },
+    "flightInstanceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Resolved flight identity for enrichment: flight number, airports and scheduled arrival instant. Shared across passengers on that flight."
+    },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag."
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140,
+      "description": "Free-text destination when the drop is not a configured hotel."
+    },
+    "readiness": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "ready",
+        "dispatched",
+        "arrived",
+        "disrupted",
+        "noShow"
+      ]
+    },
+    "readyAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Observed curb-ready timestamp; outranks every estimate."
+    },
+    "claimedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "claimedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "manualCurbAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reviewed manual curb estimate; outranks flight-derived timing."
+    },
+    "manualCurbNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "description": "Seats this leg consumes, including children without their own guest record."
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "wheelchairAccessible",
+          "extraLuggage",
+          "childSeat"
+        ]
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean",
+      "description": "VIP/private transfers never share a suggested vehicle."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "import",
+        "formResponse",
+        "planner"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "arrivalTerminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 8,
+      "description": "Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId."
+    },
+    "flightRefreshedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last successful provider refresh; null when the leg has never been enriched."
+    },
+    "flightNextRefreshAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scheduler cursor for flight polling and subscription reconciliation. Null only when no polling or provider cleanup remains."
+    },
+    "flightAlertSubscriptionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128,
+      "description": "Attached provider subscription, retained until deletion is confirmed. A pending create is represented by flightAlertFlightNumber even before its id is known."
+    },
+    "flightProviderUpdatedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts."
+    },
+    "flightAlertFlightNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 10,
+      "description": "Provider subject for the attached or pending subscription. Retained across failures and rebooking until reconciled."
+    },
+    "flightAlertLease": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "token",
+            "expiresAt"
+          ],
+          "properties": {
+            "token": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "expiresAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered."
+    }
+  }
+};
+
+export const programTravelPartyDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_travel_parties.schema.json",
+  "title": "ProgramTravelPartyDocument",
+  "description": "Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTravelParties",
+  "x-firestore-path": "programTravelParties/{partyId}",
+  "x-document-id-field": "partyId",
+  "x-owner": "program travel callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "label",
+    "legIds",
+    "dedicatedVehicle",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "label": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
+    }
+  }
+};
+
+export const transportVendorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/transport_vendors.schema.json",
+  "title": "TransportVendorDocument",
+  "description": "Server-owned organizer-level taxi/coach subcontractor identity. Program use requires an explicit binding; rate cards and commercial terms ship with the reconciliation slice.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "transportVendors",
+  "x-firestore-path": "transportVendors/{vendorId}",
+  "x-document-id-field": "vendorId",
+  "x-owner": "organizer transport vendor callables",
+  "required": [
+    "organizerId",
+    "name",
+    "contactName",
+    "phoneE164",
+    "programIds",
+    "active",
+    "notes",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "contactName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "programIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Programs this vendor is bound to; dispatch may only snapshot bound vendors."
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const transportTripDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/transport_trips.schema.json",
+  "title": "TransportTripDocument",
+  "description": "Server-owned dispatched vehicle record. The dispatch act is the reconciliation atom: plate, vendor, class and manifest are snapshotted at departure. Airport, hotel and finance surfaces read field-redacted projections.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "transportTrips",
+  "x-firestore-path": "transportTrips/{tripId}",
+  "x-document-id-field": "tripId",
+  "x-owner": "program dispatch and arrival callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "kind",
+    "pickupPointId",
+    "destinationHotelId",
+    "destinationLabel",
+    "vehicleClassId",
+    "vendorId",
+    "vendorNameSnapshot",
+    "plateNormalized",
+    "plateDisplay",
+    "partyIds",
+    "legIds",
+    "passengerCount",
+    "status",
+    "departedAt",
+    "departedByUid",
+    "voidedByUid",
+    "voidReason",
+    "arrivedAt",
+    "arrivedByUid",
+    "rateSnapshot",
+    "clientOperationId",
+    "notes",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "guestTransfer",
+        "repositioning"
+      ]
+    },
+    "pickupPointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "vehicleClassId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "description": "Program vehicle-class catalog id snapshotted at dispatch."
+    },
+    "vendorId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorNameSnapshot": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "plateNormalized": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 16,
+      "description": "Uppercased plate with separators stripped; the reconciliation join key."
+    },
+    "plateDisplay": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 16
+    },
+    "partyIds": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "passengerCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "enRoute",
+        "arrived",
+        "cancelled",
+        "voided"
+      ]
+    },
+    "departedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "departedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "arrivedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "voidedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Dispatcher/manager who voided the trip."
+    },
+    "voidReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280,
+      "description": "Required reason recorded when a dispatch is voided; reviewed in reconciliation."
+    },
+    "arrivedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rateSnapshot": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amountMinor",
+        "pricingKind"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "pricingKind": {
+          "type": "string",
+          "enum": [
+            "perTrip",
+            "perVehicleDay",
+            "custom"
+          ]
+        }
+      },
+      "description": "Optional agreed rate frozen at dispatch; commercial terms ship with the reconciliation slice."
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120,
+      "description": "Idempotent dispatch key; a replay returns the original trip."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "dispatchSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Facts captured atomically when dispatch is recorded, including offline departures recorded later. Absent only on legacy trips; never reconstructed as historical evidence from current records.",
+      "required": [
+        "recordedAt",
+        "vehicleClass",
+        "manifest"
+      ],
+      "properties": {
+        "recordedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "vehicleClass": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "passengerCapacity",
+            "luggageCapacity",
+            "capabilities",
+            "sortOrder"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60,
+              "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "passengerCapacity": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "luggageCapacity": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 500
+            },
+            "capabilities": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "wheelchairAccessible",
+                  "extraLuggage",
+                  "childSeat"
+                ]
+              }
+            },
+            "sortOrder": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          }
+        },
+        "manifest": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "legId",
+              "guestId",
+              "guestDisplayName",
+              "partyId",
+              "passengers",
+              "luggageUnits"
+            ],
+            "properties": {
+              "legId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "guestId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "guestDisplayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "partyId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "passengers": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageUnits": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const transportActiveAssignmentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/transport_active_assignments.schema.json",
+  "title": "TransportActiveAssignmentDocument",
+  "description": "Server-owned unique binding from a travel leg to its active trip. Created in the same transaction as dispatch so two staff cannot board one leg twice.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "transportActiveAssignments",
+  "x-firestore-path": "transportActiveAssignments/{assignmentId}",
+  "x-document-id-field": "assignmentId",
+  "x-owner": "program dispatch transaction",
+  "required": [
+    "programId",
+    "legId",
+    "tripId",
+    "status",
+    "assignedAt",
+    "releasedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "released"
+      ]
+    },
+    "assignedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "releasedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const transportVehicleAssignmentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/transport_vehicle_assignments.schema.json",
+  "title": "TransportVehicleAssignmentDocument",
+  "description": "Server-owned organizer-wide occupancy of a normalized vehicle plate. Dispatch reserves the vehicle atomically with its passenger assignments. Arrival or void releases only the matching trip; active reservations never expire by age.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "transportVehicleAssignments",
+  "x-firestore-path": "transportVehicleAssignments/{assignmentId}",
+  "x-document-id-field": "assignmentId",
+  "x-owner": "program dispatch transaction",
+  "required": [
+    "organizerId",
+    "plateNormalized",
+    "programId",
+    "tripId",
+    "status",
+    "assignedAt",
+    "releasedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "released"
+      ]
+    },
+    "assignedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "releasedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "plateNormalized": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]{4,16}$"
+    }
+  }
+};
+
+export const transportOperationReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/transport_operation_receipts.schema.json",
+  "title": "TransportOperationReceiptDocument",
+  "description": "Server-owned idempotency receipt for offline-replayed transport mutations. An exact retry returns the original result; a conflicting reuse of the client operation id fails closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "transportOperationReceipts",
+  "x-firestore-path": "transportOperationReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "program transport mutation callables",
+  "required": [
+    "programId",
+    "operationKind",
+    "clientOperationId",
+    "actorUid",
+    "requestHash",
+    "tripId",
+    "legId",
+    "resultRevision",
+    "createdAt",
+    "expiresAt",
+    "resultJson"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationKind": {
+      "type": "string",
+      "enum": [
+        "markReady",
+        "claim",
+        "unclaim",
+        "markDisrupted",
+        "dispatch",
+        "markArrived",
+        "voidTrip",
+        "manifestImport"
+      ]
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "minLength": 32,
+      "maxLength": 128,
+      "description": "Stable hash of the mutation payload; a same-id different-payload replay is rejected."
+    },
+    "tripId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "resultRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Committed entity revision returned to a replayed caller."
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Receipt retention horizon for cleanup sweeps.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "resultJson": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200000,
+      "description": "Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations."
+    },
+    "completedRows": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "description": "For manifestImport only: number of input rows already resolved. With completedRowIndices, rows may finish out of order so a whole travel party fits one transaction; older partial receipts use a contiguous input prefix."
+    },
+    "importedGuestIds": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Guests already applied by a resumable manifest import; prevents two source rows updating one person across chunks."
+    },
+    "completedRowIndices": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 499
+      },
+      "description": "For manifestImport only: original input indices atomically resolved with their complete travel party. Includes explicitly rejected rows; its length equals completedRows."
+    }
+  }
+};
+
+export const programIdCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_id_payload.schema.json",
+  "title": "ProgramIdCallablePayload",
+  "description": "Program-scoped read payload shared by simple program callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getOrganizerProgram",
+    "getProgramWorkAccess",
+    "listProgramHouseholds"
+  ],
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listOrganizerProgramsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_programs_payload.schema.json",
+  "title": "ListOrganizerProgramsCallablePayload",
+  "description": "Manager-scoped listing of an organizer's private programs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const createOrganizerProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_program_payload.schema.json",
+  "title": "CreateOrganizerProgramCallablePayload",
+  "description": "Create a private wedding/corporate program. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "kind",
+    "title",
+    "timezone",
+    "startsAtMillis",
+    "endsAtMillis",
+    "capabilities"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "wedding",
+        "corporate",
+        "social",
+        "other"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "transportSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bandWindowMillis",
+        "maxReadyWaitMillis",
+        "domesticExitLagMillis",
+        "internationalExitLagMillis",
+        "vehicleClasses"
+      ],
+      "properties": {
+        "bandWindowMillis": {
+          "type": "integer",
+          "minimum": 300000,
+          "maximum": 7200000,
+          "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+        },
+        "maxReadyWaitMillis": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 3600000,
+          "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+        },
+        "domesticExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7200000,
+          "description": "Default landing-to-curb lag for domestic arrivals."
+        },
+        "internationalExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 14400000,
+          "description": "Default landing-to-curb lag for international arrivals."
+        },
+        "vehicleClasses": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "passengerCapacity",
+              "luggageCapacity",
+              "capabilities",
+              "sortOrder"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "passengerCapacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageCapacity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              },
+              "capabilities": {
+                "type": "array",
+                "maxItems": 12,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "wheelchairAccessible",
+                    "extraLuggage",
+                    "childSeat"
+                  ]
+                }
+              },
+              "sortOrder": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            }
+          },
+          "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+        }
+      }
+    }
+  }
+};
+
+export const updateOrganizerProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_program_payload.schema.json",
+  "title": "UpdateOrganizerProgramCallablePayload",
+  "description": "Patch program fields. Omitted fields are unchanged; expectedRevision fences concurrent edits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "transportSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bandWindowMillis",
+        "maxReadyWaitMillis",
+        "domesticExitLagMillis",
+        "internationalExitLagMillis",
+        "vehicleClasses"
+      ],
+      "properties": {
+        "bandWindowMillis": {
+          "type": "integer",
+          "minimum": 300000,
+          "maximum": 7200000,
+          "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+        },
+        "maxReadyWaitMillis": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 3600000,
+          "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+        },
+        "domesticExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7200000,
+          "description": "Default landing-to-curb lag for domestic arrivals."
+        },
+        "internationalExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 14400000,
+          "description": "Default landing-to-curb lag for international arrivals."
+        },
+        "vehicleClasses": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "passengerCapacity",
+              "luggageCapacity",
+              "capabilities",
+              "sortOrder"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "passengerCapacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageCapacity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              },
+              "capabilities": {
+                "type": "array",
+                "maxItems": 12,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "wheelchairAccessible",
+                    "extraLuggage",
+                    "childSeat"
+                  ]
+                }
+              },
+              "sortOrder": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            }
+          },
+          "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+        }
+      }
+    }
+  }
+};
+
+export const grantProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/grant_program_staff_payload.schema.json",
+  "title": "GrantProgramStaffCallablePayload",
+  "description": "Grant named, station-scoped program duties to a signed-in account. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "phoneNumber",
+    "duties",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          }
+        }
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const revokeProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/revoke_program_staff_payload.schema.json",
+  "title": "RevokeProgramStaffCallablePayload",
+  "description": "Revoke a program staff grant with revision fencing. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "uid",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const inviteProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/invite_program_staff_payload.schema.json",
+  "title": "InviteProgramStaffCallablePayload",
+  "description": "Create a single-use, phone-bound staff invite for a program. The invite redeems into a station-scoped grant when a signed-in account with the matching verified phone claims it. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "inviteProgramStaff"
+  ],
+  "required": [
+    "programId",
+    "phoneNumber",
+    "displayName",
+    "duties",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          }
+        }
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Invite redemption deadline and the access-window end for the grant it materializes. Claims after this time fail."
+    }
+  }
+};
+
+export const claimProgramStaffInviteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/claim_program_staff_invite_payload.schema.json",
+  "title": "ClaimProgramStaffInviteCallablePayload",
+  "description": "Redeem a staff invite. The caller must be signed in with a verified phone number matching the invite's bound phone; on success a programStaffGrants document is written and the invite is consumed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "claimProgramStaffInvite"
+  ],
+  "required": [
+    "inviteId"
+  ],
+  "properties": {
+    "inviteId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180
+    }
+  }
+};
+
+export const revokeProgramStaffInviteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/revoke_program_staff_invite_payload.schema.json",
+  "title": "RevokeProgramStaffInviteCallablePayload",
+  "description": "Revoke a pending program staff invite so the link can no longer be claimed. Manager-only; claimed invites are unaffected (revoke the grant instead).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "revokeProgramStaffInvite"
+  ],
+  "required": [
+    "programId",
+    "inviteId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180
+    }
+  }
+};
+
+export const upsertProgramGuestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_guest_payload.schema.json",
+  "title": "UpsertProgramGuestCallablePayload",
+  "description": "Create or update one program guest. guestId absent creates; expectedRevision fences updates. A shared phone never merges guests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "displayName"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "householdId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "externalReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "rsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    }
+  }
+};
+
+export const listProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_staff_payload.schema.json",
+  "title": "ListProgramStaffCallablePayload",
+  "description": "Manager-only staff inventory in stable staff-identity order.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "maxLength": 180,
+      "description": "Staff UID continuation returned by the preceding page. Ordering survives renewal and revocation.",
+      "minLength": 1,
+      "pattern": "^[^/]+$"
+    }
+  }
+};
+
+export const listProgramTripsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_trips_payload.schema.json",
+  "title": "ListProgramTripsCallablePayload",
+  "description": "Scoped trip ledger page, ordered by departure time descending.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "maxLength": 180,
+      "description": "Opaque cursor returned by the previous page.",
+      "minLength": 1,
+      "pattern": "^[^/]+$"
+    }
+  }
+};
+
+export const listProgramGuestsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_guests_payload.schema.json",
+  "title": "ListProgramGuestsCallablePayload",
+  "description": "Manager/coordinator paginated guest listing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "cursor": {
+      "type": "string",
+      "maxLength": 240,
+      "description": "Opaque cursor returned by the previous page."
+    }
+  }
+};
+
+export const upsertProgramHouseholdCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_household_payload.schema.json",
+  "title": "UpsertProgramHouseholdCallablePayload",
+  "description": "Create or update a household invitation grouping for program guests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "label",
+    "primaryContactName",
+    "memberGuestIds"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "primaryContactName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "primaryPhoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "primaryEmail": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "memberGuestIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "deliveryPreference": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "sms",
+        "email",
+        "none"
+      ]
+    }
+  }
+};
+
+export const upsertProgramFunctionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_function_payload.schema.json",
+  "title": "UpsertProgramFunctionCallablePayload",
+  "description": "Create or update a private program function (ceremony, reception, session).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "name",
+    "startsAtMillis",
+    "endsAtMillis",
+    "venueName"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "venueName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "venueNotes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled"
+      ]
+    }
+  }
+};
+
+export const upsertProgramPickupPointCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_pickup_point_payload.schema.json",
+  "title": "UpsertProgramPickupPointCallablePayload",
+  "description": "Create or update a program pickup station such as an airport terminal arrivals zone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "kind",
+    "label"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "airport",
+        "railway",
+        "venue",
+        "other"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "iataCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "terminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "meetingZone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "instructions": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const upsertProgramHotelCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_hotel_payload.schema.json",
+  "title": "UpsertProgramHotelCallablePayload",
+  "description": "Create or update a program accommodation property.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "name",
+    "address"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "address": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "receptionContact": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const upsertTransportVendorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_transport_vendor_payload.schema.json",
+  "title": "UpsertTransportVendorCallablePayload",
+  "description": "Create or update an organizer-level transport vendor and bind it to programs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "name"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "contactName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "programIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const upsertProgramTravelLegCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_travel_leg_payload.schema.json",
+  "title": "UpsertProgramTravelLegCallablePayload",
+  "description": "Create or update one guest journey. Guest and journey kind are immutable; party membership is owned by upsertProgramTravelParty.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guestId",
+    "kind",
+    "passengers",
+    "luggageUnits",
+    "requiredCapabilities",
+    "dedicatedVehicle"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "ground"
+      ]
+    },
+    "flightNumber": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carrierCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 3
+    },
+    "originIata": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "destinationIata": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scheduledArrivalAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 253402300799999
+    },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag."
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "wheelchairAccessible",
+          "extraLuggage",
+          "childSeat"
+        ]
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "legId"
+        ]
+      },
+      "then": {
+        "required": [
+          "expectedRevision"
+        ]
+      }
+    }
+  ]
+};
+
+export const upsertProgramTravelPartyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_travel_party_payload.schema.json",
+  "title": "UpsertProgramTravelPartyCallablePayload",
+  "description": "Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "legIds",
+    "dedicatedVehicle"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "partyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "label": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "partyId"
+        ]
+      },
+      "then": {
+        "required": [
+          "expectedRevision"
+        ]
+      }
+    }
+  ]
+};
+
+export const setProgramTravelReadinessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_program_travel_readiness_payload.schema.json",
+  "title": "SetProgramTravelReadinessCallablePayload",
+  "description": "Greeter/dispatcher leg observation: claim, unclaim, mark ready at curb, or flag disruption. clientOperationId makes offline replays safe.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "legId",
+    "action",
+    "clientOperationId",
+    "expectedRevision",
+    "observedAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "markReady",
+        "claim",
+        "unclaim",
+        "markDisrupted"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "manualCurbAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Reviewed curb estimate set alongside markDisrupted or planner correction."
+    },
+    "manualCurbNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "afterObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientOperationId",
+        "action"
+      ],
+      "description": "A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.",
+      "properties": {
+        "clientOperationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 120
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "claim",
+            "unclaim",
+            "markReady",
+            "markDisrupted"
+          ]
+        }
+      }
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Immutable device observation time; accepted up to seven days late with five minutes of clock skew."
+    }
+  }
+};
+
+export const dispatchProgramTripCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/dispatch_program_trip_payload.schema.json",
+  "title": "DispatchProgramTripCallablePayload",
+  "description": "Dispatch a vehicle: snapshot plate, vendor, class and manifest in one transaction that also writes per-leg active assignments and an idempotency receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "pickupPointId",
+    "vehicleClassId",
+    "plateDisplay",
+    "legIds",
+    "clientOperationId",
+    "expectedLegRevisions"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "vehicleClassId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "plateDisplay": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 16
+    },
+    "vendorId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "guestTransfer",
+        "repositioning"
+      ]
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "expectedLegRevisions": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "revision"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "afterObservation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "clientOperationId",
+              "action"
+            ],
+            "description": "A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.",
+            "properties": {
+              "clientOperationId": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 120
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "claim",
+                  "unclaim",
+                  "markReady",
+                  "markDisrupted"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "description": "Exactly one revision fence for every selected leg; missing, duplicate, extraneous or stale fences abort dispatch.",
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "departedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Explicit departure timestamp for late offline sync; defaults to server now."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+};
+
+export const programTripActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_trip_action_payload.schema.json",
+  "title": "ProgramTripActionCallablePayload",
+  "description": "Post-dispatch trip lifecycle payload shared by markProgramTripArrived and voidProgramTrip; the callable name carries the action.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "markProgramTripArrived",
+    "voidProgramTrip"
+  ],
+  "required": [
+    "programId",
+    "tripId",
+    "expectedRevision",
+    "clientOperationId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280,
+      "description": "Required for voidProgramTrip; recorded on the trip for reconciliation review."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+};
+
+export const importProgramManifestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_program_manifest_payload.schema.json",
+  "title": "ImportProgramManifestCallablePayload",
+  "description": "Bulk manifest import for a program. Preview mode plans without writing; commit mode applies idempotently via clientOperationId. Rows describe one guest and, optionally, that guest's inbound travel leg.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "importProgramManifest"
+  ],
+  "required": [
+    "programId",
+    "mode",
+    "clientOperationId",
+    "rows"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "preview",
+        "commit"
+      ]
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "displayName"
+        ],
+        "properties": {
+          "externalReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180,
+            "description": "Stable upstream id (CRM row id). Primary dedup key; without it, dedup falls back to displayName + flightNumber + arrival day."
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "phoneE164": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 20
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 320
+          },
+          "householdLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Matched against program households by case-insensitive label; unmatched labels create a household."
+          },
+          "partyLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Ride-together travel party label; matched or created per program."
+          },
+          "flightNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "originIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "destinationIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scheduledArrivalAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 253402300799999
+          },
+          "international": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "pickupPointLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Must match an existing program pickup point label; unmatched values are row errors."
+          },
+          "destinationHotelName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Must match an existing program hotel name; unmatched values are row errors."
+          },
+          "destinationLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Free-text destination fallback when no program hotel applies."
+          },
+          "passengers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "luggageUnits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 40
+          }
+        }
+      }
+    }
+  }
+};
+
+export const refreshProgramTravelLegCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/refresh_program_travel_leg_payload.schema.json",
+  "title": "RefreshProgramTravelLegCallablePayload",
+  "description": "Manual flight-status refresh for a single travel leg; any active program staff member may request it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "refreshProgramTravelLeg"
+  ],
+  "required": [
+    "programId",
+    "legId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const programStationScopeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_station_scope_payload.schema.json",
+  "title": "ProgramStationScopeCallablePayload",
+  "description": "Pickup-station scoped program read shared by the arrivals roster and transport plan callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramArrivalsRoster",
+    "getProgramTransportPlan"
+  ],
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Requested station. Staff are still intersected with their granted station scope; managers may read any station."
+    }
+  }
+};
+
+export const getProgramHotelInboundCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_hotel_inbound_payload.schema.json",
+  "title": "GetProgramHotelInboundCallablePayload",
+  "description": "Hotel-desk scoped inbound view: trips en route and expected guests for one hotel only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tripCursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[^/]+$",
+      "description": "Continuation returned for this hotel list. Omit to read its first page."
+    },
+    "expectedCursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[^/]+$",
+      "description": "Continuation returned for this hotel list. Omit to read its first page."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const listTransportVendorsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_transport_vendors_payload.schema.json",
+  "title": "ListTransportVendorsCallablePayload",
+  "description": "List organizer vendors, optionally narrowed to those bound to a program.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const programMutationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_mutation_response.schema.json",
+  "title": "ProgramMutationCallableResponse",
+  "description": "Generic program mutation acknowledgement carrying the committed entity id and revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "createOrganizerProgram",
+    "updateOrganizerProgram",
+    "upsertProgramGuest",
+    "upsertProgramHousehold",
+    "upsertProgramFunction",
+    "upsertProgramPickupPoint",
+    "upsertProgramHotel",
+    "upsertTransportVendor",
+    "upsertProgramTravelLeg",
+    "upsertProgramTravelParty",
+    "setProgramTravelReadiness",
+    "markProgramTripArrived",
+    "voidProgramTrip",
+    "refreshProgramTravelLeg",
+    "grantProgramStaff",
+    "revokeProgramStaff"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact clientOperationId replay returned the original result."
+    }
+  }
+};
+
+export const organizerProgramListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_program_list_response.schema.json",
+  "title": "OrganizerProgramListCallableResponse",
+  "description": "Manager's program inventory: summaries only, no guest or logistics data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programs"
+  ],
+  "properties": {
+    "programs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "programId",
+          "kind",
+          "title",
+          "status",
+          "startsAtMillis",
+          "endsAtMillis",
+          "capabilities",
+          "revision"
+        ],
+        "properties": {
+          "programId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wedding",
+              "corporate",
+              "social",
+              "other"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "active",
+              "completed",
+              "archived"
+            ]
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "arrivalsTransport",
+                "accommodation",
+                "forms",
+                "messaging"
+              ]
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programAccessCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_access_response.schema.json",
+  "title": "ProgramAccessCallableResponse",
+  "description": "Work-shell bootstrap: the caller's role, duties, station scopes and labeled program resources. Staff receive only operational fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "title",
+    "kind",
+    "timezone",
+    "status",
+    "actorRole",
+    "duties",
+    "grantExpiresAtMillis",
+    "capabilities",
+    "pickupPoints",
+    "hotels",
+    "vehicleClasses"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "wedding",
+        "corporate",
+        "social",
+        "other"
+      ]
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "actorRole": {
+      "type": "string",
+      "enum": [
+        "manager",
+        "staff"
+      ]
+    },
+    "duties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Exclusive expiry of this exact duty and resource scope. Independent of other assignments."
+          }
+        }
+      },
+      "description": "Managers receive an empty list meaning unrestricted; staff receive their granted duties."
+    },
+    "grantExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "pickupPoints": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pickupPointId",
+          "label",
+          "kind",
+          "iataCode",
+          "terminal"
+        ],
+        "properties": {
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "airport",
+              "railway",
+              "venue",
+              "other"
+            ]
+          },
+          "iataCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "terminal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          }
+        }
+      }
+    },
+    "vehicleClasses": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "passengerCapacity",
+          "luggageCapacity",
+          "capabilities",
+          "sortOrder"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "passengerCapacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageCapacity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 12,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "wheelchairAccessible",
+                "extraLuggage",
+                "childSeat"
+              ]
+            }
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        }
+      }
+    }
+  }
+};
+
+export const organizerProgramCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_program_response.schema.json",
+  "title": "OrganizerProgramCallableResponse",
+  "description": "Manager-facing program detail: settings, resources and coverage counts. No guest rows.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "program",
+    "functions",
+    "pickupPoints",
+    "hotels",
+    "counts"
+  ],
+  "properties": {
+    "program": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "programId",
+        "kind",
+        "title",
+        "timezone",
+        "status",
+        "startsAtMillis",
+        "endsAtMillis",
+        "capabilities",
+        "transportSettings",
+        "revision"
+      ],
+      "properties": {
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "wedding",
+            "corporate",
+            "social",
+            "other"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "startsAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endsAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "arrivalsTransport",
+              "accommodation",
+              "forms",
+              "messaging"
+            ]
+          }
+        },
+        "transportSettings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bandWindowMillis",
+            "maxReadyWaitMillis",
+            "domesticExitLagMillis",
+            "internationalExitLagMillis",
+            "vehicleClasses"
+          ],
+          "properties": {
+            "bandWindowMillis": {
+              "type": "integer",
+              "minimum": 300000,
+              "maximum": 7200000,
+              "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+            },
+            "maxReadyWaitMillis": {
+              "type": "integer",
+              "minimum": 60000,
+              "maximum": 3600000,
+              "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+            },
+            "domesticExitLagMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7200000,
+              "description": "Default landing-to-curb lag for domestic arrivals."
+            },
+            "internationalExitLagMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14400000,
+              "description": "Default landing-to-curb lag for international arrivals."
+            },
+            "vehicleClasses": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "passengerCapacity",
+                  "luggageCapacity",
+                  "capabilities",
+                  "sortOrder"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "passengerCapacity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 200
+                  },
+                  "luggageCapacity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 500
+                  },
+                  "capabilities": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "wheelchairAccessible",
+                        "extraLuggage",
+                        "childSeat"
+                      ]
+                    }
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              },
+              "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "startsAtMillis",
+          "endsAtMillis",
+          "venueName",
+          "status"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "venueName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          }
+        }
+      }
+    },
+    "pickupPoints": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pickupPointId",
+          "kind",
+          "label",
+          "active",
+          "revision"
+        ],
+        "properties": {
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "airport",
+              "railway",
+              "venue",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "iataCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "terminal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "meetingZone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "instructions": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name",
+          "address",
+          "active",
+          "revision"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "receptionContact": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "guests",
+        "households",
+        "inboundLegs",
+        "activeStaff"
+      ],
+      "properties": {
+        "guests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "households": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inboundLegs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeStaff": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
+export const programInviteClaimCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_invite_claim_response.schema.json",
+  "title": "ProgramInviteClaimCallableResponse",
+  "description": "Result of redeeming a program staff invite. Carries the program the invite grants access to so the client can navigate into the work shell.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "claimProgramStaffInvite"
+  ],
+  "required": [
+    "programId",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when this account already consumed the invite."
+    }
+  }
+};
+
+export const programStaffListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_staff_list_response.schema.json",
+  "title": "ProgramStaffListCallableResponse",
+  "description": "Manager's view of program staff grants.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "members",
+    "nextCursor"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "members": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "phoneLastFour",
+          "duties",
+          "status",
+          "expiresAtMillis",
+          "revision"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "phoneLastFour": {
+            "type": "string",
+            "pattern": "^[0-9]{4}$"
+          },
+          "duties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "duty",
+                "pickupPointIds",
+                "hotelIds",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "duty": {
+                  "type": "string",
+                  "enum": [
+                    "programCoordinator",
+                    "airportGreeter",
+                    "hotelDesk",
+                    "transportDispatcher",
+                    "reconciliationViewer"
+                  ]
+                },
+                "pickupPointIds": {
+                  "type": "array",
+                  "maxItems": 32,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
+                },
+                "hotelIds": {
+                  "type": "array",
+                  "maxItems": 64,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991,
+                  "description": "Exclusive expiry of this exact duty and resource scope. Independent of other assignments."
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ]
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const programGuestListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_guest_list_response.schema.json",
+  "title": "ProgramGuestListCallableResponse",
+  "description": "Manager/coordinator guest inventory with household labels. Contact fields are present because this surface requires the programCoordinator duty or organizer management.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guests",
+    "households",
+    "nextCursor"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guests": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "householdId",
+          "phoneE164",
+          "email",
+          "externalReference",
+          "invitationStatus",
+          "rsvpStatus",
+          "revision"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "householdId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "phoneE164": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 20
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 320
+          },
+          "externalReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "invitationStatus": {
+            "type": "string",
+            "enum": [
+              "notInvited",
+              "invited",
+              "delivered",
+              "responded"
+            ]
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "households": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "householdId",
+          "label",
+          "memberGuestIds",
+          "revision"
+        ],
+        "properties": {
+          "householdId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "memberGuestIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    }
+  }
+};
+
+export const programArrivalsRosterCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_arrivals_roster_response.schema.json",
+  "title": "ProgramArrivalsRosterCallableResponse",
+  "description": "Station-scoped, duty-redacted arrivals roster. Greeter/dispatcher rows carry operational fields only: no phone numbers, emails, RSVP internals or other stations' legs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "pickupPointId",
+    "generatedAtMillis",
+    "rows",
+    "vehicleClasses",
+    "accessExpiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The station this page covers; null when the duty spans all stations."
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "guestId",
+          "partyId",
+          "guestDisplayName",
+          "partyLabel",
+          "partyGuestIds",
+          "passengers",
+          "luggageUnits",
+          "flightNumber",
+          "originIata",
+          "flightStatus",
+          "curbAtMillis",
+          "curbSource",
+          "readiness",
+          "claimedByDisplay",
+          "destinationHotelId",
+          "destinationLabel",
+          "requiredCapabilities",
+          "dedicatedVehicle",
+          "revision",
+          "arrivalTerminal"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "partyId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "guestDisplayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "partyLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "partyGuestIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Ride-together membership for dispatcher merge decisions."
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageUnits": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "flightNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8
+          },
+          "originIata": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 3
+          },
+          "flightStatus": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "enroute",
+              "landed",
+              "delayed",
+              "cancelled",
+              "diverted",
+              "unknown"
+            ]
+          },
+          "curbAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Resolved curb estimate from arrivalTiming; null means unusable timing (cancelled, diverted or missing)."
+          },
+          "curbSource": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "ready",
+              "manual",
+              "actualLanding",
+              "estimatedLanding",
+              "scheduledLanding",
+              null
+            ]
+          },
+          "unavailableReason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "cancelled",
+              "diverted",
+              "missingTiming",
+              null
+            ]
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "ready",
+              "dispatched",
+              "arrived",
+              "disrupted",
+              "noShow"
+            ]
+          },
+          "claimedByDisplay": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120,
+            "description": "Claiming staff member's display name, never their uid beyond the caller's own claim flag."
+          },
+          "claimedByMe": {
+            "type": "boolean"
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "requiredCapabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "wheelchairAccessible",
+                "extraLuggage",
+                "childSeat"
+              ]
+            }
+          },
+          "dedicatedVehicle": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "arrivalTerminal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8,
+            "description": "Provider-reported arrival terminal; null until the leg is enriched or when unannounced."
+          }
+        }
+      }
+    },
+    "vehicleClasses": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "passengerCapacity",
+          "luggageCapacity",
+          "capabilities",
+          "sortOrder"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "passengerCapacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageCapacity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 12,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "wheelchairAccessible",
+                "extraLuggage",
+                "childSeat"
+              ]
+            }
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        }
+      }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    }
+  }
+};
+
+export const programTransportPlanCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_transport_plan_response.schema.json",
+  "title": "ProgramTransportPlanCallableResponse",
+  "description": "Deterministic grouping suggestions from the transport policy, recomputed per request. Suggestions are not reservations; dispatch is a separate command.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "pickupPointId",
+    "generatedAtMillis",
+    "groups",
+    "unassigned",
+    "accessExpiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "groups": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legIds",
+          "partyIds",
+          "destinationHotelId",
+          "destinationLabel",
+          "readiness",
+          "vehicleClassId",
+          "vehicleClassLabel",
+          "passengers",
+          "luggageUnits",
+          "earliestCurbAtMillis",
+          "latestCurbAtMillis",
+          "dispatchByMillis",
+          "waitOverdue"
+        ],
+        "properties": {
+          "legIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "partyIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "ready"
+            ]
+          },
+          "vehicleClassId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "vehicleClassLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageUnits": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "earliestCurbAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "latestCurbAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dispatchByMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "waitOverdue": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "unassigned": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "reason"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "missingTime",
+              "noSuitableVehicle",
+              "missingScope"
+            ]
+          }
+        }
+      }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    }
+  }
+};
+
+export const programHotelInboundCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_hotel_inbound_response.schema.json",
+  "title": "ProgramHotelInboundCallableResponse",
+  "description": "Hotel-desk projection for one property: en-route trips and guests still expected. No phone numbers, flight internals or other hotels' data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId",
+    "hotelName",
+    "generatedAtMillis",
+    "trips",
+    "expectedLegs",
+    "accessExpiresAtMillis",
+    "nextTripCursor",
+    "nextExpectedCursor"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trips": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tripId",
+          "plateDisplay",
+          "vehicleClassId",
+          "vendorName",
+          "departedAtMillis",
+          "estimatedArriveAtMillis",
+          "passengerCount",
+          "guestNames",
+          "status",
+          "revision",
+          "manifestSource",
+          "vehicleClassLabel"
+        ],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "plateDisplay": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 16
+          },
+          "vehicleClassId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "vendorName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "departedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "estimatedArriveAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Route ETA once the Maps adapter ships; null until then."
+          },
+          "passengerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "guestNames": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "enRoute",
+              "arrived",
+              "cancelled",
+              "voided"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "manifestSource": {
+            "type": "string",
+            "enum": [
+              "dispatchSnapshot",
+              "currentRecords"
+            ],
+            "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
+          },
+          "vehicleClassLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot."
+          }
+        }
+      }
+    },
+    "expectedLegs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "guestDisplayName",
+          "partyLabel",
+          "passengers",
+          "curbAtMillis",
+          "readiness"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestDisplayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "partyLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "curbAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "ready",
+              "dispatched",
+              "arrived",
+              "disrupted",
+              "noShow"
+            ]
+          }
+        }
+      }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "nextTripCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "nextExpectedCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const programManifestImportCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_manifest_import_response.schema.json",
+  "title": "ProgramManifestImportCallableResponse",
+  "description": "Manifest import plan or commit summary. Row errors never silently drop data: every rejected row reports its index and reason.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "importProgramManifest"
+  ],
+  "required": [
+    "mode",
+    "totalRows",
+    "guestsCreated",
+    "guestsUpdated",
+    "legsCreated",
+    "legsUpdated",
+    "householdsCreated",
+    "partiesCreated",
+    "rowErrors",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "preview",
+        "commit"
+      ]
+    },
+    "totalRows": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "guestsCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "guestsUpdated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "legsCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "legsUpdated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "householdsCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "partiesCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rowErrors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "message"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 280
+          }
+        }
+      }
+    },
+    "alreadyApplied": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const dispatchProgramTripCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/dispatch_program_trip_response.schema.json",
+  "title": "DispatchProgramTripCallableResponse",
+  "description": "Committed dispatch result; an exact replay returns the original trip id and revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tripId",
+    "revision",
+    "alreadyApplied",
+    "passengerCount"
+  ],
+  "properties": {
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean"
+    },
+    "passengerCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    }
+  }
+};
+
+export const transportVendorListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/transport_vendor_list_response.schema.json",
+  "title": "TransportVendorListCallableResponse",
+  "description": "Operational vendor picker data: id, name and program binding only. Contact and commercial fields stay on manager surfaces.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "vendors"
+  ],
+  "properties": {
+    "vendors": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "vendorId",
+          "name",
+          "active",
+          "boundToProgram"
+        ],
+        "properties": {
+          "vendorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "boundToProgram": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programTripListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_trip_list_response.schema.json",
+  "title": "ProgramTripListCallableResponse",
+  "description": "Manager/dispatcher/reconciliation trip ledger: the dispatch record that drives vendor reconciliation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "listProgramTrips"
+  ],
+  "required": [
+    "programId",
+    "trips",
+    "accessExpiresAtMillis",
+    "nextCursor"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "trips": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tripId",
+          "pickupPointId",
+          "destinationHotelId",
+          "destinationLabel",
+          "vehicleClassId",
+          "plateDisplay",
+          "vendorId",
+          "kind",
+          "status",
+          "passengerCount",
+          "departedAtMillis",
+          "arrivedAtMillis",
+          "voidReason",
+          "guestNames",
+          "revision",
+          "manifestSource",
+          "vehicleClassLabel"
+        ],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "vehicleClassId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "plateDisplay": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 16
+          },
+          "vendorId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "vendorName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "guestTransfer",
+              "repositioning"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "enRoute",
+              "arrived",
+              "cancelled",
+              "voided"
+            ]
+          },
+          "passengerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "departedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "arrivedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "voidReason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 280
+          },
+          "guestNames": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "manifestSource": {
+            "type": "string",
+            "enum": [
+              "dispatchSnapshot",
+              "currentRecords"
+            ],
+            "description": "Whether displayed guest names were captured with dispatch or resolved from current records for a legacy trip."
+          },
+          "vehicleClassLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "Vehicle-class label recorded with dispatch. Null when the legacy trip has no snapshot."
+          }
+        }
+      }
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -188783,6 +202069,15 @@ export const createOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -189201,6 +202496,67 @@ export const createOrganizerFormCallableResponseSchema = {
                 }
               }
             },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
             "completion": {
               "type": "object",
               "additionalProperties": false,
@@ -189568,6 +202924,15 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
                         "profile",
                         "sensitive",
                         "organizerCustom"
+                      ]
+                    },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
                       ]
                     },
                     "prefillPolicy": {
@@ -189985,6 +203350,67 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -190504,6 +203930,15 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -190919,6 +204354,67 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -191503,6 +204999,15 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -191918,6 +205423,67 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -192597,6 +206163,15 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -193012,6 +206587,67 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -194122,6 +207758,15 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -194537,6 +208182,67 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -195160,6 +208866,15 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -195578,6 +209293,67 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                 }
               }
             },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
             "completion": {
               "type": "object",
               "additionalProperties": false,
@@ -195626,6 +209402,35 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                   "maxLength": 500
                 }
               }
+            }
+          }
+        },
+        "messagingOffer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
             }
           }
         }
@@ -196022,6 +209827,15 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                                 "profile",
                                 "sensitive",
                                 "organizerCustom"
+                              ]
+                            },
+                            "answerDestination": {
+                              "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "catchProfile",
+                                "organizerCard"
                               ]
                             },
                             "prefillPolicy": {
@@ -196442,6 +210256,67 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                     }
                   }
                 },
+                "payment": {
+                  "anyOf": [
+                    {
+                      "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "connectionId",
+                        "amountPaise",
+                        "currency",
+                        "description",
+                        "refundPolicy"
+                      ],
+                      "properties": {
+                        "connectionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "amountPaise": {
+                          "type": "integer",
+                          "minimum": 100,
+                          "maximum": 10000000
+                        },
+                        "currency": {
+                          "const": "INR"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "refundPolicy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "messagingConsent": {
+                  "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organizerWhatsapp",
+                    "catchWhatsapp"
+                  ],
+                  "properties": {
+                    "organizerWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "catchWhatsapp": {
+                      "type": "boolean"
+                    }
+                  }
+                },
                 "completion": {
                   "type": "object",
                   "additionalProperties": false,
@@ -196492,6 +210367,35 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                   }
                 }
               }
+            },
+            "messagingOffer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "termsVersion",
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "termsVersion": {
+                  "const": "form-whatsapp-v1",
+                  "type": "string"
+                },
+                "organizerWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "catchWhatsapp": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                }
+              }
             }
           }
         },
@@ -196540,6 +210444,27 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
         "consentAccepted": {
           "type": "boolean"
         },
+        "messagingChoices": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "termsVersion",
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "termsVersion": {
+              "const": "form-whatsapp-v1",
+              "type": "string"
+            },
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
+            }
+          }
+        },
         "identityKind": {
           "type": "string",
           "enum": [
@@ -196574,6 +210499,27 @@ export const saveOrganizerFormResponseDraftCallablePayloadSchema = {
     "consentAccepted"
   ],
   "properties": {
+    "messagingChoices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "termsVersion",
+        "organizerWhatsapp",
+        "catchWhatsapp"
+      ],
+      "properties": {
+        "termsVersion": {
+          "const": "form-whatsapp-v1",
+          "type": "string"
+        },
+        "organizerWhatsapp": {
+          "type": "boolean"
+        },
+        "catchWhatsapp": {
+          "type": "boolean"
+        }
+      }
+    },
     "draftId": {
       "type": "string",
       "minLength": 1,
@@ -196841,6 +210787,1175 @@ export const finalizeOrganizerFormAssetCallableResponseSchema = {
   }
 };
 
+export const prepareOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_organizer_form_payment_payload.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallablePayload",
+  "description": "Freezes a completed phone-verified draft and prepares its merchant checkout.",
+  "allOf": [
+    {
+      "title": "SubmitOrganizerFormResponseCallablePayload",
+      "description": "Idempotently submits one completed version-bound draft.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "draftToken",
+        "expectedRevision",
+        "requestId"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "draftToken": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{32,160}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{16,120}$"
+        }
+      }
+    }
+  ]
+};
+
+export const prepareOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/prepare_organizer_form_payment_response.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only safe payment projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "versionId",
+                "status",
+                "submittedAtMillis",
+                "withdrawalToken",
+                "completion"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawalToken": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "profileReviewAvailable": {
+                  "type": "boolean",
+                  "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const findOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/find_organizer_form_payment_payload.schema.json",
+  "title": "FindOrganizerFormPaymentCallablePayload",
+  "description": "Find the signed-in respondent's most recent payment for a public form without browser-local identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publicFormId"
+  ],
+  "properties": {
+    "publicFormId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{20,80}$"
+    }
+  }
+};
+
+export const findOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/find_organizer_form_payment_response.schema.json",
+  "title": "FindOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only latest payment projection; does not start checkout or depend on the current form version or availability.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payment"
+  ],
+  "properties": {
+    "payment": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "amountPaise",
+            "currency",
+            "mode",
+            "refundPolicy",
+            "refundedAmountPaise",
+            "checkout",
+            "receipt"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^fp_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "submitted",
+                "failed",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired"
+              ],
+              "type": "string"
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "refundPolicy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "checkout": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "publicToken",
+                    "orderId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "expiresAtMillis"
+                  ],
+                  "properties": {
+                    "publicToken": {
+                      "type": "string",
+                      "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "pattern": "^order_[A-Za-z0-9]+$"
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "receipt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responseId",
+                    "formId",
+                    "versionId",
+                    "status",
+                    "submittedAtMillis",
+                    "withdrawalToken",
+                    "completion"
+                  ],
+                  "properties": {
+                    "responseId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "formId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "versionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "submitted",
+                        "withdrawn"
+                      ]
+                    },
+                    "submittedAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "withdrawalToken": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                    },
+                    "completion": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "title",
+                        "message",
+                        "actionKind",
+                        "actionLabel",
+                        "actionUrl"
+                      ],
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "message": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 1000
+                        },
+                        "actionKind": {
+                          "type": "string",
+                          "enum": [
+                            "none",
+                            "externalUrl",
+                            "event",
+                            "eventRuntime"
+                          ]
+                        },
+                        "actionLabel": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 80
+                        },
+                        "actionUrl": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri",
+                          "maxLength": 500
+                        }
+                      }
+                    },
+                    "profileReviewAvailable": {
+                      "type": "boolean",
+                      "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_payment_payload.schema.json",
+  "title": "GetOrganizerFormPaymentCallablePayload",
+  "description": "Owner-only payment status or signed checkout callback; success still requires server capture verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "paymentId",
+    "callback"
+  ],
+  "properties": {
+    "paymentId": {
+      "type": "string",
+      "pattern": "^fp_[a-f0-9]{32}$"
+    },
+    "callback": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "signature"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^pay_[A-Za-z0-9]+$"
+            },
+            "signature": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_payment_response.schema.json",
+  "title": "GetOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only safe payment projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "versionId",
+                "status",
+                "submittedAtMillis",
+                "withdrawalToken",
+                "completion"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawalToken": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                },
+                "profileReviewAvailable": {
+                  "type": "boolean",
+                  "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const listOrganizerFormPaymentsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_payments_payload.schema.json",
+  "title": "ListOrganizerFormPaymentsCallablePayload",
+  "description": "Manager-only bounded fee ledger for one owned form, independent of the response inbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "statuses",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "statuses": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 11,
+      "items": {
+        "enum": [
+          "creatingOrder",
+          "orderUnknown",
+          "checkoutReady",
+          "verifying",
+          "captured",
+          "submitted",
+          "failed",
+          "expired",
+          "refundPending",
+          "refunded",
+          "reviewRequired"
+        ],
+        "type": "string"
+      }
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const listOrganizerFormPaymentsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_payments_response.schema.json",
+  "title": "ListOrganizerFormPaymentsCallableResponse",
+  "description": "Minimal organizer fee records. No private credential, draft token, unsubmitted answers or respondent identity is exposed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "paymentId",
+          "status",
+          "mode",
+          "amountPaise",
+          "currency",
+          "refundedAmountPaise",
+          "createdAtMillis",
+          "updatedAtMillis",
+          "capturedAtMillis",
+          "submittedAtMillis",
+          "responseId",
+          "providerOrderId",
+          "providerPaymentId",
+          "providerRefundId",
+          "receipt"
+        ],
+        "properties": {
+          "paymentId": {
+            "type": "string",
+            "pattern": "^fp_[a-f0-9]{32}$"
+          },
+          "status": {
+            "enum": [
+              "creatingOrder",
+              "orderUnknown",
+              "checkoutReady",
+              "verifying",
+              "captured",
+              "submitted",
+              "failed",
+              "expired",
+              "refundPending",
+              "refunded",
+              "reviewRequired"
+            ],
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "test",
+              "live"
+            ]
+          },
+          "amountPaise": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 10000000
+          },
+          "currency": {
+            "const": "INR"
+          },
+          "refundedAmountPaise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "capturedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "submittedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "responseId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "providerOrderId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "providerPaymentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "providerRefundId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "receipt": {
+            "type": "string",
+            "pattern": "^cfp_[a-f0-9]{32}$"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const manageOrganizerFormPaymentConnectionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_form_payment_connection_payload.schema.json",
+  "title": "ManageOrganizerFormPaymentConnectionCallablePayload",
+  "description": "Manager-only merchant connection setup, safe listing, credential refresh, and local disconnection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "action",
+    "connectionId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "begin",
+        "list",
+        "disconnect",
+        "refresh"
+      ]
+    },
+    "connectionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^rpc_[a-f0-9]{32}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const manageOrganizerFormPaymentConnectionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_form_payment_connection_response.schema.json",
+  "title": "ManageOrganizerFormPaymentConnectionCallableResponse",
+  "description": "Safe connection status and one-use OAuth link. No merchant credentials.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "available",
+    "authorizationUrl",
+    "connectionId",
+    "expiresAtMillis",
+    "connections"
+  ],
+  "properties": {
+    "available": {
+      "type": "boolean"
+    },
+    "authorizationUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 4000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connectionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connections": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "status",
+          "mode",
+          "accountId",
+          "webhookVerified",
+          "lastErrorCode"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "connecting",
+              "ready",
+              "needsAttention",
+              "disconnected"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "test",
+              "live"
+            ]
+          },
+          "accountId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "webhookVerified": {
+            "type": "boolean"
+          },
+          "lastErrorCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
 export const submitOrganizerFormResponseCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/submit_organizer_form_response_payload.schema.json",
@@ -196980,6 +212095,10 @@ export const submitOrganizerFormResponseCallableResponseSchema = {
               "maxLength": 500
             }
           }
+        },
+        "profileReviewAvailable": {
+          "type": "boolean",
+          "description": "True only when the verified respondent has an active owned profile proposal to review. Not a claim or sharing grant."
         }
       }
     }
@@ -197351,6 +212470,40 @@ export const listOrganizerFormResponsesCallablePayloadSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 100
+    },
+    "includeApplications": {
+      "type": "boolean",
+      "description": "Opt into the unified response and application review inbox."
+    },
+    "reviewStatus": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "submitted",
+            "inReview",
+            "approved",
+            "waitlisted",
+            "declined",
+            "withdrawn"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };
@@ -197635,6 +212788,375 @@ export const listOrganizerFormResponsesCallableResponseSchema = {
         "null"
       ],
       "maxLength": 1000
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 100,
+      "description": "Present only when includeApplications is true. A converted native response has both source summaries and occurs once.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entryId",
+          "submittedAtMillis",
+          "response",
+          "application"
+        ],
+        "properties": {
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "submittedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "response": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "responseId",
+                  "formId",
+                  "formTitle",
+                  "versionId",
+                  "version",
+                  "status",
+                  "identityKind",
+                  "identity",
+                  "sourceLinkId",
+                  "sourceLabel",
+                  "submittedAtMillis",
+                  "withdrawnAtMillis",
+                  "highlights",
+                  "conversionKinds"
+                ],
+                "properties": {
+                  "responseId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "formTitle": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "versionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "submitted",
+                      "withdrawn"
+                    ]
+                  },
+                  "identityKind": {
+                    "type": "string",
+                    "enum": [
+                      "anonymous",
+                      "emailVerified",
+                      "phoneVerified",
+                      "catchAccount"
+                    ]
+                  },
+                  "identity": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "displayName",
+                      "email",
+                      "phoneE164",
+                      "searchName",
+                      "origin"
+                    ],
+                    "properties": {
+                      "displayName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 160
+                      },
+                      "email": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 320
+                      },
+                      "phoneE164": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "pattern": "^\\+[1-9][0-9]{7,14}$"
+                      },
+                      "searchName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 160
+                      },
+                      "origin": {
+                        "type": "string",
+                        "enum": [
+                          "anonymous",
+                          "respondentGranted",
+                          "organizerAcquired"
+                        ]
+                      }
+                    }
+                  },
+                  "sourceLinkId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "sourceLabel": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "submittedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "withdrawnAtMillis": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "highlights": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "questionId",
+                        "label",
+                        "answer"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "answer": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "maxLength": 10000
+                            },
+                            {
+                              "type": "number",
+                              "minimum": -1000000000,
+                              "maximum": 1000000000
+                            },
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "array",
+                              "maxItems": 100,
+                              "uniqueItems": true,
+                              "items": {
+                                "type": "string",
+                                "maxLength": 500
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "conversionKinds": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "crmContact",
+                        "application",
+                        "eventAttendeeProposal",
+                        "followUp"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "application": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "applicationId",
+                  "formId",
+                  "formVersionId",
+                  "targetKind",
+                  "targetId",
+                  "applicantDisplayName",
+                  "reviewStatus",
+                  "dataAccessState",
+                  "sourceKind",
+                  "providerId",
+                  "submittedAtMillis",
+                  "revision"
+                ],
+                "properties": {
+                  "applicationId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "formId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "formVersionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "targetKind": {
+                    "type": "string",
+                    "enum": [
+                      "organizer",
+                      "event",
+                      "campaign"
+                    ]
+                  },
+                  "targetId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "applicantDisplayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "reviewStatus": {
+                    "type": "string",
+                    "enum": [
+                      "submitted",
+                      "inReview",
+                      "approved",
+                      "waitlisted",
+                      "declined",
+                      "withdrawn"
+                    ]
+                  },
+                  "dataAccessState": {
+                    "type": "string",
+                    "enum": [
+                      "organizerImported",
+                      "activeParticipantGrant",
+                      "revokedParticipantGrant",
+                      "submittedFormResponse"
+                    ]
+                  },
+                  "sourceKind": {
+                    "type": "string",
+                    "enum": [
+                      "native",
+                      "tabularImport",
+                      "connector"
+                    ]
+                  },
+                  "providerId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "submittedAtMillis": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "contactId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "sourceResponseId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
     }
   }
 };
@@ -198071,6 +213593,140 @@ export const getOrganizerFormResponseDetailCallableResponseSchema = {
       ],
       "minLength": 1,
       "maxLength": 180
+    },
+    "payment": {
+      "description": "Authorized financial record linked to this submitted response; no draft or credential data.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "status",
+            "mode",
+            "amountPaise",
+            "currency",
+            "refundedAmountPaise",
+            "createdAtMillis",
+            "updatedAtMillis",
+            "capturedAtMillis",
+            "submittedAtMillis",
+            "responseId",
+            "providerOrderId",
+            "providerPaymentId",
+            "providerRefundId",
+            "receipt"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^fp_[a-f0-9]{32}$"
+            },
+            "status": {
+              "enum": [
+                "creatingOrder",
+                "orderUnknown",
+                "checkoutReady",
+                "verifying",
+                "captured",
+                "submitted",
+                "failed",
+                "expired",
+                "refundPending",
+                "refunded",
+                "reviewRequired"
+              ],
+              "type": "string"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "amountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000000
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "refundedAmountPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000000
+            },
+            "createdAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "capturedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "submittedAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "responseId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "providerOrderId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "providerPaymentId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "providerRefundId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "receipt": {
+              "type": "string",
+              "pattern": "^cfp_[a-f0-9]{32}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 };

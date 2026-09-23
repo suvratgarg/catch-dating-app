@@ -183,6 +183,54 @@ import {
   organizerPostDeliveryRecipientDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
+  participantOrganizerCardDocumentSchema,
+  participantProfileClaimReceiptDocumentSchema,
+  claimParticipantFormProfileCallablePayloadSchema,
+  claimParticipantFormProfileCallableResponseSchema,
+  listParticipantFormProfilesCallablePayloadSchema,
+  listParticipantFormProfilesCallableResponseSchema,
+  getParticipantFormPhotoCallablePayloadSchema,
+  getParticipantFormPhotoCallableResponseSchema,
+  getParticipantFormProfileCallablePayloadSchema,
+  getParticipantFormProfileCallableResponseSchema,
+  participantFormProfileProposalDocumentSchema,
+  eventChatProfileShareDocumentSchema,
+  actOnEventChatMessageCallablePayloadSchema,
+  actOnEventChatMessageCallableResponseSchema,
+  listEventChatParticipantsCallablePayloadSchema,
+  listEventChatParticipantsCallableResponseSchema,
+  getEventChatProfileSharingCallablePayloadSchema,
+  updateEventChatProfileSharingCallablePayloadSchema,
+  getEventChatProfileCallablePayloadSchema,
+  getEventChatProfileSharingCallableResponseSchema,
+  updateEventChatProfileSharingCallableResponseSchema,
+  getEventChatProfileCallableResponseSchema,
+  eventChatRoomDocumentSchema,
+  eventChatMembershipDocumentSchema,
+  eventChatAccessReceiptDocumentSchema,
+  eventChatMessageDocumentSchema,
+  eventChatReactionDocumentSchema,
+  eventChatPresenceDocumentSchema,
+  sendEventChatMessageCallablePayloadSchema,
+  sendEventChatMessageCallableResponseSchema,
+  setEventChatReactionCallablePayloadSchema,
+  setEventChatReactionCallableResponseSchema,
+  setEventChatTypingCallablePayloadSchema,
+  setEventChatTypingCallableResponseSchema,
+  listEventChatsCallablePayloadSchema,
+  listEventChatsCallableResponseSchema,
+  listEventChatMessagesCallablePayloadSchema,
+  listEventChatMessagesCallableResponseSchema,
+  getEventChatAccessCallablePayloadSchema,
+  updateEventChatAccessCallablePayloadSchema,
+  getEventChatAccessCallableResponseSchema,
+  updateEventChatAccessCallableResponseSchema,
+  listParticipantMessagingPreferencesCallablePayloadSchema,
+  listParticipantMessagingPreferencesCallableResponseSchema,
+  withdrawParticipantMessagingPermissionCallablePayloadSchema,
+  withdrawParticipantMessagingPermissionCallableResponseSchema,
+  catchCommunicationPreferenceDocumentSchema,
+  catchCommunicationPermissionReceiptDocumentSchema,
   organizerCommunicationPreferenceDocumentSchema,
   organizerCommunicationPermissionReceiptDocumentSchema,
   organizerContactDocumentSchema,
@@ -205,6 +253,10 @@ import {
   organizerApplicationFormDocumentSchema,
   organizerApplicationFormVersionDocumentSchema,
   organizerFormDocumentSchema,
+  organizerPaymentConnectionDocumentSchema,
+  organizerPaymentOauthStateDocumentSchema,
+  organizerFormPaymentDocumentSchema,
+  organizerFormPaymentWebhookDocumentSchema,
   organizerFormDraftDocumentSchema,
   organizerFormVersionDocumentSchema,
   organizerFormResponseDraftDocumentSchema,
@@ -254,6 +306,63 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventStaffGrantDocumentSchema,
+  organizerProgramDocumentSchema,
+  programFunctionDocumentSchema,
+  programGuestDocumentSchema,
+  programHouseholdDocumentSchema,
+  programStaffGrantDocumentSchema,
+  programStaffInviteDocumentSchema,
+  programPickupPointDocumentSchema,
+  programHotelDocumentSchema,
+  programTravelLegDocumentSchema,
+  programTravelPartyDocumentSchema,
+  transportVendorDocumentSchema,
+  transportTripDocumentSchema,
+  transportActiveAssignmentDocumentSchema,
+  transportVehicleAssignmentDocumentSchema,
+  transportOperationReceiptDocumentSchema,
+  programIdCallablePayloadSchema,
+  listOrganizerProgramsCallablePayloadSchema,
+  createOrganizerProgramCallablePayloadSchema,
+  updateOrganizerProgramCallablePayloadSchema,
+  grantProgramStaffCallablePayloadSchema,
+  revokeProgramStaffCallablePayloadSchema,
+  inviteProgramStaffCallablePayloadSchema,
+  claimProgramStaffInviteCallablePayloadSchema,
+  revokeProgramStaffInviteCallablePayloadSchema,
+  upsertProgramGuestCallablePayloadSchema,
+  listProgramStaffCallablePayloadSchema,
+  listProgramTripsCallablePayloadSchema,
+  listProgramGuestsCallablePayloadSchema,
+  upsertProgramHouseholdCallablePayloadSchema,
+  upsertProgramFunctionCallablePayloadSchema,
+  upsertProgramPickupPointCallablePayloadSchema,
+  upsertProgramHotelCallablePayloadSchema,
+  upsertTransportVendorCallablePayloadSchema,
+  upsertProgramTravelLegCallablePayloadSchema,
+  upsertProgramTravelPartyCallablePayloadSchema,
+  setProgramTravelReadinessCallablePayloadSchema,
+  dispatchProgramTripCallablePayloadSchema,
+  programTripActionCallablePayloadSchema,
+  importProgramManifestCallablePayloadSchema,
+  refreshProgramTravelLegCallablePayloadSchema,
+  programStationScopeCallablePayloadSchema,
+  getProgramHotelInboundCallablePayloadSchema,
+  listTransportVendorsCallablePayloadSchema,
+  programMutationCallableResponseSchema,
+  organizerProgramListCallableResponseSchema,
+  programAccessCallableResponseSchema,
+  organizerProgramCallableResponseSchema,
+  programInviteClaimCallableResponseSchema,
+  programStaffListCallableResponseSchema,
+  programGuestListCallableResponseSchema,
+  programArrivalsRosterCallableResponseSchema,
+  programTransportPlanCallableResponseSchema,
+  programHotelInboundCallableResponseSchema,
+  programManifestImportCallableResponseSchema,
+  dispatchProgramTripCallableResponseSchema,
+  transportVendorListCallableResponseSchema,
+  programTripListCallableResponseSchema,
   eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
@@ -532,6 +641,16 @@ import {
   createOrganizerFormAssetIntentCallableResponseSchema,
   finalizeOrganizerFormAssetCallablePayloadSchema,
   finalizeOrganizerFormAssetCallableResponseSchema,
+  prepareOrganizerFormPaymentCallablePayloadSchema,
+  prepareOrganizerFormPaymentCallableResponseSchema,
+  findOrganizerFormPaymentCallablePayloadSchema,
+  findOrganizerFormPaymentCallableResponseSchema,
+  getOrganizerFormPaymentCallablePayloadSchema,
+  getOrganizerFormPaymentCallableResponseSchema,
+  listOrganizerFormPaymentsCallablePayloadSchema,
+  listOrganizerFormPaymentsCallableResponseSchema,
+  manageOrganizerFormPaymentConnectionCallablePayloadSchema,
+  manageOrganizerFormPaymentConnectionCallableResponseSchema,
   submitOrganizerFormResponseCallablePayloadSchema,
   submitOrganizerFormResponseCallableResponseSchema,
   withdrawOrganizerFormResponseCallablePayloadSchema,
@@ -898,6 +1017,54 @@ export const validateOrganizerPostDeliveryOperationDocument = ajv.compile(organi
 export const validateOrganizerPostDeliveryRecipientDocument = ajv.compile(organizerPostDeliveryRecipientDocumentSchema);
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
+export const validateParticipantOrganizerCardDocument = ajv.compile(participantOrganizerCardDocumentSchema);
+export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
+export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
+export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateListParticipantFormProfilesCallablePayload = ajv.compile(listParticipantFormProfilesCallablePayloadSchema);
+export const validateListParticipantFormProfilesCallableResponse = ajv.compile(listParticipantFormProfilesCallableResponseSchema);
+export const validateGetParticipantFormPhotoCallablePayload = ajv.compile(getParticipantFormPhotoCallablePayloadSchema);
+export const validateGetParticipantFormPhotoCallableResponse = ajv.compile(getParticipantFormPhotoCallableResponseSchema);
+export const validateGetParticipantFormProfileCallablePayload = ajv.compile(getParticipantFormProfileCallablePayloadSchema);
+export const validateGetParticipantFormProfileCallableResponse = ajv.compile(getParticipantFormProfileCallableResponseSchema);
+export const validateParticipantFormProfileProposalDocument = ajv.compile(participantFormProfileProposalDocumentSchema);
+export const validateEventChatProfileShareDocument = ajv.compile(eventChatProfileShareDocumentSchema);
+export const validateActOnEventChatMessageCallablePayload = ajv.compile(actOnEventChatMessageCallablePayloadSchema);
+export const validateActOnEventChatMessageCallableResponse = ajv.compile(actOnEventChatMessageCallableResponseSchema);
+export const validateListEventChatParticipantsCallablePayload = ajv.compile(listEventChatParticipantsCallablePayloadSchema);
+export const validateListEventChatParticipantsCallableResponse = ajv.compile(listEventChatParticipantsCallableResponseSchema);
+export const validateGetEventChatProfileSharingCallablePayload = ajv.compile(getEventChatProfileSharingCallablePayloadSchema);
+export const validateUpdateEventChatProfileSharingCallablePayload = ajv.compile(updateEventChatProfileSharingCallablePayloadSchema);
+export const validateGetEventChatProfileCallablePayload = ajv.compile(getEventChatProfileCallablePayloadSchema);
+export const validateGetEventChatProfileSharingCallableResponse = ajv.compile(getEventChatProfileSharingCallableResponseSchema);
+export const validateUpdateEventChatProfileSharingCallableResponse = ajv.compile(updateEventChatProfileSharingCallableResponseSchema);
+export const validateGetEventChatProfileCallableResponse = ajv.compile(getEventChatProfileCallableResponseSchema);
+export const validateEventChatRoomDocument = ajv.compile(eventChatRoomDocumentSchema);
+export const validateEventChatMembershipDocument = ajv.compile(eventChatMembershipDocumentSchema);
+export const validateEventChatAccessReceiptDocument = ajv.compile(eventChatAccessReceiptDocumentSchema);
+export const validateEventChatMessageDocument = ajv.compile(eventChatMessageDocumentSchema);
+export const validateEventChatReactionDocument = ajv.compile(eventChatReactionDocumentSchema);
+export const validateEventChatPresenceDocument = ajv.compile(eventChatPresenceDocumentSchema);
+export const validateSendEventChatMessageCallablePayload = ajv.compile(sendEventChatMessageCallablePayloadSchema);
+export const validateSendEventChatMessageCallableResponse = ajv.compile(sendEventChatMessageCallableResponseSchema);
+export const validateSetEventChatReactionCallablePayload = ajv.compile(setEventChatReactionCallablePayloadSchema);
+export const validateSetEventChatReactionCallableResponse = ajv.compile(setEventChatReactionCallableResponseSchema);
+export const validateSetEventChatTypingCallablePayload = ajv.compile(setEventChatTypingCallablePayloadSchema);
+export const validateSetEventChatTypingCallableResponse = ajv.compile(setEventChatTypingCallableResponseSchema);
+export const validateListEventChatsCallablePayload = ajv.compile(listEventChatsCallablePayloadSchema);
+export const validateListEventChatsCallableResponse = ajv.compile(listEventChatsCallableResponseSchema);
+export const validateListEventChatMessagesCallablePayload = ajv.compile(listEventChatMessagesCallablePayloadSchema);
+export const validateListEventChatMessagesCallableResponse = ajv.compile(listEventChatMessagesCallableResponseSchema);
+export const validateGetEventChatAccessCallablePayload = ajv.compile(getEventChatAccessCallablePayloadSchema);
+export const validateUpdateEventChatAccessCallablePayload = ajv.compile(updateEventChatAccessCallablePayloadSchema);
+export const validateGetEventChatAccessCallableResponse = ajv.compile(getEventChatAccessCallableResponseSchema);
+export const validateUpdateEventChatAccessCallableResponse = ajv.compile(updateEventChatAccessCallableResponseSchema);
+export const validateListParticipantMessagingPreferencesCallablePayload = ajv.compile(listParticipantMessagingPreferencesCallablePayloadSchema);
+export const validateListParticipantMessagingPreferencesCallableResponse = ajv.compile(listParticipantMessagingPreferencesCallableResponseSchema);
+export const validateWithdrawParticipantMessagingPermissionCallablePayload = ajv.compile(withdrawParticipantMessagingPermissionCallablePayloadSchema);
+export const validateWithdrawParticipantMessagingPermissionCallableResponse = ajv.compile(withdrawParticipantMessagingPermissionCallableResponseSchema);
+export const validateCatchCommunicationPreferenceDocument = ajv.compile(catchCommunicationPreferenceDocumentSchema);
+export const validateCatchCommunicationPermissionReceiptDocument = ajv.compile(catchCommunicationPermissionReceiptDocumentSchema);
 export const validateOrganizerCommunicationPreferenceDocument = ajv.compile(organizerCommunicationPreferenceDocumentSchema);
 export const validateOrganizerCommunicationPermissionReceiptDocument = ajv.compile(organizerCommunicationPermissionReceiptDocumentSchema);
 export const validateOrganizerContactDocument = ajv.compile(organizerContactDocumentSchema);
@@ -920,6 +1087,10 @@ export const validateOrganizerProviderConnectionDocument = ajv.compile(organizer
 export const validateOrganizerApplicationFormDocument = ajv.compile(organizerApplicationFormDocumentSchema);
 export const validateOrganizerApplicationFormVersionDocument = ajv.compile(organizerApplicationFormVersionDocumentSchema);
 export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSchema);
+export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
+export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
+export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
+export const validateOrganizerFormPaymentWebhookDocument = ajv.compile(organizerFormPaymentWebhookDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);
 export const validateOrganizerFormVersionDocument = ajv.compile(organizerFormVersionDocumentSchema);
 export const validateOrganizerFormResponseDraftDocument = ajv.compile(organizerFormResponseDraftDocumentSchema);
@@ -969,6 +1140,63 @@ export const validateEventInviteAttributionDocument = ajv.compile(eventInviteAtt
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
 export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
+export const validateOrganizerProgramDocument = ajv.compile(organizerProgramDocumentSchema);
+export const validateProgramFunctionDocument = ajv.compile(programFunctionDocumentSchema);
+export const validateProgramGuestDocument = ajv.compile(programGuestDocumentSchema);
+export const validateProgramHouseholdDocument = ajv.compile(programHouseholdDocumentSchema);
+export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDocumentSchema);
+export const validateProgramStaffInviteDocument = ajv.compile(programStaffInviteDocumentSchema);
+export const validateProgramPickupPointDocument = ajv.compile(programPickupPointDocumentSchema);
+export const validateProgramHotelDocument = ajv.compile(programHotelDocumentSchema);
+export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
+export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
+export const validateTransportVendorDocument = ajv.compile(transportVendorDocumentSchema);
+export const validateTransportTripDocument = ajv.compile(transportTripDocumentSchema);
+export const validateTransportActiveAssignmentDocument = ajv.compile(transportActiveAssignmentDocumentSchema);
+export const validateTransportVehicleAssignmentDocument = ajv.compile(transportVehicleAssignmentDocumentSchema);
+export const validateTransportOperationReceiptDocument = ajv.compile(transportOperationReceiptDocumentSchema);
+export const validateProgramIdCallablePayload = ajv.compile(programIdCallablePayloadSchema);
+export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrganizerProgramsCallablePayloadSchema);
+export const validateCreateOrganizerProgramCallablePayload = ajv.compile(createOrganizerProgramCallablePayloadSchema);
+export const validateUpdateOrganizerProgramCallablePayload = ajv.compile(updateOrganizerProgramCallablePayloadSchema);
+export const validateGrantProgramStaffCallablePayload = ajv.compile(grantProgramStaffCallablePayloadSchema);
+export const validateRevokeProgramStaffCallablePayload = ajv.compile(revokeProgramStaffCallablePayloadSchema);
+export const validateInviteProgramStaffCallablePayload = ajv.compile(inviteProgramStaffCallablePayloadSchema);
+export const validateClaimProgramStaffInviteCallablePayload = ajv.compile(claimProgramStaffInviteCallablePayloadSchema);
+export const validateRevokeProgramStaffInviteCallablePayload = ajv.compile(revokeProgramStaffInviteCallablePayloadSchema);
+export const validateUpsertProgramGuestCallablePayload = ajv.compile(upsertProgramGuestCallablePayloadSchema);
+export const validateListProgramStaffCallablePayload = ajv.compile(listProgramStaffCallablePayloadSchema);
+export const validateListProgramTripsCallablePayload = ajv.compile(listProgramTripsCallablePayloadSchema);
+export const validateListProgramGuestsCallablePayload = ajv.compile(listProgramGuestsCallablePayloadSchema);
+export const validateUpsertProgramHouseholdCallablePayload = ajv.compile(upsertProgramHouseholdCallablePayloadSchema);
+export const validateUpsertProgramFunctionCallablePayload = ajv.compile(upsertProgramFunctionCallablePayloadSchema);
+export const validateUpsertProgramPickupPointCallablePayload = ajv.compile(upsertProgramPickupPointCallablePayloadSchema);
+export const validateUpsertProgramHotelCallablePayload = ajv.compile(upsertProgramHotelCallablePayloadSchema);
+export const validateUpsertTransportVendorCallablePayload = ajv.compile(upsertTransportVendorCallablePayloadSchema);
+export const validateUpsertProgramTravelLegCallablePayload = ajv.compile(upsertProgramTravelLegCallablePayloadSchema);
+export const validateUpsertProgramTravelPartyCallablePayload = ajv.compile(upsertProgramTravelPartyCallablePayloadSchema);
+export const validateSetProgramTravelReadinessCallablePayload = ajv.compile(setProgramTravelReadinessCallablePayloadSchema);
+export const validateDispatchProgramTripCallablePayload = ajv.compile(dispatchProgramTripCallablePayloadSchema);
+export const validateProgramTripActionCallablePayload = ajv.compile(programTripActionCallablePayloadSchema);
+export const validateImportProgramManifestCallablePayload = ajv.compile(importProgramManifestCallablePayloadSchema);
+export const validateRefreshProgramTravelLegCallablePayload = ajv.compile(refreshProgramTravelLegCallablePayloadSchema);
+export const validateProgramStationScopeCallablePayload = ajv.compile(programStationScopeCallablePayloadSchema);
+export const validateGetProgramHotelInboundCallablePayload = ajv.compile(getProgramHotelInboundCallablePayloadSchema);
+export const validateListTransportVendorsCallablePayload = ajv.compile(listTransportVendorsCallablePayloadSchema);
+export const validateProgramMutationCallableResponse = ajv.compile(programMutationCallableResponseSchema);
+export const validateOrganizerProgramListCallableResponse = ajv.compile(organizerProgramListCallableResponseSchema);
+export const validateProgramAccessCallableResponse = ajv.compile(programAccessCallableResponseSchema);
+export const validateOrganizerProgramCallableResponse = ajv.compile(organizerProgramCallableResponseSchema);
+export const validateProgramInviteClaimCallableResponse = ajv.compile(programInviteClaimCallableResponseSchema);
+export const validateProgramStaffListCallableResponse = ajv.compile(programStaffListCallableResponseSchema);
+export const validateProgramGuestListCallableResponse = ajv.compile(programGuestListCallableResponseSchema);
+export const validateProgramArrivalsRosterCallableResponse = ajv.compile(programArrivalsRosterCallableResponseSchema);
+export const validateProgramTransportPlanCallableResponse = ajv.compile(programTransportPlanCallableResponseSchema);
+export const validateProgramHotelInboundCallableResponse = ajv.compile(programHotelInboundCallableResponseSchema);
+export const validateProgramManifestImportCallableResponse = ajv.compile(programManifestImportCallableResponseSchema);
+export const validateDispatchProgramTripCallableResponse = ajv.compile(dispatchProgramTripCallableResponseSchema);
+export const validateTransportVendorListCallableResponse = ajv.compile(transportVendorListCallableResponseSchema);
+export const validateProgramTripListCallableResponse = ajv.compile(programTripListCallableResponseSchema);
 export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
@@ -1247,6 +1475,16 @@ export const validateCreateOrganizerFormAssetIntentCallablePayload = ajv.compile
 export const validateCreateOrganizerFormAssetIntentCallableResponse = ajv.compile(createOrganizerFormAssetIntentCallableResponseSchema);
 export const validateFinalizeOrganizerFormAssetCallablePayload = ajv.compile(finalizeOrganizerFormAssetCallablePayloadSchema);
 export const validateFinalizeOrganizerFormAssetCallableResponse = ajv.compile(finalizeOrganizerFormAssetCallableResponseSchema);
+export const validatePrepareOrganizerFormPaymentCallablePayload = ajv.compile(prepareOrganizerFormPaymentCallablePayloadSchema);
+export const validatePrepareOrganizerFormPaymentCallableResponse = ajv.compile(prepareOrganizerFormPaymentCallableResponseSchema);
+export const validateFindOrganizerFormPaymentCallablePayload = ajv.compile(findOrganizerFormPaymentCallablePayloadSchema);
+export const validateFindOrganizerFormPaymentCallableResponse = ajv.compile(findOrganizerFormPaymentCallableResponseSchema);
+export const validateGetOrganizerFormPaymentCallablePayload = ajv.compile(getOrganizerFormPaymentCallablePayloadSchema);
+export const validateGetOrganizerFormPaymentCallableResponse = ajv.compile(getOrganizerFormPaymentCallableResponseSchema);
+export const validateListOrganizerFormPaymentsCallablePayload = ajv.compile(listOrganizerFormPaymentsCallablePayloadSchema);
+export const validateListOrganizerFormPaymentsCallableResponse = ajv.compile(listOrganizerFormPaymentsCallableResponseSchema);
+export const validateManageOrganizerFormPaymentConnectionCallablePayload = ajv.compile(manageOrganizerFormPaymentConnectionCallablePayloadSchema);
+export const validateManageOrganizerFormPaymentConnectionCallableResponse = ajv.compile(manageOrganizerFormPaymentConnectionCallableResponseSchema);
 export const validateSubmitOrganizerFormResponseCallablePayload = ajv.compile(submitOrganizerFormResponseCallablePayloadSchema);
 export const validateSubmitOrganizerFormResponseCallableResponse = ajv.compile(submitOrganizerFormResponseCallableResponseSchema);
 export const validateWithdrawOrganizerFormResponseCallablePayload = ajv.compile(withdrawOrganizerFormResponseCallablePayloadSchema);

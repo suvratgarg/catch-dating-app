@@ -21,6 +21,8 @@ import {
 } from "../../firebase";
 import {publicFormsCopy} from "../../content/forms";
 import type {FormStatus} from "../../shared/forms/types";
+import {usePublicFormPayment} from "./usePublicFormPayment";
+import {readFormStorage, writeFormStorage, removeFormStorage} from "./publicFormStorage";
 import {
   validatePublicFormAnswers,
   visiblePublicFormSections,
@@ -31,7 +33,11 @@ import {
 
 export type PublicFormStage =
   "loading" | "unavailable" | "identity" | "phoneCode" |
-  "emailSent" | "form" | "review" | "complete" | "withdrawn";
+  "emailSent" | "form" | "review" | "payment" | "complete" | "withdrawn";
+
+type MessagingChoices = NonNullable<PublicOrganizerFormDraft["messagingChoices"]>;
+const uncheckedMessaging: MessagingChoices = {termsVersion: "form-whatsapp-v1",
+  organizerWhatsapp: false, catchWhatsapp: false};
 
 export interface PublicFormUploadState {
   status: "uploading" | "ready" | "error";
@@ -47,13 +53,16 @@ export function usePublicFormController(publicFormId: string) {
   );
   const [answers, setAnswers] = useState<PublicFormAnswers>({});
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [messagingChoices, setMessagingChoices] = useState<MessagingChoices>(uncheckedMessaging);
   const [sectionIndex, setSectionIndex] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
   const [email, setEmail] = useState(() =>
-    window.localStorage.getItem(emailStorageKey(publicFormId)) ?? "");
+    readFormStorage("local", emailStorageKey(publicFormId)) ?? "");
+  const [recoveringPayment, setRecoveringPayment] = useState(false);
+  const recoveringPaymentRef = useRef(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [dirtyRevision, setDirtyRevision] = useState(0);
   const [uploads, setUploads] = useState<
@@ -64,10 +73,24 @@ export function usePublicFormController(publicFormId: string) {
   const draftRef = useRef<PublicOrganizerFormDraft | null>(null);
   const answersRef = useRef<PublicFormAnswers>({});
   const consentRef = useRef(false);
+  const messagingRef = useRef<MessagingChoices>(uncheckedMessaging);
+  const authGenerationRef = useRef(0);
   const verificationRef = useRef<PublicEventPhoneVerification | null>(null);
   const saveChainRef = useRef<Promise<void>>(Promise.resolve());
   const startPromiseRef = useRef<Promise<void> | null>(null);
   const submitRequestIdRef = useRef(requestId());
+  const startRequestIdRef = useRef(requestId());
+  const showPayment = useCallback(() => setStage("payment"), []);
+  const acceptReceipt = useCallback((submitted: PublicOrganizerFormReceipt) => {
+    if (formRef.current && submitted.formId !== formRef.current.formId) return;
+    setReceipt(submitted);
+    persistReceipt(publicFormId, submitted, userRef.current?.uid ?? null);
+    setStage(submitted.status === "withdrawn" ? "withdrawn" : "complete");
+    setStatus({message: "", tone: ""});
+  }, [publicFormId]);
+  const payments = usePublicFormPayment(publicFormId, showPayment, acceptReceipt);
+  const resumePayment = payments.resume;
+  const resetPaymentSession = payments.resetSession;
   const sourceToken = useMemo(() => {
     const value = new URLSearchParams(window.location.search).get("source");
     return value && /^[A-Za-z0-9_-]{20,160}$/u.test(value) ? value : null;
@@ -94,25 +117,48 @@ export function usePublicFormController(publicFormId: string) {
 
   const startDraft = useCallback(async (nextForm: PublicOrganizerForm) => {
     if (startPromiseRef.current) return startPromiseRef.current;
+    const generation = authGenerationRef.current;
     const operation = (async () => {
+      let checkingPayment = true;
       try {
+        if (await resumePayment(userRef.current?.uid ?? null)) return;
+        checkingPayment = false;
+        if (generation !== authGenerationRef.current) return;
+        const savedReceipt = storedReceipt(publicFormId, userRef.current?.uid ?? null);
+        if (!nextForm.definition.payment && savedReceipt?.formId === nextForm.formId &&
+            savedReceipt.status === "submitted") {
+          setReceipt(savedReceipt);
+          setStage("complete");
+          return;
+        }
+        if (recoveringPaymentRef.current || nextForm.availabilityStatus !== "active") {
+          setStage("unavailable");
+          if (recoveringPaymentRef.current) setStatus({tone: "", message:
+            publicFormsCopy.paymentRecoveryEmpty});
+          return;
+        }
         const started = await beginOrganizerFormResponse({
           publicFormId,
           sourceToken,
-          requestId: stableStartRequestId(publicFormId),
+          requestId: stableStartRequestId(publicFormId, startRequestIdRef.current),
         });
+        if (generation !== authGenerationRef.current) return;
         draftRef.current = started;
         answersRef.current = {...started.answers};
         consentRef.current = started.consentAccepted;
         setDraft(started);
         setAnswers({...started.answers});
         setConsentAccepted(started.consentAccepted);
+        messagingRef.current = started.messagingChoices ?? uncheckedMessaging;
+        setMessagingChoices(messagingRef.current);
         setStatus({message: "", tone: ""});
         setStage("form");
       } catch (error) {
+        if (generation !== authGenerationRef.current) return;
         setStatus({message: publicFormError(error), tone: "is-error"});
         const policy = nextForm.definition.identityPolicy;
-        setStage(policy === "anonymous" ? "unavailable" : "identity");
+        setStage((checkingPayment && userRef.current) || policy === "anonymous" ?
+          "unavailable" : "identity");
       }
     })();
     startPromiseRef.current = operation;
@@ -121,16 +167,45 @@ export function usePublicFormController(publicFormId: string) {
     } finally {
       if (startPromiseRef.current === operation) startPromiseRef.current = null;
     }
-  }, [publicFormId, sourceToken]);
+  }, [publicFormId, resumePayment, sourceToken]);
 
   useEffect(() => {
     let cancelled = false;
+    formRef.current = null;
+    draftRef.current = null;
+    answersRef.current = {};
+    recoveringPaymentRef.current = false;
+    setRecoveringPayment(false);
+    setForm(null);
+    setDraft(null);
+    setAnswers({});
+    setUploads({});
+    setReceipt(null);
+    setStage("loading");
+    setStatus({message: "", tone: ""});
     const unsubscribe = watchPublicFormAuthState((user) => {
       if (cancelled) return;
+      if (userRef.current?.uid !== user?.uid) {
+        authGenerationRef.current++;
+        startPromiseRef.current = null;
+        consentRef.current = false;
+        setConsentAccepted(false);
+        messagingRef.current = uncheckedMessaging;
+        setMessagingChoices(uncheckedMessaging);
+        resetPaymentSession();
+        draftRef.current = null;
+        setDraft(null);
+        setReceipt(null);
+        setAnswers({});
+        setUploads({});
+        answersRef.current = {};
+      }
       userRef.current = user;
       const loaded = formRef.current;
-      if (user && loaded && loaded.availabilityStatus === "active" &&
-          loaded.definition.identityPolicy !== "anonymous") {
+      if (!user && loaded?.definition.identityPolicy !== "anonymous" && loaded) {
+        setStage("identity");
+      }
+      if (user && loaded) {
         void startDraft(loaded);
       }
     });
@@ -139,14 +214,15 @@ export function usePublicFormController(publicFormId: string) {
         if (cancelled) return;
         formRef.current = loaded;
         setForm(loaded);
-        const savedReceipt = storedReceipt(publicFormId);
-        if (savedReceipt?.formId === loaded.formId &&
+        const savedReceipt = storedReceipt(publicFormId, userRef.current?.uid ?? null);
+        if (!userRef.current && !loaded.definition.payment &&
+            savedReceipt?.formId === loaded.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
           setStage("complete");
           return;
         }
-        if (loaded.availabilityStatus !== "active") {
+        if (loaded.availabilityStatus !== "active" && !userRef.current) {
           setStage("unavailable");
           return;
         }
@@ -163,32 +239,44 @@ export function usePublicFormController(publicFormId: string) {
       });
     return () => {
       cancelled = true;
+      authGenerationRef.current++;
+      startPromiseRef.current = null;
       verificationRef.current?.clear();
       unsubscribe();
     };
-  }, [publicFormId, sourceToken, startDraft]);
+  }, [publicFormId, resetPaymentSession, sourceToken, startDraft]);
 
   const flushSave = useCallback(() => {
+    const generation = authGenerationRef.current;
     const operation = async () => {
+      if (generation !== authGenerationRef.current) return;
       const current = draftRef.current;
       if (!current || current.form.versionId !== formRef.current?.versionId) return;
       setSaveState("saving");
+      const savedAnswers = {...answersRef.current};
+      const savedConsent = consentRef.current;
+      const savedMessaging = {...messagingRef.current};
       try {
         const saved = await saveOrganizerFormResponseDraft({
           draftId: current.draftId,
           draftToken: current.draftToken,
           expectedRevision: current.revision,
-          answers: answersRef.current,
-          consentAccepted: consentRef.current,
+          answers: savedAnswers,
+          consentAccepted: savedConsent,
+          ...(current.form.messagingOffer ? {messagingChoices: savedMessaging} : {}),
         });
+        if (generation !== authGenerationRef.current ||
+            draftRef.current?.draftId !== current.draftId) return;
         const updated = {...current, revision: saved.revision,
           expiresAtMillis: saved.expiresAtMillis,
-          answers: {...answersRef.current},
-          consentAccepted: consentRef.current};
+          answers: savedAnswers,
+          consentAccepted: savedConsent,
+          messagingChoices: savedMessaging};
         draftRef.current = updated;
         setDraft(updated);
         setSaveState("saved");
       } catch (error) {
+        if (generation !== authGenerationRef.current) return;
         setSaveState("idle");
         setStatus({message: publicFormError(error), tone: "is-error"});
         throw error;
@@ -227,6 +315,14 @@ export function usePublicFormController(publicFormId: string) {
     setDirtyRevision((current) => current + 1);
   }
 
+  function updateMessagingChoice(scope: "organizerWhatsapp" | "catchWhatsapp", value: boolean) {
+    if (!formRef.current?.messagingOffer?.[scope]) return;
+    const choices = {...messagingRef.current, [scope]: value};
+    messagingRef.current = choices;
+    setMessagingChoices(choices);
+    setDirtyRevision((current) => current + 1);
+  }
+
   async function handlePhoneSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus({message: "", tone: ""});
@@ -260,10 +356,10 @@ export function usePublicFormController(publicFormId: string) {
       const currentUrl = window.location.href;
       if (currentUrl.includes("mode=signIn")) {
         await completePublicFormEmailSignIn(email.trim(), currentUrl);
-        window.localStorage.removeItem(key);
+        removeFormStorage("local", key);
         if (formRef.current) await startDraft(formRef.current);
       } else {
-        window.localStorage.setItem(key, email.trim());
+        writeFormStorage("local", key, email.trim());
         await sendPublicFormEmailSignInLink(email.trim(), currentUrl);
         setStage("emailSent");
       }
@@ -294,6 +390,9 @@ export function usePublicFormController(publicFormId: string) {
   ) {
     const current = draftRef.current;
     if (!current || files.length === 0) return;
+    const generation = authGenerationRef.current;
+    const stillOwnsDraft = () => generation === authGenerationRef.current &&
+      draftRef.current?.draftId === current.draftId;
     const maximum = question.kind === "signature" ? 1 :
       question.validation.maxFileCount ?? 1;
     if (files.length > maximum) {
@@ -315,6 +414,7 @@ export function usePublicFormController(publicFormId: string) {
       const assetIds: string[] = [];
       for (const file of files) {
         const sha256 = await sha256Hex(file.blob);
+        if (!stillOwnsDraft()) return;
         const intent = await createOrganizerFormAssetIntent({
           draftId: current.draftId,
           draftToken: current.draftToken,
@@ -325,13 +425,16 @@ export function usePublicFormController(publicFormId: string) {
           sizeBytes: file.blob.size,
           sha256,
         });
+        if (!stillOwnsDraft()) return;
         await uploadOrganizerFormAsset(intent, file.blob);
+        if (!stillOwnsDraft()) return;
         await finalizeOrganizerFormAsset({
           draftId: current.draftId,
           draftToken: current.draftToken,
           assetId: intent.assetId,
           uploadToken: intent.uploadToken,
         });
+        if (!stillOwnsDraft()) return;
         assetIds.push(intent.assetId);
       }
       updateAnswer(
@@ -348,6 +451,7 @@ export function usePublicFormController(publicFormId: string) {
       }));
       setStatus({message: "", tone: ""});
     } catch (error) {
+      if (!stillOwnsDraft()) return;
       setUploads((value) => ({
         ...value,
         [question.questionId]: {
@@ -379,20 +483,26 @@ export function usePublicFormController(publicFormId: string) {
         publicFormsCopy.genericError, tone: "is-error"});
       return;
     }
+    const generation = authGenerationRef.current;
     await actionMutation.mutateAsync(async () => {
       await flushSave();
+      if (generation !== authGenerationRef.current) return;
       const current = draftRef.current;
       if (!current) throw new Error(publicFormsCopy.genericError);
-      const submitted = await submitOrganizerFormResponse({
+      const payload = {
         draftId: current.draftId,
         draftToken: current.draftToken,
         expectedRevision: current.revision,
         requestId: submitRequestIdRef.current,
-      });
-      setReceipt(submitted);
-      persistReceipt(publicFormId, submitted);
-      setStage("complete");
-      setStatus({message: "", tone: ""});
+      };
+      if (current.form.definition.payment) {
+        const uid = userRef.current?.uid;
+        if (!uid) throw new Error(publicFormsCopy.identityTitle);
+        await payments.prepare(payload, uid);
+      } else {
+        const submitted = await submitOrganizerFormResponse(payload);
+        if (generation === authGenerationRef.current) acceptReceipt(submitted);
+      }
     }).catch(() => undefined);
   }
 
@@ -409,11 +519,41 @@ export function usePublicFormController(publicFormId: string) {
     }).catch(() => undefined);
   }
 
+  async function restartAfterPayment() {
+    await actionMutation.mutateAsync(async () => {
+      if (!await payments.restart()) return;
+      removeFormStorage("session", `catch:form:${publicFormId}:start`);
+      startRequestIdRef.current = requestId();
+      recoveringPaymentRef.current = false;
+      setRecoveringPayment(false);
+      clearReceipt(publicFormId);
+      submitRequestIdRef.current = requestId();
+      const current = await getPublicOrganizerForm({publicFormId, sourceToken});
+      formRef.current = current;
+      setForm(current);
+      setSectionIndex(0);
+      if (current.availabilityStatus !== "active") setStage("unavailable");
+      else await startDraft(current);
+    }).catch(() => undefined);
+  }
+
+  function recoverPayment() {
+    recoveringPaymentRef.current = true;
+    setRecoveringPayment(true);
+    setStatus({message: "", tone: ""});
+    if (userRef.current && formRef.current) {
+      setStage("loading");
+      void startDraft(formRef.current);
+    }
+    else setStage("identity");
+  }
+
   return {
     activeSection,
     answers,
     code,
     consentAccepted,
+    messagingChoices,
     embed,
     email,
     errors,
@@ -423,9 +563,13 @@ export function usePublicFormController(publicFormId: string) {
     handlePhoneSubmit,
     nextSection,
     pending,
+    payments,
     phoneNumber,
     previousSection,
     receipt,
+    restartAfterPayment,
+    recoverPayment,
+    recoveringPayment,
     recaptchaContainerId,
     saveState,
     sectionIndex,
@@ -439,6 +583,7 @@ export function usePublicFormController(publicFormId: string) {
     submit,
     updateAnswer,
     updateConsent,
+    updateMessagingChoice,
     uploadAnswer,
     uploadInProgress,
     uploads,
@@ -468,13 +613,12 @@ function requestId() {
     `request-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function stableStartRequestId(publicFormId: string) {
+function stableStartRequestId(publicFormId: string, fallback: string) {
   const key = `catch:form:${publicFormId}:start`;
-  const existing = window.sessionStorage.getItem(key);
+  const existing = readFormStorage("session", key);
   if (existing) return existing;
-  const created = requestId();
-  window.sessionStorage.setItem(key, created);
-  return created;
+  writeFormStorage("session", key, fallback);
+  return fallback;
 }
 
 function emailStorageKey(publicFormId: string) {
@@ -483,20 +627,21 @@ function emailStorageKey(publicFormId: string) {
 
 function persistReceipt(
   publicFormId: string,
-  receipt: PublicOrganizerFormReceipt
+  receipt: PublicOrganizerFormReceipt,
+  ownerUid: string | null
 ) {
-  window.localStorage.setItem(
+  writeFormStorage("local",
     `catch:form:${publicFormId}:receipt`,
-    JSON.stringify(receipt)
+    JSON.stringify({...receipt, cacheOwnerUid: ownerUid})
   );
 }
 
 function clearReceipt(publicFormId: string) {
-  window.localStorage.removeItem(`catch:form:${publicFormId}:receipt`);
+  removeFormStorage("local", `catch:form:${publicFormId}:receipt`);
 }
 
-function storedReceipt(publicFormId: string): PublicOrganizerFormReceipt | null {
-  const value = window.localStorage.getItem(
+function storedReceipt(publicFormId: string, ownerUid: string | null = null): PublicOrganizerFormReceipt | null {
+  const value = readFormStorage("local",
     `catch:form:${publicFormId}:receipt`
   );
   if (!value) return null;
@@ -510,6 +655,10 @@ function storedReceipt(publicFormId: string): PublicOrganizerFormReceipt | null 
         !(parsed.withdrawalToken === null ||
           typeof parsed.withdrawalToken === "string") ||
         !isRecord(parsed.completion)) return null;
+    // Legacy anonymous receipts retain their bearer withdrawal token. Verified
+    // receipts need an explicit matching cache owner; never restore on sign-out.
+    if ("cacheOwnerUid" in parsed ? parsed.cacheOwnerUid !== ownerUid :
+        parsed.withdrawalToken === null) return null;
     return parsed as PublicOrganizerFormReceipt;
   } catch {
     return null;

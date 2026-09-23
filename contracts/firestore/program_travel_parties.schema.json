@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_travel_parties.schema.json",
+  "title": "ProgramTravelPartyDocument",
+  "description": "Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTravelParties",
+  "x-firestore-path": "programTravelParties/{partyId}",
+  "x-document-id-field": "partyId",
+  "x-owner": "program travel callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "label",
+    "legIds",
+    "dedicatedVehicle",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "label": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
+    }
+  }
+}

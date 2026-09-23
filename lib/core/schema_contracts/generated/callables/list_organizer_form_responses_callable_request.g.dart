@@ -21,6 +21,9 @@ final class ListOrganizerFormResponsesCallableRequest {
     this.sortDirection,
     this.answerFilters,
     required this.limit,
+    this.includeApplications,
+    this.reviewStatus,
+    this.contactId,
   });
 
   final String organizerId;
@@ -36,6 +39,9 @@ final class ListOrganizerFormResponsesCallableRequest {
   final String? sortDirection;
   final List<Map<String, Object?>>? answerFilters;
   final int limit;
+  final bool? includeApplications;
+  final String? reviewStatus;
+  final String? contactId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -51,5 +57,8 @@ final class ListOrganizerFormResponsesCallableRequest {
     'sortDirection': ?sortDirection,
     'answerFilters': ?answerFilters,
     'limit': limit,
+    'includeApplications': ?includeApplications,
+    'reviewStatus': ?reviewStatus,
+    'contactId': ?contactId,
   };
 }

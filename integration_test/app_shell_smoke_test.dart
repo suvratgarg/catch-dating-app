@@ -148,6 +148,9 @@ void main() {
     expect(find.text('Explore'), findsWidgets);
 
     await openAppTab(tester, 'Chats');
+    expect(find.text('Your event conversations'), findsOneWidget);
+    await tester.tap(find.text('Direct messages'));
+    await pumpAppShellFrames(tester);
     expect(find.text('Chats'), findsWidgets);
     expect(find.text('No catches yet'), findsOneWidget);
 

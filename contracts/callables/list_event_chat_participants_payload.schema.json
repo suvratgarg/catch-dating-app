@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_event_chat_participants_payload.schema.json",
+  "title": "ListEventChatParticipantsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedUid",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "expectedUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "accountUid",
+            "after"
+          ],
+          "properties": {
+            "eventId": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "accountUid": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "after": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    }
+  }
+}

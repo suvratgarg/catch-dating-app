@@ -168,14 +168,105 @@ final _audienceCaptureApplication = HostApplicationDetail(
   dataAccessState: 'submittedFormResponse',
 );
 
+HostApplicationDetail _responseReviewCaptureApplication({
+  bool imported = false,
+  bool revoked = false,
+}) {
+  final base = _audienceCaptureApplication;
+  return HostApplicationDetail(
+    organizerId: base.organizerId,
+    applicationId: base.applicationId,
+    formId: base.formId,
+    formVersionId: base.formVersionId,
+    targetKind: base.targetKind,
+    targetId: base.targetId,
+    applicantDisplayName: base.applicantDisplayName,
+    reviewStatus: HostApplicationReviewStatus.submitted,
+    answers: revoked ? const [] : base.answers,
+    outreach: revoked
+        ? const HostApplicationOutreach(
+            phoneE164: null,
+            email: null,
+            instagramUrl: null,
+            linkedinUrl: null,
+          )
+        : const HostApplicationOutreach(
+            phoneE164: '+919876543210',
+            email: 'maya@example.com',
+            instagramUrl: 'https://www.instagram.com/maya.example/',
+            linkedinUrl: 'https://www.linkedin.com/in/maya-example/',
+          ),
+    reviewNote: null,
+    assignedReviewerUid: null,
+    submittedAt: base.submittedAt,
+    reviewedAt: null,
+    revision: 1,
+    sourceResponseId: imported ? null : base.sourceResponseId,
+    dataAccessState: revoked ? 'revokedParticipantGrant' : base.dataAccessState,
+  );
+}
+
 class _AudienceCaptureResponses extends HostFormResponsesController {
   @override
   Future<HostFormResponsesState> build(
     HostFormResponseListRequest request,
-  ) async => HostFormResponsesState(
-    responses: [_audienceCaptureResponse.response],
-    nextCursor: null,
-  );
+  ) async {
+    final response = _audienceCaptureResponse.response;
+    final entries = <HostFormInboxEntry>[
+      for (final (index, status) in HostApplicationReviewStatus.values.indexed)
+        HostFormInboxEntry(
+          entryId: 'application:review-$index',
+          submittedAt: DateTime(2026, 9, 21, 12 - index),
+          response: index == 0 ? response : null,
+          application: HostApplicationSummary(
+            applicationId: 'review-$index',
+            formId: response.formId,
+            formVersionId: response.versionId,
+            targetKind: 'organizer',
+            targetId: null,
+            applicantDisplayName: [
+              'Maya Kapoor',
+              'Asha Mehta',
+              'Rohan Shah',
+              'Noor Ali',
+              'Dev Patel',
+              'Withdrawn applicant',
+            ][index],
+            reviewStatus: status,
+            sourceKind: index == 0
+                ? HostApplicationSourceKind.native
+                : HostApplicationSourceKind.tabularImport,
+            providerId: null,
+            submittedAt: DateTime(2026, 9, 21, 12 - index),
+            revision: 1,
+          ),
+        ),
+      HostFormInboxEntry.fromResponse(
+        HostFormResponseSummary.fromMap({
+          ...(_audienceCaptureDetailMap()['response']! as Map<String, Object?>),
+          'responseId': 'feedback-1',
+          'formTitle': 'Weekend feedback',
+          'identity': const {
+            'displayName': 'Sara Desai',
+            'email': null,
+            'phoneE164': null,
+            'origin': 'respondentGranted',
+          },
+        }),
+      ),
+    ];
+    return HostFormResponsesState(
+      responses: const [],
+      entries: entries
+          .where(
+            (entry) =>
+                request.reviewStatus == null ||
+                entry.application?.reviewStatus == request.reviewStatus,
+          )
+          .toList(),
+      nextCursor: null,
+    );
+  }
 }
 
 class _AudienceCaptureApplications extends HostApplicationsDirectoryController {
@@ -413,6 +504,11 @@ List<Object> _audienceCaptureResponseOverrides({
   bool application = true,
   bool withdrawn = false,
 }) => [
+  ..._audienceCaptureSources('org_1'),
+  hostApplicationDetailProvider(
+    'org_1',
+    'design-application-1',
+  ).overrideWithValue(AsyncData(_audienceCaptureApplication)),
   hostFormResponseCanApplyProvider(
     organizerId: 'org_1',
     responseId: 'response_1',
@@ -422,6 +518,9 @@ List<Object> _audienceCaptureResponseOverrides({
     responseId: 'response_1',
   ).overrideWith((_) async {
     final data = _audienceCaptureDetailMap();
+    if (application && !withdrawn) {
+      data['applicationId'] = 'design-application-1';
+    }
     if (withdrawn) {
       (data['response'] as Map<String, Object?>)['status'] = 'withdrawn';
     }

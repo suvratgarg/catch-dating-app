@@ -20,6 +20,7 @@ runs:
         exit 64
 
     - name: Restore CocoaPods downloads
+      id: pods-cache
       uses: actions/cache@v5
       with:
         path: |
@@ -28,3 +29,8 @@ runs:
         key: pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cocoapods-version }}-${{ hashFiles(inputs.lockfiles) }}
         restore-keys: |
           pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cocoapods-version }}-
+
+    - name: Refresh specs for changed native dependencies
+      if: ${{ steps.pods-cache.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: pod repo update

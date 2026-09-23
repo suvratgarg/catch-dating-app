@@ -1,6 +1,10 @@
 import 'package:catch_dating_app/hosts/domain/forms/form_operation_fields.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment_record.dart';
+import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:meta/meta.dart';
+
+part 'host_form_inbox_entry.dart';
 
 enum HostFormResponseStatus { submitted, withdrawn }
 
@@ -23,6 +27,9 @@ class HostFormResponseListRequest {
   const HostFormResponseListRequest({
     required this.organizerId,
     this.formId,
+    this.contactId,
+    this.includeApplications = false,
+    this.reviewStatus,
     this.versionId,
     this.statuses = const {},
     this.identityKinds = const {},
@@ -38,6 +45,9 @@ class HostFormResponseListRequest {
 
   final String organizerId;
   final String? formId;
+  final String? contactId;
+  final bool includeApplications;
+  final HostApplicationReviewStatus? reviewStatus;
   final String? versionId;
   final Set<HostFormResponseStatus> statuses;
   final Set<HostFormResponseIdentityKind> identityKinds;
@@ -54,6 +64,9 @@ class HostFormResponseListRequest {
       HostFormResponseListRequest(
         organizerId: organizerId,
         formId: formId,
+        contactId: contactId,
+        includeApplications: includeApplications,
+        reviewStatus: reviewStatus,
         versionId: versionId,
         statuses: statuses,
         identityKinds: identityKinds,
@@ -72,6 +85,9 @@ class HostFormResponseListRequest {
       other is HostFormResponseListRequest &&
       organizerId == other.organizerId &&
       formId == other.formId &&
+      contactId == other.contactId &&
+      includeApplications == other.includeApplications &&
+      reviewStatus == other.reviewStatus &&
       versionId == other.versionId &&
       formOperationSetEquals(statuses, other.statuses) &&
       formOperationSetEquals(identityKinds, other.identityKinds) &&
@@ -91,6 +107,9 @@ class HostFormResponseListRequest {
   int get hashCode => Object.hash(
     organizerId,
     formId,
+    contactId,
+    includeApplications,
+    reviewStatus,
     versionId,
     Object.hashAllUnordered(statuses),
     Object.hashAllUnordered(identityKinds),
@@ -255,15 +274,28 @@ class HostFormResponseFilterOption {
 class HostFormResponsePage {
   const HostFormResponsePage({
     this.answerFilterOptions = const [],
+    this.entries,
     required this.organizerId,
     required this.items,
     required this.nextCursor,
   });
 
-  factory HostFormResponsePage.fromCallableData(Object? data) {
+  factory HostFormResponsePage.fromCallableData(
+    Object? data, {
+    bool requireUnifiedEntries = false,
+  }) {
     final map = formOperationRequiredMap(data, 'form responses');
+    if (requireUnifiedEntries && map['entries'] == null) {
+      throw const FormatException('Unified response entries are unavailable.');
+    }
     return HostFormResponsePage(
       organizerId: formOperationRequiredString(map, 'organizerId'),
+      entries: map['entries'] == null
+          ? null
+          : formOperationMapList(
+              map['entries'],
+              'response entries',
+            ).map(HostFormInboxEntry.fromMap).toList(growable: false),
       items: formOperationMapList(
         map['items'],
         'form responses',
@@ -278,6 +310,7 @@ class HostFormResponsePage {
 
   final String organizerId;
   final List<HostFormResponseSummary> items;
+  final List<HostFormInboxEntry>? entries;
   final List<HostFormResponseFilterOption> answerFilterOptions;
   final String? nextCursor;
 }
@@ -358,6 +391,7 @@ class HostFormResponseDetail {
     required this.response,
     this.applicationId,
     this.contactId,
+    this.payment,
     required this.answers,
     required this.consentVersion,
     required this.completionMillis,
@@ -366,6 +400,11 @@ class HostFormResponseDetail {
   factory HostFormResponseDetail.fromCallableData(Object? data) {
     final map = formOperationRequiredMap(data, 'form response detail');
     return HostFormResponseDetail(
+      payment: map['payment'] == null
+          ? null
+          : HostFormPaymentRecord.fromMap(
+              formOperationRequiredMap(map['payment'], 'response payment'),
+            ),
       applicationId: formOperationNullableString(map['applicationId']),
       contactId: formOperationNullableString(map['contactId']),
       response: HostFormResponseSummary.fromMap(
@@ -381,6 +420,7 @@ class HostFormResponseDetail {
   }
 
   final HostFormResponseSummary response;
+  final HostFormPaymentRecord? payment;
   final String? applicationId;
   final String? contactId;
   final List<HostFormResponseAnswer> answers;

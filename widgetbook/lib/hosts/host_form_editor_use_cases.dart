@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
@@ -31,6 +32,7 @@ Widget hostFormSettingsSectionListPreview(BuildContext context) =>
       children: (state, notifier) => [
         WidgetbookContentFrame(
           child: HostFormSettingsSectionList(
+            organizerId: 'org_1',
             definition: state.editor.definition,
             notifier: notifier,
           ),
@@ -429,6 +431,7 @@ Widget hostFormInspectorSectionPreview(BuildContext context) => _editorPreview(
             : 'Question',
         child: WidgetbookContentFrame(
           child: HostFormInspectorSection(
+            organizerId: 'org_1',
             definition: state.editor.definition,
             sectionIndex: selection.$1,
             questionIndex: selection.$2,
@@ -455,6 +458,7 @@ Widget hostFormEditorViewportPreview(BuildContext context) => _editorPreview(
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(size: const Size(1200, 1000)),
           child: HostFormEditorViewport(
+            organizerId: 'org_1',
             state: state,
             notifier: notifier,
             sectionIndex: 0,
@@ -548,6 +552,13 @@ class _PreviewFormRepository implements HostFormsRepository {
   }
 
   HostFormEditor _editor = hostFormPreviewState.editor;
+
+  @override
+  Future<HostFormPaymentSetup> managePaymentConnection({
+    required String organizerId,
+    required HostFormPaymentConnectionAction action,
+    String? connectionId,
+  }) async => const HostFormPaymentSetup(available: false, connections: []);
 
   @override
   Future<HostFormEditor> getEditor({

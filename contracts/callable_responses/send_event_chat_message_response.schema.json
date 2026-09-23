@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/send_event_chat_message_response.schema.json",
+  "title": "SendEventChatMessageCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "messageId",
+    "sequence",
+    "replayed"
+  ],
+  "properties": {
+    "messageId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+}

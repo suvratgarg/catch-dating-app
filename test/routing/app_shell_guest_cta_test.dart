@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -25,6 +26,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../support/empty_event_chat_repository.dart';
 import '../support/profile_readiness_fixtures.dart';
 
 void main() {
@@ -555,6 +557,7 @@ void main() {
     );
 
     expect(find.byType(ChatsListScreen), findsOneWidget);
+    expect(find.text('Your event conversations'), findsOneWidget);
     expect(find.text('Continue with phone'), findsNothing);
   });
 
@@ -613,6 +616,9 @@ Widget _authenticatedShellProviderScope({
         // ignore: scoped_providers_should_specify_dependencies
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         fcmServiceProvider.overrideWithValue(_UnsupportedFcmService()),
+        eventChatRepositoryProvider.overrideWithValue(
+          EmptyEventChatRepository(),
+        ),
         // ignore: scoped_providers_should_specify_dependencies
         watchMatchesForUserProvider(
           'runner-1',

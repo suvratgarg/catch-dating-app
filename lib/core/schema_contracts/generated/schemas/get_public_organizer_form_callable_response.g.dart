@@ -337,6 +337,15 @@ const schemaGetPublicOrganizerFormCallableResponseSchema = <String, Object?>{
                             'organizerCustom',
                           ],
                         },
+                        'answerDestination': <String, Object?>{
+                          'description': 'Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.',
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'organizerOnly',
+                            'catchProfile',
+                            'organizerCard',
+                          ],
+                        },
                         'prefillPolicy': <String, Object?>{
                           'type': 'string',
                           'enum': <Object?>[
@@ -755,6 +764,67 @@ const schemaGetPublicOrganizerFormCallableResponseSchema = <String, Object?>{
                 },
               },
             },
+            'payment': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'description': 'An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.',
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'connectionId',
+                    'amountPaise',
+                    'currency',
+                    'description',
+                    'refundPolicy',
+                  ],
+                  'properties': <String, Object?>{
+                    'connectionId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    'amountPaise': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 100,
+                      'maximum': 10000000,
+                    },
+                    'currency': <String, Object?>{
+                      'const': 'INR',
+                    },
+                    'description': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                    },
+                    'refundPolicy': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 1000,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'messagingConsent': <String, Object?>{
+              'description': 'Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.',
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'organizerWhatsapp',
+                'catchWhatsapp',
+              ],
+              'properties': <String, Object?>{
+                'organizerWhatsapp': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'catchWhatsapp': <String, Object?>{
+                  'type': 'boolean',
+                },
+              },
+            },
             'completion': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -803,6 +873,35 @@ const schemaGetPublicOrganizerFormCallableResponseSchema = <String, Object?>{
                   'maxLength': 500,
                 },
               },
+            },
+          },
+        },
+        'messagingOffer': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'termsVersion',
+            'organizerWhatsapp',
+            'catchWhatsapp',
+          ],
+          'properties': <String, Object?>{
+            'termsVersion': <String, Object?>{
+              'const': 'form-whatsapp-v1',
+              'type': 'string',
+            },
+            'organizerWhatsapp': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
+            },
+            'catchWhatsapp': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
             },
           },
         },

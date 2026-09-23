@@ -182,6 +182,7 @@ test("updateUserProfileHandler validates and applies profile patches",
 
     assert.deepEqual(h.firestore.get("users/runner-1"), {
       name: "Runner Updated",
+      profileRevision: 1,
       displayName: "Runner R.",
       email: "runner@example.com",
       instagramHandle: "runner.one",

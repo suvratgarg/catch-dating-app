@@ -11,6 +11,7 @@
   "x-owner": "organizer form management callables",
   "required": ["organizerId", "createdByUid", "title", "description", "purpose", "status", "templateId", "publicFormId", "defaultTargetKind", "defaultTargetId", "activeVersionId", "draftRevision", "publishedVersion", "submittedResponseCount", "createdAt", "updatedAt", "publishedAt", "pausedAt", "archivedAt", "lastResponseAt"],
   "properties": {
+    "pendingPaymentCount": {"type": "integer", "minimum": 0, "description": "Unreleased form response reservations awaiting a fee. Legacy omitted means zero."},
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "createdByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "title": {"type": "string", "minLength": 1, "maxLength": 160},

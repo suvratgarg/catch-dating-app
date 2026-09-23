@@ -51,6 +51,9 @@ void main() {
     );
 
     await openAppTab(tester, 'Chats');
+    expect(find.text('Your event conversations'), findsOneWidget);
+    await tester.tap(find.text('Direct messages'));
+    await pumpAppShellFrames(tester);
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('See you at the event'), findsOneWidget);
 

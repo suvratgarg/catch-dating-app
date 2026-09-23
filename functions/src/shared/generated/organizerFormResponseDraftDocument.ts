@@ -6,6 +6,29 @@
  * Expiring version-bound respondent autosave state.
  */
 export interface OrganizerFormResponseDraftDocument {
+  messagingDecision?: {
+    termsVersion: "form-whatsapp-v1";
+    organizerWhatsapp: boolean;
+    catchWhatsapp: boolean;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    organizerDecidedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    catchDecidedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+  };
+  /**
+   * Server-only checkout lock; prevents edits while a fee is unresolved.
+   */
+  paymentAttemptId?: string | null;
   organizerId: string;
   formId: string;
   versionId: string;

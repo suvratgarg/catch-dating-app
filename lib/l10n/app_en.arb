@@ -6471,7 +6471,7 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.profile_screen"
   },
-  "userProfileProfileScreenMessageFinishOnboardingOrSign": "Finish onboarding or sign in again to load your profile.",
+  "userProfileProfileScreenMessageFinishOnboardingOrSign": "You can review submitted details in Forms & cards before setting up the rest of your profile.",
   "@userProfileProfileScreenMessageFinishOnboardingOrSign": {
     "description": "Product copy used by lib/user_profile/presentation/profile_screen.dart (message).",
     "x-audience": "consumer",
@@ -8450,14 +8450,14 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenTitleAccountUnavailable": "Account unavailable",
+  "safetySettingsScreenTitleAccountUnavailable": "Review your form details",
   "@safetySettingsScreenTitleAccountUnavailable": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenMessageSignOutAndSign": "Sign out and sign back in if this keeps happening.",
+  "safetySettingsScreenMessageSignOutAndSign": "Your Catch profile is not set up yet. Review your submitted details in Forms & cards. Profile preferences become available after setup.",
   "@safetySettingsScreenMessageSignOutAndSign": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (message).",
     "x-audience": "consumer",
@@ -8658,13 +8658,6 @@
   },
   "userProfileProfileTabSkeletonTitleAboutYou": "About you",
   "@userProfileProfileTabSkeletonTitleAboutYou": {
-    "description": "Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "user_profile.presentation.widgets.profile_tab_skeleton"
-  },
-  "userProfileProfileTabSkeletonTitleRunning": "Running",
-  "@userProfileProfileTabSkeletonTitleRunning": {
     "description": "Product copy used by lib/user_profile/presentation/widgets/profile_tab_skeleton.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
@@ -12643,21 +12636,21 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.self_profile_edit_tab_state"
   },
-  "userProfileSelfProfileEditTabStateLabelPreferredDistances": "Preferred distances",
+  "userProfileSelfProfileEditTabStateLabelPreferredDistances": "Distances",
   "@userProfileSelfProfileEditTabStateLabelPreferredDistances": {
     "description": "Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.self_profile_edit_tab_state"
   },
-  "userProfileSelfProfileEditTabStateLabelWhyIEvent": "Why I event",
+  "userProfileSelfProfileEditTabStateLabelWhyIEvent": "Motivation",
   "@userProfileSelfProfileEditTabStateLabelWhyIEvent": {
     "description": "Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.self_profile_edit_tab_state"
   },
-  "userProfileSelfProfileEditTabStateLabelFavoriteEventTimes": "Favorite event times",
+  "userProfileSelfProfileEditTabStateLabelFavoriteEventTimes": "Run times",
   "@userProfileSelfProfileEditTabStateLabelFavoriteEventTimes": {
     "description": "Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).",
     "x-audience": "consumer",
@@ -22172,15 +22165,13 @@
   "@hostCustomersSort": {"description": "Customers directory sort menu group label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSortControl": "Sort: {label}",
   "@hostCustomersSortControl": {"description": "Visible Customers directory sort control with its current ordering.", "placeholders": {"label": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersSortSheetSubtitle": "Choose how customers are ordered.",
-  "@hostCustomersSortSheetSubtitle": {"description": "Explains the Customers directory sort sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSortLastSeen": "Last seen",
   "@hostCustomersSortLastSeen": {"description": "Customers directory last-seen ordering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSortMostAttended": "Most attended",
   "@hostCustomersSortMostAttended": {"description": "Customers directory event-attendance ordering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersSortName": "Name",
   "@hostCustomersSortName": {"description": "Customers directory alphabetical ordering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostCustomersMoreActions": "More customer actions",
+  "hostCustomersMoreActions": "More audience actions",
   "@hostCustomersMoreActions": {"description": "Accessible label for the Customers header overflow commands.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "eventSuccessAccountabilityTitle": "Return sweep",
   "@eventSuccessAccountabilityTitle": {"description": "Host accountability sweep heading.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
@@ -22266,17 +22257,15 @@
   "@hostApplicationsTitle": {"description": "Host application review queue title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsImport": "Import responses",
   "@hostApplicationsImport": {"description": "Application queue spreadsheet import action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsSort": "Sort applications",
-  "@hostApplicationsSort": {"description": "Accessible label and compact sheet title for application ordering.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsImportTitle": "Import applications",
+  "hostApplicationsImportTitle": "Import responses",
   "@hostApplicationsImportTitle": {"description": "Application spreadsheet import sheet title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsImportSubtitle": "Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.",
+  "hostApplicationsImportSubtitle": "Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.",
   "@hostApplicationsImportSubtitle": {"description": "Explains provider-neutral automatic field mapping.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsImportReusableField": "Reusable profile field",
   "@hostApplicationsImportReusableField": {"description": "Mapping label for a canonical participant intake field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsImportOrganizerField": "Organizer-only question",
   "@hostApplicationsImportOrganizerField": {"description": "Mapping label for a proprietary form question.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsImportAction": "Import {count, plural, =1{1 application} other{{count} applications}}",
+  "hostApplicationsImportAction": "Import {count, plural, =1{1 response} other{{count} responses}}",
   "@hostApplicationsImportAction": {"description": "Confirms a bounded application spreadsheet import.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsImportLimit": "{count, plural, =1{1 additional row will need a second import.} other{{count} additional rows will need a second import.}}",
   "@hostApplicationsImportLimit": {"description": "Application import batch truncation explanation.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
@@ -22284,26 +22273,16 @@
   "@hostApplicationsImportMissingName": {"description": "Application import requires a safe queue identity.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsImportNoRows": "The spreadsheet does not contain any application rows.",
   "@hostApplicationsImportNoRows": {"description": "Empty application spreadsheet error.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsImportComplete": "{created, plural, =1{Imported 1 application} other{Imported {created} applications}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.",
+  "hostApplicationsImportComplete": "{created, plural, =1{Imported 1 response} other{Imported {created} responses}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.",
   "@hostApplicationsImportComplete": {"description": "Application import result summary.", "placeholders": {"created": {"type": "int"}, "skipped": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsConsentCopy": "I agree to share these submitted answers with this organizer for application review.",
   "@hostApplicationsConsentCopy": {"description": "Default participant consent copy for imported-form versions that may later accept native submissions.", "x-audience": "shared", "x-owner": "legal", "x-surface": "applications.form"},
   "hostApplicationsRetentionCopy": "The organizer may retain submitted answers for application review and customer history according to its stated policy.",
   "@hostApplicationsRetentionCopy": {"description": "Default application retention disclosure.", "x-audience": "shared", "x-owner": "legal", "x-surface": "applications.form"},
-  "hostApplicationsSearch": "Search by applicant name",
-  "@hostApplicationsSearch": {"description": "Application queue applicant-name search placeholder.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsEmptyTitle": "No applications yet",
-  "@hostApplicationsEmptyTitle": {"description": "Empty application queue title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsEmptyBody": "Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.",
-  "@hostApplicationsEmptyBody": {"description": "Empty application queue guidance without favoring one form provider.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsSortNewest": "Newest first",
   "@hostApplicationsSortNewest": {"description": "Application queue newest sort.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsSortOldest": "Oldest first",
   "@hostApplicationsSortOldest": {"description": "Application queue oldest sort.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsSortName": "Applicant name",
-  "@hostApplicationsSortName": {"description": "Application queue name sort.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsFilterAll": "All",
-  "@hostApplicationsFilterAll": {"description": "Application queue all-status filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsReviewStatusFilter": "Filter by review status",
   "@hostApplicationsReviewStatusFilter": {"description": "Accessible title and tooltip for the application review-status filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsStatusSubmitted": "Submitted",
@@ -22324,12 +22303,8 @@
   "@hostApplicationsSourceImport": {"description": "Provider-neutral spreadsheet source label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsSourceConnector": "Connected form",
   "@hostApplicationsSourceConnector": {"description": "Generic external form connector source label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationsSubmittedOn": "Submitted {date}",
-  "@hostApplicationsSubmittedOn": {"description": "Application submitted date metadata.", "placeholders": {"date": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsLoadMore": "Load more applications",
   "@hostApplicationsLoadMore": {"description": "Application queue pagination action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
-  "hostApplicationAnswersTitle": "Answers",
-  "@hostApplicationAnswersTitle": {"description": "Application detail answers section title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationNotAnswered": "Not answered",
   "@hostApplicationNotAnswered": {"description": "Empty optional application answer value.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationAnswerYes": "Yes",
@@ -22338,8 +22313,6 @@
   "@hostApplicationAnswerNo": {"description": "Boolean no application answer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationAnswerFiles": "{count, plural, =1{1 file} other{{count} files}}",
   "@hostApplicationAnswerFiles": {"description": "Application asset answer count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
-  "hostApplicationOutreachTitle": "Contact applicant",
-  "@hostApplicationOutreachTitle": {"description": "Application detail validated outreach actions title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationCall": "Call",
   "@hostApplicationCall": {"description": "Calls a validated E.164 application phone number.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationEmail": "Email",
@@ -22348,8 +22321,6 @@
   "@hostApplicationInstagram": {"description": "Opens a validated Instagram profile.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationLinkedin": "LinkedIn",
   "@hostApplicationLinkedin": {"description": "Opens a validated LinkedIn profile.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
-  "hostApplicationNoOutreach": "This form did not grant a usable phone, email, Instagram, or LinkedIn destination.",
-  "@hostApplicationNoOutreach": {"description": "Application detail absence of validated outreach data.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationReviewNote": "Private review note",
   "@hostApplicationReviewNote": {"description": "Organizer-only application review note label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.application_detail"},
   "hostApplicationReviewNoteHint": "Add context for your team",
@@ -23589,14 +23560,7 @@
   "hostCustomersSourcesTruncated": "More source records exist. Only the loaded records are shown.",
   "@hostCustomersSourcesTruncated": {"description": "Explicit boundary when the backend returns a truncated set of customer origin receipts.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostApplicationOpenPerson": "Open person",
-  "hostApplicationOpenResponse": "Open original response",
   "@hostApplicationOpenPerson": {
-    "description": "Audience intake workflow label.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.applications"
-  },
-  "@hostApplicationOpenResponse": {
     "description": "Audience intake workflow label.",
     "x-audience": "host",
     "x-owner": "product",
@@ -24018,30 +23982,18 @@
   "@hostAudienceResponseTitle": {"description": "Response", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceSubmissionDetails": "Submission details",
   "@hostAudienceSubmissionDetails": {"description": "Submission details", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostAudienceReviewApplication": "Review application",
-  "@hostAudienceReviewApplication": {"description": "Review application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostAudienceApplicationTitle": "Application",
-  "@hostAudienceApplicationTitle": {"description": "Application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceApplicationAccepted": "Accepted into People. Event admission is handled separately.",
   "@hostAudienceApplicationAccepted": {"description": "Accepted into People. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceApplicationAdmission": "Accepting adds this person to People. Event admission is handled separately.",
   "@hostAudienceApplicationAdmission": {"description": "Accepting adds this person to People. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostAudienceApplicationsNew": "New applications",
-  "@hostAudienceApplicationsNew": {"description": "New applications", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostAudienceApplicationsAll": "All applications",
-  "@hostAudienceApplicationsAll": {"description": "All applications", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceApplicationEvent": "Event application",
   "@hostAudienceApplicationEvent": {"description": "Event application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceApplicationOrganizer": "Organizer application",
   "@hostAudienceApplicationOrganizer": {"description": "Organizer application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostAudienceApplicationActivity": "Activity",
-  "@hostAudienceApplicationActivity": {"description": "Activity", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceManualGroup": "Selected people",
   "@hostAudienceManualGroup": {"description": "Selected people", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostAudienceAutomaticGroup": "Automatic membership",
   "@hostAudienceAutomaticGroup": {"description": "Automatic membership", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-  "hostAudienceGroupMembershipHelp": "Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.",
-  "@hostAudienceGroupMembershipHelp": {"description": "Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostAudienceGroupChecked": "Checked {date}",
   "@hostAudienceGroupChecked": {"description": "Checked {date}", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"date": {"type": "String"}}},
   "hostAudienceGroupTitle": "Group",
@@ -24214,14 +24166,14 @@
     "x-owner": "product",
     "x-surface": "event_create"
   },
-  "hostFormPersonField": "Use this answer as",
+  "hostFormPersonField": "Person field",
   "@hostFormPersonField": {
     "description": "Person-field mapping in the Host form builder.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.forms"
   },
-  "hostFormPersonFieldHelp": "Identify contact and profile answers for review. Other answers stay with this response.",
+  "hostFormPersonFieldHelp": "Classify this answer for your CRM. This label alone does not save or share a Catch profile field.",
   "@hostFormPersonFieldHelp": {
     "description": "Person-field mapping in the Host form builder.",
     "x-audience": "host",
@@ -27263,5 +27215,1687 @@
   "hostCustomersAccountVerified": "Verified account linked",
   "@hostCustomersAccountVerified": {"description": "Customer account link evidence without inferring messaging consent.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersAccountNotVerified": "No verified account linked",
-  "@hostCustomersAccountNotVerified": {"description": "Customer account link evidence without inferring messaging consent.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"}
+  "@hostCustomersAccountNotVerified": {"description": "Customer account link evidence without inferring messaging consent.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceRecentlyUpdated": "Recently updated",
+  "@hostAudienceRecentlyUpdated": {"description": "Fixed server ordering of the Forms directory.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceSelectedPerson": "Selected person",
+  "@hostAudienceSelectedPerson": {"description": "Active person filter on the unified responses list.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentTitle": "Form payment",
+  "@hostFormPaymentTitle": {"description": "Form payment setup: Title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentFree": "No payment required",
+  "@hostFormPaymentFree": {"description": "Form payment setup: Free.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentHelp": "Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.",
+  "@hostFormPaymentHelp": {"description": "Form payment setup: Help.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentUnavailable": "Form payments are not available yet. Catch must finish its Razorpay connection setup. You can continue using free forms.",
+  "@hostFormPaymentUnavailable": {"description": "Form payment setup: Unavailable.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentConnect": "Connect Razorpay",
+  "@hostFormPaymentConnect": {"description": "Form payment setup: Connect.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentConnectHelp": "Authorize your existing Razorpay account in your browser, then return and check the connection.",
+  "@hostFormPaymentConnectHelp": {"description": "Form payment setup: ConnectHelp.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentRefresh": "Check connection",
+  "@hostFormPaymentRefresh": {"description": "Form payment setup: Refresh.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentReady": "Ready for payments",
+  "@hostFormPaymentReady": {"description": "Form payment setup: Ready.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentConnecting": "Finish connecting in your browser",
+  "@hostFormPaymentConnecting": {"description": "Form payment setup: Connecting.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentAttention": "Reconnect Razorpay to restore payments",
+  "@hostFormPaymentAttention": {"description": "Form payment setup: Attention.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentDisconnected": "Disconnected",
+  "@hostFormPaymentDisconnected": {"description": "Form payment setup: Disconnected.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentTest": "Test mode — no real money",
+  "@hostFormPaymentTest": {"description": "Form payment setup: Test.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentLive": "Live payments",
+  "@hostFormPaymentLive": {"description": "Form payment setup: Live.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentConfigure": "Set a submission fee",
+  "@hostFormPaymentConfigure": {"description": "Form payment setup: Configure.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentEdit": "Edit submission fee",
+  "@hostFormPaymentEdit": {"description": "Form payment setup: Edit.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentRemove": "Remove fee from draft",
+  "@hostFormPaymentRemove": {"description": "Form payment setup: Remove.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentPhoneRequired": "Choose verified phone in Access before adding a fee. This lets applicants recover their payment and response securely.",
+  "@hostFormPaymentPhoneRequired": {"description": "Form payment setup: PhoneRequired.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentConnectionRequired": "Connect a ready Razorpay account before setting a fee.",
+  "@hostFormPaymentConnectionRequired": {"description": "Form payment setup: ConnectionRequired.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentAmount": "Amount (INR)",
+  "@hostFormPaymentAmount": {"description": "Form payment setup: Amount.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentAmountHelp": "Enter ₹1 to ₹100,000, with up to two decimal places. For example, 100 or 200.",
+  "@hostFormPaymentAmountHelp": {"description": "Form payment setup: AmountHelp.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentDescription": "What is the fee for?",
+  "@hostFormPaymentDescription": {"description": "Form payment setup: Description.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentDescriptionDefault": "Application fee",
+  "@hostFormPaymentDescriptionDefault": {"description": "Form payment setup: DescriptionDefault.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentRefundPolicy": "Refund policy",
+  "@hostFormPaymentRefundPolicy": {"description": "Form payment setup: RefundPolicy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentRefundHelp": "Explain when you will refund the fee, including if an application is declined. Applicants see this before paying.",
+  "@hostFormPaymentRefundHelp": {"description": "Form payment setup: RefundHelp.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentSave": "Save fee",
+  "@hostFormPaymentSave": {"description": "Form payment setup: Save.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentDisconnect": "Disconnect account",
+  "@hostFormPaymentDisconnect": {"description": "Form payment setup: Disconnect.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentDisconnectHelp": "This stops new checkouts on every form using this account. Existing payments and refunds will still be reconciled.",
+  "@hostFormPaymentDisconnectHelp": {"description": "Form payment setup: DisconnectHelp.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentPublishHelp": "This fee applies to new submissions after publishing. Previously started checkouts keep their original fee.",
+  "@hostFormPaymentPublishHelp": {"description": "Form payment setup: PublishHelp.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentAccount": "Razorpay account",
+  "@hostFormPaymentAccount": {"description": "Connected merchant selector label.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentsTitle": "Payments",
+  "@hostFormPaymentsTitle": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsHelp": "Newest first. Payment confirmation and form submission are tracked separately. Test payments do not move real money.",
+  "@hostFormPaymentsHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefresh": "Refresh payments",
+  "@hostFormPaymentsRefresh": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsPending": "Pending",
+  "@hostFormPaymentsPending": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefunds": "Refunds",
+  "@hostFormPaymentsRefunds": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsAttention": "Needs attention",
+  "@hostFormPaymentsAttention": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsEmpty": "No payment records",
+  "@hostFormPaymentsEmpty": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsEmptyBody": "Checkout attempts will appear here when someone starts paying for a submission.",
+  "@hostFormPaymentsEmptyBody": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsNoMatches": "No payments in this stage",
+  "@hostFormPaymentsNoMatches": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsNoMatchesBody": "Choose All to see other payment stages.",
+  "@hostFormPaymentsNoMatchesBody": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCreatingOrder": "Starting checkout",
+  "@hostFormPaymentsCreatingOrder": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsOrderUnknown": "Confirming checkout",
+  "@hostFormPaymentsOrderUnknown": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCheckoutReady": "Awaiting payment",
+  "@hostFormPaymentsCheckoutReady": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsVerifying": "Verifying payment",
+  "@hostFormPaymentsVerifying": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCaptured": "Paid · submission pending",
+  "@hostFormPaymentsCaptured": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsSubmitted": "Paid · submitted",
+  "@hostFormPaymentsSubmitted": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsFailed": "Payment attempt failed",
+  "@hostFormPaymentsFailed": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsExpired": "Checkout expired",
+  "@hostFormPaymentsExpired": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundPending": "Refund pending",
+  "@hostFormPaymentsRefundPending": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefunded": "Refunded",
+  "@hostFormPaymentsRefunded": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReviewRequired": "Payment needs review",
+  "@hostFormPaymentsReviewRequired": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCapturedHelp": "Payment is confirmed. Catch is still completing the submission. Refresh to check its progress.",
+  "@hostFormPaymentsCapturedHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsSubmittedHelp": "Payment is confirmed and the form response has been submitted. Acceptance and event admission are separate.",
+  "@hostFormPaymentsSubmittedHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsPendingHelp": "This checkout is not confirmed as a completed payment. No form response has been submitted yet.",
+  "@hostFormPaymentsPendingHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsFailedHelp": "This payment attempt failed. The applicant can retry while checkout is available.",
+  "@hostFormPaymentsFailedHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsExpiredHelp": "This checkout has expired. If a payment arrives late and cannot be submitted, Catch will attempt a refund.",
+  "@hostFormPaymentsExpiredHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundHelp": "Check the refund in the connected Razorpay account using the references below. Withdrawing a response or declining an application does not automatically refund a fee.",
+  "@hostFormPaymentsRefundHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReviewHelp": "Automatic recovery needs attention. Check the connected Razorpay account using these references before taking further action.",
+  "@hostFormPaymentsReviewHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsAmount": "Submission fee",
+  "@hostFormPaymentsAmount": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundAmount": "Confirmed refunds",
+  "@hostFormPaymentsRefundAmount": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsStarted": "Checkout started",
+  "@hostFormPaymentsStarted": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsUpdated": "Last checked",
+  "@hostFormPaymentsUpdated": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsCapturedAt": "Payment captured",
+  "@hostFormPaymentsCapturedAt": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsSubmittedAt": "Response submitted",
+  "@hostFormPaymentsSubmittedAt": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReferences": "Payment references",
+  "@hostFormPaymentsReferences": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsReceipt": "Receipt reference",
+  "@hostFormPaymentsReceipt": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsOrderReference": "Razorpay order",
+  "@hostFormPaymentsOrderReference": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsPaymentReference": "Razorpay payment",
+  "@hostFormPaymentsPaymentReference": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsRefundReference": "Razorpay refund",
+  "@hostFormPaymentsRefundReference": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsTestHelp": "Test payment. No real money was collected.",
+  "@hostFormPaymentsTestHelp": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormPaymentsOpenResponse": "Open submitted response",
+  "@hostFormPaymentsOpenResponse": {
+    "description": "Host form payment history and verified payment details.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.payments"
+  },
+  "hostFormMessagingTitle": "Optional WhatsApp choices",
+  "@hostFormMessagingTitle": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingOrganizer": "Offer updates from this organizer",
+  "@hostFormMessagingOrganizer": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingCatch": "Offer updates from Catch",
+  "@hostFormMessagingCatch": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingHelp": "These settings add separate, unchecked choices to the form. Applicants can choose either, both, or neither. Payment and submission never grant messaging permission. Publish to update the form.",
+  "@hostFormMessagingHelp": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormMessagingPhoneRequired": "Choose verified phone in Access to offer WhatsApp updates.",
+  "@hostFormMessagingPhoneRequired": {
+    "description": "Host form optional messaging consent controls.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.forms.settings"
+  },
+  "hostFormAnswerDestinationLabel": "Profile use",
+  "@hostFormAnswerDestinationLabel": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerOnly": "Organizer only",
+  "@hostFormAnswerOrganizerOnly": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerCatchProfile": "Catch profile",
+  "@hostFormAnswerCatchProfile": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerCard": "Organizer card",
+  "@hostFormAnswerOrganizerCard": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerOnlyHelp": "Stays in your form response. A person-field label does not add it to a Catch profile. Choose a supported person field above to offer a Catch profile building block.",
+  "@hostFormAnswerOrganizerOnlyHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerCatchProfileHelp": "Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.",
+  "@hostFormAnswerCatchProfileHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerCardHelp": "Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.",
+  "@hostFormAnswerOrganizerCardHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "messagingPermissionsTitle": "WhatsApp permissions",
+  "@messagingPermissionsTitle": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsDescription": "Choose who can send you WhatsApp updates. Catch and each organizer have separate permissions. Stopping updates does not change your form submission, booking, or event-service messages.",
+  "@messagingPermissionsDescription": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsCatch": "Catch",
+  "@messagingPermissionsCatch": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsOn": "Updates allowed",
+  "@messagingPermissionsOn": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsOff": "Updates stopped",
+  "@messagingPermissionsOff": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsUnknown": "No confirmed permission",
+  "@messagingPermissionsUnknown": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsCatchHelp": "Event recommendations and Catch updates.",
+  "@messagingPermissionsCatchHelp": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsOrganizerHelp": "Event announcements and updates from this organizer only.",
+  "@messagingPermissionsOrganizerHelp": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsStop": "Stop updates",
+  "@messagingPermissionsStop": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsRefresh": "Refresh permissions",
+  "@messagingPermissionsRefresh": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "messagingPermissionsSettingsHelp": "Manage Catch and organizer WhatsApp updates separately.",
+  "@messagingPermissionsSettingsHelp": {"description": "Participant-owned WhatsApp permission controls.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.messaging_permissions"},
+  "formProfilesTabLabel": "Forms & cards",
+  "@formProfilesTabLabel": {
+    "description": "Own-profile tab for form submissions and private organizer cards.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesTitle": "Forms & private cards",
+  "@formProfilesTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesDescription": "Your form details, grouped by organizer. Review unclaimed submissions and manage the answers saved to each private card. Other organizers cannot see these cards.",
+  "@formProfilesDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesEmptyTitle": "No form profiles yet",
+  "@formProfilesEmptyTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesEmptyBody": "Forms with Catch profile fields or private card fields appear here after you submit with your verified phone number.",
+  "@formProfilesEmptyBody": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesLoadMore": "Load more",
+  "@formProfilesLoadMore": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesOrganizerFallback": "Organizer",
+  "@formProfilesOrganizerFallback": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileReviewTitle": "Review your profile",
+  "@formProfileReviewTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileReviewDescription": "Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.",
+  "@formProfileReviewDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileCoreTitle": "Catch profile details",
+  "@formProfileCoreTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileCardTitle": "Your private organizer card",
+  "@formProfileCardTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileCardDescription": "This card is private to you. Other organizers cannot see it. You can separately choose answers to share in an eligible event chat. The original organizer still has your form response; removing an answer here only removes it from your card.",
+  "@formProfileCardDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileKeepAnswer": "Keep on my private card",
+  "@formProfileKeepAnswer": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileUseAnswer": "Use for my Catch profile",
+  "@formProfileUseAnswer": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileBasicsTitle": "Review your identity",
+  "@formProfileBasicsTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileBasicsDescription": "Your verified sign-in phone identifies your account. Review your name, date of birth and gender before saving.",
+  "@formProfileBasicsDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileDisplayName": "Display name",
+  "@formProfileDisplayName": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileBirthDate": "Date of birth",
+  "@formProfileBirthDate": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileGender": "Gender",
+  "@formProfileGender": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileDateHint": "YYYY-MM-DD · You must be 18 or older.",
+  "@formProfileDateHint": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileConfirmation": "I have reviewed these details",
+  "@formProfileConfirmation": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileConfirmationBody": "Catch can store the profile details I choose. They remain subject to my sharing settings. My private organizer card stays private until I choose to share it.",
+  "@formProfileConfirmationBody": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileSave": "Save reviewed details",
+  "@formProfileSave": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileSaved": "Your reviewed details have been saved.",
+  "@formProfileSaved": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileYes": "Yes",
+  "@formProfileYes": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileNo": "No",
+  "@formProfileNo": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileEmptyAnswer": "No answer",
+  "@formProfileEmptyAnswer": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileAttachment": "Submitted attachment",
+  "@formProfileAttachment": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileReload": "Reload latest details",
+  "@formProfileReload": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilePhoneAuthority": "Your sign-in phone is verified separately. This form answer cannot change it.",
+  "@formProfilePhoneAuthority": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileUnsupported": "This answer can stay in your private form submission. It cannot be copied into a Catch profile field here.",
+  "@formProfileUnsupported": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileInvalid": "Check the highlighted fields before saving.",
+  "@formProfileInvalid": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileRequired": "Enter a valid value.",
+  "@formProfileRequired": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileUsePhoto": "Use this photo for my Catch profile",
+  "@formProfileUsePhoto": {
+    "description": "Private form photo review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilePhotoRetry": "Retry photo preview",
+  "@formProfilePhotoRetry": {
+    "description": "Private form photo review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "eventChatTitle": "Event chat",
+  "eventChatEntryBody": "Meet the people attending this event.",
+  "eventChatOpen": "Open event chat",
+  "eventChatClose": "Close event chat",
+  "eventChatLeave": "Leave chat",
+  "eventChatJoin": "Join event chat",
+  "eventChatNotOpen": "The chat is not open yet",
+  "eventChatHostSetup": "Open a shared conversation for people admitted to this event. Each person chooses whether to join.",
+  "eventChatGuestWaiting": "Your host can open a shared conversation for people attending this event.",
+  "eventChatJoinTitle": "Meet your fellow attendees",
+  "eventChatJoinDisclosure": "Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.",
+  "eventChatProfileRequired": "Review your Catch profile before joining",
+  "eventChatProfileHelp": "Choose the name you want other attendees to see. Your submitted form details stay private until you review them.",
+  "eventChatReviewProfile": "Review my profile",
+  "eventChatProfileHostHelp": "Review your Catch profile in the consumer app, then return here to join. You can open or close this room as a host.",
+  "eventChatEmptyTitle": "Start the conversation",
+  "eventChatEmptyBody": "Say hello, ask a question or make a plan for the event.",
+  "eventChatEarlier": "Earlier messages",
+  "eventChatMessageActions": "Message actions",
+  "eventChatReply": "Reply",
+  "eventChatReact": "React",
+  "eventChatClearReply": "Cancel reply",
+  "eventChatUnavailable": "Message unavailable",
+  "eventChatReactionLike": "Like",
+  "eventChatReactionLove": "Love",
+  "eventChatReactionLaugh": "Laugh",
+  "eventChatReactionWow": "Surprised",
+  "eventChatReactionSad": "Sad",
+  "eventChatReactionThanks": "Thanks",
+  "eventChatReactionsTitle": "Choose a reaction",
+  "eventChatCloseReactions": "Close reactions",
+  "eventChatYou": "You",
+  "eventChatRefresh": "Refresh chat",
+  "eventChatReplyingTo": "Replying to {name}",
+  "@eventChatReplyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Name of the participant whose message is being replied to.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatTyping": "{names} typing…",
+  "@eventChatTyping": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    },
+    "description": "Names of participants currently typing.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEntryBody": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatOpen": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatClose": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatLeave": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatJoin": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatNotOpen": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatHostSetup": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatGuestWaiting": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatJoinTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatJoinDisclosure": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatProfileRequired": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatProfileHelp": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReviewProfile": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatProfileHostHelp": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEmptyTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEmptyBody": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatEarlier": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatMessageActions": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReply": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReact": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatClearReply": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatUnavailable": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionLike": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionLove": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionLaugh": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionWow": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionSad": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionThanks": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatReactionsTitle": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatCloseReactions": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatYou": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "@eventChatRefresh": {
+    "description": "Event conversation interface copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsTab": "Events",
+  "@eventChatsTab": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "directMessagesTab": "Direct messages",
+  "@directMessagesTab": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsEmptyTitle": "Your event conversations",
+  "@eventChatsEmptyTitle": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsEmptyBody": "Event chats appear here when you are on the attendee list. You can review your profile and choose to join once the host opens the chat.",
+  "@eventChatsEmptyBody": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsWaiting": "Waiting for the host to open the chat",
+  "@eventChatsWaiting": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsReviewProfile": "Review your profile to join",
+  "@eventChatsReviewProfile": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsJoined": "You joined this conversation",
+  "@eventChatsJoined": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsReady": "Ready to join",
+  "@eventChatsReady": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatsLoadMore": "Check more events",
+  "@eventChatsLoadMore": {
+    "description": "Consumer event conversation directory copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "hostResponseSaveReviewNote": "Save review note",
+  "@hostResponseSaveReviewNote": {"description": "Explicit save for an application review note without changing its status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseStartReview": "Start application review",
+  "@hostResponseStartReview": {"description": "Create the review projection for a response on its existing detail page.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "eventProfileTitle": "Event profile",
+  "@eventProfileTitle": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileMine": "My event profile",
+  "@eventProfileMine": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileDisclosure": "Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.",
+  "@eventProfileDisclosure": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileCardDisclosure": "Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.",
+  "@eventProfileCardDisclosure": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileCore": "Catch profile details",
+  "@eventProfileCore": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileCard": "Organizer card",
+  "@eventProfileCard": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfilePhoto": "Profile photo",
+  "@eventProfilePhoto": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileNoPhoto": "No photo shared",
+  "@eventProfileNoPhoto": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileNoCard": "No card selected",
+  "@eventProfileNoCard": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileChooseCard": "Choose a private card",
+  "@eventProfileChooseCard": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileNoCards": "No claimed cards from this organizer are available. You can review your submitted forms from your account.",
+  "@eventProfileNoCards": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileMoreCards": "Load more cards",
+  "@eventProfileMoreCards": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileSave": "Save sharing choices",
+  "@eventProfileSave": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileStop": "Stop sharing extra details",
+  "@eventProfileStop": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileSaved": "Event profile updated",
+  "@eventProfileSaved": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileCannotShare": "To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.",
+  "@eventProfileCannotShare": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileEmpty": "Only their name is shared",
+  "@eventProfileEmpty": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileEmptyBody": "This person has not shared extra profile details with this event chat.",
+  "@eventProfileEmptyBody": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileSharedHere": "Shared with this event chat",
+  "@eventProfileSharedHere": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileSelectedAnswers": "Selected organizer answers",
+  "@eventProfileSelectedAnswers": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileReviewAgain": "Changed profile details or answers need to be selected again before sharing.",
+  "@eventProfileReviewAgain": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileView": "View event profile",
+  "@eventProfileView": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfileEditAgain": "After saving, review your choices here whenever you want to change or stop sharing.",
+  "@eventProfileEditAgain": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfilePhotoLabel": "Photo {number}",
+  "@eventProfilePhotoLabel": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "x-audience": "shared"
+  },
+  "eventProfileChoosePhoto": "Share this photo",
+  "@eventProfileChoosePhoto": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "eventProfilePhotoUnavailable": "Photo preview unavailable. Reload before selecting it.",
+  "@eventProfilePhotoUnavailable": {
+    "description": "Participant-controlled event profile sharing.",
+    "x-owner": "product",
+    "x-surface": "chats.presentation.event_profile",
+    "x-audience": "shared"
+  },
+  "formProfilesUnclaimed": "Not claimed · Review before using in Catch",
+  "@formProfilesUnclaimed": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesNoCardAnswers": "Reviewed · No answers saved to a private card",
+  "@formProfilesNoCardAnswers": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesSavedAnswers": "{count, plural, one {1 answer saved to your private card} other {{count} answers saved to your private card}}",
+  "@formProfilesSavedAnswers": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileActivityPreferencesTitle": "Activity preferences",
+  "@profileActivityPreferencesTitle": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "profileActivityPreferencesBody": "Optional pace, distances and run preferences.",
+  "@profileActivityPreferencesBody": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "profileCoreDetailsTitle": "Your Catch profile",
+  "@profileCoreDetailsTitle": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "profileCoreDetailsBody": "Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.",
+  "@profileCoreDetailsBody": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "eventChatParticipantsTitle": "Participants",
+  "@eventChatParticipantsTitle": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsDescription": "People who have joined this event chat. Open a profile to see the details they chose to share here.",
+  "@eventChatParticipantsDescription": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsEmpty": "No participants are available to show.",
+  "@eventChatParticipantsEmpty": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsContinue": "No visible participants in this part of the list. Continue to check the remaining participants.",
+  "@eventChatParticipantsContinue": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantsMore": "Show more participants",
+  "@eventChatParticipantsMore": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantHost": "Host",
+  "@eventChatParticipantHost": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatParticipantAttendee": "Attendee",
+  "@eventChatParticipantAttendee": {
+    "description": "Event room participant directory copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat_participants"
+  },
+  "eventChatReport": "Report message",
+  "@eventChatReport": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatBlock": "Block sender",
+  "@eventChatBlock": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatRemove": "Remove message",
+  "@eventChatRemove": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportDisclosure": "Choose a reason to send this message to Catch for review. The sender will not see your report.",
+  "@eventChatReportDisclosure": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportHarassment": "Harassment or abuse",
+  "@eventChatReportHarassment": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportSpam": "Spam or scam",
+  "@eventChatReportSpam": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportInappropriate": "Inappropriate content",
+  "@eventChatReportInappropriate": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReportOther": "Something else",
+  "@eventChatReportOther": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatBlockDisclosure": "You and this person will stop seeing each other’s messages and event profiles. They stay in the event, and other participants can still see them. You can unblock them in Settings.",
+  "@eventChatBlockDisclosure": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatRemoveDisclosure": "This message and its reply previews will be hidden from everyone in the room. You cannot undo this. Catch may retain a private record for safety review.",
+  "@eventChatRemoveDisclosure": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatReported": "Report sent to Catch.",
+  "@eventChatReported": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatBlocked": "Sender blocked.",
+  "@eventChatBlocked": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "eventChatRemoved": "Message removed.",
+  "@eventChatRemoved": {
+    "description": "Event room message safety action copy.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-domain": "chats",
+    "x-surface": "chats.presentation.event_chat"
+  },
+  "programsWorkShellTitle": "Program operations",
+  "@programsWorkShellTitle": {"description": "Program operations copy: programsWorkShellTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkShellAccessTitle": "Restricted program access",
+  "@programsWorkShellAccessTitle": {"description": "Program operations copy: programsWorkShellAccessTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkShellAccessSubtitle": "This workspace shows only the duties and scopes granted for this program.",
+  "@programsWorkShellAccessSubtitle": {"description": "Program operations copy: programsWorkShellAccessSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkShellRoleManager": "Organizer manager",
+  "@programsWorkShellRoleManager": {"description": "Program operations copy: programsWorkShellRoleManager.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkShellRoleStaff": "Program staff",
+  "@programsWorkShellRoleStaff": {"description": "Program operations copy: programsWorkShellRoleStaff.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkArrivalsTitle": "Airport arrivals",
+  "@programsWorkArrivalsTitle": {"description": "Program operations copy: programsWorkArrivalsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkArrivalsSubtitle": "Live guest roster for each pickup station in your scope.",
+  "@programsWorkArrivalsSubtitle": {"description": "Program operations copy: programsWorkArrivalsSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkDispatchTitle": "Dispatch desk",
+  "@programsWorkDispatchTitle": {"description": "Program operations copy: programsWorkDispatchTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkDispatchSubtitle": "Vehicle suggestions and plate capture per station.",
+  "@programsWorkDispatchSubtitle": {"description": "Program operations copy: programsWorkDispatchSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkHotelTitle": "Hotel desk",
+  "@programsWorkHotelTitle": {"description": "Program operations copy: programsWorkHotelTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkHotelSubtitle": "Inbound vehicles and expected guests for your hotel.",
+  "@programsWorkHotelSubtitle": {"description": "Program operations copy: programsWorkHotelSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkLedgerTitle": "Trip ledger",
+  "@programsWorkLedgerTitle": {"description": "Program operations copy: programsWorkLedgerTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkLedgerSubtitle": "Every dispatch as a reconciliation record.",
+  "@programsWorkLedgerSubtitle": {"description": "Program operations copy: programsWorkLedgerSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkLedgerOpen": "Open trip ledger",
+  "@programsWorkLedgerOpen": {"description": "Program operations copy: programsWorkLedgerOpen.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkShellEmptyTitle": "No duties assigned",
+  "@programsWorkShellEmptyTitle": {"description": "Program operations copy: programsWorkShellEmptyTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsWorkShellEmptyMessage": "Ask the organizer to grant you an airport, hotel or dispatch duty for this program.",
+  "@programsWorkShellEmptyMessage": {"description": "Program operations copy: programsWorkShellEmptyMessage.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell"},
+  "programsArrivalsTitle": "Arrivals roster",
+  "@programsArrivalsTitle": {"description": "Program operations copy: programsArrivalsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsAttentionTitle": "Needs attention",
+  "@programsArrivalsAttentionTitle": {"description": "Program operations copy: programsArrivalsAttentionTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsAttentionSubtitle": "Cancelled, diverted or disrupted arrivals that need a human decision.",
+  "@programsArrivalsAttentionSubtitle": {"description": "Program operations copy: programsArrivalsAttentionSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsReadyTitle": "Ready at the curb",
+  "@programsArrivalsReadyTitle": {"description": "Program operations copy: programsArrivalsReadyTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsReadySubtitle": "Guests observed at the pickup point and waiting.",
+  "@programsArrivalsReadySubtitle": {"description": "Program operations copy: programsArrivalsReadySubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsReadyEmpty": "Nobody is waiting at the curb right now.",
+  "@programsArrivalsReadyEmpty": {"description": "Program operations copy: programsArrivalsReadyEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsExpectedTitle": "Expected",
+  "@programsArrivalsExpectedTitle": {"description": "Program operations copy: programsArrivalsExpectedTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsExpectedSubtitle": "Inbound or landed guests, sorted by estimated curb time.",
+  "@programsArrivalsExpectedSubtitle": {"description": "Program operations copy: programsArrivalsExpectedSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsExpectedEmpty": "No more guests expected at this station.",
+  "@programsArrivalsExpectedEmpty": {"description": "Program operations copy: programsArrivalsExpectedEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsOperationsReviewBadge": "Needs review",
+  "@programsOperationsReviewBadge": {"description": "Saved operation conflict status.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsOperationsReviewTitle": "Review saved changes",
+  "@programsOperationsReviewTitle": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsReviewBody": "Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.",
+  "@programsOperationsReviewBody": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsReviewEmpty": "No changes need review for this account.",
+  "@programsOperationsReviewEmpty": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsGuestUnavailable": "Guest details unavailable at this station",
+  "@programsOperationsGuestUnavailable": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsDismiss": "Dismiss this saved change",
+  "@programsOperationsDismiss": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsDeparture": "Departure \u00b7 {plate}",
+  "@programsOperationsDeparture": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice", "placeholders": {"plate": {"type": "String"}}},
+  "programsOperationsClaim": "Claim guest",
+  "@programsOperationsClaim": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsUnclaim": "Release guest claim",
+  "@programsOperationsUnclaim": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsReady": "Guest ready at curb",
+  "@programsOperationsReady": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsDisrupted": "Guest journey disrupted",
+  "@programsOperationsDisrupted": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsNeedsReview": "This saved change needs review. Check the current journey and trip records before recording more work.",
+  "@programsOperationsNeedsReview": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsReloadManifest": "Reload the complete arrivals roster before dispatching this vehicle.",
+  "@programsOperationsReloadManifest": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "coreSavedOperationsQuarantined": "Some saved operations need recovery. Keep the app’s saved data and contact support.",
+  "@coreSavedOperationsQuarantined": {"description": "Shared attendance/program command journal contains quarantined records requiring recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "core.app_error_message"},
+  "coreSavedOperationsUnavailable": "Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.",
+  "@coreSavedOperationsUnavailable": {"description": "Shared attendance/program command journal storage is unavailable; original data must be preserved.", "x-audience": "host", "x-owner": "product", "x-surface": "core.app_error_message"},
+  "programsRecoveryAction": "Recover saved work",
+  "@programsRecoveryAction": {"description": "Opens recovery options when the local operations journal cannot be read.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsRecoveryTitle": "Saved work recovery",
+  "@programsRecoveryTitle": {"description": "Title of the saved operations recovery sheet and exported file.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsRecoveryBody": "Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.",
+  "@programsRecoveryBody": {"description": "Explains recovery file scope, privacy, and the non-destructive export boundary.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsRecoveryExport": "Export recovery file",
+  "@programsRecoveryExport": {"description": "Opens the platform file share or download flow for a recovery copy; does not automatically contact support.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsOperationsPassengersNotReady": "Every passenger must be marked ready at the curb before this vehicle departs.",
+  "@programsOperationsPassengersNotReady": {"description": "Program saved operation review and recovery.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_operations_notice"},
+  "programsArrivalsOutboxTitle": "Offline queue",
+  "@programsArrivalsOutboxTitle": {"description": "Program operations copy: programsArrivalsOutboxTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsOutboxSync": "Sync now",
+  "@programsArrivalsOutboxSync": {"description": "Program operations copy: programsArrivalsOutboxSync.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsOutboxClear": "Review changes",
+  "@programsArrivalsOutboxClear": {"description": "Program operations copy: programsArrivalsOutboxClear.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsClaimedByMe": "Claimed by you",
+  "@programsArrivalsClaimedByMe": {"description": "Program operations copy: programsArrivalsClaimedByMe.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsQueued": "Queued offline",
+  "@programsArrivalsQueued": {"description": "Program operations copy: programsArrivalsQueued.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsCurbSourceReady": "ready",
+  "@programsArrivalsCurbSourceReady": {"description": "Program operations copy: programsArrivalsCurbSourceReady.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsCurbSourceManual": "manual",
+  "@programsArrivalsCurbSourceManual": {"description": "Program operations copy: programsArrivalsCurbSourceManual.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsCurbSourceLanded": "landed",
+  "@programsArrivalsCurbSourceLanded": {"description": "Program operations copy: programsArrivalsCurbSourceLanded.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsCurbSourceEstimated": "est.",
+  "@programsArrivalsCurbSourceEstimated": {"description": "Program operations copy: programsArrivalsCurbSourceEstimated.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsCurbSourceScheduled": "sched.",
+  "@programsArrivalsCurbSourceScheduled": {"description": "Program operations copy: programsArrivalsCurbSourceScheduled.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsCancelled": "Flight cancelled",
+  "@programsArrivalsCancelled": {"description": "Program operations copy: programsArrivalsCancelled.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsDiverted": "Flight diverted",
+  "@programsArrivalsDiverted": {"description": "Program operations copy: programsArrivalsDiverted.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsNoEstimate": "No curb estimate",
+  "@programsArrivalsNoEstimate": {"description": "Program operations copy: programsArrivalsNoEstimate.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsReadyBadge": "Ready",
+  "@programsArrivalsReadyBadge": {"description": "Program operations copy: programsArrivalsReadyBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsExpectedBadge": "Expected",
+  "@programsArrivalsExpectedBadge": {"description": "Program operations copy: programsArrivalsExpectedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsDisruptedBadge": "Disrupted",
+  "@programsArrivalsDisruptedBadge": {"description": "Program operations copy: programsArrivalsDisruptedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsDispatchedBadge": "Dispatched",
+  "@programsArrivalsDispatchedBadge": {"description": "Program operations copy: programsArrivalsDispatchedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsNoShowBadge": "No-show",
+  "@programsArrivalsNoShowBadge": {"description": "A guest marked as a no-show for this travel leg.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsArrivedBadge": "Arrived",
+  "@programsArrivalsArrivedBadge": {"description": "Program operations copy: programsArrivalsArrivedBadge.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsRowActions": "Arrival actions",
+  "@programsArrivalsRowActions": {"description": "Program operations copy: programsArrivalsRowActions.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsClaimAction": "Claim this party",
+  "@programsArrivalsClaimAction": {"description": "Program operations copy: programsArrivalsClaimAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsUnclaimAction": "Release my claim",
+  "@programsArrivalsUnclaimAction": {"description": "Program operations copy: programsArrivalsUnclaimAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsReadyAction": "Mark ready at curb",
+  "@programsArrivalsReadyAction": {"description": "Program operations copy: programsArrivalsReadyAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsArrivalsDisruptedAction": "Flag disruption",
+  "@programsArrivalsDisruptedAction": {"description": "Program operations copy: programsArrivalsDisruptedAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsDispatchTitle": "Dispatch desk",
+  "@programsDispatchTitle": {"description": "Program operations copy: programsDispatchTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchGroupsTitle": "Suggested vehicles",
+  "@programsDispatchGroupsTitle": {"description": "Program operations copy: programsDispatchGroupsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchGroupsSubtitle": "Parties batched by curb window and destination. Suggestions only — you decide.",
+  "@programsDispatchGroupsSubtitle": {"description": "Program operations copy: programsDispatchGroupsSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchGroupsEmpty": "No parties are waiting or expected in this window.",
+  "@programsDispatchGroupsEmpty": {"description": "Program operations copy: programsDispatchGroupsEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchUnassignedTitle": "Unassigned",
+  "@programsDispatchUnassignedTitle": {"description": "Program operations copy: programsDispatchUnassignedTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchUnassignedSubtitle": "Legs the planner could not batch.",
+  "@programsDispatchUnassignedSubtitle": {"description": "Program operations copy: programsDispatchUnassignedSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchReasonMissingTime": "A guest has no usable arrival estimate.",
+  "@programsDispatchReasonMissingTime": {"description": "Program operations copy: programsDispatchReasonMissingTime.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchReasonNoVehicle": "No vehicle class fits this party — needs review.",
+  "@programsDispatchReasonNoVehicle": {"description": "Program operations copy: programsDispatchReasonNoVehicle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchReasonMissingScope": "A leg is missing a pickup or destination assignment.",
+  "@programsDispatchReasonMissingScope": {"description": "Program operations copy: programsDispatchReasonMissingScope.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchAction": "Dispatch vehicle",
+  "@programsDispatchAction": {"description": "Program operations copy: programsDispatchAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchSheetTitle": "Dispatch vehicle",
+  "@programsDispatchSheetTitle": {"description": "Program operations copy: programsDispatchSheetTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchPlateHint": "Plate, e.g. DL-1T-4471",
+  "@programsDispatchPlateHint": {"description": "Program operations copy: programsDispatchPlateHint.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchNoVendors": "No vendors are bound to this program yet.",
+  "@programsDispatchNoVendors": {"description": "Program operations copy: programsDispatchNoVendors.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchVendorsUnavailable": "Vendor list could not be loaded — you can still dispatch without a vendor.",
+  "@programsDispatchVendorsUnavailable": {"description": "Program operations copy: programsDispatchVendorsUnavailable.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchConfirm": "Dispatch now",
+  "@programsDispatchConfirm": {"description": "Program operations copy: programsDispatchConfirm.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsHotelPreviousTrip": "Previous vehicles",
+  "@programsHotelPreviousTrip": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelFirstTrip": "First vehicles",
+  "@programsHotelFirstTrip": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelMoreTrip": "More vehicles",
+  "@programsHotelMoreTrip": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelPreviousExpected": "Previous guests",
+  "@programsHotelPreviousExpected": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelFirstExpected": "First guests",
+  "@programsHotelFirstExpected": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelMoreExpected": "More guests",
+  "@programsHotelMoreExpected": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelRefresh": "Refresh hotel",
+  "@programsHotelRefresh": {"description": "Hotel desk page navigation", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk"},
+  "programsHotelTitle": "Hotel desk",
+  "@programsHotelTitle": {"description": "Program operations copy: programsHotelTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelSubtitle": "Inbound arrivals",
+  "@programsHotelSubtitle": {"description": "Program operations copy: programsHotelSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelEnRouteTitle": "On the way",
+  "@programsHotelEnRouteTitle": {"description": "Program operations copy: programsHotelEnRouteTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelEnRouteSubtitle": "Vehicles that departed the airport for this hotel.",
+  "@programsHotelEnRouteSubtitle": {"description": "Program operations copy: programsHotelEnRouteSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelEnRouteEmpty": "No vehicles are on the way right now.",
+  "@programsHotelEnRouteEmpty": {"description": "Program operations copy: programsHotelEnRouteEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelExpectedTitle": "Still expected",
+  "@programsHotelExpectedTitle": {"description": "Program operations copy: programsHotelExpectedTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelExpectedSubtitle": "Parties assigned to this hotel that have not departed yet.",
+  "@programsHotelExpectedSubtitle": {"description": "Program operations copy: programsHotelExpectedSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelExpectedEmpty": "No more guests expected at this hotel.",
+  "@programsHotelExpectedEmpty": {"description": "Program operations copy: programsHotelExpectedEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelExpectedNoEstimate": "No curb estimate yet.",
+  "@programsHotelExpectedNoEstimate": {"description": "Program operations copy: programsHotelExpectedNoEstimate.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelEtaUnknown": "ETA unknown",
+  "@programsHotelEtaUnknown": {"description": "Program operations copy: programsHotelEtaUnknown.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelMarkArrived": "Mark arrived",
+  "@programsHotelMarkArrived": {"description": "Program operations copy: programsHotelMarkArrived.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelStatusEnRoute": "En route",
+  "@programsHotelStatusEnRoute": {"description": "Program operations copy: programsHotelStatusEnRoute.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelStatusArrived": "Arrived",
+  "@programsHotelStatusArrived": {"description": "Program operations copy: programsHotelStatusArrived.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelStatusCancelled": "Cancelled",
+  "@programsHotelStatusCancelled": {"description": "Program operations copy: programsHotelStatusCancelled.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsHotelStatusVoided": "Voided",
+  "@programsHotelStatusVoided": {"description": "Program operations copy: programsHotelStatusVoided.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen"},
+  "programsTripsNewer": "Newer trips",
+  "@programsTripsNewer": {"description": "Trip ledger pagination action", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips"},
+  "programsTripsOlder": "Older trips",
+  "@programsTripsOlder": {"description": "Trip ledger pagination action", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips"},
+  "programsTripsLatest": "Latest trips",
+  "@programsTripsLatest": {"description": "Trip ledger pagination action", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips"},
+  "programsTripCurrentNames": "Guest names reflect current records; no dispatch snapshot was saved.",
+  "@programsTripCurrentNames": {"description": "Legacy trip manifest provenance shown in ledger and hotel receiving views", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation"},
+  "programsTripsTitle": "Trip ledger",
+  "@programsTripsTitle": {"description": "Program operations copy: programsTripsTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsSubtitle": "Dispatch reconciliation",
+  "@programsTripsSubtitle": {"description": "Program operations copy: programsTripsSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsLedgerTitle": "Dispatched vehicles",
+  "@programsTripsLedgerTitle": {"description": "Program operations copy: programsTripsLedgerTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsLedgerSubtitle": "One record per departure, newest first. Voided trips stay listed.",
+  "@programsTripsLedgerSubtitle": {"description": "Program operations copy: programsTripsLedgerSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsEmpty": "No vehicles dispatched yet.",
+  "@programsTripsEmpty": {"description": "Program operations copy: programsTripsEmpty.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsVoidAction": "Void this trip",
+  "@programsTripsVoidAction": {"description": "Program operations copy: programsTripsVoidAction.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsVoidSheetTitle": "Void trip",
+  "@programsTripsVoidSheetTitle": {"description": "Program operations copy: programsTripsVoidSheetTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsVoidSheetSubtitle": "A void releases the guests back to the ready pool. The record stays in the ledger.",
+  "@programsTripsVoidSheetSubtitle": {"description": "Program operations copy: programsTripsVoidSheetSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsVoidReasonHint": "Reason, e.g. wrong vehicle sent",
+  "@programsTripsVoidReasonHint": {"description": "Program operations copy: programsTripsVoidReasonHint.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsVoidConfirm": "Void trip",
+  "@programsTripsVoidConfirm": {"description": "Program operations copy: programsTripsVoidConfirm.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsStatusEnRoute": "En route",
+  "@programsTripsStatusEnRoute": {"description": "Program operations copy: programsTripsStatusEnRoute.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsStatusArrived": "Arrived",
+  "@programsTripsStatusArrived": {"description": "Program operations copy: programsTripsStatusArrived.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsStatusCancelled": "Cancelled",
+  "@programsTripsStatusCancelled": {"description": "Program operations copy: programsTripsStatusCancelled.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsTripsStatusVoided": "Voided",
+  "@programsTripsStatusVoided": {"description": "Program operations copy: programsTripsStatusVoided.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen"},
+  "programsWorkShellExpires": "Access expires {date}",
+  "@programsWorkShellExpires": {"description": "Program operations copy: programsWorkShellExpires.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_work_shell", "placeholders": {"date": {}}},
+  "programsArrivalsOutboxPending": "{count} change(s) queued while offline. They will sync when connectivity returns.",
+  "@programsArrivalsOutboxPending": {"description": "Program operations copy: programsArrivalsOutboxPending.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"count": {"type": "int"}}},
+  "programsArrivalsOutboxReview": "{pending} pending, {review} need review before they can sync.",
+  "@programsArrivalsOutboxReview": {"description": "Program operations copy: programsArrivalsOutboxReview.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"pending": {"type": "int"}, "review": {"type": "int"}}},
+  "programsArrivalsPassengerCount": "{count} pax",
+  "@programsArrivalsPassengerCount": {"description": "Compact passenger count in an airport arrival party row; pax means passengers.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"count": {"type": "int"}}},
+  "programsArrivalsBagCount": "{count, plural, one{1 bag} other{{count} bags}}",
+  "@programsArrivalsBagCount": {"description": "Baggage count in an airport arrival party row.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"count": {"type": "int"}}},
+  "programsArrivalsOrigin": "from {airport}",
+  "@programsArrivalsOrigin": {"description": "Origin airport in an arrival party row; airport is an IATA code.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"airport": {"type": "String"}}},
+  "programsArrivalsTerminal": "T{terminal}",
+  "@programsArrivalsTerminal": {"description": "Compact arrival terminal label in an arrival party row.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"terminal": {"type": "String"}}},
+  "programsArrivalsClaimedBy": "Claimed by {name}",
+  "@programsArrivalsClaimedBy": {"description": "Program operations copy: programsArrivalsClaimedBy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"name": {}}},
+  "programsDispatchGroupMeta": "{passengers} pax · {luggage} bags · {legs} leg(s)",
+  "@programsDispatchGroupMeta": {"description": "Program operations copy: programsDispatchGroupMeta.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"passengers": {"type": "int"}, "luggage": {"type": "int"}, "legs": {"type": "int"}}},
+  "programsDispatchWaitOverdue": "Ready wait overdue — should have left by {time}",
+  "@programsDispatchWaitOverdue": {"description": "Program operations copy: programsDispatchWaitOverdue.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"time": {}}},
+  "programsDispatchDispatchBy": "Dispatch by {time} to keep the ready wait",
+  "@programsDispatchDispatchBy": {"description": "Program operations copy: programsDispatchDispatchBy.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"time": {}}},
+  "programsDispatchSheetSubtitle": "To {destination}",
+  "@programsDispatchSheetSubtitle": {"description": "Program operations copy: programsDispatchSheetSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"destination": {}}},
+  "programsHotelExpectedMeta": "{passengers} pax · at curb ~{time}",
+  "@programsHotelExpectedMeta": {"description": "Program operations copy: programsHotelExpectedMeta.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen", "placeholders": {"passengers": {"type": "int"}, "time": {}}},
+  "programsHotelTripMeta": "{passengers} pax · {names}",
+  "@programsHotelTripMeta": {"description": "Program operations copy: programsHotelTripMeta.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen", "placeholders": {"passengers": {"type": "int"}, "names": {}}},
+  "programsHotelTripTiming": "Departed {departed} · ETA {eta}",
+  "@programsHotelTripTiming": {"description": "Program operations copy: programsHotelTripTiming.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_hotel_desk_screen", "placeholders": {"departed": {}, "eta": {}}},
+  "programsTripsRowMeta": "{passengers} pax · {names}",
+  "@programsTripsRowMeta": {"description": "Program operations copy: programsTripsRowMeta.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"passengers": {"type": "int"}, "names": {}}},
+  "programsTripsRowTimingArrived": "Departed {departed} · arrived {arrived}",
+  "@programsTripsRowTimingArrived": {"description": "Program operations copy: programsTripsRowTimingArrived.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"departed": {}, "arrived": {}}},
+  "programsTripsRowTimingDeparted": "Departed {departed} · still en route",
+  "@programsTripsRowTimingDeparted": {"description": "Program operations copy: programsTripsRowTimingDeparted.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"departed": {}}},
+  "programsDispatchHoldTitle": "Hold for expected arrivals",
+  "@programsDispatchHoldTitle": {"description": "Program operations copy: programsDispatchHoldTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchHoldSubtitle": "Still inbound to {destination} — adding them makes this vehicle wait.",
+  "@programsDispatchHoldSubtitle": {"description": "Program operations copy: programsDispatchHoldSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"destination": {}}},
+  "programsDispatchHoldOption": "{time} · {passengers} pax",
+  "@programsDispatchHoldOption": {"description": "Program operations copy: programsDispatchHoldOption.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"time": {}, "passengers": {"type": "int"}}},
+  "programsSnapshotTitle": "Saved view",
+  "@programsSnapshotTitle": {"description": "Program operations copy: programsSnapshotTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsSnapshotBanner": "Last synced at {time} — your changes queue until you are back online.",
+  "@programsSnapshotBanner": {"description": "Program operations copy: programsSnapshotBanner.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"time": {}}}
 }

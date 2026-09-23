@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_event_chat_access_payload.schema.json",
+  "title": "UpdateEventChatAccessCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "action",
+    "expectedRevision",
+    "requestId",
+    "termsVersion",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "open",
+        "close",
+        "join",
+        "leave"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "termsVersion": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "event-chat-v1"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    }
+  }
+}

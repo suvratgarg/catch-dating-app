@@ -97,6 +97,10 @@ export interface UpdateOrganizerFormDraftCallablePayload {
             )
           | null;
         privacyClass: "contact" | "profile" | "sensitive" | "organizerCustom";
+        /**
+         * Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.
+         */
+        answerDestination?: "organizerOnly" | "catchProfile" | "organizerCard";
         prefillPolicy: "never" | "participantReviewRequired";
         hostPresentation: "detailOnly" | "filterable" | "sortable";
         validation: {
@@ -182,6 +186,20 @@ export interface UpdateOrganizerFormDraftCallablePayload {
       consentCopy: string;
       consentVersion: string;
       retentionCopy: string;
+    };
+    payment?: {
+      connectionId: string;
+      amountPaise: number;
+      currency: "INR";
+      description: string;
+      refundPolicy: string;
+    } | null;
+    /**
+     * Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.
+     */
+    messagingConsent?: {
+      organizerWhatsapp: boolean;
+      catchWhatsapp: boolean;
     };
     completion: {
       title: string;

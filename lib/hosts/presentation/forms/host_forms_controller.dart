@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
@@ -154,6 +155,17 @@ class HostFormEditorController extends _$HostFormEditorController {
     return HostFormEditorState(editor: editor);
   }
 
+  void updateMessagingConsent({bool? organizerWhatsapp, bool? catchWhatsapp}) =>
+      _mutate(
+        (definition) => definition.withMessagingConsent(
+          organizerWhatsapp: organizerWhatsapp,
+          catchWhatsapp: catchWhatsapp,
+        ),
+      );
+
+  void updatePayment(HostFormPayment? payment) =>
+      _mutate((definition) => definition.withPayment(payment));
+
   void updateMetadata({
     String? title,
     String? description,
@@ -268,6 +280,7 @@ class HostFormEditorController extends _$HostFormEditorController {
     HostFormPrivacyClass? privacyClass,
     HostFormPrefillPolicy? prefillPolicy,
     HostFormPresentation? hostPresentation,
+    HostFormAnswerDestination? answerDestination,
     HostFormQuestionValidation? validation,
   }) => _mutate((definition) {
     final currentSection = definition.sections[sectionIndex];
@@ -282,6 +295,7 @@ class HostFormEditorController extends _$HostFormEditorController {
       privacyClass: privacyClass,
       prefillPolicy: prefillPolicy,
       hostPresentation: hostPresentation,
+      answerDestination: answerDestination,
       validation: validation,
     );
     final section = currentSection.replaceQuestion(questionIndex, question);

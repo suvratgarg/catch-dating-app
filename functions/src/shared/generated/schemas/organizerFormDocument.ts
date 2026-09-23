@@ -36,6 +36,11 @@ export const organizerFormDocumentSchema: Record<string, unknown> = {
     "lastResponseAt"
   ],
   "properties": {
+    "pendingPaymentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unreleased form response reservations awaiting a fee. Legacy omitted means zero."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,

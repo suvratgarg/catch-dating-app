@@ -23,6 +23,19 @@ enum Routes {
     '/dashboard/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
   ),
+  eventChatScreen('/events/:eventId/chat', AppRouteAudience.shared),
+  eventProfileSharingScreen(
+    '/events/:eventId/chat/profile',
+    AppRouteAudience.shared,
+  ),
+  eventChatParticipantsScreen(
+    '/events/:eventId/chat/people',
+    AppRouteAudience.shared,
+  ),
+  eventParticipantProfileScreen(
+    '/events/:eventId/chat/people/:participantUid',
+    AppRouteAudience.shared,
+  ),
   eventLocationMapScreen('/events/:eventId/location', AppRouteAudience.shared),
   dashboardScreen('/', AppRouteAudience.consumer),
   notificationsScreen('/notifications', AppRouteAudience.consumer),
@@ -47,9 +60,12 @@ enum Routes {
   matchesListScreen('/chats', AppRouteAudience.consumer),
   chatScreen('/chats/:matchId', AppRouteAudience.consumer),
   profileScreen('/you', AppRouteAudience.consumer),
+  formProfilesScreen('/you/forms', AppRouteAudience.consumer),
+  formProfileReviewScreen('/you/forms/:responseId', AppRouteAudience.consumer),
   reviewsHistoryScreen('/you/reviews', AppRouteAudience.consumer),
   publicProfileScreen('/profiles/:uid', AppRouteAudience.consumer),
   settingsScreen('/settings', AppRouteAudience.consumer),
+  messagingPermissionsScreen('/settings/whatsapp', AppRouteAudience.consumer),
   launchAccessScreen('/settings/launch-access', AppRouteAudience.consumer),
   paymentHistoryScreen('/payment-history', AppRouteAudience.consumer),
   paymentConfirmationScreen('/payment-confirmation', AppRouteAudience.consumer),
@@ -105,6 +121,20 @@ enum Routes {
   hostCustomersLegacyScreen('/host/customers', AppRouteAudience.host),
   hostFormsLegacyScreen('/host/forms', AppRouteAudience.host),
   hostOperatorEventScreen('/host/operator/:eventId', AppRouteAudience.host),
+  hostWorkProgramScreen('/host/work/:programId', AppRouteAudience.host),
+  hostWorkArrivalsScreen(
+    '/host/work/:programId/arrivals/:pickupPointId',
+    AppRouteAudience.host,
+  ),
+  hostWorkDispatchScreen(
+    '/host/work/:programId/dispatch/:pickupPointId',
+    AppRouteAudience.host,
+  ),
+  hostWorkHotelScreen(
+    '/host/work/:programId/hotel/:hotelId',
+    AppRouteAudience.host,
+  ),
+  hostWorkTripsScreen('/host/work/:programId/trips', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
   hostOrganizerMessagingScreen(
     '/host/organizer/:clubId/messaging',

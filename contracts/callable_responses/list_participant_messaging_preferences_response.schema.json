@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_messaging_preferences_response.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallableResponse",
+  "description": "Bounded participant-only WhatsApp permission directory; no contact endpoints or CRM fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catchPreference",
+    "organizers",
+    "nextCursor"
+  ],
+  "properties": {
+    "catchPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "organizers": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "preference"
+        ],
+        "properties": {
+          "organizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "preference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "receiptId"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "optedIn",
+                  "optedOut"
+                ]
+              },
+              "receiptId": {
+                "anyOf": [
+                  {
+                    "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

@@ -99,7 +99,10 @@ void main() {
 
     expect(find.text('Profile not available'), findsOneWidget);
     expect(
-      find.text('Finish onboarding or sign in again to load your profile.'),
+      find.text(
+        'You can review submitted details in Forms & cards before setting up '
+        'the rest of your profile.',
+      ),
       findsOneWidget,
     );
     expect(find.text('Try again'), findsOneWidget);

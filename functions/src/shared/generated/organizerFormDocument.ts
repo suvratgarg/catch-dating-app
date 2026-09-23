@@ -6,6 +6,10 @@
  * Organizer-owned generic form metadata and lifecycle. Editable content lives in a draft and published content in immutable versions.
  */
 export interface OrganizerFormDocument {
+  /**
+   * Unreleased form response reservations awaiting a fee. Legacy omitted means zero.
+   */
+  pendingPaymentCount?: number;
   organizerId: string;
   createdByUid: string;
   title: string;

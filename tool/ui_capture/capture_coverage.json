@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-21",
+  "updated": "2026-09-23",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -729,7 +729,10 @@
         "host_form_response_application",
         "host_form_response_intake",
         "host_form_response_withdrawn",
-        "host_form_response_large_text"
+        "host_form_response_large_text",
+        "host_response_review_submitted",
+        "host_response_review_imported",
+        "host_response_review_revoked"
       ]
     },
     {
@@ -792,12 +795,10 @@
     },
     {
       "routeId": "hostApplicationsScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
-      "captureIds": [
-        "host_applications_populated"
-      ]
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "The retired Applications directory redirects to Audience Responses while preserving organizer, form, and contact scope."
     },
     {
       "routeId": "hostApplicationDetailScreen",
@@ -841,6 +842,36 @@
       "priority": "P1",
       "canonicalRouteId": "hostAppEventManageScreen",
       "reason": "Restricted staff route reuses the canonical operational roster composition while removing every manager-only control."
+    },
+    {
+      "routeId": "hostWorkProgramScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Program work workspace lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkArrivalsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Arrivals roster lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkDispatchScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Dispatch desk lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkHotelScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Hotel desk lands with this slice; route captures are scheduled with the program golden pass."
+    },
+    {
+      "routeId": "hostWorkTripsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Trip ledger lands with this slice; route captures are scheduled with the program golden pass."
     },
     {
       "routeId": "hostOrganizerScreen",
@@ -1213,6 +1244,48 @@
         "host_chat_safety_pending_menu"
       ],
       "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, composer ready/send-pending/image-pending/disabled states, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and pending safety menu rows. Remaining work is provider-specific offline policy, dedicated references, and pixel comparison."
+    },
+    {
+      "routeId": "eventProfileSharingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventParticipantProfileScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Private event profile surface covered by typed route ownership, Widgetbook and focused light/dark/large-text rendered review tests."
+    },
+    {
+      "routeId": "eventChatScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Event conversation has production-widget light/dark, keyboard, reply, reaction and large-text review tests; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "eventChatParticipantsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Participant directory has light/dark and large-text production-widget review captures and authority tests; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "formProfilesScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Private organizer-card directory has synthetic grouped-card light/dark and large-text review captures; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "formProfileReviewScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Profile claim has synthetic production-widget review and protected-photo captures; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "messagingPermissionsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Own-account WhatsApp consent and withdrawal have focused controller/widget coverage; canonical marketing capture registration remains planned."
     }
   ]
 }

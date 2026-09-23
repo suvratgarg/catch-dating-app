@@ -1,10 +1,9 @@
-import 'dart:convert';
-
-import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'host_attendance_outbox.g.dart';
 
@@ -39,7 +38,7 @@ class RepositoryHostAttendanceMutator implements HostAttendanceMutator {
   );
 }
 
-enum HostAttendanceOutboxStatus { pending, needsReview }
+typedef HostAttendanceOutboxStatus = LocalCommandStatus;
 
 class HostAttendanceOutboxEntry {
   const HostAttendanceOutboxEntry({
@@ -117,128 +116,62 @@ class HostAttendanceOutboxSummary {
       .length;
 
   HostAttendanceOutboxEntry? forAttendee(String attendeeId) {
-    for (final entry in entries) {
+    for (final entry in entries.reversed) {
       if (entry.attendeeId == attendeeId) return entry;
     }
     return null;
   }
 }
 
-abstract interface class HostAttendanceOutboxStore {
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId);
-  Future<void> save(String accountId, List<HostAttendanceOutboxEntry> entries);
-}
+typedef HostAttendanceOutboxStore =
+    LocalCommandJournal<HostAttendanceOutboxEntry>;
 
-class SharedPreferencesHostAttendanceOutboxStore
-    implements HostAttendanceOutboxStore {
-  SharedPreferences? _preferences;
-
-  static const _keyPrefix = 'host_attendance_outbox_v1_';
-
-  Future<SharedPreferences> get _prefs async {
-    final cached = _preferences;
-    if (cached != null) return cached;
-    final loaded = await withAppErrorContext(
-      SharedPreferences.getInstance,
-      context: const AppErrorContext(
-        operation: AppOperation.localPersistence,
-        action: 'open attendance replay queue',
-        resource: 'shared_preferences',
-      ),
-    );
-    _preferences = loaded;
-    return loaded;
-  }
-
-  @override
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId) async {
-    final raw = (await _prefs).getString('$_keyPrefix$accountId');
-    if (raw == null) return const [];
-    try {
-      final values = jsonDecode(raw) as List<Object?>;
-      return values
-          .map(
-            (value) => HostAttendanceOutboxEntry.fromJson(
-              (value! as Map<Object?, Object?>).cast<String, Object?>(),
-            ),
-          )
-          .toList(growable: false);
-    } on Object {
-      await (await _prefs).remove('$_keyPrefix$accountId');
-      return const [];
-    }
-  }
-
-  @override
-  Future<void> save(
-    String accountId,
-    List<HostAttendanceOutboxEntry> entries,
-  ) async {
-    final prefs = await _prefs;
-    final key = '$_keyPrefix$accountId';
-    if (entries.isEmpty) {
-      await prefs.remove(key);
-      return;
-    }
-    await prefs.setString(
-      key,
-      jsonEncode(entries.map((entry) => entry.toJson()).toList()),
-    );
-  }
-}
+HostAttendanceOutboxStore createHostAttendanceJournal({
+  required Future<CommandJournalStorage> Function() storage,
+  required String? Function() currentAccountId,
+  Future<String?> Function(String)? loadLegacy,
+  Future<void> Function(String)? clearLegacy,
+}) => LocalCommandJournal(
+  storage: storage,
+  namespace: 'host_attendance',
+  currentAccountId: currentAccountId,
+  loadLegacy: loadLegacy,
+  clearLegacy: clearLegacy,
+  codec: LocalCommandCodec(
+    encode: (entry) => entry.toJson(),
+    decode: HostAttendanceOutboxEntry.fromJson,
+    scope: (entry) => entry.eventId,
+    resources: (entry) => {'attendee:${entry.attendeeId}'},
+  ),
+);
 
 class HostAttendanceOutbox {
-  const HostAttendanceOutbox(this._store, this._attendees);
-
-  static const maxEntries = 200;
-  static const reviewAfter = Duration(days: 7);
-  static const deleteAfter = Duration(days: 30);
-
-  final HostAttendanceOutboxStore _store;
+  const HostAttendanceOutbox(this._journal, this._attendees);
+  static const reviewAfter = LocalCommandJournal.reviewAfter;
+  final HostAttendanceOutboxStore _journal;
   final HostAttendanceMutator _attendees;
 
   Future<HostAttendanceOutboxSummary> loadAll({
     required String accountId,
     DateTime? now,
-  }) async {
-    final normalized = _normalize(
-      await _store.load(accountId),
-      now ?? DateTime.now(),
-    );
-    await _store.save(accountId, normalized);
-    return HostAttendanceOutboxSummary(
-      List<HostAttendanceOutboxEntry>.unmodifiable(normalized),
-    );
-  }
+  }) async =>
+      HostAttendanceOutboxSummary(await _journal.load(accountId, now: now));
 
   Future<HostAttendanceOutboxSummary> loadForEvent({
     required String accountId,
     required String eventId,
     DateTime? now,
-  }) async {
-    final normalized = await loadAll(accountId: accountId, now: now);
-    return HostAttendanceOutboxSummary(
-      normalized.entries
-          .where((entry) => entry.eventId == eventId)
-          .toList(growable: false),
-    );
-  }
+  }) async => HostAttendanceOutboxSummary(
+    await _journal.load(accountId, scope: eventId, now: now),
+  );
 
   Future<HostAttendanceOutboxSummary> enqueueAndAttempt({
     required String accountId,
     required HostAttendanceOutboxEntry entry,
     required bool offline,
   }) async {
-    final entries = _normalize(await _store.load(accountId), DateTime.now())
-      ..removeWhere(
-        (item) =>
-            item.eventId == entry.eventId &&
-            item.attendeeId == entry.attendeeId,
-      )
-      ..add(entry);
-    _trim(entries);
-    await _store.save(accountId, entries);
-    if (!offline) await _attempt(accountId, entries, entry);
+    await _journal.append(accountId, entry);
+    if (!offline) await _journal.flush(accountId, entry.eventId, _execute);
     return loadForEvent(accountId: accountId, eventId: entry.eventId);
   }
 
@@ -246,109 +179,44 @@ class HostAttendanceOutbox {
     required String accountId,
     required String eventId,
   }) async {
-    final entries = _normalize(await _store.load(accountId), DateTime.now());
-    for (final entry in List<HostAttendanceOutboxEntry>.of(entries)) {
-      if (entry.eventId != eventId ||
-          entry.status != HostAttendanceOutboxStatus.pending) {
-        continue;
-      }
-      final shouldContinue = await _attempt(accountId, entries, entry);
-      if (!shouldContinue) break;
-    }
-    await _store.save(accountId, entries);
-    return HostAttendanceOutboxSummary(
-      entries
-          .where((entry) => entry.eventId == eventId)
-          .toList(growable: false),
-    );
+    await _journal.flush(accountId, eventId, _execute);
+    return loadForEvent(accountId: accountId, eventId: eventId);
   }
 
   Future<HostAttendanceOutboxSummary> clearNeedsReview({
     required String accountId,
     required String eventId,
   }) async {
-    final entries = await _store.load(accountId)
-      ..removeWhere(
-        (entry) =>
-            entry.eventId == eventId &&
-            entry.status == HostAttendanceOutboxStatus.needsReview,
-      );
-    await _store.save(accountId, entries);
-    return HostAttendanceOutboxSummary(
-      entries
-          .where((entry) => entry.eventId == eventId)
-          .toList(growable: false),
+    await _journal.dismissReview(accountId, eventId);
+    return loadForEvent(accountId: accountId, eventId: eventId);
+  }
+
+  Future<void> _execute(HostAttendanceOutboxEntry entry) async {
+    await _attendees.setAttendance(
+      eventId: entry.eventId,
+      attendeeId: entry.attendeeId,
+      desiredCheckedIn: entry.desiredCheckedIn,
+      expectedRevision: entry.expectedRevision,
+      clientOperationId: entry.clientOperationId,
     );
-  }
-
-  Future<bool> _attempt(
-    String accountId,
-    List<HostAttendanceOutboxEntry> entries,
-    HostAttendanceOutboxEntry entry,
-  ) async {
-    try {
-      await _attendees.setAttendance(
-        eventId: entry.eventId,
-        attendeeId: entry.attendeeId,
-        desiredCheckedIn: entry.desiredCheckedIn,
-        expectedRevision: entry.expectedRevision,
-        clientOperationId: entry.clientOperationId,
-      );
-      entries.removeWhere(
-        (item) => item.clientOperationId == entry.clientOperationId,
-      );
-      await _store.save(accountId, entries);
-      return true;
-    } on AppException catch (error) {
-      if (error.retryable && error.code != 'aborted') return false;
-      final index = entries.indexWhere(
-        (item) => item.clientOperationId == entry.clientOperationId,
-      );
-      if (index >= 0) {
-        entries[index] = entry.copyWith(
-          status: HostAttendanceOutboxStatus.needsReview,
-          lastErrorCode: error.code,
-        );
-      }
-      await _store.save(accountId, entries);
-      return true;
-    }
-  }
-
-  List<HostAttendanceOutboxEntry> _normalize(
-    List<HostAttendanceOutboxEntry> source,
-    DateTime now,
-  ) {
-    final entries = <HostAttendanceOutboxEntry>[];
-    for (final entry in source) {
-      final age = now.difference(entry.createdAt);
-      if (age > deleteAfter) continue;
-      entries.add(
-        age > reviewAfter && entry.status == HostAttendanceOutboxStatus.pending
-            ? entry.copyWith(status: HostAttendanceOutboxStatus.needsReview)
-            : entry,
-      );
-    }
-    _trim(entries);
-    return entries;
-  }
-
-  void _trim(List<HostAttendanceOutboxEntry> entries) {
-    entries.sort((left, right) => left.createdAt.compareTo(right.createdAt));
-    if (entries.length > maxEntries) {
-      entries.removeRange(0, entries.length - maxEntries);
-    }
   }
 }
 
-// keepalive: a single local store preserves queued attendance mutations while
-// the operator moves between roster surfaces.
+// keepalive: shared durable command policy across Host work surfaces.
 @Riverpod(keepAlive: true)
-HostAttendanceOutboxStore hostAttendanceOutboxStore(Ref ref) =>
-    SharedPreferencesHostAttendanceOutboxStore();
+HostAttendanceOutboxStore hostAttendanceOutboxStore(Ref ref) {
+  final auth = ref.watch(firebaseAuthProvider);
+  return createHostAttendanceJournal(
+    storage: ref.watch(commandJournalStorageProvider),
+    currentAccountId: () => auth.currentUser?.uid,
+    loadLegacy: (accountId) =>
+        loadLegacyCommandJournal('host_attendance_outbox_v1_', accountId),
+    clearLegacy: (accountId) =>
+        clearLegacyCommandJournal('host_attendance_outbox_v1_', accountId),
+  );
+}
 
-// keepalive: the replay coordinator must retain one serialized queue for the
-// lifetime of the Host application process.
+// keepalive: commands survive navigation between event work surfaces.
 @Riverpod(keepAlive: true)
 HostAttendanceOutbox hostAttendanceOutbox(Ref ref) => HostAttendanceOutbox(
   ref.watch(hostAttendanceOutboxStoreProvider),

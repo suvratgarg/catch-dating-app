@@ -3281,7 +3281,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userProfileProfileScreenMessageFinishOnboardingOrSign =>
-      'Finish onboarding or sign in again to load your profile.';
+      'You can review submitted details in Forms & cards before setting up the rest of your profile.';
 
   @override
   String get userProfileInlineEditorHeightTooltipDecreaseHeight =>
@@ -4422,11 +4422,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get safetySettingsScreenTitleAccountUnavailable =>
-      'Account unavailable';
+      'Review your form details';
 
   @override
   String get safetySettingsScreenMessageSignOutAndSign =>
-      'Sign out and sign back in if this keeps happening.';
+      'Your Catch profile is not set up yet. Review your submitted details in Forms & cards. Profile preferences become available after setup.';
 
   @override
   String get swipesEventRecapScreenTitleEventNotFound => 'Event not found';
@@ -4546,9 +4546,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userProfileProfileTabSkeletonTitleAboutYou => 'About you';
-
-  @override
-  String get userProfileProfileTabSkeletonTitleRunning => 'Running';
 
   @override
   String get userProfileProfileTabSkeletonTitleLifestyle => 'Lifestyle';
@@ -6878,14 +6875,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userProfileSelfProfileEditTabStateLabelPreferredDistances =>
-      'Preferred distances';
+      'Distances';
 
   @override
-  String get userProfileSelfProfileEditTabStateLabelWhyIEvent => 'Why I event';
+  String get userProfileSelfProfileEditTabStateLabelWhyIEvent => 'Motivation';
 
   @override
   String get userProfileSelfProfileEditTabStateLabelFavoriteEventTimes =>
-      'Favorite event times';
+      'Run times';
 
   @override
   String get userProfileSelfProfileEditTabStateLabelDrinking => 'Drinking';
@@ -14526,10 +14523,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersSortSheetSubtitle =>
-      'Choose how customers are ordered.';
-
-  @override
   String get hostCustomersSortLastSeen => 'Last seen';
 
   @override
@@ -14539,7 +14532,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersSortName => 'Name';
 
   @override
-  String get hostCustomersMoreActions => 'More customer actions';
+  String get hostCustomersMoreActions => 'More audience actions';
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';
@@ -14711,14 +14704,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsImport => 'Import responses';
 
   @override
-  String get hostApplicationsSort => 'Sort applications';
-
-  @override
-  String get hostApplicationsImportTitle => 'Import applications';
+  String get hostApplicationsImportTitle => 'Import responses';
 
   @override
   String get hostApplicationsImportSubtitle =>
-      'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
+      'Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
 
   @override
   String get hostApplicationsImportReusableField => 'Reusable profile field';
@@ -14731,8 +14721,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count applications',
-      one: '1 application',
+      other: '$count responses',
+      one: '1 response',
     );
     return 'Import $_temp0';
   }
@@ -14764,8 +14754,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       created,
       locale: localeName,
-      other: 'Imported $created applications',
-      one: 'Imported 1 application',
+      other: 'Imported $created responses',
+      one: 'Imported 1 response',
     );
     String _temp1 = intl.Intl.pluralLogic(
       skipped,
@@ -14785,26 +14775,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The organizer may retain submitted answers for application review and customer history according to its stated policy.';
 
   @override
-  String get hostApplicationsSearch => 'Search by applicant name';
-
-  @override
-  String get hostApplicationsEmptyTitle => 'No applications yet';
-
-  @override
-  String get hostApplicationsEmptyBody =>
-      'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.';
-
-  @override
   String get hostApplicationsSortNewest => 'Newest first';
 
   @override
   String get hostApplicationsSortOldest => 'Oldest first';
-
-  @override
-  String get hostApplicationsSortName => 'Applicant name';
-
-  @override
-  String get hostApplicationsFilterAll => 'All';
 
   @override
   String get hostApplicationsReviewStatusFilter => 'Filter by review status';
@@ -14837,15 +14811,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsSourceConnector => 'Connected form';
 
   @override
-  String hostApplicationsSubmittedOn({required String date}) {
-    return 'Submitted $date';
-  }
-
-  @override
   String get hostApplicationsLoadMore => 'Load more applications';
-
-  @override
-  String get hostApplicationAnswersTitle => 'Answers';
 
   @override
   String get hostApplicationNotAnswered => 'Not answered';
@@ -14868,9 +14834,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostApplicationOutreachTitle => 'Contact applicant';
-
-  @override
   String get hostApplicationCall => 'Call';
 
   @override
@@ -14881,10 +14844,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationLinkedin => 'LinkedIn';
-
-  @override
-  String get hostApplicationNoOutreach =>
-      'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.';
 
   @override
   String get hostApplicationReviewNote => 'Private review note';
@@ -17054,9 +17013,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationOpenPerson => 'Open person';
 
   @override
-  String get hostApplicationOpenResponse => 'Open original response';
-
-  @override
   String get hostSavedAudienceEditRules => 'Edit rules';
 
   @override
@@ -17469,12 +17425,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceSubmissionDetails => 'Submission details';
 
   @override
-  String get hostAudienceReviewApplication => 'Review application';
-
-  @override
-  String get hostAudienceApplicationTitle => 'Application';
-
-  @override
   String get hostAudienceApplicationAccepted =>
       'Accepted into People. Event admission is handled separately.';
 
@@ -17483,29 +17433,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Accepting adds this person to People. Event admission is handled separately.';
 
   @override
-  String get hostAudienceApplicationsNew => 'New applications';
-
-  @override
-  String get hostAudienceApplicationsAll => 'All applications';
-
-  @override
   String get hostAudienceApplicationEvent => 'Event application';
 
   @override
   String get hostAudienceApplicationOrganizer => 'Organizer application';
 
   @override
-  String get hostAudienceApplicationActivity => 'Activity';
-
-  @override
   String get hostAudienceManualGroup => 'Selected people';
 
   @override
   String get hostAudienceAutomaticGroup => 'Automatic membership';
-
-  @override
-  String get hostAudienceGroupMembershipHelp =>
-      'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.';
 
   @override
   String hostAudienceGroupChecked({required String date}) {
@@ -17670,11 +17607,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventCreateAction => 'Create event';
 
   @override
-  String get hostFormPersonField => 'Use this answer as';
+  String get hostFormPersonField => 'Person field';
 
   @override
   String get hostFormPersonFieldHelp =>
-      'Identify contact and profile answers for review. Other answers stay with this response.';
+      'Classify this answer for your CRM. This label alone does not save or share a Catch profile field.';
 
   @override
   String hostFormPersonFieldName({required String field}) {
@@ -20119,4 +20056,1321 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersAccountNotVerified => 'No verified account linked';
+
+  @override
+  String get hostAudienceRecentlyUpdated => 'Recently updated';
+
+  @override
+  String get hostAudienceSelectedPerson => 'Selected person';
+
+  @override
+  String get hostFormPaymentTitle => 'Form payment';
+
+  @override
+  String get hostFormPaymentFree => 'No payment required';
+
+  @override
+  String get hostFormPaymentHelp =>
+      'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.';
+
+  @override
+  String get hostFormPaymentUnavailable =>
+      'Form payments are not available yet. Catch must finish its Razorpay connection setup. You can continue using free forms.';
+
+  @override
+  String get hostFormPaymentConnect => 'Connect Razorpay';
+
+  @override
+  String get hostFormPaymentConnectHelp =>
+      'Authorize your existing Razorpay account in your browser, then return and check the connection.';
+
+  @override
+  String get hostFormPaymentRefresh => 'Check connection';
+
+  @override
+  String get hostFormPaymentReady => 'Ready for payments';
+
+  @override
+  String get hostFormPaymentConnecting => 'Finish connecting in your browser';
+
+  @override
+  String get hostFormPaymentAttention =>
+      'Reconnect Razorpay to restore payments';
+
+  @override
+  String get hostFormPaymentDisconnected => 'Disconnected';
+
+  @override
+  String get hostFormPaymentTest => 'Test mode — no real money';
+
+  @override
+  String get hostFormPaymentLive => 'Live payments';
+
+  @override
+  String get hostFormPaymentConfigure => 'Set a submission fee';
+
+  @override
+  String get hostFormPaymentEdit => 'Edit submission fee';
+
+  @override
+  String get hostFormPaymentRemove => 'Remove fee from draft';
+
+  @override
+  String get hostFormPaymentPhoneRequired =>
+      'Choose verified phone in Access before adding a fee. This lets applicants recover their payment and response securely.';
+
+  @override
+  String get hostFormPaymentConnectionRequired =>
+      'Connect a ready Razorpay account before setting a fee.';
+
+  @override
+  String get hostFormPaymentAmount => 'Amount (INR)';
+
+  @override
+  String get hostFormPaymentAmountHelp =>
+      'Enter ₹1 to ₹100,000, with up to two decimal places. For example, 100 or 200.';
+
+  @override
+  String get hostFormPaymentDescription => 'What is the fee for?';
+
+  @override
+  String get hostFormPaymentDescriptionDefault => 'Application fee';
+
+  @override
+  String get hostFormPaymentRefundPolicy => 'Refund policy';
+
+  @override
+  String get hostFormPaymentRefundHelp =>
+      'Explain when you will refund the fee, including if an application is declined. Applicants see this before paying.';
+
+  @override
+  String get hostFormPaymentSave => 'Save fee';
+
+  @override
+  String get hostFormPaymentDisconnect => 'Disconnect account';
+
+  @override
+  String get hostFormPaymentDisconnectHelp =>
+      'This stops new checkouts on every form using this account. Existing payments and refunds will still be reconciled.';
+
+  @override
+  String get hostFormPaymentPublishHelp =>
+      'This fee applies to new submissions after publishing. Previously started checkouts keep their original fee.';
+
+  @override
+  String get hostFormPaymentAccount => 'Razorpay account';
+
+  @override
+  String get hostFormPaymentsTitle => 'Payments';
+
+  @override
+  String get hostFormPaymentsHelp =>
+      'Newest first. Payment confirmation and form submission are tracked separately. Test payments do not move real money.';
+
+  @override
+  String get hostFormPaymentsRefresh => 'Refresh payments';
+
+  @override
+  String get hostFormPaymentsPending => 'Pending';
+
+  @override
+  String get hostFormPaymentsRefunds => 'Refunds';
+
+  @override
+  String get hostFormPaymentsAttention => 'Needs attention';
+
+  @override
+  String get hostFormPaymentsEmpty => 'No payment records';
+
+  @override
+  String get hostFormPaymentsEmptyBody =>
+      'Checkout attempts will appear here when someone starts paying for a submission.';
+
+  @override
+  String get hostFormPaymentsNoMatches => 'No payments in this stage';
+
+  @override
+  String get hostFormPaymentsNoMatchesBody =>
+      'Choose All to see other payment stages.';
+
+  @override
+  String get hostFormPaymentsCreatingOrder => 'Starting checkout';
+
+  @override
+  String get hostFormPaymentsOrderUnknown => 'Confirming checkout';
+
+  @override
+  String get hostFormPaymentsCheckoutReady => 'Awaiting payment';
+
+  @override
+  String get hostFormPaymentsVerifying => 'Verifying payment';
+
+  @override
+  String get hostFormPaymentsCaptured => 'Paid · submission pending';
+
+  @override
+  String get hostFormPaymentsSubmitted => 'Paid · submitted';
+
+  @override
+  String get hostFormPaymentsFailed => 'Payment attempt failed';
+
+  @override
+  String get hostFormPaymentsExpired => 'Checkout expired';
+
+  @override
+  String get hostFormPaymentsRefundPending => 'Refund pending';
+
+  @override
+  String get hostFormPaymentsRefunded => 'Refunded';
+
+  @override
+  String get hostFormPaymentsReviewRequired => 'Payment needs review';
+
+  @override
+  String get hostFormPaymentsCapturedHelp =>
+      'Payment is confirmed. Catch is still completing the submission. Refresh to check its progress.';
+
+  @override
+  String get hostFormPaymentsSubmittedHelp =>
+      'Payment is confirmed and the form response has been submitted. Acceptance and event admission are separate.';
+
+  @override
+  String get hostFormPaymentsPendingHelp =>
+      'This checkout is not confirmed as a completed payment. No form response has been submitted yet.';
+
+  @override
+  String get hostFormPaymentsFailedHelp =>
+      'This payment attempt failed. The applicant can retry while checkout is available.';
+
+  @override
+  String get hostFormPaymentsExpiredHelp =>
+      'This checkout has expired. If a payment arrives late and cannot be submitted, Catch will attempt a refund.';
+
+  @override
+  String get hostFormPaymentsRefundHelp =>
+      'Check the refund in the connected Razorpay account using the references below. Withdrawing a response or declining an application does not automatically refund a fee.';
+
+  @override
+  String get hostFormPaymentsReviewHelp =>
+      'Automatic recovery needs attention. Check the connected Razorpay account using these references before taking further action.';
+
+  @override
+  String get hostFormPaymentsAmount => 'Submission fee';
+
+  @override
+  String get hostFormPaymentsRefundAmount => 'Confirmed refunds';
+
+  @override
+  String get hostFormPaymentsStarted => 'Checkout started';
+
+  @override
+  String get hostFormPaymentsUpdated => 'Last checked';
+
+  @override
+  String get hostFormPaymentsCapturedAt => 'Payment captured';
+
+  @override
+  String get hostFormPaymentsSubmittedAt => 'Response submitted';
+
+  @override
+  String get hostFormPaymentsReferences => 'Payment references';
+
+  @override
+  String get hostFormPaymentsReceipt => 'Receipt reference';
+
+  @override
+  String get hostFormPaymentsOrderReference => 'Razorpay order';
+
+  @override
+  String get hostFormPaymentsPaymentReference => 'Razorpay payment';
+
+  @override
+  String get hostFormPaymentsRefundReference => 'Razorpay refund';
+
+  @override
+  String get hostFormPaymentsTestHelp =>
+      'Test payment. No real money was collected.';
+
+  @override
+  String get hostFormPaymentsOpenResponse => 'Open submitted response';
+
+  @override
+  String get hostFormMessagingTitle => 'Optional WhatsApp choices';
+
+  @override
+  String get hostFormMessagingOrganizer => 'Offer updates from this organizer';
+
+  @override
+  String get hostFormMessagingCatch => 'Offer updates from Catch';
+
+  @override
+  String get hostFormMessagingHelp =>
+      'These settings add separate, unchecked choices to the form. Applicants can choose either, both, or neither. Payment and submission never grant messaging permission. Publish to update the form.';
+
+  @override
+  String get hostFormMessagingPhoneRequired =>
+      'Choose verified phone in Access to offer WhatsApp updates.';
+
+  @override
+  String get hostFormAnswerDestinationLabel => 'Profile use';
+
+  @override
+  String get hostFormAnswerOrganizerOnly => 'Organizer only';
+
+  @override
+  String get hostFormAnswerCatchProfile => 'Catch profile';
+
+  @override
+  String get hostFormAnswerOrganizerCard => 'Organizer card';
+
+  @override
+  String get hostFormAnswerOrganizerOnlyHelp =>
+      'Stays in your form response. A person-field label does not add it to a Catch profile. Choose a supported person field above to offer a Catch profile building block.';
+
+  @override
+  String get hostFormAnswerCatchProfileHelp =>
+      'Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.';
+
+  @override
+  String get hostFormAnswerOrganizerCardHelp =>
+      'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.';
+
+  @override
+  String get messagingPermissionsTitle => 'WhatsApp permissions';
+
+  @override
+  String get messagingPermissionsDescription =>
+      'Choose who can send you WhatsApp updates. Catch and each organizer have separate permissions. Stopping updates does not change your form submission, booking, or event-service messages.';
+
+  @override
+  String get messagingPermissionsCatch => 'Catch';
+
+  @override
+  String get messagingPermissionsOn => 'Updates allowed';
+
+  @override
+  String get messagingPermissionsOff => 'Updates stopped';
+
+  @override
+  String get messagingPermissionsUnknown => 'No confirmed permission';
+
+  @override
+  String get messagingPermissionsCatchHelp =>
+      'Event recommendations and Catch updates.';
+
+  @override
+  String get messagingPermissionsOrganizerHelp =>
+      'Event announcements and updates from this organizer only.';
+
+  @override
+  String get messagingPermissionsStop => 'Stop updates';
+
+  @override
+  String get messagingPermissionsRefresh => 'Refresh permissions';
+
+  @override
+  String get messagingPermissionsSettingsHelp =>
+      'Manage Catch and organizer WhatsApp updates separately.';
+
+  @override
+  String get formProfilesTabLabel => 'Forms & cards';
+
+  @override
+  String get formProfilesTitle => 'Forms & private cards';
+
+  @override
+  String get formProfilesDescription =>
+      'Your form details, grouped by organizer. Review unclaimed submissions and manage the answers saved to each private card. Other organizers cannot see these cards.';
+
+  @override
+  String get formProfilesEmptyTitle => 'No form profiles yet';
+
+  @override
+  String get formProfilesEmptyBody =>
+      'Forms with Catch profile fields or private card fields appear here after you submit with your verified phone number.';
+
+  @override
+  String get formProfilesLoadMore => 'Load more';
+
+  @override
+  String get formProfilesOrganizerFallback => 'Organizer';
+
+  @override
+  String get formProfileReviewTitle => 'Review your profile';
+
+  @override
+  String get formProfileReviewDescription =>
+      'Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.';
+
+  @override
+  String get formProfileCoreTitle => 'Catch profile details';
+
+  @override
+  String get formProfileCardTitle => 'Your private organizer card';
+
+  @override
+  String get formProfileCardDescription =>
+      'This card is private to you. Other organizers cannot see it. You can separately choose answers to share in an eligible event chat. The original organizer still has your form response; removing an answer here only removes it from your card.';
+
+  @override
+  String get formProfileKeepAnswer => 'Keep on my private card';
+
+  @override
+  String get formProfileUseAnswer => 'Use for my Catch profile';
+
+  @override
+  String get formProfileBasicsTitle => 'Review your identity';
+
+  @override
+  String get formProfileBasicsDescription =>
+      'Your verified sign-in phone identifies your account. Review your name, date of birth and gender before saving.';
+
+  @override
+  String get formProfileDisplayName => 'Display name';
+
+  @override
+  String get formProfileBirthDate => 'Date of birth';
+
+  @override
+  String get formProfileGender => 'Gender';
+
+  @override
+  String get formProfileDateHint => 'YYYY-MM-DD · You must be 18 or older.';
+
+  @override
+  String get formProfileConfirmation => 'I have reviewed these details';
+
+  @override
+  String get formProfileConfirmationBody =>
+      'Catch can store the profile details I choose. They remain subject to my sharing settings. My private organizer card stays private until I choose to share it.';
+
+  @override
+  String get formProfileSave => 'Save reviewed details';
+
+  @override
+  String get formProfileSaved => 'Your reviewed details have been saved.';
+
+  @override
+  String get formProfileYes => 'Yes';
+
+  @override
+  String get formProfileNo => 'No';
+
+  @override
+  String get formProfileEmptyAnswer => 'No answer';
+
+  @override
+  String get formProfileAttachment => 'Submitted attachment';
+
+  @override
+  String get formProfileReload => 'Reload latest details';
+
+  @override
+  String get formProfilePhoneAuthority =>
+      'Your sign-in phone is verified separately. This form answer cannot change it.';
+
+  @override
+  String get formProfileUnsupported =>
+      'This answer can stay in your private form submission. It cannot be copied into a Catch profile field here.';
+
+  @override
+  String get formProfileInvalid =>
+      'Check the highlighted fields before saving.';
+
+  @override
+  String get formProfileRequired => 'Enter a valid value.';
+
+  @override
+  String get formProfileUsePhoto => 'Use this photo for my Catch profile';
+
+  @override
+  String get formProfilePhotoRetry => 'Retry photo preview';
+
+  @override
+  String get eventChatTitle => 'Event chat';
+
+  @override
+  String get eventChatEntryBody => 'Meet the people attending this event.';
+
+  @override
+  String get eventChatOpen => 'Open event chat';
+
+  @override
+  String get eventChatClose => 'Close event chat';
+
+  @override
+  String get eventChatLeave => 'Leave chat';
+
+  @override
+  String get eventChatJoin => 'Join event chat';
+
+  @override
+  String get eventChatNotOpen => 'The chat is not open yet';
+
+  @override
+  String get eventChatHostSetup =>
+      'Open a shared conversation for people admitted to this event. Each person chooses whether to join.';
+
+  @override
+  String get eventChatGuestWaiting =>
+      'Your host can open a shared conversation for people attending this event.';
+
+  @override
+  String get eventChatJoinTitle => 'Meet your fellow attendees';
+
+  @override
+  String get eventChatJoinDisclosure =>
+      'Joining shares your name and messages with the people in this event chat. Your form answers and private organizer cards stay private unless you choose to share them. Joining does not turn on dating discovery.';
+
+  @override
+  String get eventChatProfileRequired =>
+      'Review your Catch profile before joining';
+
+  @override
+  String get eventChatProfileHelp =>
+      'Choose the name you want other attendees to see. Your submitted form details stay private until you review them.';
+
+  @override
+  String get eventChatReviewProfile => 'Review my profile';
+
+  @override
+  String get eventChatProfileHostHelp =>
+      'Review your Catch profile in the consumer app, then return here to join. You can open or close this room as a host.';
+
+  @override
+  String get eventChatEmptyTitle => 'Start the conversation';
+
+  @override
+  String get eventChatEmptyBody =>
+      'Say hello, ask a question or make a plan for the event.';
+
+  @override
+  String get eventChatEarlier => 'Earlier messages';
+
+  @override
+  String get eventChatMessageActions => 'Message actions';
+
+  @override
+  String get eventChatReply => 'Reply';
+
+  @override
+  String get eventChatReact => 'React';
+
+  @override
+  String get eventChatClearReply => 'Cancel reply';
+
+  @override
+  String get eventChatUnavailable => 'Message unavailable';
+
+  @override
+  String get eventChatReactionLike => 'Like';
+
+  @override
+  String get eventChatReactionLove => 'Love';
+
+  @override
+  String get eventChatReactionLaugh => 'Laugh';
+
+  @override
+  String get eventChatReactionWow => 'Surprised';
+
+  @override
+  String get eventChatReactionSad => 'Sad';
+
+  @override
+  String get eventChatReactionThanks => 'Thanks';
+
+  @override
+  String get eventChatReactionsTitle => 'Choose a reaction';
+
+  @override
+  String get eventChatCloseReactions => 'Close reactions';
+
+  @override
+  String get eventChatYou => 'You';
+
+  @override
+  String get eventChatRefresh => 'Refresh chat';
+
+  @override
+  String eventChatReplyingTo({required String name}) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String eventChatTyping({required String names}) {
+    return '$names typing…';
+  }
+
+  @override
+  String get eventChatsTab => 'Events';
+
+  @override
+  String get directMessagesTab => 'Direct messages';
+
+  @override
+  String get eventChatsEmptyTitle => 'Your event conversations';
+
+  @override
+  String get eventChatsEmptyBody =>
+      'Event chats appear here when you are on the attendee list. You can review your profile and choose to join once the host opens the chat.';
+
+  @override
+  String get eventChatsWaiting => 'Waiting for the host to open the chat';
+
+  @override
+  String get eventChatsReviewProfile => 'Review your profile to join';
+
+  @override
+  String get eventChatsJoined => 'You joined this conversation';
+
+  @override
+  String get eventChatsReady => 'Ready to join';
+
+  @override
+  String get eventChatsLoadMore => 'Check more events';
+
+  @override
+  String get hostResponseSaveReviewNote => 'Save review note';
+
+  @override
+  String get hostResponseStartReview => 'Start application review';
+
+  @override
+  String get eventProfileTitle => 'Event profile';
+
+  @override
+  String get eventProfileMine => 'My event profile';
+
+  @override
+  String get eventProfileDisclosure =>
+      'Your name is visible when you join. Choose any extra details to share with people in this event chat, including its hosts. These choices apply only to this event.';
+
+  @override
+  String get eventProfileCardDisclosure =>
+      'Choose answers you kept in this organizer’s private card. Your other organizer cards and private host notes are never included.';
+
+  @override
+  String get eventProfileCore => 'Catch profile details';
+
+  @override
+  String get eventProfileCard => 'Organizer card';
+
+  @override
+  String get eventProfilePhoto => 'Profile photo';
+
+  @override
+  String get eventProfileNoPhoto => 'No photo shared';
+
+  @override
+  String get eventProfileNoCard => 'No card selected';
+
+  @override
+  String get eventProfileChooseCard => 'Choose a private card';
+
+  @override
+  String get eventProfileNoCards =>
+      'No claimed cards from this organizer are available. You can review your submitted forms from your account.';
+
+  @override
+  String get eventProfileMoreCards => 'Load more cards';
+
+  @override
+  String get eventProfileSave => 'Save sharing choices';
+
+  @override
+  String get eventProfileStop => 'Stop sharing extra details';
+
+  @override
+  String get eventProfileSaved => 'Event profile updated';
+
+  @override
+  String get eventProfileCannotShare =>
+      'To share extra details, you need to review and claim your profile, be admitted to this event, and join its chat. You can still remove an earlier sharing choice.';
+
+  @override
+  String get eventProfileEmpty => 'Only their name is shared';
+
+  @override
+  String get eventProfileEmptyBody =>
+      'This person has not shared extra profile details with this event chat.';
+
+  @override
+  String get eventProfileSharedHere => 'Shared with this event chat';
+
+  @override
+  String get eventProfileSelectedAnswers => 'Selected organizer answers';
+
+  @override
+  String get eventProfileReviewAgain =>
+      'Changed profile details or answers need to be selected again before sharing.';
+
+  @override
+  String get eventProfileView => 'View event profile';
+
+  @override
+  String get eventProfileEditAgain =>
+      'After saving, review your choices here whenever you want to change or stop sharing.';
+
+  @override
+  String eventProfilePhotoLabel({required int number}) {
+    return 'Photo $number';
+  }
+
+  @override
+  String get eventProfileChoosePhoto => 'Share this photo';
+
+  @override
+  String get eventProfilePhotoUnavailable =>
+      'Photo preview unavailable. Reload before selecting it.';
+
+  @override
+  String get formProfilesUnclaimed =>
+      'Not claimed · Review before using in Catch';
+
+  @override
+  String get formProfilesNoCardAnswers =>
+      'Reviewed · No answers saved to a private card';
+
+  @override
+  String formProfilesSavedAnswers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers saved to your private card',
+      one: '1 answer saved to your private card',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileActivityPreferencesTitle => 'Activity preferences';
+
+  @override
+  String get profileActivityPreferencesBody =>
+      'Optional pace, distances and run preferences.';
+
+  @override
+  String get profileCoreDetailsTitle => 'Your Catch profile';
+
+  @override
+  String get profileCoreDetailsBody =>
+      'Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.';
+
+  @override
+  String get eventChatParticipantsTitle => 'Participants';
+
+  @override
+  String get eventChatParticipantsDescription =>
+      'People who have joined this event chat. Open a profile to see the details they chose to share here.';
+
+  @override
+  String get eventChatParticipantsEmpty =>
+      'No participants are available to show.';
+
+  @override
+  String get eventChatParticipantsContinue =>
+      'No visible participants in this part of the list. Continue to check the remaining participants.';
+
+  @override
+  String get eventChatParticipantsMore => 'Show more participants';
+
+  @override
+  String get eventChatParticipantHost => 'Host';
+
+  @override
+  String get eventChatParticipantAttendee => 'Attendee';
+
+  @override
+  String get eventChatReport => 'Report message';
+
+  @override
+  String get eventChatBlock => 'Block sender';
+
+  @override
+  String get eventChatRemove => 'Remove message';
+
+  @override
+  String get eventChatReportDisclosure =>
+      'Choose a reason to send this message to Catch for review. The sender will not see your report.';
+
+  @override
+  String get eventChatReportHarassment => 'Harassment or abuse';
+
+  @override
+  String get eventChatReportSpam => 'Spam or scam';
+
+  @override
+  String get eventChatReportInappropriate => 'Inappropriate content';
+
+  @override
+  String get eventChatReportOther => 'Something else';
+
+  @override
+  String get eventChatBlockDisclosure =>
+      'You and this person will stop seeing each other’s messages and event profiles. They stay in the event, and other participants can still see them. You can unblock them in Settings.';
+
+  @override
+  String get eventChatRemoveDisclosure =>
+      'This message and its reply previews will be hidden from everyone in the room. You cannot undo this. Catch may retain a private record for safety review.';
+
+  @override
+  String get eventChatReported => 'Report sent to Catch.';
+
+  @override
+  String get eventChatBlocked => 'Sender blocked.';
+
+  @override
+  String get eventChatRemoved => 'Message removed.';
+
+  @override
+  String get programsWorkShellTitle => 'Program operations';
+
+  @override
+  String get programsWorkShellAccessTitle => 'Restricted program access';
+
+  @override
+  String get programsWorkShellAccessSubtitle =>
+      'This workspace shows only the duties and scopes granted for this program.';
+
+  @override
+  String get programsWorkShellRoleManager => 'Organizer manager';
+
+  @override
+  String get programsWorkShellRoleStaff => 'Program staff';
+
+  @override
+  String get programsWorkArrivalsTitle => 'Airport arrivals';
+
+  @override
+  String get programsWorkArrivalsSubtitle =>
+      'Live guest roster for each pickup station in your scope.';
+
+  @override
+  String get programsWorkDispatchTitle => 'Dispatch desk';
+
+  @override
+  String get programsWorkDispatchSubtitle =>
+      'Vehicle suggestions and plate capture per station.';
+
+  @override
+  String get programsWorkHotelTitle => 'Hotel desk';
+
+  @override
+  String get programsWorkHotelSubtitle =>
+      'Inbound vehicles and expected guests for your hotel.';
+
+  @override
+  String get programsWorkLedgerTitle => 'Trip ledger';
+
+  @override
+  String get programsWorkLedgerSubtitle =>
+      'Every dispatch as a reconciliation record.';
+
+  @override
+  String get programsWorkLedgerOpen => 'Open trip ledger';
+
+  @override
+  String get programsWorkShellEmptyTitle => 'No duties assigned';
+
+  @override
+  String get programsWorkShellEmptyMessage =>
+      'Ask the organizer to grant you an airport, hotel or dispatch duty for this program.';
+
+  @override
+  String get programsArrivalsTitle => 'Arrivals roster';
+
+  @override
+  String get programsArrivalsAttentionTitle => 'Needs attention';
+
+  @override
+  String get programsArrivalsAttentionSubtitle =>
+      'Cancelled, diverted or disrupted arrivals that need a human decision.';
+
+  @override
+  String get programsArrivalsReadyTitle => 'Ready at the curb';
+
+  @override
+  String get programsArrivalsReadySubtitle =>
+      'Guests observed at the pickup point and waiting.';
+
+  @override
+  String get programsArrivalsReadyEmpty =>
+      'Nobody is waiting at the curb right now.';
+
+  @override
+  String get programsArrivalsExpectedTitle => 'Expected';
+
+  @override
+  String get programsArrivalsExpectedSubtitle =>
+      'Inbound or landed guests, sorted by estimated curb time.';
+
+  @override
+  String get programsArrivalsExpectedEmpty =>
+      'No more guests expected at this station.';
+
+  @override
+  String get programsOperationsReviewBadge => 'Needs review';
+
+  @override
+  String get programsOperationsReviewTitle => 'Review saved changes';
+
+  @override
+  String get programsOperationsReviewBody =>
+      'Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.';
+
+  @override
+  String get programsOperationsReviewEmpty =>
+      'No changes need review for this account.';
+
+  @override
+  String get programsOperationsGuestUnavailable =>
+      'Guest details unavailable at this station';
+
+  @override
+  String get programsOperationsDismiss => 'Dismiss this saved change';
+
+  @override
+  String programsOperationsDeparture({required String plate}) {
+    return 'Departure · $plate';
+  }
+
+  @override
+  String get programsOperationsClaim => 'Claim guest';
+
+  @override
+  String get programsOperationsUnclaim => 'Release guest claim';
+
+  @override
+  String get programsOperationsReady => 'Guest ready at curb';
+
+  @override
+  String get programsOperationsDisrupted => 'Guest journey disrupted';
+
+  @override
+  String get programsOperationsNeedsReview =>
+      'This saved change needs review. Check the current journey and trip records before recording more work.';
+
+  @override
+  String get programsOperationsReloadManifest =>
+      'Reload the complete arrivals roster before dispatching this vehicle.';
+
+  @override
+  String get coreSavedOperationsQuarantined =>
+      'Some saved operations need recovery. Keep the app’s saved data and contact support.';
+
+  @override
+  String get coreSavedOperationsUnavailable =>
+      'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.';
+
+  @override
+  String get programsRecoveryAction => 'Recover saved work';
+
+  @override
+  String get programsRecoveryTitle => 'Saved work recovery';
+
+  @override
+  String get programsRecoveryBody =>
+      'Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.';
+
+  @override
+  String get programsRecoveryExport => 'Export recovery file';
+
+  @override
+  String get programsOperationsPassengersNotReady =>
+      'Every passenger must be marked ready at the curb before this vehicle departs.';
+
+  @override
+  String get programsArrivalsOutboxTitle => 'Offline queue';
+
+  @override
+  String get programsArrivalsOutboxSync => 'Sync now';
+
+  @override
+  String get programsArrivalsOutboxClear => 'Review changes';
+
+  @override
+  String get programsArrivalsClaimedByMe => 'Claimed by you';
+
+  @override
+  String get programsArrivalsQueued => 'Queued offline';
+
+  @override
+  String get programsArrivalsCurbSourceReady => 'ready';
+
+  @override
+  String get programsArrivalsCurbSourceManual => 'manual';
+
+  @override
+  String get programsArrivalsCurbSourceLanded => 'landed';
+
+  @override
+  String get programsArrivalsCurbSourceEstimated => 'est.';
+
+  @override
+  String get programsArrivalsCurbSourceScheduled => 'sched.';
+
+  @override
+  String get programsArrivalsCancelled => 'Flight cancelled';
+
+  @override
+  String get programsArrivalsDiverted => 'Flight diverted';
+
+  @override
+  String get programsArrivalsNoEstimate => 'No curb estimate';
+
+  @override
+  String get programsArrivalsReadyBadge => 'Ready';
+
+  @override
+  String get programsArrivalsExpectedBadge => 'Expected';
+
+  @override
+  String get programsArrivalsDisruptedBadge => 'Disrupted';
+
+  @override
+  String get programsArrivalsDispatchedBadge => 'Dispatched';
+
+  @override
+  String get programsArrivalsNoShowBadge => 'No-show';
+
+  @override
+  String get programsArrivalsArrivedBadge => 'Arrived';
+
+  @override
+  String get programsArrivalsRowActions => 'Arrival actions';
+
+  @override
+  String get programsArrivalsClaimAction => 'Claim this party';
+
+  @override
+  String get programsArrivalsUnclaimAction => 'Release my claim';
+
+  @override
+  String get programsArrivalsReadyAction => 'Mark ready at curb';
+
+  @override
+  String get programsArrivalsDisruptedAction => 'Flag disruption';
+
+  @override
+  String get programsDispatchTitle => 'Dispatch desk';
+
+  @override
+  String get programsDispatchGroupsTitle => 'Suggested vehicles';
+
+  @override
+  String get programsDispatchGroupsSubtitle =>
+      'Parties batched by curb window and destination. Suggestions only — you decide.';
+
+  @override
+  String get programsDispatchGroupsEmpty =>
+      'No parties are waiting or expected in this window.';
+
+  @override
+  String get programsDispatchUnassignedTitle => 'Unassigned';
+
+  @override
+  String get programsDispatchUnassignedSubtitle =>
+      'Legs the planner could not batch.';
+
+  @override
+  String get programsDispatchReasonMissingTime =>
+      'A guest has no usable arrival estimate.';
+
+  @override
+  String get programsDispatchReasonNoVehicle =>
+      'No vehicle class fits this party — needs review.';
+
+  @override
+  String get programsDispatchReasonMissingScope =>
+      'A leg is missing a pickup or destination assignment.';
+
+  @override
+  String get programsDispatchAction => 'Dispatch vehicle';
+
+  @override
+  String get programsDispatchSheetTitle => 'Dispatch vehicle';
+
+  @override
+  String get programsDispatchPlateHint => 'Plate, e.g. DL-1T-4471';
+
+  @override
+  String get programsDispatchNoVendors =>
+      'No vendors are bound to this program yet.';
+
+  @override
+  String get programsDispatchVendorsUnavailable =>
+      'Vendor list could not be loaded — you can still dispatch without a vendor.';
+
+  @override
+  String get programsDispatchConfirm => 'Dispatch now';
+
+  @override
+  String get programsHotelPreviousTrip => 'Previous vehicles';
+
+  @override
+  String get programsHotelFirstTrip => 'First vehicles';
+
+  @override
+  String get programsHotelMoreTrip => 'More vehicles';
+
+  @override
+  String get programsHotelPreviousExpected => 'Previous guests';
+
+  @override
+  String get programsHotelFirstExpected => 'First guests';
+
+  @override
+  String get programsHotelMoreExpected => 'More guests';
+
+  @override
+  String get programsHotelRefresh => 'Refresh hotel';
+
+  @override
+  String get programsHotelTitle => 'Hotel desk';
+
+  @override
+  String get programsHotelSubtitle => 'Inbound arrivals';
+
+  @override
+  String get programsHotelEnRouteTitle => 'On the way';
+
+  @override
+  String get programsHotelEnRouteSubtitle =>
+      'Vehicles that departed the airport for this hotel.';
+
+  @override
+  String get programsHotelEnRouteEmpty =>
+      'No vehicles are on the way right now.';
+
+  @override
+  String get programsHotelExpectedTitle => 'Still expected';
+
+  @override
+  String get programsHotelExpectedSubtitle =>
+      'Parties assigned to this hotel that have not departed yet.';
+
+  @override
+  String get programsHotelExpectedEmpty =>
+      'No more guests expected at this hotel.';
+
+  @override
+  String get programsHotelExpectedNoEstimate => 'No curb estimate yet.';
+
+  @override
+  String get programsHotelEtaUnknown => 'ETA unknown';
+
+  @override
+  String get programsHotelMarkArrived => 'Mark arrived';
+
+  @override
+  String get programsHotelStatusEnRoute => 'En route';
+
+  @override
+  String get programsHotelStatusArrived => 'Arrived';
+
+  @override
+  String get programsHotelStatusCancelled => 'Cancelled';
+
+  @override
+  String get programsHotelStatusVoided => 'Voided';
+
+  @override
+  String get programsTripsNewer => 'Newer trips';
+
+  @override
+  String get programsTripsOlder => 'Older trips';
+
+  @override
+  String get programsTripsLatest => 'Latest trips';
+
+  @override
+  String get programsTripCurrentNames =>
+      'Guest names reflect current records; no dispatch snapshot was saved.';
+
+  @override
+  String get programsTripsTitle => 'Trip ledger';
+
+  @override
+  String get programsTripsSubtitle => 'Dispatch reconciliation';
+
+  @override
+  String get programsTripsLedgerTitle => 'Dispatched vehicles';
+
+  @override
+  String get programsTripsLedgerSubtitle =>
+      'One record per departure, newest first. Voided trips stay listed.';
+
+  @override
+  String get programsTripsEmpty => 'No vehicles dispatched yet.';
+
+  @override
+  String get programsTripsVoidAction => 'Void this trip';
+
+  @override
+  String get programsTripsVoidSheetTitle => 'Void trip';
+
+  @override
+  String get programsTripsVoidSheetSubtitle =>
+      'A void releases the guests back to the ready pool. The record stays in the ledger.';
+
+  @override
+  String get programsTripsVoidReasonHint => 'Reason, e.g. wrong vehicle sent';
+
+  @override
+  String get programsTripsVoidConfirm => 'Void trip';
+
+  @override
+  String get programsTripsStatusEnRoute => 'En route';
+
+  @override
+  String get programsTripsStatusArrived => 'Arrived';
+
+  @override
+  String get programsTripsStatusCancelled => 'Cancelled';
+
+  @override
+  String get programsTripsStatusVoided => 'Voided';
+
+  @override
+  String programsWorkShellExpires({required Object date}) {
+    return 'Access expires $date';
+  }
+
+  @override
+  String programsArrivalsOutboxPending({required int count}) {
+    return '$count change(s) queued while offline. They will sync when connectivity returns.';
+  }
+
+  @override
+  String programsArrivalsOutboxReview({
+    required int pending,
+    required int review,
+  }) {
+    return '$pending pending, $review need review before they can sync.';
+  }
+
+  @override
+  String programsArrivalsPassengerCount({required int count}) {
+    return '$count pax';
+  }
+
+  @override
+  String programsArrivalsBagCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bags',
+      one: '1 bag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String programsArrivalsOrigin({required String airport}) {
+    return 'from $airport';
+  }
+
+  @override
+  String programsArrivalsTerminal({required String terminal}) {
+    return 'T$terminal';
+  }
+
+  @override
+  String programsArrivalsClaimedBy({required Object name}) {
+    return 'Claimed by $name';
+  }
+
+  @override
+  String programsDispatchGroupMeta({
+    required int passengers,
+    required int luggage,
+    required int legs,
+  }) {
+    return '$passengers pax · $luggage bags · $legs leg(s)';
+  }
+
+  @override
+  String programsDispatchWaitOverdue({required Object time}) {
+    return 'Ready wait overdue — should have left by $time';
+  }
+
+  @override
+  String programsDispatchDispatchBy({required Object time}) {
+    return 'Dispatch by $time to keep the ready wait';
+  }
+
+  @override
+  String programsDispatchSheetSubtitle({required Object destination}) {
+    return 'To $destination';
+  }
+
+  @override
+  String programsHotelExpectedMeta({
+    required int passengers,
+    required Object time,
+  }) {
+    return '$passengers pax · at curb ~$time';
+  }
+
+  @override
+  String programsHotelTripMeta({
+    required int passengers,
+    required Object names,
+  }) {
+    return '$passengers pax · $names';
+  }
+
+  @override
+  String programsHotelTripTiming({
+    required Object departed,
+    required Object eta,
+  }) {
+    return 'Departed $departed · ETA $eta';
+  }
+
+  @override
+  String programsTripsRowMeta({
+    required int passengers,
+    required Object names,
+  }) {
+    return '$passengers pax · $names';
+  }
+
+  @override
+  String programsTripsRowTimingArrived({
+    required Object departed,
+    required Object arrived,
+  }) {
+    return 'Departed $departed · arrived $arrived';
+  }
+
+  @override
+  String programsTripsRowTimingDeparted({required Object departed}) {
+    return 'Departed $departed · still en route';
+  }
+
+  @override
+  String get programsDispatchHoldTitle => 'Hold for expected arrivals';
+
+  @override
+  String programsDispatchHoldSubtitle({required Object destination}) {
+    return 'Still inbound to $destination — adding them makes this vehicle wait.';
+  }
+
+  @override
+  String programsDispatchHoldOption({
+    required Object time,
+    required int passengers,
+  }) {
+    return '$time · $passengers pax';
+  }
+
+  @override
+  String get programsSnapshotTitle => 'Saved view';
+
+  @override
+  String programsSnapshotBanner({required Object time}) {
+    return 'Last synced at $time — your changes queue until you are back online.';
+  }
 }

@@ -104,6 +104,33 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       "pattern": "^\\+\\d{1,4}$",
       "x-catch-ownership": "client-writable"
     },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "profileClaimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "profileComplete": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
@@ -437,7 +464,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     },
     "interestedInGenders": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 8,
       "uniqueItems": true,
       "items": {

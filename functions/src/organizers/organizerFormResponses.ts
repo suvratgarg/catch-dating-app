@@ -1,4 +1,10 @@
+import {formMessagingOffer, formMessagingChoices,
+  normalizeFormMessagingDecision, prepareFormMessagingGrants} from
+  "./organizerFormMessagingConsent";
 import {createHash} from "crypto";
+import {prepareFormProfileProposal, readParticipantFormProfileProposal} from
+  "./organizerFormProfileProposals";
+import {requireFreeFormSubmission} from "./organizerFormCapabilities";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -289,6 +295,8 @@ export async function beginOrganizerFormResponseHandler(
     revision: draft.revision,
     answers: draft.answers,
     consentAccepted: draft.consentAccepted,
+    ...(draft.messagingDecision ?
+      {messagingChoices: formMessagingChoices(draft.messagingDecision)} : {}),
     identityKind: draft.identityKind,
     expiresAtMillis: draft.expiresAt.toMillis(),
   };
@@ -331,8 +339,17 @@ export async function saveOrganizerFormResponseDraftHandler(
     const version = await getVersion(tx, db, current.versionId);
     validateAnswerShape(version.definition, data.answers, false);
     const now = deps.timestamp();
+    const messagingDecision = normalizeFormMessagingDecision({
+      choices: data.messagingChoices, previous: current.messagingDecision,
+      definition: version.definition,
+      phoneVerified: current.identityKind === "phoneVerified" &&
+        typeof request.auth?.token.phone_number === "string" &&
+        /^\+[1-9]\d{6,14}$/u.test(request.auth.token.phone_number),
+      now,
+    });
     const updated: OrganizerFormResponseDraftDocument = {
       ...current,
+      ...(messagingDecision ? {messagingDecision} : {}),
       revision: current.revision + 1,
       answers: data.answers,
       consentAccepted: data.consentAccepted,
@@ -641,6 +658,7 @@ export async function submitOrganizerFormResponseHandler(
       formSnap,
       "OrganizerFormDocument"
     );
+    requireFreeFormSubmission(version.definition);
     const availability = availabilityFor(form, version, deps.timestamp());
     if (availability.status !== "active") {
       throw new HttpsError("failed-precondition", availability.message);
@@ -665,72 +683,105 @@ export async function submitOrganizerFormResponseHandler(
       definition: version.definition,
       answers: submittedAnswers,
     });
-    const response: OrganizerFormResponseDocument = {
-      organizerId: draft.organizerId,
-      formId: draft.formId,
-      versionId: draft.versionId,
-      publicFormId: draft.publicFormId,
-      draftId: data.draftId,
-      status: "submitted",
-      identityKind: draft.identityKind,
-      respondentUid: draft.respondentUid,
-      identity: responseIdentitySnapshot(
-        version.definition,
-        submittedAnswers,
-        request
-      ),
+    const {response} = await persistOrganizerFormSubmission({
+      tx, db, draftId: data.draftId, draft, version, submittedAnswers,
+      identity: responseIdentitySnapshot(version.definition,
+        submittedAnswers, request),
       withdrawalTokenHash: draft.respondentUid === null ?
         hashToken(withdrawalToken) : null,
-      answers: submittedAnswers,
-      answerSnapshots: answerSnapshots(version.definition, submittedAnswers),
-      consentVersion: draft.consentVersion,
-      sourceLinkId: draft.sourceLinkId,
-      completionMillis: Math.max(
-        0,
-        Math.min(
-          responseDraftLifetimeMs,
-          now.toMillis() - draft.createdAt.toMillis()
-        )
-      ),
-      submittedAt: now,
-      withdrawnAt: null,
-    };
-    tx.create(responseRef, response);
-    for (const assetRef of submittedAssetRefs) {
-      tx.update(assetRef, {
-        expiresAt: admin.firestore.Timestamp.fromMillis(
-          now.toMillis() + submittedAssetLifetimeMs
-        ),
-      });
-    }
-    tx.set(draftRef, {
-      ...draft,
-      status: "submitted",
-      submittedResponseId: responseId,
-      updatedAt: now,
-    } satisfies OrganizerFormResponseDraftDocument);
-    tx.update(db.collection("organizerForms").doc(draft.formId), {
-      submittedResponseCount: admin.firestore.FieldValue.increment(1),
-      lastResponseAt: now,
-      updatedAt: now,
+      submittedAssetRefs, now,
     });
-    if (draft.sourceLinkId) {
-      tx.update(
-        db.collection("organizerFormShareLinks").doc(draft.sourceLinkId),
-        {submissionCount: admin.firestore.FieldValue.increment(1)}
-      );
-    }
     return {response, version};
   });
-  return responseReceipt(
-    responseId,
+  return organizerFormResponseReceipt(
+    db, responseId,
     result.response,
     result.version,
     result.response.respondentUid === null ? withdrawalToken : null
   );
 }
 
-function responseIdentitySnapshot(
+/** Writes a previously validated submission inside its caller's transaction. */
+export async function persistOrganizerFormSubmission(params: {
+  tx: FirebaseFirestore.Transaction;
+  db: FirebaseFirestore.Firestore;
+  draftId: string;
+  draft: OrganizerFormResponseDraftDocument;
+  version: OrganizerFormVersionDocument;
+  submittedAnswers: AnswerMap;
+  identity: OrganizerFormResponseDocument["identity"];
+  withdrawalTokenHash: string | null;
+  submittedAssetRefs: FirebaseFirestore.DocumentReference[];
+  now: FirebaseFirestore.Timestamp;
+}): Promise<{responseId: string; response: OrganizerFormResponseDocument}> {
+  const {tx, db, draftId, draft, version, submittedAnswers, identity,
+    withdrawalTokenHash, submittedAssetRefs, now} = params;
+  const responseId = deterministicId("formresponse", draftId);
+  const responseRef = db.collection("organizerFormResponses").doc(responseId);
+  const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
+  const writeMessagingGrants = await prepareFormMessagingGrants({
+    tx, db, draft, definition: version.definition, responseId, now,
+  });
+  const writeProfileProposal = await prepareFormProfileProposal({
+    tx, db, draft, definition: version.definition,
+    answers: submittedAnswers, responseId, now,
+  });
+  const response: OrganizerFormResponseDocument = {
+    organizerId: draft.organizerId,
+    formId: draft.formId,
+    versionId: draft.versionId,
+    publicFormId: draft.publicFormId,
+    draftId: draftId,
+    status: "submitted",
+    identityKind: draft.identityKind,
+    respondentUid: draft.respondentUid,
+    identity,
+    withdrawalTokenHash,
+    answers: submittedAnswers,
+    answerSnapshots: answerSnapshots(version.definition, submittedAnswers),
+    consentVersion: draft.consentVersion,
+    sourceLinkId: draft.sourceLinkId,
+    completionMillis: Math.max(
+      0,
+      Math.min(
+        responseDraftLifetimeMs,
+        now.toMillis() - draft.createdAt.toMillis()
+      )
+    ),
+    submittedAt: now,
+    withdrawnAt: null,
+  };
+  writeMessagingGrants();
+  writeProfileProposal();
+  tx.create(responseRef, response);
+  for (const assetRef of submittedAssetRefs) {
+    tx.update(assetRef, {
+      expiresAt: admin.firestore.Timestamp.fromMillis(
+        now.toMillis() + submittedAssetLifetimeMs
+      ),
+    });
+  }
+  tx.set(draftRef, {
+    ...draft,
+    status: "submitted",
+    submittedResponseId: responseId,
+    updatedAt: now,
+  } satisfies OrganizerFormResponseDraftDocument);
+  tx.update(db.collection("organizerForms").doc(draft.formId), {
+    submittedResponseCount: admin.firestore.FieldValue.increment(1),
+    lastResponseAt: now,
+    updatedAt: now,
+  });
+  if (draft.sourceLinkId) {
+    tx.update(
+      db.collection("organizerFormShareLinks").doc(draft.sourceLinkId),
+      {submissionCount: admin.firestore.FieldValue.increment(1)}
+    );
+  }
+  return {responseId, response};
+}
+
+export function responseIdentitySnapshot(
   definition: FormDefinition,
   answers: AnswerMap,
   request: CallableRequest<unknown>
@@ -973,6 +1024,7 @@ async function resolvePublicForm(
       availabilityMessage: availability.message,
       organizer: presentation,
       definition: definitionToWire(version.definition),
+      messagingOffer: formMessagingOffer(version.definition),
     },
   };
 }
@@ -990,14 +1042,14 @@ async function organizerPresentation(
     return {
       organizerId,
       name: organizer.name,
-      logoUrl: organizer.logoPhoto?.url ?? organizer.profileImageUrl ??
-        organizer.imageUrl,
+      logoUrl: organizer.logoPhoto?.url?.trim() ||
+        organizer.profileImageUrl?.trim() || null,
     };
   }
   return {organizerId, name: "Organizer", logoUrl: null};
 }
 
-function availabilityFor(
+export function availabilityFor(
   form: OrganizerFormDocument,
   version: OrganizerFormVersionDocument,
   now: FirebaseFirestore.Timestamp
@@ -1022,7 +1074,8 @@ function availabilityFor(
     return {status: "closed", message: closedCopy};
   }
   const limit = version.definition.availability.responseLimit;
-  if (limit !== null && form.submittedResponseCount >= limit) {
+  if (limit !== null && form.submittedResponseCount +
+      (form.pendingPaymentCount ?? 0) >= limit) {
     return {status: "full", message: closedCopy};
   }
   return {status: "active", message: "This form is accepting responses."};
@@ -1038,7 +1091,7 @@ function assertAcceptingResponses(projection: PublicFormProjection): void {
   }
 }
 
-function requireResponseIdentity(
+export function requireResponseIdentity(
   request: CallableRequest<unknown>,
   policy: FormDefinition["identityPolicy"]
 ): {
@@ -1091,7 +1144,7 @@ function requireActiveDraft(
     snapshot,
     "OrganizerFormResponseDraftDocument"
   );
-  if (draft.status !== "active") {
+  if (draft.status !== "active" || draft.paymentAttemptId) {
     throw new HttpsError(
       "failed-precondition",
       "This response draft is no longer editable."
@@ -1274,7 +1327,7 @@ function validateQuestionAnswer(
   }
 }
 
-async function requireReadyAssets(params: {
+export async function requireReadyAssets(params: {
   tx: FirebaseFirestore.Transaction;
   db: FirebaseFirestore.Firestore;
   draftId: string;
@@ -1412,12 +1465,28 @@ function answerSnapshots(
     }));
 }
 
-function responseReceipt(
+export async function organizerFormResponseReceipt(
+  db: FirebaseFirestore.Firestore,
   responseId: string,
   response: OrganizerFormResponseDocument,
   version: OrganizerFormVersionDocument,
   withdrawalToken: string | null
-): SubmitOrganizerFormResponseCallableResponse {
+): Promise<SubmitOrganizerFormResponseCallableResponse> {
+  let profileReviewAvailable = false;
+  if (response.status === "submitted" && response.respondentUid &&
+      response.identityKind === "phoneVerified") {
+    try {
+      await readParticipantFormProfileProposal({db,
+        uid: response.respondentUid, responseId});
+      profileReviewAvailable = true;
+    } catch (error) {
+      // Old receipts and ordinary forms have no proposal. Never mask a real
+      // operational error as a completed ownership check.
+      if (!(error instanceof HttpsError) || error.code !== "not-found") {
+        throw error;
+      }
+    }
+  }
   return {
     responseId,
     formId: response.formId,
@@ -1426,6 +1495,7 @@ function responseReceipt(
     submittedAtMillis: response.submittedAt.toMillis(),
     withdrawalToken,
     completion: version.definition.completion,
+    profileReviewAvailable,
   };
 }
 

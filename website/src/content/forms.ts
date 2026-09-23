@@ -1,12 +1,14 @@
 export const publicFormsCopy = {
   brand: "Catch Forms",
+  profileReviewAction: "Review my profile in Catch",
+  profileReviewHelp: "Sign in to Catch with the same verified phone number to review your profile and private organizer card. Nothing is shared with other attendees by opening this link.",
   brandWord: "catch",
   loading: "Opening form",
   unavailableTitle: "This form is unavailable",
   unavailableBody: "The organizer may have paused, closed, or filled this form.",
   identityKicker: "Secure response",
   identityTitle: "Verify before continuing",
-  identityBody: "This organizer requires a verified identity. Your answers remain scoped to this form.",
+  identityBody: "Verify your identity to continue. Verification does not make your profile public or sign you up for WhatsApp messages.",
   phoneLabel: "Mobile number",
   phonePlaceholder: "+91 98765 43210",
   sendCode: "Send code",
@@ -28,8 +30,27 @@ export const publicFormsCopy = {
   reviewBody: "You can go back and change any answer before it is sent.",
   unanswered: "Not answered",
   consentHeading: "Consent and retention",
+  messagingHeading: "WhatsApp updates (optional)",
+  messagingHelp: "Choose either, both, or neither. These choices do not affect your application or payment. Leaving a box unchecked does not change an existing messaging permission.",
   submit: "Submit response",
   submitting: "Submitting",
+  paymentKicker: "Form payment",
+  paymentTitle: "Complete your submission",
+  paymentRecoveryAction: "Check an existing payment",
+  paymentRecoveryTitle: "Find your payment",
+  paymentRecoveryBody: "Verify the same phone number you used when applying. You can check a payment even when this form is closed. This does not start another payment.",
+  paymentRecoveryEmpty: "No unfinished payment or submitted response was found for this phone number on this form.",
+  paymentBody: "Your answers are saved. Your response is sent after payment is confirmed. Payment does not guarantee acceptance or event admission.",
+  paymentContinue: "Continue to payment",
+  paymentPreparing: "Preparing secure payment",
+  paymentCheck: "Check payment status",
+  paymentRestart: "Start a new response",
+  paymentUnavailable: "Checkout could not be opened. Check its status or contact the organizer before trying again.",
+  paymentChecking: "Checking payment",
+  paymentRefundPolicy: "Refund policy",
+  paymentTestMode: "Test checkout — no real payment is collected.",
+  paymentWithdrawNote: "Withdrawing your response does not automatically refund the fee. The organizer’s refund policy still applies.",
+  paymentReceiptRefunded: "Your payment was refunded. Your response is still submitted; a refund does not change its review status.",
   saveStatus: "Saving draft",
   savedStatus: "Draft saved",
   selectFiles: "Choose files",
@@ -46,6 +67,10 @@ export const publicFormsCopy = {
   uploadPending: "Wait for the secure upload to finish before continuing.",
   uploadedAnswer: "Secure upload attached",
   requiredSuffix: "required",
+  optionalSuffix: "optional",
+  profileFieldDisclosure: "Catch profile field. Saved privately until you claim your profile and choose what to share.",
+  organizerCardFieldDisclosure: "Organizer card field. Private to you and this organizer until you choose to share it after claiming your profile.",
+  profilePrivacyNote: "Your answers go to this organizer. Marked profile and organizer-card fields are also saved privately in Catch. Other users can see only the fields you choose to share after you claim your profile. Other organizers cannot see this organizer’s card.",
   chooseOne: "Choose one",
   chooseAny: "Choose all that apply",
   confirmAcknowledgement: "I confirm",
@@ -56,7 +81,31 @@ export const publicFormsCopy = {
   withdrawing: "Withdrawing",
   withdrawnTitle: "Response withdrawn",
   withdrawnBody: "The organizer can no longer treat this response as active.",
-  privacyNote: "Powered by Catch. Answers are sent only to the organizer named above.",
+  poweredBy: "Powered by",
+  privacyNote: "Answers are sent only to the organizer named above.",
   stepLabel: "Form progress",
   genericError: "Something went wrong. Please try again.",
 } as const;
+
+export const publicFormPaymentStatuses = {
+  creatingOrder: "Preparing your checkout. Please wait before trying again.",
+  orderUnknown: "We’re checking whether checkout was created. Please don’t start a second response.",
+  checkoutReady: "Ready for secure payment through Razorpay.",
+  verifying: "Checking payment. You can return to this page for the result.",
+  captured: "Payment received. Finishing your submission.",
+  submitted: "Response received.",
+  failed: "That payment did not complete. You can retry while this checkout is open.",
+  expired: "This checkout has expired. Any late payment will be refunded; no response has been submitted.",
+  refundPending: "A refund is being processed because the response could not be submitted. You can return here to check it.",
+  refunded: "Payment refunded. No response was submitted.",
+  reviewRequired: "This payment needs the organizer’s attention. Please contact them before paying again.",
+} as const;
+
+export function formFeeLabel(amountPaise: number) {
+  return new Intl.NumberFormat("en-IN", {style: "currency", currency: "INR",
+    maximumFractionDigits: amountPaise % 100 === 0 ? 0 : 2}).format(amountPaise / 100);
+}
+
+export function formFeePayLabel(amountPaise: number) {
+  return `Pay ${formFeeLabel(amountPaise)} and submit`;
+}

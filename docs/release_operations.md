@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.16
-updated: 2026-09-21
+version: 2.7.17
+updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -32,7 +32,7 @@ GitHub Actions and Xcode Cloud read that contract;
 `bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
 Functions Node engine, or an Apple-native workflow runner drifts. Keep the
 Apple runner major aligned with the minimum Xcode major. The repository enforces
-Xcode 26.2.0 or newer for the locked Firebase Apple SDK 12.18.0. Although
+Xcode 26.2.0 or newer for the locked Firebase Apple SDK 12.19.0. Although
 `connectivity_plus` 7.x requires only Xcode 26.1.1 or newer, Firebase sets the
 higher repository minimum. Native build, release, and hosted visual-smoke
 workflows use `macos-26`.

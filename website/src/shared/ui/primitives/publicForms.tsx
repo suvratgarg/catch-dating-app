@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useId, useRef, useState} from "react";
 import type {ChangeEvent, FormHTMLAttributes, PointerEvent, ReactNode} from "react";
 import {Button, PlainLink} from "./actions";
 import {Form} from "./forms";
@@ -6,8 +6,6 @@ import {Form} from "./forms";
 export function PublicFormFrame({
   activityKind,
   appearance,
-  brandLabel,
-  brandWord,
   children,
   embed,
   logoUrl,
@@ -15,31 +13,35 @@ export function PublicFormFrame({
 }: {
   activityKind?: string | null;
   appearance?: "editorial" | "minimal" | "activity";
-  brandLabel: string;
-  brandWord: string;
   children: ReactNode;
   embed: boolean;
   logoUrl?: string | null;
   organizerName?: string | null;
 }) {
+  const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null);
+  const organizerLogo = logoUrl?.trim();
+  const showLogo = organizerLogo && organizerLogo !== failedLogoUrl;
+
   return (
     <div
       className="public-form"
       data-appearance={appearance ?? "minimal"}
       data-embed={embed || undefined}
     >
-      <header className="public-form__brand">
-        <PlainLink aria-label={brandLabel} href="/">
-          {brandWord}<span>●</span>
-        </PlainLink>
-        {organizerName ? (
-          <span className="public-form__organizer">
-            {logoUrl ? <img alt="" src={logoUrl} /> : null}
-            <span>{organizerName}</span>
+      {organizerName ? (
+        <header className="public-form__brand">
+          <div className="public-form__organizer">
+            {showLogo ? (
+              <img
+                alt={organizerName}
+                onError={() => setFailedLogoUrl(organizerLogo)}
+                src={organizerLogo}
+              />
+            ) : <span>{organizerName}</span>}
             {activityKind ? <small>{activityKind}</small> : null}
-          </span>
-        ) : null}
-      </header>
+          </div>
+        </header>
+      ) : null}
       {children}
     </div>
   );
@@ -109,21 +111,25 @@ export function PublicFormSection({
 
 export function PublicFormQuestion({
   children,
+  disclosure,
   error,
   help,
   label,
   requiredLabel,
 }: {
   children: ReactNode;
+  disclosure?: ReactNode;
   error?: ReactNode;
   help?: ReactNode;
   label: ReactNode;
   requiredLabel?: ReactNode;
 }) {
+  const disclosureId = useId();
   return (
-    <fieldset className="public-form__question">
+    <fieldset aria-describedby={disclosure ? disclosureId : undefined} className="public-form__question">
       <legend>{label}{requiredLabel ? <small>{requiredLabel}</small> : null}</legend>
       {help ? <p>{help}</p> : null}
+      {disclosure ? <p id={disclosureId}>{disclosure}</p> : null}
       {children}
       {error ? <p className="public-form__error" role="alert">{error}</p> : null}
     </fieldset>
@@ -156,8 +162,28 @@ export function PublicFormConsent({children}: {children: ReactNode}) {
   return <aside className="public-form__consent">{children}</aside>;
 }
 
-export function PublicFormPrivacy({children}: {children: ReactNode}) {
-  return <footer className="public-form__privacy">{children}</footer>;
+export function PublicFormPrivacy({
+  brandLabel,
+  brandWord,
+  children,
+  poweredByLabel,
+}: {
+  brandLabel: string;
+  brandWord: string;
+  children: ReactNode;
+  poweredByLabel: string;
+}) {
+  return (
+    <footer className="public-form__privacy">
+      <div className="public-form__powered-by">
+        <span>{poweredByLabel}</span>
+        <PlainLink aria-label={brandLabel} href="/">
+          {brandWord}<span aria-hidden="true">●</span>
+        </PlainLink>
+      </div>
+      <p>{children}</p>
+    </footer>
+  );
 }
 
 export function PublicFormForm(

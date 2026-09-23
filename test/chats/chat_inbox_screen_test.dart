@@ -514,7 +514,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -556,7 +556,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -604,7 +604,7 @@ void main() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -670,7 +670,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -754,7 +754,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -811,7 +811,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -871,7 +871,7 @@ void main() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -905,7 +905,8 @@ void main() {
         GoRoute(
           path: Routes.hostInboxScreen.path,
           name: Routes.hostInboxScreen.name,
-          builder: (_, _) => const ChatsListScreen(),
+          builder: (_, _) =>
+              const ChatsListScreen(initialScope: ConsumerChatScope.messages),
           routes: [
             GoRoute(
               path: ':matchId',
@@ -985,7 +986,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -1027,7 +1028,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const ChatsListScreen(),
+          home: const ChatsListScreen(initialScope: ConsumerChatScope.messages),
         ),
       ),
     );
@@ -1060,7 +1061,8 @@ void main() {
         GoRoute(
           path: Routes.matchesListScreen.path,
           name: Routes.matchesListScreen.name,
-          builder: (_, _) => const ChatsListScreen(),
+          builder: (_, _) =>
+              const ChatsListScreen(initialScope: ConsumerChatScope.messages),
           routes: [
             GoRoute(
               path: ':matchId',

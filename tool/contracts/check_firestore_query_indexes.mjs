@@ -7,7 +7,7 @@ import {indexSignature} from "../firebase/wait_firestore_indexes_ready.mjs";
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
 const contractPattern =
-  /\/\/\s*firestore-index:\s*([A-Za-z0-9_.-]+)\s*\(([^)]+)\)/gu;
+  /(?:\/\/|\/\*)\s*firestore-index:\s*([A-Za-z0-9_.-]+)\s*\(([^)]+)\)/gu;
 
 export function canonicalIndex(collectionGroup, fields) {
   return `${collectionGroup}|${fields
@@ -124,6 +124,20 @@ export function validateContracts({sources, indexConfig}) {
       );
     }
 
+    if (source.path.endsWith(".ts")) {
+      for (const shape of typeScriptQueryShapes(source.contents)) {
+        const covered = contracts.some((contract) =>
+          contract.collectionGroup === shape.collectionGroup &&
+          contract.fields.length === shape.fields.length &&
+          shape.fields.every((field) => contract.fields.some((candidate) =>
+            candidate.fieldPath === field.fieldPath &&
+            candidate.mode === field.mode)));
+        if (!covered) errors.push(`${source.path}: composite query has no ` +
+          `firestore-index contract for ${canonicalIndex(shape.collectionGroup,
+            shape.fields)}`);
+      }
+    }
+
     for (const contract of contracts) {
       const key = canonicalIndex(contract.collectionGroup, contract.fields);
       if (!configured.has(key)) {
@@ -182,18 +196,41 @@ function matchingBrace(source, openIndex) {
   return null;
 }
 
+// Statically resolvable fluent TypeScript queries. Dynamic additions still
+// require explicit adjacent contracts and review; this is not a TS compiler.
+export function typeScriptQueryShapes(source) {
+  const withoutComments = source.replace(/\/\*[\s\S]*?\*\//gu, "")
+    .replace(/\/\/.*$/gmu, "");
+  const shapes = [];
+  const chains = /\.collection\(\s*["']([^"']+)["']\s*\)((?:\s*\.(?:where|orderBy|limit|startAfter)\([^)]*\))+)/gu;
+  for (const match of withoutComments.matchAll(chains)) {
+    const fields = new Map();
+    for (const field of match[2].matchAll(/\.(where|orderBy)\(\s*["']([^"']+)["']([^)]*)\)/gu)) {
+      fields.set(field[2], field[1] === "orderBy" &&
+        /,\s*["']desc["']/u.test(field[3]) ? "DESCENDING" : "ASCENDING");
+    }
+    if (fields.size > 1) shapes.push({collectionGroup: match[1],
+      fields: [...fields].map(([fieldPath, mode]) => ({fieldPath, mode}))});
+  }
+  return shapes;
+}
+
 function repositorySources(repoRoot) {
   const libRoot = path.join(repoRoot, "lib");
-  if (!fs.existsSync(libRoot)) return [];
-  return walk(libRoot)
+  const dart = fs.existsSync(libRoot) ? walk(libRoot)
     .filter((file) => file.endsWith(".dart"))
     .filter((file) => file.includes(`${path.sep}data${path.sep}`))
     .filter((file) => path.basename(file).includes("repository"))
-    .filter((file) => !file.endsWith(".g.dart"))
-    .map((file) => ({
-      path: path.relative(repoRoot, file),
-      contents: fs.readFileSync(file, "utf8"),
-    }));
+    .filter((file) => !file.endsWith(".g.dart")) : [];
+  const backend = ["programs", "transport"].flatMap((directory) => {
+    const root = path.join(repoRoot, "functions/src", directory);
+    return fs.existsSync(root) ? walk(root).filter((file) =>
+      file.endsWith(".ts") && !file.endsWith(".test.ts")) : [];
+  });
+  return [...dart, ...backend].map((file) => ({
+    path: path.relative(repoRoot, file),
+    contents: fs.readFileSync(file, "utf8"),
+  }));
 }
 
 function walk(directory) {

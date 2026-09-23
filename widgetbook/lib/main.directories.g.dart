@@ -235,12 +235,16 @@ import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_payment_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
+import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_response_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_roster_import_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
@@ -515,6 +519,8 @@ import 'package:widgetbook_workspace/profiles/catalog/tabs.dart'
     as _widgetbook_workspace_profiles_catalog_tabs;
 import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
+import 'package:widgetbook_workspace/programs/use_cases.dart'
+    as _widgetbook_workspace_programs_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
     as _widgetbook_workspace_shell_app_shell_use_cases;
 import 'package:widgetbook_workspace/user_analytics/user_analytics_use_cases.dart'
@@ -525,12 +531,24 @@ import 'package:widgetbook_workspace/utility/auth.dart'
     as _widgetbook_workspace_utility_auth;
 import 'package:widgetbook_workspace/utility/calendar.dart'
     as _widgetbook_workspace_utility_calendar;
+import 'package:widgetbook_workspace/utility/event_chat.dart'
+    as _widgetbook_workspace_utility_event_chat;
+import 'package:widgetbook_workspace/utility/event_chat_participants.dart'
+    as _widgetbook_workspace_utility_event_chat_participants;
+import 'package:widgetbook_workspace/utility/event_profile.dart'
+    as _widgetbook_workspace_utility_event_profile;
 import 'package:widgetbook_workspace/utility/force_update.dart'
     as _widgetbook_workspace_utility_force_update;
+import 'package:widgetbook_workspace/utility/form_profile_review.dart'
+    as _widgetbook_workspace_utility_form_profile_review;
+import 'package:widgetbook_workspace/utility/form_profiles.dart'
+    as _widgetbook_workspace_utility_form_profiles;
 import 'package:widgetbook_workspace/utility/launch_access.dart'
     as _widgetbook_workspace_utility_launch_access;
 import 'package:widgetbook_workspace/utility/location_map.dart'
     as _widgetbook_workspace_utility_location_map;
+import 'package:widgetbook_workspace/utility/messaging_permissions.dart'
+    as _widgetbook_workspace_utility_messaging_permissions;
 import 'package:widgetbook_workspace/utility/notifications.dart'
     as _widgetbook_workspace_utility_notifications;
 import 'package:widgetbook_workspace/utility/payment_confirmation.dart'
@@ -9821,6 +9839,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostAudienceHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared Audience header with group states',
+                    builder: _widgetbook_workspace_hosts_operations_audiences
+                        .hostAudienceHeaderStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostClubsScaffold',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10489,6 +10517,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentDetailSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Captured payment awaiting submission',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentDetailPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manager connection boundary',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentSetupSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unconfigured and connected account',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentSetupPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Amount and mandatory refund policy',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentSheetPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentsSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Verified fee stages and test money',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormPublishText',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10540,34 +10623,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormQuestionsPageBodyPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormResponsePrimaryAction',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Application conversion',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormResponsePrimaryActionPreview,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'People conversion',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormResponsePeopleActionPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormResponseRelatedActions',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Related People and event actions',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormResponseRelatedActionsPreview,
                   ),
                 ],
               ),
@@ -10767,6 +10822,99 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Campaign and sender states',
                     builder: _widgetbook_workspace_hosts_operations_audiences
                         .hostCustomerMessagingStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Response review',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostApplicationDetailScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Existing application link',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewApplicationPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormResponseDetailScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unified response review',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewScreenPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseAnswerRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answer with provenance',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewAnswerPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseContactSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Contact targets',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewContactsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseDetailSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Answers and review sections',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewSectionsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseMetadataSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Submission metadata',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewMetadataPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponsePrimaryAction',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Borderless acceptance',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewPrimaryPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseStartReviewAction',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Start review inline',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_review_use_cases
+                            .responseReviewStartPreview,
                   ),
                 ],
               ),
@@ -12224,6 +12372,211 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program arrivals',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalActionMenu',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Menu states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalActionMenuStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalReadinessBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Badge states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalReadinessBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalsOutboxBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Banner states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalsOutboxBannerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalsScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramJournalRecoverySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Preserved local work',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programJournalRecoverySheetPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramOperationReviewSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programOperationReviewSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramOperationsNotice',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Notice states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programOperationsNoticeStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program dispatch',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDispatchGroupTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tile states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDispatchGroupTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDispatchScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDispatchScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDispatchSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDispatchSheetStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program hotel desk',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelDeskScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programHotelDeskScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelInboundTripTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tile states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programHotelInboundTripTileStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program trips',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTripLedgerRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programTripLedgerRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTripVoidSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programTripVoidSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTripsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programTripsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program work',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programWorkPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programWorkScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'User analytics',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -12610,6 +12963,101 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Event chat',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatDirectoryRowList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty directory with more candidates',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatDirectoryEmptyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatDirectorySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Admitted event directory',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatDirectoryPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatEntrySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Admitted event entry',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatEntryPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatMessageTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Reply and reactions',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatMessagePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review and explicit join',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatJoinPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatParticipantsRowList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'People and their shared event profiles',
+                builder: _widgetbook_workspace_utility_event_chat_participants
+                    .eventChatParticipantsListPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatParticipantsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Current event participants',
+                builder: _widgetbook_workspace_utility_event_chat_participants
+                    .eventChatParticipantsPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatReactionSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Six accessible reactions',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatReactionsPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventChatScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Admitted attendee conversation',
+                builder: _widgetbook_workspace_utility_event_chat
+                    .eventChatScreenPreview,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Event location map',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -12629,6 +13077,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Map states',
                 builder: _widgetbook_workspace_utility_location_map
                     .eventLocationMapScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Event profile',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileAnswerField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Full answer review',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileAnswerPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileEditorSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Revoke after admission ends',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileRevokePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileIdentitySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Participant mini-profile',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileIdentityPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfilePhotoField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review owned photo before sharing',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfilePhotoPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventProfileScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Choose details for one event',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventProfileScreenPreview,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Only explicitly shared details',
+                builder: _widgetbook_workspace_utility_event_profile
+                    .eventParticipantScreenPreview,
               ),
             ],
           ),
@@ -12664,6 +13172,91 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_utility_force_update
                     .updateRequiredScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Form profiles',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilePhotoField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Owned photo preview before selection',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfilePhotoFieldPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilePhotoSelectionField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Photo selection waits for decoding',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfilePhotoSelectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfileReviewPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Separate core fields and organizer answers',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfileReviewBodyPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfileReviewScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review before claiming a form profile',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfileReviewScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfileValueField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed basic fields within a claim review',
+                builder: _widgetbook_workspace_utility_form_profile_review
+                    .formProfileValueFieldPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesAsyncBoundary',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Account-owned form directory',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesContentPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Organizer-scoped cards and unclaimed submissions',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesSectionList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Private cards grouped by organizer',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesListPreview,
               ),
             ],
           ),
@@ -13145,6 +13738,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Blocked account row',
                 builder: _widgetbook_workspace_utility_settings
                     .blockedAccountTileState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MessagingPermissionsPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Allowed, stopped, unknown and pending',
+                builder: _widgetbook_workspace_utility_messaging_permissions
+                    .messagingPermissionsPageStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MessagingPermissionsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Independent sender permissions',
+                builder: _widgetbook_workspace_utility_messaging_permissions
+                    .messagingPermissionsScreenStates,
               ),
             ],
           ),

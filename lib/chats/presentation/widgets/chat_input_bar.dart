@@ -22,6 +22,8 @@ class ChatInputBar extends StatefulWidget {
     this.disabledReason,
     this.showImageButton = true,
     this.autofocus = false,
+    this.contract =
+        CatchContractConstraints.createChatMessageClientWriteDataText,
   });
 
   static const Key pillKey = ValueKey('chat_input_bar.floating_pill');
@@ -37,6 +39,7 @@ class ChatInputBar extends StatefulWidget {
   final String? disabledReason;
   final bool showImageButton;
   final bool autofocus;
+  final CatchContractFieldConstraints contract;
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -70,6 +73,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
       valueListenable: widget.controller,
       builder: (context, value, _) => _ChatComposer(
         value: value,
+        contract: widget.contract,
         controller: widget.controller,
         focusNode: _focusNode,
         sending: widget.sending,
@@ -87,6 +91,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
 class _ChatComposer extends StatelessWidget {
   const _ChatComposer({
     required this.value,
+    required this.contract,
     required this.controller,
     required this.focusNode,
     required this.sending,
@@ -99,6 +104,7 @@ class _ChatComposer extends StatelessWidget {
   });
 
   final TextEditingValue value;
+  final CatchContractFieldConstraints contract;
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool sending;
@@ -181,8 +187,7 @@ class _ChatComposer extends StatelessWidget {
                           key: ChatInputBar.fieldLaneKey,
                           copy: catchFieldCopy(context.l10n),
                           title: context.l10n.chatsChatInputBarTitleMessage,
-                          contract: CatchContractConstraints
-                              .createChatMessageClientWriteDataText,
+                          contract: contract,
                           labelMode: CatchFieldLabelTextMode.hidden,
                           controller: controller,
                           focusNode: focusNode,

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_scroll_physics.dart';
@@ -168,41 +169,44 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 children: [ProfileInsightsTabSliverBody()],
               ),
             ),
+            _formProfilesPage,
           ],
         );
       case SelfProfileRouteStatus.error:
-        return CatchRootScreenBody.single(
-          page: CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.standard(
-              scrollKey: const PageStorageKey('profile-error-tab-scroll'),
-              children: [
-                CatchLocalizedSliverErrorState(
-                  state.error!,
-                  context: AppErrorContext.profile,
-                  onRetry: onRetry,
-                ),
-              ],
-            ),
-          ),
-        );
       case SelfProfileRouteStatus.unavailable:
-        return CatchRootScreenBody.single(
-          page: CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.standard(
-              scrollKey: const PageStorageKey('profile-unavailable-tab-scroll'),
-              children: [
-                CatchSliverEmptyState(
-                  icon: CatchIcons.personOffOutlined,
-                  title: context
-                      .l10n
-                      .userProfileProfileScreenTitleProfileNotAvailable,
-                  message: context
-                      .l10n
-                      .userProfileProfileScreenMessageFinishOnboardingOrSign,
+        return CatchRootScreenBody.paged(
+          controller: controller,
+          pages: [
+            for (final tab in SelfProfileTab.values)
+              if (tab == SelfProfileTab.forms)
+                _formProfilesPage
+              else
+                CatchRootScreenPageSpec.scroll(
+                  page: CatchRootScreenPageScrollView.standard(
+                    scrollKey: PageStorageKey(
+                      'profile-${tab.name}-${state.status.name}',
+                    ),
+                    children: [
+                      if (state.status == SelfProfileRouteStatus.error)
+                        CatchLocalizedSliverErrorState(
+                          state.error!,
+                          context: AppErrorContext.profile,
+                          onRetry: onRetry,
+                        )
+                      else
+                        CatchSliverEmptyState(
+                          icon: CatchIcons.personOffOutlined,
+                          title: context
+                              .l10n
+                              .userProfileProfileScreenTitleProfileNotAvailable,
+                          message: context
+                              .l10n
+                              .userProfileProfileScreenMessageFinishOnboardingOrSign,
+                        ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
+          ],
         );
       case SelfProfileRouteStatus.ready:
         final user = state.user!;
@@ -240,11 +244,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 children: [ProfileInsightsTabSliverBody()],
               ),
             ),
+            _formProfilesPage,
           ],
         );
     }
   }
 }
+
+const _formProfilesPage = CatchRootScreenPageSpec.scroll(
+  page: CatchRootScreenPageScrollView.standard(
+    scrollKey: PageStorageKey('profile-forms-tab-scroll'),
+    children: [SliverToBoxAdapter(child: FormProfilesAsyncBoundary())],
+  ),
+);
 
 class PreviewTabSkeletonSliverBody extends StatelessWidget {
   const PreviewTabSkeletonSliverBody({

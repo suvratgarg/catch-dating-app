@@ -5,12 +5,33 @@
   "description": "One immutable response with classified answers and expiring asset downloads.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["response", "answers", "consentVersion", "completionMillis"],
+  "required": [
+    "response",
+    "answers",
+    "consentVersion",
+    "completionMillis"
+  ],
   "properties": {
-    "response": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseRow"},
-    "answers": {"type": "array", "maxItems": 200, "items": {"$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/answerDetail"}},
-    "consentVersion": {"type": "string", "minLength": 1, "maxLength": 80},
-    "completionMillis": {"type": "integer", "minimum": 0, "maximum": 604800000},
+    "response": {
+      "$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseRow"
+    },
+    "answers": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/answerDetail"
+      }
+    },
+    "consentVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "completionMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 604800000
+    },
     "applicationId": {
       "type": [
         "string",
@@ -26,6 +47,17 @@
       ],
       "minLength": 1,
       "maxLength": 180
+    },
+    "payment": {
+      "description": "Authorized financial record linked to this submitted response; no draft or credential data.",
+      "anyOf": [
+        {
+          "$ref": "../shared/organizer_form_payment_common.schema.json#/definitions/ledgerRow"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 }

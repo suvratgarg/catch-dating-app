@@ -20,6 +20,8 @@ const manualQueueOwners = new Set([
 ]);
 const permissionCollectionReviewers = new Set([
   "functions/src/events/eventAttendees.ts",
+  "functions/src/messaging/participantMessagingPreferences.ts",
+  "functions/src/organizers/organizerFormMessagingConsent.ts",
   "functions/src/organizers/organizerAudienceProjection.ts",
   "functions/src/organizers/organizerCampaignDispatcher.ts",
   "functions/src/organizers/organizerCampaigns.ts",
@@ -339,7 +341,7 @@ export function audienceWorkspacePresentationFindings({
   for (const anchor of [
     "CatchRootScreenScaffold.withPrimaryRail(",
     "HostSavedAudiencesWorkspace(",
-    "actions: peopleView",
+    "primaryAction: peopleView",
   ]) {
     if (!customersSource.includes(anchor)) findings.push({
       path: customersPath,
@@ -368,7 +370,8 @@ export function audienceWorkspacePresentationFindings({
   }
 
   const createKey = "ValueKey('host-saved-audience-create')";
-  const createActionCount = workspaceSource.split(createKey).length - 1;
+  const createActionCount = customersSource.split(createKey).length - 1;
+  const directoryCreateCount = workspaceSource.split(createKey).length - 1;
   if (!/CatchSection\.(?:rows|sliverRows)\s*\(/u.test(workspaceSource) ||
       !/CatchField\.navigate\s*\(/u.test(workspaceSource)) {
     findings.push({
@@ -377,11 +380,11 @@ export function audienceWorkspacePresentationFindings({
       reason: "The top-level saved-audience directory must use a full-width typed row section with navigation fields.",
     });
   }
-  if (createActionCount !== 1) {
+  if (createActionCount !== 1 || directoryCreateCount !== 0) {
     findings.push({
-      path: workspacePath,
+      path: customersPath,
       line: 1,
-      reason: "The Audiences workspace must expose exactly one New audience action.",
+      reason: "Groups must expose exactly one New group action in the app-bar primary action, with none in the directory body.",
     });
   }
   if (editorSheetsSource.includes("class HostSavedAudiencesSheet")) {

@@ -1,0 +1,294 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_travel_legs.schema.json",
+  "title": "ProgramTravelLegDocument",
+  "description": "Server-owned per-guest travel leg. Carries itinerary facts, flight status snapshots, readiness/claim state and reviewed manual overrides. Provider facts are linked, never copied over manual observations.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTravelLegs",
+  "x-firestore-path": "programTravelLegs/{legId}",
+  "x-document-id-field": "legId",
+  "x-owner": "program travel and dispatch callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "guestId",
+    "partyId",
+    "kind",
+    "flightNumber",
+    "carrierCode",
+    "originIata",
+    "destinationIata",
+    "scheduledArrivalAt",
+    "estimatedArrivalAt",
+    "actualArrivalAt",
+    "flightStatus",
+    "flightInstanceId",
+    "pickupPointId",
+    "destinationHotelId",
+    "destinationLabel",
+    "readiness",
+    "readyAt",
+    "claimedByUid",
+    "claimedAt",
+    "manualCurbAt",
+    "manualCurbNote",
+    "passengers",
+    "luggageUnits",
+    "requiredCapabilities",
+    "dedicatedVehicle",
+    "source",
+    "createdAt",
+    "updatedAt",
+    "revision",
+    "arrivalTerminal",
+    "flightRefreshedAt",
+    "flightNextRefreshAt"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "Exactly one guest per leg; companions get their own legs sharing a party."
+    },
+    "partyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Server-maintained membership index of the canonical party legIds. Only party membership commands and manifest import may change it."
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/travelLegKind"
+    },
+    "flightNumber": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/flightDesignator"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carrierCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 3
+    },
+    "originIata": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/iataCode"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "destinationIata": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/iataCode"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scheduledArrivalAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "estimatedArrivalAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "actualArrivalAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "flightStatus": {
+      "$ref": "../shared/program_common.schema.json#/definitions/travelLegFlightStatus"
+    },
+    "flightInstanceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Resolved flight identity for enrichment: flight number, airports and scheduled arrival instant. Shared across passengers on that flight."
+    },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag."
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140,
+      "description": "Free-text destination when the drop is not a configured hotel."
+    },
+    "readiness": {
+      "$ref": "../shared/program_common.schema.json#/definitions/travelLegReadiness"
+    },
+    "readyAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Observed curb-ready timestamp; outranks every estimate."
+    },
+    "claimedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "claimedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "manualCurbAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Reviewed manual curb estimate; outranks flight-derived timing."
+    },
+    "manualCurbNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "description": "Seats this leg consumes, including children without their own guest record."
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/vehicleCapability"
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean",
+      "description": "VIP/private transfers never share a suggested vehicle."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "import",
+        "formResponse",
+        "planner"
+      ]
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "arrivalTerminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 8,
+      "description": "Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId."
+    },
+    "flightRefreshedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Last successful provider refresh; null when the leg has never been enriched."
+    },
+    "flightNextRefreshAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Scheduler cursor for flight polling and subscription reconciliation. Null only when no polling or provider cleanup remains."
+    },
+    "flightAlertSubscriptionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128,
+      "description": "Attached provider subscription, retained until deletion is confirmed. A pending create is represented by flightAlertFlightNumber even before its id is known."
+    },
+    "flightProviderUpdatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts."
+    },
+    "flightAlertFlightNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 10,
+      "description": "Provider subject for the attached or pending subscription. Retained across failures and rebooking until reconciled."
+    },
+    "flightAlertLease": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "token",
+            "expiresAt"
+          ],
+          "properties": {
+            "token": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "expiresAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+            }
+          }
+        }
+      ],
+      "description": "Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered."
+    }
+  }
+}

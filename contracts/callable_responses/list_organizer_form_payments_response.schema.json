@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_payments_response.schema.json",
+  "title": "ListOrganizerFormPaymentsCallableResponse",
+  "description": "Minimal organizer fee records. No private credential, draft token, unsubmitted answers or respondent identity is exposed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "../shared/organizer_form_payment_common.schema.json#/definitions/ledgerRow"
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+}
