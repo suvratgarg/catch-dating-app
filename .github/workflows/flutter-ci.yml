@@ -232,6 +232,11 @@ jobs:
           SHARD_TOTAL: ${{ matrix.shard_total }}
           CATCH_EVENT_PARTICIPANTS_CAPTURE_DIR: /tmp/catch-event-participants-review
           CATCH_HOST_RESPONSE_REVIEW_DIR: /tmp/catch-host-response-review
+          CATCH_RESPONSE_PAYMENT_REVIEW_DIR: /tmp/catch-response-payment-review
+          CATCH_FORM_PAYMENT_CAPTURE_DIR: /tmp/catch-form-payment-review
+          CATCH_FORM_PROFILE_CAPTURE_DIR: /tmp/catch-form-profile-review
+          CATCH_MESSAGING_CAPTURE_DIR: /tmp/catch-messaging-permissions-review
+          CATCH_CHAT_SAFETY_CAPTURE_DIR: /tmp/catch-chat-safety-review
         run: |
           jq -er --arg sha "$GITHUB_SHA" --argjson index "$SHARD_INDEX" \
             '.sourceSha == $sha and (.shards[$index].files | length > 0)' \
@@ -273,6 +278,11 @@ jobs:
               'event-chat': ('/tmp/catch-event-chat-review', 'test/chats/event_chat_widget_test.dart'),
               'event-participants': ('/tmp/catch-event-participants-review', 'test/chats/event_chat_participants_widget_test.dart'),
               'host-response-review': ('/tmp/catch-host-response-review', 'test/hosts/forms/host_form_response_detail_screen_test.dart'),
+              'response-payment': ('/tmp/catch-response-payment-review', 'test/hosts/forms/host_form_response_detail_screen_test.dart'),
+              'form-payment': ('/tmp/catch-form-payment-review', 'test/hosts/forms/host_form_payments_section_list_test.dart'),
+              'form-profile-question': ('/tmp/catch-form-profile-review', 'test/hosts/forms/host_form_profile_question_section_test.dart'),
+              'messaging-permissions': ('/tmp/catch-messaging-permissions-review', 'test/safety/messaging_permissions_widget_test.dart'),
+              'chat-safety': ('/tmp/catch-chat-safety-review', 'test/chats/event_chat_message_actions_widget_test.dart'),
           }
           output = Path(os.environ['CAPTURE_OUTPUT_DIR'])
           captures = []
@@ -291,6 +301,8 @@ jobs:
                       capture_source = 'test/chats/event_chat_directory_widget_test.dart'
                   if group == 'host-response-review' and image.name.startswith('filters-'):
                       capture_source = 'test/hosts/forms/host_form_response_filters_test.dart'
+                  if group == 'form-payment' and image.name.startswith(('unavailable-', 'configure-fee-', 'ready-large-')):
+                      capture_source = 'test/hosts/forms/host_form_payment_settings_test.dart'
                   captures.append({
                       'path': str(target.relative_to(output)),
                       'sourceTest': capture_source,
