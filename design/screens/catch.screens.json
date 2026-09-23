@@ -1002,15 +1002,15 @@
           "routes": [
             "hostApplicationDetailScreen"
           ],
-          "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-          "symbol": "_HostApplicationDetailScreenState",
+          "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+          "symbol": "_HostFormResponseDetailScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Application detail remains a canonical pushed route; the application directory redirects into Audience Responses."
+      "reason": "Existing application links render the unified response detail; the application directory redirects into Audience Responses."
     },
     "screen.host.event.rehearsal": {
       "owners": [
@@ -27207,8 +27207,8 @@
       "topBar": {
         "role": "compact",
         "expression": "CatchTopBar",
-        "owner": "HostApplicationDetailScreen",
-        "reason": "Application detail uses the canonical compact Host top bar with an explicit back action."
+        "owner": "HostFormResponseDetailScreen",
+        "reason": "Saved application URLs delegate to the unified response detail route and its canonical back action."
       },
       "statePolicy": {
         "requiredStates": [
@@ -27219,7 +27219,7 @@
           "offline",
           "permission"
         ],
-        "owner": "HostApplicationsController and hostApplicationDetailProvider"
+        "owner": "hostResponseReviewDetailProvider and HostApplicationsController"
       },
       "name": "Host Application Detail",
       "owner": "hosts",
@@ -27233,12 +27233,16 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-        "symbol": "HostApplicationDetailScreen"
+        "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+        "symbol": "HostFormResponseDetailScreen"
       },
       "stateController": {
-        "primary": "hostApplicationDetailProvider + hostApplicationsControllerProvider",
+        "primary": "hostResponseReviewDetailProvider + hostApplicationsControllerProvider",
         "files": [
+          {
+            "file": "lib/hosts/presentation/forms/host_response_review_detail.dart",
+            "symbol": "hostResponseReviewDetail"
+          },
           {
             "file": "lib/hosts/data/host_application_repository.dart",
             "symbol": "hostApplicationDetail"
@@ -27259,14 +27263,14 @@
           "id": "host_applications_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "HostApplicationDetailScreen typed async loading branch",
+          "source": "HostFormResponseDetailScreen typed async loading branch",
           "nextAction": "Add a deterministic full-route capture."
         },
         {
           "id": "host_application_detail",
           "kind": "populated",
           "status": "implemented",
-          "source": "HostApplicationDetailScreen immutable answers and review controls",
+          "source": "HostFormResponseDetailScreen immutable answers and review controls",
           "captureIds": [
             "host_application_detail"
           ],
@@ -27276,7 +27280,7 @@
           "id": "host_applications_error",
           "kind": "error",
           "status": "implemented",
-          "source": "HostApplicationDetailScreen typed async error branch",
+          "source": "HostFormResponseDetailScreen typed async error branch",
           "nextAction": "Add deterministic callable-error capture."
         },
         {
@@ -27315,11 +27319,11 @@
             "layer": "screen-adapter",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-              "symbol": "HostApplicationDetailScreen"
+              "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+              "symbol": "HostFormResponseDetailScreen"
             },
-            "currentOwner": "hosts.presentation.applications",
-            "targetOwner": "hosts.presentation.applications",
+            "currentOwner": "hosts.presentation.forms",
+            "targetOwner": "hosts.presentation.forms",
             "dependencies": [
               "catch.top_bar",
               "catch.section",

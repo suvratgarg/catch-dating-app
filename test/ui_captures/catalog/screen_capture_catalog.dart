@@ -15941,11 +15941,82 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       applicationId: 'design-application-1',
     ),
     providerOverrides: [
+      hostFormResponseDetailProvider(
+        organizerId: 'org_1',
+        responseId: 'design-response-1',
+      ).overrideWith((_) async => _audienceCaptureResponse),
       ..._audienceCaptureSources('org_1'),
       hostApplicationDetailProvider(
         'org_1',
         'design-application-1',
       ).overrideWithValue(AsyncData(_audienceCaptureApplication)),
+    ],
+    includeOverlays: true,
+  ),
+  ScreenCaptureEntry(
+    id: 'host_response_review_submitted',
+    routeIds: const <String>['hostFormResponseDetailScreen'],
+    device: CaptureDevice.iphone17Pro,
+    builder: (_) => const HostFormResponseDetailScreen.application(
+      organizerId: 'org_1',
+      applicationId: 'design-application-1',
+    ),
+    providerOverrides: [
+      ..._audienceCaptureSources('org_1'),
+      hostFormResponseDetailProvider(
+        organizerId: 'org_1',
+        responseId: 'design-response-1',
+      ).overrideWith((_) async => _audienceCaptureResponse),
+      hostApplicationDetailProvider(
+        'org_1',
+        'design-application-1',
+      ).overrideWithValue(AsyncData(_responseReviewCaptureApplication())),
+    ],
+    includeOverlays: true,
+  ),
+  ScreenCaptureEntry(
+    id: 'host_response_review_imported',
+    routeIds: const <String>['hostFormResponseDetailScreen'],
+    device: CaptureDevice.iphone17Pro,
+    builder: (_) => const HostFormResponseDetailScreen.application(
+      organizerId: 'org_1',
+      applicationId: 'design-application-1',
+    ),
+    providerOverrides: [
+      ..._audienceCaptureSources('org_1'),
+      hostFormResponseDetailProvider(
+        organizerId: 'org_1',
+        responseId: 'design-response-1',
+      ).overrideWith((_) async => _audienceCaptureResponse),
+      hostApplicationDetailProvider(
+        'org_1',
+        'design-application-1',
+      ).overrideWithValue(
+        AsyncData(_responseReviewCaptureApplication(imported: true)),
+      ),
+    ],
+    includeOverlays: true,
+  ),
+  ScreenCaptureEntry(
+    id: 'host_response_review_revoked',
+    routeIds: const <String>['hostFormResponseDetailScreen'],
+    device: CaptureDevice.iphone17Pro,
+    builder: (_) => const HostFormResponseDetailScreen.application(
+      organizerId: 'org_1',
+      applicationId: 'design-application-1',
+    ),
+    providerOverrides: [
+      ..._audienceCaptureSources('org_1'),
+      hostFormResponseDetailProvider(
+        organizerId: 'org_1',
+        responseId: 'design-response-1',
+      ).overrideWith((_) async => _audienceCaptureResponse),
+      hostApplicationDetailProvider(
+        'org_1',
+        'design-application-1',
+      ).overrideWithValue(
+        AsyncData(_responseReviewCaptureApplication(revoked: true)),
+      ),
     ],
     includeOverlays: true,
   ),

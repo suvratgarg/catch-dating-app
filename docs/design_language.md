@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.31.0
-updated: 2026-09-22
+version: 1.31.1
+updated: 2026-09-23
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -503,7 +503,15 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   the top safe area and never shifts route content. Reduced motion skips entry;
   accessible navigation holds the card, and pointer/hover/focus interaction
   pauses auto-dismiss. Ordinary inline notices retain their existing controls.
-- Persistent control docking routes through `CatchDockSurface`. Its default
+- Review decisions use `CatchButtonVariant.dangerSecondary` when they need
+  destructive feedback without a filled danger CTA. Resting chrome is neutral
+  and outlined; hover, focus and press identify danger. Status belongs to the
+  record badge rather than an action's resting fill.
+- Persistent control docking routes through `CatchDockSurface`. `pageAction`
+  is the borderless page-background recipe for one detail action. The scaffold
+  reserves its measured height and positions snackbars above it. It owns the
+  page gutter and safe area; features do not wrap it in a card.
+- Other persistent control docking routes through `CatchDockSurface`. Its default
   constructor hosts utility content; `primary` owns floating Cupertino or
   anchored Material action chrome. `primaryContent` reuses the same action body
   when its caller already supplies a surface. `CatchBottomActionOverlay` owns
