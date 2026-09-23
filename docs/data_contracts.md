@@ -2000,6 +2000,11 @@ replaces `eventParticipations`:
   ticket-buyer key shared by guests expected to arrive together. Adapters keep
   it separate from attendee-level external references, imports include it in
   their canonical payload hash, and it remains private roster data;
+- optional `cityMarketId` is a catalog-normalized, organizer-reported import
+  field with `citySource` provenance. The Host preview rejects unknown mapped
+  cities; re-imports preserve an existing city when omitted. This private roster
+  fact never updates a user's city, event admission, runtime profile, or
+  assignment readiness. Participant-owned runtime answers remain separate;
 - optional attendee revenue fields retain organizer-reported CSV amounts,
   explicit organizer-entered per-guest estimates, or financially complete
   provider facts with their currency and allocation provenance. Repeated equal
@@ -2197,6 +2202,11 @@ additional properties` diagnostic; other validation and access failures are
 not retried. Loading all tabs can add a
 second invocation and repeat core reads; overview-only visits omit operational
 queries. No minimum instances or new persistent listeners are introduced.
+The directory and export accept additive `segmentIds` and `manualTagIds` arrays
+alongside legacy scalar filters. Selections combine with OR within Attendance,
+Reliability, Advocacy, Reachable and Tags, then AND across nonempty groups;
+empty groups impose no condition. List cursors bind to the canonical selection,
+and combined-filter result counts come from the complete bounded candidate set.
 The directory accepts `lastSeen`, `mostAttended`, or `name`; every opaque cursor
 is versioned and bound to its query plan, filters, and ordering. Filtered sorts
 are computed over a bounded complete candidate set rather than sorting one
@@ -2234,7 +2244,9 @@ documents may omit `manualTagIds` and read as an empty assignment, so neither
 feature requires a backfill.
 
 `organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
-audiences. A definition contains one to eight predicates joined by `all` or
+audiences. The closed `directoryFilters` predicate preserves the same combined
+segment/tag semantics as the People directory.
+A definition contains one to eight predicates joined by `all` or
 `any` over the reviewed computed-segment, organizer-tag, attendance-count,
 last-seen recency, named-intent reach, application status by form, immutable
 filterable choice/boolean answers, named-event attendance, and Catch spend.
@@ -2492,7 +2504,10 @@ references are returned. Free responses have no payment row. Refund and manual
 review states remain financial facts and do not change application review.
 
 `findOrganizerFormPayment` resolves the public form id with a bounded unique
-lookup, then reads only the authenticated respondent's latest form payment.
+lookup, then scans a bounded recent window for the authenticated respondent's
+newest recoverable form payment. Newer expired or refunded attempts without a
+response do not conceal an earlier paid receipt or financial review; a
+saturated window fails explicitly instead of silently declaring no payment.
 Discovery does not call the provider or depend on the current published version,
 fee, availability or browser storage. Ended attempts without a response do not
 block a fresh start; completed responses remain recoverable, including refunds.

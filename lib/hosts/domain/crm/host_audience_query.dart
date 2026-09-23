@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 enum HostAudienceSegment {
   newToOrganizer('new_to_organizer'),
   pastAttendee('past_attendee'),
@@ -39,6 +41,8 @@ class HostAudienceQuery {
     this.search,
     this.segment,
     this.manualTagId,
+    this.segments = const {},
+    this.manualTagIds = const {},
     this.sort = HostAudienceSort.lastSeen,
     this.cursor,
   });
@@ -46,6 +50,8 @@ class HostAudienceQuery {
   final String? search;
   final HostAudienceSegment? segment;
   final String? manualTagId;
+  final Set<HostAudienceSegment> segments;
+  final Set<String> manualTagIds;
   final HostAudienceSort sort;
   final String? cursor;
 
@@ -53,6 +59,8 @@ class HostAudienceQuery {
     String? search,
     HostAudienceSegment? segment,
     String? manualTagId,
+    Set<HostAudienceSegment>? segments,
+    Set<String>? manualTagIds,
     HostAudienceSort? sort,
     String? cursor,
     bool clearSegment = false,
@@ -62,6 +70,8 @@ class HostAudienceQuery {
     search: search ?? this.search,
     segment: clearSegment ? null : segment ?? this.segment,
     manualTagId: clearManualTag ? null : manualTagId ?? this.manualTagId,
+    segments: clearSegment ? const {} : segments ?? this.segments,
+    manualTagIds: clearManualTag ? const {} : manualTagIds ?? this.manualTagIds,
     sort: sort ?? this.sort,
     cursor: clearCursor ? null : cursor ?? this.cursor,
   );
@@ -72,9 +82,22 @@ class HostAudienceQuery {
       other.search == search &&
       other.segment == segment &&
       other.manualTagId == manualTagId &&
+      const SetEquality<HostAudienceSegment>().equals(
+        other.segments,
+        segments,
+      ) &&
+      const SetEquality<String>().equals(other.manualTagIds, manualTagIds) &&
       other.sort == sort &&
       other.cursor == cursor;
 
   @override
-  int get hashCode => Object.hash(search, segment, manualTagId, sort, cursor);
+  int get hashCode => Object.hash(
+    search,
+    segment,
+    manualTagId,
+    sort,
+    cursor,
+    Object.hashAllUnordered(segments),
+    Object.hashAllUnordered(manualTagIds),
+  );
 }

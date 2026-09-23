@@ -100,22 +100,24 @@ void main() {
       await tester.tap(find.text('Open switcher'));
       await pumpFeatureUi(tester);
 
-      final ownerOption = find.byKey(
-        const ValueKey<String>('host-organizer-switcher-option-owner-club'),
-      );
-      final teamOption = find.byKey(
-        const ValueKey<String>('host-organizer-switcher-option-team-club'),
-      );
+      final ownerOption = find.byKey(const ValueKey<Object?>('owner-club'));
+      final teamOption = find.byKey(const ValueKey<Object?>('team-club'));
       expect(
         find.byKey(const ValueKey<String>('host-organizer-switcher-sheet')),
         findsOneWidget,
       );
-      expect(tester.widget<CatchIndexRow>(ownerOption).selected, isTrue);
-      expect(tester.widget<CatchIndexRow>(teamOption).selected, isFalse);
+      expect(
+        tester.widget<CatchMenuRow<String>>(ownerOption).item.selected,
+        isTrue,
+      );
+      expect(
+        tester.widget<CatchMenuRow<String>>(teamOption).item.selected,
+        isFalse,
+      );
       expect(
         find.descendant(
           of: ownerOption,
-          matching: find.byIcon(CatchIcons.checkCircleFilled),
+          matching: find.byIcon(CatchIcons.check),
         ),
         findsOneWidget,
       );
@@ -151,18 +153,8 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(tester.takeException(), isNull);
-    expect(
-      find.byKey(
-        const ValueKey<String>('host-organizer-switcher-option-club-1'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(
-        const ValueKey<String>('host-organizer-switcher-option-club-2'),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byKey(const ValueKey<Object?>('club-1')), findsOneWidget);
+    expect(find.byKey(const ValueKey<Object?>('club-2')), findsOneWidget);
   });
 }
 

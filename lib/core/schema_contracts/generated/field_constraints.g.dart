@@ -29286,6 +29286,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAttendeeDocumentCityMarketId = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.cityMarketId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const eventAttendeeDocumentCitySource = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.citySource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostImport', 'hostManual'],
+  );
+
   static const eventAttendeeDocumentClubId = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.clubId',
     maxLength: 180,
@@ -58760,6 +58774,27 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const exportOrganizerContactsCallablePayloadManualTagId = CatchContractFieldConstraints(
+    path: 'exportOrganizerContactsCallablePayload.manualTagId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const exportOrganizerContactsCallablePayloadManualTagIds = CatchContractFieldConstraints(
+    path: 'exportOrganizerContactsCallablePayload.manualTagIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const exportOrganizerContactsCallablePayloadManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'exportOrganizerContactsCallablePayload.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const exportOrganizerContactsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'exportOrganizerContactsCallablePayload.organizerId',
     maxLength: 180,
@@ -58768,8 +58803,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const exportOrganizerContactsCallablePayloadQuery = CatchContractFieldConstraints(
+    path: 'exportOrganizerContactsCallablePayload.query',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
   static const exportOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'exportOrganizerContactsCallablePayload.segmentId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const exportOrganizerContactsCallablePayloadSegmentIds = CatchContractFieldConstraints(
+    path: 'exportOrganizerContactsCallablePayload.segmentIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const exportOrganizerContactsCallablePayloadSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'exportOrganizerContactsCallablePayload.segmentIds.items',
+    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
   );
@@ -67841,6 +67898,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const importEventAttendeesCallablePayloadRowsItemsCityMarketId = CatchContractFieldConstraints(
+    path: 'importEventAttendeesCallablePayload.rows.items.cityMarketId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
   static const importEventAttendeesCallablePayloadRowsItemsDisplayName = CatchContractFieldConstraints(
     path: 'importEventAttendeesCallablePayload.rows.items.displayName',
     maxLength: 120,
@@ -71037,6 +71102,21 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const listOrganizerContactsCallablePayloadManualTagIds = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.manualTagIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerContactsCallablePayloadManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const listOrganizerContactsCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.organizerId',
     maxLength: 180,
@@ -71053,6 +71133,22 @@ abstract final class CatchContractConstraints {
 
   static const listOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.segmentId',
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const listOrganizerContactsCallablePayloadSegmentIds = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.segmentIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerContactsCallablePayloadSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallablePayload.segmentIds.items',
+    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
   );
@@ -73178,6 +73274,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagIds = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.operator',
     required: true,
@@ -73202,6 +73314,23 @@ abstract final class CatchContractConstraints {
 
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
@@ -90933,6 +91062,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagIds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.operator',
     required: true,
@@ -90957,6 +91102,23 @@ abstract final class CatchContractConstraints {
 
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
@@ -91230,6 +91392,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagIds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.manualTagIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceDocument.definition.predicates.items.operator',
     required: true,
@@ -91254,6 +91432,23 @@ abstract final class CatchContractConstraints {
 
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
     path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
@@ -94224,6 +94419,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagIds = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.operator',
     required: true,
@@ -94248,6 +94459,23 @@ abstract final class CatchContractConstraints {
 
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
@@ -110541,6 +110769,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagIds = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagIdsItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator = CatchContractFieldConstraints(
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.operator',
     required: true,
@@ -110565,6 +110809,23 @@ abstract final class CatchContractConstraints {
 
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId = CatchContractFieldConstraints(
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentIdsItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
@@ -118205,6 +118466,8 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.checkedInAt._nanoseconds': eventAttendeeDocumentCheckedInAtNanoseconds,
     'eventAttendeeDocument.checkedInAt._seconds': eventAttendeeDocumentCheckedInAtSeconds,
     'eventAttendeeDocument.checkedInBy': eventAttendeeDocumentCheckedInBy,
+    'eventAttendeeDocument.cityMarketId': eventAttendeeDocumentCityMarketId,
+    'eventAttendeeDocument.citySource': eventAttendeeDocumentCitySource,
     'eventAttendeeDocument.clubId': eventAttendeeDocumentClubId,
     'eventAttendeeDocument.createdAt._nanoseconds': eventAttendeeDocumentCreatedAtNanoseconds,
     'eventAttendeeDocument.createdAt._seconds': eventAttendeeDocumentCreatedAtSeconds,
@@ -122161,8 +122424,14 @@ abstract final class CatchContractConstraints {
     'exploreSearchCallableResponse.eventIds.items': exploreSearchCallableResponseEventIdsItems,
     'exploreSearchCallableResponse.organizerIds': exploreSearchCallableResponseOrganizerIds,
     'exploreSearchCallableResponse.organizerIds.items': exploreSearchCallableResponseOrganizerIdsItems,
+    'exportOrganizerContactsCallablePayload.manualTagId': exportOrganizerContactsCallablePayloadManualTagId,
+    'exportOrganizerContactsCallablePayload.manualTagIds': exportOrganizerContactsCallablePayloadManualTagIds,
+    'exportOrganizerContactsCallablePayload.manualTagIds.items': exportOrganizerContactsCallablePayloadManualTagIdsItems,
     'exportOrganizerContactsCallablePayload.organizerId': exportOrganizerContactsCallablePayloadOrganizerId,
+    'exportOrganizerContactsCallablePayload.query': exportOrganizerContactsCallablePayloadQuery,
     'exportOrganizerContactsCallablePayload.segmentId': exportOrganizerContactsCallablePayloadSegmentId,
+    'exportOrganizerContactsCallablePayload.segmentIds': exportOrganizerContactsCallablePayloadSegmentIds,
+    'exportOrganizerContactsCallablePayload.segmentIds.items': exportOrganizerContactsCallablePayloadSegmentIdsItems,
     'exportOrganizerContactsCallableResponse.csv': exportOrganizerContactsCallableResponseCsv,
     'exportOrganizerContactsCallableResponse.fileName': exportOrganizerContactsCallableResponseFileName,
     'exportOrganizerContactsCallableResponse.generatedAtMillis': exportOrganizerContactsCallableResponseGeneratedAtMillis,
@@ -123396,6 +123665,7 @@ abstract final class CatchContractConstraints {
     'importEventAttendeesCallablePayload.importKey': importEventAttendeesCallablePayloadImportKey,
     'importEventAttendeesCallablePayload.rows': importEventAttendeesCallablePayloadRows,
     'importEventAttendeesCallablePayload.rows.items.arrivalGroup': importEventAttendeesCallablePayloadRowsItemsArrivalGroup,
+    'importEventAttendeesCallablePayload.rows.items.cityMarketId': importEventAttendeesCallablePayloadRowsItemsCityMarketId,
     'importEventAttendeesCallablePayload.rows.items.displayName': importEventAttendeesCallablePayloadRowsItemsDisplayName,
     'importEventAttendeesCallablePayload.rows.items.email': importEventAttendeesCallablePayloadRowsItemsEmail,
     'importEventAttendeesCallablePayload.rows.items.externalReference': importEventAttendeesCallablePayloadRowsItemsExternalReference,
@@ -123842,9 +124112,13 @@ abstract final class CatchContractConstraints {
     'listOrganizerContactsCallablePayload.cursor': listOrganizerContactsCallablePayloadCursor,
     'listOrganizerContactsCallablePayload.limit': listOrganizerContactsCallablePayloadLimit,
     'listOrganizerContactsCallablePayload.manualTagId': listOrganizerContactsCallablePayloadManualTagId,
+    'listOrganizerContactsCallablePayload.manualTagIds': listOrganizerContactsCallablePayloadManualTagIds,
+    'listOrganizerContactsCallablePayload.manualTagIds.items': listOrganizerContactsCallablePayloadManualTagIdsItems,
     'listOrganizerContactsCallablePayload.organizerId': listOrganizerContactsCallablePayloadOrganizerId,
     'listOrganizerContactsCallablePayload.query': listOrganizerContactsCallablePayloadQuery,
     'listOrganizerContactsCallablePayload.segmentId': listOrganizerContactsCallablePayloadSegmentId,
+    'listOrganizerContactsCallablePayload.segmentIds': listOrganizerContactsCallablePayloadSegmentIds,
+    'listOrganizerContactsCallablePayload.segmentIds.items': listOrganizerContactsCallablePayloadSegmentIdsItems,
     'listOrganizerContactsCallablePayload.sort': listOrganizerContactsCallablePayloadSort,
     'listOrganizerContactsCallableResponse.contacts': listOrganizerContactsCallableResponseContacts,
     'listOrganizerContactsCallableResponse.contacts.items.ambiguousCandidateCount': listOrganizerContactsCallableResponseContactsItemsAmbiguousCandidateCount,
@@ -124134,10 +124408,14 @@ abstract final class CatchContractConstraints {
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.intent': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsIntent,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.kind': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsKind,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagIds': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagIds,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.manualTagIds.items': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsManualTagIdsItems,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.operator': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsOperator,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.questionId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsQuestionId,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.reviewStatus': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsReviewStatus,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentId,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentIds': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentIds,
+    'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentIds.items': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentIdsItems,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.value': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsValue,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.versionId': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsVersionId,
     'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.withinDays': listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsWithinDays,
@@ -126607,10 +126885,14 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceCallableResponse.definition.predicates.items.intent': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsIntent,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.kind': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsKind,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagId,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagIds': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagIds,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.manualTagIds.items': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsManualTagIdsItems,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.operator': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsOperator,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.questionId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsQuestionId,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.reviewStatus': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsReviewStatus,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentId,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentIds': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentIds,
+    'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentIds.items': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentIdsItems,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.value': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsValue,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.versionId': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsVersionId,
     'organizerSavedAudienceCallableResponse.definition.predicates.items.withinDays': organizerSavedAudienceCallableResponseDefinitionPredicatesItemsWithinDays,
@@ -126647,10 +126929,14 @@ abstract final class CatchContractConstraints {
     'organizerSavedAudienceDocument.definition.predicates.items.intent': organizerSavedAudienceDocumentDefinitionPredicatesItemsIntent,
     'organizerSavedAudienceDocument.definition.predicates.items.kind': organizerSavedAudienceDocumentDefinitionPredicatesItemsKind,
     'organizerSavedAudienceDocument.definition.predicates.items.manualTagId': organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagId,
+    'organizerSavedAudienceDocument.definition.predicates.items.manualTagIds': organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagIds,
+    'organizerSavedAudienceDocument.definition.predicates.items.manualTagIds.items': organizerSavedAudienceDocumentDefinitionPredicatesItemsManualTagIdsItems,
     'organizerSavedAudienceDocument.definition.predicates.items.operator': organizerSavedAudienceDocumentDefinitionPredicatesItemsOperator,
     'organizerSavedAudienceDocument.definition.predicates.items.questionId': organizerSavedAudienceDocumentDefinitionPredicatesItemsQuestionId,
     'organizerSavedAudienceDocument.definition.predicates.items.reviewStatus': organizerSavedAudienceDocumentDefinitionPredicatesItemsReviewStatus,
     'organizerSavedAudienceDocument.definition.predicates.items.segmentId': organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentId,
+    'organizerSavedAudienceDocument.definition.predicates.items.segmentIds': organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentIds,
+    'organizerSavedAudienceDocument.definition.predicates.items.segmentIds.items': organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentIdsItems,
     'organizerSavedAudienceDocument.definition.predicates.items.value': organizerSavedAudienceDocumentDefinitionPredicatesItemsValue,
     'organizerSavedAudienceDocument.definition.predicates.items.versionId': organizerSavedAudienceDocumentDefinitionPredicatesItemsVersionId,
     'organizerSavedAudienceDocument.definition.predicates.items.withinDays': organizerSavedAudienceDocumentDefinitionPredicatesItemsWithinDays,
@@ -127054,10 +127340,14 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.intent': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsIntent,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.kind': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsKind,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagIds': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagIds,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.manualTagIds.items': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsManualTagIdsItems,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.operator': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsOperator,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.questionId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsQuestionId,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.reviewStatus': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsReviewStatus,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentId,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentIds': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentIds,
+    'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentIds.items': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentIdsItems,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.value': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsValue,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.versionId': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsVersionId,
     'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.withinDays': previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsWithinDays,
@@ -129270,10 +129560,14 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.intent': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsIntent,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.kind': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsKind,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagIds': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagIds,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.manualTagIds.items': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagIdsItems,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.operator': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.questionId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsQuestionId,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.reviewStatus': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsReviewStatus,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentIds': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentIds,
+    'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentIds.items': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentIdsItems,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.value': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsValue,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.versionId': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsVersionId,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.withinDays': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsWithinDays,

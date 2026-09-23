@@ -127,17 +127,24 @@ export async function findOrganizerFormPaymentHandler(
   const payments = await db.collection("organizerFormPayments")
     .where("formId", "==", formSnap.id)
     .where("respondentUid", "==", uid)
-    .orderBy("createdAt", "desc").limit(1).get();
+    .orderBy("createdAt", "desc").limit(26).get();
   if (!payments.docs.length) return {payment: null};
-  const snap = payments.docs[0];
-  const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
-  if (payment.respondentUid !== uid || payment.formId !== formSnap.id ||
-      payment.organizerId !== form.organizerId) unavailable();
-  // Ended attempts without a submission do not trap a deliberate fresh start.
-  if (!payment.responseId &&
-      ["expired", "refunded"].includes(payment.status)) return {payment: null};
-  return {payment: await projectFormPayment({db, paymentId: snap.id,
-    payment, respondentUid: uid})};
+  for (const snap of payments.docs.slice(0, 25)) {
+    const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+    if (payment.respondentUid !== uid || payment.formId !== formSnap.id ||
+        payment.organizerId !== form.organizerId) unavailable();
+    // A newer abandoned retry must not conceal an earlier receipt or
+    // outstanding refund/review after browser storage is lost.
+    if (!payment.responseId &&
+        ["expired", "refunded"].includes(payment.status)) continue;
+    return {payment: await projectFormPayment({db, paymentId: snap.id,
+      payment, respondentUid: uid})};
+  }
+  if (payments.docs.length > 25) {
+    throw new HttpsError("resource-exhausted",
+      "Too many ended attempts to recover automatically.");
+  }
+  return {payment: null};
 }
 
 export async function manageOrganizerFormPaymentConnectionHandler(

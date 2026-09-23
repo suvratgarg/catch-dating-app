@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:971a7b4ff2bcbf2687607aeeadd9435e1421d88a327e681ea1c3399535adcffb",
-  "resolvedDigest": "sha256:9fdb5db9303b23450d5972bf2a38392a0012db0434f455762e117d2fd6f423ba",
+  "resolvedDigest": "sha256:aa8c0cade920ff400404951c33d971c7ea41e55cf9581d33ddd0a4ddf28f9c28",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1432,7 +1432,9 @@
               "symbol": "CatchSheet",
               "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
-                "CatchSheet"
+                "CatchSheet",
+                "CatchSheet.standard",
+                "CatchSheet.filter"
               ]
             }
           },
@@ -1447,7 +1449,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

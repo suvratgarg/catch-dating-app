@@ -2,14 +2,17 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
+import 'support/response_filter_fixtures.dart';
 
 void main() {
   testWidgets(
@@ -47,13 +50,21 @@ void main() {
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Filters'));
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('Event city'));
-      await pumpFeatureUi(tester);
       await tester.tap(find.text('Mumbai'));
       await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
-      await tester.tap(find.text('Done'));
+      await tester.tap(find.text('Dubai'));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
+      expect(requests.last.answerFilters, {
+        'city': {'Mumbai', 'Dubai'},
+      });
+      expect(find.byType(CatchSelectionSheet<String>), findsNothing);
+      await tester.tap(find.text('Dubai'));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
+      await tester.tap(find.text('Close'));
       await pumpUntilFound(tester, find.text('Event city: Mumbai'));
-      expect(requests.last.answerFilters, {'city': 'Mumbai'});
+      expect(requests.last.answerFilters, {
+        'city': {'Mumbai'},
+      });
       expect(find.text('Event city: Mumbai'), findsOneWidget);
       pending.complete(_page);
       await pumpFeatureUi(tester);
@@ -64,7 +75,9 @@ void main() {
       await tester.tap(find.text('Oldest first'));
       await pumpFeatureUi(tester);
       expect(requests.last.oldestFirst, isTrue);
-      expect(requests.last.answerFilters, {'city': 'Mumbai'});
+      expect(requests.last.answerFilters, {
+        'city': {'Mumbai'},
+      });
       expect(tester.takeException(), isNull);
     },
   );
@@ -101,34 +114,115 @@ void main() {
       await tester.tap(find.text('Filters'));
       await pumpFeatureUi(tester);
       for (final number in [6, 1, 2, 3, 4]) {
-        await tester.tap(find.text('Filter $number'));
-        await pumpFeatureUi(tester);
-        await tester.tap(
-          find.descendant(
-            of: find.byType(CatchSelectionSheet<String>),
-            matching: find.text('Selected'),
-          ),
-        );
+        final chip = find.byKey(ValueKey('response-filter-q$number-selected'));
+        await tester.ensureVisible(chip);
+        await tester.tap(chip);
         await pumpFeatureUi(tester);
       }
       expect(requests.last.answerFilters.length, 5);
-      expect(requests.last.answerFilters['q6'], 'selected');
-      final sixth = find.widgetWithText(CatchField, 'Filter 5');
-      expect(tester.widget<CatchField>(sixth).onTap, isNull);
-      await tester.tap(find.text('Filter 6'));
-      await pumpFeatureUi(tester);
-      await tester.tap(
-        find.descendant(
-          of: find.byType(CatchSelectionSheet<String>),
-          matching: find.text('All'),
-        ),
+      expect(requests.last.answerFilters['q6'], {'selected'});
+      final sixth = find.byKey(const ValueKey('response-filter-q5-selected'));
+      expect(tester.widget<CatchChip>(sixth).onPressed, isNull);
+      final selected = find.byKey(
+        const ValueKey('response-filter-q6-selected'),
       );
+      await tester.ensureVisible(selected);
+      await tester.tap(selected);
       await pumpFeatureUi(tester);
       expect(requests.last.answerFilters.length, 4);
-      expect(tester.widget<CatchField>(sixth).onTap, isNotNull);
+      expect(tester.widget<CatchChip>(sixth).onPressed, isNotNull);
       expect(tester.takeException(), isNull);
     },
   );
+  for (final scale in [1.0, 2.0]) {
+    testWidgets(
+      'inline form and answer chips combine, reset and preserve selection at $scale',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 874);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final requests = <HostFormResponseListRequest>[];
+        String? formId = 'rsvp';
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              hostFormsDirectoryControllerProvider.overrideWith2(
+                (_) => _Forms(),
+              ),
+              hostFormResponsesControllerProvider.overrideWith2(
+                (_) => _ScopedResponses(requests),
+              ),
+            ],
+            child: MaterialApp(
+              theme: scale == 1 ? AppTheme.light : AppTheme.dark,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: TextScaler.linear(scale)),
+                child: child!,
+              ),
+              home: StatefulBuilder(
+                builder: (context, update) => Scaffold(
+                  body: CustomScrollView(
+                    slivers: [
+                      HostFormResponsesPanel(
+                        organizerId: 'review',
+                        formId: formId,
+                        onFormChanged: (value) => update(() => formId = value),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await pumpFeatureUi(tester);
+        await tester.tap(find.text('Filters'));
+        await pumpFeatureUi(tester);
+        Future<void> choose(String value) async {
+          final chip = find.byKey(ValueKey('response-filter-$value'));
+          await tester.ensureVisible(chip);
+          await tester.tap(chip);
+          await pumpFeatureUi(tester);
+        }
+
+        await choose('city-Mumbai');
+        await choose('city-Delhi');
+        await choose('diet-vegetarian');
+        expect(requests.last.answerFilters, {
+          'city': {'Mumbai', 'Delhi'},
+          'diet': {'vegetarian'},
+        });
+        final dinner = find.widgetWithText(CatchChip, 'Community dinner');
+        await tester.ensureVisible(dinner);
+        await tester.tap(dinner);
+        await pumpFeatureUi(tester);
+        expect(requests.last.formId, 'dinner');
+        expect(requests.last.answerFilters, isEmpty);
+        expect(find.byType(CatchSheet), findsOneWidget);
+        await choose('city-Mumbai');
+        await tester.tap(find.text('Close'));
+        await pumpFeatureUi(tester);
+        await tester.tap(find.text('Filters'));
+        await pumpFeatureUi(tester);
+        expect(
+          tester
+              .widget<CatchChip>(
+                find.byKey(const ValueKey('response-filter-city-Mumbai')),
+              )
+              .selected,
+          isTrue,
+        );
+        await tester.tap(find.text('Reset all'));
+        await pumpFeatureUi(tester);
+        expect(requests.last.formId, isNull);
+        expect(requests.last.answerFilters, isEmpty);
+        expect(find.widgetWithText(CatchChip, 'All forms'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 }
 
 const _page = HostFormResponsesState(
@@ -175,6 +269,30 @@ class _ManyFilters extends HostFormResponsesController {
             options: const {'selected': 'Selected'},
           ),
       ],
+    );
+  }
+}
+
+class _Forms extends HostFormsDirectoryController {
+  @override
+  Future<HostFormsDirectoryState> build(HostFormListRequest request) async =>
+      HostFormsDirectoryState(forms: responseFilterForms, nextCursor: null);
+}
+
+class _ScopedResponses extends HostFormResponsesController {
+  _ScopedResponses(this.requests);
+  final List<HostFormResponseListRequest> requests;
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async {
+    requests.add(request);
+    return HostFormResponsesState(
+      responses: const [],
+      nextCursor: null,
+      answerFilterOptions: request.formId == null
+          ? const []
+          : responseFilterQuestions,
     );
   }
 }

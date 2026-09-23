@@ -10,13 +10,25 @@ final class ExportOrganizerContactsCallableRequest {
   const ExportOrganizerContactsCallableRequest({
     required this.organizerId,
     this.segmentId,
+    this.segmentIds,
+    this.manualTagIds,
+    this.query,
+    this.manualTagId,
   });
 
   final String organizerId;
   final String? segmentId;
+  final List<String>? segmentIds;
+  final List<String>? manualTagIds;
+  final String? query;
+  final String? manualTagId;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
     'segmentId': ?segmentId,
+    'segmentIds': ?segmentIds,
+    'manualTagIds': ?manualTagIds,
+    'query': ?query,
+    'manualTagId': ?manualTagId,
   };
 }

@@ -104145,6 +104145,51 @@ export const organizerSavedAudienceDocumentSchema = {
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentIds",
+                  "manualTagIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "directoryFilters"
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "new_to_organizer",
+                        "past_attendee",
+                        "first_time_attendee",
+                        "repeat_attendee",
+                        "regular",
+                        "lapsed_regular",
+                        "reliable_attendee",
+                        "needs_confirmation",
+                        "advocate",
+                        "high_impact_advocate",
+                        "whatsapp_reachable",
+                        "sms_reachable"
+                      ]
+                    }
+                  },
+                  "manualTagIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{32}$"
+                    }
+                  }
+                }
               }
             ]
           }
@@ -104627,6 +104672,51 @@ export const organizerSavedAudienceDocumentSchema = {
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentIds",
+                  "manualTagIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "directoryFilters"
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "new_to_organizer",
+                        "past_attendee",
+                        "first_time_attendee",
+                        "repeat_attendee",
+                        "regular",
+                        "lapsed_regular",
+                        "reliable_attendee",
+                        "needs_confirmation",
+                        "advocate",
+                        "high_impact_advocate",
+                        "whatsapp_reachable",
+                        "sms_reachable"
+                      ]
+                    }
+                  },
+                  "manualTagIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{32}$"
+                    }
+                  }
+                }
               }
             ]
           }
@@ -104891,8 +104981,98 @@ export const organizerSavedAudienceDocumentSchema = {
               }
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "segmentIds",
+            "manualTagIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "directoryFilters"
+            },
+            "segmentIds": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "new_to_organizer",
+                  "past_attendee",
+                  "first_time_attendee",
+                  "repeat_attendee",
+                  "regular",
+                  "lapsed_regular",
+                  "reliable_attendee",
+                  "needs_confirmation",
+                  "advocate",
+                  "high_impact_advocate",
+                  "whatsapp_reachable",
+                  "sms_reachable"
+                ]
+              }
+            },
+            "manualTagIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{32}$"
+              }
+            }
+          }
         }
       ]
+    },
+    "directoryFiltersPredicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "segmentIds",
+        "manualTagIds"
+      ],
+      "properties": {
+        "kind": {
+          "const": "directoryFilters"
+        },
+        "segmentIds": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "new_to_organizer",
+              "past_attendee",
+              "first_time_attendee",
+              "repeat_attendee",
+              "regular",
+              "lapsed_regular",
+              "reliable_attendee",
+              "needs_confirmation",
+              "advocate",
+              "high_impact_advocate",
+              "whatsapp_reachable",
+              "sms_reachable"
+            ]
+          }
+        },
+        "manualTagIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          }
+        }
+      }
     },
     "computedSegmentPredicate": {
       "type": "object",
@@ -124117,6 +124297,31 @@ export const eventAttendeeDocumentSchema = {
       ],
       "format": "email",
       "maxLength": 320
+    },
+    "cityMarketId": {
+      "description": "Private organizer-reported roster city; never a verified participant profile or eligibility input.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "hostImport",
+        "hostManual",
+        null
+      ]
     },
     "externalReference": {
       "type": [
@@ -173848,6 +174053,51 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentIds",
+                  "manualTagIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "directoryFilters"
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "new_to_organizer",
+                        "past_attendee",
+                        "first_time_attendee",
+                        "repeat_attendee",
+                        "regular",
+                        "lapsed_regular",
+                        "reliable_attendee",
+                        "needs_confirmation",
+                        "advocate",
+                        "high_impact_advocate",
+                        "whatsapp_reachable",
+                        "sms_reachable"
+                      ]
+                    }
+                  },
+                  "manualTagIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{32}$"
+                    }
+                  }
+                }
               }
             ]
           }
@@ -174395,6 +174645,51 @@ export const organizerSavedAudienceCallableResponseSchema = {
                     }
                   }
                 }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "segmentIds",
+                  "manualTagIds"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "directoryFilters"
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "new_to_organizer",
+                        "past_attendee",
+                        "first_time_attendee",
+                        "repeat_attendee",
+                        "regular",
+                        "lapsed_regular",
+                        "reliable_attendee",
+                        "needs_confirmation",
+                        "advocate",
+                        "high_impact_advocate",
+                        "whatsapp_reachable",
+                        "sms_reachable"
+                      ]
+                    }
+                  },
+                  "manualTagIds": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{32}$"
+                    }
+                  }
+                }
               }
             ]
           }
@@ -174822,6 +175117,51 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 180
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "segmentIds",
+                        "manualTagIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "directoryFilters"
+                        },
+                        "segmentIds": {
+                          "type": "array",
+                          "maxItems": 12,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "new_to_organizer",
+                              "past_attendee",
+                              "first_time_attendee",
+                              "repeat_attendee",
+                              "regular",
+                              "lapsed_regular",
+                              "reliable_attendee",
+                              "needs_confirmation",
+                              "advocate",
+                              "high_impact_advocate",
+                              "whatsapp_reachable",
+                              "sms_reachable"
+                            ]
+                          }
+                        },
+                        "manualTagIds": {
+                          "type": "array",
+                          "maxItems": 20,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{32}$"
                           }
                         }
                       }
@@ -175428,6 +175768,51 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 180
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "segmentIds",
+                      "manualTagIds"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "directoryFilters"
+                      },
+                      "segmentIds": {
+                        "type": "array",
+                        "maxItems": 12,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "new_to_organizer",
+                            "past_attendee",
+                            "first_time_attendee",
+                            "repeat_attendee",
+                            "regular",
+                            "lapsed_regular",
+                            "reliable_attendee",
+                            "needs_confirmation",
+                            "advocate",
+                            "high_impact_advocate",
+                            "whatsapp_reachable",
+                            "sms_reachable"
+                          ]
+                        }
+                      },
+                      "manualTagIds": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{32}$"
                         }
                       }
                     }
@@ -178908,6 +179293,19 @@ export const importEventAttendeesCallablePayloadSchema = {
               "null"
             ],
             "maxLength": 320
+          },
+          "cityMarketId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "externalReference": {
             "type": [
@@ -204413,6 +204811,39 @@ export const listOrganizerContactsCallablePayloadSchema = {
         "null"
       ],
       "pattern": "^[a-f0-9]{32}$"
+    },
+    "segmentIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "new_to_organizer",
+          "past_attendee",
+          "first_time_attendee",
+          "repeat_attendee",
+          "regular",
+          "lapsed_regular",
+          "reliable_attendee",
+          "needs_confirmation",
+          "advocate",
+          "high_impact_advocate",
+          "whatsapp_reachable",
+          "sms_reachable"
+        ]
+      },
+      "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."
+    },
+    "manualTagIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "description": "Match any selected manual tag, combined with all selected segment categories."
     }
   }
 };
@@ -226803,6 +227234,53 @@ export const exportOrganizerContactsCallablePayloadSchema = {
           "type": "null"
         }
       ]
+    },
+    "segmentIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "new_to_organizer",
+          "past_attendee",
+          "first_time_attendee",
+          "repeat_attendee",
+          "regular",
+          "lapsed_regular",
+          "reliable_attendee",
+          "needs_confirmation",
+          "advocate",
+          "high_impact_advocate",
+          "whatsapp_reachable",
+          "sms_reachable"
+        ]
+      },
+      "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."
+    },
+    "manualTagIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "description": "Match any selected manual tag, combined with all selected segment categories."
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "manualTagId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{32}$"
     }
   }
 };

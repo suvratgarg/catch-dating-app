@@ -49,14 +49,12 @@ class _HostFormPaymentSheetState extends State<HostFormPaymentSheet> {
         description.length <= 160 &&
         _refundPolicy.trim().isNotEmpty &&
         _refundPolicy.trim().length <= 1000;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: l10n.hostFormPaymentConfigure,
-      mode: CatchSheetMode.scrollable,
-      keyboardSafe: true,
       subtitle: l10n.hostFormPaymentHelp,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
         label: l10n.hostFormPaymentSave,
-        fullWidth: true,
+        role: CatchButtonEmphasis.commit,
         onPressed: !canSave
             ? null
             : () => Navigator.of(context).pop(

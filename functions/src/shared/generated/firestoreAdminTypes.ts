@@ -5624,6 +5624,30 @@ export interface OrganizerSavedAudienceDocument {
            */
           contactIds: string[];
         }
+      | {
+          kind: "directoryFilters";
+          /**
+           * @maxItems 12
+           */
+          segmentIds: (
+            | "new_to_organizer"
+            | "past_attendee"
+            | "first_time_attendee"
+            | "repeat_attendee"
+            | "regular"
+            | "lapsed_regular"
+            | "reliable_attendee"
+            | "needs_confirmation"
+            | "advocate"
+            | "high_impact_advocate"
+            | "whatsapp_reachable"
+            | "sms_reachable"
+          )[];
+          /**
+           * @maxItems 20
+           */
+          manualTagIds: string[];
+        }
     )[];
   };
   definitionHash: string;
@@ -8664,6 +8688,11 @@ export interface EventAttendeeDocument {
   linkedUid: string | null;
   phoneE164: string | null;
   email: string | null;
+  /**
+   * Private organizer-reported roster city; never a verified participant profile or eligibility input.
+   */
+  cityMarketId?: string | null;
+  citySource?: "hostImport" | "hostManual" | null;
   externalReference: string | null;
   /**
    * Provider or import-supplied booking/arrival group shared by guests who are expected to arrive together.

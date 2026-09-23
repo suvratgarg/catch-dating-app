@@ -3,10 +3,8 @@ import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,13 +15,13 @@ Future<void> runHostEventEntryFlow({
   required WidgetRef ref,
   required Club club,
   required HostEventEntryState state,
-  required HostEventEntryIntent intent,
+  required HostEventEntrySelection selection,
   required DateTime createdAt,
 }) async {
-  switch (intent) {
+  switch (selection.intent) {
     case HostEventEntryIntent.resumeDraft:
-      final draft = await _pickDraft(context: context, ref: ref, state: state);
-      if (draft == null || !context.mounted) return;
+      final draft = selection.draft;
+      if (draft == null || draft.clubId != club.id || !context.mounted) return;
       await _openCreateEvent(
         context: context,
         ref: ref,
@@ -45,27 +43,6 @@ Future<void> runHostEventEntryFlow({
     case HostEventEntryIntent.createFromGuestList:
       await _openExternalEvent(context: context, ref: ref, club: club);
   }
-}
-
-Future<EventDraft?> _pickDraft({
-  required BuildContext context,
-  required WidgetRef ref,
-  required HostEventEntryState state,
-}) async {
-  if (!state.hasMultipleDrafts) return state.mostRecentDraft;
-  return showDraftPickerSheet(
-    context: context,
-    drafts: state.drafts,
-    showStartFreshAction: false,
-    onDeleteDraft: (draft) async {
-      await CreateEventDraftController.deleteDraftMutation.run(ref, (tx) {
-        return tx
-            .get(createEventDraftControllerProvider.notifier)
-            .deleteDraft(clubId: draft.clubId, draftId: draft.id);
-      });
-      ref.invalidate(clubEventDraftsProvider(clubId: draft.clubId));
-    },
-  );
 }
 
 Future<void> _openCreateEvent({

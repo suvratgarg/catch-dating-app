@@ -240,19 +240,20 @@ class _HostManualSendTaskSheetState
   bool _busy = false;
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
     title: context.l10n.hostManualSendTaskTitle(name: _task.displayName),
     subtitle: context.l10n.hostManualSendTaskSubtitle,
-    footer: CatchButton(
+    footer: CatchButton.sheet(
+      role: CatchButtonEmphasis.commit,
       key: const ValueKey('host-manual-send-mark-sent'),
       label: context.l10n.hostManualSendTaskMarkSent,
       status: (_busy) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: _busy || _task.status != HostManualSendTaskStatus.handoffOpened
           ? null
           : () => unawaited(_mark(HostManualSendTaskAction.hostMarkedSent)),
-      fullWidth: true,
     ),
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchNotice(
@@ -265,6 +266,7 @@ class _HostManualSendTaskSheetState
         ),
         gapH16,
         CatchSection.fieldRows(
+          first: true,
           children: [
             CatchField.action(
               copy: catchFieldCopy(context.l10n),
@@ -357,10 +359,11 @@ class _HostManualSendReplanSheet extends StatelessWidget {
   final Map<String, HostManualSendTaskReplanResult> results;
 
   @override
-  Widget build(BuildContext context) => CatchSheet(
+  Widget build(BuildContext context) => CatchSheet.standard(
     title: context.l10n.hostManualSendReplanTitle,
     subtitle: context.l10n.hostManualSendReplanSubtitle,
     child: CatchSection.fieldRows(
+      first: true,
       children: [
         for (final task in tasks.take(50))
           CatchField.read(
