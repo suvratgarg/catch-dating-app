@@ -71462,6 +71462,21 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerFormResponsesCallableResponseVersionScopeActiveVersionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.versionScope.activeVersionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseVersionScopePublishedVersion = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.versionScope.publishedVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
   static const listOrganizerFormsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listOrganizerFormsCallablePayload.cursor',
     maxLength: 500,
@@ -122010,6 +122025,8 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormResponsesCallableResponse.items.items.withdrawnAtMillis': listOrganizerFormResponsesCallableResponseItemsItemsWithdrawnAtMillis,
     'listOrganizerFormResponsesCallableResponse.nextCursor': listOrganizerFormResponsesCallableResponseNextCursor,
     'listOrganizerFormResponsesCallableResponse.organizerId': listOrganizerFormResponsesCallableResponseOrganizerId,
+    'listOrganizerFormResponsesCallableResponse.versionScope.activeVersionId': listOrganizerFormResponsesCallableResponseVersionScopeActiveVersionId,
+    'listOrganizerFormResponsesCallableResponse.versionScope.publishedVersion': listOrganizerFormResponsesCallableResponseVersionScopePublishedVersion,
     'listOrganizerFormsCallablePayload.cursor': listOrganizerFormsCallablePayloadCursor,
     'listOrganizerFormsCallablePayload.limit': listOrganizerFormsCallablePayloadLimit,
     'listOrganizerFormsCallablePayload.organizerId': listOrganizerFormsCallablePayloadOrganizerId,

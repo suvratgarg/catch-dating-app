@@ -212919,6 +212919,41 @@ export const listOrganizerFormResponsesCallableResponseSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "versionScope": {
+      "description": "Published native form version scope; null for all forms or imported forms. Version IDs are formId_vN for N from 1 through publishedVersion.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "activeVersionId",
+            "publishedVersion"
+          ],
+          "properties": {
+            "activeVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "publishedVersion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "items": {
       "type": "array",
       "maxItems": 100,
