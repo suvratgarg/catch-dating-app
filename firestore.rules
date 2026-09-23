@@ -1323,6 +1323,15 @@ service cloud.firestore {
     }
 
     // Event chat admission, membership and replay evidence are server-owned.
+    match /eventChatMessages/{id} {
+      allow read, write: if false;
+    }
+    match /eventChatReactions/{id} {
+      allow read, write: if false;
+    }
+    match /eventChatPresence/{id} {
+      allow read, write: if false;
+    }
     match /eventChatRooms/{eventId} {
       allow read, write: if false;
     }

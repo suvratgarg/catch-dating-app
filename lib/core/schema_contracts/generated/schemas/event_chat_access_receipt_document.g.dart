@@ -58,7 +58,7 @@ const schemaEventChatAccessReceiptDocumentSchema = <String, Object?>{
       },
     },
   },
-  'description': 'Payload-bound idempotency receipt for an explicit room availability or membership change.',
+  'description': 'Payload-bound idempotency receipt for an explicit room availability, membership or reaction change.',
   'x-firestore-collection': 'eventChatAccessReceipts',
   'x-firestore-path': 'eventChatAccessReceipts/{receiptId}',
   'x-document-id-field': 'receiptId',

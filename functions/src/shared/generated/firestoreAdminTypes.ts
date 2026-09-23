@@ -5008,6 +5008,7 @@ export interface EventChatRoomDocument {
   updatedByUid: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  lastMessageSequence?: number;
 }
 
 /**
@@ -5027,7 +5028,7 @@ export interface EventChatMembershipDocument {
 }
 
 /**
- * Payload-bound idempotency receipt for an explicit room availability or membership change.
+ * Payload-bound idempotency receipt for an explicit room availability, membership or reaction change.
  */
 export interface EventChatAccessReceiptDocument {
   eventId: string;
@@ -5035,6 +5036,53 @@ export interface EventChatAccessReceiptDocument {
   payloadHash: string;
   revision: number;
   createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned event conversation message; replies are same-room references, never quoted copies.
+ */
+export interface EventChatMessageDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string | null;
+  sequence: number;
+  text: string | null;
+  replyToMessageId: string | null;
+  status: "visible" | "removed";
+  payloadHash: string;
+  reactionCounts: {
+    like: number;
+    love: number;
+    laugh: number;
+    wow: number;
+    sad: number;
+    thanks: number;
+  };
+  createdAt: FirebaseFirestore.Timestamp;
+  removedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * One current reaction per account and message; separate from aggregated anonymous counts.
+ */
+export interface EventChatReactionDocument {
+  eventId: string;
+  messageId: string;
+  uid: string;
+  reaction: ("like" | "love" | "laugh" | "wow" | "sad" | "thanks") | null;
+  revision: number;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Bounded expiring typing indicator, never draft text.
+ */
+export interface EventChatPresenceDocument {
+  eventId: string;
+  uid: string;
+  revision: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

@@ -1,5 +1,21 @@
 {
   "indexes": [
+    {
+      "collectionGroup": "eventChatMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "order": "ASCENDING"},
+        {"fieldPath": "sequence", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventChatPresence",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "order": "ASCENDING"},
+        {"fieldPath": "expiresAt", "order": "DESCENDING"}
+      ]
+    },
     {"collectionGroup":"organizerFormPayments","queryScope":"COLLECTION","fields":[{"fieldPath":"organizerId","order":"ASCENDING"},{"fieldPath":"formId","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}]},
     {"collectionGroup":"organizerFormPayments","queryScope":"COLLECTION","fields":[{"fieldPath":"organizerId","order":"ASCENDING"},{"fieldPath":"formId","order":"ASCENDING"},{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}]},
     {"collectionGroup": "organizerPaymentConnections","queryScope": "COLLECTION","fields": [{"fieldPath": "organizerId","order": "ASCENDING"},{"fieldPath": "createdAt","order": "DESCENDING"}]},

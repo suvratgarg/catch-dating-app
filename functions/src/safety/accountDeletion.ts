@@ -334,11 +334,19 @@ async function queueParticipantPrivateStateCleanup(
 ) {
   for (const collection of ["participantFormProfileProposals",
     "participantOrganizerCards", "participantProfileClaimReceipts",
-    "eventChatMemberships", "eventChatAccessReceipts"]) {
+    "eventChatMemberships", "eventChatAccessReceipts",
+    "eventChatReactions", "eventChatPresence"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));
   }
+  const messages = await db.collection("eventChatMessages")
+    .where("uid", "==", uid).get();
+  messages.forEach((doc) => writer.update(doc.ref, {
+    uid: null, text: null, replyToMessageId: null, status: "removed",
+    removedAt: admin.firestore.FieldValue.serverTimestamp(),
+    reactionCounts: {like: 0, love: 0, laugh: 0, wow: 0, sad: 0, thanks: 0},
+  }));
 }
 
 /**

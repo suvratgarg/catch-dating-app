@@ -54,7 +54,7 @@ export function hasEventChatAdmission(eventId: string, organizerId: string,
   return participation !== null || attendee !== undefined;
 }
 
-async function readAccount(db: FirebaseFirestore.Firestore,
+export async function readEventChatAccount(db: FirebaseFirestore.Firestore,
   tx: FirebaseFirestore.Transaction, uid: string) {
   const [deleted, user] = await Promise.all([
     tx.get(db.collection("deletedUsers").doc(uid)),
@@ -70,7 +70,7 @@ async function readAccount(db: FirebaseFirestore.Firestore,
 /** Reads current event authority without trusting a cached roster grant. */
 export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
   tx: FirebaseFirestore.Transaction, eventId: string, uid: string) {
-  const user = await readAccount(db, tx, uid);
+  const user = await readEventChatAccount(db, tx, uid);
   const eventSnap = await tx.get(db.collection("events").doc(eventId));
   if (!eventSnap.exists) throw unavailable();
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
@@ -106,7 +106,7 @@ export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
         member.organizerId !== organizerId))) throw unavailable();
   const claimed = user !== null && typeof user.displayName === "string" &&
     user.displayName.trim().length > 0 &&
-    (user.profileComplete === true || (user.profileRevision ?? 0) > 0);
+    (user.profileComplete === true || user.profileClaimedAt != null);
   const active = event.status === "active" && room?.status === "open";
   const view: View = {eventId, organizerId, title: event.name ?? "",
     role: host ? "host" : "attendee",
@@ -158,7 +158,7 @@ export async function updateEventChatAccessHandler(
   const payloadHash = hash([data.eventId, data.action, data.expectedRevision,
     data.termsVersion]);
   return db.runTransaction(async (tx) => {
-    await readAccount(db, tx, uid);
+    await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);
     if (receiptSnap.exists) {
       const receipt = requireDoc<Receipt>(receiptSnap,
@@ -206,6 +206,7 @@ export async function updateEventChatAccessHandler(
         tx.set(db.collection("eventChatRooms").doc(data.eventId), {
           eventId: data.eventId, organizerId: access.view.organizerId,
           status: data.action === "open" ? "open" : "closed", revision,
+          lastMessageSequence: access.room?.lastMessageSequence ?? 0,
           createdByUid: access.room?.createdByUid ?? uid, updatedByUid: uid,
           createdAt: access.room?.createdAt ?? now, updatedAt: now,
         } satisfies Room);

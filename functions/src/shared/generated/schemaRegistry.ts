@@ -199,6 +199,17 @@ export {participantFormProfileProposalDocumentSchema} from "./schemas/participan
 export {eventChatRoomDocumentSchema} from "./schemas/eventChatRoomDocument";
 export {eventChatMembershipDocumentSchema} from "./schemas/eventChatMembershipDocument";
 export {eventChatAccessReceiptDocumentSchema} from "./schemas/eventChatAccessReceiptDocument";
+export {eventChatMessageDocumentSchema} from "./schemas/eventChatMessageDocument";
+export {eventChatReactionDocumentSchema} from "./schemas/eventChatReactionDocument";
+export {eventChatPresenceDocumentSchema} from "./schemas/eventChatPresenceDocument";
+export {sendEventChatMessageCallablePayloadSchema} from "./schemas/sendEventChatMessageInput";
+export {sendEventChatMessageCallableResponseSchema} from "./schemas/sendEventChatMessageOutput";
+export {setEventChatReactionCallablePayloadSchema} from "./schemas/setEventChatReactionInput";
+export {setEventChatReactionCallableResponseSchema} from "./schemas/setEventChatReactionOutput";
+export {setEventChatTypingCallablePayloadSchema} from "./schemas/setEventChatTypingInput";
+export {setEventChatTypingCallableResponseSchema} from "./schemas/setEventChatTypingOutput";
+export {listEventChatMessagesCallablePayloadSchema} from "./schemas/listEventChatMessagesInput";
+export {listEventChatMessagesCallableResponseSchema} from "./schemas/listEventChatMessagesOutput";
 export {getEventChatAccessCallablePayloadSchema} from "./schemas/getEventChatAccessInput";
 export {updateEventChatAccessCallablePayloadSchema} from "./schemas/updateEventChatAccessInput";
 export {getEventChatAccessCallableResponseSchema} from "./schemas/getEventChatAccessOutput";

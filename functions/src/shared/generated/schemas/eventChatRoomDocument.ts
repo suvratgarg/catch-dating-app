@@ -90,6 +90,11 @@ export const eventChatRoomDocumentSchema: Record<string, unknown> = {
           "maximum": 999999999
         }
       }
+    },
+    "lastMessageSequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
     }
   },
   "description": "Host-controlled event conversation availability. No attendee admission or profile data.",

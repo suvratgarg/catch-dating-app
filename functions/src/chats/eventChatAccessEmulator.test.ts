@@ -71,7 +71,13 @@ test("Firestore room access follows current authority and explicit choices",
       assert.equal((await member(person).get()).exists, false);
 
       const profile = {displayName: "Sara Demo", profileRevision: 1,
-        profileComplete: false, prefsShowInCrossPaths: false};
+        profileComplete: false, profileClaimedAt: Timestamp.now(),
+        prefsShowInCrossPaths: false};
+      await ref("users", person).set({displayName: "Private draft",
+        profileRevision: 1, profileComplete: false});
+      assert.equal((await view(person)).canJoin, false);
+      await assert.rejects(update(change(person, "join", 0), deps),
+        {code: "permission-denied"});
       await ref("users", person).set(profile);
       const join = change(person, "join", 0);
       await assert.rejects(update({...join, data: {...join.data as object,

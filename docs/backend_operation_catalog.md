@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.78.0
+version: 1.79.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -166,6 +166,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
 | `getEventChatAccess` / `updateEventChatAccess` | Callable | Event chat access | Room availability, explicit participant memberships and replay receipts | Current canonical organizer/admission checks; claimed identity and phone verification for join; revision fences; no automatic admission, messages or card disclosure. |
+| `sendEventChatMessage` / `listEventChatMessages` | Callable | Event conversations | Ordered, idempotent messages with same-room reply pointers and bounded private projections | Rechecks current joined admission, claim, blocks and deletion; no copied quotes or private profile data; moderation before writes. |
+| `setEventChatReaction` / `setEventChatTyping` | Callable | Event conversations | Per-person reaction changes and expiring typing hints | Revision fences, payload-bound reaction retries, anonymous aggregates; typing contains no draft text and can be withdrawn after access revocation. |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | Callable | Participant WhatsApp permissions | Own Catch/organizer preferences and immutable permission receipts | UID-scoped bounded reads; separate sender scopes; optimistic receipt fence and idempotent withdrawal. No opt-in, dispatch, booking, or profile mutation. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create and increments the server profile revision; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |

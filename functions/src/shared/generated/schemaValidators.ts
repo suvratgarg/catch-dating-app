@@ -199,6 +199,17 @@ export {validateParticipantFormProfileProposalDocument} from "./validators/parti
 export {validateEventChatRoomDocument} from "./validators/eventChatRoomDocument";
 export {validateEventChatMembershipDocument} from "./validators/eventChatMembershipDocument";
 export {validateEventChatAccessReceiptDocument} from "./validators/eventChatAccessReceiptDocument";
+export {validateEventChatMessageDocument} from "./validators/eventChatMessageDocument";
+export {validateEventChatReactionDocument} from "./validators/eventChatReactionDocument";
+export {validateEventChatPresenceDocument} from "./validators/eventChatPresenceDocument";
+export {validateSendEventChatMessageCallablePayload} from "./validators/sendEventChatMessageInput";
+export {validateSendEventChatMessageCallableResponse} from "./validators/sendEventChatMessageOutput";
+export {validateSetEventChatReactionCallablePayload} from "./validators/setEventChatReactionInput";
+export {validateSetEventChatReactionCallableResponse} from "./validators/setEventChatReactionOutput";
+export {validateSetEventChatTypingCallablePayload} from "./validators/setEventChatTypingInput";
+export {validateSetEventChatTypingCallableResponse} from "./validators/setEventChatTypingOutput";
+export {validateListEventChatMessagesCallablePayload} from "./validators/listEventChatMessagesInput";
+export {validateListEventChatMessagesCallableResponse} from "./validators/listEventChatMessagesOutput";
 export {validateGetEventChatAccessCallablePayload} from "./validators/getEventChatAccessInput";
 export {validateUpdateEventChatAccessCallablePayload} from "./validators/updateEventChatAccessInput";
 export {validateGetEventChatAccessCallableResponse} from "./validators/getEventChatAccessOutput";

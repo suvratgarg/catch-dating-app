@@ -1024,6 +1024,61 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventChatAccessReceiptDocument.ts",
   },
   {
+    name: "EventChatMessageDocument",
+    source: "firestore/event_chat_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatMessageDocument.ts",
+  },
+  {
+    name: "EventChatReactionDocument",
+    source: "firestore/event_chat_reactions.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatReactionDocument.ts",
+  },
+  {
+    name: "EventChatPresenceDocument",
+    source: "firestore/event_chat_presence.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatPresenceDocument.ts",
+  },
+  {
+    name: "SendEventChatMessageCallablePayload",
+    source: "callables/send_event_chat_message_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/sendEventChatMessageCallablePayload.ts",
+  },
+  {
+    name: "SendEventChatMessageCallableResponse",
+    source: "callable_responses/send_event_chat_message_response.schema.json",
+    typeOutput: "functions/src/shared/generated/sendEventChatMessageCallableResponse.ts",
+  },
+  {
+    name: "SetEventChatReactionCallablePayload",
+    source: "callables/set_event_chat_reaction_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatReactionCallablePayload.ts",
+  },
+  {
+    name: "SetEventChatReactionCallableResponse",
+    source: "callable_responses/set_event_chat_reaction_response.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatReactionCallableResponse.ts",
+  },
+  {
+    name: "SetEventChatTypingCallablePayload",
+    source: "callables/set_event_chat_typing_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatTypingCallablePayload.ts",
+  },
+  {
+    name: "SetEventChatTypingCallableResponse",
+    source: "callable_responses/set_event_chat_typing_response.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventChatTypingCallableResponse.ts",
+  },
+  {
+    name: "ListEventChatMessagesCallablePayload",
+    source: "callables/list_event_chat_messages_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatMessagesCallablePayload.ts",
+  },
+  {
+    name: "ListEventChatMessagesCallableResponse",
+    source: "callable_responses/list_event_chat_messages_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventChatMessagesCallableResponse.ts",
+  },
+  {
     name: "GetEventChatAccessCallablePayload",
     source: "callables/get_event_chat_access_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getEventChatAccessCallablePayload.ts",

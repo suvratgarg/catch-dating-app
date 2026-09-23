@@ -344,15 +344,21 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // 10/min
   blockUser: {maxRequests: 10, windowMs: 60 * 1000},
   unblockUser: {maxRequests: 10, windowMs: 60 * 1000},
-  // 60/min because profile editing can save one field per sheet interaction.
+  sendEventChatMessage: {maxRequests: 30, windowMs: 60 * 1000},
+  setEventChatReaction: {maxRequests: 60, windowMs: 60 * 1000},
+  setEventChatTyping: {maxRequests: 30, windowMs: 60 * 1000},
+  listEventChatMessages: {maxRequests: 120, windowMs: 60 * 1000},
   getEventChatAccess: {maxRequests: 120, windowMs: 60 * 1000},
   updateEventChatAccess: {maxRequests: 30, windowMs: 60 * 1000},
   listParticipantMessagingPreferences: {maxRequests: 60, windowMs: 60 * 1000},
-  withdrawParticipantMessagingPermission: {maxRequests: 30, windowMs: 60 * 1000},
+  withdrawParticipantMessagingPermission: {
+    maxRequests: 30, windowMs: 60 * 1000,
+  },
   listParticipantFormProfiles: {maxRequests: 60, windowMs: 60 * 1000},
   getParticipantFormPhoto: {maxRequests: 30, windowMs: 60 * 1000},
   getParticipantFormProfile: {maxRequests: 60, windowMs: 60 * 1000},
   claimParticipantFormProfile: {maxRequests: 10, windowMs: 60 * 1000},
+  // 60/min because profile editing can save one field per sheet interaction.
   updateUserProfile: {maxRequests: 60, windowMs: 60 * 1000},
   setCrossPathsEventConsent: {maxRequests: 30, windowMs: 60 * 1000},
   getCrossPathsSuggestions: {maxRequests: 12, windowMs: 60 * 1000},

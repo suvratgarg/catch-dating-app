@@ -197,6 +197,17 @@ import {
   eventChatRoomDocumentSchema,
   eventChatMembershipDocumentSchema,
   eventChatAccessReceiptDocumentSchema,
+  eventChatMessageDocumentSchema,
+  eventChatReactionDocumentSchema,
+  eventChatPresenceDocumentSchema,
+  sendEventChatMessageCallablePayloadSchema,
+  sendEventChatMessageCallableResponseSchema,
+  setEventChatReactionCallablePayloadSchema,
+  setEventChatReactionCallableResponseSchema,
+  setEventChatTypingCallablePayloadSchema,
+  setEventChatTypingCallableResponseSchema,
+  listEventChatMessagesCallablePayloadSchema,
+  listEventChatMessagesCallableResponseSchema,
   getEventChatAccessCallablePayloadSchema,
   updateEventChatAccessCallablePayloadSchema,
   getEventChatAccessCallableResponseSchema,
@@ -948,6 +959,17 @@ export const validateParticipantFormProfileProposalDocument = ajv.compile(partic
 export const validateEventChatRoomDocument = ajv.compile(eventChatRoomDocumentSchema);
 export const validateEventChatMembershipDocument = ajv.compile(eventChatMembershipDocumentSchema);
 export const validateEventChatAccessReceiptDocument = ajv.compile(eventChatAccessReceiptDocumentSchema);
+export const validateEventChatMessageDocument = ajv.compile(eventChatMessageDocumentSchema);
+export const validateEventChatReactionDocument = ajv.compile(eventChatReactionDocumentSchema);
+export const validateEventChatPresenceDocument = ajv.compile(eventChatPresenceDocumentSchema);
+export const validateSendEventChatMessageCallablePayload = ajv.compile(sendEventChatMessageCallablePayloadSchema);
+export const validateSendEventChatMessageCallableResponse = ajv.compile(sendEventChatMessageCallableResponseSchema);
+export const validateSetEventChatReactionCallablePayload = ajv.compile(setEventChatReactionCallablePayloadSchema);
+export const validateSetEventChatReactionCallableResponse = ajv.compile(setEventChatReactionCallableResponseSchema);
+export const validateSetEventChatTypingCallablePayload = ajv.compile(setEventChatTypingCallablePayloadSchema);
+export const validateSetEventChatTypingCallableResponse = ajv.compile(setEventChatTypingCallableResponseSchema);
+export const validateListEventChatMessagesCallablePayload = ajv.compile(listEventChatMessagesCallablePayloadSchema);
+export const validateListEventChatMessagesCallableResponse = ajv.compile(listEventChatMessagesCallableResponseSchema);
 export const validateGetEventChatAccessCallablePayload = ajv.compile(getEventChatAccessCallablePayloadSchema);
 export const validateUpdateEventChatAccessCallablePayload = ajv.compile(updateEventChatAccessCallablePayloadSchema);
 export const validateGetEventChatAccessCallableResponse = ajv.compile(getEventChatAccessCallableResponseSchema);

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.138.0
+version: 1.139.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2599,7 +2599,8 @@ organizer. Contradictory projections, duplicate linked attendees, cancellation,
 waitlisting and foreign identity bindings fail closed. A runtime identity alone
 is not admission. Joining also requires verified phone identity and an
 intentionally created Consumer profile (completed onboarding or a reviewed
-profile revision); private form proposals alone never qualify. A claimed form
+profile claim timestamp); a revision number or private form proposal alone
+never qualifies. A claimed form
 profile may join without enabling dating discovery or completing dating setup.
 
 Organizer managers can open/close a room; guests cannot. Message access requires
@@ -2613,8 +2614,40 @@ Mutations use a reviewed room/membership revision and UID-bound request ID.
 `eventChatAccessReceipts` prevents an old join or open retry from reversing a
 later leave or close. Replay results report the originally applied revision;
 clients must refresh current access, not interpret replay as current permission.
-These endpoints currently establish access only; message delivery, presence,
-replies, reactions and optional member-card disclosure use separate contracts.
+`sendEventChatMessage`, `listEventChatMessages`, `setEventChatReaction` and
+`setEventChatTyping` read that same current authority on every active operation.
+All message, reaction and presence documents are server-only. The chat reader
+returns only a claimed display name and message fields, never an entire user
+profile, private organizer card, CRM record or form submission. Explicit card
+sharing needs a separate grant and is not implied by joining or sending.
+
+`eventChatMessages` has a monotonically increasing per-room sequence. Sending
+uses a UID/event/request-bound ID and payload hash; duplicate retries neither
+send twice nor overwrite another payload. Room close/reopen preserves sequence.
+Replies store a same-room message ID, never a copied quote. Reads resolve each
+parent again, hiding removed messages, deleted accounts and both directions of
+a block from message bodies, names and reply previews. Message pagination is
+bounded to 30 rows plus a lookahead with a sequence cursor. Prior messages from
+a participant who leaves remain history; account deletion redacts their text
+and identity. Existing text moderation blocks prohibited writes or atomically
+creates a review flag while leaving flagged text visible.
+
+`eventChatReactions/{sha256([messageId,uid])}` stores one optional reaction per
+person; the message stores six anonymous aggregate counts. Revision checks and
+namespaced payload-bound `eventChatAccessReceipts` prevent retries or late edits
+from double-counting or restoring a replaced reaction. Deletion removes the
+person's reaction record; anonymous historical counts on other people's
+messages remain. Their own removed messages expose neither text nor counts.
+
+`eventChatPresence/{sha256([eventId,uid])}` stores only a revision and timestamps,
+never draft text. Typing expires after 10 seconds and readers recheck current
+membership, claimed identity, tombstones and blocks before showing a name.
+Compare-and-set revisions prevent delayed starts from undoing newer stops.
+Stopping one's own indicator remains possible after admission is revoked;
+account deletion removes presence and its tombstone fences subsequent writes.
+The reader returns at most 10 visible typing names from a bounded 11-row
+candidate query; this is a presence hint, not a member census. Client transport
+and UI must discard cached room content when access fails or identity changes.
 
 ### Organizer Application Intake
 

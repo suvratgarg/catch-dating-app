@@ -26,4 +26,5 @@ export interface EventChatRoomDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  lastMessageSequence?: number;
 }

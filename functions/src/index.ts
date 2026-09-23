@@ -598,8 +598,13 @@ export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
 export {getEventRcsWithdrawal, withdrawEventRcs} from
   "./eventSuccess/operations/rcsWithdrawalHandlers";
 
-export {listParticipantMessagingPreferences, withdrawParticipantMessagingPermission}
+export {listParticipantMessagingPreferences,
+  withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
 
 export {getEventChatAccess, updateEventChatAccess}
   from "./chats/eventChatAccess";
+
+export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
+  from "./chats/eventChatMessages";
+export {listEventChatMessages} from "./chats/listEventChatMessages";

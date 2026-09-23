@@ -29294,6 +29294,245 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventChatMessageDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatMessageDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatMessageDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMessageDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMessageDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventChatMessageDocumentReactionCountsLaugh = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.reactionCounts.laugh',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentReactionCountsLike = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.reactionCounts.like',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentReactionCountsLove = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.reactionCounts.love',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentReactionCountsSad = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.reactionCounts.sad',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentReactionCountsThanks = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.reactionCounts.thanks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentReactionCountsWow = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.reactionCounts.wow',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentRemovedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.removedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatMessageDocumentRemovedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.removedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatMessageDocumentReplyToMessageId = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.replyToMessageId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMessageDocumentSequence = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.sequence',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMessageDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['visible', 'removed'],
+  );
+
+  static const eventChatMessageDocumentText = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.text',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMessageDocumentUid = CatchContractFieldConstraints(
+    path: 'eventChatMessageDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatPresenceDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatPresenceDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatPresenceDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatPresenceDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatPresenceDocumentUid = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatPresenceDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatPresenceDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatPresenceDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatReactionDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatReactionDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatReactionDocumentReaction = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.reaction',
+    valueTypes: <String>['string'],
+    enumValues: <String>['like', 'love', 'laugh', 'wow', 'sad', 'thanks'],
+  );
+
+  static const eventChatReactionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatReactionDocumentUid = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatReactionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatReactionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatReactionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventChatRoomDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventChatRoomDocument.createdAt._nanoseconds',
     required: true,
@@ -29322,6 +29561,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventChatRoomDocumentLastMessageSequence = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.lastMessageSequence',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventChatRoomDocumentOrganizerId = CatchContractFieldConstraints(
@@ -66300,6 +66546,243 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const listEventChatMessagesCallablePayloadBeforeSequence = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallablePayload.beforeSequence',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 30,
+  );
+
+  static const listEventChatMessagesCallableResponseMessages = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 30,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsAvailable = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsMessageId = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsMyReaction = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.myReaction',
+    valueTypes: <String>['string'],
+    enumValues: <String>['like', 'love', 'laugh', 'wow', 'sad', 'thanks'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsMyReactionRevision = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.myReactionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReactionCountsLaugh = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reactionCounts.laugh',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReactionCountsLike = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reactionCounts.like',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReactionCountsLove = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reactionCounts.love',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReactionCountsSad = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reactionCounts.sad',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReactionCountsThanks = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reactionCounts.thanks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReactionCountsWow = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reactionCounts.wow',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReplyAvailable = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reply.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReplyMessageId = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reply.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReplySenderName = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reply.senderName',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReplySenderUid = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reply.senderUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsReplyText = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.reply.text',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsSenderName = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.senderName',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsSenderUid = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.senderUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsSentAtMillis = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.sentAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsSequence = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.sequence',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseMessagesItemsText = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.messages.items.text',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseNextBeforeSequence = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.nextBeforeSequence',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseOwnTypingRevision = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.ownTypingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseServerTimeMillis = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.serverTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseTyping = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.typing',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const listEventChatMessagesCallableResponseTypingItemsDisplayName = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.typing.items.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseTypingItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.typing.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatMessagesCallableResponseTypingItemsUid = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.typing.items.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventChatMessagesCallableResponseTypingHasMore = CatchContractFieldConstraints(
+    path: 'listEventChatMessagesCallableResponse.typingHasMore',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const listEventRcsPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'listEventRcsPreferencesCallablePayload.attendeeId',
     required: true,
@@ -93878,6 +94361,59 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['completed', 'partial'],
   );
 
+  static const sendEventChatMessageCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendEventChatMessageCallablePayloadReplyToMessageId = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallablePayload.replyToMessageId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendEventChatMessageCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendEventChatMessageCallablePayloadText = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallablePayload.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendEventChatMessageCallableResponseMessageId = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallableResponse.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const sendEventChatMessageCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const sendEventChatMessageCallableResponseSequence = CatchContractFieldConstraints(
+    path: 'sendEventChatMessageCallableResponse.sequence',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const sendOrganizerWhatsappReplyCallablePayloadBody = CatchContractFieldConstraints(
     path: 'sendOrganizerWhatsappReplyCallablePayload.body',
     maxLength: 4096,
@@ -94871,6 +95407,96 @@ abstract final class CatchContractConstraints {
     path: 'setEventAttendeeAttendanceCallableResponse.replayed',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const setEventChatReactionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventChatReactionCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventChatReactionCallablePayloadMessageId = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallablePayload.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventChatReactionCallablePayloadReaction = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallablePayload.reaction',
+    valueTypes: <String>['string'],
+    enumValues: <String>['like', 'love', 'laugh', 'wow', 'sad', 'thanks'],
+  );
+
+  static const setEventChatReactionCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventChatReactionCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setEventChatReactionCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'setEventChatReactionCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventChatTypingCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventChatTypingCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventChatTypingCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventChatTypingCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventChatTypingCallablePayloadIsTyping = CatchContractFieldConstraints(
+    path: 'setEventChatTypingCallablePayload.isTyping',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setEventChatTypingCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'setEventChatTypingCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventChatTypingCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'setEventChatTypingCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const setEventRcsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -108239,10 +108865,43 @@ abstract final class CatchContractConstraints {
     'eventChatMembershipDocument.uid': eventChatMembershipDocumentUid,
     'eventChatMembershipDocument.updatedAt._nanoseconds': eventChatMembershipDocumentUpdatedAtNanoseconds,
     'eventChatMembershipDocument.updatedAt._seconds': eventChatMembershipDocumentUpdatedAtSeconds,
+    'eventChatMessageDocument.createdAt._nanoseconds': eventChatMessageDocumentCreatedAtNanoseconds,
+    'eventChatMessageDocument.createdAt._seconds': eventChatMessageDocumentCreatedAtSeconds,
+    'eventChatMessageDocument.eventId': eventChatMessageDocumentEventId,
+    'eventChatMessageDocument.organizerId': eventChatMessageDocumentOrganizerId,
+    'eventChatMessageDocument.payloadHash': eventChatMessageDocumentPayloadHash,
+    'eventChatMessageDocument.reactionCounts.laugh': eventChatMessageDocumentReactionCountsLaugh,
+    'eventChatMessageDocument.reactionCounts.like': eventChatMessageDocumentReactionCountsLike,
+    'eventChatMessageDocument.reactionCounts.love': eventChatMessageDocumentReactionCountsLove,
+    'eventChatMessageDocument.reactionCounts.sad': eventChatMessageDocumentReactionCountsSad,
+    'eventChatMessageDocument.reactionCounts.thanks': eventChatMessageDocumentReactionCountsThanks,
+    'eventChatMessageDocument.reactionCounts.wow': eventChatMessageDocumentReactionCountsWow,
+    'eventChatMessageDocument.removedAt._nanoseconds': eventChatMessageDocumentRemovedAtNanoseconds,
+    'eventChatMessageDocument.removedAt._seconds': eventChatMessageDocumentRemovedAtSeconds,
+    'eventChatMessageDocument.replyToMessageId': eventChatMessageDocumentReplyToMessageId,
+    'eventChatMessageDocument.sequence': eventChatMessageDocumentSequence,
+    'eventChatMessageDocument.status': eventChatMessageDocumentStatus,
+    'eventChatMessageDocument.text': eventChatMessageDocumentText,
+    'eventChatMessageDocument.uid': eventChatMessageDocumentUid,
+    'eventChatPresenceDocument.eventId': eventChatPresenceDocumentEventId,
+    'eventChatPresenceDocument.expiresAt._nanoseconds': eventChatPresenceDocumentExpiresAtNanoseconds,
+    'eventChatPresenceDocument.expiresAt._seconds': eventChatPresenceDocumentExpiresAtSeconds,
+    'eventChatPresenceDocument.revision': eventChatPresenceDocumentRevision,
+    'eventChatPresenceDocument.uid': eventChatPresenceDocumentUid,
+    'eventChatPresenceDocument.updatedAt._nanoseconds': eventChatPresenceDocumentUpdatedAtNanoseconds,
+    'eventChatPresenceDocument.updatedAt._seconds': eventChatPresenceDocumentUpdatedAtSeconds,
+    'eventChatReactionDocument.eventId': eventChatReactionDocumentEventId,
+    'eventChatReactionDocument.messageId': eventChatReactionDocumentMessageId,
+    'eventChatReactionDocument.reaction': eventChatReactionDocumentReaction,
+    'eventChatReactionDocument.revision': eventChatReactionDocumentRevision,
+    'eventChatReactionDocument.uid': eventChatReactionDocumentUid,
+    'eventChatReactionDocument.updatedAt._nanoseconds': eventChatReactionDocumentUpdatedAtNanoseconds,
+    'eventChatReactionDocument.updatedAt._seconds': eventChatReactionDocumentUpdatedAtSeconds,
     'eventChatRoomDocument.createdAt._nanoseconds': eventChatRoomDocumentCreatedAtNanoseconds,
     'eventChatRoomDocument.createdAt._seconds': eventChatRoomDocumentCreatedAtSeconds,
     'eventChatRoomDocument.createdByUid': eventChatRoomDocumentCreatedByUid,
     'eventChatRoomDocument.eventId': eventChatRoomDocumentEventId,
+    'eventChatRoomDocument.lastMessageSequence': eventChatRoomDocumentLastMessageSequence,
     'eventChatRoomDocument.organizerId': eventChatRoomDocumentOrganizerId,
     'eventChatRoomDocument.revision': eventChatRoomDocumentRevision,
     'eventChatRoomDocument.status': eventChatRoomDocumentStatus,
@@ -113229,6 +113888,38 @@ abstract final class CatchContractConstraints {
     'listEventAssistanceDepartureRostersCallablePayload.context.mode': listEventAssistanceDepartureRostersCallablePayloadContextMode,
     'listEventAssistanceDepartureRostersCallablePayload.context.organizerId': listEventAssistanceDepartureRostersCallablePayloadContextOrganizerId,
     'listEventAssistanceDepartureRostersCallablePayload.groupId': listEventAssistanceDepartureRostersCallablePayloadGroupId,
+    'listEventChatMessagesCallablePayload.beforeSequence': listEventChatMessagesCallablePayloadBeforeSequence,
+    'listEventChatMessagesCallablePayload.eventId': listEventChatMessagesCallablePayloadEventId,
+    'listEventChatMessagesCallablePayload.limit': listEventChatMessagesCallablePayloadLimit,
+    'listEventChatMessagesCallableResponse.messages': listEventChatMessagesCallableResponseMessages,
+    'listEventChatMessagesCallableResponse.messages.items.available': listEventChatMessagesCallableResponseMessagesItemsAvailable,
+    'listEventChatMessagesCallableResponse.messages.items.messageId': listEventChatMessagesCallableResponseMessagesItemsMessageId,
+    'listEventChatMessagesCallableResponse.messages.items.myReaction': listEventChatMessagesCallableResponseMessagesItemsMyReaction,
+    'listEventChatMessagesCallableResponse.messages.items.myReactionRevision': listEventChatMessagesCallableResponseMessagesItemsMyReactionRevision,
+    'listEventChatMessagesCallableResponse.messages.items.reactionCounts.laugh': listEventChatMessagesCallableResponseMessagesItemsReactionCountsLaugh,
+    'listEventChatMessagesCallableResponse.messages.items.reactionCounts.like': listEventChatMessagesCallableResponseMessagesItemsReactionCountsLike,
+    'listEventChatMessagesCallableResponse.messages.items.reactionCounts.love': listEventChatMessagesCallableResponseMessagesItemsReactionCountsLove,
+    'listEventChatMessagesCallableResponse.messages.items.reactionCounts.sad': listEventChatMessagesCallableResponseMessagesItemsReactionCountsSad,
+    'listEventChatMessagesCallableResponse.messages.items.reactionCounts.thanks': listEventChatMessagesCallableResponseMessagesItemsReactionCountsThanks,
+    'listEventChatMessagesCallableResponse.messages.items.reactionCounts.wow': listEventChatMessagesCallableResponseMessagesItemsReactionCountsWow,
+    'listEventChatMessagesCallableResponse.messages.items.reply.available': listEventChatMessagesCallableResponseMessagesItemsReplyAvailable,
+    'listEventChatMessagesCallableResponse.messages.items.reply.messageId': listEventChatMessagesCallableResponseMessagesItemsReplyMessageId,
+    'listEventChatMessagesCallableResponse.messages.items.reply.senderName': listEventChatMessagesCallableResponseMessagesItemsReplySenderName,
+    'listEventChatMessagesCallableResponse.messages.items.reply.senderUid': listEventChatMessagesCallableResponseMessagesItemsReplySenderUid,
+    'listEventChatMessagesCallableResponse.messages.items.reply.text': listEventChatMessagesCallableResponseMessagesItemsReplyText,
+    'listEventChatMessagesCallableResponse.messages.items.senderName': listEventChatMessagesCallableResponseMessagesItemsSenderName,
+    'listEventChatMessagesCallableResponse.messages.items.senderUid': listEventChatMessagesCallableResponseMessagesItemsSenderUid,
+    'listEventChatMessagesCallableResponse.messages.items.sentAtMillis': listEventChatMessagesCallableResponseMessagesItemsSentAtMillis,
+    'listEventChatMessagesCallableResponse.messages.items.sequence': listEventChatMessagesCallableResponseMessagesItemsSequence,
+    'listEventChatMessagesCallableResponse.messages.items.text': listEventChatMessagesCallableResponseMessagesItemsText,
+    'listEventChatMessagesCallableResponse.nextBeforeSequence': listEventChatMessagesCallableResponseNextBeforeSequence,
+    'listEventChatMessagesCallableResponse.ownTypingRevision': listEventChatMessagesCallableResponseOwnTypingRevision,
+    'listEventChatMessagesCallableResponse.serverTimeMillis': listEventChatMessagesCallableResponseServerTimeMillis,
+    'listEventChatMessagesCallableResponse.typing': listEventChatMessagesCallableResponseTyping,
+    'listEventChatMessagesCallableResponse.typing.items.displayName': listEventChatMessagesCallableResponseTypingItemsDisplayName,
+    'listEventChatMessagesCallableResponse.typing.items.expiresAtMillis': listEventChatMessagesCallableResponseTypingItemsExpiresAtMillis,
+    'listEventChatMessagesCallableResponse.typing.items.uid': listEventChatMessagesCallableResponseTypingItemsUid,
+    'listEventChatMessagesCallableResponse.typingHasMore': listEventChatMessagesCallableResponseTypingHasMore,
     'listEventRcsPreferencesCallablePayload.attendeeId': listEventRcsPreferencesCallablePayloadAttendeeId,
     'listEventRcsPreferencesCallablePayload.cursor': listEventRcsPreferencesCallablePayloadCursor,
     'listEventRcsPreferencesCallablePayload.eventId': listEventRcsPreferencesCallablePayloadEventId,
@@ -117027,6 +117718,13 @@ abstract final class CatchContractConstraints {
     'sendEventBroadcastCallableResponse.pushUnknownCount': sendEventBroadcastCallableResponsePushUnknownCount,
     'sendEventBroadcastCallableResponse.recipientCount': sendEventBroadcastCallableResponseRecipientCount,
     'sendEventBroadcastCallableResponse.status': sendEventBroadcastCallableResponseStatus,
+    'sendEventChatMessageCallablePayload.eventId': sendEventChatMessageCallablePayloadEventId,
+    'sendEventChatMessageCallablePayload.replyToMessageId': sendEventChatMessageCallablePayloadReplyToMessageId,
+    'sendEventChatMessageCallablePayload.requestId': sendEventChatMessageCallablePayloadRequestId,
+    'sendEventChatMessageCallablePayload.text': sendEventChatMessageCallablePayloadText,
+    'sendEventChatMessageCallableResponse.messageId': sendEventChatMessageCallableResponseMessageId,
+    'sendEventChatMessageCallableResponse.replayed': sendEventChatMessageCallableResponseReplayed,
+    'sendEventChatMessageCallableResponse.sequence': sendEventChatMessageCallableResponseSequence,
     'sendOrganizerWhatsappReplyCallablePayload.body': sendOrganizerWhatsappReplyCallablePayloadBody,
     'sendOrganizerWhatsappReplyCallablePayload.expectedLastInboundAtMillis': sendOrganizerWhatsappReplyCallablePayloadExpectedLastInboundAtMillis,
     'sendOrganizerWhatsappReplyCallablePayload.idempotencyKey': sendOrganizerWhatsappReplyCallablePayloadIdempotencyKey,
@@ -117159,6 +117857,18 @@ abstract final class CatchContractConstraints {
     'setEventAttendeeAttendanceCallableResponse.changed': setEventAttendeeAttendanceCallableResponseChanged,
     'setEventAttendeeAttendanceCallableResponse.checkedIn': setEventAttendeeAttendanceCallableResponseCheckedIn,
     'setEventAttendeeAttendanceCallableResponse.replayed': setEventAttendeeAttendanceCallableResponseReplayed,
+    'setEventChatReactionCallablePayload.eventId': setEventChatReactionCallablePayloadEventId,
+    'setEventChatReactionCallablePayload.expectedRevision': setEventChatReactionCallablePayloadExpectedRevision,
+    'setEventChatReactionCallablePayload.messageId': setEventChatReactionCallablePayloadMessageId,
+    'setEventChatReactionCallablePayload.reaction': setEventChatReactionCallablePayloadReaction,
+    'setEventChatReactionCallablePayload.requestId': setEventChatReactionCallablePayloadRequestId,
+    'setEventChatReactionCallableResponse.replayed': setEventChatReactionCallableResponseReplayed,
+    'setEventChatReactionCallableResponse.revision': setEventChatReactionCallableResponseRevision,
+    'setEventChatTypingCallablePayload.eventId': setEventChatTypingCallablePayloadEventId,
+    'setEventChatTypingCallablePayload.expectedRevision': setEventChatTypingCallablePayloadExpectedRevision,
+    'setEventChatTypingCallablePayload.isTyping': setEventChatTypingCallablePayloadIsTyping,
+    'setEventChatTypingCallableResponse.expiresAtMillis': setEventChatTypingCallableResponseExpiresAtMillis,
+    'setEventChatTypingCallableResponse.revision': setEventChatTypingCallableResponseRevision,
     'setEventRcsPreferenceCallablePayload.attendeeId': setEventRcsPreferenceCallablePayloadAttendeeId,
     'setEventRcsPreferenceCallablePayload.decision.copyVersion': setEventRcsPreferenceCallablePayloadDecisionCopyVersion,
     'setEventRcsPreferenceCallablePayload.decision.kind': setEventRcsPreferenceCallablePayloadDecisionKind,
