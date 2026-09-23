@@ -272,11 +272,16 @@ void main() {
   ) async {
     final saved = <EventProfileSelection?>[];
     await pumpProfile(tester, editor(editorState(), onSave: saved.add));
-    expect(find.text('First name'), findsOneWidget);
-    expect(find.text('Introduction'), findsOneWidget);
-    await tester.enterText(find.byType(TextField).first, 'Mira');
+    final firstName = find.byKey(const ValueKey('event-profile-first-name'));
+    final introduction = find.byKey(const ValueKey('event-profile-introduction'));
+    expect(firstName, findsOneWidget);
+    expect(introduction, findsOneWidget);
     await tester.enterText(
-      find.byType(TextField).last,
+      find.descendant(of: firstName, matching: find.byType(TextField)),
+      'Mira',
+    );
+    await tester.enterText(
+      find.descendant(of: introduction, matching: find.byType(TextField)),
       'Happy to meet everyone',
     );
     final preview = find.widgetWithText(
@@ -289,8 +294,8 @@ void main() {
     expect(saved.single?.introduction, 'Happy to meet everyone');
 
     await pumpProfile(tester, editor(editorState(canShare: false)));
-    expect(find.text('First name'), findsNothing);
-    expect(find.text('Introduction'), findsNothing);
+    expect(firstName, findsNothing);
+    expect(introduction, findsNothing);
   });
   testWidgets('owned preview confirmation saves the reviewed selection', (
     tester,
@@ -315,13 +320,17 @@ void main() {
       ),
     );
     await pumpFeatureUi(tester);
+    final age = toggle('Age');
+    await tester.ensureVisible(age);
+    await tester.tap(age);
+    await pumpFeatureUi(tester);
     final preview = find.widgetWithText(
       CatchButton,
       'Preview what event members can see',
     );
     await tester.ensureVisible(preview);
     await tester.tap(preview);
-    await pumpFeatureUi(tester);
+    await pumpUntilFound(tester, find.byType(EventProfileIdentitySection));
     expect(find.byType(EventProfileIdentitySection), findsOneWidget);
     expect(repo.writes, isEmpty);
     await tester.tap(find.widgetWithText(CatchButton, 'Save sharing choices'));
@@ -356,13 +365,17 @@ void main() {
       ),
     );
     await pumpFeatureUi(tester);
+    final age = toggle('Age');
+    await tester.ensureVisible(age);
+    await tester.tap(age);
+    await pumpFeatureUi(tester);
     final preview = find.widgetWithText(
       CatchButton,
       'Preview what event members can see',
     );
     await tester.ensureVisible(preview);
     await tester.tap(preview);
-    await pumpFeatureUi(tester);
+    await pumpUntilFound(tester, find.text('Mira'));
     expect(find.text('Mira'), findsOneWidget);
     accounts.add('another-person');
     await pumpFeatureUi(tester);
@@ -393,13 +406,17 @@ void main() {
       ),
     );
     await pumpFeatureUi(tester);
+    final age = toggle('Age');
+    await tester.ensureVisible(age);
+    await tester.tap(age);
+    await pumpFeatureUi(tester);
     final preview = find.widgetWithText(
       CatchButton,
       'Preview what event members can see',
     );
     await tester.ensureVisible(preview);
     await tester.tap(preview);
-    await pumpFeatureUi(tester);
+    await pumpUntilFound(tester, find.text('Mira'));
     expect(find.text('Mira'), findsOneWidget);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     await pumpFeatureUi(tester);

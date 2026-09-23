@@ -199,7 +199,9 @@ class EventProfileEditorController extends _$EventProfileEditorController {
           .previewProfile(reviewedUid, current.settings, selection);
       if (!_current(reviewedUid, generation) ||
           epoch != _readEpoch ||
-          !_foreground) return null;
+          !_foreground) {
+        return null;
+      }
       if (fresh.revision != reviewedRevision ||
           fresh.profileRevision != selection.profileRevision ||
           fresh.membershipRevision != selection.membershipRevision ||

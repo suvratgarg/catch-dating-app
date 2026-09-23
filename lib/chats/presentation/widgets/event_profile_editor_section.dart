@@ -115,6 +115,7 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
             title: l.eventProfilePersonalize,
             children: [
               CatchField.input(
+                key: const ValueKey('event-profile-first-name'),
                 copy: catchFieldCopy(l),
                 title: l.eventProfileFirstName,
                 initialValue: _draft.firstName,
@@ -128,6 +129,7 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                     : (value) => _draft.firstName = value,
               ),
               CatchField.input(
+                key: const ValueKey('event-profile-introduction'),
                 copy: catchFieldCopy(l),
                 title: l.eventProfileIntroduction,
                 initialValue: _draft.introduction,

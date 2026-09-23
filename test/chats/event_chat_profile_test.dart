@@ -122,7 +122,7 @@ void main() {
     expect(first.selection()!.firstName, 'Mira');
     expect(first.selection()!.introduction, 'I like coffee.');
     expect(EventProfileDraft(settingsFixture(
-      selection: saved, membershipRevision: 3), null).selection(), isNull);
+      selection: saved), null).selection(), isNull);
   });
   test('a core-only choice does not dereference a missing card', () {
     final saved = selectionFixture(withCard: false);

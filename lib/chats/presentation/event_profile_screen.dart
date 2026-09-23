@@ -196,18 +196,6 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
                                     }
                                     return CatchDialog<bool>(
                                       title: context.l10n.eventProfilePreview,
-                                      child: SizedBox(
-                                        height:
-                                            MediaQuery.sizeOf(
-                                              dialogContext,
-                                            ).height *
-                                            0.48,
-                                        child: SingleChildScrollView(
-                                          child: EventProfileIdentitySection(
-                                            profile: preview,
-                                          ),
-                                        ),
-                                      ),
                                       actions: [
                                         CatchButton(
                                           label: context
@@ -225,6 +213,18 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
                                           ).pop(true),
                                         ),
                                       ],
+                                      child: SizedBox(
+                                        height:
+                                            MediaQuery.sizeOf(
+                                              dialogContext,
+                                            ).height *
+                                            0.48,
+                                        child: SingleChildScrollView(
+                                          child: EventProfileIdentitySection(
+                                            profile: preview,
+                                          ),
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
