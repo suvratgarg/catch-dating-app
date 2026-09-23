@@ -6136,6 +6136,24 @@ export interface OrganizerFormDocument {
 }
 
 /**
+ * Server-owned exact hostname lease and verified form binding. Client reads and writes are forbidden.
+ */
+export interface OrganizerFormDomainDocument {
+  hostname: string;
+  organizerId: string;
+  formId: string;
+  publicFormId: string;
+  ownershipChallenge: string;
+  expectedCname: string;
+  status: "pending" | "verified" | "active" | "revoked";
+  certificateStatus: "pending" | "ready" | "failed";
+  verifiedAtMillis: number | null;
+  generation: number;
+  reservedAtMillis: number;
+  pendingExpiresAtMillis: number;
+}
+
+/**
  * Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.
  */
 export interface OrganizerPaymentConnectionDocument {

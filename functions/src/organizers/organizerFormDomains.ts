@@ -14,6 +14,8 @@ export interface OrganizerFormDomain {
   certificateStatus: "pending" | "ready" | "failed";
   verifiedAtMillis: number | null;
   generation: number;
+  reservedAtMillis: number;
+  pendingExpiresAtMillis: number;
 }
 
 export interface DomainProbe {
@@ -75,7 +77,12 @@ export function parseOrganizerFormDomain(
         (typeof record.verifiedAtMillis === "number" &&
           Number.isFinite(record.verifiedAtMillis))) ||
       !Number.isSafeInteger(record.generation) ||
-      (record.generation ?? 0) < 1) {
+      (record.generation ?? 0) < 1 ||
+      typeof record.reservedAtMillis !== "number" ||
+      !Number.isFinite(record.reservedAtMillis) ||
+      typeof record.pendingExpiresAtMillis !== "number" ||
+      !Number.isFinite(record.pendingExpiresAtMillis) ||
+      record.pendingExpiresAtMillis <= record.reservedAtMillis) {
     return null;
   }
   return record as OrganizerFormDomain;
@@ -103,6 +110,7 @@ export function verifyFormDomain(
   nowMillis: number
 ): OrganizerFormDomain {
   if (domain.status !== "pending" ||
+      nowMillis >= domain.pendingExpiresAtMillis ||
       !hasCurrentDomainOwnership(domain, probe, nowMillis)) {
     throw new Error("Domain ownership or routing is unverified");
   }

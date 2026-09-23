@@ -10,6 +10,7 @@ import {
 } from "./organizerFormDomains";
 
 const COLLECTION = "organizerFormDomains";
+const PENDING_LEASE_MS = 48 * 60 * 60 * 1000;
 
 function requireHostname(hostname: string): string {
   const normalized = normalizeCustomFormHost(hostname);
@@ -66,7 +67,9 @@ export async function reserveOrganizerFormDomain(
     const previous = existing.exists ?
       parseOrganizerFormDomain(existing.data()) : null;
     if (existing.exists && !previous) throw new Error("Invalid domain record");
-    if (previous && previous.status !== "revoked") {
+    if (previous && previous.status !== "revoked" &&
+        !(previous.status === "pending" &&
+          previous.pendingExpiresAtMillis <= nowMillis)) {
       throw new Error("Hostname is already reserved");
     }
     // A revoked hostname can be reassigned only with a fresh challenge and DNS
@@ -79,6 +82,8 @@ export async function reserveOrganizerFormDomain(
       expectedCname, status: "pending",
       certificateStatus: "pending", verifiedAtMillis: null,
       generation: (previous?.generation ?? 0) + 1,
+      reservedAtMillis: nowMillis,
+      pendingExpiresAtMillis: nowMillis + PENDING_LEASE_MS,
     };
     tx.set(domainRef, record);
     return record;

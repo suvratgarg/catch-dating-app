@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import type {firestore} from "firebase-admin";
 import {defineString} from "firebase-functions/params";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -6,6 +7,12 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
+import type {ManageOrganizerFormDomainCallablePayload} from
+  "../shared/generated/manageOrganizerFormDomainCallablePayload";
+import type {ManageOrganizerFormDomainCallableResponse} from
+  "../shared/generated/manageOrganizerFormDomainCallableResponse";
+import {validateManageOrganizerFormDomainCallablePayload} from
+  "../shared/generated/validators/manageOrganizerFormDomainInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {normalizeCustomFormHost, parseOrganizerFormDomain} from
@@ -19,15 +26,23 @@ import {
 // value keeps reservations disabled until the hosting operator configures it.
 const hostingTarget = defineString("FORM_DOMAIN_CNAME_TARGET", {default: ""});
 
-type DomainAction = "reserve" | "verify" | "revoke";
-interface DomainRequest {
-  action: DomainAction;
-  hostname: string;
-  organizerId: string;
-  formId?: string;
+interface DomainDeps {
+  firestore: () => firestore.Firestore;
+  checkLimit: typeof checkRateLimit;
+  assertManager: typeof requireOrganizerManager;
+  loadProbe: typeof probeFormDomain;
+  target: () => string;
+  now: () => number;
 }
+const defaultDeps: DomainDeps = {
+  firestore: () => admin.firestore(), checkLimit: checkRateLimit,
+  assertManager: requireOrganizerManager, loadProbe: probeFormDomain,
+  target: () => hostingTarget.value(), now: Date.now,
+};
 
-export function parseDomainRequest(value: unknown): DomainRequest {
+export function parseDomainRequest(
+  value: unknown
+): ManageOrganizerFormDomainCallablePayload {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new HttpsError("invalid-argument", "Invalid domain request.");
   }
@@ -46,30 +61,36 @@ export function parseDomainRequest(value: unknown): DomainRequest {
         data.formId !== undefined)) {
     throw new HttpsError("invalid-argument", "Invalid domain request.");
   }
-  return data as unknown as DomainRequest;
+  if (!validateManageOrganizerFormDomainCallablePayload(value)) {
+    throw new HttpsError("invalid-argument", "Invalid domain request.");
+  }
+  return value;
 }
 
 /** Manager ownership operations. Certificate readiness stays operator-only. */
 export async function manageOrganizerFormDomainHandler(
-  request: CallableRequest<unknown>
-): Promise<{hostname: string; status: string; ownershipChallenge?: string;
-  expectedCname?: string}> {
+  request: CallableRequest<unknown>, deps: DomainDeps = defaultDeps
+): Promise<ManageOrganizerFormDomainCallableResponse> {
   const actorUid = requireAuth(request);
   const input = parseDomainRequest(request.data);
-  const db = admin.firestore();
-  await checkRateLimit(db, actorUid, "manageOrganizerFormDomain");
-  await requireOrganizerManager({db, organizerId: input.organizerId, actorUid});
+  const db = deps.firestore();
+  await deps.checkLimit(db, actorUid, "manageOrganizerFormDomain");
+  await deps.assertManager({db, organizerId: input.organizerId, actorUid});
   if (input.action === "revoke") {
     await revokeOrganizerFormDomain(db, input.hostname, input.organizerId,
-      actorUid);
+      actorUid, deps.assertManager);
     return {hostname: input.hostname, status: "revoked"};
   }
   if (input.action === "reserve") {
+    // Key by organizer as well as caller so several managers cannot multiply
+    // the pending-host reservation budget.
+    await deps.checkLimit(db, input.organizerId,
+      "reserveOrganizerFormDomain");
     const record = await reserveOrganizerFormDomain(db, {
       hostname: input.hostname, organizerId: input.organizerId,
-      formId: input.formId!, actorUid,
-    }, Date.now(), hostingTarget.value());
-    return {hostname: record.hostname, status: record.status,
+      formId: input.formId, actorUid,
+    }, deps.now(), deps.target(), deps.assertManager);
+    return {hostname: record.hostname, status: "pending",
       ownershipChallenge: record.ownershipChallenge,
       expectedCname: record.expectedCname};
   }
@@ -79,10 +100,10 @@ export async function manageOrganizerFormDomainHandler(
       current.status !== "pending") {
     throw new HttpsError("failed-precondition", "Domain is not pending.");
   }
-  const probe = await probeFormDomain(input.hostname);
+  const probe = await deps.loadProbe(input.hostname);
   const record = await verifyOrganizerFormDomain(db, input.hostname,
-    probe, Date.now(), input.organizerId);
-  return {hostname: record.hostname, status: record.status};
+    probe, deps.now(), input.organizerId);
+  return {hostname: record.hostname, status: "verified"};
 }
 
 export const manageOrganizerFormDomain = onCall(

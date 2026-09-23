@@ -842,6 +842,19 @@
       ]
     },
     {
+      "id": "organizerFormDomains",
+      "path": "organizerFormDomains/{hostname}",
+      "rulesMatch": "/organizerFormDomains/{hostname}",
+      "typescriptInterface": "OrganizerFormDomainDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": ["keeps organizer form state server-only"],
+      "owner": "organizer form domain registry",
+      "read": "server only; manager sees bounded callable status",
+      "write": "server only",
+      "exportedFunctions": ["manageOrganizerFormDomain", "resolvePublicFormDomain"]
+    },
+    {
       "id": "organizerFormDrafts",
       "path": "organizerFormDrafts/{formId}",
       "rulesMatch": "/organizerFormDrafts/{formId}",

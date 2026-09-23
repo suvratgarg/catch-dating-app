@@ -48,6 +48,10 @@ routing policy for a future Catch-served customer subdomain. It stores one
 exact hostname per record, binds it to a published organizer form, issues a
 fresh TXT challenge for every reservation, requires a matching CNAME and
 current DNS probe, and requires trusted certificate readiness before activation.
+An unverified reservation expires after 48 hours; reclaim rotates both the
+challenge and generation, while verified and active bindings do not expire
+into another organizer's control. Reservations are limited per organizer and
+per caller.
 Resolution also rechecks form ownership and publication. Revocation stops
 resolution; reassignment starts with a rotated challenge and generation.
 The public `/api/form-domain` endpoint resolves only active, still-owned

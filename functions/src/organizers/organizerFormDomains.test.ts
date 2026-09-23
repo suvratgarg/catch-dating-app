@@ -12,6 +12,7 @@ const pending: OrganizerFormDomain = {
   ownershipChallenge: "catch-verification=random-proof",
   expectedCname: "custom.catchdates.com", status: "pending",
   certificateStatus: "pending", verifiedAtMillis: null, generation: 1,
+  reservedAtMillis: now, pendingExpiresAtMillis: now + 48 * 60 * 60 * 1000,
 };
 const probe = {
   hostname: pending.hostname, txtValues: [pending.ownershipChallenge],

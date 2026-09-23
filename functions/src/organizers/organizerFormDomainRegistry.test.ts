@@ -46,6 +46,36 @@ const input = {hostname: "apply.client.example", organizerId: "organizer-a",
 const hostingTarget = "custom.catchdates.com";
 
 describe("organizer form domain registry", () => {
+  it("reclaims only expired pending leases with a new generation", async () => {
+    const {db, rows} = fakeDb();
+    rows.set("organizerForms/form-b", {organizerId: "organizer-b",
+      status: "published", publicFormId: "public-b"});
+    const first = await reserveOrganizerFormDomain(db, input, now,
+      hostingTarget, manager);
+    const other = {...input, organizerId: "organizer-b", formId: "form-b"};
+    await assert.rejects(reserveOrganizerFormDomain(db, other,
+      now + 48 * 60 * 60 * 1000 - 1, hostingTarget, manager));
+    await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
+      {hostname: input.hostname,
+        txtValues: [first.ownershipChallenge],
+        cnameTarget: hostingTarget, checkedAtMillis:
+          now + 48 * 60 * 60 * 1000},
+      now + 48 * 60 * 60 * 1000));
+    const replacement = await reserveOrganizerFormDomain(db, other,
+      now + 48 * 60 * 60 * 1000, hostingTarget, manager);
+    assert.equal(replacement.generation, first.generation + 1);
+    assert.notEqual(replacement.ownershipChallenge,
+      first.ownershipChallenge);
+    await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
+      {hostname: input.hostname,
+        txtValues: [first.ownershipChallenge],
+        cnameTarget: hostingTarget, checkedAtMillis:
+          now + 48 * 60 * 60 * 1000},
+      now + 48 * 60 * 60 * 1000, input.organizerId));
+    await assert.rejects(markOrganizerFormCertificateReady(db,
+      input.hostname, first.generation));
+  });
+
   it("reserves one host, checks evidence, and revokes routing", async () => {
     const {db, rows} = fakeDb();
     const pending = await reserveOrganizerFormDomain(db, input, now,

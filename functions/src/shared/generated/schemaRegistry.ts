@@ -255,6 +255,7 @@ export {organizerProviderConnectionDocumentSchema} from "./schemas/organizerProv
 export {organizerApplicationFormDocumentSchema} from "./schemas/organizerApplicationFormDocument";
 export {organizerApplicationFormVersionDocumentSchema} from "./schemas/organizerApplicationFormVersionDocument";
 export {organizerFormDocumentSchema} from "./schemas/organizerFormDocument";
+export {organizerFormDomainDocumentSchema} from "./schemas/organizerFormDomainDocument";
 export {organizerPaymentConnectionDocumentSchema} from "./schemas/organizerPaymentConnectionDocument";
 export {organizerPaymentOauthStateDocumentSchema} from "./schemas/organizerPaymentOauthStateDocument";
 export {organizerFormPaymentDocumentSchema} from "./schemas/organizerFormPaymentDocument";
@@ -614,6 +615,8 @@ export {getEventRosterInsightsCallableResponseSchema} from "./schemas/getEventRo
 export {getOrganizerCrmSummaryCallableResponseSchema} from "./schemas/getOrganizerCrmSummaryOutput";
 export {listOrganizerContactsCallablePayloadSchema} from "./schemas/listOrganizerContactsInput";
 export {createOrganizerFormCallablePayloadSchema} from "./schemas/createOrganizerFormInput";
+export {manageOrganizerFormDomainCallablePayloadSchema} from "./schemas/manageOrganizerFormDomainInput";
+export {manageOrganizerFormDomainCallableResponseSchema} from "./schemas/manageOrganizerFormDomainOutput";
 export {createOrganizerFormCallableResponseSchema} from "./schemas/createOrganizerFormOutput";
 export {updateOrganizerFormDraftCallablePayloadSchema} from "./schemas/updateOrganizerFormDraftInput";
 export {updateOrganizerFormDraftCallableResponseSchema} from "./schemas/updateOrganizerFormDraftOutput";

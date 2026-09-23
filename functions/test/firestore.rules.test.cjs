@@ -1085,6 +1085,10 @@ describe("firestore.rules", () => {
         organizerId: "organizer-1",
         title: "Private form metadata",
       });
+      await seed(["organizerFormDomains", "apply.example.test"], {
+        organizerId: "organizer-1", hostname: "apply.example.test",
+        ownershipChallenge: "private-challenge",
+      });
       await seed(["organizerFormDrafts", "form-1"], {
         organizerId: "organizer-1",
         formId: "form-1",
@@ -1100,6 +1104,7 @@ describe("firestore.rules", () => {
         const db = authedDb(uid);
         for (const [collectionName, documentId] of [
           ["organizerForms", "form-1"],
+          ["organizerFormDomains", "apply.example.test"],
           ["organizerFormDrafts", "form-1"],
           ["organizerFormVersions", "form-1_v1"],
         ]) {
