@@ -27,11 +27,11 @@ class SelfProfileInlineEditPatchFactory {
   }
 
   UpdateUserProfilePatch occupation(Object? value) {
-    return UpdateUserProfilePatch(occupation: value as String);
+    return UpdateUserProfilePatch(occupation: value as String?);
   }
 
   UpdateUserProfilePatch company(Object? value) {
-    return UpdateUserProfilePatch(company: value as String);
+    return UpdateUserProfilePatch(company: value as String?);
   }
 
   UpdateUserProfilePatch education(EducationLevel? value) {

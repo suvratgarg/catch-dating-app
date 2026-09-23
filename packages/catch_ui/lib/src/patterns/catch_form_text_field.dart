@@ -26,8 +26,27 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
   late final TextEditingController _controller;
   final _saveState = CatchFormSaveState();
   Object? _lastCommittedValue;
+  bool _hasCommittedValue = false;
+  String? _lastCommittedText;
   String? _validationError;
   bool _hasFocus = false;
+  bool _lastClearIntent = false;
+
+  bool get _isClearDraft {
+    final descriptor = widget.descriptor;
+    if (widget.scope.fieldCopy.clearLabel == null ||
+        descriptor.contract?.required != false ||
+        _savedText.trim().isEmpty) {
+      return false;
+    }
+    final draft =
+        descriptor.normalizeInput?.call(_controller.text) ??
+        _controller.text.trim();
+    return draft.isEmpty;
+  }
+
+  String get _savedText =>
+      _hasCommittedValue ? _lastCommittedText! : widget.descriptor.currentValue;
 
   bool get _usesExplicitCommit =>
       widget.scope.textCommitMode == CatchFormRowListMode.explicit;
@@ -44,10 +63,23 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
     super.didUpdateWidget(oldWidget);
     final old = oldWidget.descriptor;
     final current = widget.descriptor;
-    if (old.currentFieldValue != current.currentFieldValue) {
+    if (old.id != current.id ||
+        old.currentValue != current.currentValue ||
+        old.currentFieldValue != current.currentFieldValue) {
       _lastCommittedValue = null;
+      _hasCommittedValue = false;
+    }
+    if (_usesExplicitCommit &&
+        oldWidget.scope.isExpanded &&
+        !widget.scope.isExpanded &&
+        !_saveState.saving &&
+        _saveState.status != CatchFieldStatus.saved) {
+      _controller.text = _savedText;
+      _validationError = null;
+      _saveState.reset();
     }
     if (!_hasFocus &&
+        !widget.scope.isExpanded &&
         (old.id != current.id || old.currentValue != current.currentValue) &&
         _controller.text != current.currentValue) {
       _controller.text = current.currentValue;
@@ -64,12 +96,15 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
   }
 
   void _clearErrors() {
-    if (_validationError == null &&
+    final clearIntent = _isClearDraft;
+    if (clearIntent == _lastClearIntent &&
+        _validationError == null &&
         _saveState.error == null &&
         _saveState.status == CatchFieldStatus.idle) {
       return;
     }
     setState(() {
+      _lastClearIntent = clearIntent;
       _validationError = null;
       _saveState.reset();
     });
@@ -95,13 +130,12 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
     final Object? value = descriptor.toFieldValue != null
         ? descriptor.toFieldValue!(normalized)
         : normalized;
-    final comparable =
-        _lastCommittedValue ??
-        descriptor.currentFieldValue ??
-        descriptor.currentValue;
+    final comparable = _hasCommittedValue
+        ? _lastCommittedValue
+        : descriptor.currentFieldValue ?? descriptor.currentValue;
     if (value == comparable ||
-        (value == null && descriptor.currentValue.trim().isEmpty) ||
-        (value == '' && descriptor.currentFieldValue == null)) {
+        ((value == null || value == '') &&
+            (comparable == null || comparable == ''))) {
       if (_usesExplicitCommit) widget.scope.collapse();
       return;
     }
@@ -123,6 +157,8 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
         return;
       }
       _lastCommittedValue = value;
+      _hasCommittedValue = true;
+      _lastCommittedText = normalized;
       setState(() {
         _saveState
           ..saving = false
@@ -156,17 +192,24 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
             : widget.errorTextBuilder(context, saveError));
     if (_usesExplicitCommit) {
       return CatchField.inputActions(
-        copy: widget.scope.fieldCopy,
+        copy: _isClearDraft
+            ? widget.scope.fieldCopy.copyWith(
+                doneLabel: widget.scope.fieldCopy.clearLabel,
+              )
+            : widget.scope.fieldCopy,
         icon: descriptor.icon,
         title: descriptor.label,
+        contract: descriptor.contract,
         placeholder: descriptor.placeholder,
         emptyValueText: descriptor.emptyValueText,
         inputHint: descriptor.inputHint,
         controller: _controller,
+        showClearButton: descriptor.showClearButton,
+        onFocusChanged: (focused) => _hasFocus = focused,
         open: widget.scope.isExpanded,
         onOpenChanged: (_) => widget.scope.toggle(),
         onCancel: () {
-          _controller.text = descriptor.currentValue;
+          _controller.text = _savedText;
           _validationError = null;
           _saveState.reset();
           widget.scope.collapse();
@@ -193,6 +236,7 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
       copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,
+      contract: descriptor.contract,
       placeholder: descriptor.placeholder,
       emptyValueText: descriptor.emptyValueText,
       inputHint: descriptor.inputHint,

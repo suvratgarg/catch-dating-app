@@ -38,6 +38,17 @@ class CatchFormRowList<P> extends StatefulWidget {
 
 class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
   CatchAccordionController? _ownedAccordion;
+  bool _saving = false;
+
+  Future<bool> _save(P patch) async {
+    if (_saving) return false;
+    setState(() => _saving = true);
+    try {
+      return await widget.onSave(patch);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   CatchAccordionController get _accordion =>
       widget.accordion ?? (_ownedAccordion ??= CatchAccordionController());
@@ -154,7 +165,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        section,
+        AbsorbPointer(absorbing: _saving, child: section),
         if (widget.footer case final footer?) CatchPageBody(child: footer),
       ],
     );
@@ -165,9 +176,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
     return CatchFormRowScope<P>(
       fieldCopy: widget.fieldCopy,
       isExpanded: _accordion.isExpanded(key),
-      toggle: () => _accordion.toggle(key),
+      toggle: () {
+        if (!_saving) _accordion.toggle(key);
+      },
       collapse: _accordion.collapse,
-      save: widget.onSave,
+      save: _save,
       textCommitMode: widget.textCommitMode,
     );
   }

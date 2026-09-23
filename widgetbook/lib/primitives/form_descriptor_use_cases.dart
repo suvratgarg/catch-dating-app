@@ -70,6 +70,7 @@ class _FormDescriptorFields extends StatefulWidget {
 class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
   final _accordion = CatchAccordionController(initialExpanded: 'single');
   String _name = 'Alex';
+  String? _nickname = 'Lex';
   int? _choice = 2;
   List<int> _choices = [1, 3];
   RangeValues _range = const RangeValues(2, 4);
@@ -100,8 +101,28 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
         icon: CatchIcons.personOutlined,
         label: 'Name',
         currentValue: _name,
+        contract: const CatchContractFieldConstraints(
+          path: 'preview.name',
+          required: true,
+          minLength: 1,
+          maxLength: 80,
+        ),
         validationCopy: catchFormValidationCopy(context.l10n),
         patchForValue: (value) => ('name', value),
+      ),
+      CatchFormTextRow<(String, Object?)>(
+        id: 'nickname',
+        icon: CatchIcons.personOutlined,
+        label: 'Nickname',
+        currentValue: _nickname ?? '',
+        currentFieldValue: _nickname,
+        validationCopy: catchFormValidationCopy(context.l10n),
+        contract: const CatchContractFieldConstraints(
+          path: 'preview.nickname',
+          maxLength: 80,
+        ),
+        toFieldValue: (value) => value.isEmpty ? null : value,
+        patchForValue: (value) => ('nickname', value),
       ),
       CatchFormSingleChoiceRow<(String, Object?), int>(
         id: 'single',
@@ -152,6 +173,8 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
         switch (patch.$1) {
           case 'name':
             _name = patch.$2 as String;
+          case 'nickname':
+            _nickname = patch.$2 as String?;
           case 'single':
             _choice = patch.$2 as int?;
           case 'multiple':

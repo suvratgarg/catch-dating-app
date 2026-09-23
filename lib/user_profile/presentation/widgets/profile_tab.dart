@@ -232,9 +232,6 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
           CatchFormRowList<UpdateUserProfilePatch>(
             fieldCopy: catchFieldCopy(context.l10n),
             title: context.l10n.userProfileProfileTabTitleAboutYou,
-            // Preserve the existing Consumer interaction until its product
-            // migration to explicit confirmation is reviewed separately.
-            textCommitMode: CatchFormRowListMode.onBlur,
             rows: editState.aboutSectionRows,
             accordion: _fieldAccordion,
             onSave: _saveAboutPatch,

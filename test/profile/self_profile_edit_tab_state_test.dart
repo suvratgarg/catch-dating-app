@@ -163,7 +163,15 @@ void main() {
               as CatchFormTextRow;
       expect(instagram.currentValue, 'suvrat_events');
       expect(instagram.currentFieldValue, 'suvrat_events');
-      expect(instagram.leadingUnit, '@');
+      expect(instagram.leadingUnit, isNull);
+      final handle = 'a' * 30;
+      var draft = TextEditingValue(text: '@$handle');
+      for (final formatter in instagram.effectiveInputFormatters!) {
+        draft = formatter.formatEditUpdate(TextEditingValue.empty, draft);
+      }
+      expect(draft.text, handle);
+      expect(instagram.validate(instagram.normalizeInput!(draft.text)), isNull);
+      expect(instagram.toFieldValue!(''), isNull);
 
       final height =
           state.basicRows.singleWhere((row) => row.id == 'height')

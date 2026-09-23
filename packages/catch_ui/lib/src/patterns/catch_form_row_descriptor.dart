@@ -62,7 +62,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     this.placeholder,
     this.inputHint,
     this.leadingUnit,
-    this.showClearButton = false,
+    this.showClearButton = true,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.autofillHints,
