@@ -21635,4 +21635,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsPrivateEventContinueSaved => 'Continue saved event';
+
+  @override
+  String get hostsEventPreferenceTitle => 'Event settings and payments';
+
+  @override
+  String get hostsEventPreferencePrivateHint =>
+      'These settings belong to this private event. Collection preferences do not activate a provider or send a request.';
+
+  @override
+  String get hostsEventPreferenceInherit => 'Use organizer suggestion';
+
+  @override
+  String get hostsEventPreferenceOverride => 'Use event value';
+
+  @override
+  String get hostsEventPreferenceClear => 'Leave unset';
+
+  @override
+  String get hostsEventPreferenceExpectedAmountMinor =>
+      'Expected amount in the smallest currency unit';
+
+  @override
+  String get hostsEventPreferenceExpectedAmountHint =>
+      'For INR, 120000 means ₹1,200.00';
+
+  @override
+  String get hostsEventPreferenceAdmission => 'Admission suggestion';
+
+  @override
+  String get hostsEventPreferenceAdmissionOpen => 'Open capacity';
+
+  @override
+  String get hostsEventPreferenceAdmissionInvite => 'Invite only';
+
+  @override
+  String get hostsEventPreferenceAdmissionBalanced => 'Balanced singles';
+
+  @override
+  String get hostsEventPreferenceAdmissionFixed => 'Fixed cohort caps';
+
+  @override
+  String get hostsEventPreferencePending => 'Previous settings save unresolved';
+
+  @override
+  String get hostsEventPreferencePendingBody =>
+      'Catch may already have saved these settings. Retry the same request before changing them.';
+
+  @override
+  String get hostsEventPreferenceRetry => 'Retry previous settings save';
+
+  @override
+  String get hostsEventPreferenceError => 'Settings unavailable';
+
+  @override
+  String get hostsEventPreferenceProviderHint =>
+      'A saved collection preference is only a plan. Review provider readiness, guest consent and payment terms before sending an offer.';
+
+  @override
+  String get hostsEventPreferenceInvalidValue =>
+      'Enter a valid value for this setting.';
 }

@@ -34686,6 +34686,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue saved event'**
   String get hostsPrivateEventContinueSaved;
+
+  /// Private event-specific setup settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Event settings and payments'**
+  String get hostsEventPreferenceTitle;
+
+  /// Distinguishes stored private preferences from payment activation.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings belong to this private event. Collection preferences do not activate a provider or send a request.'**
+  String get hostsEventPreferencePrivateHint;
+
+  /// Event preference inheritance option.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer suggestion'**
+  String get hostsEventPreferenceInherit;
+
+  /// Event preference override option.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event value'**
+  String get hostsEventPreferenceOverride;
+
+  /// Event preference explicit clear option.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unset'**
+  String get hostsEventPreferenceClear;
+
+  /// Event-specific expected amount stored in minor currency units.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected amount in the smallest currency unit'**
+  String get hostsEventPreferenceExpectedAmountMinor;
+
+  /// Explains amount entry in currency minor units without assuming an active payment provider.
+  ///
+  /// In en, this message translates to:
+  /// **'For INR, 120000 means ₹1,200.00'**
+  String get hostsEventPreferenceExpectedAmountHint;
+
+  /// Event-local admission preference, not registration activation.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission suggestion'**
+  String get hostsEventPreferenceAdmission;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Open capacity'**
+  String get hostsEventPreferenceAdmissionOpen;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite only'**
+  String get hostsEventPreferenceAdmissionInvite;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced singles'**
+  String get hostsEventPreferenceAdmissionBalanced;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed cohort caps'**
+  String get hostsEventPreferenceAdmissionFixed;
+
+  /// Pending private event preferences save.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous settings save unresolved'**
+  String get hostsEventPreferencePending;
+
+  /// Explains idempotent private event preferences retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved these settings. Retry the same request before changing them.'**
+  String get hostsEventPreferencePendingBody;
+
+  /// Replays the exact event preferences command.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry previous settings save'**
+  String get hostsEventPreferenceRetry;
+
+  /// Manager-only event settings read or save error.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings unavailable'**
+  String get hostsEventPreferenceError;
+
+  /// Prevents event preference settings from implying active payment capability.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved collection preference is only a plan. Review provider readiness, guest consent and payment terms before sending an offer.'**
+  String get hostsEventPreferenceProviderHint;
+
+  /// Invalid event-local setting value.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value for this setting.'**
+  String get hostsEventPreferenceInvalidValue;
 }
 
 class _AppLocalizationsDelegate
