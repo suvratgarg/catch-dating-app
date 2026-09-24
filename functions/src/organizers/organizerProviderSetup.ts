@@ -465,14 +465,19 @@ export async function syncOrganizerProviderEventHandler(
         OrganizerProviderConnectionDocument | undefined;
       tx.set(runRef, failed);
       if (currentMapping?.lastSyncRunId === runId &&
-          currentMapping.status === "active") {
+          currentMapping.status === "active" &&
+          currentMapping.revision === mapping.revision &&
+          currentMapping.connectionId === mapping.connectionId) {
         tx.update(mappingRef, {lastSyncAt: failedAt,
           lastSyncStatus: "failed", lastSyncRunId: runId,
           updatedAt: failedAt});
       }
       if (error instanceof LumaProviderError &&
           currentConnection?.status === "active" &&
-          currentConnection.organizerId === data.organizerId) {
+          currentConnection.organizerId === data.organizerId &&
+          currentConnection.revision === connection.revision &&
+          currentConnection.secretVersionResource ===
+            connection.secretVersionResource) {
         tx.update(connectionRef, {status: errorCode ===
           "providerCredentialRejected" ? "credentialRevoked" : "degraded",
         lastHealthSyncAt: failedAt, lastErrorCode: errorCode,
@@ -655,6 +660,12 @@ export async function reconcileLumaGuests(params: {
       id: doc.id,
       data: doc.data() as EventAttendeeDocument,
     }));
+    if (existing.some((row) => row.data.eventId !== eventId ||
+        row.data.organizerId !== params.run.organizerId ||
+        row.data.clubId !== event.clubId)) {
+      throw new HttpsError("failed-precondition",
+        "Provider roster contains an attendee from another tenant.");
+    }
     const byGuestId = new Map(existing.filter((row) =>
       row.data.provider === "luma" && row.data.providerGuestId
     ).map((row) => [row.data.providerGuestId as string, row]));

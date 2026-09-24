@@ -3,6 +3,7 @@ import {createHash} from "node:crypto";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {eventParticipationId} from "../shared/relationshipDocuments";
+import {LumaProviderError} from "./organizerLumaProvider";
 import {seatIdentityAliasId, seatIdentityValueHash} from
   "../events/seatIdentityAuthority";
 import {deriveEventSeatPolicy} from
@@ -236,7 +237,8 @@ function reconcileFixture(options: {locked?: boolean; ready?: boolean;
     doc: (id: string) => ({id, path: `${name}/${id}`,
       get: async () => {
         const value = docs[`${name}/${id}`];
-        return {exists: value !== undefined, data: () => value};
+        return {exists: value !== undefined, data: () =>
+          value ? {...value} : undefined};
       }}),
     where: query(name).where,
   }),
@@ -388,4 +390,77 @@ test("oversize ready handler records failure without a partial roster",
     assert.equal(h.docs[`eventSeatLedgers/${eventId}`].occupied, 0);
     assert.equal(Object.values(h.docs).filter((row) =>
       row.providerGuestId !== undefined).length, 0);
+  });
+
+
+test("ready provider rejects a matched attendee owned by another tenant",
+  async () => {
+    for (const field of ["organizerId", "clubId"] as const) {
+      const h = fixture({active: true});
+      h.old![field] = "foreignOrg";
+      await assert.rejects(prepareProviderSeatChanges({db: h.db, tx: h.tx,
+        event: h.event as never, eventId, organizerId, runId: "run1",
+        nowMillis: 1000, writes: [write(h.old)]}),
+      /Provider attendee tenant changed/u);
+      assert.equal(h.pendingCount, 0);
+    }
+  });
+
+test("all-inactive ready sync rejects malformed ledger before attendee writes",
+  async () => {
+    for (const malformed of [{occupied: 3}, {revision: -1},
+      {capacityRevision: 0}, {migrationRevision: 0}]) {
+      const h = reconcileFixture({ready: true});
+      Object.assign(h.docs[`eventSeatLedgers/${eventId}`], malformed);
+      await assert.rejects(reconcileLumaGuests({db: h.db,
+        actorUid: "host1", connectionId: "connection1", mappingId,
+        expectedMappingRevision: 1, expectedConnectionRevision: 1,
+        expectedSecretVersionResource: "secret1",
+        expectedExternalEventId: "lumaEvent1",
+        guests: [{...guest, approvalStatus: "declined"}],
+        pageCount: 1, truncated: false, now, run: h.run}));
+      assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
+        "host1", operationId)}`].status, "running");
+      assert.equal(Object.values(h.docs).filter((row) =>
+        row.providerGuestId !== undefined).length, 0);
+    }
+  });
+
+test("provider failure cannot revoke a concurrently rotated credential",
+  async () => {
+    const h = reconcileFixture({ready: true, withoutRun: true});
+    await assert.rejects(syncOrganizerProviderEventHandler({
+      auth: {uid: "host1"}, data: {organizerId, eventId,
+        clientOperationId: operationId},
+    } as never, {firestore: () => h.db,
+      checkRateLimit: async () => undefined,
+      luma: () => ({listGuests: async () => {
+        Object.assign(h.docs["organizerProviderConnections/connection1"],
+          {revision: 2, secretVersionResource: "secret2"});
+        throw new LumaProviderError("old credential rejected", 401,
+          "unauthorized");
+      }}) as never,
+      credentialStore: {access: async () => "test-key"} as never,
+      now: () => now}));
+    const connection = h.docs["organizerProviderConnections/connection1"];
+    assert.equal(connection.status, "active");
+    assert.equal(connection.secretVersionResource, "secret2");
+    assert.equal(connection.revision, 2);
+    assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
+      "host1", operationId)}`].status, "failed");
+  });
+
+
+test("legacy provider sync refuses a foreign-owned matched attendee",
+  async () => {
+    for (const field of ["organizerId", "clubId"] as const) {
+      const h = reconcileFixture();
+      h.docs[`eventAttendees/${attendeeId}`][field] = "foreignOrg";
+      await assert.rejects(reconcileFixtureRun(h),
+        /attendee from another tenant/u);
+      assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
+        "host1", operationId)}`].status, "running");
+      assert.equal(h.docs[`eventAttendees/${attendeeId}`][field],
+        "foreignOrg");
+    }
   });

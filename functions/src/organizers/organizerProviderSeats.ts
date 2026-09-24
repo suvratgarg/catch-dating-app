@@ -3,6 +3,8 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {EventAttendeeDocument, EventDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {eventParticipationId} from "../shared/relationshipDocuments";
+import {assertReadySeatState} from
+  "../events/seatAuthority/seatAuthority";
 import {FirestoreSeatIdentityAuthority, SeatIdentityAlias,
   seatIdentityAliasId, seatIdentityValueHash} from
   "../events/seatIdentityAuthority";
@@ -51,6 +53,10 @@ export async function prepareProviderSeatChanges(params: {
   const ledger = await seatTx.ledger(eventId);
   const policy = deriveEventSeatPolicy(event);
   if (!ledger) fail("Provider roster seat ledger is unavailable.");
+  // Validate the ledger even when every provider row is inactive and no seat
+  // operation would otherwise invoke the shared seat planner.
+  assertReadySeatState(eventId,
+    {key: "providerLedgerValidation", revision: 1}, ledger, null);
   if (ledger.state !== "ready" || policy.organizerId !== organizerId ||
       ledger.capacity !== policy.capacity ||
       ledger.policyHash !== policy.policyHash ||
@@ -65,9 +71,12 @@ export async function prepareProviderSeatChanges(params: {
   for (const write of writes) {
     const {id, old, document} = write;
     const oldActive = old !== undefined && ACTIVE.has(old.status);
-    if (old && old.eventId !== eventId ||
+    if (old && (old.eventId !== eventId ||
+        old.organizerId !== organizerId ||
+        old.clubId !== event.clubId) ||
         document.eventId !== eventId ||
-        document.organizerId !== organizerId) {
+        document.organizerId !== organizerId ||
+        document.clubId !== event.clubId) {
       fail("Provider attendee tenant changed.");
     }
     if (old && old.source !== "providerSync" &&
