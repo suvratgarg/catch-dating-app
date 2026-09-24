@@ -181,10 +181,10 @@ test("private and malformed setup events never enter a visible organizer index",
       {publicationState: null}, {setupRevision: 1}]) {
       assert.equal(buildEventSearchRecord("private-event", {
         ...event(), ...state,
-      }, organizer()), null);
+      } as EventDocument, organizer()), null);
     }
     assert.ok(buildEventSearchRecord("published-event", {
-      ...event(), ...{publicationState: "published", setupRevision: 2},
+      ...event(), ...{publicationState: "published" as const, setupRevision: 2},
     }, organizer()));
   });
 
@@ -203,7 +203,8 @@ test("index settings expose required filters", () => {
 
 test("late published trigger cannot reindex the current private event",
   async () => {
-    const current = {...event(), publicationState: "private", setupRevision: 2};
+    const current: EventDocument = {
+      ...event(), publicationState: "private", setupRevision: 2};
     const methods: string[] = [];
     const deps = searchDeps(() => current, async (init) => {
       methods.push(init.method!);
@@ -214,7 +215,8 @@ test("late published trigger cannot reindex the current private event",
 
 test("publication change during index write deletes the stale projection",
   async () => {
-    let current = {...event(), publicationState: "published", setupRevision: 1};
+    let current: EventDocument = {
+      ...event(), publicationState: "published", setupRevision: 1};
     const methods: string[] = [];
     const deps = searchDeps(() => current, async (init) => {
       methods.push(init.method!);

@@ -1,3 +1,4 @@
+import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -554,11 +555,12 @@ export async function registerPublicEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    if (!isEventPubliclyAccessible(event)) {
+    const candidate = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    if (!isEventPubliclyAccessible(candidate)) {
       throw new HttpsError("failed-precondition",
         "This event is not open for public registration.");
     }
+    const event = requirePublicConfiguredEvent(candidate);
     const organizerId = event.organizerId ?? event.clubId;
     const communicationPreferenceRef = db
       .collection("organizerCommunicationPreferences")
