@@ -14,6 +14,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -114,39 +115,8 @@ class _PrivateEventCreateScreenState
           break;
         }
       }
-      final localDate = startingValues.eventLocalDate;
-      if (localDate != null) {
-        final parsed = DateTime.tryParse(localDate);
-        if (parsed != null &&
-            !parsed.isBefore(DateUtils.dateOnly(DateTime.now()))) {
-          _date = DateUtils.dateOnly(parsed);
-        }
-      }
-      final localStart = startingValues.eventLocalStartTime;
-      if (localStart != null) {
-        final parts = localStart.split(':');
-        if (parts.length == 2) {
-          final hour = int.tryParse(parts[0]);
-          final minute = int.tryParse(parts[1]);
-          if (hour != null && minute != null &&
-              hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
-            _start = TimeOfDay(hour: hour, minute: minute);
-          }
-        }
-      }
-      final selectedDateMillis = startingValues.selectedDateMillis;
-      if (_date == null && selectedDateMillis != null) {
-        final restored = DateTime.fromMillisecondsSinceEpoch(selectedDateMillis);
-        if (!restored.isBefore(DateUtils.dateOnly(DateTime.now()))) {
-          _date = DateUtils.dateOnly(restored);
-        }
-      }
-      final hour = startingValues.selectedStartHour;
-      final minute = startingValues.selectedStartMinute;
-      if (_start == null && hour != null && minute != null &&
-          hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
-        _start = TimeOfDay(hour: hour, minute: minute);
-      }
+      _date = restoredPrivateEventDate(startingValues, rejectPast: true);
+      _start = restoredPrivateEventStart(startingValues);
     }
     for (final option in defaultCityOptions) {
       if (_city == null &&
@@ -238,22 +208,8 @@ class _PrivateEventCreateScreenState
     _timezoneController.text = draft.eventTimezone ??
         widget.club.hostDefaults.timezone ??
         _city?.timeZone ?? '';
-    final localDate = draft.eventLocalDate;
-    _date = localDate == null ? null : DateTime.tryParse(localDate);
-    if (_date == null && draft.selectedDateMillis != null) {
-      _date = DateTime.fromMillisecondsSinceEpoch(draft.selectedDateMillis!);
-    }
-    final localStart = draft.eventLocalStartTime?.split(':');
-    final hour = localStart?.length == 2
-        ? int.tryParse(localStart![0])
-        : draft.selectedStartHour;
-    final minute = localStart?.length == 2
-        ? int.tryParse(localStart![1])
-        : draft.selectedStartMinute;
-    _start = hour != null && minute != null &&
-            hour >= 0 && hour < 24 && minute >= 0 && minute < 60
-        ? TimeOfDay(hour: hour, minute: minute)
-        : null;
+    _date = restoredPrivateEventDate(draft, rejectPast: false);
+    _start = restoredPrivateEventStart(draft);
     _cityInherited = _trustedOrganizerDefaultsReadAvailable() &&
         draft.eventCityMode == 'inherit';
     _timezoneInherited = _trustedOrganizerDefaultsReadAvailable() &&

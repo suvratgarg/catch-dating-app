@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -18,6 +19,31 @@ import '../test_pump_helpers.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  test('restores canonical and legacy local draft times', () {
+    final canonical = EventDraft(
+      id: 'canonical',
+      clubId: 'club-1',
+      savedAt: DateTime(2026, 9, 24),
+      eventLocalDate: '2090-10-03',
+      eventLocalStartTime: '19:30',
+      selectedDateMillis: DateTime(2090, 10, 4).millisecondsSinceEpoch,
+      selectedStartHour: 8,
+      selectedStartMinute: 15,
+    );
+    expect(restoredPrivateEventDate(canonical, rejectPast: true),
+        DateTime(2090, 10, 3));
+    expect(restoredPrivateEventStart(canonical),
+        const TimeOfDay(hour: 19, minute: 30));
+    final legacy = canonical.copyWith(
+      eventLocalDate: null,
+      eventLocalStartTime: null,
+    );
+    expect(restoredPrivateEventDate(legacy, rejectPast: true),
+        DateTime(2090, 10, 4));
+    expect(restoredPrivateEventStart(legacy),
+        const TimeOfDay(hour: 8, minute: 15));
+  });
 
   testWidgets('one first-save request opens the private setup workspace', (
     tester,
