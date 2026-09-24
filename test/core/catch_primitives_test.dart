@@ -2,7 +2,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -56,6 +57,13 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
     ),
   );
 }
+
+Widget _feedbackWrap(Widget child, {ThemeData? theme}) => ProviderScope(
+  child: MaterialApp(
+    theme: theme ?? AppTheme.light,
+    home: CatchNoticeOverlay(child: Scaffold(body: child)),
+  ),
+);
 
 bool _chipSelected(WidgetTester tester, Finder chip) {
   final semantics = tester.widget<Semantics>(

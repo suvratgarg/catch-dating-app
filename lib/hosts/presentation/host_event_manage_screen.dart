@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
         EventSuccessHostFixtureActions,
@@ -576,7 +576,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .get(hostEventManageActionsProvider)
             .cancelHostedEvent(event: event);
         if (!mounted) return;
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostsHostEventManageScreenVisiblecopyEventCancelled,
         );
@@ -610,7 +610,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .get(hostEventManageActionsProvider)
             .deleteUnusedEvent(event: event);
         if (!mounted) return;
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostsHostEventManageScreenVisiblecopyEventDeleted,
         );
@@ -637,7 +637,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 ),
           );
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(
           label: label,
@@ -669,7 +669,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             .copyInviteLink(event: event, inviteCode: inviteCode, link: link),
       );
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsHostEventManageScreenVisiblecopyLabelCopied(
           label: label,
@@ -722,7 +722,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 .disableInviteLink(event: event, link: link),
           );
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsHostEventManageScreenVisiblecopyLabelDisabled(
           label: label,

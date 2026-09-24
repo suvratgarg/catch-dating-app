@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/widgets.dart';
@@ -31,7 +31,7 @@ void showNotificationRouteError(
   Object error,
   StackTrace stackTrace,
 ) {
-  showCatchErrorSnackBar(
+  showCatchNoticeError(
     context,
     ExternalActionException(
       context.l10n.dashboardNotificationRouteUtilVisiblecopyCouldNotOpenThis,

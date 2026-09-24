@@ -1149,8 +1149,8 @@ bool _catchSurfacesToUser(List<String> lines, int lineIndex) {
     after: 14,
     needles: const [
       'ScaffoldMessenger',
-      'showCatchErrorSnackBar',
-      'showSnackBar',
+      'showCatchNoticeError',
+      'showCatchNotice',
       'CatchBanner.error',
       'ErrorBanner',
       '_searchError',

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -170,7 +171,7 @@ class _HostResponseQueryEditorSectionState
       });
       widget.onApply(_root);
     } on ArgumentError {
-      showCatchSnackBar(context, widget.copy.invalidCondition);
+      showCatchNotice(context, widget.copy.invalidCondition);
     }
   }
 

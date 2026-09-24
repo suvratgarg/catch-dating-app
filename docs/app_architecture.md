@@ -207,7 +207,7 @@ window in `docs/migrations/clubs_to_organizers.md`.
 7. The old project context names some pre-migration error files. The current
    error owner is this document; app-facing errors must use the
    `CatchErrorState` family, `CatchLocalizedErrorBanner.mutation`,
-   `listenToCatchMutationErrors`, or `showCatchErrorSnackBar` as appropriate.
+   `listenToCatchMutationErrors`, or `showCatchNoticeError` as appropriate.
 
 8. Private helper widgets are not an acceptable long-term destination for
    reusable UI. A widget must be public and catalogable, merged into a canonical
@@ -1446,10 +1446,10 @@ empty, retry, stale data, and mutation failure are handled.
 | Section-level load | Section widget or view model | `CatchErrorState` in inline/compact mode, section skeleton, section retry |
 | Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
-| Mutation/action failure | Screen or section | `CatchLocalizedErrorBanner.mutation`, `listenToCatchMutationErrors`, or `showCatchErrorSnackBar` |
+| Mutation/action failure | Screen or section | `CatchLocalizedErrorBanner.mutation`, `listenToCatchMutationErrors`, or `showCatchNoticeError` |
 | Form validation | Form/controller/domain validator | field error text or inline form banner |
 | Optional enrichment failure | Repository/view model | keep primary UI alive, log through error context when useful |
-| Platform/plugin failure | Service/repository/controller seam | typed app error, snackbar/banner if user action failed |
+| Platform/plugin failure | Service/repository/controller seam | typed app error, transient CatchNotice for a brief user action failure |
 | Framework/runtime failure | Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, `CatchFrameworkErrorState` |
 
 Use `CatchAsyncBoundary` for simple body screens with one async value.
@@ -1566,7 +1566,7 @@ delivery channels:
   subscribes once per distinct handle, and publishes only pending-to-error
   transitions. Riverpod cancels the subscriptions when that branch or widget
   leaves; rebuilds never replay an existing failure.
-- `showCatchErrorSnackBar` is the canonical transient action failure surface.
+- `showCatchNoticeError` is the canonical transient action failure surface.
 - `CatchFrameworkErrorState` is separate and only for `ErrorWidget.builder` /
   framework build/render crashes.
 
@@ -1685,8 +1685,8 @@ Surface rules:
 | `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
 | `CatchErrorState` in inline/compact mode | Section/card-level failure | Compact descriptor copy and retry when retryable. |
 | `CatchLocalizedErrorBanner` / `.mutation` | Persistent form/mutation failure | Preserve explicit recovery; no retry unless action exists; avoid duplicating field validation. |
-| `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
-| Field validation error | Per-field invalid input | Specific field copy, not snackbar or generic exception. |
+| `showCatchNoticeError` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
+| Field validation error | Per-field invalid input | Specific field copy, not a transient notice or generic exception. |
 | `CatchFrameworkErrorState` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
 | Empty state | Successful load with zero items | Never use an error primitive for empty data. |
 
@@ -1709,7 +1709,7 @@ Rules:
 - Persistent mutation/form failures use `CatchLocalizedErrorBanner` or
   `CatchLocalizedErrorBanner.mutation`.
 - Transient action failures use `listenToCatchMutationErrors` or
-  `showCatchErrorSnackBar`.
+  `showCatchNoticeError`.
 - Flutter framework/build/layout crashes use `CatchFrameworkErrorState`, not the
   normal app-facing error family.
 - Empty state means successful data load with zero items. It is not an error
@@ -1772,21 +1772,20 @@ callback APIs to futures, or intentionally continuing after a logged local
 failure. Do not catch only to show UI from a controller.
 
 Transient publication is a shared boundary in both apps:
-`showCatchSnackBar` / `showCatchErrorSnackBar` remain the only owners of raw
-`SnackBar` construction and `ScaffoldMessengerState.showSnackBar` publication.
-`catch_use_canonical_feedback` resolves framework symbols and rejects raw
-SnackBar/MaterialBanner constructors, typedef aliases, constructor tear-offs,
-publisher calls and publisher tear-offs outside that exact owner. Unlike
-syntax-only geometry rules, it requires resolved analysis and does not exempt
-all core widgets. Seeded probes cover Host, Consumer, shared/core code,
-same-name non-framework classes, and the allowed helper owner.
+`showCatchNotice` and `showCatchNoticeError` publish brief feedback through
+the app-level `CatchNoticeController` queue. Ordinary notices use low priority
+and a stable deduplication key so rapid actions cannot displace foreground
+arrival notices. Action labels and callbacks stay on `CatchNoticeData`; error
+notices preserve explicit retry callbacks.
 
-This enforcement standardizes the entry point; it does **not** claim that
-snackbars have moved to a top notification overlay. Keep field validation,
-section/load failures, persistent inline mutation errors and framework crash
-fallbacks in their existing contextual owners. Ongoing connectivity/rehearsal
-status and transient arrival notices have different lifetimes; their layout
-integration must not be inferred merely from sharing a visual renderer.
+`catch_use_canonical_feedback` resolves Flutter symbols and rejects
+`SnackBar`, `SnackBarAction`, `MaterialBanner`, and `ScaffoldMessenger` usage,
+including aliases, tear-offs, state publishers, clearing/hiding methods, and
+`MaterialApp.scaffoldMessengerKey`. There is no production owner exemption.
+Deterministic probes cover Host, Consumer, shared/core code, aliases and
+lookalike non-Flutter types. Keep field validation beside its field, section/load
+failures beside their section, persistent mutation errors in `CatchBanner`, and
+framework crash fallbacks in `CatchFrameworkErrorState`.
 
 Foreground match/message delivery has three owners shared by Host and Consumer:
 `FcmService` owns SDK subscriptions, app/recipient checks, token rotation and
@@ -1962,7 +1961,7 @@ needs migration and what was intentionally retained.
 Candidate patterns:
 
 - bare `catch (_)`, empty catch, `.catchError` without logging/rethrow;
-- `debugPrint`, raw `SnackBar`, or `Text(e.toString())` for errors;
+- `debugPrint`, raw framework messenger widgets, or `Text(e.toString())` for errors;
 - raw `StateError`, `ArgumentError`, `Exception`, or thrown strings;
 - `AsyncValue(error:)` branches not using descriptor primitives;
 - casual `requireValue` in widgets/providers;
@@ -1987,10 +1986,10 @@ Candidate patterns:
 | Backend scanner | `tool/audit/backend_error_candidates.dart` |
 | Frontend scanner | `tool/audit/frontend_error_candidates.dart` |
 | Branded error surfaces | `packages/catch_ui/lib/src/components/catch_error_state.dart` |
-| Branded error snackbar | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
+| App-level transient feedback | `lib/core/riverpod_ui/catch_notice_feedback.dart` |
 | Error banner | `packages/catch_ui/lib/src/components/catch_banner.dart` |
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
-| Mutation subscriptions and error snackbar publication | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
+| Mutation subscriptions and transient error notices | `lib/core/riverpod_ui/catch_notice_feedback.dart` |
 | Global error handlers | `lib/main.dart` |
 
 ### Event conversation session ownership
@@ -2792,7 +2791,7 @@ Shared components receive caller-localized strings and formatters; they never
 import the app catalog or introduce English defaults. The gate covers more than
 direct `Text(...)` calls: copy-shaped
 named arguments, default parameters and constructor initializers,
-presentation-state members, validation/share/status helpers, snackbar and
+presentation-state members, validation/share/status helpers, transient notice and
 confirmation helpers, and Event Success display-enum arguments are all
 enforced. Interpolation-only compositions of already-localized values, switch
 wire patterns, exception diagnostics, and generated sources are excluded so
@@ -4141,12 +4140,12 @@ Widget build(BuildContext context) {
     if (vm.isAuthenticated) {
       ref.listen(EventBookingController.bookMutation, (prev, next) {
         if (prev?.isPending == true && next.isSuccess) {
-          showCatchSnackBar(context, 'Booking confirmed!');
+          showCatchNotice(context, 'Booking confirmed!');
         }
       });
       ref.listen(EventBookingController.cancelMutation, (prev, next) {
         if (prev?.isPending == true && next.isSuccess) {
-          showCatchSnackBar(context, 'Booking cancelled.');
+          showCatchNotice(context, 'Booking cancelled.');
         }
       });
     }
@@ -4680,7 +4679,7 @@ Use this order for architecture cleanup:
 
 7. Establish error surfaces.
    - Full-screen/sliver/inline data errors use branded error primitives.
-   - Mutation errors use banner/listener/snackbar based on persistence needs.
+   - Mutation errors use banner/listener/notice based on persistence needs.
    - Optional enrichment failures log or degrade without breaking primary UI.
 
 8. Clean widget ownership.

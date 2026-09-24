@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
@@ -82,7 +82,7 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
       if (mounted) setState(() => _drafts.removeWhere((d) => d.id == draft.id));
     } catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(context, error);
+        showCatchNoticeError(context, error);
       }
     } finally {
       if (mounted) setState(() => _deletingDraftId = null);

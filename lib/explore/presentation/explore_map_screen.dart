@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/events.dart'
@@ -389,16 +390,16 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       _ => context.l10n.exploreExploreMapScreenMessageLocationUnavailable,
     };
     final locationController = ref.read(deviceLocationProvider.notifier);
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       message,
-      action: canOpenSettings
-          ? SnackBarAction(
-              label: context.l10n.exploreExploreMapScreenActionOpenSettings,
-              onPressed: () {
-                unawaited(locationController.openRecoverySettings());
-              },
-            )
+      actionLabel: canOpenSettings
+          ? context.l10n.exploreExploreMapScreenActionOpenSettings
+          : null,
+      onAction: canOpenSettings
+          ? () {
+              unawaited(locationController.openRecoverySettings());
+            }
           : null,
     );
   }

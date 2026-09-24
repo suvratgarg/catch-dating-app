@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -19,14 +20,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class EventChatScreen extends ConsumerStatefulWidget {
-  const EventChatScreen({
-    super.key,
-    required this.eventId,
-    this.pickSchedule,
-  });
+  const EventChatScreen({super.key, required this.eventId, this.pickSchedule});
   final String eventId;
   final Future<({DateTime opensAt, DateTime closesAt})?> Function(BuildContext)?
-      pickSchedule;
+  pickSchedule;
   @override
   ConsumerState<EventChatScreen> createState() => _EventChatScreenState();
 }
@@ -105,14 +102,16 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
     }
     final text = _draft.text.trim();
     final reply = _replyId;
-    final reviewed = ref.read(eventChatControllerProvider(widget.eventId))
-        .asData?.value;
+    final reviewed = ref
+        .read(eventChatControllerProvider(widget.eventId))
+        .asData
+        ?.value;
     final sent = await _controller.send(
       text,
       reviewedUid: reviewedUid,
       replyToMessageId: reply,
-      announcement: _announcement ||
-          reviewed?.access.roomStatus == 'announcementsOnly',
+      announcement:
+          _announcement || reviewed?.access.roomStatus == 'announcementsOnly',
     );
     if (!mounted || ref.read(uidProvider).asData?.value != uid || !sent) {
       return;
@@ -159,7 +158,7 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
         }
         if (!window.opensAt.isAfter(DateTime.now()) ||
             !window.closesAt.isAfter(window.opensAt)) {
-          showCatchSnackBar(context, context.l10n.eventChatInvalidSchedule);
+          showCatchNotice(context, context.l10n.eventChatInvalidSchedule);
           return;
         }
       } else {
@@ -227,10 +226,22 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
       initialTime: openTime,
     );
     if (!context.mounted || closeTime == null) return null;
-    return (opensAt: DateTime(openDate.year, openDate.month, openDate.day,
-      openTime.hour, openTime.minute),
-    closesAt: DateTime(closeDate.year, closeDate.month, closeDate.day,
-      closeTime.hour, closeTime.minute));
+    return (
+      opensAt: DateTime(
+        openDate.year,
+        openDate.month,
+        openDate.day,
+        openTime.hour,
+        openTime.minute,
+      ),
+      closesAt: DateTime(
+        closeDate.year,
+        closeDate.month,
+        closeDate.day,
+        closeTime.hour,
+        closeTime.minute,
+      ),
+    );
   }
 
   Future<void> _messageAction(
@@ -301,7 +312,7 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
         _reactionId = null;
       });
     }
-    showCatchSnackBar(context, switch (action) {
+    showCatchNotice(context, switch (action) {
       EventChatSafetyAction.report => l.eventChatReported,
       EventChatSafetyAction.block => l.eventChatBlocked,
       EventChatSafetyAction.remove => l.eventChatRemoved,
@@ -314,8 +325,9 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
     final value = ref.watch(provider);
     final display = catchAsyncStateFromAsyncValue(value);
     final current = display.isSettledData ? display.value : null;
-    _syncActive(_resumed &&
-        ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog));
+    _syncActive(
+      _resumed && ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog),
+    );
     ref.listen(uidProvider, (before, after) {
       if (before?.asData?.value != after.asData?.value) {
         _draft.clear();
@@ -646,8 +658,10 @@ class EventChatPageBody extends StatelessWidget {
                         message: message,
                         isMe: message.senderUid == state.uid,
                         enabled: state.canSend,
-                        safetyEnabled: state.active &&
-                            access.canReadMessages && !state.busy,
+                        safetyEnabled:
+                            state.active &&
+                            access.canReadMessages &&
+                            !state.busy,
                         onReport:
                             onMessageAction != null &&
                                 message.senderUid != state.uid

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
@@ -36,11 +37,11 @@ class PhotosPage extends ConsumerWidget {
 
     ref.listen(photoUploadControllerProvider, (_, state) {
       if (state.uploadError != null) {
-        final messenger = ScaffoldMessenger.of(context);
-        messenger.clearSnackBars();
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.onboardingPhotosPageVisiblecopyUploadFailedPleaseTry,
+          dedupeKey: 'onboarding.photo-upload-failed',
+          tone: CatchNoticeTone.danger,
         );
       }
     });

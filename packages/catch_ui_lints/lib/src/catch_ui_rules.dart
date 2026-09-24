@@ -23,7 +23,7 @@ class CatchFeedbackRules extends MultiAnalysisRule {
 
   static const useCanonicalFeedback = LintCode(
     'catch_use_canonical_feedback',
-    'Use showCatchSnackBar/showCatchErrorSnackBar for transient feedback or a Catch contextual error primitive; raw framework feedback belongs only to the canonical feedback owner.',
+    'Publish transient feedback through CatchNoticeController using showCatchNotice/showCatchNoticeError; keep field errors contextual and persistent statuses in CatchBanner.',
     severity: DiagnosticSeverity.WARNING,
   );
   static const statusStripIsLayoutOwned = LintCode(
@@ -72,6 +72,8 @@ class CatchFeedbackRules extends MultiAnalysisRule {
     registry.addMethodInvocation(this, visitor);
     registry.addPrefixedIdentifier(this, visitor);
     registry.addPropertyAccess(this, visitor);
+    registry.addNamedType(this, visitor);
+    registry.addNamedExpression(this, visitor);
   }
 }
 
@@ -123,19 +125,63 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     }
     final constructor =
         element is ConstructorElement &&
-        ((element.enclosingElement.name == 'SnackBar' &&
-                uri == 'package:flutter/src/material/snack_bar.dart') ||
-            (element.enclosingElement.name == 'MaterialBanner' &&
-                uri == 'package:flutter/src/material/banner.dart'));
+            uri == 'package:flutter/src/material/snack_bar.dart' &&
+            const {
+              'SnackBar',
+              'SnackBarAction',
+            }.contains(element.enclosingElement.name) ||
+        element is ConstructorElement &&
+            uri == 'package:flutter/src/material/snack_bar_theme.dart' &&
+            const {
+              'SnackBarThemeData',
+              'SnackBarTheme',
+            }.contains(element.enclosingElement.name) ||
+        element is ConstructorElement &&
+            uri == 'package:flutter/src/material/banner.dart' &&
+            element.enclosingElement.name == 'MaterialBanner' ||
+        element is ConstructorElement &&
+            uri == 'package:flutter/src/material/scaffold.dart' &&
+            element.enclosingElement.name == 'ScaffoldMessenger';
+    final messengerLookup =
+        element is MethodElement &&
+        element.enclosingElement?.name == 'ScaffoldMessenger' &&
+        uri == 'package:flutter/src/material/scaffold.dart' &&
+        const {'of', 'maybeOf'}.contains(element.name);
     final publisher =
         element is MethodElement &&
         element.enclosingElement?.name == 'ScaffoldMessengerState' &&
         uri == 'package:flutter/src/material/scaffold.dart' &&
-        const {'showSnackBar', 'showMaterialBanner'}.contains(element.name);
-    if ((constructor || publisher) &&
-        !path.endsWith(
-          '/packages/catch_ui/lib/src/components/catch_snack_bar.dart',
-        )) {
+        const {
+          'showSnackBar',
+          'showMaterialBanner',
+          'clearSnackBars',
+          'hideCurrentSnackBar',
+          'removeCurrentSnackBar',
+          'hideCurrentMaterialBanner',
+          'removeCurrentMaterialBanner',
+        }.contains(element.name);
+    final messengerType =
+        element is InterfaceElement &&
+        const {
+          'ScaffoldMessenger',
+          'ScaffoldMessengerState',
+        }.contains(element.name) &&
+        uri == 'package:flutter/src/material/scaffold.dart';
+    final snackbarThemeType =
+        element is InterfaceElement &&
+        const {'SnackBarThemeData', 'SnackBarTheme'}.contains(element.name) &&
+        uri == 'package:flutter/src/material/snack_bar_theme.dart';
+    final materialAppMessengerKey =
+        element is FormalParameterElement &&
+        element.name == 'scaffoldMessengerKey' &&
+        element.enclosingElement?.name == 'MaterialApp' &&
+        uri == 'package:flutter/src/material/app.dart';
+    if (constructor ||
+        messengerLookup ||
+        publisher ||
+        messengerType ||
+        snackbarThemeType ||
+        materialAppMessengerKey) {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchFeedbackRules.useCanonicalFeedback,
@@ -162,6 +208,12 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
   @override
   void visitPropertyAccess(PropertyAccess node) =>
       _check(node, node.propertyName.element);
+
+  @override
+  void visitNamedType(NamedType node) => _check(node, node.element);
+
+  @override
+  void visitNamedExpression(NamedExpression node) => _check(node, node.element);
 }
 
 const _eventDetailPathFragments = <String>[
@@ -1386,8 +1438,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     while (current != null) {
       if (current is InstanceCreationExpression) {
         final typeName = _constructorTypeName(current);
-        if (typeName == 'SnackBar' ||
-            typeName == 'PopupMenuItem' ||
+        if (typeName == 'PopupMenuItem' ||
             typeName == 'Badge' ||
             typeName == 'AlertDialog' ||
             typeName == 'CupertinoAlertDialog' ||

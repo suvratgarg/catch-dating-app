@@ -479,26 +479,21 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     expect(decoration.color, isNot(CatchTokens.editorialWhite));
   });
 
-  testWidgets('showCatchErrorSnackBar maps errors to user copy', (
-    tester,
-  ) async {
+  testWidgets('showCatchNoticeError maps errors to user copy', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: Builder(
-            builder: (context) => TextButton(
-              onPressed: () =>
-                  showCatchErrorSnackBar(context, StateError('snack failed')),
-              child: const Text('Show error'),
-            ),
+      _feedbackWrap(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () =>
+                showCatchNoticeError(context, StateError('notice failed')),
+            child: const Text('Show error'),
           ),
         ),
       ),
     );
 
     await tester.tap(find.text('Show error'));
-    await tester.pump();
+    await pumpFeatureUi(tester);
 
     expect(
       find.text('Something went wrong. Please try again.'),
@@ -506,52 +501,50 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     );
   });
 
-  testWidgets('showCatchSnackBar pins token contrast in dark mode', (
+  testWidgets('showCatchNotice publishes a notice in dark mode', (
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.dark,
-        home: Scaffold(
-          body: Builder(
-            builder: (context) => TextButton(
-              onPressed: () => showCatchSnackBar(context, 'Saved.'),
-              child: const Text('Show snackbar'),
+      _feedbackWrap(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showCatchNotice(
+              context,
+              'Saved.',
+              tone: CatchNoticeTone.success,
             ),
+            child: const Text('Show notice'),
           ),
         ),
+        theme: AppTheme.dark,
       ),
     );
 
-    await tester.tap(find.text('Show snackbar'));
+    await tester.tap(find.text('Show notice'));
     await tester.pump();
 
-    final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
-    final message = tester.widget<Text>(find.text('Saved.'));
-    expect(snackBar.backgroundColor, CatchTokens.dark.ink);
-    expect(message.style?.color, CatchTokens.dark.bg);
+    final notice = tester.widget<CatchNotice>(find.byType(CatchNotice));
+    expect(notice.notice.tone, CatchNoticeTone.success);
+    expect(find.text('Saved.'), findsOneWidget);
   });
 
   testWidgets(
-    'showCatchErrorSnackBar exposes retry action for retryable errors',
+    'showCatchNoticeError exposes retry action for retryable errors',
     (tester) async {
       var retryCount = 0;
       await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: Builder(
-              builder: (context) => TextButton(
-                onPressed: () => showCatchErrorSnackBar(
-                  context,
-                  const NetworkException(
-                    'timeout',
-                    'The request timed out. Please try again.',
-                  ),
-                  onRetry: () => retryCount++,
+        _feedbackWrap(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showCatchNoticeError(
+                context,
+                const NetworkException(
+                  'timeout',
+                  'The request timed out. Please try again.',
                 ),
-                child: const Text('Show error'),
+                onRetry: () => retryCount++,
               ),
+              child: const Text('Show error'),
             ),
           ),
         ),
