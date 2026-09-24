@@ -1195,7 +1195,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:59</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:70</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventSuccessScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_success_screen.dart:15</code> | — | — | No class documentation or registry summary. |
-| <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:40</code> | — | — | The first page of the single progressive event editor. |
+| <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:41</code> | — | — | The first page of the single progressive event editor. |
 | <code>PrivateEventPreferencesScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart:16</code> | — | — | Manager-only settings on the same saved private event. Every field shows whether it inherits, overrides, or clears an organizer suggestion. |
 | <code>PrivateEventSetupScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_setup_screen.dart:14</code> | — | — | Progressive actions for one already-saved canonical event. |
 | <code>HostCreateEventRouteLoadingScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
