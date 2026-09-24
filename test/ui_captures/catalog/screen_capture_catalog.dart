@@ -5102,6 +5102,9 @@ class _CaptureHostFormResponsesController extends HostFormResponsesController {
 
 class _CaptureHostFormEditorController extends HostFormEditorController {
   @override
+  bool editorBoundTo(String? accountId) => true;
+
+  @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
       HostFormEditorState(
         editor: HostFormEditor(
