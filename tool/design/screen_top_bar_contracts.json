@@ -337,7 +337,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 1
+      "occurrences": 4
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
@@ -415,7 +415,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 1
+      "occurrences": 3
     },
     {
       "path": "lib/programs/presentation/program_dispatch_screen.dart",
@@ -424,7 +424,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 1
+      "occurrences": 3
     },
     {
       "path": "lib/programs/presentation/program_hotel_desk_screen.dart",
@@ -433,7 +433,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 1
+      "occurrences": 3
     },
     {
       "path": "lib/programs/presentation/program_trips_screen.dart",
@@ -442,7 +442,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 1
+      "occurrences": 3
     },
     {
       "path": "lib/programs/presentation/program_work_screen.dart",
@@ -451,7 +451,7 @@
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
-      "occurrences": 1
+      "occurrences": 3
     },
     {
       "path": "lib/public_profile/presentation/public_profile_screen.dart",

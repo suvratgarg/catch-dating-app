@@ -51,15 +51,6 @@ test("composition renderer recognition stays bound to real owner methods", () =>
       owner: null, name: "_buildActionModule", returnType: "Widget"},
     {file: `${ui}catch_banner.dart`, library: `${ui}catch_banner.dart`,
       owner: "CatchBanner", name: "_buildBodyFeedback", returnType: "Widget"},
-    ...[
-      ["lib/hosts/presentation/host_event_operator_screen.dart", "HostEventOperatorScreen"],
-      ["lib/programs/presentation/program_arrivals_screen.dart", "ProgramArrivalsScreen"],
-      ["lib/programs/presentation/program_dispatch_screen.dart", "_ProgramDispatchScreenState"],
-      ["lib/programs/presentation/program_hotel_desk_screen.dart", "_ProgramHotelDeskScreenState"],
-      ["lib/programs/presentation/program_trips_screen.dart", "_ProgramTripsScreenState"],
-      ["lib/programs/presentation/program_work_screen.dart", null],
-    ].map(([file, owner]) => ({file, library: file, owner,
-      name: "_routeScaffold", returnType: "CatchRouteScaffold"})),
     ...["_buildBar", "_searchField", "_selectorControls"].map((name) => ({
       file: `${ui}catch_top_bar.dart`, library: `${ui}catch_top_bar.dart`,
       owner: "_CatchTopBarState", name, returnType: "Widget",
