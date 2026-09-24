@@ -28846,5 +28846,21 @@
   "hostsPrivateEventInventoryLoadMore": "Load more private events",
   "@hostsPrivateEventInventoryLoadMore": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
   "hostsPrivateEventInventoryError": "Could not load private events.",
-  "@hostsPrivateEventInventoryError": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96}
+  "@hostsPrivateEventInventoryError": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
+  "hostFormTargetTitle": "Who is this form for?",
+  "@hostFormTargetTitle": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetReusable": "Reusable organizer form",
+  "@hostFormTargetReusable": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetEvent": "For an event",
+  "@hostFormTargetEvent": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetSelectEvent": "Choose an event",
+  "@hostFormTargetSelectEvent": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetNoUpcomingEvents": "No eligible upcoming events are available.",
+  "@hostFormTargetNoUpcomingEvents": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetUnavailable": "This linked event is no longer available. Choose another event or make the form reusable.",
+  "@hostFormTargetUnavailable": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetPublishedNotice": "Changes to a published form take effect when you publish the draft updates.",
+  "@hostFormTargetPublishedNotice": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostFormTargetLoadFailed": "Could not load your events. Try again.",
+  "@hostFormTargetLoadFailed": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120}
 }
