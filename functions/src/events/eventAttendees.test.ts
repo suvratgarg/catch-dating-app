@@ -17,6 +17,8 @@ import {
   setEventAttendeeAttendanceHandler,
 } from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {seatIdentityAliasId, seatIdentityValueHash} from
+  "./seatIdentityAuthority";
 
 type FakeData = Record<string, unknown>;
 
@@ -38,6 +40,9 @@ class FakeSnapshot {
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+  get id() {
+    return this.path.split("/").at(-1)!;
+  }
   async get() {
     return new FakeSnapshot(this, this.firestore.get(this.path));
   }
@@ -48,13 +53,44 @@ class FakeCollectionRef {
   doc(id: string) {
     return new FakeDocRef(this.firestore, `${this.path}/${id}`);
   }
+  where(field: string, _operator: string, value: unknown) {
+    return new FakeQuery(this.firestore, this.path, [[field, value]]);
+  }
+}
+
+class FakeQuery {
+  constructor(private readonly firestore: FakeFirestore,
+    private readonly path: string,
+    private readonly filters: Array<[string, unknown]>,
+    private readonly max = Infinity) {}
+  where(field: string, _operator: string, value: unknown) {
+    return new FakeQuery(this.firestore, this.path,
+      [...this.filters, [field, value]], this.max);
+  }
+  limit(max: number) {
+    return new FakeQuery(this.firestore, this.path, this.filters, max);
+  }
+  docs() {
+    return this.firestore.entries(this.path).filter(([, value]) =>
+      this.filters.every(([field, expected]) => value[field] === expected))
+      .slice(0, this.max).map(([id, value]) =>
+        new FakeSnapshot(new FakeDocRef(this.firestore,
+          `${this.path}/${id}`), value));
+  }
 }
 
 class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   private readonly reads = new Map<string, number>();
   constructor(private readonly firestore: FakeFirestore) {}
-  async get(ref: FakeDocRef) {
+  async get(ref: FakeDocRef | FakeQuery): Promise<any> {
+    if (ref instanceof FakeQuery) {
+      const docs = ref.docs();
+      for (const doc of docs) {
+        this.reads.set(doc.ref.path, this.firestore.version(doc.ref.path));
+      }
+      return {docs, size: docs.length};
+    }
     const value = this.firestore.get(ref.path);
     this.reads.set(ref.path, this.firestore.version(ref.path));
     this.firestore.afterRead?.(ref.path);
@@ -90,6 +126,13 @@ class FakeFirestore {
   }
   get(path: string) {
     return this.docs[path];
+  }
+  entries(collection: string): Array<[string, FakeData]> {
+    return Object.entries(this.docs).filter(([path, value]) =>
+      path.startsWith(`${collection}/`) &&
+      !path.slice(collection.length + 1).includes("/") && value !== undefined)
+      .map(([path, value]) => [path.slice(collection.length + 1),
+        value as FakeData]);
   }
   version(path: string) {
     return this.versions.get(path) ?? 0;
@@ -228,6 +271,75 @@ test("public OTP registration denies private basics before roster reads",
       error.code === "failed-precondition" &&
       error.message.includes("not open for public registration"));
     assert.equal(firestore.get("onboarding_drafts/guest-1"), undefined);
+  });
+
+test("ready OTP links an imported external-ID guest at full capacity",
+  async () => {
+    const phone = "+919876543210";
+    const attendeeId = eventAttendeeId("event-1", "external:guest-7");
+    const startTime = admin.firestore.Timestamp.fromMillis(Date.now() +
+      60_000);
+    const endTime = admin.firestore.Timestamp.fromMillis(Date.now() +
+      3_600_000);
+    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+      status: "active", startTime, endTime, capacityLimit: 1,
+      priceInPaise: 0, publicRegistrationEnabled: true,
+      eventFormat: {version: 1, activityKind: "running",
+        interactionModel: "open"}, meetingPoint: "Park",
+      meetingLocation: {name: "Park", latitude: 12, longitude: 77},
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+    const policy = deriveEventSeatPolicy(event);
+    const canonicalKey = "guest_1";
+    const alias = (kind: "phone" | "attendee" | "external",
+      value: string) => ({eventId: "event-1", organizerId: "organizer-1",
+      kind, valueHash: seatIdentityValueHash(kind, value),
+      canonicalKey, identityRevision: 1, migrationRevision: 1,
+      state: "ready"});
+    const docs: Record<string, FakeData | undefined> = {
+      "events/event-1": event,
+      "organizers/organizer-1": {appVisibility: "discoverable",
+        publicPage: {publishStatus: "published"}},
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 1,
+        occupied: 1, revision: 1, capacityRevision: 1,
+        policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+        migrationRevision: 1, state: "ready"},
+      [`eventAttendees/${attendeeId}`]: {eventId: "event-1",
+        clubId: "organizer-1", organizerId: "organizer-1",
+        source: "hostImport", status: "registered", linkedUid: null,
+        phoneE164: phone, externalReference: "guest-7",
+        displayName: "Imported Guest"},
+      [`eventSeatReservations/${createHash("sha256")
+        .update(`event-1\u001f${canonicalKey}`).digest("hex")}`]: {
+        eventId: "event-1", canonicalKey, identityRevision: 1,
+        active: true, revision: 1, reservedAtMillis: 100,
+        releasedAtMillis: null},
+    };
+    for (const [kind, value] of [["phone", phone],
+      ["attendee", attendeeId], ["external", "guest-7"]] as const) {
+      docs[`eventSeatIdentityAliases/${seatIdentityAliasId(
+        "event-1", kind, value)}`] = alias(kind, value);
+    }
+    const firestore = new FakeFirestore(docs);
+    const response = await registerPublicEventHandler({
+      auth: {uid: "user-1", token: {phone_number: phone}},
+      data: {eventId: "event-1", displayName: "Guest"},
+      rawRequest: {},
+    } as CallableRequest<unknown>, {
+      firestore: () => firestore as never,
+      checkRateLimit: async () => undefined,
+      timestamp: () => admin.firestore.Timestamp.fromMillis(1000),
+    });
+    assert.equal(response.attendeeId, attendeeId);
+    assert.equal(response.status, "alreadyRegistered");
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(firestore.get(`eventAttendees/${attendeeId}`)?.source,
+      "hostImport");
+    assert.equal(firestore.get(`eventAttendees/${attendeeId}`)?.linkedUid,
+      "user-1");
+    assert.equal(firestore.get(`eventAttendees/${eventAttendeeId(
+      "event-1", `phone:${phone}`)}`), undefined);
   });
 
 test("prepareImportRows deduplicates event-scoped contact identity", () => {
@@ -710,6 +822,55 @@ test("absolute attendance replays and preserves prior state", async () => {
     clientOperationId: "operation-check-in-1",
   }), /^ear_[a-f0-9]{48}$/u);
 });
+
+test("ready Host attendance reserves and releases one canonical guest seat",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1_000);
+    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+      status: "active", capacityLimit: 1, checkedInCount: 0,
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+    const policy = deriveEventSeatPolicy(event);
+    const attendeeId = "attendee-1";
+    const canonicalKey = "guest_1";
+    const firestore = new FakeFirestore({
+      "events/event-1": event,
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      "eventAttendees/attendee-1": {eventId: "event-1",
+        organizerId: "organizer-1", source: "hostImport",
+        status: "waitlisted", linkedUid: null, phoneE164: null,
+        externalReference: null, attendanceRevision: 0,
+        preCheckInStatus: null},
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 1,
+        occupied: 0, revision: 1, capacityRevision: 1,
+        policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+        migrationRevision: 1, state: "ready"},
+      [`eventSeatIdentityAliases/${seatIdentityAliasId("event-1",
+        "attendee", attendeeId)}`]: {eventId: "event-1",
+        organizerId: "organizer-1", kind: "attendee",
+        valueHash: seatIdentityValueHash("attendee", attendeeId),
+        canonicalKey, identityRevision: 1, migrationRevision: 1,
+        state: "ready"},
+    });
+    const deps = {firestore: () => firestore as never,
+      checkRateLimit: async () => undefined, timestamp: () => now};
+    const checkIn = attendanceRequest({eventId: "event-1", attendeeId,
+      desiredCheckedIn: true, expectedRevision: 0,
+      clientOperationId: "ready-check-in-0001"});
+    await setEventAttendeeAttendanceHandler(checkIn, deps);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(firestore.get("eventAttendees/attendee-1")?.status,
+      "checkedIn");
+    await setEventAttendeeAttendanceHandler(attendanceRequest({
+      eventId: "event-1", attendeeId, desiredCheckedIn: false,
+      expectedRevision: 1, clientOperationId: "ready-check-out-0001",
+    }), deps);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
+    assert.equal(firestore.get("eventAttendees/attendee-1")?.status,
+      "waitlisted");
+  });
 
 
 test("roster import retries current event and manager authority before writes",

@@ -4,7 +4,8 @@ import {createHash} from "crypto";
 import {Timestamp} from "firebase-admin/firestore";
 import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
   seatVerifiedPhoneProofId, SeatIdentityAuthorityError,
-  linkVerifiedUidToGuestSeat, prepareCrmOriginSeatIdentity} from
+  linkVerifiedUidToGuestSeat, prepareCrmOriginSeatIdentity,
+  prepareVerifiedUidAttendeeEnrollment} from
   "./seatIdentityAuthority";
 import {eventAttendeeId} from "./eventAttendees";
 
@@ -238,6 +239,30 @@ test("anonymous form contact enrolls without a phone or UID claim",
       row?.kind === "phone" || row?.kind === "uid"), false);
   });
 
+test("unverified CRM phone rejects stale or foreign ambiguous alias",
+  async () => {
+    for (const corruption of [
+      {organizerId: "other"}, {migrationRevision: 2},
+      {identityRevision: 2}, {valueHash: "wrong"},
+    ]) {
+      const store = new FakeStore();
+      store.ready();
+      crmSource(store);
+      store.alias("contact", "contact1", "contactSeat");
+      store.alias("contactOrigin", "origin1", "contactSeat");
+      store.alias("phone", phone, "contactSeat");
+      const aliasPath = `eventSeatIdentityAliases/${
+        seatIdentityAliasId(eventId, "phone", phone)}`;
+      store.rows.set(aliasPath, {...store.rows.get(aliasPath),
+        state: "ambiguous", ...corruption});
+      await assert.rejects(prepareCrmOriginSeatIdentity({
+        db: store.db(), tx: store.writeTx().tx, eventId, organizerId,
+        originId: "origin1", responseId: "response1",
+      }), unavailable);
+      assert.deepEqual(store.writes, []);
+    }
+  });
+
 test("later verified response upgrades its contact seat without duplication",
   async () => {
     const store = new FakeStore();
@@ -454,6 +479,50 @@ test("verified phone links an imported guest without reserving another seat",
       ledgerRevision: 4, replayed: true});
     assert.deepEqual(await h.store.resolve({kind: "verifiedUid",
       uid: "uid1"}), {key: h.key, revision: 1});
+  });
+
+test("verified UID enrolls invited guest without fabricating occupancy",
+  async () => {
+    const h = guestSeatStore();
+    h.store.rows.get(`eventAttendees/${h.attendeeId}`)!.status = "invited";
+    h.store.rows.delete(`eventSeatReservations/${hash(eventId, h.key)}`);
+    const preparedTx = h.store.writeTx();
+    const prepared = await prepareVerifiedUidAttendeeEnrollment({
+      db: h.store.db(), tx: preparedTx.tx, eventId, organizerId,
+      attendeeId: h.attendeeId, uid: "uid1", authTokenPhoneNumber: phone,
+      now: Timestamp.fromMillis(1000),
+    });
+    assert.deepEqual(prepared.identity, {key: h.key, revision: 1});
+    assert.equal(prepared.seatActive, false);
+    assert.equal(h.store.writes.length, 0);
+    prepared.apply();
+    preparedTx.commit();
+    assert.equal(h.store.rows.get(`eventSeatLedgers/${eventId}`)?.revision,
+      3);
+    assert.equal([...h.store.rows.keys()].some((path) =>
+      path.startsWith("eventSeatReservations/")), false);
+    const retry = h.store.writeTx();
+    const replay = await prepareVerifiedUidAttendeeEnrollment({
+      db: h.store.db(), tx: retry.tx, eventId, organizerId,
+      attendeeId: h.attendeeId, uid: "uid1", authTokenPhoneNumber: phone,
+      now: Timestamp.fromMillis(1001),
+    });
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.seatActive, false);
+  });
+
+test("pending guest enrollment denies another UID or mismatched phone",
+  async () => {
+    const h = guestSeatStore();
+    h.store.rows.get(`eventAttendees/${h.attendeeId}`)!.status = "waitlisted";
+    h.store.rows.delete(`eventSeatReservations/${hash(eventId, h.key)}`);
+    h.store.alias("uid", "uid1", "anotherSeat");
+    await assert.rejects(prepareVerifiedUidAttendeeEnrollment({
+      db: h.store.db(), tx: h.store.writeTx().tx, eventId, organizerId,
+      attendeeId: h.attendeeId, uid: "uid1", authTokenPhoneNumber: phone,
+      now: Timestamp.fromMillis(1000),
+    }), unavailable);
+    assert.deepEqual(h.store.writes, []);
   });
 
 test("different token phone, duplicate UID seat or missing alias denies",
