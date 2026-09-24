@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import {createHash} from "node:crypto";
 import {test} from "node:test";
+import {eventSetupDefaultsDependencies} from "./dependencies";
 import {
   EventSetupDefaultsDependencies, getManagerEventSetupDefaults,
   updateManagerEventSetupDefaults,
@@ -51,16 +51,9 @@ function harness() {
     db: db as unknown as FirebaseFirestore.Firestore,
     serverTimestamp: () => "server-time" as unknown as
       FirebaseFirestore.FieldValue,
-    validateAndHashPreferences(source) {
-      const setup = source.eventSetup;
-      if (setup.usualDurationMinutes !== undefined &&
-          (!Number.isSafeInteger(setup.usualDurationMinutes) ||
-            setup.usualDurationMinutes < 15)) {
-        throw new Error("invalid duration");
-      }
-      return createHash("sha256").update(JSON.stringify(source))
-        .digest("hex");
-    },
+    validateAndHashPreferences: eventSetupDefaultsDependencies(
+      db as unknown as FirebaseFirestore.Firestore
+    ).validateAndHashPreferences,
   };
   return {rows, deps, get writes() {
     return writes;
@@ -155,7 +148,7 @@ test("clear, validation and changed public defaults are fenced", async () => {
   await assert.rejects(update(h.deps, {requestId: "request_005",
     expectedRevision: 2,
     changes: {usualDurationMinutes: {mode: "set", value: 1}}}),
-  /invalid duration/);
+  {code: "invalid-argument"});
   await assert.rejects(update(h.deps, {requestId: "request_006",
     expectedRevision: 2,
     changes: {unknown: {mode: "set", value: true}}}),
@@ -184,3 +177,27 @@ test("malformed private source fails closed", async () => {
   await assert.rejects(update(h.deps), {code: "failed-precondition"});
   assert.equal(h.writes, 0);
 });
+
+
+test("real payment-page validation rejects unsafe storage without writes",
+  async () => {
+    const h = harness();
+    for (const page of [
+      {url: "https://payments.example/offer", reusableForEvents: false},
+      {url: "http://payments.example/offer", reusableForEvents: true},
+      {url: "https://secret@payments.example/offer", reusableForEvents: true},
+    ]) {
+      await assert.rejects(update(h.deps, {changes: {
+        reusablePaymentPage: {mode: "set", value: page},
+      }}), {code: "invalid-argument"});
+    }
+    assert.equal(h.writes, 0);
+    const saved = await update(h.deps, {changes: {
+      reusablePaymentPage: {mode: "set", value: {
+        url: "https://payments.example/offer", reusableForEvents: true,
+      }},
+    }});
+    assert.equal(saved.current.preferences.reusablePaymentPage?.url,
+      "https://payments.example/offer");
+    assert.equal(h.rows.get("organizers/org1")?.reusablePaymentPage, undefined);
+  });

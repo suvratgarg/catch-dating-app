@@ -2951,6 +2951,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/privateEventSetupCallableResponse.ts",
   },
   {
+    name: "QueryOrganizerFormResponsesCallablePayload",
+    source: "callables/query_organizer_form_responses_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/queryOrganizerFormResponsesCallablePayload.ts",
+  },
+  {
+    name: "QueryOrganizerFormResponsesCallableResponse",
+    source: "callable_responses/query_organizer_form_responses_response.schema.json",
+    typeOutput: "functions/src/shared/generated/queryOrganizerFormResponsesCallableResponse.ts",
+  },
+  {
     name: "CreateEventCallablePayload",
     source: "callables/create_event_payload.schema.json",
     typeOutput: "functions/src/shared/generated/createEventCallablePayload.ts",

@@ -523,6 +523,8 @@ export {validateUpdatePrivateEventBasicsCallablePayload} from "./validators/upda
 export {validateGetPrivateEventSetupCallablePayload} from "./validators/getPrivateEventSetupInput";
 export {validatePrivateEventSetupMutationCallableResponse} from "./validators/privateEventSetupMutationOutput";
 export {validatePrivateEventSetupCallableResponse} from "./validators/privateEventSetupOutput";
+export {validateQueryOrganizerFormResponsesCallablePayload} from "./validators/queryOrganizerFormResponsesInput";
+export {validateQueryOrganizerFormResponsesCallableResponse} from "./validators/queryOrganizerFormResponsesOutput";
 export {validateCreateEventCallablePayload} from "./validators/createEventInput";
 export {validateUpdateEventCallablePayload} from "./validators/updateEventInput";
 export {validateCancelEventCallablePayload} from "./validators/cancelEventInput";

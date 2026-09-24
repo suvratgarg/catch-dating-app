@@ -523,6 +523,8 @@ export {updatePrivateEventBasicsCallablePayloadSchema} from "./schemas/updatePri
 export {getPrivateEventSetupCallablePayloadSchema} from "./schemas/getPrivateEventSetupInput";
 export {privateEventSetupMutationCallableResponseSchema} from "./schemas/privateEventSetupMutationOutput";
 export {privateEventSetupCallableResponseSchema} from "./schemas/privateEventSetupOutput";
+export {queryOrganizerFormResponsesCallablePayloadSchema} from "./schemas/queryOrganizerFormResponsesInput";
+export {queryOrganizerFormResponsesCallableResponseSchema} from "./schemas/queryOrganizerFormResponsesOutput";
 export {createEventCallablePayloadSchema} from "./schemas/createEventInput";
 export {updateEventCallablePayloadSchema} from "./schemas/updateEventInput";
 export {cancelEventCallablePayloadSchema} from "./schemas/cancelEventInput";

@@ -521,6 +521,8 @@ import {
   getPrivateEventSetupCallablePayloadSchema,
   privateEventSetupMutationCallableResponseSchema,
   privateEventSetupCallableResponseSchema,
+  queryOrganizerFormResponsesCallablePayloadSchema,
+  queryOrganizerFormResponsesCallableResponseSchema,
   createEventCallablePayloadSchema,
   updateEventCallablePayloadSchema,
   cancelEventCallablePayloadSchema,
@@ -1378,6 +1380,8 @@ export const validateUpdatePrivateEventBasicsCallablePayload = ajv.compile(updat
 export const validateGetPrivateEventSetupCallablePayload = ajv.compile(getPrivateEventSetupCallablePayloadSchema);
 export const validatePrivateEventSetupMutationCallableResponse = ajv.compile(privateEventSetupMutationCallableResponseSchema);
 export const validatePrivateEventSetupCallableResponse = ajv.compile(privateEventSetupCallableResponseSchema);
+export const validateQueryOrganizerFormResponsesCallablePayload = ajv.compile(queryOrganizerFormResponsesCallablePayloadSchema);
+export const validateQueryOrganizerFormResponsesCallableResponse = ajv.compile(queryOrganizerFormResponsesCallableResponseSchema);
 export const validateCreateEventCallablePayload = ajv.compile(createEventCallablePayloadSchema);
 export const validateUpdateEventCallablePayload = ajv.compile(updateEventCallablePayloadSchema);
 export const validateCancelEventCallablePayload = ajv.compile(cancelEventCallablePayloadSchema);

@@ -662,6 +662,8 @@ export 'publish_organizer_application_form_callable_payload.g.dart';
 export 'publish_organizer_application_form_callable_response.g.dart';
 export 'publish_organizer_form_callable_payload.g.dart';
 export 'publish_organizer_form_callable_response.g.dart';
+export 'query_organizer_form_responses_callable_payload.g.dart';
+export 'query_organizer_form_responses_callable_response.g.dart';
 export 'rate_limit_document.g.dart';
 export 'razorpay_order_callable_response.g.dart';
 export 'razorpay_pending_order_document.g.dart';

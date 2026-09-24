@@ -1,5 +1,12 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
+import {appCheckCallableOptionsWithLimits} from
+  "../shared/callableOptions";
+import {validateQueryOrganizerFormResponsesCallablePayload} from
+  "../shared/generated/validators/queryOrganizerFormResponsesInput";
+import {validateQueryOrganizerFormResponsesCallableResponse} from
+  "../shared/generated/validators/queryOrganizerFormResponsesOutput";
+import {validateCallableWithAjv} from "../shared/validation";
 import {requireAuth} from "../shared/auth";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
@@ -67,8 +74,7 @@ async function authorizeAndRateLimit(deps: QueryCallableDeps,
 
 /**
  * Callable handler for a bare HostResponseQueryRequest.toJson() payload.
- * Parent registration must wrap this in onCall with App Check and bounded
- * callable options; no endpoint is exported from this module.
+ * The exported endpoint enforces App Check and bounded execution options.
  */
 export async function queryOrganizerFormResponsesHandler(
   request: CallableRequest<unknown>,
@@ -76,9 +82,15 @@ export async function queryOrganizerFormResponsesHandler(
 ): Promise<ResponseQueryPage> {
   const actorUid = requireAuth(request);
   const db = deps.firestore();
-  const scope = scopeOf(db, actorUid, request.data);
+  const input = validateCallableWithAjv(request,
+    validateQueryOrganizerFormResponsesCallablePayload);
+  const scope = scopeOf(db, actorUid, input);
   await authorizeAndRateLimit(deps, scope);
-  return runFirestoreResponseQuery(scope, request.data);
+  const result = await runFirestoreResponseQuery(scope, input);
+  if (!validateQueryOrganizerFormResponsesCallableResponse(result)) {
+    throw new HttpsError("internal", "Response query returned invalid data.");
+  }
+  return result;
 }
 
 /**
@@ -110,3 +122,9 @@ export async function resolveOrganizerResponseSelectionHandler(
     data.requestedIds, data.expectedResultHash);
   return {responseIds, resultHash: data.expectedResultHash};
 }
+
+export const queryOrganizerFormResponses = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 10,
+    concurrency: 4}),
+  (request) => queryOrganizerFormResponsesHandler(request),
+);

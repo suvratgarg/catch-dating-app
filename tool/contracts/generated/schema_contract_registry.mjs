@@ -171726,6 +171726,354 @@ export const privateEventSetupCallableResponseSchema = {
   }
 };
 
+export const queryOrganizerFormResponsesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/query_organizer_form_responses_payload.schema.json",
+  "title": "QueryOrganizerFormResponsesCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "statuses",
+    "predicate",
+    "sort",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "formId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "versionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "submitted",
+          "withdrawn"
+        ]
+      }
+    },
+    "predicate": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "maxProperties": 5,
+      "additionalProperties": true,
+      "description": "Published-version-aware compiler validates ALL/ANY tree, operators, value types, sensitive exclusion, depth 3 and maximum 20 leaves before any response scan."
+    },
+    "sort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId",
+        "direction",
+        "nulls"
+      ],
+      "properties": {
+        "questionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        },
+        "nulls": {
+          "type": "string",
+          "enum": [
+            "first",
+            "last"
+          ]
+        }
+      }
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const queryOrganizerFormResponsesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/query_organizer_form_responses_response.schema.json",
+  "title": "QueryOrganizerFormResponsesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "form",
+    "fieldCatalog",
+    "items",
+    "total",
+    "nextCursor",
+    "selectedIds",
+    "queryHash",
+    "resultHash"
+  ],
+  "properties": {
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "formId",
+        "title",
+        "versionId",
+        "version"
+      ],
+      "properties": {
+        "formId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "versionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "fieldCatalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "label",
+          "kind",
+          "operators",
+          "sortable",
+          "options"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sortable": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseId",
+          "formId",
+          "formTitle",
+          "versionId",
+          "version",
+          "status",
+          "identityKind",
+          "identity",
+          "sourceLinkId",
+          "submittedAtMillis",
+          "withdrawnAtMillis"
+        ],
+        "properties": {
+          "responseId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "formId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "formTitle": {
+            "type": "string"
+          },
+          "versionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "withdrawn"
+            ]
+          },
+          "identityKind": {
+            "type": "string",
+            "enum": [
+              "anonymous",
+              "emailVerified",
+              "phoneVerified",
+              "catchAccount"
+            ]
+          },
+          "identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "displayName",
+              "email",
+              "phoneE164",
+              "origin"
+            ],
+            "properties": {
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email",
+                "maxLength": 320
+              },
+              "phoneE164": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\+[1-9][0-9]{7,14}$"
+              },
+              "origin": {
+                "type": "string",
+                "enum": [
+                  "anonymous",
+                  "respondentGranted",
+                  "organizerAcquired"
+                ]
+              }
+            }
+          },
+          "sourceLinkId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "submittedAtMillis": {
+            "type": "integer"
+          },
+          "withdrawnAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "selectedIds": {
+      "type": "array",
+      "maxItems": 5000,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,128}$"
+      }
+    },
+    "queryHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "resultHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
 export const createEventCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/create_event_payload.schema.json",
