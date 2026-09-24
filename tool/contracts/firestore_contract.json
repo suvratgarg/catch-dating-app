@@ -3307,7 +3307,26 @@
       "write": "server only",
       "exportedFunctions": [
         "createPrivateEventSetup",
-        "updatePrivateEventBasics"
+        "updatePrivateEventBasics",
+        "updatePrivateEventPreferences"
+      ]
+    },
+    {
+      "id": "eventSetupPreferences",
+      "path": "eventSetupPreferences/{eventId}",
+      "rulesMatch": "/eventSetupPreferences/{eventId}",
+      "typescriptInterface": "EventSetupPreferencesDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "private event setup operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "updatePrivateEventPreferences",
+        "getPrivateEventSetup"
       ]
     }
   ]
