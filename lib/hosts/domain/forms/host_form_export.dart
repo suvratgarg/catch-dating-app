@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/domain/forms/form_operation_fields.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:meta/meta.dart';
 
 enum HostFormExportFormat { csv, xlsx }
@@ -15,6 +16,7 @@ class HostFormExportReceipt {
     required this.downloadUrl,
     required this.expiresAt,
     required this.errorMessage,
+    this.errorCode,
   });
 
   factory HostFormExportReceipt.fromCallableData(Object? data) {
@@ -33,6 +35,7 @@ class HostFormExportReceipt {
       downloadUrl: formOperationNullableString(map['downloadUrl']),
       expiresAt: formOperationDateTime(map, 'expiresAtMillis'),
       errorMessage: formOperationNullableString(map['errorMessage']),
+      errorCode: formOperationNullableString(map['errorCode']),
     );
   }
 
@@ -43,4 +46,90 @@ class HostFormExportReceipt {
   final String? downloadUrl;
   final DateTime expiresAt;
   final String? errorMessage;
+  final String? errorCode;
+}
+
+/// Immutable command persisted before the first export callable attempt.
+/// The backend uses requestId to return the same receipt after an uncertain
+/// response; a later query is a new command only after this one resolves.
+@immutable
+class HostResponseExportCommand {
+  const HostResponseExportCommand({
+    required this.accountId,
+    required this.organizerId,
+    required this.formId,
+    required this.versionId,
+    required this.requestId,
+    required this.format,
+    required this.statuses,
+    required this.responseQuery,
+    required this.expectedQueryHash,
+    required this.expectedResultHash,
+    required this.createdAtMillis,
+  });
+
+  factory HostResponseExportCommand.fromJson(Map<String, Object?> map) {
+    final rawQuery = map['responseQuery'];
+    final rawStatuses = map['statuses'];
+    if (rawQuery is! Map || rawStatuses is! List ||
+        rawStatuses.any((value) => value is! String)) {
+      throw const FormatException('Saved response export is invalid.');
+    }
+    return HostResponseExportCommand(
+      accountId: map['accountId']! as String,
+      organizerId: map['organizerId']! as String,
+      formId: map['formId']! as String,
+      versionId: map['versionId']! as String,
+      requestId: map['clientOperationId']! as String,
+      format: HostFormExportFormat.values.byName(map['format']! as String),
+      statuses: List<String>.unmodifiable(rawStatuses.cast<String>()),
+      responseQuery: Map<String, Object?>.unmodifiable(
+        rawQuery.cast<String, Object?>()),
+      expectedQueryHash: map['expectedQueryHash']! as String,
+      expectedResultHash: map['expectedResultHash']! as String,
+      createdAtMillis: map['createdAtMillis']! as int,
+    );
+  }
+
+  final String accountId;
+  final String organizerId;
+  final String formId;
+  final String versionId;
+  final String requestId;
+  final HostFormExportFormat format;
+  final List<String> statuses;
+  final Map<String, Object?> responseQuery;
+  final String expectedQueryHash;
+  final String expectedResultHash;
+  final int createdAtMillis;
+
+  String get scope => '$organizerId|$formId';
+
+  bool matches(HostResponseQueryRequest request, String queryHash,
+      String resultHash) =>
+      organizerId == request.organizerId && formId == request.formId &&
+      versionId == request.versionId &&
+      expectedQueryHash == queryHash && expectedResultHash == resultHash;
+
+  Map<String, Object?> toJson() => {
+    'clientOperationId': requestId,
+    'createdAtMillis': createdAtMillis,
+    'status': 'pending',
+    'accountId': accountId,
+    'organizerId': organizerId,
+    'formId': formId,
+    'versionId': versionId,
+    'format': format.name,
+    'statuses': statuses,
+    'responseQuery': responseQuery,
+    'expectedQueryHash': expectedQueryHash,
+    'expectedResultHash': expectedResultHash,
+  };
+}
+
+/// Data-layer adapter owns durable request identity and callable replay.
+abstract interface class HostResponseExportGateway {
+  Future<HostResponseExportCommand?> pending({required String accountId,
+    required String organizerId, required String formId});
+  Future<HostFormExportReceipt> execute(HostResponseExportCommand command);
 }
