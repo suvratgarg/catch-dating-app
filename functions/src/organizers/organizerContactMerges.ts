@@ -22,6 +22,8 @@ import {
 import {
   validateUnmergeOrganizerContactsCallablePayload,
 } from "../shared/generated/validators/unmergeOrganizerContactsInput";
+import {validateOrganizerContactMergeReceiptDocument} from
+  "../shared/generated/validators/organizerContactMergeReceiptDocument";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -36,6 +38,8 @@ const maxAtomicMergeDocuments = 400;
 
 interface OrganizerContactMergeDeps extends AudienceProjectionDeps {
   checkRateLimit: typeof checkRateLimit;
+  rebuildAfterMerge?: (receipt: OrganizerContactMergeReceiptDocument,
+    receiptId: string) => Promise<void>;
 }
 
 const defaultDeps: OrganizerContactMergeDeps = {
@@ -170,6 +174,10 @@ export async function mergeOrganizerContactsHandler(
     } as OrganizerContactMergeReceiptDocument & MergeSeatEvidence;
     assertContactMergeReceiptBudget(receipt, totalMoved,
       seats.evidence.seatMoves.length);
+    if (!validateOrganizerContactMergeReceiptDocument(receipt)) {
+      throw new HttpsError("failed-precondition",
+        "Merge receipt violates the canonical storage contract.");
+    }
     for (const document of edgeSnap.docs) {
       if (document.data().organizerId !== data.organizerId) {
         throw new HttpsError("failed-precondition", "Foreign edge in merge.");
@@ -435,6 +443,10 @@ async function rebuildMergedContacts(
   receiptId: string,
   deps: OrganizerContactMergeDeps
 ): Promise<void> {
+  if (deps.rebuildAfterMerge) {
+    await deps.rebuildAfterMerge(receipt, receiptId);
+    return;
+  }
   await rebuildOrganizerContact(
     receipt.survivorContactId,
     `${receiptId}|survivor`,
@@ -453,7 +465,12 @@ function receiptDocument(
   if (!snap.exists) {
     throw new HttpsError("not-found", "Merge receipt not found.");
   }
-  return snap.data() as OrganizerContactMergeReceiptDocument;
+  const receipt = snap.data();
+  if (!validateOrganizerContactMergeReceiptDocument(receipt)) {
+    throw new HttpsError("failed-precondition",
+      "Stored contact merge receipt is malformed.");
+  }
+  return receipt as unknown as OrganizerContactMergeReceiptDocument;
 }
 
 function assertReceiptReplay(

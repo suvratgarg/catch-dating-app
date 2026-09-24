@@ -3,8 +3,9 @@ import {createHash} from "node:crypto";
 import test from "node:test";
 import {seatIdentityAliasId, seatIdentityValueHash} from
   "../events/seatIdentityAuthority";
-import {MergeOrigin, prepareContactMergeSeats,
-  prepareContactUnmergeSeats} from "./organizerContactMergeSeats";
+import {assertContactMergeReceiptBudget, MergeOrigin,
+  prepareContactMergeSeats, prepareContactUnmergeSeats} from
+  "./organizerContactMergeSeats";
 
 type Row = Record<string, unknown>;
 const org = "org1";
@@ -220,3 +221,91 @@ test("new admission or migration revision prevents stale unmerge",
       assert.equal(store.writes.length, writes);
     }
   });
+
+test("changed operational alias authority prevents stale unmerge",
+  async () => {
+    const store = seed("person1", null, true);
+    const operationalId = seatIdentityAliasId(eventId, "uid", "uid1");
+    store.put(`eventSeatIdentityAliases/${operationalId}`, {
+      eventId, organizerId: org, kind: "uid",
+      valueHash: seatIdentityValueHash("uid", "uid1"),
+      canonicalKey: "person1", identityRevision: 1,
+      migrationRevision: 1, state: "ready",
+    });
+    const prepared = await store.run(async (tx) => {
+      const plan = await prepare(store, tx);
+      plan.apply();
+      return plan;
+    });
+    store.get(`organizerContactOrigins/${originId}`)!
+      .currentContactId = survivor;
+    store.get(`eventSeatIdentityAliases/${operationalId}`)!
+      .state = "stale";
+    const writes = store.writes.length;
+    await assert.rejects(store.run((tx) =>
+      prepareContactUnmergeSeats({db: store.db(), tx,
+        organizerId: org, sourceContactId: source,
+        survivorContactId: survivor, movedOriginIds: [originId],
+        evidence: prepared.evidence})));
+    assert.equal(store.writes.length, writes);
+  });
+
+test("receipt budget rejects oversized evidence and write batches", () => {
+  assertContactMergeReceiptBudget({seatMoves: []}, 397, 0);
+  assert.throws(() => assertContactMergeReceiptBudget(
+    {seatMoves: []}, 398, 0));
+  assert.throws(() => assertContactMergeReceiptBudget(
+    {seatMoves: "x".repeat(800_001)}, 0, 0));
+});
+
+test("inactive source aliases can join survivor seat and restore exactly",
+  async () => {
+    const store = seed("person1", "person2", false, true);
+    const prepared = await store.run(async (tx) => {
+      const plan = await prepare(store, tx);
+      plan.apply();
+      return plan;
+    });
+    assert.equal(prepared.evidence.seatMoves.length, 2);
+    assert.equal(store.get(`eventSeatIdentityAliases/${aliasId(
+      "contact", source)}`)?.canonicalKey, "person2");
+    assert.equal(store.get(`eventSeatIdentityAliases/${aliasId(
+      "contactOrigin", originId)}`)?.canonicalKey, "person2");
+    store.get(`organizerContactOrigins/${originId}`)!
+      .currentContactId = survivor;
+    await store.run(async (tx) => {
+      const restore = await prepareContactUnmergeSeats({db: store.db(), tx,
+        organizerId: org, sourceContactId: source,
+        survivorContactId: survivor, movedOriginIds: [originId],
+        evidence: prepared.evidence});
+      restore();
+    });
+    assert.equal(store.get(`eventSeatIdentityAliases/${aliasId(
+      "contact", source)}`)?.canonicalKey, "person1");
+    assert.equal(store.get(`eventSeatIdentityAliases/${aliasId(
+      "contactOrigin", originId)}`)?.canonicalKey, "person1");
+    assert.equal(store.get(`eventSeatReservations/${reservationId(
+      "person2")}`)?.active, true);
+  });
+
+test("non-CRM aliases on losing key require reconciliation", async () => {
+  const store = seed("person1", "person2", false, true);
+  store.put(`eventSeatIdentityAliases/${seatIdentityAliasId(
+    eventId, "uid", "uid1")}`, {eventId, organizerId: org,
+    kind: "uid", valueHash: seatIdentityValueHash("uid", "uid1"),
+    canonicalKey: "person1", identityRevision: 1,
+    migrationRevision: 1, state: "ready"});
+  await assert.rejects(store.run((tx) => prepare(store, tx)));
+  assert.equal(store.writes.length, 0);
+});
+
+test("inconsistent operational alias on target key blocks merge", async () => {
+  const store = seed("person1", "person2", false, true);
+  store.put(`eventSeatIdentityAliases/${seatIdentityAliasId(
+    eventId, "uid", "uid1")}`, {eventId, organizerId: org,
+    kind: "uid", valueHash: seatIdentityValueHash("uid", "uid1"),
+    canonicalKey: "person2", identityRevision: 2,
+    migrationRevision: 1, state: "ready"});
+  await assert.rejects(store.run((tx) => prepare(store, tx)));
+  assert.equal(store.writes.length, 0);
+});

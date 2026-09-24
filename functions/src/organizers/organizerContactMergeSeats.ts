@@ -293,6 +293,17 @@ export async function prepareContactMergeSeats(params: {
     }
     const targetKeyDocs = await aliasesForKey(db, tx,
       target.canonicalKey);
+    for (const doc of targetKeyDocs) {
+      const alias = doc.data() as AliasRow;
+      if (alias.eventId !== eventId || alias.organizerId !== organizerId) {
+        continue;
+      }
+      if (alias.state !== "ready" ||
+          alias.migrationRevision !== ledger.migrationRevision ||
+          alias.identityRevision !== target.identityRevision) {
+        fail("Target seat alias authority is inconsistent.");
+      }
+    }
     const beforeIds = unique([...aliases.keys(),
       ...targetKeyDocs.filter((doc) =>
         (doc.data() as AliasRow).eventId === eventId &&
@@ -374,8 +385,8 @@ export async function prepareContactUnmergeSeats(params: {
   movedOriginIds: string[];
   evidence: MergeSeatEvidence | null;
 }): Promise<() => void> {
-  const {db, tx, organizerId, survivorContactId, movedOriginIds,
-    evidence} = params;
+  const {db, tx, organizerId, sourceContactId, survivorContactId,
+    movedOriginIds, evidence} = params;
   const survivorOrigins = await tx.get(db.collection("organizerContactOrigins")
     .where("currentContactId", "==", survivorContactId)
     .limit(401));
@@ -383,8 +394,10 @@ export async function prepareContactUnmergeSeats(params: {
   const currentIds = unique(survivorOrigins.docs.filter((doc) =>
     doc.data().organizerId === organizerId).map((doc) => doc.id));
   if (!evidence) {
-    const hashes = movedOriginIds.map((id) =>
-      seatIdentityValueHash("contactOrigin", id));
+    const hashes = [seatIdentityValueHash("contact", sourceContactId),
+      seatIdentityValueHash("contact", survivorContactId),
+      ...movedOriginIds.map((id) =>
+        seatIdentityValueHash("contactOrigin", id))];
     const found = await aliasesForHashes(db, tx, hashes);
     if (found.some((doc) => doc.data().organizerId === organizerId)) {
       fail("Legacy merge lacks reversible seat evidence.");
@@ -450,6 +463,19 @@ export async function prepareContactUnmergeSeats(params: {
       aliasesForKey(db, tx, key)))).flat().filter((doc) =>
       doc.data().eventId === guard.eventId &&
       doc.data().organizerId === organizerId);
+    for (const doc of currentAliases) {
+      const alias = doc.data() as AliasRow;
+      const expectedIdentity = [guard.sourceAlias, guard.survivorAlias,
+        ...moves.filter((move) => move.eventId === guard.eventId)
+          .map((move) => move.after)].find((candidate) =>
+        candidate?.canonicalKey === alias.canonicalKey);
+      if (alias.state !== "ready" ||
+          alias.migrationRevision !== guard.migrationRevision ||
+          !positive(alias.identityRevision) || !expectedIdentity ||
+          alias.identityRevision !== expectedIdentity.identityRevision) {
+        stale("Event seat alias authority changed since merge.");
+      }
+    }
     const expected = unique([...guard.aliasIdsBefore,
       ...moves.filter((move) => move.eventId === guard.eventId &&
         move.before === null).map((move) => move.aliasId)]);
