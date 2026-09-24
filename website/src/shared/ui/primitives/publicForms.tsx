@@ -178,7 +178,8 @@ export function PublicFormPrivacy({
       <div className="public-form__powered-by">
         <span>{poweredByLabel}</span>
         <PlainLink aria-label={brandLabel} href="/">
-          {brandWord}<span aria-hidden="true">●</span>
+          <img alt={`${brandWord}_`} className="public-form__catch-mark"
+            src="/assets/branding/catch_splash_mark_light.png" />
         </PlainLink>
       </div>
       <p>{children}</p>

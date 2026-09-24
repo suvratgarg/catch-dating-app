@@ -378,17 +378,16 @@
 }
 
 .public-form__powered-by > a {
-  color: #171513;
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.4;
+  align-items: center;
+  display: inline-flex;
   text-decoration: none;
 }
 
-.public-form__powered-by > a span {
-  color: var(--form-accent);
+.public-form__catch-mark {
+  display: block;
+  height: 48px;
+  object-fit: cover;
+  width: 160px;
 }
 
 .public-form__loading {

@@ -18,7 +18,10 @@ export function EventRuntimeFrame({
   return (
     <div className="event-runtime">
       <header className="event-runtime__brand">
-        <PlainLink aria-label={brandLabel} href="/">{brandWord}<span>●</span></PlainLink>
+        <PlainLink aria-label={brandLabel} href="/">
+          <img alt={`${brandWord}_`} className="event-runtime__catch-mark"
+            src="/assets/branding/catch_splash_mark_light.png" />
+        </PlainLink>
         {eventTitle ? <span>{eventTitle}</span> : null}
       </header>
       {children}
