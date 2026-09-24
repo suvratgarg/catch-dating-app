@@ -39,9 +39,14 @@ import {
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
 import {
-  claimUserEventScheduleInTransaction,
+  prepareUserEventScheduleClaimInTransaction,
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {FirestoreSeatIdentityAuthority} from "./seatIdentityAuthority";
+import {applyFirestoreSeatBatch, FirestoreSeatBatchPreparation,
+  FirestoreSeatTransaction, prepareFirestoreSeatBatch} from
+  "./seatAuthority/firestoreAdapter";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {
   assertPolicyAllowsSignup,
@@ -181,6 +186,7 @@ export async function cancelEventSignUpHandler(
       "EventDocument"
 
     );
+    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
@@ -217,7 +223,12 @@ export async function cancelEventSignUpHandler(
       } : null;
     }
 
-    const currentSignedUpCount = event.bookedCount ??
+    const seatTransaction = seatMode === "ready" ?
+      new FirestoreSeatTransaction(db, tx) : null;
+    const seatLedger = seatTransaction ?
+      await seatTransaction.ledger(eventId) : null;
+    const currentSignedUpCount = seatLedger?.occupied ??
+      event.bookedCount ??
         activeParticipations.filter((edge) =>
           edge.data.status === "signedUp").length;
     const currentWaitlistedCount = event.waitlistedCount ??
@@ -243,6 +254,8 @@ export async function cancelEventSignUpHandler(
     let promotedNotification:
         {uid: string; token?: string; title: string; body: string} | null =
         null;
+    let promotedUid: string | null = null;
+    let promotedScheduleClaim: {apply: () => void} | null = null;
 
     // Promote the first waitlist user who passes gender-cap and block checks.
     const activePeerIds = participantUids(activeParticipations, userId);
@@ -287,7 +300,8 @@ export async function cancelEventSignUpHandler(
         if (quotedAmountInPaise > 0) {
           continue;
         }
-        await claimUserEventScheduleInTransaction(tx, db, {
+        promotedScheduleClaim =
+          await prepareUserEventScheduleClaimInTransaction(tx, db, {
           uid: waitlistUserId,
           eventId,
           clubId: event.clubId,
@@ -305,6 +319,7 @@ export async function cancelEventSignUpHandler(
       }
 
       // Promote this user.
+      promotedUid = waitlistUserId;
       const promotedOfferId = eventWaitlistOfferId(eventId, waitlistUserId);
       const promotionTimestamp =
           admin.firestore.Timestamp.fromMillis(deps.nowMillis());
@@ -374,6 +389,45 @@ export async function cancelEventSignUpHandler(
       break;
     }
 
+    let seatPreparation: FirestoreSeatBatchPreparation | null = null;
+    if (seatMode === "ready") {
+      if (!seatLedger || !seatTransaction) {
+        throw new HttpsError("failed-precondition",
+          "Event seat authority is unavailable.");
+      }
+      const authority = new FirestoreSeatIdentityAuthority();
+      const organizerId = event.organizerId ?? event.clubId;
+      const uids = promotedUid ? [userId, promotedUid] : [userId];
+      const identities = await Promise.all(uids.map((uid) =>
+        authority.resolve({db, tx, eventId, organizerId,
+          subject: {kind: "verifiedUid", uid}})));
+      if (identities.some((identity) => identity === null)) {
+        throw new HttpsError("failed-precondition",
+          "Verified seat identity is unavailable.");
+      }
+      const reservations = await Promise.all(identities.map((identity) =>
+        seatTransaction.reservation(eventId, identity!.key)));
+      const releaseRevision = reservations[0]?.revision ?? 0;
+      seatPreparation = await prepareFirestoreSeatBatch({db, tx,
+        identityAuthority: authority,
+        command: {eventId,
+          batchId: `cancel_${userId}_${releaseRevision}`,
+          expectedLedgerRevision: seatLedger.revision,
+          expectedCapacityRevision: seatLedger.capacityRevision,
+          expectedMigrationRevision: seatLedger.migrationRevision,
+          nowMillis: deps.nowMillis(),
+          operations: uids.map((uid, index) => ({
+            subject: {kind: "verifiedUid" as const, uid},
+            operation: index === 0 ? "release" as const : "reserve" as const,
+            requestId: index === 0 ?
+              `cancel_${uid}_${releaseRevision}` :
+              `promote_${uid}_${reservations[index]?.revision ?? 0}`,
+            expectedReservationRevision: reservations[index]?.revision ?? 0,
+          }))}});
+    }
+
+    if (seatPreparation) applyFirestoreSeatBatch(seatPreparation);
+    promotedScheduleClaim?.apply();
     tx.update(eventRef, {
       bookedCount: nextBookedCount,
       waitlistedCount: nextWaitlistedCount,

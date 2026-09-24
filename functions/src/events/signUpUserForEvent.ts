@@ -23,7 +23,13 @@ import {
   eventActivityNotificationCopy,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
-import {claimUserEventScheduleInTransaction} from "./scheduleConflicts";
+import {prepareUserEventScheduleClaimInTransaction} from
+  "./scheduleConflicts";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {FirestoreSeatIdentityAuthority} from "./seatIdentityAuthority";
+import {applyFirestoreSeat, FirestoreSeatPreparation,
+  FirestoreSeatTransaction, prepareFirestoreSeat} from
+  "./seatAuthority/firestoreAdapter";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -117,6 +123,7 @@ export async function signUpUserForEvent(
       "EventDocument"
 
     );
+    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
     const pairHoldSnap = pairHoldRef ? await tx.get(pairHoldRef) : null;
     const pairHold = pairHoldSnap?.exists ?
       requireDoc<CrossPathsPairHoldDocument>(
@@ -254,7 +261,12 @@ export async function signUpUserForEvent(
     const signedUpCount = activeParticipations
       .filter((participation) => participation.data.status === "signedUp")
       .length;
-    const currentBookedCount = event.bookedCount ?? signedUpCount;
+    const seatTransaction = seatMode === "ready" ?
+      new FirestoreSeatTransaction(db, tx) : null;
+    const seatLedger = seatTransaction ?
+      await seatTransaction.ledger(eventId) : null;
+    const currentBookedCount = seatLedger?.occupied ??
+      event.bookedCount ?? signedUpCount;
     const baseRoster = {
       ...rosterFromEvent(event),
       totalBooked: currentBookedCount +
@@ -288,7 +300,8 @@ export async function signUpUserForEvent(
       admissionMode: pairHold ? "crossPathsPair" : "general",
     });
 
-    await claimUserEventScheduleInTransaction(tx, db, {
+    const scheduleClaim = await prepareUserEventScheduleClaimInTransaction(
+      tx, db, {
       uid: userId,
       eventId,
       clubId: event.clubId,
@@ -297,6 +310,33 @@ export async function signUpUserForEvent(
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: configuredEvent.endTime.toMillis(),
     });
+
+    let seatPreparation: FirestoreSeatPreparation | null = null;
+    if (seatMode === "ready") {
+      if (!seatLedger || !seatTransaction) {
+        throw new HttpsError("failed-precondition",
+          "Event seat authority is unavailable.");
+      }
+      const subject = {kind: "verifiedUid" as const, uid: userId};
+      const authority = new FirestoreSeatIdentityAuthority();
+      const identity = await authority.resolve({db, tx, eventId,
+        organizerId: event.organizerId ?? event.clubId, subject});
+      if (!identity) {
+        throw new HttpsError("failed-precondition",
+          "Verified seat identity is unavailable.");
+      }
+      const reservation = await seatTransaction.reservation(eventId,
+        identity.key);
+      seatPreparation = await prepareFirestoreSeat({db, tx,
+        identityAuthority: authority, command: {eventId, subject,
+          operation: "reserve",
+          requestId: `signup_${userId}_${reservation?.revision ?? 0}`,
+          expectedLedgerRevision: seatLedger.revision,
+          expectedCapacityRevision: seatLedger.capacityRevision,
+          expectedMigrationRevision: seatLedger.migrationRevision,
+          expectedReservationRevision: reservation?.revision ?? 0,
+          nowMillis: Date.now()}});
+    }
 
     const wasWaitlisted = existingParticipation?.status === "waitlisted";
     const nextBookedCount = currentBookedCount + 1;
@@ -334,6 +374,8 @@ export async function signUpUserForEvent(
       );
     }
 
+    if (seatPreparation) applyFirestoreSeat(seatPreparation);
+    scheduleClaim.apply();
     tx.update(eventRef, eventUpdate);
     const attribution = attributionForSignup({
       existingParticipation,

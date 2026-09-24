@@ -30,6 +30,7 @@ import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import {requirePublicConfiguredEvent, requireEventTimeRange} from
   "./configuredEvent";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 import {
   cohortIdForUser,
   eventPolicyFromEvent,
@@ -98,6 +99,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
     if (!userSnap.exists) {
       throw new HttpsError("not-found", "User profile not found.");
     }
+    await readSeatMigrationWriterFence({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const user = userSnap.data() as UserProfileDocument;
@@ -245,6 +247,7 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    await readSeatMigrationWriterFence({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const existingParticipation = participationSnap.exists ?

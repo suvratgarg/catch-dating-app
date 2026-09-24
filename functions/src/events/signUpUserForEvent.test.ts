@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
+import {createHash} from "crypto";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {catchNativeEventOrigin} from "../shared/testUtils";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {seatIdentityAliasId, seatIdentityValueHash,
+  seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 
 type FakeData = Record<string, unknown>;
 
@@ -126,6 +130,9 @@ class FakeTransaction {
   async get(ref: FakeDocRef | FakeQuery): Promise<FakeSnapshot | {
     docs: Array<{ref: FakeDocRef; data: () => FakeData}>;
   }> {
+    if (this.writes.length > 0) {
+      throw new Error("Firestore transaction read after first write.");
+    }
     if (ref instanceof FakeQuery) return ref.get();
     return new FakeSnapshot(ref.id, this.firestore.get(ref.path));
   }
@@ -165,6 +172,36 @@ class FakeTransaction {
 function firestore(initialDocs: Record<string, FakeData | undefined>) {
   return new FakeFirestore(initialDocs) as unknown as
     FirebaseFirestore.Firestore;
+}
+
+function readySeatDocs(sourceEvent: FakeData, uid: string,
+  occupied = 0): Record<string, FakeData> {
+  const eventId = "event-1";
+  const key = `uid_${uid}`;
+  const policy = deriveEventSeatPolicy(sourceEvent);
+  const rows: Record<string, FakeData> = {
+    [`eventSeatMigrationFences/${eventId}`]: {eventId,
+      migrationRevision: 1, state: "ready"},
+    [`eventSeatLedgers/${eventId}`]: {eventId,
+      capacity: policy.capacity, occupied, revision: 1,
+      capacityRevision: 1, policyVersion: policy.policyVersion,
+      policyHash: policy.policyHash, migrationRevision: 1, state: "ready"},
+    [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(eventId, uid)}`]: {
+      eventId, organizerId: "club-1", uid, phoneE164: null,
+      migrationRevision: 1, state: "current",
+    },
+    [`eventSeatIdentityAliases/${seatIdentityAliasId(eventId, "uid", uid)}`]: {
+      eventId, organizerId: "club-1", kind: "uid",
+      valueHash: seatIdentityValueHash("uid", uid), canonicalKey: key,
+      identityRevision: 1, migrationRevision: 1, state: "ready",
+    },
+  };
+  return rows;
+}
+
+function reservationPath(key: string): string {
+  return "eventSeatReservations/" + createHash("sha256")
+    .update(`event-1\u001f${key}`).digest("hex");
 }
 
 function event(overrides: FakeData = {}): FakeData {
@@ -306,6 +343,35 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
     "event-1"
   );
 });
+
+test("ready seat ledger admits the last Catch seat once", async () => {
+  const sourceEvent = event({capacityLimit: 1, bookedCount: 0});
+  const db = firestore({"events/event-1": sourceEvent,
+    "users/runner-1": user(),
+    ...readySeatDocs(sourceEvent, "runner-1")});
+  await signUpUserForEvent(db, "event-1", "runner-1");
+  await signUpUserForEvent(db, "event-1", "runner-1");
+  const fake = db as unknown as FakeFirestore;
+  assert.equal(fake.get("eventSeatLedgers/event-1")?.occupied, 1);
+  assert.equal(fake.get(reservationPath("uid_runner-1"))?.active, true);
+  assert.equal(fake.get("eventParticipations/event-1_runner-1")?.status,
+    "signedUp");
+});
+
+test("locked seat migration denies Catch signup without source writes",
+  async () => {
+    const sourceEvent = event();
+    const rows = readySeatDocs(sourceEvent, "runner-1");
+    rows["eventSeatMigrationFences/event-1"].state = "locked";
+    const db = firestore({"events/event-1": sourceEvent,
+      "users/runner-1": user(), ...rows});
+    await assert.rejects(() =>
+      signUpUserForEvent(db, "event-1", "runner-1"));
+    const fake = db as unknown as FakeFirestore;
+    assert.equal(fake.get("eventParticipations/event-1_runner-1"),
+      undefined);
+    assert.equal(fake.get("events/event-1")?.bookedCount, 0);
+  });
 
 test("signUpUserForEvent updates event discovery availability", async () => {
   const db = firestore({

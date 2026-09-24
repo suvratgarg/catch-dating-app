@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {createHash} from "crypto";
 import {cancelEventSignUpHandler} from "./cancelEventSignUp";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {seatIdentityAliasId, seatIdentityValueHash,
+  seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 
 type FakeData = Record<string, unknown>;
 
@@ -183,6 +187,9 @@ class FakeTransaction {
   async get(
     ref: FakeDocRef | FakeCollectionRef
   ): Promise<FakeSnapshot | {docs: FakeSnapshot[]; empty: boolean}> {
+    if (this.writes.length > 0) {
+      throw new Error("Firestore transaction read after first write.");
+    }
     if (ref instanceof FakeCollectionRef) return ref.get();
     return new FakeSnapshot(this.firestore, ref.path);
   }
@@ -196,6 +203,15 @@ class FakeTransaction {
     this.writes.push(() => this.firestore.merge(ref.path, data));
   }
 
+  create(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => {
+      if (this.firestore.get(ref.path) !== undefined) {
+        throw new Error(`Already exists: ${ref.path}`);
+      }
+      this.firestore.set(ref.path, data);
+    });
+  }
+
   delete(ref: FakeDocRef) {
     this.writes.push(() => this.firestore.set(ref.path, undefined));
   }
@@ -203,6 +219,41 @@ class FakeTransaction {
   commit() {
     for (const write of this.writes) write();
   }
+}
+
+function seatReservationPath(key: string): string {
+  return "eventSeatReservations/" + createHash("sha256")
+    .update(`event-1\u001f${key}`).digest("hex");
+}
+
+function readySeatDocs(sourceEvent: FakeData,
+  uids: readonly string[]): Record<string, FakeData> {
+  const policy = deriveEventSeatPolicy(sourceEvent);
+  const rows: Record<string, FakeData> = {
+    "eventSeatMigrationFences/event-1": {eventId: "event-1",
+      migrationRevision: 1, state: "ready"},
+    "eventSeatLedgers/event-1": {eventId: "event-1",
+      capacity: policy.capacity, occupied: 1, revision: 1,
+      capacityRevision: 1, policyVersion: policy.policyVersion,
+      policyHash: policy.policyHash, migrationRevision: 1, state: "ready"},
+  };
+  for (const uid of uids) {
+    rows[`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId("event-1", uid)}`] = {
+      eventId: "event-1", organizerId: "club-1", uid, phoneE164: null,
+      migrationRevision: 1, state: "current",
+    };
+    rows[`eventSeatIdentityAliases/${seatIdentityAliasId("event-1", "uid", uid)}`] = {
+      eventId: "event-1", organizerId: "club-1", kind: "uid",
+      valueHash: seatIdentityValueHash("uid", uid),
+      canonicalKey: `uid_${uid}`, identityRevision: 1,
+      migrationRevision: 1, state: "ready",
+    };
+  }
+  rows[seatReservationPath("uid_runner-1")] = {eventId: "event-1",
+    canonicalKey: "uid_runner-1", identityRevision: 1,
+    active: true, revision: 1, reservedAtMillis: 1,
+    releasedAtMillis: null};
+  return rows;
 }
 
 test(
@@ -287,6 +338,74 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
     organizerId: "club-1",
   }]);
 });
+
+test("ready seat ledger transfers the final seat on cancellation",
+  async () => {
+    const sourceEvent = event({capacityLimit: 1, bookedCount: 1,
+      waitlistedCount: 1});
+    const h = harness({"events/event-1": sourceEvent,
+      "users/runner-1": user(),
+      "users/runner-2": user({gender: "woman",
+        interestedInGenders: ["man"]}),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "eventParticipations/event-1_runner-2":
+        participation("runner-2", "waitlisted"),
+      ...readySeatDocs(sourceEvent, ["runner-1", "runner-2"])});
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get(seatReservationPath("uid_runner-1"))
+      ?.active, false);
+    assert.equal(h.firestore.get(seatReservationPath("uid_runner-2"))
+      ?.active, true);
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+      ?.status, "signedUp");
+  });
+
+test("locked migration denies cancellation and promotion atomically",
+  async () => {
+    const sourceEvent = event({bookedCount: 1, waitlistedCount: 1});
+    const rows = readySeatDocs(sourceEvent, ["runner-1", "runner-2"]);
+    rows["eventSeatMigrationFences/event-1"].state = "locked";
+    const h = harness({"events/event-1": sourceEvent,
+      "users/runner-1": user(),
+      "users/runner-2": user({gender: "woman",
+        interestedInGenders: ["man"]}),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "eventParticipations/event-1_runner-2":
+        participation("runner-2", "waitlisted"), ...rows});
+    await assert.rejects(() =>
+      cancelEventSignUpHandler(request("runner-1"), h.deps));
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+      ?.status, "signedUp");
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+      ?.status, "waitlisted");
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+  });
+
+test("unresolved promoted seat rejects cancellation without partial writes",
+  async () => {
+    const sourceEvent = event({capacityLimit: 1, bookedCount: 1,
+      waitlistedCount: 1});
+    const h = harness({"events/event-1": sourceEvent,
+      "users/runner-1": user(),
+      "users/runner-2": user({gender: "woman",
+        interestedInGenders: ["man"]}),
+      "eventParticipations/event-1_runner-1":
+        participation("runner-1", "signedUp"),
+      "eventParticipations/event-1_runner-2":
+        participation("runner-2", "waitlisted"),
+      ...readySeatDocs(sourceEvent, ["runner-1"])});
+    await assert.rejects(() =>
+      cancelEventSignUpHandler(request("runner-1"), h.deps));
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+      ?.status, "signedUp");
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+      ?.status, "waitlisted");
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+  });
 
 test("private event cancellation does not auto-promote waitlist", async () => {
   const h = harness({
