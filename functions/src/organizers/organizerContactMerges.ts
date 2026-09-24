@@ -28,7 +28,8 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {AudienceProjectionDeps, rebuildOrganizerContact} from
   "./organizerAudienceProjection";
-import {MergeOrigin, MergeSeatEvidence, prepareContactMergeSeats,
+import {assertContactMergeReceiptBudget, MergeOrigin,
+  MergeSeatEvidence, prepareContactMergeSeats,
   prepareContactUnmergeSeats} from "./organizerContactMergeSeats";
 
 const maxAtomicMergeDocuments = 400;
@@ -149,11 +150,6 @@ export async function mergeOrganizerContactsHandler(
       sourceLinkedUid: source.linkedUid,
       survivorLinkedUid: survivor.linkedUid,
       sourceOrigins, survivorOrigins});
-    if (totalMoved + seats.evidence.seatMoves.length + 3 >
-        maxAtomicMergeDocuments) {
-      throw new HttpsError("resource-exhausted",
-        "Too many contact and seat facts for an atomic merge.");
-    }
     const receipt = {
       organizerId: data.organizerId, operation: "merge" as const,
       survivorContactId: data.survivorContactId,
@@ -172,6 +168,8 @@ export async function mergeOrganizerContactsHandler(
       reversalOfReceiptId: null, createdAt: now,
       ...seats.evidence,
     } as OrganizerContactMergeReceiptDocument & MergeSeatEvidence;
+    assertContactMergeReceiptBudget(receipt, totalMoved,
+      seats.evidence.seatMoves.length);
     for (const document of edgeSnap.docs) {
       if (document.data().organizerId !== data.organizerId) {
         throw new HttpsError("failed-precondition", "Foreign edge in merge.");
@@ -291,11 +289,6 @@ export async function unmergeOrganizerContactsHandler(
       survivorContactId: mergeReceipt.survivorContactId,
       movedOriginIds: mergeReceipt.movedOriginIds ?? [],
       evidence: seatEvidence});
-    if (refs.length + (seatEvidence?.seatMoves.length ?? 0) + 2 >
-        maxAtomicMergeDocuments) {
-      throw new HttpsError("resource-exhausted",
-        "Too many facts for an atomic unmerge.");
-    }
     const reversal = {...mergeReceipt,
       movedOriginIds: mergeReceipt.movedOriginIds ?? [],
       movedOriginCount: mergeReceipt.movedOriginCount ?? 0,

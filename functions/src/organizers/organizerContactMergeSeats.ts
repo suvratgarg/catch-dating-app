@@ -63,6 +63,18 @@ interface AliasRow extends AliasCore {
   kind: string;
   valueHash: string;
 }
+
+/** Leave room for Firestore names, timestamps and document framing. */
+export function assertContactMergeReceiptBudget(receipt: unknown,
+  movedFacts: number, seatWrites: number): void {
+  const encoded = JSON.stringify(receipt);
+  if (!encoded || Buffer.byteLength(encoded, "utf8") > 800_000 ||
+      movedFacts + seatWrites + 3 > 400) {
+    throw new HttpsError("resource-exhausted",
+      "Contact merge exceeds the atomic Firestore document budget.");
+  }
+}
+
 const maxAliases = 200;
 const maxEvents = 100;
 const hash = (...parts: string[]) => createHash("sha256")
@@ -399,6 +411,7 @@ export async function prepareContactUnmergeSeats(params: {
     const raw = snap.data() as AliasRow | undefined;
     if (!raw || raw.eventId !== move.eventId ||
         raw.organizerId !== organizerId || raw.kind !== move.kind ||
+        raw.state !== "ready" ||
         raw.valueHash !== move.valueHash ||
         !same(aliasCore(raw), move.after)) {
       stale("Seat alias changed since merge.");
