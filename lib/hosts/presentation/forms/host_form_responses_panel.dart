@@ -216,6 +216,8 @@ class _HostFormResponsesPanelState
   String? _queryAccountId;
   String? _legacyLoadedAccountId;
   bool _legacyAccountRefreshScheduled = false;
+  Object? _legacyRefreshError;
+  int _legacyRefreshGeneration = 0;
   String? _offerAccountId;
   HostOfferEventTarget? _returnedEventTarget;
   String? _returnedSelectionHash;
@@ -278,6 +280,8 @@ class _HostFormResponsesPanelState
       _versionScope = null;
       _legacyLoadedAccountId = null;
       _legacyAccountRefreshScheduled = false;
+      _legacyRefreshError = null;
+      _legacyRefreshGeneration++;
     }
   }
 
@@ -403,20 +407,41 @@ class _HostFormResponsesPanelState
       final uid = ref.watch(uidProvider).asData?.value;
       final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
       if (uid != routeAccountId || liveUid != routeAccountId) {
+        _legacyLoadedAccountId = null;
+        _legacyAccountRefreshScheduled = false;
+        _legacyRefreshError = null;
+        _legacyRefreshGeneration++;
         return const CatchStateViewport.sliverLoading();
       }
       if (capability == null && _legacyLoadedAccountId != routeAccountId) {
+        if (_legacyRefreshError case final error?) {
+          return CatchLocalizedSliverErrorState(
+            error,
+            context: AppErrorContext.forms,
+            onRetry: () => setState(() => _legacyRefreshError = null),
+          );
+        }
         if (!_legacyAccountRefreshScheduled) {
           _legacyAccountRefreshScheduled = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || widget.accountId != routeAccountId) return;
-            ref.invalidate(hostFormResponsesControllerProvider(
-              _responseRequest(widget.formId),
-            ));
-            setState(() {
-              _legacyLoadedAccountId = routeAccountId;
-              _legacyAccountRefreshScheduled = false;
-            });
+          final generation = ++_legacyRefreshGeneration;
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (!_currentLegacyAccount(routeAccountId, generation)) return;
+            try {
+              await ref.refresh(hostFormResponsesControllerProvider(
+                _responseRequest(widget.formId),
+              ).future);
+              if (!_currentLegacyAccount(routeAccountId, generation)) return;
+              setState(() {
+                _legacyLoadedAccountId = routeAccountId;
+                _legacyAccountRefreshScheduled = false;
+              });
+            } on Object catch (error) {
+              if (!_currentLegacyAccount(routeAccountId, generation)) return;
+              setState(() {
+                _legacyRefreshError = error;
+                _legacyAccountRefreshScheduled = false;
+              });
+            }
           });
         }
         return const CatchStateViewport.sliverLoading();
@@ -835,6 +860,13 @@ class _HostFormResponsesPanelState
       ],
     );
   }
+
+  bool _currentLegacyAccount(String accountId, int generation) =>
+      mounted &&
+      widget.accountId == accountId &&
+      _legacyRefreshGeneration == generation &&
+      ref.read(uidProvider).asData?.value == accountId &&
+      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
 
   String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
       widget.formId == null

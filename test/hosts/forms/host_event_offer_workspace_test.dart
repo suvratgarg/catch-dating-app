@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
@@ -64,6 +65,19 @@ void main() {
     auth.uid = 'host-two';
     updateRoute(() => accountId = 'host-two');
     accounts.add('host-two');
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Maya'), findsNothing);
+
+    responses.nextResponse!.completeError(StateError('Fixture read failed'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchLocalizedSliverErrorState), findsOneWidget);
+    expect(find.text('Maya'), findsNothing);
+
+    responses.nextResponse = Completer<HostFormResponsesState>();
+    tester.widget<CatchLocalizedSliverErrorState>(
+      find.byType(CatchLocalizedSliverErrorState),
+    ).onRetry!();
     await tester.pump();
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
