@@ -7,7 +7,7 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {requireDoc} from "../shared/validation";
 import {compileResponseQuery, materializeResponseQuery, pageResponseQuery,
-  resolveSelectedResponseIds} from "./query";
+  resolveSelectedResponseIds, staleResponseQuery} from "./query";
 import type {ResponseQueryRow, ResponseQuerySource} from "./query";
 
 interface Scope {
@@ -54,7 +54,8 @@ const maxScanMillis = 25_000;
  * scan bounded; version is checked against the immutable published version
  * and every row, so a large multi-version form fails rather than truncates.
  */
-export function firestoreResponseQuerySource(scope: Scope):
+export function firestoreResponseQuerySource(scope: Scope,
+  capture?: Map<string, OrganizerFormResponseDocument>):
   ResponseQuerySource {
   return {readAll: (maxRows) => scope.db.runTransaction(async (tx) => {
     await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
@@ -86,6 +87,7 @@ export function firestoreResponseQuerySource(scope: Scope):
     }
     const metadata = {formTitle: form.title, version: version.version,
       definition: version.definition};
+    capture?.clear();
     const rows: ResponseQueryRow[] = [];
     let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
     let bytes = 0;
@@ -125,6 +127,7 @@ export function firestoreResponseQuerySource(scope: Scope):
           throw new HttpsError("permission-denied",
             "Response query read outside its form scope.");
         }
+        capture?.set(doc.id, response);
         // Every scanned form row spends budget, even another version.
         rows.push({id: doc.id, organizerId: response.organizerId,
           formId: response.formId, versionId: response.versionId,
@@ -133,7 +136,8 @@ export function firestoreResponseQuerySource(scope: Scope):
           withdrawnAtMillis: response.withdrawnAt?.toMillis() ?? null,
           identityKind: response.identityKind, identity: response.identity,
           sourceLinkId: response.sourceLinkId,
-          answers: response.answers});
+          answers: response.answers, consentVersion: response.consentVersion,
+          completionMillis: response.completionMillis});
         if (rows.length > maxRows) return {...metadata, rows};
       }
       if (page.size < limit) break;
@@ -203,4 +207,32 @@ export async function resolveFirestoreResponseIds(scope: Scope,
     firestoreResponseQuerySource(scope));
   return resolveSelectedResponseIds(query, result, requestedIds,
     expectedResultHash);
+}
+
+/** Validates export semantics without scanning responses at request time. */
+export async function validateFirestoreResponseExport(scope: Scope,
+  input: unknown, expectedQueryHash: string): Promise<void> {
+  const query = await prepare(scope, input);
+  if (query.hash !== expectedQueryHash) staleResponseQuery();
+  if (query.spec.cursor !== null) {
+    throw new HttpsError("invalid-argument",
+      "Export the complete query with a null page cursor.");
+  }
+}
+
+/** Resolves ordered export rows from the same authorized query snapshot. */
+export async function exportFirestoreResponseQuery(scope: Scope,
+  input: unknown, expectedResultHash: string, expectedQueryHash: string) {
+  const query = await prepare(scope, input);
+  if (query.hash !== expectedQueryHash) staleResponseQuery();
+  if (query.spec.cursor !== null) {
+    throw new HttpsError("invalid-argument", "Export cursor must be null.");
+  }
+  const captured = new Map<string, OrganizerFormResponseDocument>();
+  const result = await materializeResponseQuery(query,
+    firestoreResponseQuerySource(scope, captured));
+  if (result.resultHash !== expectedResultHash) staleResponseQuery();
+  return {...result, rows: result.rows.map((row) => ({
+    row, document: captured.get(row.id)!,
+  }))};
 }

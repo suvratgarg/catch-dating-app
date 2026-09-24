@@ -2544,6 +2544,25 @@ feedback, and survey definitions. The existing application collections below
 remain the application-review projection and import compatibility boundary;
 they are not the generic response store.
 
+`requestOrganizerFormExport` accepts optional `responseQuery`,
+`expectedQueryHash` and `expectedResultHash` together. Typed exports use the
+same published-version-aware predicate, ordering and one-snapshot reader as
+`queryOrganizerFormResponses`. The page cursor must be null; the export covers
+all matching rows, including rows beyond the displayed page. Legacy date/status
+filters cannot be combined with a typed query. Query and result hashes prevent
+silent changes between review and background processing. CSV and XLSX redact
+sensitive and withdrawn answers and neutralize spreadsheet formulas. File and
+signature cells show attachment presence, never private asset IDs. The
+worker rechecks current manager/deleted-account authority through the query
+reader; download requests recheck current manager authority. Typed exports
+retain the interactive 5,000 scanned responses / 8 MiB / 25-second bounds and
+fail before storage on overflow or changed results. Legacy exports retain
+their existing 10,000 matching / 50,000 scanned bounds. Receipts distinguish
+query settings and both hashes; a reused request ID cannot change its filters.
+The result hash includes exported consent/completion metadata. Failed receipts
+return the stable `response-query-stale` code when the reviewed set changes;
+clients must refresh and use a new request ID, not replay a different query.
+
 ### Organizer-connected form payments
 
 `organizerPaymentConnections` binds one organizer to one Razorpay merchant,

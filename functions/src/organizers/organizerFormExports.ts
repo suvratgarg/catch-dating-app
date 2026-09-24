@@ -1,3 +1,5 @@
+import {exportFirestoreResponseQuery, validateFirestoreResponseExport} from
+  "../organizerResponseQuery/firestoreAdapter";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import ExcelJS from "exceljs";
@@ -96,6 +98,25 @@ export async function requestOrganizerFormExportHandler(
       throw new HttpsError("not-found", "Form version not found.");
     }
   }
+  const typedQuery = data.responseQuery ?? null;
+  if (typedQuery) {
+    if (!data.expectedResultHash || !data.expectedQueryHash ||
+        data.fromMillis !== null ||
+        data.toMillis !== null || data.versionId !== typedQuery.versionId ||
+        data.organizerId !== typedQuery.organizerId ||
+        data.formId !== typedQuery.formId ||
+        JSON.stringify([...data.statuses].sort()) !==
+        JSON.stringify([...typedQuery.statuses].sort())) {
+      throw new HttpsError("invalid-argument",
+        "Export scope and filters must match the response query.");
+    }
+    await validateFirestoreResponseExport({db, actorUid,
+      organizerId: data.organizerId, formId: data.formId,
+      versionId: typedQuery.versionId}, typedQuery, data.expectedQueryHash);
+  } else if (data.expectedResultHash != null ||
+      data.expectedQueryHash != null) {
+    throw new HttpsError("invalid-argument", "Export query is required.");
+  }
   const exportId = deterministicExportId(
     data.organizerId,
     data.formId,
@@ -103,6 +124,11 @@ export async function requestOrganizerFormExportHandler(
   );
   const exportRef = db.collection("organizerFormExports").doc(exportId);
   let document = await db.runTransaction(async (tx) => {
+    await requireOrganizerManager({db, organizerId: data.organizerId,
+      actorUid, transaction: tx});
+    if ((await tx.get(db.collection("deletedUsers").doc(actorUid))).exists) {
+      throw new HttpsError("permission-denied", "Account is deleted.");
+    }
     const snapshot = await tx.get(exportRef);
     if (snapshot.exists) {
       const existing = requireDoc<OrganizerFormExportDocument>(
@@ -119,6 +145,9 @@ export async function requestOrganizerFormExportHandler(
       requestedByUid: actorUid,
       requestId: data.requestId,
       format: data.format,
+      responseQuery: typedQuery,
+      expectedResultHash: data.expectedResultHash ?? null,
+      expectedQueryHash: data.expectedQueryHash ?? null,
       statuses: data.statuses,
       versionId: data.versionId,
       fromMillis: data.fromMillis,
@@ -188,6 +217,38 @@ export async function processOrganizerFormExport(
     let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
     let exhausted = false;
     let scanned = 0;
+    if (document.responseQuery) {
+      const query = document.responseQuery;
+      if (!document.expectedResultHash || !document.expectedQueryHash ||
+          query.organizerId !==
+          document.organizerId || query.formId !== document.formId ||
+          query.versionId !== document.versionId) {
+        throw new HttpsError("failed-precondition", "Invalid export scope.");
+      }
+      const result = await exportFirestoreResponseQuery({db,
+        actorUid: document.requestedByUid, organizerId: document.organizerId,
+        formId: document.formId, versionId: query.versionId}, query,
+      document.expectedResultHash, document.expectedQueryHash);
+      for (const field of result.fieldCatalog) {
+        columns.set(`v${result.version}_${field.questionId}`,
+          `Version ${result.version}: ${field.label}`);
+      }
+      for (const {row, document: response} of result.rows) {
+        const values = baseExportValues(row.id, response, result.version);
+        for (const field of result.fieldCatalog) {
+          const key = `v${result.version}_${field.questionId}`;
+          const answer = row.answers[field.questionId] ?? null;
+          const attachment = field.kind === "file" ||
+            field.kind === "signature";
+          values.set(key, attachment ?
+            (answer === null || answer === "" ||
+              (Array.isArray(answer) && answer.length === 0) ?
+              null : "Attached") : exportAnswer(answer));
+        }
+        rows.push({values});
+      }
+      exhausted = true;
+    }
     while (!exhausted) {
       // Reserve one read beyond the scan budget to prove exhaustion.
       const pageSize = Math.min(exportPageSize,
@@ -270,7 +331,9 @@ export async function processOrganizerFormExport(
   } catch (error) {
     await exportRef.update({
       status: "failed",
-      errorCode: "export_failed",
+      errorCode: error instanceof HttpsError && error.code === "aborted" &&
+        (error.details as {reason?: string})?.reason ===
+          "response-query-stale" ? "response-query-stale" : "export_failed",
       errorMessage: sanitizeError(error),
       updatedAt: deps.timestamp(),
     });
@@ -391,6 +454,7 @@ async function exportProjection(
     downloadUrl,
     expiresAtMillis: document.expiresAt.toMillis(),
     errorMessage: document.errorMessage,
+    errorCode: document.errorCode ?? null,
   };
 }
 
@@ -406,6 +470,12 @@ function assertSameExport(
       existing.versionId !== data.versionId ||
       existing.fromMillis !== data.fromMillis ||
       existing.toMillis !== data.toMillis ||
+      canonicalJson(existing.responseQuery ?? null) !==
+        canonicalJson(data.responseQuery ?? null) ||
+      (existing.expectedQueryHash ?? null) !==
+        (data.expectedQueryHash ?? null) ||
+      (existing.expectedResultHash ?? null) !==
+        (data.expectedResultHash ?? null) ||
       JSON.stringify([...existing.statuses].sort()) !==
         JSON.stringify([...data.statuses].sort())) {
     throw new HttpsError(
@@ -449,3 +519,14 @@ export const onOrganizerFormExportRequested = onDocumentCreated(
   },
   async (event) => processOrganizerFormExport(event.params.exportId)
 );
+
+/** Object property order must not change idempotent request identity. */
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort().map((key) =>
+      `${JSON.stringify(key)}:${canonicalJson(record[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}

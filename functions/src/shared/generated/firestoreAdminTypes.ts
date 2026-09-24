@@ -12,6 +12,7 @@ import type {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableRespons
 import type {EventOfferPaymentSnapshot} from "./eventOfferPaymentSnapshot";
 import type {EventOfferManualPayment} from "./eventOfferManualPayment";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
+import type {QueryOrganizerFormResponsesCallablePayload} from "./queryOrganizerFormResponsesCallablePayload";
 
 /**
  * Schema-derived Admin SDK Firestore document types.
@@ -7160,6 +7161,18 @@ export interface OrganizerFormExportDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
   expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Optional exact typed filter and sort. Export covers all matches, not one page.
+   */
+  responseQuery?: QueryOrganizerFormResponsesCallablePayload | null;
+  /**
+   * Required with responseQuery; changed results fail rather than silently exporting a different set.
+   */
+  expectedResultHash?: string | null;
+  /**
+   * Required with responseQuery; binds the published definition and filter semantics.
+   */
+  expectedQueryHash?: string | null;
 }
 
 /**

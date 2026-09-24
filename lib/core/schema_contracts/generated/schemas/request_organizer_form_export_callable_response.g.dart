@@ -68,5 +68,13 @@ const schemaRequestOrganizerFormExportCallableResponseSchema = <String, Object?>
       ],
       'maxLength': 500,
     },
+    'errorCode': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 80,
+      'description': 'Stable failure code; response-query-stale requires refreshing before a new export request.',
+    },
   },
 };

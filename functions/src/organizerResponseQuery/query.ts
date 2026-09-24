@@ -20,6 +20,8 @@ export interface ResponseQueryRow {
   identity: OrganizerFormResponseDocument["identity"];
   sourceLinkId: string | null;
   answers: Record<string, Answer>;
+  consentVersion?: string;
+  completionMillis?: number;
 }
 
 export type Clause =
@@ -466,6 +468,7 @@ export async function materializeResponseQuery(query: CompiledResponseQuery,
   }, rows: safeRows.map((row) => [
     row.id, row.status, row.submittedAtMillis, row.withdrawnAtMillis,
     row.identityKind, row.identity, row.sourceLinkId, row.answers,
+    row.consentVersion ?? null, row.completionMillis ?? null,
   ])});
   const rows = safeRows.filter((row) =>
     query.spec.statuses.includes(row.status) &&
