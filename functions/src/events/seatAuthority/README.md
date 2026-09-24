@@ -7,11 +7,16 @@ admission and payment reads, then apply
 the frozen plan only after all other authority reads and before its confirmed
 booking, attendee and receipt writes. A plan can apply only to its preparing
 transaction. The adapter must map each event ledger, canonical identity
-reservation and request receipt to a
-deterministic, client-denied document; optimistic transaction retries serialize
+reservation and request receipt to deterministic, client-denied documents; optimistic transaction retries serialize
 the ledger revision and capacity check. Its `createReceipt` must be create-only.
 
-The caller supplies a current, explicit capacity and capacity policy revision.
+`deriveEventSeatPolicy` is the shared migration/read projection. The adapter
+reads positive configured event capacity and raw admission policy
+inside the caller transaction. It compares their canonical hash and policy
+version with the migrated ledger; a changed admission policy closes the ledger
+until reconciliation, while an unrelated `bookedCount` update does not. The
+ledger also has an explicit migration-owned capacity revision, which the caller
+must supply as an expected revision. No capacity or revision is inferred.
 The ledger must be marked `ready` with a positive migration revision only after
 all historical Catch participations and Host/imported attendees have been
 reconciled into one occupied count and one reservation per unique person.
@@ -36,3 +41,13 @@ Fresh retries after a release require the latest ledger and reservation
 revisions. A reservation is a seat, not proof of payment, approval, consent,
 message delivery, or check-in. The integration must bind its own admission
 receipt to the source offer generation and explicit payment terms snapshot.
+
+`prepareFirestoreSeat` is the read-only Firestore entry point. Its required
+`identityAuthority` must verify complete aliases against authoritative current
+links in the same transaction. No default resolver exists: current attendee
+phone/external keys and asynchronous Catch participation projection cannot
+prove that a pending UID, import and CRM contact are one person. Omitted or
+ambiguous authority fails closed. `applyFirestoreSeat` stages deterministic
+ledger/reservation/receipt writes only after the caller completes its other
+reads. The core does not authorize actor, payment, offer, event timing or
+cohort policy; those remain the integrating callable's responsibility.

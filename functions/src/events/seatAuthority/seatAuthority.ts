@@ -7,6 +7,8 @@ export interface SeatLedger {
   occupied: number;
   revision: number;
   capacityRevision: number;
+  policyVersion: "legacy" | "v1" | "v2";
+  policyHash: string;
   migrationRevision: number;
   state: "ready" | "unreconciled" | "revoked";
 }
@@ -136,6 +138,9 @@ export async function prepareSeatCommand<Subject>(params: {
       ledger.revision === Number.MAX_SAFE_INTEGER ||
       !nonnegative(ledger.capacityRevision) ||
       ledger.capacityRevision === 0 ||
+      !["legacy", "v1", "v2"].includes(ledger.policyVersion) ||
+      typeof ledger.policyHash !== "string" ||
+      !/^[a-f0-9]{64}$/u.test(ledger.policyHash) ||
       !nonnegative(ledger.migrationRevision) ||
       ledger.migrationRevision === 0) {
     fail("unavailable", "Seat authority is not reconciled and ready.");

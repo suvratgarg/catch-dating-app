@@ -10,7 +10,10 @@ type Subject = {key: string; revision: number};
 const identity = async (subject: Subject): Promise<CanonicalSeatIdentity> =>
   ({key: subject.key, revision: subject.revision});
 const initialLedger = (): SeatLedger => ({eventId: "event-1", capacity: 1,
-  occupied: 0, revision: 4, capacityRevision: 2, migrationRevision: 3,
+  occupied: 0, revision: 4, capacityRevision: 2,
+  policyVersion: "legacy", policyHash: "0d9299cd008e8ca01fb1070205278ada1" +
+    "788be8a6b71d6bbd8b4760fff94a023",
+  migrationRevision: 3,
   state: "ready"});
 const command = (key: string, requestId: string, extras: Partial<
   SeatCommand<Subject>> = {}): SeatCommand<Subject> => ({
