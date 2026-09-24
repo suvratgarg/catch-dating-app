@@ -38,10 +38,17 @@ Future<void> runHostEventEntryFlow({
         event: source,
         createdAt: createdAt,
       );
-    case HostEventEntryIntent.createWithCatchBookings:
+    case HostEventEntryIntent.createEvent:
       await _openCreateEvent(context: context, ref: ref, club: club);
-    case HostEventEntryIntent.createFromGuestList:
-      await _openExternalEvent(context: context, ref: ref, club: club);
+    case HostEventEntryIntent.resumePrivateEvent:
+      final eventId = selection.savedEventId;
+      if (eventId == null || eventId.isEmpty) return;
+      await _openCreateEvent(
+        context: context,
+        ref: ref,
+        club: club,
+        initialSavedEventId: eventId,
+      );
   }
 }
 
@@ -50,6 +57,7 @@ Future<void> _openCreateEvent({
   required WidgetRef ref,
   required Club club,
   EventDraft? initialDraft,
+  String? initialSavedEventId,
 }) async {
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
@@ -57,24 +65,8 @@ Future<void> _openCreateEvent({
     extra: HostCreateEventRouteArguments(
       initialClub: club,
       initialDraft: initialDraft,
+      initialSavedEventId: initialSavedEventId,
       externalBookingMode: initialDraft?.externalBookingMode ?? false,
-      promptForDrafts: false,
-    ),
-  );
-  ref.invalidate(clubEventDraftsProvider(clubId: club.id));
-}
-
-Future<void> _openExternalEvent({
-  required BuildContext context,
-  required WidgetRef ref,
-  required Club club,
-}) async {
-  await context.pushNamed(
-    Routes.hostCreateEventScreen.name,
-    pathParameters: {'clubId': club.id},
-    extra: HostCreateEventRouteArguments(
-      initialClub: club,
-      externalBookingMode: true,
       promptForDrafts: false,
     ),
   );

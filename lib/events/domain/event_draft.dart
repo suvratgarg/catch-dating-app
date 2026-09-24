@@ -18,6 +18,20 @@ abstract class EventDraft with _$EventDraft {
     required DateTime savedAt,
     // Event Details step
     String? name,
+    // Progressive private first-save fields. Older local drafts remain valid.
+    String? eventCityId,
+    String? eventMarketId,
+    String? eventLocalDate,
+    String? eventLocalStartTime,
+    String? eventTimezone,
+    String? eventCityMode,
+    String? eventTimezoneMode,
+    String? eventReviewedDefaultsHash,
+    String? eventCreateRequestId,
+    String? eventCreatePayloadSignature,
+    String? eventCreatePayloadJson,
+    String? eventCreateReceiptEventId,
+    int? eventCreateReceiptRevision,
     String? distance,
     String? capacity,
     String? price,
@@ -81,6 +95,11 @@ abstract class EventDraft with _$EventDraft {
 extension EventDraftX on EventDraft {
   bool get isEmpty =>
       name == null &&
+      eventCityId == null &&
+      eventMarketId == null &&
+      eventLocalDate == null &&
+      eventLocalStartTime == null &&
+      eventTimezone == null &&
       distance == null &&
       capacity == null &&
       price == null &&

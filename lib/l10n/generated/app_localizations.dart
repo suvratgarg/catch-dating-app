@@ -9572,12 +9572,6 @@ abstract class AppLocalizations {
   /// **'Create event'**
   String get hostsHostEventsListLabelNewEvent;
 
-  /// CTA to create an external companion event from an existing booking-platform guest list.
-  ///
-  /// In en, this message translates to:
-  /// **'Use guest list'**
-  String get hostsHostEventsListLabelUseGuestList;
-
   /// Section label for resuming existing event work.
   ///
   /// In en, this message translates to:
@@ -9602,12 +9596,6 @@ abstract class AppLocalizations {
   /// **'Repeat last event'**
   String get hostsHostEventEntrySheetTitleRepeatLastEvent;
 
-  /// Action title for creating an event that uses Catch bookings.
-  ///
-  /// In en, this message translates to:
-  /// **'Sell tickets with Catch'**
-  String get hostsHostEventEntrySheetTitleSellTicketsWithCatch;
-
   /// Supporting copy showing how many event drafts are available.
   ///
   /// In en, this message translates to:
@@ -9621,18 +9609,6 @@ abstract class AppLocalizations {
   String hostsHostEventEntrySheetBodyReuseEventSetup({
     required String eventTitle,
   });
-
-  /// Supporting copy for the Catch-bookings event path.
-  ///
-  /// In en, this message translates to:
-  /// **'Tickets, waitlist, and payments in one place.'**
-  String get hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments;
-
-  /// Supporting copy for creating an event from an external guest list.
-  ///
-  /// In en, this message translates to:
-  /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
-  String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
   /// Peer view containing live and upcoming events.
   ///
@@ -34080,6 +34056,744 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Row {row}: choose a supported city or leave it blank.'**
   String hostsOperationalRosterIssueInvalidCity({required int row});
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the basics, then add guests, registration and payments as needed.'**
+  String get hostsPrivateEventEntryBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the basics'**
+  String get hostsPrivateEventBasicsHeading;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get hostsPrivateEventCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city'**
+  String get hostsPrivateEventChooseCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get hostsPrivateEventTimezone;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Asia/Kolkata'**
+  String get hostsPrivateEventTimezoneHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested by city. Review before saving.'**
+  String get hostsPrivateEventTimezoneSuggestion;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'From organizer'**
+  String get hostsPrivateEventFromOrganizer;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer city'**
+  String get hostsPrivateEventUseOrganizerCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer timezone'**
+  String get hostsPrivateEventUseOrganizerTimezone;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'More basics'**
+  String get hostsPrivateEventMoreBasics;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue and end time can be added later'**
+  String get hostsPrivateEventMoreBasicsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'After saving'**
+  String get hostsPrivateEventAfterSave;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a venue and end time when you are ready to set up registration or a public listing.'**
+  String get hostsPrivateEventAfterSaveBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is saved privately. You can link a form after saving.'**
+  String get hostsPrivateEventSaveHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & continue'**
+  String get hostsPrivateEventSaveContinue;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer defaults changed. Review the city and timezone before saving.'**
+  String get hostsPrivateEventDefaultsChanged;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Review current defaults'**
+  String get hostsPrivateEventReviewDefaults;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved event'**
+  String get hostsPrivateEventSavedTitle;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get hostsPrivateEventPrivateTitle;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to link to forms. Registration and public listing are off.'**
+  String get hostsPrivateEventPrivateBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue setup when you need it'**
+  String get hostsPrivateEventSetupHeading;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to selected responses'**
+  String get hostsPrivateEventReturnResponses;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selection stays in Responses.'**
+  String get hostsPrivateEventReturnResponsesBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Link a registration form'**
+  String get hostsPrivateEventLinkForm;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect responses and offer places for this event.'**
+  String get hostsPrivateEventLinkFormBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event-bound form setup is not available yet.'**
+  String get hostsPrivateEventLinkFormUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event details'**
+  String get hostsPrivateEventDetails;
+
+  /// Opens the saved private event basics editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event basics'**
+  String get hostsPrivateEventEditBasics;
+
+  /// Describes the saved private event basics editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the name, city, date, start time or timezone.'**
+  String get hostsPrivateEventEditBasicsBody;
+
+  /// Explains why basics cannot be edited for a cancelled private event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled events cannot be edited.'**
+  String get hostsPrivateEventEditBasicsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a venue and end time when needed.'**
+  String get hostsPrivateEventDetailsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue and end-time editing is not available yet.'**
+  String get hostsPrivateEventDetailsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a guest list'**
+  String get hostsPrivateEventImportGuests;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add existing registrations to the roster.'**
+  String get hostsPrivateEventImportGuestsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Private-event roster import is not available yet.'**
+  String get hostsPrivateEventImportGuestsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept registrations with Catch'**
+  String get hostsPrivateEventCatchRegistration;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the admission policy and check payment readiness.'**
+  String get hostsPrivateEventCatchRegistrationBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration requires an admission policy and booking setup.'**
+  String get hostsPrivateEventCatchRegistrationUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostsPrivateEventPayments;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add external collection instructions.'**
+  String get hostsPrivateEventPaymentsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event payment settings are not available yet.'**
+  String get hostsPrivateEventPaymentsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Public listing'**
+  String get hostsPrivateEventPublicListing;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published.'**
+  String get hostsPrivateEventPublicListingBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published. Add public details before listing.'**
+  String get hostsPrivateEventPublicListingUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Live event guide'**
+  String get hostsPrivateEventGuide;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional.'**
+  String get hostsPrivateEventGuideBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional guide setup is not available yet.'**
+  String get hostsPrivateEventGuideUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests from imports and Catch registration can share one roster. Offers do not confirm attendance.'**
+  String get hostsPrivateEventRosterNote;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Basics'**
+  String get hostsEventDefaultsBasics;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for new events. Existing events keep their saved timezone.'**
+  String get hostsEventDefaultsTimezoneHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose on each event'**
+  String get hostsEventDefaultsChooseEachEvent;
+
+  /// Explains an unresolved idempotent event save.
+  ///
+  /// In en, this message translates to:
+  /// **'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.'**
+  String get hostsPrivateEventPendingRequest;
+
+  /// Explains an unresolved idempotent event basics update.
+  ///
+  /// In en, this message translates to:
+  /// **'This edit may already have reached Catch. Retry the same save before changing the basics.'**
+  String get hostsPrivateEventPendingUpdate;
+
+  /// Retries an unresolved private event save with its original request identity.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry the same save'**
+  String get hostsPrivateEventRetrySave;
+
+  /// Shows a retained import plan after the canonical event is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list ready to import'**
+  String get hostsPrivateEventPendingRoster;
+
+  /// Explains the retained import file and why it is not yet applied.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} can be imported after event roster setup is available.'**
+  String hostsPrivateEventPendingRosterBody({required String fileName});
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual duration'**
+  String get hostsEventDefaultsUsualDuration;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String hostsEventDefaultsMinutes({required int minutes});
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose duration on each event'**
+  String get hostsEventDefaultsClearDuration;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred venue'**
+  String get hostsEventDefaultsPreferredVenue;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue suggestions need an organizer venue picker.'**
+  String get hostsEventDefaultsVenueUnavailable;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved venue suggestion. Review access before using it for an event.'**
+  String get hostsEventDefaultsVenueSaved;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear preferred venue'**
+  String get hostsEventDefaultsClearVenue;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get hostsEventDefaultsOffersHeading;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual offer validity'**
+  String get hostsEventDefaultsOfferValidity;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose offer validity on each event'**
+  String get hostsEventDefaultsClearValidity;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer message template'**
+  String get hostsEventDefaultsMessageTemplate;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested text for an individual handoff'**
+  String get hostsEventDefaultsMessageTemplateHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment suggestions'**
+  String get hostsEventDefaultsPaymentHeading;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred collection method'**
+  String get hostsEventDefaultsCollectionPreference;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual instructions'**
+  String get hostsEventDefaultsManualInstructions;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable payment page'**
+  String get hostsEventDefaultsReusablePage;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal payment request'**
+  String get hostsEventDefaultsPersonalRequest;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checkout'**
+  String get hostsEventDefaultsCatchCheckout;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'A preference only. Event payment and provider readiness are reviewed separately.'**
+  String get hostsEventDefaultsCollectionSuggestionHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose collection method on each event'**
+  String get hostsEventDefaultsClearCollection;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostsEventDefaultsCurrency;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a three-letter currency code.'**
+  String get hostsEventDefaultsInvalidCurrency;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment instructions'**
+  String get hostsEventDefaultsPaymentInstructions;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested instructions for future events'**
+  String get hostsEventDefaultsPaymentInstructionsHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable organizer payment page'**
+  String get hostsEventDefaultsReusablePaymentPage;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/pay'**
+  String get hostsEventDefaultsReusablePageHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a reusable public organizer page belongs here. Personal links stay with one offer.'**
+  String get hostsEventDefaultsReusablePagePrivacyNote;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a secure https payment-page URL.'**
+  String get hostsEventDefaultsInvalidReusablePage;
+
+  /// Manager-only organizer event setup text length validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this to 1,000 characters or fewer.'**
+  String get hostsEventDefaultsTextTooLong;
+
+  /// Manager attestation before retaining a reusable payment URL.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reusable payment page'**
+  String get hostsEventDefaultsReusableConfirmTitle;
+
+  /// Manager attestation before retaining a reusable payment URL.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm this page can be shared with different guests for different events. It is not a personal payment request or invoice.'**
+  String get hostsEventDefaultsReusableConfirmBody;
+
+  /// Cancel reusable payment page attestation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get hostsEventDefaultsReusableConfirmCancel;
+
+  /// Explicitly attest that a payment page is reusable.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reusable page'**
+  String get hostsEventDefaultsReusableConfirmAccept;
+
+  /// Explains why private organizer preferences are not shown without an authorized read.
+  ///
+  /// In en, this message translates to:
+  /// **'Private organizer preferences unavailable'**
+  String get hostsEventDefaultsManagerUnavailable;
+
+  /// Explains why private organizer preferences are not shown without an authorized read.
+  ///
+  /// In en, this message translates to:
+  /// **'A manager-authorized preferences read is required before these suggestions can be shown or edited.'**
+  String get hostsEventDefaultsManagerUnavailableBody;
+
+  /// Explains the source of inherited event city.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events use the organizer city. Change that city in the organizer profile.'**
+  String get hostsEventDefaultsCitySource;
+
+  /// Explains the private timezone suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events can use this private timezone suggestion, or choose a timezone for each event.'**
+  String get hostsEventDefaultsTimezoneSource;
+
+  /// Pending manager defaults update label.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous defaults save unresolved'**
+  String get hostsEventDefaultsPendingUpdate;
+
+  /// Explains frozen manager defaults update after uncertain response.
+  ///
+  /// In en, this message translates to:
+  /// **'The previous save may have reached Catch. Retry the same request before changing suggestions.'**
+  String get hostsEventDefaultsPendingUpdateBody;
+
+  /// Replays the same manager defaults update.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry previous defaults save'**
+  String get hostsEventDefaultsRetryUpdate;
+
+  /// Retries the manager-authorized defaults read before private event inheritance.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry organizer defaults read'**
+  String get hostsPrivateEventRetryDefaultsRead;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save still unresolved'**
+  String get hostsPrivateEventPendingExitTitle;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.'**
+  String get hostsPrivateEventPendingExitBody;
+
+  /// Explains leaving an unresolved private event basics update.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved this edit. The request is kept on this device. Leave and retry the same save later before changing the basics.'**
+  String get hostsPrivateEventPendingUpdateExitBody;
+
+  /// Shown when a saved private event is opened before the guarded rollout.
+  ///
+  /// In en, this message translates to:
+  /// **'Private event setup is not available yet.'**
+  String get hostsPrivateEventSetupUnavailable;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay and retry'**
+  String get hostsPrivateEventPendingStay;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave; retry later'**
+  String get hostsPrivateEventPendingLeave;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue saved event'**
+  String get hostsPrivateEventContinueSaved;
+
+  /// Private event-specific setup settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Event settings and payments'**
+  String get hostsEventPreferenceTitle;
+
+  /// Distinguishes stored private preferences from payment activation.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings belong to this private event. Collection preferences do not activate a provider or send a request.'**
+  String get hostsEventPreferencePrivateHint;
+
+  /// Event preference inheritance option.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer suggestion'**
+  String get hostsEventPreferenceInherit;
+
+  /// Event preference override option.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event value'**
+  String get hostsEventPreferenceOverride;
+
+  /// Event preference explicit clear option.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unset'**
+  String get hostsEventPreferenceClear;
+
+  /// Event-specific expected amount stored in minor currency units.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected amount in the smallest currency unit'**
+  String get hostsEventPreferenceExpectedAmountMinor;
+
+  /// Explains amount entry in currency minor units without assuming an active payment provider.
+  ///
+  /// In en, this message translates to:
+  /// **'For INR, 120000 means ₹1,200.00'**
+  String get hostsEventPreferenceExpectedAmountHint;
+
+  /// Event-local admission preference, not registration activation.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission suggestion'**
+  String get hostsEventPreferenceAdmission;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Open capacity'**
+  String get hostsEventPreferenceAdmissionOpen;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite only'**
+  String get hostsEventPreferenceAdmissionInvite;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced singles'**
+  String get hostsEventPreferenceAdmissionBalanced;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed cohort caps'**
+  String get hostsEventPreferenceAdmissionFixed;
+
+  /// Pending private event preferences save.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous settings save unresolved'**
+  String get hostsEventPreferencePending;
+
+  /// Explains idempotent private event preferences retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved these settings. Retry the same request before changing them.'**
+  String get hostsEventPreferencePendingBody;
+
+  /// Replays the exact event preferences command.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry previous settings save'**
+  String get hostsEventPreferenceRetry;
+
+  /// Manager-only event settings read or save error.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings unavailable'**
+  String get hostsEventPreferenceError;
+
+  /// Prevents event preference settings from implying active payment capability.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved collection preference is only a plan. Review provider readiness, guest consent and payment terms before sending an offer.'**
+  String get hostsEventPreferenceProviderHint;
+
+  /// Invalid event-local setting value.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value for this setting.'**
+  String get hostsEventPreferenceInvalidValue;
 }
 
 class _AppLocalizationsDelegate

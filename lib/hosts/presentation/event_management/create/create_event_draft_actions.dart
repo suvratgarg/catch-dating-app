@@ -100,15 +100,6 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     if (picked == null) return;
     if (picked.draft case final draft?) {
       _restoreFromDraft(draft);
-    } else {
-      _setLocalState(() {
-        _externalBookingMode =
-            picked.intent == HostEventEntryIntent.createFromGuestList;
-        if (_externalBookingMode) {
-          _priceController.text = '0';
-          _eventSuccessDefaults = _eventSuccessDefaults.copyWith(enabled: true);
-        }
-      });
     }
   }
 

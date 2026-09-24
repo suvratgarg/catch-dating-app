@@ -142,7 +142,11 @@ void registerHostEventEntryTests() {
     expect(find.text('Continue draft'), findsNothing);
     expect(find.text('Quiz night'), findsOneWidget);
     expect(find.text('Repeat last event'), findsOneWidget);
-    expect(find.text('Use guest list'), findsOneWidget);
+    expect(find.text('Use guest list'), findsNothing);
+    expect(
+      find.byKey(const ValueKey<String>('host-event-entry-createEvent')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Quiz night'));
     await pumpFeatureUi(tester);

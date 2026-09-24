@@ -2,16 +2,20 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -24,17 +28,24 @@ class HostCreateEventRouteArguments {
     required this.initialClub,
     this.initialDraft,
     this.initialPrefill,
+    this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create route cannot restore a draft and apply a repeat prefill.',
+       ),
+       assert(
+         initialSavedEventId == null ||
+             (initialDraft == null && initialPrefill == null),
+         'A saved event cannot also restore a draft or repeat prefill.',
        );
 
   final Club initialClub;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
@@ -47,18 +58,25 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     this.initialClub,
     this.initialDraft,
     this.initialPrefill,
+    this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create route cannot restore a draft and apply a repeat prefill.',
+       ),
+       assert(
+         initialSavedEventId == null ||
+             (initialDraft == null && initialPrefill == null),
+         'A saved event cannot also restore a draft or repeat prefill.',
        );
 
   final String clubId;
   final Club? initialClub;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
@@ -114,6 +132,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       state: routeState,
       initialDraft: initialDraft,
       initialPrefill: initialPrefill,
+      initialSavedEventId: initialSavedEventId,
       initialRosterImportPlan: initialRosterImportPlan,
       externalBookingMode:
           initialDraft?.externalBookingMode ?? externalBookingMode,
@@ -129,6 +148,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     required this.state,
     this.initialDraft,
     this.initialPrefill,
+    this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
@@ -138,6 +158,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
   final HostCreateEventRouteState state;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
@@ -175,6 +196,27 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           actions: const [CatchErrorBackButton()],
         ),
       ),
+      HostCreateEventRouteStatus.ready when privateEventSetupAvailable() =>
+        PrivateEventCreateScreen(
+        club: state.club!,
+        initialDraft: initialDraft,
+        initialPrefill: initialPrefill,
+        initialSavedEventId: initialSavedEventId,
+        initialRosterImportPlan: initialRosterImportPlan,
+        promptForDraftsOnStart: promptForDrafts,
+        readOrganizerDefaults: (organizerId) =>
+            ManagerEventSetupDefaultsRepository(
+              ref.read(firebaseFunctionsProvider),
+            ).get(organizerId),
+      ),
+      HostCreateEventRouteStatus.ready when initialSavedEventId != null =>
+        CatchScaffold.stepFlow(
+          body: CatchErrorState(
+            title: context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+            message: context.l10n.hostsPrivateEventSetupUnavailable,
+            actions: const [CatchErrorBackButton()],
+          ),
+        ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,
         initialDraft: initialDraft,
