@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -540,7 +541,7 @@ class PrivateEventSetupRepository {
   /// through the public rich Event model or a device-local draft list.
   Future<PrivateEventSetupInventoryPage> list({
     required String organizerId,
-    int limit = 20,
+    int limit = ReadLimitPolicy.privateEventSetupPage,
     String? cursor,
   }) {
     if (!_setupInventoryId.hasMatch(organizerId) ||
