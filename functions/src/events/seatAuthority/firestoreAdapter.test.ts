@@ -272,7 +272,8 @@ test("retained seat checks reject corrupt lineage, stale policy and identity",
       ...[
         {eventId: "foreign"}, {occupied: 0}, {occupied: 3},
         {occupied: -1}, {revision: Number.MAX_SAFE_INTEGER},
-        {revision: NaN}, {capacityRevision: 0}, {migrationRevision: 0},
+        {revision: NaN}, {revision: 0},
+        {capacityRevision: 0}, {migrationRevision: 0},
         {policyHash: "f".repeat(64)}, {capacity: 3},
       ].map((patch) => ({...base, ledger: {...base.ledger, ...patch}})),
       ...[

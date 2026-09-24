@@ -158,6 +158,7 @@ export function assertCurrentReadySeatSnapshot(params: {
   const policy = deriveEventSeatPolicy(params.event);
   assertReadySeatState(eventId, identity, ledger, reservation);
   if (policy.organizerId !== organizerId || identity.revision < 1 ||
+      ledger.revision < 1 ||
       ledger.capacity !== policy.capacity ||
       ledger.policyHash !== policy.policyHash ||
       ledger.policyVersion !== policy.policyVersion ||
