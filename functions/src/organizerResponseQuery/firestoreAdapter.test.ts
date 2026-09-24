@@ -83,7 +83,8 @@ test("Firestore adapter authorizes and uses one exact query for IDs/pages",
     await assert.rejects(resolveFirestoreResponseIds(scope, input,
       ["other-version"], first.resultHash), {code: "invalid-argument"});
     await assert.rejects(resolveFirestoreResponseIds(scope, input,
-      ["one"], "stale"), {code: "invalid-argument"});
+      ["one"], "stale"), {code: "aborted", details: {
+      reason: "response-query-stale", action: "refresh"}});
     await assert.rejects(runFirestoreResponseQuery({...scope,
       actorUid: "outsider"}, input), {code: "permission-denied"});
     await assert.rejects(runFirestoreResponseQuery(scope,
@@ -118,7 +119,8 @@ test("display identity and form title changes invalidate continuation",
       ...store.docs["organizerForms/form-1"], title: "Renamed signup"};
     await assert.rejects(runFirestoreResponseQuery(scope,
       {...input, cursor: first.nextCursor}),
-    {code: "invalid-argument", message: /Refresh/u});
+    {code: "aborted", details: {reason: "response-query-stale",
+      action: "refresh"}});
     store.docs["organizerForms/form-1"] = {
       ...store.docs["organizerForms/form-1"], title: "Event signup"};
     const response = store.docs["organizerFormResponses/one"];
@@ -126,7 +128,8 @@ test("display identity and form title changes invalidate continuation",
       identity: {...response.identity as object, displayName: "Renamed Asha"}};
     await assert.rejects(runFirestoreResponseQuery(scope,
       {...input, cursor: first.nextCursor}),
-    {code: "invalid-argument", message: /Refresh/u});
+    {code: "aborted", details: {reason: "response-query-stale",
+      action: "refresh"}});
   });
 
 test("field catalog follows only the authorized published version",
@@ -189,7 +192,8 @@ test("changed published definition fails closed", async () => {
     return original(body);
   };
   await assert.rejects(runFirestoreResponseQuery(scope, input),
-    {code: "aborted", message: /Refresh/u});
+    {code: "aborted", details: {reason: "response-query-stale",
+      action: "refresh"}});
 });
 
 test("other-version rows cannot hide an oversized form scan", async () => {
@@ -199,8 +203,22 @@ test("other-version rows cannot hide an oversized form scan", async () => {
     store.docs[`organizerFormResponses/older-${index}`] = {...other,
       submittedAt: admin.firestore.Timestamp.fromMillis(index + 2000)};
   }
+  let fetchedRows = 0;
+  const original = store.runTransaction.bind(store);
+  store.runTransaction = async (body) => original(async (tx) => body({
+    ...tx,
+    get: async (ref) => {
+      const result = await tx.get(ref);
+      if (ref.path === "organizerFormResponses") {
+        fetchedRows += (result as {size: number}).size;
+      }
+      return result;
+    },
+  }));
   await assert.rejects(runFirestoreResponseQuery(scope, input),
     {code: "resource-exhausted", message: /5,000-response/u});
+  assert.equal(fetchedRows, 5_001,
+    "only the exact cap plus one lookahead may be fetched");
 });
 
 test("manager revocation between preparation and snapshot scan denies rows",
@@ -215,6 +233,17 @@ test("manager revocation between preparation and snapshot scan denies rows",
     await assert.rejects(runFirestoreResponseQuery(scope, input),
       {code: "permission-denied"});
   });
+
+test("account deletion between preparation and scan denies rows", async () => {
+  const {store, scope} = fixture();
+  const original = store.runTransaction.bind(store);
+  store.runTransaction = async (body) => {
+    store.docs["deletedUsers/host-1"] = {status: "processing"};
+    return original(body);
+  };
+  await assert.rejects(runFirestoreResponseQuery(scope, input),
+    {code: "permission-denied"});
+});
 
 test("byte ceiling stops after first oversized Firestore page", async () => {
   const {store, scope} = fixture();

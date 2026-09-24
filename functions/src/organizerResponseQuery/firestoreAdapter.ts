@@ -59,6 +59,11 @@ export function firestoreResponseQuerySource(scope: Scope):
   return {readAll: (maxRows) => scope.db.runTransaction(async (tx) => {
     await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
       organizerId: scope.organizerId, transaction: tx});
+    if ((await tx.get(scope.db.collection("deletedUsers")
+      .doc(scope.actorUid))).exists) {
+      throw new HttpsError("permission-denied",
+        "Deleted accounts cannot query form responses.");
+    }
     const [versionSnap, formSnap] = await Promise.all([
       tx.get(scope.db.collection("organizerFormVersions")
         .doc(scope.versionId)),
