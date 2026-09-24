@@ -70155,6 +70155,173 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const listMyHostAssignmentsCallablePayloadIncludeExpired = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallablePayload.includeExpired',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignments = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 128,
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDestinations = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.destinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDestinationsItems = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.destinations.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDuties = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.duty',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'transportDispatcher', 'hotelDesk', 'reconciliationViewer', 'stakeholderViewer', 'eventLead'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsHotelIds = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.hotelIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsHotelIdsItems = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.hotelIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsPickupPointIds = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.pickupPointIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 32,
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsPickupPointIdsItems = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.pickupPointIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsGrantExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.grantExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsKind = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.organizerName',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsOverflowDestinations = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.overflowDestinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsOverflowDestinationsItems = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.overflowDestinations.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['arrivals', 'dispatch', 'inbound', 'rooms', 'nowNext', 'door', 'walkIns', 'attention', 'guests', 'rsvpInbox', 'imports', 'inbox', 'moments', 'trips', 'exceptions', 'export', 'overview'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsScopeId = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.scopeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsShellMode = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.shellMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['task', 'tabs', 'programWorkspace', 'none'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsSubtitle = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.subtitle',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseAssignmentsItemsTitle = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.assignments.items.title',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listMyHostAssignmentsCallableResponseShellEntry = CatchContractFieldConstraints(
+    path: 'listMyHostAssignmentsCallableResponse.shellEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['managerShell', 'workShell', 'none'],
+  );
+
   static const listOrganizerApplicationsCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'listOrganizerApplicationsCallablePayload.contactId',
     maxLength: 180,
@@ -124665,6 +124832,29 @@ abstract final class CatchContractConstraints {
     'listEventWhatsappPreferencesCallableResponse.previousSenderIds': listEventWhatsappPreferencesCallableResponsePreviousSenderIds,
     'listEventWhatsappPreferencesCallableResponse.previousSenderIds.items': listEventWhatsappPreferencesCallableResponsePreviousSenderIdsItems,
     'listEventWhatsappPreferencesCallableResponse.serverTime': listEventWhatsappPreferencesCallableResponseServerTime,
+    'listMyHostAssignmentsCallablePayload.includeExpired': listMyHostAssignmentsCallablePayloadIncludeExpired,
+    'listMyHostAssignmentsCallableResponse.assignments': listMyHostAssignmentsCallableResponseAssignments,
+    'listMyHostAssignmentsCallableResponse.assignments.items.destinations': listMyHostAssignmentsCallableResponseAssignmentsItemsDestinations,
+    'listMyHostAssignmentsCallableResponse.assignments.items.destinations.items': listMyHostAssignmentsCallableResponseAssignmentsItemsDestinationsItems,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties': listMyHostAssignmentsCallableResponseAssignmentsItemsDuties,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.duty': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsDuty,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.functionIds': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsFunctionIds,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.functionIds.items': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsFunctionIdsItems,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.hotelIds': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsHotelIds,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.hotelIds.items': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsHotelIdsItems,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.pickupPointIds': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsPickupPointIds,
+    'listMyHostAssignmentsCallableResponse.assignments.items.duties.items.pickupPointIds.items': listMyHostAssignmentsCallableResponseAssignmentsItemsDutiesItemsPickupPointIdsItems,
+    'listMyHostAssignmentsCallableResponse.assignments.items.grantExpiresAtMillis': listMyHostAssignmentsCallableResponseAssignmentsItemsGrantExpiresAtMillis,
+    'listMyHostAssignmentsCallableResponse.assignments.items.kind': listMyHostAssignmentsCallableResponseAssignmentsItemsKind,
+    'listMyHostAssignmentsCallableResponse.assignments.items.organizerId': listMyHostAssignmentsCallableResponseAssignmentsItemsOrganizerId,
+    'listMyHostAssignmentsCallableResponse.assignments.items.organizerName': listMyHostAssignmentsCallableResponseAssignmentsItemsOrganizerName,
+    'listMyHostAssignmentsCallableResponse.assignments.items.overflowDestinations': listMyHostAssignmentsCallableResponseAssignmentsItemsOverflowDestinations,
+    'listMyHostAssignmentsCallableResponse.assignments.items.overflowDestinations.items': listMyHostAssignmentsCallableResponseAssignmentsItemsOverflowDestinationsItems,
+    'listMyHostAssignmentsCallableResponse.assignments.items.scopeId': listMyHostAssignmentsCallableResponseAssignmentsItemsScopeId,
+    'listMyHostAssignmentsCallableResponse.assignments.items.shellMode': listMyHostAssignmentsCallableResponseAssignmentsItemsShellMode,
+    'listMyHostAssignmentsCallableResponse.assignments.items.subtitle': listMyHostAssignmentsCallableResponseAssignmentsItemsSubtitle,
+    'listMyHostAssignmentsCallableResponse.assignments.items.title': listMyHostAssignmentsCallableResponseAssignmentsItemsTitle,
+    'listMyHostAssignmentsCallableResponse.shellEntry': listMyHostAssignmentsCallableResponseShellEntry,
     'listOrganizerApplicationsCallablePayload.contactId': listOrganizerApplicationsCallablePayloadContactId,
     'listOrganizerApplicationsCallablePayload.cursor': listOrganizerApplicationsCallablePayloadCursor,
     'listOrganizerApplicationsCallablePayload.formId': listOrganizerApplicationsCallablePayloadFormId,

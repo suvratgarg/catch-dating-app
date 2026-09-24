@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_my_host_assignments_response.schema.json",
+  "title": "ListMyHostAssignmentsCallableResponse",
+  "description": "The caller's host work assignments with server-resolved shell destinations. Assignments sort by scope kind (event before program) then scope id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assignments",
+    "shellEntry"
+  ],
+  "properties": {
+    "assignments": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "../shared/host_work.schema.json#/definitions/hostWorkAssignment"
+      }
+    },
+    "shellEntry": {
+      "type": "string",
+      "enum": [
+        "managerShell",
+        "workShell",
+        "none"
+      ],
+      "description": "The app shell the caller should land in: managers always get managerShell even when they also hold staff assignments; staff get workShell only while at least one assignment is live."
+    }
+  }
+}

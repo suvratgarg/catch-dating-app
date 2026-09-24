@@ -447,6 +447,8 @@ export 'list_event_sms_preferences_callable_payload.g.dart';
 export 'list_event_sms_preferences_callable_response.g.dart';
 export 'list_event_whatsapp_preferences_callable_payload.g.dart';
 export 'list_event_whatsapp_preferences_callable_response.g.dart';
+export 'list_my_host_assignments_callable_payload.g.dart';
+export 'list_my_host_assignments_callable_response.g.dart';
 export 'list_organizer_applications_callable_payload.g.dart';
 export 'list_organizer_applications_callable_response.g.dart';
 export 'list_organizer_attention_items_callable_payload.g.dart';

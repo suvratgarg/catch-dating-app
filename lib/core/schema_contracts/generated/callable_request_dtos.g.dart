@@ -177,6 +177,7 @@ export 'callables/list_event_chats_callable_request.g.dart';
 export 'callables/list_event_rcs_preferences_callable_request.g.dart';
 export 'callables/list_event_sms_preferences_callable_request.g.dart';
 export 'callables/list_event_whatsapp_preferences_callable_request.g.dart';
+export 'callables/list_my_host_assignments_callable_request.g.dart';
 export 'callables/list_organizer_applications_callable_request.g.dart';
 export 'callables/list_organizer_attention_items_callable_request.g.dart';
 export 'callables/list_organizer_campaigns_callable_request.g.dart';
