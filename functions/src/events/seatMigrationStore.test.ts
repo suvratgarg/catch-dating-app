@@ -120,6 +120,21 @@ function attendee(index: number, phone: string | null = null): Row {
     status: "registered", linkedUid: null, phoneE164: phone,
     externalReference: `external-${index}`, sourceRowId: `row-${index}`};
 }
+function rosterOrigin(originContactId: string | undefined): Row {
+  return {eventId: "event1", organizerId: "org1",
+    sourceKind: "hostImport", sourceEntityKind: "eventAttendee",
+    sourceEntityId: "att000", responseId: null, formId: null,
+    ...(originContactId === undefined ? {} : {originContactId}),
+    currentContactId: "contact1"};
+}
+function addRosterOrigin(store: Store, originContactId: string | undefined) {
+  store.rows.set("organizerContactOrigins/origin1",
+    rosterOrigin(originContactId));
+  store.rows.set("organizerContacts/contact1", {organizerId: "org1",
+    linkedUid: null, identityState: "unlinked", deletedAt: null,
+    hiddenAt: null, mergedIntoContactId: null,
+    ambiguousCandidateContactIds: []});
+}
 function setup(count = 1) {
   const store = new Store();
   store.rows.set("events/event1", event());
@@ -239,6 +254,41 @@ test("duplicate alias across page boundary denies readiness", async () => {
   assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
     "unreconciled");
 });
+
+test("missing or malformed original CRM contact blocks ready migration",
+  async () => {
+    for (const originContactId of [undefined, "invalid/id"]) {
+      const h = setup();
+      addRosterOrigin(h.store, originContactId);
+      await assert.rejects(h.bootstrap(), denied);
+      assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+        "unreconciled");
+      assert.equal(h.store.rows.get("eventSeatMigrationFences/event1")?.state,
+        "locked");
+    }
+  });
+
+test("changed original CRM contact after staging denies final activation",
+  async () => {
+    const h = setup();
+    addRosterOrigin(h.store, "contact1");
+    let changed = false;
+    h.store.beforeTransaction = () => {
+      const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+      if (!changed && run?.phase === "apply" &&
+          run.outputCursor === run.outputCount) {
+        h.store.rows.set("organizerContactOrigins/origin1",
+          rosterOrigin("contact2"));
+        changed = true;
+      }
+    };
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(changed, true);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "unreconciled");
+    assert.equal(h.store.rows.get("eventSeatMigrationFences/event1")?.state,
+      "locked");
+  });
 
 test("lost writer fence denies activation", async () => {
   const h = setup(80);

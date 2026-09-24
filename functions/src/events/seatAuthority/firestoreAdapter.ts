@@ -107,6 +107,10 @@ export function deriveEventSeatPolicy(value: unknown): {
         value.organizerId.length === 0) &&
         (typeof value.clubId !== "string" ||
           value.clubId.length === 0) ||
+      typeof value.organizerId === "string" &&
+        value.organizerId.length > 0 &&
+        typeof value.clubId === "string" && value.clubId.length > 0 &&
+        value.organizerId !== value.clubId ||
       !Number.isSafeInteger(value.capacityLimit) ||
       Number(value.capacityLimit) < 1 ||
       !["active", "cancelled"].includes(String(value.status))) {
@@ -130,9 +134,10 @@ export function deriveEventSeatPolicy(value: unknown): {
   const policyHash = createHash("sha256").update(JSON.stringify(canonical({
     capacity: value.capacityLimit, policyVersion, admissionPolicy,
   }))).digest("hex");
-  return {organizerId: String(value.organizerId ?? value.clubId),
-    capacity: value.capacityLimit as number, policyHash, policyVersion,
-    status: value.status as "active" | "cancelled"};
+  return {organizerId: typeof value.organizerId === "string" &&
+    value.organizerId.length > 0 ? value.organizerId : String(value.clubId),
+  capacity: value.capacityLimit as number, policyHash, policyVersion,
+  status: value.status as "active" | "cancelled"};
 }
 
 /**

@@ -99,6 +99,15 @@ test("capacity failure stages zero writes for every row", () => {
   assert.deepEqual(writer.calls, []);
 });
 
+test("changed import row cannot retain a prior request hash", () => {
+  const writer = new Writer();
+  const snapshot = read([row("a")]);
+  snapshot.rows[0].row.status = "invited";
+  assert.throws(() => prepareBatchImportSeats(snapshot, writer),
+    /Duplicate or invalid/);
+  assert.deepEqual(writer.calls, []);
+});
+
 test("duplicate phone, attendee or existing other-seat alias rejects batch",
   () => {
     const writer = new Writer();

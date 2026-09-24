@@ -90,6 +90,7 @@
         {"fieldPath": "status", "mode": "ASCENDING"}
       ]
     },
+    {"collectionGroup": "eventAttendees", "queryScope": "COLLECTION", "fields": [{"fieldPath": "eventId", "order": "ASCENDING"}, {"fieldPath": "phoneE164", "order": "ASCENDING"}]},
     {
       "collectionGroup": "eventAttendees",
       "queryScope": "COLLECTION",

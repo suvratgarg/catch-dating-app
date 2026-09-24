@@ -131,6 +131,7 @@ test("CRM origin joins only through reviewed attendee provenance", () => {
   origins: [{id: "origin1", organizerId: "org1", eventId: null,
     sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",
     sourceEntityId: "response1", responseId: "response1", formId: "form1",
+    originContactId: "contact1",
     currentContactId: "contact1"}],
   contacts: [{id: "contact1", organizerId: "org1", linkedUid: null,
     identityState: "unlinked", deleted: false, hidden: false,
@@ -156,6 +157,27 @@ test("CRM origin joins only through reviewed attendee provenance", () => {
   assert.equal(mismatched.state, "blocked");
   if (mismatched.state !== "blocked") return;
   assert.ok(mismatched.blockers.includes("formOriginConflict"));
+});
+
+test("malformed original CRM contact cannot produce a ready alias", () => {
+  const origin = {id: "origin1", organizerId: "org1", eventId: "event1",
+    sourceKind: "hostImport" as const,
+    sourceEntityKind: "eventAttendee" as const,
+    sourceEntityId: "att_guest", responseId: null, formId: null,
+    originContactId: "contact1", currentContactId: "contact1"};
+  const contact = {id: "contact1", organizerId: "org1", linkedUid: null,
+    identityState: "unlinked" as const, deleted: false, hidden: false,
+    mergedIntoContactId: null, ambiguousCandidateContactIds: []};
+  const source = input({origins: [origin], contacts: [contact]});
+  assert.equal(planEventSeatMigration(source).state, "ready");
+  for (const malformed of [undefined, "invalid/id"]) {
+    const result = planEventSeatMigration({...source,
+      origins: [{...origin, originContactId: malformed as string}]});
+    assert.equal(result.state, "blocked");
+    if (result.state === "blocked") {
+      assert.ok(result.blockers.includes("contactOriginProvenanceConflict"));
+    }
+  }
 });
 
 test("ready output is deterministic under source row reorder", () => {

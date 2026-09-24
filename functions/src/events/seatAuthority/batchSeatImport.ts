@@ -223,6 +223,9 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
         row.rowId.length > 120 || row.linkedUid !== null ||
         canonicalKey !== guestKey(eventId, row.attendeeId) ||
         item.receiptId !== receiptId(eventId, read.importId, row.rowId) ||
+        item.requestHash !== digest([eventId, organizerId, read.importId,
+          row.rowId, row.attendeeId, row.status, row.phoneE164 ?? "",
+          row.externalReference?.trim().toLowerCase() ?? ""]) ||
         item.aliases.length !== aliasKeys(eventId, row).length) {
       fail("Duplicate or invalid imported attendee.");
     }

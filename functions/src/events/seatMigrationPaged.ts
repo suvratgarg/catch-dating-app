@@ -108,7 +108,8 @@ function sourceProjection(kind: Source,
       ["eventId", "organizerId", "status", "source", "linkedUid",
         "phoneE164", "externalReference", "sourceRowId"] :
       ["eventId", "organizerId", "sourceKind", "sourceEntityKind",
-        "sourceEntityId", "responseId", "formId", "currentContactId"];
+        "sourceEntityId", "responseId", "formId", "originContactId",
+        "currentContactId"];
   const projected = Object.fromEntries(keys.filter((key) =>
     raw[key] !== undefined)
     .map((key) => [key, raw[key]]));

@@ -48,6 +48,7 @@ export interface SeatMigrationContactOrigin {
   sourceEntityId: string;
   responseId: string | null;
   formId: string | null;
+  originContactId: string;
   currentContactId: string;
 }
 
@@ -255,6 +256,14 @@ export function planEventSeatMigration(input: SeatMigrationInput):
     if (origin.eventId !== input.eventId &&
         !(origin.eventId === null &&
           origin.sourceEntityKind === "hostFormResponse")) continue;
+    if (typeof origin.id !== "string" || !ID.test(origin.id) ||
+        typeof origin.originContactId !== "string" ||
+        !ID.test(origin.originContactId) ||
+        typeof origin.currentContactId !== "string" ||
+        !ID.test(origin.currentContactId)) {
+      block("contactOriginProvenanceConflict");
+      continue;
+    }
     let attendeeId = origin.sourceEntityKind === "eventAttendee" ?
       origin.sourceEntityId : undefined;
     if (origin.sourceEntityKind === "hostFormResponse") {
