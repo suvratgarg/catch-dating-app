@@ -124,11 +124,12 @@ test("signUpForFreeEventHandler rejects paid events", async () => {
 });
 
 test("private or missing-price setup cannot enter free signup", async () => {
-  for (const candidate of [
-    {publicationState: "private", setupRevision: 1},
-    {priceInPaise: undefined},
-    {capacityLimit: undefined},
-  ]) {
+  for (const [candidate, message] of [
+    [{publicationState: "private", setupRevision: 1},
+      "This event is not open for public booking."],
+    [{priceInPaise: undefined}, "This event is not ready for booking."],
+    [{capacityLimit: undefined}, "This event is not ready for booking."],
+  ] as const) {
     let signedUp = false;
     await assert.rejects(signUpForFreeEventHandler(
       request("runner-1", {eventId: "event-1"}),
@@ -138,8 +139,7 @@ test("private or missing-price setup cannot enter free signup", async () => {
           signedUp = true;
         },
       }
-    ), isHttpsError("failed-precondition",
-      "This event is not ready for booking."));
+    ), isHttpsError("failed-precondition", message));
     assert.equal(signedUp, false);
   }
 });

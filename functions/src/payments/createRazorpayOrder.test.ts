@@ -135,11 +135,14 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
 });
 
 test("private or incomplete events never create a Razorpay order", async () => {
-  for (const event of [
-    buildEventDoc({publicationState: "private"} as Partial<EventDocument>),
-    buildEventDoc({capacityLimit: undefined}),
-    buildEventDoc({priceInPaise: undefined}),
-  ]) {
+  for (const [event, message] of [
+    [buildEventDoc({publicationState: "private"} as
+      Partial<EventDocument>), "This event is not open for public booking."],
+    [buildEventDoc({capacityLimit: undefined}),
+      "This event is not ready for booking."],
+    [buildEventDoc({priceInPaise: undefined}),
+      "This event is not ready for booking."],
+  ] as const) {
     await assert.rejects(createRazorpayOrderHandler(
       buildRequest({data: {eventId: "event-1"}, auth: {uid: "runner-1"}}),
       {
@@ -149,8 +152,7 @@ test("private or incomplete events never create a Razorpay order", async () => {
         now: () => 0,
         serverTimestamp: () => "server-now",
       }
-    ), isHttpsError("failed-precondition",
-      "This event is not ready for booking."));
+    ), isHttpsError("failed-precondition", message));
   }
 });
 

@@ -465,10 +465,9 @@ test("bootstrap returns bounded event and own state", async () => {
   assert.equal((result.event as FakeData).organizerId, undefined);
 });
 
-test("private setup cannot open the public runtime bootstrap", async () => {
+test("incomplete setup cannot open the runtime bootstrap", async () => {
   const h = harness({"events/event-1": event({
-    publicationState: "private",
-    setupRevision: 1,
+    meetingLocation: undefined,
   })});
   await assert.rejects(getEventRuntimeBootstrapHandler(request(
     "runner-1", {publicRuntimeId: "runtime_123456789012345678901234"}

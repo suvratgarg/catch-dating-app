@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
-import {isConfiguredEvent, requireConfiguredEvent} from "./configuredEvent";
+import {isConfiguredEvent, isPublicConfiguredEvent,
+  requireConfiguredEvent, requirePublicConfiguredEvent} from
+  "./configuredEvent";
 
 const time = (millis: number) => ({
   toMillis: () => millis,
@@ -30,15 +32,21 @@ test("configured event accepts rich legacy and published events", () => {
   assert.equal(isConfiguredEvent(event()), true);
   assert.equal(isConfiguredEvent(event({publicationState: "published",
     setupRevision: 1})), true);
+  assert.equal(isConfiguredEvent(event({publicationState: "private",
+    setupRevision: 1})), true);
+  assert.equal(isPublicConfiguredEvent(event({publicationState: "private",
+    setupRevision: 1})), false);
+  assert.equal(isPublicConfiguredEvent(event()), true);
   assert.equal(requireConfiguredEvent(event()).capacityLimit, 20);
+  assert.throws(() => requirePublicConfiguredEvent(event({
+    publicationState: "private", setupRevision: 1,
+  })), (error) => error instanceof HttpsError &&
+    error.code === "failed-precondition");
 });
 
-test("private or malformed progressive setup never becomes booking authority",
+test("incomplete setup never becomes configured event authority",
   () => {
     for (const candidate of [
-      event({publicationState: "private", setupRevision: 1}),
-      event({setupRevision: 1}),
-      event({publicationState: "pending"}),
       event({capacityLimit: undefined}),
       event({capacityLimit: 0}),
       event({priceInPaise: undefined}),

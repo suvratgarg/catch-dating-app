@@ -302,16 +302,17 @@ test(
   }
 );
 
-test("private setup cannot generate a rotation draft", async () => {
+test("incomplete setup cannot generate a rotation draft", async () => {
   const {deps} = harness({"events/event-1": {
     publicationState: "private",
     setupRevision: 1,
+    endTime: undefined,
   }});
   await assert.rejects(generateEventSuccessRotationsHandler(
     callableRequest("host-1"), deps
   ), (error) => {
     isHttpsError(error, "failed-precondition",
-      "This event is not ready for booking.");
+      "This event needs a valid schedule and format.");
     return true;
   });
 });

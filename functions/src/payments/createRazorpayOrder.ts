@@ -33,7 +33,7 @@ import {eventParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {requireCatchBookingAuthority} from "../events/eventOrigin";
-import {requireConfiguredEvent} from "../events/configuredEvent";
+import {requirePublicConfiguredEvent} from "../events/configuredEvent";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -105,7 +105,7 @@ export async function createRazorpayOrderHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = requireConfiguredEvent(requireDoc<EventDocument>(
+  const event = requirePublicConfiguredEvent(requireDoc<EventDocument>(
 
     eventSnap,
 

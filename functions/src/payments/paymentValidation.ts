@@ -4,7 +4,7 @@ import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {razorpayCurrency} from "./razorpay";
-import {requireConfiguredEvent} from "../events/configuredEvent";
+import {requirePublicConfiguredEvent} from "../events/configuredEvent";
 
 interface RazorpayOrderNotes {
   [key: string]: string | number | null;
@@ -80,7 +80,7 @@ export function buildOrderCreatePayload({
   inviteSource?: string | null;
   crossPathsPairHoldId?: string | null;
 }) {
-  requireConfiguredEvent(event);
+  requirePublicConfiguredEvent(event);
   if (event.status === "cancelled") {
     throw new HttpsError(
       "failed-precondition",

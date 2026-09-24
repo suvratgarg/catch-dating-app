@@ -4,7 +4,7 @@ import type {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventParticipationId} from "../shared/relationshipDocuments";
-import {requireConfiguredEvent} from "./configuredEvent";
+import {requireEventPolicyTerms} from "./configuredEvent";
 
 export const cohortIds = {
   menInterestedInWomen: "menInterestedInWomen",
@@ -111,7 +111,7 @@ export interface EventRosterSnapshot {
 export function eventPolicyFromEvent(
   event: EventDocument
 ): EventPolicyBundleDocument {
-  const configured = requireConfiguredEvent(event);
+  const configured = requireEventPolicyTerms(event);
   const policy = (event as EventDocument & {
     eventPolicy?: EventPolicyBundleDocument | null;
   }).eventPolicy;
@@ -174,7 +174,7 @@ export function normalizePolicy(policy: EventPolicyBundleDocument):
 export function legacyPolicyFromEvent(
   event: EventDocument
 ): EventPolicyBundleDocument {
-  const configured = requireConfiguredEvent(event);
+  const configured = requireEventPolicyTerms(event);
   const maxMen = configured.constraints?.maxMen;
   const maxWomen = configured.constraints?.maxWomen;
   const hasCaps = maxMen != null || maxWomen != null;

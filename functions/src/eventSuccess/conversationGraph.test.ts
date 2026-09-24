@@ -208,10 +208,9 @@ test(
   }
 );
 
-test("private setup cannot expose an attendee conversation graph", async () => {
+test("incomplete setup cannot expose conversation graph", async () => {
   const h = harness({"events/event-1": event({
-    publicationState: "private",
-    setupRevision: 1,
+    endTime: undefined,
   })});
   await assert.rejects(getEventSuccessConversationGraphHandler(
     request({eventId: "event-1"}), h.deps

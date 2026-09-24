@@ -68,8 +68,8 @@ import {
   onboardingDraftSeed,
 } from "../events/eventAttendees";
 import {resolveInviteAttributionToken} from "../events/inviteLinks";
-import {requireConfiguredEvent,
-  type ConfiguredEventDocument} from "../events/configuredEvent";
+import {requireRuntimeVenueEvent,
+  type RuntimeVenueEventDocument} from "../events/configuredEvent";
 import {
   assertEventCheckInWindow,
   eventVenueSessionRedemptionDocument,
@@ -561,7 +561,7 @@ export async function checkInEventRuntimeHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const event = requireConfiguredEvent(
+    const event = requireRuntimeVenueEvent(
       requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const participant = requireRuntimeParticipant(
       participantSnap,
@@ -651,7 +651,7 @@ export async function approveEventRuntimeClaimHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const event = requireConfiguredEvent(
+    const event = requireRuntimeVenueEvent(
       requireDoc<EventDocument>(eventSnap, "EventDocument"));
     const organizerSnap = await tx.get(eventOrganizerRef(db, event));
     const organizer = requireEventOrganizer(organizerSnap, event);
@@ -770,7 +770,7 @@ export function eventRuntimeParticipantId(
 async function resolveRuntimeEvent(
   db: FirebaseFirestore.Firestore,
   publicRuntimeId: string
-): Promise<{eventId: string; event: ConfiguredEventDocument}> {
+): Promise<{eventId: string; event: RuntimeVenueEventDocument}> {
   const snapshot = await db.collection("events")
     .where("runtimeAccess.publicRuntimeId", "==", publicRuntimeId)
     .limit(2)
@@ -782,7 +782,7 @@ async function resolveRuntimeEvent(
     throw new HttpsError("internal", "Event runtime identity is not unique.");
   }
   const eventSnap = snapshot.docs[0];
-  const event = requireConfiguredEvent(
+  const event = requireRuntimeVenueEvent(
     requireDoc<EventDocument>(eventSnap, "EventDocument"));
   if (
     event.status === "cancelled" ||
@@ -839,7 +839,7 @@ function requireRuntimeParticipant(
 }
 
 function publicRuntimeEventProjection(
-  event: ConfiguredEventDocument,
+  event: RuntimeVenueEventDocument,
   eventId: string,
   publicRuntimeId: string,
   plan: EventSuccessPlanDocument | null,
@@ -875,7 +875,7 @@ function publicRuntimeEventProjection(
 
 async function publicLivePositions(
   db: FirebaseFirestore.Firestore,
-  event: ConfiguredEventDocument,
+  event: RuntimeVenueEventDocument,
   eventId: string,
   now: FirebaseFirestore.Timestamp
 ): Promise<GetEventRuntimeBootstrapCallableResponse["event"]["livePositions"]> {
@@ -981,7 +981,7 @@ function arraysEqual<T>(a: T[], b: T[]): boolean {
 }
 
 function activityTitle(
-  activityKind: ConfiguredEventDocument["eventFormat"]["activityKind"]
+  activityKind: RuntimeVenueEventDocument["eventFormat"]["activityKind"]
 ): string {
   const titles: Record<typeof activityKind, string> = {
     socialRun: "Social run",

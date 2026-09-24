@@ -98,11 +98,14 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
   });
 
 test("private or incomplete events never start Stripe checkout", async () => {
-  for (const event of [
-    buildEventDoc({publicationState: "private"} as Partial<EventDocument>),
-    buildEventDoc({capacityLimit: undefined}),
-    buildEventDoc({priceInPaise: undefined}),
-  ]) {
+  for (const [event, message] of [
+    [buildEventDoc({publicationState: "private"} as
+      Partial<EventDocument>), "This event is not open for public booking."],
+    [buildEventDoc({capacityLimit: undefined}),
+      "This event is not ready for booking."],
+    [buildEventDoc({priceInPaise: undefined}),
+      "This event is not ready for booking."],
+  ] as const) {
     const firestore = new FakeFirestore({
       "events/event-1": event,
       "users/runner-1": {gender: "man", interestedInGenders: ["woman"]},
@@ -119,8 +122,7 @@ test("private or incomplete events never start Stripe checkout", async () => {
         serverTimestamp: () => "server-now",
         checkRateLimit: async () => undefined,
       }
-    ), isHttpsError("failed-precondition",
-      "This event is not ready for booking."));
+    ), isHttpsError("failed-precondition", message));
   }
 });
 

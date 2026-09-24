@@ -13,7 +13,7 @@ import {hasBlockingRelationship} from "../safety/blocking";
 import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";
 import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
 import {requireCatchBookingAuthority} from "../events/eventOrigin";
-import {requireConfiguredEvent} from "../events/configuredEvent";
+import {requirePublicConfiguredEvent} from "../events/configuredEvent";
 import {requireAuth} from "../shared/auth";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -109,7 +109,7 @@ export async function createStripeCheckoutSessionHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = requireConfiguredEvent(requireDoc<EventDocument>(
+  const event = requirePublicConfiguredEvent(requireDoc<EventDocument>(
     eventSnap,
     "EventDocument"
   ));
