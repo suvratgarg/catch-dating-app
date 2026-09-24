@@ -114184,6 +114184,367 @@ export const organizerContactMergeReceiptDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "seatMoves": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "aliasId",
+          "kind",
+          "valueHash",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "aliasId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "enum": [
+              "contact",
+              "contactOrigin"
+            ]
+          },
+          "valueHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "canonicalKey",
+                  "identityRevision",
+                  "migrationRevision",
+                  "state"
+                ],
+                "properties": {
+                  "canonicalKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "identityRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "migrationRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "state": {
+                    "const": "ready"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "after": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "canonicalKey",
+              "identityRevision",
+              "migrationRevision",
+              "state"
+            ],
+            "properties": {
+              "canonicalKey": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "identityRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "migrationRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "state": {
+                "const": "ready"
+              }
+            }
+          }
+        }
+      }
+    },
+    "seatEventGuards": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "ledgerRevision",
+          "migrationRevision",
+          "sourceReservation",
+          "survivorReservation",
+          "aliasIdsBefore",
+          "sourceAlias",
+          "survivorAlias"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "ledgerRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "migrationRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "sourceReservation": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "canonicalKey",
+                  "identityRevision",
+                  "revision",
+                  "active"
+                ],
+                "properties": {
+                  "canonicalKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "identityRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "survivorReservation": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "canonicalKey",
+                  "identityRevision",
+                  "revision",
+                  "active"
+                ],
+                "properties": {
+                  "canonicalKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "identityRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "active": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "aliasIdsBefore": {
+            "type": "array",
+            "maxItems": 200,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "sourceAlias": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "canonicalKey",
+                  "identityRevision",
+                  "migrationRevision",
+                  "state"
+                ],
+                "properties": {
+                  "canonicalKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "identityRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "migrationRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "state": {
+                    "const": "ready"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "survivorAlias": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "canonicalKey",
+                  "identityRevision",
+                  "migrationRevision",
+                  "state"
+                ],
+                "properties": {
+                  "canonicalKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "identityRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "migrationRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "state": {
+                    "const": "ready"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "seatAdmissionGuards": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "responseId",
+          "ownershipId",
+          "receiptId"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "responseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "ownershipId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "receiptId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "survivorOriginIdsBefore": {
+      "type": "array",
+      "maxItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "sourceOriginAliasIdsBefore": {
+      "type": "array",
+      "maxItems": 200,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
     }
   }
 };

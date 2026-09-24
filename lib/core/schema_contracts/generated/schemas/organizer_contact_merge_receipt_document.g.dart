@@ -196,5 +196,366 @@ const schemaOrganizerContactMergeReceiptDocumentSchema = <String, Object?>{
         },
       },
     },
+    'seatMoves': <String, Object?>{
+      'type': 'array',
+      'maxItems': 200,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'eventId',
+          'aliasId',
+          'kind',
+          'valueHash',
+          'before',
+          'after',
+        ],
+        'properties': <String, Object?>{
+          'eventId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'aliasId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'kind': <String, Object?>{
+            'enum': <Object?>[
+              'contact',
+              'contactOrigin',
+            ],
+          },
+          'valueHash': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[0-9a-f]{64}\$',
+          },
+          'before': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'canonicalKey',
+                  'identityRevision',
+                  'migrationRevision',
+                  'state',
+                ],
+                'properties': <String, Object?>{
+                  'canonicalKey': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'identityRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'migrationRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'state': <String, Object?>{
+                    'const': 'ready',
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'after': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'canonicalKey',
+              'identityRevision',
+              'migrationRevision',
+              'state',
+            ],
+            'properties': <String, Object?>{
+              'canonicalKey': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'identityRevision': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 9007199254740991,
+              },
+              'migrationRevision': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 9007199254740991,
+              },
+              'state': <String, Object?>{
+                'const': 'ready',
+              },
+            },
+          },
+        },
+      },
+    },
+    'seatEventGuards': <String, Object?>{
+      'type': 'array',
+      'maxItems': 100,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'eventId',
+          'ledgerRevision',
+          'migrationRevision',
+          'sourceReservation',
+          'survivorReservation',
+          'aliasIdsBefore',
+          'sourceAlias',
+          'survivorAlias',
+        ],
+        'properties': <String, Object?>{
+          'eventId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'ledgerRevision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 9007199254740991,
+          },
+          'migrationRevision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 9007199254740991,
+          },
+          'sourceReservation': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'canonicalKey',
+                  'identityRevision',
+                  'revision',
+                  'active',
+                ],
+                'properties': <String, Object?>{
+                  'canonicalKey': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'identityRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'revision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'active': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'survivorReservation': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'canonicalKey',
+                  'identityRevision',
+                  'revision',
+                  'active',
+                ],
+                'properties': <String, Object?>{
+                  'canonicalKey': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'identityRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'revision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'active': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'aliasIdsBefore': <String, Object?>{
+            'type': 'array',
+            'maxItems': 200,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+          },
+          'sourceAlias': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'canonicalKey',
+                  'identityRevision',
+                  'migrationRevision',
+                  'state',
+                ],
+                'properties': <String, Object?>{
+                  'canonicalKey': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'identityRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'migrationRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'state': <String, Object?>{
+                    'const': 'ready',
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'survivorAlias': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'canonicalKey',
+                  'identityRevision',
+                  'migrationRevision',
+                  'state',
+                ],
+                'properties': <String, Object?>{
+                  'canonicalKey': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'identityRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'migrationRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'state': <String, Object?>{
+                    'const': 'ready',
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+        },
+      },
+    },
+    'seatAdmissionGuards': <String, Object?>{
+      'type': 'array',
+      'maxItems': 200,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'eventId',
+          'responseId',
+          'ownershipId',
+          'receiptId',
+        ],
+        'properties': <String, Object?>{
+          'eventId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'responseId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'ownershipId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'receiptId': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+        },
+      },
+    },
+    'survivorOriginIdsBefore': <String, Object?>{
+      'type': 'array',
+      'maxItems': 400,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
+    'sourceOriginAliasIdsBefore': <String, Object?>{
+      'type': 'array',
+      'maxItems': 200,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
   },
 };

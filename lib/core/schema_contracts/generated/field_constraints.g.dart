@@ -84329,8 +84329,322 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerContactMergeReceiptDocumentSeatAdmissionGuards = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatAdmissionGuards',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsOwnershipId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.ownershipId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsReceiptId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsResponseId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuards = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsAliasIdsBefore = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.aliasIdsBefore',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 200,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsAliasIdsBeforeItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.aliasIdsBefore.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsLedgerRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.ledgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsMigrationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasCanonicalKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.canonicalKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasMigrationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasState = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.state',
+    required: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationActive = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationCanonicalKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.canonicalKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasCanonicalKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.canonicalKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasMigrationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasState = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.state',
+    required: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationActive = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationCanonicalKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.canonicalKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMoves = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsAfterCanonicalKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.after.canonicalKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsAfterIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.after.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsAfterMigrationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.after.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsAfterState = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.after.state',
+    required: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsAliasId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.aliasId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsBeforeCanonicalKey = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.before.canonicalKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsBeforeIdentityRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.before.identityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsBeforeMigrationRevision = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.before.migrationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsBeforeState = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.before.state',
+    required: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsKind = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.kind',
+    required: true,
+    enumValues: <String>['contact', 'contactOrigin'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSeatMovesItemsValueHash = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.seatMoves.items.valueHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9a-f]{64}\$',
+  );
+
   static const organizerContactMergeReceiptDocumentSourceContactId = CatchContractFieldConstraints(
     path: 'organizerContactMergeReceiptDocument.sourceContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSourceOriginAliasIdsBefore = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.sourceOriginAliasIdsBefore',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 200,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSourceOriginAliasIdsBeforeItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.sourceOriginAliasIdsBefore.items',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -84347,6 +84661,22 @@ abstract final class CatchContractConstraints {
 
   static const organizerContactMergeReceiptDocumentSurvivorContactId = CatchContractFieldConstraints(
     path: 'organizerContactMergeReceiptDocument.survivorContactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactMergeReceiptDocumentSurvivorOriginIdsBefore = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.survivorOriginIdsBefore',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 400,
+    uniqueItems: true,
+  );
+
+  static const organizerContactMergeReceiptDocumentSurvivorOriginIdsBeforeItems = CatchContractFieldConstraints(
+    path: 'organizerContactMergeReceiptDocument.survivorOriginIdsBefore.items',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -133651,9 +133981,53 @@ abstract final class CatchContractConstraints {
     'organizerContactMergeReceiptDocument.operation': organizerContactMergeReceiptDocumentOperation,
     'organizerContactMergeReceiptDocument.organizerId': organizerContactMergeReceiptDocumentOrganizerId,
     'organizerContactMergeReceiptDocument.reversalOfReceiptId': organizerContactMergeReceiptDocumentReversalOfReceiptId,
+    'organizerContactMergeReceiptDocument.seatAdmissionGuards': organizerContactMergeReceiptDocumentSeatAdmissionGuards,
+    'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.eventId': organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsEventId,
+    'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.ownershipId': organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsOwnershipId,
+    'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.receiptId': organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsReceiptId,
+    'organizerContactMergeReceiptDocument.seatAdmissionGuards.items.responseId': organizerContactMergeReceiptDocumentSeatAdmissionGuardsItemsResponseId,
+    'organizerContactMergeReceiptDocument.seatEventGuards': organizerContactMergeReceiptDocumentSeatEventGuards,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.aliasIdsBefore': organizerContactMergeReceiptDocumentSeatEventGuardsItemsAliasIdsBefore,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.aliasIdsBefore.items': organizerContactMergeReceiptDocumentSeatEventGuardsItemsAliasIdsBeforeItems,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.eventId': organizerContactMergeReceiptDocumentSeatEventGuardsItemsEventId,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.ledgerRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsLedgerRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.migrationRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsMigrationRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.canonicalKey': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasCanonicalKey,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.identityRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasIdentityRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.migrationRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasMigrationRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceAlias.state': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceAliasState,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.active': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationActive,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.canonicalKey': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationCanonicalKey,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.identityRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationIdentityRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.sourceReservation.revision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSourceReservationRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.canonicalKey': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasCanonicalKey,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.identityRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasIdentityRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.migrationRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasMigrationRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorAlias.state': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorAliasState,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.active': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationActive,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.canonicalKey': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationCanonicalKey,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.identityRevision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationIdentityRevision,
+    'organizerContactMergeReceiptDocument.seatEventGuards.items.survivorReservation.revision': organizerContactMergeReceiptDocumentSeatEventGuardsItemsSurvivorReservationRevision,
+    'organizerContactMergeReceiptDocument.seatMoves': organizerContactMergeReceiptDocumentSeatMoves,
+    'organizerContactMergeReceiptDocument.seatMoves.items.after.canonicalKey': organizerContactMergeReceiptDocumentSeatMovesItemsAfterCanonicalKey,
+    'organizerContactMergeReceiptDocument.seatMoves.items.after.identityRevision': organizerContactMergeReceiptDocumentSeatMovesItemsAfterIdentityRevision,
+    'organizerContactMergeReceiptDocument.seatMoves.items.after.migrationRevision': organizerContactMergeReceiptDocumentSeatMovesItemsAfterMigrationRevision,
+    'organizerContactMergeReceiptDocument.seatMoves.items.after.state': organizerContactMergeReceiptDocumentSeatMovesItemsAfterState,
+    'organizerContactMergeReceiptDocument.seatMoves.items.aliasId': organizerContactMergeReceiptDocumentSeatMovesItemsAliasId,
+    'organizerContactMergeReceiptDocument.seatMoves.items.before.canonicalKey': organizerContactMergeReceiptDocumentSeatMovesItemsBeforeCanonicalKey,
+    'organizerContactMergeReceiptDocument.seatMoves.items.before.identityRevision': organizerContactMergeReceiptDocumentSeatMovesItemsBeforeIdentityRevision,
+    'organizerContactMergeReceiptDocument.seatMoves.items.before.migrationRevision': organizerContactMergeReceiptDocumentSeatMovesItemsBeforeMigrationRevision,
+    'organizerContactMergeReceiptDocument.seatMoves.items.before.state': organizerContactMergeReceiptDocumentSeatMovesItemsBeforeState,
+    'organizerContactMergeReceiptDocument.seatMoves.items.eventId': organizerContactMergeReceiptDocumentSeatMovesItemsEventId,
+    'organizerContactMergeReceiptDocument.seatMoves.items.kind': organizerContactMergeReceiptDocumentSeatMovesItemsKind,
+    'organizerContactMergeReceiptDocument.seatMoves.items.valueHash': organizerContactMergeReceiptDocumentSeatMovesItemsValueHash,
     'organizerContactMergeReceiptDocument.sourceContactId': organizerContactMergeReceiptDocumentSourceContactId,
+    'organizerContactMergeReceiptDocument.sourceOriginAliasIdsBefore': organizerContactMergeReceiptDocumentSourceOriginAliasIdsBefore,
+    'organizerContactMergeReceiptDocument.sourceOriginAliasIdsBefore.items': organizerContactMergeReceiptDocumentSourceOriginAliasIdsBeforeItems,
     'organizerContactMergeReceiptDocument.sourceRevision': organizerContactMergeReceiptDocumentSourceRevision,
     'organizerContactMergeReceiptDocument.survivorContactId': organizerContactMergeReceiptDocumentSurvivorContactId,
+    'organizerContactMergeReceiptDocument.survivorOriginIdsBefore': organizerContactMergeReceiptDocumentSurvivorOriginIdsBefore,
+    'organizerContactMergeReceiptDocument.survivorOriginIdsBefore.items': organizerContactMergeReceiptDocumentSurvivorOriginIdsBeforeItems,
     'organizerContactMergeReceiptDocument.survivorRevision': organizerContactMergeReceiptDocumentSurvivorRevision,
     'organizerContactMergeReviewDecisionDocument.contactIds': organizerContactMergeReviewDecisionDocumentContactIds,
     'organizerContactMergeReviewDecisionDocument.contactIds.items': organizerContactMergeReviewDecisionDocumentContactIdsItems,
