@@ -26,38 +26,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_forms_controller.g.dart';
 part 'host_form_target_controller.dart';
-
-@immutable
-class HostFormsDirectoryState {
-  const HostFormsDirectoryState({
-    required this.forms,
-    required this.nextCursor,
-    this.loadingMore = false,
-    this.loadMoreError,
-  });
-
-  final List<HostFormSummary> forms;
-  final String? nextCursor;
-  final bool loadingMore;
-  final Object? loadMoreError;
-
-  bool get canLoadMore => nextCursor != null && !loadingMore;
-
-  HostFormsDirectoryState copyWith({
-    List<HostFormSummary>? forms,
-    String? nextCursor,
-    bool? loadingMore,
-    Object? loadMoreError,
-    bool clearLoadMoreError = false,
-  }) => HostFormsDirectoryState(
-    forms: forms ?? this.forms,
-    nextCursor: nextCursor ?? this.nextCursor,
-    loadingMore: loadingMore ?? this.loadingMore,
-    loadMoreError: clearLoadMoreError
-        ? null
-        : loadMoreError ?? this.loadMoreError,
-  );
-}
+part 'host_forms_directory_state.dart';
 
 typedef HostFormAccountDirectoryScope = ({
   String uid,
@@ -82,9 +51,24 @@ Future<HostFormsDirectoryState> hostFormsAccountDirectory(
 
 @riverpod
 class HostFormsDirectoryController extends _$HostFormsDirectoryController {
+  int _readGeneration = 0;
+
+  bool _matchesAccount(HostFormListRequest request) =>
+      request.accountUid == null ||
+      ref.read(firebaseAuthProvider).currentUser?.uid == request.accountUid;
+
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
+    final generation = ++_readGeneration;
+    if (!_matchesAccount(request)) {
+      throw StateError('The Host account changed while loading forms.');
+    }
     final page = await ref.read(hostFormsRepositoryProvider).listForms(request);
+    if (!ref.mounted ||
+        generation != _readGeneration ||
+        !_matchesAccount(request)) {
+      throw StateError('The Host account changed while loading forms.');
+    }
     return HostFormsDirectoryState(
       forms: page.items,
       nextCursor: page.nextCursor,
@@ -93,7 +77,12 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
 
   Future<void> loadMore() async {
     final current = state.asData?.value;
-    if (current == null || !current.canLoadMore) return;
+    if (current == null ||
+        !current.canLoadMore ||
+        !_matchesAccount(request)) {
+      return;
+    }
+    final generation = _readGeneration;
     state = AsyncData(
       current.copyWith(loadingMore: true, clearLoadMoreError: true),
     );
@@ -101,6 +90,11 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
       final page = await ref
           .read(hostFormsRepositoryProvider)
           .listForms(request.copyWith(cursor: current.nextCursor));
+      if (!ref.mounted ||
+          generation != _readGeneration ||
+          !_matchesAccount(request)) {
+        return;
+      }
       final byId = <String, HostFormSummary>{
         for (final form in current.forms) form.formId: form,
         for (final form in page.items) form.formId: form,
@@ -112,6 +106,11 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
         ),
       );
     } on Object catch (error) {
+      if (!ref.mounted ||
+          generation != _readGeneration ||
+          !_matchesAccount(request)) {
+        return;
+      }
       state = AsyncData(
         current.copyWith(loadingMore: false, loadMoreError: error),
       );

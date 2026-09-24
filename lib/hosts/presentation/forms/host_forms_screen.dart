@@ -227,6 +227,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     )!;
     final request = HostFormListRequest(
       organizerId: selectedClub.id,
+      accountUid: uid,
+      accountGeneration: _accountGeneration,
       statuses: _statuses.isEmpty
           ? HostFormLifecycleStatus.values.toSet()
           : _statuses,
@@ -465,88 +467,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       Routes.hostFormTemplatesScreen.name,
       queryParameters: {'organizerId': organizerId},
     );
-  }
-
-  Future<void> _handleRowAction(
-    _HostFormRowAction action,
-    HostFormSummary form,
-    HostFormListRequest request,
-  ) async {
-    if (action == _HostFormRowAction.analytics) {
-      await context.pushNamed(
-        Routes.hostFormAnalyticsScreen.name,
-        pathParameters: {'formId': form.formId},
-        queryParameters: {'organizerId': form.organizerId},
-      );
-      return;
-    }
-    if (action == _HostFormRowAction.automations) {
-      await context.pushNamed(
-        Routes.hostFormAutomationsScreen.name,
-        pathParameters: {'formId': form.formId},
-        queryParameters: {'organizerId': form.organizerId},
-      );
-      return;
-    }
-    try {
-      switch (action) {
-        case _HostFormRowAction.analytics:
-        case _HostFormRowAction.automations:
-          break;
-        case _HostFormRowAction.duplicate:
-          final duplicate = await ref
-              .read(hostFormsControllerProvider)
-              .duplicate(source: form, requestId: _requestId('duplicate'));
-          if (!mounted) return;
-          ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          await context.pushNamed(
-            Routes.hostFormBuilderScreen.name,
-            pathParameters: {'formId': duplicate.form.formId},
-            queryParameters: {'organizerId': form.organizerId},
-          );
-          return;
-        case _HostFormRowAction.pause:
-        case _HostFormRowAction.resume:
-        case _HostFormRowAction.archive:
-          final lifecycleAction = switch (action) {
-            _HostFormRowAction.pause => HostFormLifecycleAction.pause,
-            _HostFormRowAction.resume => HostFormLifecycleAction.resume,
-            _ => HostFormLifecycleAction.archive,
-          };
-          if (lifecycleAction == HostFormLifecycleAction.archive) {
-            final confirmed = await showCatchConfirmDialog(
-              copy: catchDialogCopy(context.l10n),
-              context: context,
-              title: context.l10n.hostFormsArchiveConfirmTitle,
-              message: context.l10n.hostFormsArchiveConfirmBody,
-              confirmLabel: context.l10n.hostFormsArchive,
-              danger: true,
-            );
-            if (confirmed != true) return;
-          }
-          await ref
-              .read(hostFormsControllerProvider)
-              .setLifecycle(form: form, action: lifecycleAction);
-          ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          return;
-        case _HostFormRowAction.delete:
-          final confirmed = await showCatchConfirmDialog(
-            copy: catchDialogCopy(context.l10n),
-            context: context,
-            title: context.l10n.hostFormsDeleteConfirmTitle,
-            message: context.l10n.hostFormsDeleteConfirmBody,
-            confirmLabel: context.l10n.hostFormsDeleteDraft,
-            danger: true,
-          );
-          if (confirmed != true) return;
-          await ref.read(hostFormsControllerProvider).deleteDraft(form);
-          ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          return;
-      }
-    } on Object catch (error) {
-      if (!mounted) return;
-      showCatchErrorSnackBar(context, error);
-    }
   }
 
   void _openForm(HostFormSummary form) {

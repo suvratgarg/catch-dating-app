@@ -36,6 +36,19 @@ void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  test('directory pagination keeps account and session identity', () {
+    const first = HostFormListRequest(organizerId: 'forms-club',
+        accountUid: 'host-1', accountGeneration: 2);
+    final pageTwo = first.copyWith(cursor: 'next-page');
+    expect(pageTwo.accountUid, 'host-1');
+    expect(pageTwo.accountGeneration, 2);
+    expect(pageTwo.cursor, 'next-page');
+    expect(first, isNot(const HostFormListRequest(organizerId: 'forms-club',
+        accountUid: 'host-2', accountGeneration: 2)));
+    expect(first, isNot(const HostFormListRequest(organizerId: 'forms-club',
+        accountUid: 'host-1', accountGeneration: 3)));
+  });
+
   testWidgets('Responses empty state centers below controls and above nav', (
     tester,
   ) async {
@@ -477,6 +490,7 @@ void main() {
         final auth = _TestAuth('host-1');
         final nextDirectory = Completer<HostFormsDirectoryState>();
         final pendingReadDisposals = _ReadDisposeProbe();
+        final directoryRequests = <HostFormListRequest>[];
         String? routeMarker;
         late StateSetter rebuildRoute;
         await tester.pumpWidget(
@@ -492,7 +506,8 @@ void main() {
               ),
               hostFormsDirectoryControllerProvider.overrideWith2(
                 (_) => _AccountSwitchDirectoryController(
-                  auth, nextDirectory, pendingReadDisposals),
+                  auth, nextDirectory, pendingReadDisposals,
+                  directoryRequests),
               ),
             ],
             child: MaterialApp(
@@ -509,6 +524,8 @@ void main() {
         accounts.add('host-1');
         await pumpFeatureUi(tester);
         expect(find.byKey(const ValueKey('host-form-old')), findsOneWidget);
+        expect(directoryRequests.last.accountUid, 'host-1');
+        expect(directoryRequests.last.accountGeneration, 0);
 
         // FirebaseAuth switches before uidProvider emits. The old manager's row
         // must disappear in that intermediate frame.
@@ -529,6 +546,8 @@ void main() {
           await tester.pump();
         }
         expect(pendingReadDisposals.count, 0);
+        expect(directoryRequests.last.accountUid, 'host-2');
+        expect(directoryRequests.last.accountGeneration, 1);
 
         // Returning to A while B is still pending must start a new A-scoped
         // read; B's later completion must never replace A's visible page.
@@ -542,6 +561,8 @@ void main() {
             find.byKey(const ValueKey('host-form-old')),
           );
           expect(find.byKey(const ValueKey('host-form-old')), findsOneWidget);
+          expect(directoryRequests.last.accountUid, 'host-1');
+          expect(directoryRequests.last.accountGeneration, 2);
         }
 
         nextDirectory.complete(HostFormsDirectoryState(
@@ -689,13 +710,16 @@ class _TestUser extends Fake implements User {
 
 class _AccountSwitchDirectoryController extends HostFormsDirectoryController {
   _AccountSwitchDirectoryController(
-    this.auth, this.nextDirectory, this.pendingReadDisposals);
+    this.auth, this.nextDirectory, this.pendingReadDisposals,
+    this.requests);
   final _TestAuth auth;
   final Completer<HostFormsDirectoryState> nextDirectory;
   final _ReadDisposeProbe pendingReadDisposals;
+  final List<HostFormListRequest> requests;
 
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
+    requests.add(request);
     if (auth.uid == 'host-1') {
       return HostFormsDirectoryState(
         forms: [_formSummary(id: 'old', status: HostFormLifecycleStatus.published)],
