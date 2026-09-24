@@ -1,3 +1,8 @@
+/* firestore-index: organizerCampaignRecipients (
+  organizerId:ASCENDING,
+  endpointHash:ASCENDING,
+  acceptedAt:DESCENDING
+) */
 import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
 import * as crypto from "node:crypto";
 import * as admin from "firebase-admin";
@@ -19,6 +24,8 @@ import type {
   OrganizerContactDocument,
   OrganizerMessageTemplateDocument,
   OrganizerSenderConnectionDocument,
+  ProgramGuestDocument,
+  ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {OrganizerCampaignActionCallablePayload} from
   "../shared/generated/organizerCampaignActionCallablePayload";
@@ -270,11 +277,14 @@ async function claimRecipient(params: {
     ) {
       return;
     }
-    const contactRef = params.db
-      .collection("organizerContacts")
-      .doc(recipient.contactId);
-    const contactSnap = await tx.get(contactRef);
-    const contact = contactSnap.data() as OrganizerContactDocument | undefined;
+    const program = recipient.programRecipient ?? null;
+    const contactRef = recipient.contactId ?
+      params.db.collection("organizerContacts").doc(recipient.contactId) :
+      null;
+    const contactSnap = contactRef ? await tx.get(contactRef) : null;
+    const contact = contactSnap?.data() as
+      | OrganizerContactDocument
+      | undefined;
     const preferenceRef = contact?.linkedUid ?
       params.db
         .collection("organizerCommunicationPreferences")
@@ -285,11 +295,16 @@ async function claimRecipient(params: {
           ),
         ) :
       null;
-    const channelRef = params.db
-      .collection("organizerContactChannelStates")
-      .doc(
-        organizerContactChannelStateId(params.organizerId, recipient.contactId),
-      );
+    const channelRef = recipient.contactId ?
+      params.db
+        .collection("organizerContactChannelStates")
+        .doc(
+          organizerContactChannelStateId(
+            params.organizerId,
+            recipient.contactId,
+          ),
+        ) :
+      null;
     const connectionRef = params.db
       .collection("organizerSenderConnections")
       .doc(campaign.connectionId);
@@ -304,18 +319,37 @@ async function claimRecipient(params: {
         .collection("eventInviteLinkSecrets")
         .doc(recipient.inviteLinkId) :
       null;
+    // Program recipients re-check the endpoint guest, the household's
+    // live messaging consent, and recent sends to the same endpoint —
+    // the program analog of CRM preference/channel state.
+    const endpointGuestRef = program ?
+      params.db.collection("programGuests").doc(program.endpointGuestId) :
+      null;
+    const householdRef = program?.householdId ?
+      params.db.collection("programHouseholds").doc(program.householdId) :
+      null;
+    const endpointHistoryQuery = program && recipient.endpointHash ?
+      params.db.collection("organizerCampaignRecipients")
+        .where("organizerId", "==", params.organizerId)
+        .where("endpointHash", "==", recipient.endpointHash)
+        .orderBy("acceptedAt", "desc")
+        .limit(10) :
+      null;
     const related = await Promise.all([
       preferenceRef ? tx.get(preferenceRef) : null,
-      tx.get(channelRef),
+      channelRef ? tx.get(channelRef) : null,
       tx.get(connectionRef),
       tx.get(templateRef),
       eventRef ? tx.get(eventRef) : null,
       inviteSecretRef ? tx.get(inviteSecretRef) : null,
+      endpointGuestRef ? tx.get(endpointGuestRef) : null,
+      householdRef ? tx.get(householdRef) : null,
+      endpointHistoryQuery ? tx.get(endpointHistoryQuery) : null,
     ]);
     const preference = related[0]?.data() as
       | OrganizerCommunicationPreferenceDocument
       | undefined;
-    const channelState = related[1].data() as
+    const channelState = related[1]?.data() as
       | OrganizerContactChannelStateDocument
       | undefined;
     const connection = related[2].data() as
@@ -329,19 +363,42 @@ async function claimRecipient(params: {
       typeof related[5]?.data()?.token === "string" ?
         (related[5]!.data()!.token as string) :
         null;
-    const suppression = finalSuppressionReason({
-      organizerId: params.organizerId,
-      campaign,
-      recipient,
-      contact,
-      preference,
-      channelState,
-      connection,
-      template,
-      event,
-      inviteToken,
-      now,
-    });
+    const endpointGuest = related[6]?.data() as
+      | ProgramGuestDocument
+      | undefined;
+    const household = related[7]?.data() as
+      | ProgramHouseholdDocument
+      | undefined;
+    const endpointHistory = related[8] ?
+      (related[8] as FirebaseFirestore.QuerySnapshot).docs.map((doc) =>
+        doc.data() as OrganizerCampaignRecipientDocument
+      ) :
+      [];
+    const suppression = program ?
+      programSuppressionReason({
+        organizerId: params.organizerId,
+        campaign,
+        recipient,
+        endpointGuest,
+        household,
+        endpointHistory,
+        connection,
+        template,
+        now,
+      }) :
+      finalSuppressionReason({
+        organizerId: params.organizerId,
+        campaign,
+        recipient,
+        contact,
+        preference,
+        channelState,
+        connection,
+        template,
+        event,
+        inviteToken,
+        now,
+      });
     if (suppression) {
       tx.update(recipientRef, {
         status: "suppressed",
@@ -433,17 +490,21 @@ async function deliverRecipient(
     const campaignRef = db
       .collection("organizerCampaigns")
       .doc(claimed.recipient.campaignId);
-    const stateRef = db
-      .collection("organizerContactChannelStates")
-      .doc(
-        organizerContactChannelStateId(
-          claimed.recipient.organizerId,
-          claimed.recipient.contactId,
-        ),
-      );
+    // Program recipients have no CRM channel-state doc; the send-time
+    // endpoint-history read is their frequency-cap record.
+    const stateRef = claimed.recipient.contactId ?
+      db
+        .collection("organizerContactChannelStates")
+        .doc(
+          organizerContactChannelStateId(
+            claimed.recipient.organizerId,
+            claimed.recipient.contactId,
+          ),
+        ) :
+      null;
     const [recipientSnap, stateSnap] = await Promise.all([
       tx.get(recipientRef),
-      tx.get(stateRef),
+      stateRef ? tx.get(stateRef) : null,
     ]);
     const recipient = recipientSnap.data() as
       | OrganizerCampaignRecipientDocument
@@ -455,7 +516,7 @@ async function deliverRecipient(
     ) {
       return;
     }
-    const existingState = stateSnap.data() as
+    const existingState = stateSnap?.data() as
       | OrganizerContactChannelStateDocument
       | undefined;
     tx.update(recipientRef, {
@@ -466,25 +527,28 @@ async function deliverRecipient(
       leaseExpiresAt: null,
       updatedAt: now,
     });
-    tx.set(
-      stateRef,
-      {
-        organizerId: recipient.organizerId,
-        contactId: recipient.contactId,
-        channel: organizerWhatsappCampaignRoute.transport,
-        endpointHash: recipient.endpointHash,
-        suppressionStatus: existingState?.suppressionStatus ?? "none",
-        suppressionSource: existingState?.suppressionSource ?? null,
-        adminSuppressed: existingState?.adminSuppressed ?? false,
-        campaignAcceptedCount: (existingState?.campaignAcceptedCount ?? 0) + 1,
-        lastCampaignAcceptedAt: now,
-        lastInboundAt: existingState?.lastInboundAt ?? null,
-        lastReplyAt: existingState?.lastReplyAt ?? null,
-        createdAt: existingState?.createdAt ?? now,
-        updatedAt: now,
-      },
-      {merge: false},
-    );
+    if (stateRef && recipient.contactId) {
+      tx.set(
+        stateRef,
+        {
+          organizerId: recipient.organizerId,
+          contactId: recipient.contactId,
+          channel: organizerWhatsappCampaignRoute.transport,
+          endpointHash: recipient.endpointHash,
+          suppressionStatus: existingState?.suppressionStatus ?? "none",
+          suppressionSource: existingState?.suppressionSource ?? null,
+          adminSuppressed: existingState?.adminSuppressed ?? false,
+          campaignAcceptedCount:
+            (existingState?.campaignAcceptedCount ?? 0) + 1,
+          lastCampaignAcceptedAt: now,
+          lastInboundAt: existingState?.lastInboundAt ?? null,
+          lastReplyAt: existingState?.lastReplyAt ?? null,
+          createdAt: existingState?.createdAt ?? now,
+          updatedAt: now,
+        },
+        {merge: false},
+      );
+    }
     tx.update(campaignRef, {
       "deliveryCounts.pending": admin.firestore.FieldValue.increment(-1),
       "deliveryCounts.accepted": admin.firestore.FieldValue.increment(1),
@@ -650,6 +714,19 @@ function finalSuppressionReason(params: {
   ) {
     return "frequencyCapped";
   }
+  return senderGateReason(params);
+}
+
+// The send-time gate shared by CRM and program recipients: the sender
+// connection, template, and event invite checks are identity-agnostic.
+function senderGateReason(params: {
+  organizerId: string;
+  campaign: OrganizerCampaignDocument;
+  connection: OrganizerSenderConnectionDocument | undefined;
+  template: OrganizerMessageTemplateDocument | undefined;
+  event: EventDocument | undefined;
+  inviteToken: string | null;
+}): OrganizerCampaignRecipientDocument["exclusionReason"] {
   if (
     !params.connection ||
     params.connection.organizerId !== params.organizerId ||
@@ -679,6 +756,53 @@ function finalSuppressionReason(params: {
     return "providerBlocked";
   }
   return null;
+}
+
+// Program recipients carry no CRM identity: the gate is the endpoint
+// guest still resolving to the snapshotted phone, the household's live
+// explicit consent (granted:false suppresses; absent consent does not —
+// save-the-date precedes the consent tick), recent sends to the same
+// endpoint for the frequency cap, then the shared sender gate.
+function programSuppressionReason(params: {
+  organizerId: string;
+  campaign: OrganizerCampaignDocument;
+  recipient: OrganizerCampaignRecipientDocument;
+  endpointGuest: ProgramGuestDocument | undefined;
+  household: ProgramHouseholdDocument | undefined;
+  endpointHistory: OrganizerCampaignRecipientDocument[];
+  connection: OrganizerSenderConnectionDocument | undefined;
+  template: OrganizerMessageTemplateDocument | undefined;
+  now: FirebaseFirestore.Timestamp;
+}): OrganizerCampaignRecipientDocument["exclusionReason"] {
+  if (
+    !params.endpointGuest ||
+    !params.endpointGuest.phoneE164 ||
+    hashEndpoint(params.endpointGuest.phoneE164) !==
+      params.recipient.endpointHash
+  ) {
+    return "invalidEndpoint";
+  }
+  if (params.household?.messagingConsent?.granted === false) {
+    return "optedOut";
+  }
+  for (const prior of params.endpointHistory) {
+    if (prior.optedOutAt) return "optedOut";
+    if (
+      prior.acceptedAt &&
+      params.now.toMillis() - prior.acceptedAt.toMillis() <
+        organizerCampaignFrequencyCapMillis
+    ) {
+      return "frequencyCapped";
+    }
+  }
+  return senderGateReason({
+    organizerId: params.organizerId,
+    campaign: params.campaign,
+    connection: params.connection,
+    template: params.template,
+    event: undefined,
+    inviteToken: null,
+  });
 }
 
 function normalizePayload(data: unknown): unknown {

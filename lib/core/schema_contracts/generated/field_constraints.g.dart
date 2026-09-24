@@ -78956,7 +78956,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerCampaignRecipientDocument.contactId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -79096,6 +79095,81 @@ abstract final class CatchContractConstraints {
     path: 'organizerCampaignRecipientDocument.permissionUpdatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientEndpointGuestId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.endpointGuestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientGuestIds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.guestIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientGuestIdsItems = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.guestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientHouseholdId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.householdId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientMessagingConsentGranted = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.messagingConsent.granted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientMessagingConsentGrantedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.messagingConsent.grantedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientMessagingConsentGrantedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.messagingConsent.grantedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientMessagingConsentSource = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.messagingConsent.source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['householdRsvpLink', 'staff', 'import', 'whatsappStop'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientProgramId = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignRecipientDocumentProgramRecipientRecipientKey = CatchContractFieldConstraints(
+    path: 'organizerCampaignRecipientDocument.programRecipient.recipientKey',
+    maxLength: 220,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerCampaignRecipientDocumentProviderErrorCategory = CatchContractFieldConstraints(
@@ -97195,7 +97269,7 @@ abstract final class CatchContractConstraints {
   static const programHouseholdDocumentMessagingConsentSource = CatchContractFieldConstraints(
     path: 'programHouseholdDocument.messagingConsent.source',
     valueTypes: <String>['string'],
-    enumValues: <String>['householdRsvpLink', 'staff', 'import'],
+    enumValues: <String>['householdRsvpLink', 'staff', 'import', 'whatsappStop'],
   );
 
   static const programHouseholdDocumentOrganizerId = CatchContractFieldConstraints(
@@ -112045,6 +112119,57 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceFunctionIds = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 32,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceHouseholdDedupe = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.householdDedupe',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['savedAudience', 'programSelection'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceProgramId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceRsvpStatuses = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.rsvpStatuses',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerCampaignCallablePayloadRecipientSourceRsvpStatusesItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerCampaignCallablePayload.recipientSource.rsvpStatuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
   static const upsertOrganizerCampaignCallablePayloadRequestId = CatchContractFieldConstraints(
     path: 'upsertOrganizerCampaignCallablePayload.requestId',
     maxLength: 120,
@@ -112057,7 +112182,6 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerCampaignCallablePayload.savedAudienceId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -126827,6 +126951,16 @@ abstract final class CatchContractConstraints {
     'organizerCampaignRecipientDocument.permissionTermsVersion': organizerCampaignRecipientDocumentPermissionTermsVersion,
     'organizerCampaignRecipientDocument.permissionUpdatedAt._nanoseconds': organizerCampaignRecipientDocumentPermissionUpdatedAtNanoseconds,
     'organizerCampaignRecipientDocument.permissionUpdatedAt._seconds': organizerCampaignRecipientDocumentPermissionUpdatedAtSeconds,
+    'organizerCampaignRecipientDocument.programRecipient.endpointGuestId': organizerCampaignRecipientDocumentProgramRecipientEndpointGuestId,
+    'organizerCampaignRecipientDocument.programRecipient.guestIds': organizerCampaignRecipientDocumentProgramRecipientGuestIds,
+    'organizerCampaignRecipientDocument.programRecipient.guestIds.items': organizerCampaignRecipientDocumentProgramRecipientGuestIdsItems,
+    'organizerCampaignRecipientDocument.programRecipient.householdId': organizerCampaignRecipientDocumentProgramRecipientHouseholdId,
+    'organizerCampaignRecipientDocument.programRecipient.messagingConsent.granted': organizerCampaignRecipientDocumentProgramRecipientMessagingConsentGranted,
+    'organizerCampaignRecipientDocument.programRecipient.messagingConsent.grantedAt._nanoseconds': organizerCampaignRecipientDocumentProgramRecipientMessagingConsentGrantedAtNanoseconds,
+    'organizerCampaignRecipientDocument.programRecipient.messagingConsent.grantedAt._seconds': organizerCampaignRecipientDocumentProgramRecipientMessagingConsentGrantedAtSeconds,
+    'organizerCampaignRecipientDocument.programRecipient.messagingConsent.source': organizerCampaignRecipientDocumentProgramRecipientMessagingConsentSource,
+    'organizerCampaignRecipientDocument.programRecipient.programId': organizerCampaignRecipientDocumentProgramRecipientProgramId,
+    'organizerCampaignRecipientDocument.programRecipient.recipientKey': organizerCampaignRecipientDocumentProgramRecipientRecipientKey,
     'organizerCampaignRecipientDocument.providerErrorCategory': organizerCampaignRecipientDocumentProviderErrorCategory,
     'organizerCampaignRecipientDocument.providerMessageId': organizerCampaignRecipientDocumentProviderMessageId,
     'organizerCampaignRecipientDocument.readAt._nanoseconds': organizerCampaignRecipientDocumentReadAtNanoseconds,
@@ -131358,6 +131492,13 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerCampaignCallablePayload.messageClass': upsertOrganizerCampaignCallablePayloadMessageClass,
     'upsertOrganizerCampaignCallablePayload.name': upsertOrganizerCampaignCallablePayloadName,
     'upsertOrganizerCampaignCallablePayload.organizerId': upsertOrganizerCampaignCallablePayloadOrganizerId,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.functionIds': upsertOrganizerCampaignCallablePayloadRecipientSourceFunctionIds,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.functionIds.items': upsertOrganizerCampaignCallablePayloadRecipientSourceFunctionIdsItems,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.householdDedupe': upsertOrganizerCampaignCallablePayloadRecipientSourceHouseholdDedupe,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.kind': upsertOrganizerCampaignCallablePayloadRecipientSourceKind,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.programId': upsertOrganizerCampaignCallablePayloadRecipientSourceProgramId,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.rsvpStatuses': upsertOrganizerCampaignCallablePayloadRecipientSourceRsvpStatuses,
+    'upsertOrganizerCampaignCallablePayload.recipientSource.rsvpStatuses.items': upsertOrganizerCampaignCallablePayloadRecipientSourceRsvpStatusesItems,
     'upsertOrganizerCampaignCallablePayload.requestId': upsertOrganizerCampaignCallablePayloadRequestId,
     'upsertOrganizerCampaignCallablePayload.savedAudienceId': upsertOrganizerCampaignCallablePayloadSavedAudienceId,
     'upsertOrganizerCampaignCallablePayload.scheduledAtMillis': upsertOrganizerCampaignCallablePayloadScheduledAtMillis,

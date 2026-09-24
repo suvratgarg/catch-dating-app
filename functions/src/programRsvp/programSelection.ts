@@ -37,7 +37,22 @@ export interface SelectionRecipient {
   // `household:{id}` or `guest:{id}`; stable and sortable.
   recipientKey: string;
   guestIds: string[];
+  // The member whose phoneE164 the send targets; dispatch re-reads this
+  // guest to catch an endpoint change between approval and send.
+  endpointGuestId: string;
+  // The household backing this recipient for consent checks, or null
+  // when a dedupe-off guest has no household.
+  householdId: string | null;
   phoneE164: string;
+}
+
+// A resolved-but-unreachable recipient identity: the dedupe group (or
+// single guest) qualified on every filter yet had no phone to send to.
+// Emitting the identity lets callers materialize suppressed recipient
+// rows for audit parity with CRM exclusions instead of only a count.
+export interface SelectionNoPhone {
+  recipientKey: string;
+  guestIds: string[];
 }
 
 export interface ProgramSelectionResolution {
@@ -50,6 +65,7 @@ export interface ProgramSelectionResolution {
     // Dedupe groups or guests with no phone to send to.
     noPhone: number;
   };
+  noPhoneRecipients: SelectionNoPhone[];
 }
 
 export function resolveProgramSelection(
@@ -94,16 +110,19 @@ export function resolveProgramSelection(
     .map((guestId) => guestIndex.get(guestId))
     .filter((guest): guest is SelectionGuest => guest !== undefined)
     .sort((a, b) => a.guestId.localeCompare(b.guestId));
-  const {recipients, noPhone} = filter.householdDedupe ?
+  const {recipients, noPhoneRecipients} = filter.householdDedupe ?
     dedupeByHousehold(eligible) : perGuest(eligible);
   recipients.sort((a, b) => a.recipientKey.localeCompare(b.recipientKey));
+  noPhoneRecipients.sort((a, b) =>
+    a.recipientKey.localeCompare(b.recipientKey));
   return {
     recipients,
     excluded: {
       notSelected: guests.length - qualified.size,
       rsvpFiltered,
-      noPhone,
+      noPhone: noPhoneRecipients.length,
     },
+    noPhoneRecipients,
   };
 }
 
@@ -123,27 +142,30 @@ function pickFunctions(
 
 function perGuest(guests: ReadonlyArray<SelectionGuest>): {
   recipients: SelectionRecipient[];
-  noPhone: number;
+  noPhoneRecipients: SelectionNoPhone[];
 } {
   const recipients: SelectionRecipient[] = [];
-  let noPhone = 0;
+  const noPhoneRecipients: SelectionNoPhone[] = [];
   for (const guest of guests) {
+    const recipientKey = `guest:${guest.guestId}`;
     if (guest.phoneE164 === null) {
-      noPhone += 1;
+      noPhoneRecipients.push({recipientKey, guestIds: [guest.guestId]});
       continue;
     }
     recipients.push({
-      recipientKey: `guest:${guest.guestId}`,
+      recipientKey,
       guestIds: [guest.guestId],
+      endpointGuestId: guest.guestId,
+      householdId: guest.householdId,
       phoneE164: guest.phoneE164,
     });
   }
-  return {recipients, noPhone};
+  return {recipients, noPhoneRecipients};
 }
 
 function dedupeByHousehold(guests: ReadonlyArray<SelectionGuest>): {
   recipients: SelectionRecipient[];
-  noPhone: number;
+  noPhoneRecipients: SelectionNoPhone[];
 } {
   const groups = new Map<string, SelectionGuest[]>();
   for (const guest of guests) {
@@ -153,19 +175,24 @@ function dedupeByHousehold(guests: ReadonlyArray<SelectionGuest>): {
     if (group) group.push(guest); else groups.set(key, [guest]);
   }
   const recipients: SelectionRecipient[] = [];
-  let noPhone = 0;
+  const noPhoneRecipients: SelectionNoPhone[] = [];
   for (const [key, members] of groups) {
-    const phone = members.map((member) => member.phoneE164)
-      .find((value) => value !== null);
-    if (phone === undefined) {
-      noPhone += 1;
+    const endpoint = members.find((member) => member.phoneE164 !== null);
+    if (endpoint === undefined) {
+      noPhoneRecipients.push({
+        recipientKey: key,
+        guestIds: members.map((member) => member.guestId),
+      });
       continue;
     }
     recipients.push({
       recipientKey: key,
       guestIds: members.map((member) => member.guestId),
-      phoneE164: phone,
+      endpointGuestId: endpoint.guestId,
+      householdId: key.startsWith("household:") ?
+        key.slice("household:".length) : null,
+      phoneE164: endpoint.phoneE164!,
     });
   }
-  return {recipients, noPhone};
+  return {recipients, noPhoneRecipients};
 }

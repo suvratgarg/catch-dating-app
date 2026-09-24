@@ -1,0 +1,19 @@
+{
+  "organizerId": "org-1",
+  "requestId": "req-program-selection-1",
+  "name": "Mehndi save the date",
+  "messageClass": "organizerUpdate",
+  "savedAudienceId": null,
+  "recipientSource": {
+    "kind": "programSelection",
+    "programId": "program-1",
+    "functionIds": ["fn-mehndi", "fn-reception"],
+    "rsvpStatuses": ["pending", "attending", "maybe"],
+    "householdDedupe": true
+  },
+  "connectionId": "conn-1",
+  "templateId": "tpl-1",
+  "templateVariables": {
+    "program_name": "Sharma-Mehta Wedding"
+  }
+}

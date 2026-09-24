@@ -118159,9 +118159,134 @@ export const organizerCampaignRecipientDocumentSchema = {
       "maxLength": 180
     },
     "contactId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "CRM contact for saved-audience recipients; null on programSelection rows — program identity lives in programRecipient."
+    },
+    "programRecipient": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "programId",
+        "recipientKey",
+        "guestIds",
+        "householdId",
+        "endpointGuestId",
+        "messagingConsent"
+      ],
+      "description": "Program-native recipient identity for recipientSource=programSelection campaigns. One doc per resolved recipientKey (guest:{id} or household:{id}); contactId is null on these rows.",
+      "properties": {
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "recipientKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220,
+          "description": "guest:{guestId} or household:{householdId}; hashed into the document id in place of contactId."
+        },
+        "guestIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Program guests covered by this recipient; one for guest recipients, household members for deduped rows."
+        },
+        "householdId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Household carrying messaging consent for this recipient — the dedupe household for household:{id} rows or the guest's household otherwise."
+        },
+        "endpointGuestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "messagingConsent": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "granted",
+            "grantedAt",
+            "source"
+          ],
+          "properties": {
+            "granted": {
+              "type": "boolean"
+            },
+            "grantedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "householdRsvpLink",
+                "staff",
+                "import",
+                "whatsappStop",
+                null
+              ]
+            }
+          },
+          "description": "Snapshot of the household's explicit messaging consent at approve time; grant decisions re-read live at dispatch."
+        }
+      }
     },
     "channel": {
       "const": "whatsapp"
@@ -126882,9 +127007,10 @@ export const programHouseholdDocumentSchema = {
             "householdRsvpLink",
             "staff",
             "import",
+            "whatsappStop",
             null
           ],
-          "description": "Channel that recorded the consent decision."
+          "description": "Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook."
         }
       },
       "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent."
@@ -175510,9 +175636,17 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
       ]
     },
     "savedAudienceId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Active CRM saved audience. Required for recipientSource.kind=savedAudience (the default); must be null for programSelection."
     },
     "connectionId": {
       "type": "string",
@@ -175564,6 +175698,74 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
       ],
       "minimum": 0,
       "maximum": 4102444800000
+    },
+    "recipientSource": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "description": "Recipient resolution. Absent reads as savedAudience backed by savedAudienceId. programSelection resolves program guests/households instead of CRM contacts.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "savedAudience",
+            "programSelection"
+          ]
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=programSelection; ignored otherwise."
+        },
+        "functionIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Restricts to guests invited to these functions; null or empty means every function in the program."
+        },
+        "rsvpStatuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "description": "Restricts to matching per-function RSVP statuses; null or empty means every effective status."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "When true, guests sharing a household collapse into one recipient. Default true."
+        }
+      }
     }
   }
 };

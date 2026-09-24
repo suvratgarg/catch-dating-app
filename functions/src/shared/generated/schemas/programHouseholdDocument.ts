@@ -196,9 +196,10 @@ export const programHouseholdDocumentSchema: Record<string, unknown> = {
             "householdRsvpLink",
             "staff",
             "import",
+            "whatsappStop",
             null
           ],
-          "description": "Channel that recorded the consent decision."
+          "description": "Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook."
         }
       },
       "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent."

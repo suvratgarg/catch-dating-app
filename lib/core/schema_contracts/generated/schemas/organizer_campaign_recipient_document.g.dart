@@ -57,9 +57,134 @@ const schemaOrganizerCampaignRecipientDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'contactId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'CRM contact for saved-audience recipients; null on programSelection rows — program identity lives in programRecipient.',
+    },
+    'programRecipient': <String, Object?>{
+      'type': <Object?>[
+        'object',
+        'null',
+      ],
+      'additionalProperties': false,
+      'required': <Object?>[
+        'programId',
+        'recipientKey',
+        'guestIds',
+        'householdId',
+        'endpointGuestId',
+        'messagingConsent',
+      ],
+      'description': 'Program-native recipient identity for recipientSource=programSelection campaigns. One doc per resolved recipientKey (guest:{id} or household:{id}); contactId is null on these rows.',
+      'properties': <String, Object?>{
+        'programId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'recipientKey': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 220,
+          'description': 'guest:{guestId} or household:{householdId}; hashed into the document id in place of contactId.',
+        },
+        'guestIds': <String, Object?>{
+          'type': 'array',
+          'minItems': 1,
+          'maxItems': 50,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'description': 'Program guests covered by this recipient; one for guest recipients, household members for deduped rows.',
+        },
+        'householdId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+          'description': 'Household carrying messaging consent for this recipient — the dedupe household for household:{id} rows or the guest\'s household otherwise.',
+        },
+        'endpointGuestId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'messagingConsent': <String, Object?>{
+          'type': <Object?>[
+            'object',
+            'null',
+          ],
+          'additionalProperties': false,
+          'required': <Object?>[
+            'granted',
+            'grantedAt',
+            'source',
+          ],
+          'properties': <String, Object?>{
+            'granted': <String, Object?>{
+              'type': 'boolean',
+            },
+            'grantedAt': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'description': 'Serialized Firestore Timestamp fixture shape.',
+                  'x-firestore-type': 'timestamp',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    '_seconds',
+                    '_nanoseconds',
+                  ],
+                  'properties': <String, Object?>{
+                    '_seconds': <String, Object?>{
+                      'type': 'integer',
+                    },
+                    '_nanoseconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 999999999,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'source': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'enum': <Object?>[
+                'householdRsvpLink',
+                'staff',
+                'import',
+                'whatsappStop',
+                null,
+              ],
+            },
+          },
+          'description': 'Snapshot of the household\'s explicit messaging consent at approve time; grant decisions re-read live at dispatch.',
+        },
+      },
     },
     'channel': <String, Object?>{
       'const': 'whatsapp',

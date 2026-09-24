@@ -16,8 +16,13 @@ import type {
   OrganizerContactDocument,
   OrganizerContactTraitDocument,
   OrganizerMessageTemplateDocument,
+  OrganizerProgramDocument,
   OrganizerSavedAudienceDocument,
   OrganizerSenderConnectionDocument,
+  ProgramFunctionDocument,
+  ProgramFunctionGuestDocument,
+  ProgramGuestDocument,
+  ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {OrganizerCampaignActionCallablePayload} from
   "../shared/generated/organizerCampaignActionCallablePayload";
@@ -63,6 +68,16 @@ import {
   resolveSavedAudienceRows,
   SavedAudienceEvaluationRow,
 } from "./organizerSavedAudiences";
+import {
+  resolveProgramSelection,
+  type ProgramSelectionResolution,
+  type SelectionGuest,
+  type SelectionRecipient,
+} from "../programRsvp/programSelection";
+import type {
+  FunctionGuestRowLike,
+  FunctionLike,
+} from "../programRsvp/functionInvitation";
 
 import {requireAutomationCampaignAuthority} from "./organizerAutomationSource";
 
@@ -82,14 +97,35 @@ const defaultDeps: CampaignDeps = {
 };
 
 interface AudienceRow {
+  // CRM contact id, or the programSelection recipientKey
+  // ("guest:{id}"/"household:{id}") for program recipients.
   contactId: string;
-  contact: OrganizerContactDocument;
-  trait: OrganizerContactTraitDocument;
+  contact: OrganizerContactDocument | null;
+  trait: OrganizerContactTraitDocument | null;
   preference: OrganizerCommunicationPreferenceDocument | null;
   channelState: OrganizerContactChannelStateDocument | null;
   eligibility: "eligible" | "excluded";
   exclusionReason: ExclusionReason;
   endpointHash: string | null;
+  programRecipient?: ProgramAudienceRecipient;
+}
+
+// The program-native recipient identity written onto the campaign
+// recipient document. messagingConsent is the approve-time snapshot;
+// dispatch re-reads the household doc for a live grant check.
+interface ProgramAudienceRecipient {
+  programId: string;
+  recipientKey: string;
+  guestIds: string[];
+  householdId: string | null;
+  endpointGuestId: string;
+  phoneE164: string | null;
+  messagingConsent: {
+    granted: boolean;
+    grantedAt: FirebaseFirestore.Timestamp | null;
+    source:
+      "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
+  } | null;
 }
 
 interface CampaignContext {
@@ -126,26 +162,63 @@ export async function upsertOrganizerCampaignHandler(
     organizerId: data.organizerId,
     actorUid,
   });
+  const recipientSource = data.recipientSource ?? null;
+  const programSelection =
+    recipientSource?.kind === "programSelection" ? recipientSource : null;
+  if (programSelection) {
+    if (!programSelection.programId) {
+      throw new HttpsError("invalid-argument",
+        "programSelection campaigns require a programId.");
+    }
+    if (data.savedAudienceId) {
+      throw new HttpsError("invalid-argument",
+        "savedAudienceId must be null for programSelection campaigns.");
+    }
+    if (data.eventId) {
+      throw new HttpsError("invalid-argument",
+        "Event invite links are CRM-contact bound; programSelection " +
+        "campaigns cannot carry an eventId.");
+    }
+  } else if (!data.savedAudienceId) {
+    throw new HttpsError("invalid-argument",
+      "Choose an audience.");
+  }
+  const programId = programSelection?.programId ?? null;
   const campaignId =
     data.campaignId ??
     organizerCampaignId(data.organizerId, actorUid, data.requestId);
   const campaignRef = db.collection("organizerCampaigns").doc(campaignId);
-  const savedAudienceRef = db.collection("organizerSavedAudiences")
-    .doc(data.savedAudienceId);
+  const savedAudienceRef = data.savedAudienceId ?
+    db.collection("organizerSavedAudiences").doc(data.savedAudienceId) :
+    null;
+  const programRef = programId ?
+    db.collection("organizerPrograms").doc(programId) :
+    null;
   const now = deps.now();
   await db.runTransaction(async (tx) => {
-    const [snapshot, savedAudienceSnap] = await Promise.all([
+    const [snapshot, savedAudienceSnap, programSnap] = await Promise.all([
       tx.get(campaignRef),
-      tx.get(savedAudienceRef),
+      savedAudienceRef ? tx.get(savedAudienceRef) : null,
+      programRef ? tx.get(programRef) : null,
     ]);
     const existing = snapshot.data() as OrganizerCampaignDocument | undefined;
-    const savedAudience = savedAudienceSnap.data() as
+    const savedAudience = savedAudienceSnap?.data() as
       OrganizerSavedAudienceDocument | undefined;
+    const program = programSnap?.data() as
+      OrganizerProgramDocument | undefined;
+    if (programSelection && (!program ||
+        program.organizerId !== data.organizerId)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Program not found for this organizer.",
+      );
+    }
     if (
-      !savedAudience ||
-      savedAudience.organizerId !== data.organizerId ||
-      savedAudience.scope !== "organizerCrm" ||
-      savedAudience.status !== "active"
+      !programSelection &&
+      (!savedAudience ||
+        savedAudience.organizerId !== data.organizerId ||
+        savedAudience.scope !== "organizerCrm" ||
+        savedAudience.status !== "active")
     ) {
       throw new HttpsError(
         "failed-precondition",
@@ -182,11 +255,21 @@ export async function upsertOrganizerCampaignHandler(
       data.scheduledAtMillis === null || data.scheduledAtMillis === undefined ?
         null :
         admin.firestore.Timestamp.fromMillis(data.scheduledAtMillis);
+    const normalizedSource = programSelection && programId ? {
+      kind: "programSelection" as const,
+      programId,
+      functionIds: programSelection.functionIds?.length ?
+        [...programSelection.functionIds] : null,
+      rsvpStatuses: programSelection.rsvpStatuses?.length ?
+        [...programSelection.rsvpStatuses] : null,
+      householdDedupe: programSelection.householdDedupe ?? true,
+    } : null;
     const content = {
       messageClass: data.messageClass,
-      savedAudienceId: savedAudience.audienceId,
-      savedAudienceRevision: savedAudience.revision,
-      savedAudienceDefinitionHash: savedAudience.definitionHash,
+      savedAudienceId: savedAudience?.audienceId ?? null,
+      savedAudienceRevision: savedAudience?.revision ?? null,
+      savedAudienceDefinitionHash: savedAudience?.definitionHash ?? null,
+      recipientSource: normalizedSource,
       connectionId: data.connectionId,
       templateId: data.templateId,
       templateVariables: data.templateVariables,
@@ -202,9 +285,10 @@ export async function upsertOrganizerCampaignHandler(
       status: "draft",
       name: data.name,
       segmentIds: [],
-      savedAudienceId: savedAudience.audienceId,
-      savedAudienceRevision: savedAudience.revision,
-      savedAudienceDefinitionHash: savedAudience.definitionHash,
+      recipientSource: normalizedSource,
+      savedAudienceId: savedAudience?.audienceId ?? null,
+      savedAudienceRevision: savedAudience?.revision ?? null,
+      savedAudienceDefinitionHash: savedAudience?.definitionHash ?? null,
       connectionId: data.connectionId,
       templateId: data.templateId,
       templateVariables: data.templateVariables,
@@ -489,29 +573,39 @@ export async function approveOrganizerCampaignHandler(
     const savedAudienceRef = initial.campaign.savedAudienceId ?
       db.collection("organizerSavedAudiences")
         .doc(initial.campaign.savedAudienceId) : null;
+    const isProgramSelection =
+      initial.campaign.recipientSource?.kind === "programSelection";
     const refs = [
       campaignRef,
       db.collection("organizerAudienceSummaries").doc(data.organizerId),
       ...(savedAudienceRef ? [savedAudienceRef] : []),
-      ...initial.audienceRows.flatMap((row) => [
-        db.collection("organizerContacts").doc(row.contactId),
-        db.collection("organizerContactTraits").doc(row.contactId),
-        ...(row.contact.linkedUid ?
+      ...initial.audienceRows.flatMap((row) =>
+        // Program rows carry no CRM identity to re-read.
+        row.programRecipient ?
+          [] :
           [
+            db.collection("organizerContacts").doc(row.contactId),
+            db.collection("organizerContactTraits").doc(row.contactId),
+            ...(row.contact?.linkedUid ?
+              [
+                db
+                  .collection("organizerCommunicationPreferences")
+                  .doc(
+                    organizerCommunicationPreferenceId(
+                      data.organizerId,
+                      row.contact.linkedUid,
+                    ),
+                  ),
+              ] :
+              []),
             db
-              .collection("organizerCommunicationPreferences")
-              .doc(
-                organizerCommunicationPreferenceId(
-                  data.organizerId,
-                  row.contact.linkedUid,
-                ),
-              ),
-          ] :
-          []),
-        db
-          .collection("organizerContactChannelStates")
-          .doc(organizerContactChannelStateId(data.organizerId, row.contactId)),
-      ]),
+              .collection("organizerContactChannelStates")
+              .doc(organizerContactChannelStateId(
+                data.organizerId,
+                row.contactId,
+              )),
+          ],
+      ),
     ];
     const attendeeHistorySnap = await tx.get(
       db.collection("eventAttendees")
@@ -546,20 +640,31 @@ export async function approveOrganizerCampaignHandler(
         liveSavedAudience.definitionHash !==
           liveCampaign.savedAudienceDefinitionHash
       )) ||
-      !liveSummary || liveCoverage !== "exact"
+      (!isProgramSelection &&
+        (!liveSummary || liveCoverage !== "exact"))
     ) {
       throw new HttpsError(
         "aborted",
         "Campaign or audience changed. Preview it again.",
       );
     }
-    const liveRows = audienceRowsFromSnapshots({
-      organizerId: data.organizerId,
-      segmentIds: liveCampaign.savedAudienceId ? null : liveCampaign.segmentIds,
-      originalRows: initial.audienceRows,
-      snapshots: snapshots.slice(rowSnapshotOffset),
-      now,
-    });
+    // Program selections re-resolve live inside the transaction; CRM
+    // rows re-evaluate from the fresh doc snapshots.
+    const liveRows = isProgramSelection ?
+      (await loadProgramSelectionRows({
+        db,
+        organizerId: data.organizerId,
+        campaign: liveCampaign,
+        tx,
+      })).rows :
+      audienceRowsFromSnapshots({
+        organizerId: data.organizerId,
+        segmentIds:
+          liveCampaign.savedAudienceId ? null : liveCampaign.segmentIds,
+        originalRows: initial.audienceRows,
+        snapshots: snapshots.slice(rowSnapshotOffset),
+        now,
+      });
     if (
       campaignAudienceSnapshotHash(liveRows) !== snapshotHash
     ) {
@@ -582,12 +687,25 @@ export async function approveOrganizerCampaignHandler(
       const recipient: OrganizerCampaignRecipientDocument = {
         organizerId: data.organizerId,
         campaignId: data.campaignId,
-        contactId: row.contactId,
+        // Program rows keep contactId null — no CRM contact is created.
+        contactId: row.programRecipient ? null : row.contactId,
         channel: "whatsapp",
         eligibility: row.eligibility,
         exclusionReason: row.exclusionReason,
         endpointE164:
-          row.eligibility === "eligible" ? row.contact.phoneE164 : null,
+          row.eligibility === "eligible" ?
+            (row.contact?.phoneE164 ??
+              row.programRecipient?.phoneE164 ??
+              null) :
+            null,
+        programRecipient: row.programRecipient ? {
+          programId: row.programRecipient.programId,
+          recipientKey: row.programRecipient.recipientKey,
+          guestIds: row.programRecipient.guestIds,
+          householdId: row.programRecipient.householdId,
+          endpointGuestId: row.programRecipient.endpointGuestId,
+          messagingConsent: row.programRecipient.messagingConsent,
+        } : null,
         endpointHash: row.endpointHash,
         permissionTermsVersion: row.preference?.whatsapp.termsVersion ?? null,
         permissionUpdatedAt: row.preference?.whatsapp.updatedAt ?? null,
@@ -815,21 +933,23 @@ async function campaignContext(
     storedCoverage: summaryForOrganizer?.sourceCoverage,
   });
   const audience = !loadAudience ? {rows: [], tooLarge: false} :
-    campaign.savedAudienceId && activeSavedAudience && !savedAudienceChanged ?
-      await loadSavedAudienceCampaignRows({
-        db,
-        organizerId,
-        savedAudience: activeSavedAudience,
-        now,
-        contactId: campaign.automationOrigin?.contactId,
-      }) : campaign.savedAudienceId ?
-        {rows: [], tooLarge: false} :
-        await loadLegacyAudienceRows({
+    campaign.recipientSource?.kind === "programSelection" ?
+      await loadProgramSelectionRows({db, organizerId, campaign}) :
+      campaign.savedAudienceId && activeSavedAudience && !savedAudienceChanged ?
+        await loadSavedAudienceCampaignRows({
           db,
           organizerId,
-          segmentIds: campaign.segmentIds,
+          savedAudience: activeSavedAudience,
           now,
-        });
+          contactId: campaign.automationOrigin?.contactId,
+        }) : campaign.savedAudienceId ?
+          {rows: [], tooLarge: false} :
+          await loadLegacyAudienceRows({
+            db,
+            organizerId,
+            segmentIds: campaign.segmentIds,
+            now,
+          });
   return {
     campaignId,
     campaign,
@@ -853,6 +973,145 @@ async function campaignContext(
       row.contactId === campaign.automationOrigin!.contactId) : audience.rows,
     audienceTooLarge: audience.tooLarge,
   };
+}
+
+// Resolves recipientSource=programSelection audiences: program guests
+// invited to the selected functions whose per-function RSVP matches,
+// deduped per household when requested, gated by explicit household
+// messaging consent. Unreachable identities become excluded rows so
+// preview shows the gap instead of silently dropping it.
+async function loadProgramSelectionRows(params: {
+  db: FirebaseFirestore.Firestore;
+  organizerId: string;
+  campaign: OrganizerCampaignDocument;
+  tx?: FirebaseFirestore.Transaction;
+}): Promise<{ rows: AudienceRow[]; tooLarge: boolean }> {
+  const source = params.campaign.recipientSource;
+  const programId = source?.kind === "programSelection" ?
+    source.programId ?? null : null;
+  if (programId === null) {
+    throw new HttpsError("failed-precondition",
+      "programSelection campaigns require a programId.");
+  }
+  const getQuery = (query: FirebaseFirestore.Query) =>
+    params.tx ? params.tx.get(query) : query.get();
+  const programRef = params.db.collection("organizerPrograms").doc(programId);
+  const [programSnap, functionsSnap, guestsSnap, rowsSnap,
+    householdsSnap] = await Promise.all([
+    params.tx ? params.tx.get(programRef) : programRef.get(),
+    getQuery(params.db.collection("programFunctions")
+      .where("programId", "==", programId)),
+    getQuery(params.db.collection("programGuests")
+      .where("programId", "==", programId)),
+    getQuery(params.db.collection("programFunctionGuests")
+      .where("programId", "==", programId)),
+    getQuery(params.db.collection("programHouseholds")
+      .where("programId", "==", programId)),
+  ]);
+  const program = programSnap.data() as OrganizerProgramDocument | undefined;
+  if (!program || program.organizerId !== params.organizerId) {
+    throw new HttpsError("failed-precondition",
+      "Program not found for this organizer.");
+  }
+  const functions = new Map<string, FunctionLike>();
+  for (const doc of functionsSnap.docs) {
+    const fn = doc.data() as ProgramFunctionDocument;
+    functions.set(doc.id, {
+      functionId: doc.id,
+      status: fn.status,
+      invitationMode: fn.invitationMode ?? "allGuests",
+    });
+  }
+  const guests: SelectionGuest[] = [];
+  for (const doc of guestsSnap.docs) {
+    const guest = doc.data() as ProgramGuestDocument;
+    guests.push({
+      guestId: doc.id,
+      householdId: guest.householdId,
+      phoneE164: guest.phoneE164,
+      invitationStatus: guest.invitationStatus,
+    });
+  }
+  const rows: FunctionGuestRowLike[] = [];
+  for (const doc of rowsSnap.docs) {
+    const row = doc.data() as ProgramFunctionGuestDocument;
+    rows.push({
+      functionId: row.functionId,
+      guestId: row.guestId,
+      invited: row.invited,
+      rsvpStatus: row.rsvpStatus,
+      attendanceStatus: row.attendanceStatus,
+    });
+  }
+  const consentByHousehold = new Map<string,
+    ProgramAudienceRecipient["messagingConsent"]>();
+  for (const doc of householdsSnap.docs) {
+    const household = doc.data() as ProgramHouseholdDocument;
+    consentByHousehold.set(doc.id, household.messagingConsent ? {
+      granted: household.messagingConsent.granted,
+      grantedAt: household.messagingConsent.grantedAt,
+      source: household.messagingConsent.source,
+    } : null);
+  }
+  const resolution: ProgramSelectionResolution =
+    resolveProgramSelection({
+      functionIds: source?.functionIds?.length ?
+        [...source.functionIds] : null,
+      rsvpStatuses: source?.rsvpStatuses?.length ?
+        [...source.rsvpStatuses] :
+        ["pending", "attending", "maybe", "declined"],
+      householdDedupe: source?.householdDedupe ?? true,
+    }, functions, guests, rows);
+  const toRow = (recipient: SelectionRecipient): AudienceRow => {
+    const messagingConsent = recipient.householdId === null ? null :
+      consentByHousehold.get(recipient.householdId) ?? null;
+    const declined = messagingConsent?.granted === false;
+    return {
+      contactId: recipient.recipientKey,
+      contact: null,
+      trait: null,
+      preference: null,
+      channelState: null,
+      eligibility: declined ? "excluded" : "eligible",
+      exclusionReason: declined ? "optedOut" : null,
+      endpointHash: hashEndpoint(recipient.phoneE164),
+      programRecipient: {
+        programId,
+        recipientKey: recipient.recipientKey,
+        guestIds: recipient.guestIds,
+        householdId: recipient.householdId,
+        endpointGuestId: recipient.endpointGuestId,
+        phoneE164: recipient.phoneE164,
+        messagingConsent,
+      },
+    };
+  };
+  const audienceRows: AudienceRow[] = resolution.recipients.map(toRow);
+  for (const unreachable of resolution.noPhoneRecipients) {
+    audienceRows.push({
+      contactId: unreachable.recipientKey,
+      contact: null,
+      trait: null,
+      preference: null,
+      channelState: null,
+      eligibility: "excluded",
+      exclusionReason: "noVerifiedEndpoint",
+      endpointHash: null,
+      programRecipient: {
+        programId,
+        recipientKey: unreachable.recipientKey,
+        guestIds: unreachable.guestIds,
+        householdId: unreachable.recipientKey.startsWith("household:") ?
+          unreachable.recipientKey.slice("household:".length) : null,
+        endpointGuestId: unreachable.guestIds[0],
+        phoneE164: null,
+        messagingConsent: null,
+      },
+    });
+  }
+  const tooLarge = audienceRows.length > organizerCampaignAudienceLimit;
+  return {rows: audienceRows.slice(0, organizerCampaignAudienceLimit),
+    tooLarge};
 }
 
 async function loadSavedAudienceCampaignRows(params: {
@@ -980,7 +1239,7 @@ function audienceRowsFromSnapshots(params: {
       | OrganizerContactTraitDocument
       | undefined;
     let preference: OrganizerCommunicationPreferenceDocument | null = null;
-    if (original.contact.linkedUid) {
+    if (original.contact?.linkedUid) {
       preference =
         (params.snapshots[index++].data() as
           | OrganizerCommunicationPreferenceDocument
@@ -1156,7 +1415,12 @@ function campaignBlockers(
   } else if (context.savedAudienceChanged) {
     blockers.push("savedAudienceChanged");
   }
-  if (context.summary?.sourceCoverage !== "exact") {
+  // CRM coverage is irrelevant to program audiences — resolution is
+  // exact by construction.
+  if (
+    campaign.recipientSource?.kind !== "programSelection" &&
+    context.summary?.sourceCoverage !== "exact"
+  ) {
     blockers.push("audienceCoveragePartial");
   }
   if (context.audienceTooLarge) blockers.push("audienceTooLarge");

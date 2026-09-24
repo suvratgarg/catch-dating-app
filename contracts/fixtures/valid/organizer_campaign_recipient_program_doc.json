@@ -1,0 +1,51 @@
+{
+  "organizerId": "org-1",
+  "campaignId": "campaign-1",
+  "contactId": null,
+  "channel": "whatsapp",
+  "eligibility": "eligible",
+  "exclusionReason": null,
+  "endpointE164": "+919800001234",
+  "endpointHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "permissionTermsVersion": null,
+  "permissionUpdatedAt": null,
+  "renderedVariablesHash": "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210",
+  "inviteLinkId": null,
+  "status": "pending",
+  "providerMessageId": null,
+  "providerErrorCategory": null,
+  "retryEligible": false,
+  "attemptCount": 0,
+  "leaseOwner": null,
+  "leaseExpiresAt": null,
+  "acceptedAt": null,
+  "sentAt": null,
+  "deliveredAt": null,
+  "readAt": null,
+  "failedAt": null,
+  "repliedAt": null,
+  "optedOutAt": null,
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "programRecipient": {
+    "programId": "program-1",
+    "recipientKey": "household:household-1",
+    "guestIds": ["guest-1", "guest-2"],
+    "householdId": "household-1",
+    "endpointGuestId": "guest-1",
+    "messagingConsent": {
+      "granted": true,
+      "grantedAt": {
+        "_seconds": 1786625400,
+        "_nanoseconds": 0
+      },
+      "source": "householdRsvpLink"
+    }
+  }
+}

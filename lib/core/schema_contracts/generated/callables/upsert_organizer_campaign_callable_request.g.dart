@@ -21,6 +21,7 @@ final class UpsertOrganizerCampaignCallableRequest {
     this.eventId,
     this.inviteDestinationKind,
     this.scheduledAtMillis,
+    this.recipientSource,
   });
 
   final String organizerId;
@@ -29,13 +30,14 @@ final class UpsertOrganizerCampaignCallableRequest {
   final int? expectedRevision;
   final String name;
   final String messageClass;
-  final String savedAudienceId;
+  final String? savedAudienceId;
   final String connectionId;
   final String templateId;
   final Map<String, Object?> templateVariables;
   final String? eventId;
   final String? inviteDestinationKind;
   final int? scheduledAtMillis;
+  final Map<String, Object?>? recipientSource;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -51,5 +53,6 @@ final class UpsertOrganizerCampaignCallableRequest {
     'eventId': ?eventId,
     'inviteDestinationKind': ?inviteDestinationKind,
     'scheduledAtMillis': ?scheduledAtMillis,
+    'recipientSource': ?recipientSource,
   };
 }

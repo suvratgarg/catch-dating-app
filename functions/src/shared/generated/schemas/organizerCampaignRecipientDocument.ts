@@ -55,9 +55,134 @@ export const organizerCampaignRecipientDocumentSchema: Record<string, unknown> =
       "maxLength": 180
     },
     "contactId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "CRM contact for saved-audience recipients; null on programSelection rows — program identity lives in programRecipient."
+    },
+    "programRecipient": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "programId",
+        "recipientKey",
+        "guestIds",
+        "householdId",
+        "endpointGuestId",
+        "messagingConsent"
+      ],
+      "description": "Program-native recipient identity for recipientSource=programSelection campaigns. One doc per resolved recipientKey (guest:{id} or household:{id}); contactId is null on these rows.",
+      "properties": {
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "recipientKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220,
+          "description": "guest:{guestId} or household:{householdId}; hashed into the document id in place of contactId."
+        },
+        "guestIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Program guests covered by this recipient; one for guest recipients, household members for deduped rows."
+        },
+        "householdId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Household carrying messaging consent for this recipient — the dedupe household for household:{id} rows or the guest's household otherwise."
+        },
+        "endpointGuestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "messagingConsent": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "granted",
+            "grantedAt",
+            "source"
+          ],
+          "properties": {
+            "granted": {
+              "type": "boolean"
+            },
+            "grantedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "householdRsvpLink",
+                "staff",
+                "import",
+                "whatsappStop",
+                null
+              ]
+            }
+          },
+          "description": "Snapshot of the household's explicit messaging consent at approve time; grant decisions re-read live at dispatch."
+        }
+      }
     },
     "channel": {
       "const": "whatsapp"

@@ -53,8 +53,8 @@ export interface ProgramHouseholdDocument {
       _nanoseconds: number;
     } | null;
     /**
-     * Channel that recorded the consent decision.
+     * Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook.
      */
-    source: "householdRsvpLink" | "staff" | "import" | null;
+    source: "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
   } | null;
 }

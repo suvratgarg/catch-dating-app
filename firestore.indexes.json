@@ -962,6 +962,15 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "endpointHash", "mode": "ASCENDING"},
+        {"fieldPath": "acceptedAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerCampaignRecipients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "providerMessageId", "mode": "ASCENDING"}
       ]
     },

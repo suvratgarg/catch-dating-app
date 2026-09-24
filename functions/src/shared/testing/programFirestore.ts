@@ -70,6 +70,16 @@ class FakeQuery {
     return new FakeQuery(this.firestore, this.collectionPath, this.wheres,
       this.order, this.limitN, value);
   }
+  count() {
+    return {
+      get: async () => {
+        const snap = await this.firestore.runQuery(
+          new FakeQuery(this.firestore, this.collectionPath,
+            this.wheres, this.order, null, this.startAfterValue));
+        return {data: () => ({count: snap.size})};
+      },
+    };
+  }
   async get() {
     return this.firestore.runQuery(this);
   }
@@ -98,8 +108,14 @@ class FakeTransaction {
     }
     return source.get();
   }
+  async getAll(...refs: FakeDocRef[]) {
+    return Promise.all(refs.map((ref) => this.get(ref)));
+  }
   set(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.setDoc(ref.path, data));
+  }
+  create(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => this.firestore.createDoc(ref.path, data));
   }
   update(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.updateDoc(ref.path, data));
@@ -135,10 +151,20 @@ export class FakeFirestore {
     this.docs.set(path, {...data});
     this.version++;
   }
+  createDoc(path: string, data: FakeData) {
+    if (this.docs.has(path)) {
+      throw new Error(`Document already exists: ${path}`);
+    }
+    this.setDoc(path, data);
+  }
   updateDoc(path: string, data: FakeData) {
     const existing = this.docs.get(path);
     if (!existing) throw new Error(`Document missing: ${path}`);
-    this.docs.set(path, {...existing, ...data});
+    const next = {...existing};
+    for (const [key, value] of Object.entries(data)) {
+      applyFieldUpdate(next, key.split("."), value);
+    }
+    this.docs.set(path, next);
     this.version++;
   }
   async runQuery(query: FakeQuery) {
@@ -207,6 +233,31 @@ export class FakeFirestore {
     }
     throw new Error("Test transaction exhausted retries.");
   }
+}
+
+function applyFieldUpdate(
+  target: FakeData,
+  segments: string[],
+  value: unknown,
+) {
+  const [head, ...rest] = segments;
+  if (rest.length === 0) {
+    target[head] = resolveSentinel(target[head], value);
+    return;
+  }
+  const child = (target[head] ?? {}) as FakeData;
+  target[head] = {...child};
+  applyFieldUpdate(target[head] as FakeData, rest, value);
+}
+
+function resolveSentinel(current: unknown, value: unknown) {
+  if (value && typeof value === "object" &&
+      (value as {constructor?: {name?: string}}).constructor?.name ===
+        "NumericIncrementTransform") {
+    const operand = (value as {operand?: number}).operand ?? 0;
+    return (typeof current === "number" ? current : 0) + operand;
+  }
+  return value;
 }
 
 function matchWhere(data: FakeData, where: Where): boolean {
