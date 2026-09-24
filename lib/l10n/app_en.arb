@@ -28587,7 +28587,7 @@
   "@hostsEventPreferenceOverride": {"description": "Event preference override option.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsEventPreferenceClear": "Leave unset",
   "@hostsEventPreferenceClear": {"description": "Event preference explicit clear option.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
-  "hostsEventPreferenceExpectedAmountMinor": "Expected amount in the currency's smallest unit",
+  "hostsEventPreferenceExpectedAmountMinor": "Expected amount in the smallest currency unit",
   "@hostsEventPreferenceExpectedAmountMinor": {"description": "Event-specific expected amount stored in minor currency units.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsEventPreferenceExpectedAmountHint": "For INR, 120000 means ₹1,200.00",
   "@hostsEventPreferenceExpectedAmountHint": {"description": "Explains amount entry in currency minor units without assuming an active payment provider.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
