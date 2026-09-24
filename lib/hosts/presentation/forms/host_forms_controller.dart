@@ -164,6 +164,10 @@ class HostFormEditorController extends _$HostFormEditorController
     // Watching the UID rebuilds the editor when the signed-in account changes.
     final accountId = _watchedAccountId();
     if (accountId == null) throw StateError('The Host account is not ready.');
+    if (!await _awaitSaveIdle(buildSerial) ||
+        _settledAccountId() != accountId) {
+      throw StateError('The Host account changed while loading the form.');
+    }
     final editor = await ref
         .read(hostFormsRepositoryProvider)
         .getEditor(organizerId: organizerId, formId: formId);

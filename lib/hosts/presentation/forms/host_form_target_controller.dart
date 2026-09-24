@@ -24,6 +24,9 @@ mixin HostFormEditorTargetMixin on _$HostFormEditorController {
     _undoStack.clear();
     _redoStack.clear();
     state = const AsyncLoading();
+    // The old request now has a superseded serial and cannot update state.
+    // Let it finish before reading the authoritative draft revision.
+    if (!await _awaitSaveIdle(serial)) return;
     final accountId = _settledAccountId();
     final result = await AsyncValue.guard(() async {
       if (accountId == null) {
@@ -47,6 +50,13 @@ mixin HostFormEditorTargetMixin on _$HostFormEditorController {
     }
     _editorAccountId = result.hasValue ? accountId : null;
     state = result;
+  }
+
+  Future<bool> _awaitSaveIdle(int serial) async {
+    while (_saveRunning && ref.mounted && serial == _reloadSerial) {
+      await Future<void>.delayed(CatchMotion.fast);
+    }
+    return ref.mounted && serial == _reloadSerial;
   }
 
   void _scheduleSave() {
@@ -134,6 +144,7 @@ mixin HostFormEditorTargetMixin on _$HostFormEditorController {
     if (current == null) return false;
     if (current.saveState == HostFormSaveState.saved) return true;
     _saveRunning = true;
+    var reloadAfterSave = false;
     final generation = _generation;
     final reloadSerial = _reloadSerial;
     final targetMutationAccountId = _targetMutationAccountId;
@@ -155,12 +166,12 @@ mixin HostFormEditorTargetMixin on _$HostFormEditorController {
       // A newer reload owns state. Never refresh over edits made since it.
       if (reloadSerial != _reloadSerial) return false;
       if (!editorBoundTo(editorAccountId)) {
-        await reload();
+        reloadAfterSave = true;
         return false;
       }
       if (targetMutationAccountId != null &&
           !_currentTargetActor(targetMutationAccountId)) {
-        await reload();
+        reloadAfterSave = true;
         return false;
       }
       final latest = state.asData?.value;
@@ -190,12 +201,12 @@ mixin HostFormEditorTargetMixin on _$HostFormEditorController {
       // A newer reload owns state. Never refresh over edits made since it.
       if (reloadSerial != _reloadSerial) return false;
       if (!editorBoundTo(editorAccountId)) {
-        await reload();
+        reloadAfterSave = true;
         return false;
       }
       if (targetMutationAccountId != null &&
           !_currentTargetActor(targetMutationAccountId)) {
-        await reload();
+        reloadAfterSave = true;
         return false;
       }
       final latest = state.asData?.value ?? current;
@@ -211,6 +222,9 @@ mixin HostFormEditorTargetMixin on _$HostFormEditorController {
       return false;
     } finally {
       _saveRunning = false;
+      if (reloadAfterSave && ref.mounted && reloadSerial == _reloadSerial) {
+        unawaited(reload());
+      }
     }
   }
 

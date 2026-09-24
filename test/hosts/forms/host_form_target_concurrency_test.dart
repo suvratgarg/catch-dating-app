@@ -21,7 +21,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
-  test('late save does not reload over newer unsaved target edit', () async {
+  test('reload waits for sent save then newer target edit saves at fresh revision',
+      () async {
     final accounts = StreamController<String?>();
     addTearDown(accounts.close);
     final auth = _Auth('host-one');
@@ -42,20 +43,55 @@ void main() {
     final save = notifier.saveNow();
     await flushTestEventQueue();
     expect(repository.saves, 1);
+    expect(repository.reads, 1);
 
-    final staleRead = Completer<HostFormEditor>();
-    repository.pendingReads.add(staleRead);
     final reload = notifier.reload();
     await flushTestEventQueue();
-    staleRead.complete(_editor());
-    await reload;
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-two', accountId: 'host-one');
+    expect(repository.reads, 1); // No stale GET before the write settles.
     repository.pendingSave!.complete();
     expect(await save, isFalse);
+    await reload;
+    expect(repository.reads, 2);
+    expect(container.read(provider).requireValue.editor.definition
+        .defaultTargetId, 'event-one');
+    notifier.updateTarget(kind: HostFormTargetKind.event,
+        eventId: 'event-two', accountId: 'host-one');
+    expect(await notifier.saveNow(), isTrue);
+    expect(repository.saves, 2);
+    expect(repository.serverRevision, 4);
     expect(container.read(provider).requireValue.editor.definition
         .defaultTargetId, 'event-two');
-    expect(repository.saves, 1);
+  });
+
+  test('account rebuild waits for old save before manager read', () async {
+    final accounts = StreamController<String?>();
+    addTearDown(accounts.close);
+    final auth = _Auth('host-one');
+    final repository = _Repository()..actor = () => auth.uid;
+    final container = _container(accounts, auth, repository);
+    addTearDown(container.dispose);
+    accounts.add('host-one');
+    await container.pump();
+    final provider = hostFormEditorControllerProvider('org', 'form');
+    final subscription = container.listen(provider, (_, _) {});
+    addTearDown(subscription.close);
+    await container.read(provider.future);
+    final notifier = container.read(provider.notifier);
+    notifier.updateTarget(kind: HostFormTargetKind.event,
+        eventId: 'event-one', accountId: 'host-one');
+    repository.pendingSave = Completer<void>();
+    final save = notifier.saveNow();
+    await flushTestEventQueue();
+    auth.uid = 'host-two';
+    accounts.add('host-two');
+    await container.pump();
+    expect(repository.reads, 1);
+    repository.pendingSave!.complete();
+    expect(await save, isFalse);
+    final current = await container.read(provider.future);
+    expect(repository.reads, 2);
+    expect(current.editor.definition.defaultTargetId, 'event-two');
+    expect(notifier.editorBoundTo('host-two'), isTrue);
   });
 
   test('disposed provider ignores an in-flight save response', () async {
@@ -76,10 +112,47 @@ void main() {
     final save = notifier.saveNow();
     await flushTestEventQueue();
 
+    final reload = notifier.reload();
+    await flushTestEventQueue();
+    expect(repository.reads, 1);
     subscription.close();
     container.dispose();
     repository.pendingSave!.complete();
     expect(await save, isFalse);
+    await reload;
+    expect(repository.reads, 1);
+  });
+
+  test('late actor mismatch schedules reload after save exits', () async {
+    final accounts = StreamController<String?>();
+    addTearDown(accounts.close);
+    final auth = _Auth('host-one');
+    final repository = _Repository()..actor = () => auth.uid;
+    final container = _container(accounts, auth, repository);
+    addTearDown(container.dispose);
+    accounts.add('host-one');
+    await container.pump();
+    final provider = hostFormEditorControllerProvider('org', 'form');
+    final subscription = container.listen(provider, (_, _) {});
+    addTearDown(subscription.close);
+    await container.read(provider.future);
+    final notifier = container.read(provider.notifier);
+    notifier.updateTarget(kind: HostFormTargetKind.event,
+        eventId: 'event-one', accountId: 'host-one');
+    repository.pendingSave = Completer<void>();
+    final save = notifier.saveNow();
+    await flushTestEventQueue();
+    // Auth updates before its UID stream. A save callback must not await a
+    // reload while it still owns the in-flight-save lock.
+    auth.uid = 'host-two';
+    repository.pendingSave!.complete();
+    expect(await save, isFalse);
+    await flushTestEventQueue();
+    accounts.add('host-two');
+    await container.pump();
+    final current = await container.read(provider.future);
+    expect(current.editor.definition.defaultTargetId, 'event-two');
+    expect(notifier.editorBoundTo('host-two'), isTrue);
   });
 
   test('undo after a successful target save cannot write as next actor',
@@ -253,12 +326,17 @@ class _Repository extends Fake implements HostFormsRepository {
   final pendingReads = Queue<Completer<HostFormEditor>>();
   Completer<void>? pendingSave;
   int saves = 0;
+  int reads = 0;
+  int serverRevision = 2;
+  String? serverTargetId;
 
   @override
   Future<HostFormEditor> getEditor({required String organizerId,
       required String formId}) async {
+    reads++;
     if (pendingReads.isNotEmpty) return pendingReads.removeFirst().future;
-    return _editor(targetId: actor?.call() == 'host-two' ? 'event-two' : null);
+    return _editor(targetId: actor?.call() == 'host-two'
+        ? 'event-two' : serverTargetId, draftRevision: serverRevision);
   }
 
   @override
@@ -267,7 +345,13 @@ class _Repository extends Fake implements HostFormsRepository {
       required HostFormDefinition definition}) async {
     saves++;
     if (pendingSave case final pending?) await pending.future;
-    return _editor(targetId: definition.defaultTargetId);
+    if (expectedRevision != serverRevision) {
+      throw StateError('Stale draft revision');
+    }
+    serverRevision++;
+    serverTargetId = definition.defaultTargetId;
+    return _editor(targetId: serverTargetId,
+        draftRevision: serverRevision);
   }
 }
 
@@ -284,8 +368,8 @@ class _PickerNotifier extends HostFormEditorController {
   }
 }
 
-HostFormEditor _editor({String? targetId}) => HostFormEditor(
-  form: HostFormSummary.fromMap(_summary),
+HostFormEditor _editor({String? targetId, int draftRevision = 2}) => HostFormEditor(
+  form: HostFormSummary.fromMap({..._summary, 'draftRevision': draftRevision}),
   definition: HostFormDefinition.fromMap({
     ..._definition,
     'defaultTargetKind': targetId == null ? 'organizer' : 'event',
