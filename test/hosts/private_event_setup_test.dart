@@ -126,6 +126,85 @@ void main() {
     );
   });
 
+  test('basics update carries stable event identity and revision', () {
+    const basics = PrivateEventBasics(
+      name: 'Saturday mixer',
+      city: EventSetupValue.set(city),
+      localDate: '2026-09-26',
+      localStartTime: '19:00',
+      timezone: EventSetupValue.set('Asia/Kolkata'),
+    );
+    const request = PrivateEventBasicsUpdateRequest(
+      organizerId: 'club-1',
+      eventId: 'event-1',
+      requestId: 'update-1',
+      expectedSetupRevision: 3,
+      basics: basics,
+    );
+    expect(request.isValid, isTrue);
+    expect(request.toJson(), {
+      'organizerId': 'club-1',
+      'eventId': 'event-1',
+      'requestId': 'update-1',
+      'expectedSetupRevision': 3,
+      'basics': basics.toJson(),
+    });
+    expect(
+      const PrivateEventBasicsUpdateRequest(
+        organizerId: 'club-1',
+        eventId: 'event-1',
+        requestId: 'update-1',
+        expectedSetupRevision: 0,
+        basics: basics,
+      ).isValid,
+      isFalse,
+    );
+  });
+
+  test('manager read decodes only a canonical private basic summary', () {
+    final response = <String, Object?>{
+      'eventId': 'event-1',
+      'organizerId': 'club-1',
+      'setupRevision': 3,
+      'publicationState': 'private',
+      'status': 'active',
+      'name': 'Saturday mixer',
+      'city': {'cityId': 'in-mh-mumbai', 'marketId': 'in-mh-mumbai'},
+      'localDate': '2026-09-26',
+      'localStartTime': '19:00',
+      'timezone': 'Asia/Kolkata',
+      'startTimeMillis': 1790449200000,
+      'setupDefaults': <String, Object?>{},
+      'detailsConfigured': false,
+    };
+    final summary = PrivateEventBasicSummary.fromResponse(response);
+    expect(summary.eventId, 'event-1');
+    expect(summary.setupRevision, 3);
+    expect(summary.city.cityId, 'in-mh-mumbai');
+    expect(summary.canEditBasics, isTrue);
+    expect(
+      () => PrivateEventBasicSummary.fromResponse({
+        ...response,
+        'publicationState': 'published',
+      }),
+      throwsFormatException,
+    );
+    expect(
+      () => PrivateEventBasicSummary.fromResponse({
+        ...response,
+        'city': {'cityId': 'in-mh-mumbai', 'marketId': ''},
+      }),
+      throwsFormatException,
+    );
+    expect(
+      PrivateEventBasicSummary.fromResponse({
+        ...response,
+        'status': 'cancelled',
+      }).canEditBasics,
+      isFalse,
+    );
+  });
+
   test('organizer defaults hash matches server JSON with legacy nulls', () {
     expect(
       organizerEventDefaultsHash(

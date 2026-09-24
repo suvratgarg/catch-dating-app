@@ -213,6 +213,144 @@ class PrivateEventCreateReceipt {
   }
 }
 
+/// The exact update command is caller-owned across retries. In particular,
+/// [requestId], [expectedSetupRevision], and [basics] must not change after a
+/// request might have reached the server.
+class PrivateEventBasicsUpdateRequest {
+  const PrivateEventBasicsUpdateRequest({
+    required this.organizerId,
+    required this.eventId,
+    required this.requestId,
+    required this.expectedSetupRevision,
+    required this.basics,
+  });
+
+  final String organizerId;
+  final String eventId;
+  final String requestId;
+  final int expectedSetupRevision;
+  final PrivateEventBasics basics;
+
+  bool get isValid =>
+      organizerId.trim().isNotEmpty &&
+      eventId.trim().isNotEmpty &&
+      requestId.trim().isNotEmpty &&
+      expectedSetupRevision >= 1 &&
+      basics.isValid;
+
+  Map<String, Object?> toJson() => {
+    'organizerId': organizerId,
+    'eventId': eventId,
+    'requestId': requestId,
+    'expectedSetupRevision': expectedSetupRevision,
+    'basics': basics.toJson(),
+  };
+}
+
+/// Manager-only projection of an already-saved basic event. It intentionally
+/// has no rich Event defaults; a partial private setup cannot be decoded as a
+/// public event.
+class PrivateEventBasicSummary {
+  const PrivateEventBasicSummary({
+    required this.eventId,
+    required this.organizerId,
+    required this.setupRevision,
+    required this.name,
+    required this.city,
+    required this.localDate,
+    required this.localStartTime,
+    required this.timezone,
+    required this.startTimeMillis,
+    required this.status,
+    required this.setupDefaults,
+    required this.detailsConfigured,
+  });
+
+  final String eventId;
+  final String organizerId;
+  final int setupRevision;
+  final String name;
+  final EventSetupCity city;
+  final String localDate;
+  final String localStartTime;
+  final String timezone;
+  final int startTimeMillis;
+  final String status;
+  final Map<String, Object?> setupDefaults;
+  final bool detailsConfigured;
+
+  bool get canEditBasics => status == 'active';
+
+  factory PrivateEventBasicSummary.fromResponse(Object? response) {
+    if (response is! Map) {
+      throw const FormatException('Invalid private event summary');
+    }
+    final data = Map<String, Object?>.from(response);
+    final rawCity = data['city'];
+    if (rawCity is! Map) {
+      throw const FormatException('Invalid private event city');
+    }
+    final cityData = Map<String, Object?>.from(rawCity);
+    final cityId = cityData['cityId'];
+    final marketId = cityData['marketId'];
+    final eventId = data['eventId'];
+    final organizerId = data['organizerId'];
+    final setupRevision = data['setupRevision'];
+    final name = data['name'];
+    final localDate = data['localDate'];
+    final localStartTime = data['localStartTime'];
+    final timezone = data['timezone'];
+    final startTimeMillis = data['startTimeMillis'];
+    final status = data['status'];
+    final setupDefaults = data['setupDefaults'];
+    final detailsConfigured = data['detailsConfigured'];
+    if (eventId is! String ||
+        eventId.trim().isEmpty ||
+        organizerId is! String ||
+        organizerId.trim().isEmpty ||
+        setupRevision is! int ||
+        setupRevision < 1 ||
+        name is! String ||
+        cityId is! String ||
+        marketId is! String ||
+        localDate is! String ||
+        localStartTime is! String ||
+        timezone is! String ||
+        startTimeMillis is! int ||
+        (status != 'active' && status != 'cancelled') ||
+        data['publicationState'] != 'private' ||
+        setupDefaults is! Map ||
+        detailsConfigured is! bool) {
+      throw const FormatException('Invalid private event summary');
+    }
+    final city = EventSetupCity(cityId: cityId, marketId: marketId);
+    final basics = PrivateEventBasics(
+      name: name,
+      city: EventSetupValue.set(city),
+      localDate: localDate,
+      localStartTime: localStartTime,
+      timezone: EventSetupValue.set(timezone),
+    );
+    if (!basics.isValid) {
+      throw const FormatException('Invalid private event basics');
+    }
+    return PrivateEventBasicSummary(
+      eventId: eventId,
+      organizerId: organizerId,
+      setupRevision: setupRevision,
+      name: name,
+      city: city,
+      localDate: localDate,
+      localStartTime: localStartTime,
+      timezone: timezone,
+      startTimeMillis: startTimeMillis,
+      status: status,
+      setupDefaults: Map<String, Object?>.from(setupDefaults),
+      detailsConfigured: detailsConfigured,
+    );
+  }
+}
+
 class PrivateEventSetupRepository {
   const PrivateEventSetupRepository(this._functions);
 
@@ -241,6 +379,57 @@ class PrivateEventSetupRepository {
         service: BackendService.functions,
         action: 'create private event',
         resource: 'createPrivateEventSetup',
+      ),
+    );
+  }
+
+  Future<PrivateEventCreateReceipt> update(
+    PrivateEventBasicsUpdateRequest request,
+  ) {
+    if (!request.isValid) {
+      throw ArgumentError.value(request, 'request', 'Invalid basics update');
+    }
+    return withBackendErrorContext(
+      () async {
+        final response = await _functions
+            .httpsCallable('updatePrivateEventBasics')
+            .call<Object?>(request.toJson());
+        final receipt = PrivateEventCreateReceipt.fromResponse(response.data);
+        if (receipt.eventId != request.eventId) {
+          throw const FormatException('Basics update changed event identity');
+        }
+        return receipt;
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'update private event basics',
+        resource: 'updatePrivateEventBasics',
+      ),
+    );
+  }
+
+  Future<PrivateEventBasicSummary> get({
+    required String organizerId,
+    required String eventId,
+  }) {
+    if (organizerId.trim().isEmpty || eventId.trim().isEmpty) {
+      throw ArgumentError('Organizer and event ids are required');
+    }
+    return withBackendErrorContext(
+      () async {
+        final response = await _functions
+            .httpsCallable('getPrivateEventSetup')
+            .call<Object?>({'organizerId': organizerId, 'eventId': eventId});
+        final summary = PrivateEventBasicSummary.fromResponse(response.data);
+        if (summary.organizerId != organizerId || summary.eventId != eventId) {
+          throw const FormatException('Private event read changed identity');
+        }
+        return summary;
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'read private event setup',
+        resource: 'getPrivateEventSetup',
       ),
     );
   }

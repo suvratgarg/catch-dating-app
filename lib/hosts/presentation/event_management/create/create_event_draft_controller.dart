@@ -53,4 +53,17 @@ class CreateEventDraftController extends _$CreateEventDraftController {
     requestId: requestId,
     basics: basics,
   );
+
+  Future<PrivateEventCreateReceipt> updatePrivateEventBasics(
+    PrivateEventBasicsUpdateRequest request,
+  ) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider))
+      .update(request);
+
+  Future<PrivateEventBasicSummary> getPrivateEventSetup({
+    required String organizerId,
+    required String eventId,
+  }) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).get(
+    organizerId: organizerId,
+    eventId: eventId,
+  );
 }
