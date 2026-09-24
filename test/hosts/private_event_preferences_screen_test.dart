@@ -43,7 +43,7 @@ void main() {
       localDate: '2026-10-03', localStartTime: '19:00',
       timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
       status: 'active', setupDefaults: {}, detailsConfigured: false,
-      eventPreferences: null,
+      eventPreferences: null, canEditBasics: true,
     );
     controller.defaults = ManagerEventSetupDefaults(
       organizerId: 'club-1', cityId: 'in-mh-mumbai',

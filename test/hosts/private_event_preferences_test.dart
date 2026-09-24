@@ -18,7 +18,7 @@ void main() {
     localDate: '2026-09-26', localStartTime: '08:00',
     timezone: 'Asia/Kolkata', startTimeMillis: 1790409600000,
     status: 'active', setupDefaults: const {}, detailsConfigured: false,
-    eventPreferences: null,
+    eventPreferences: null, canEditBasics: true,
   );
   ManagerEventSetupDefaults defaults() => ManagerEventSetupDefaults(
     organizerId: 'club-1', cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',

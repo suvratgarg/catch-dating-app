@@ -169,6 +169,3 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 }
-import 'dart:async';
-
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
