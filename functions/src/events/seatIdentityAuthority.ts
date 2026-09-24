@@ -1,5 +1,5 @@
 import {createHash} from "crypto";
-import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
+import {normalizeRosterPhone} from "./eventAttendees";
 
 /** Structural adapter compatibility until the seat core is integrated. */
 export class SeatIdentityAuthorityError extends Error {
@@ -252,9 +252,7 @@ export async function linkVerifiedUidToGuestSeat(params: {
   }
   const normalized = normalizeRosterPhone(params.authTokenPhoneNumber);
   if (normalized.issue || !normalized.value ||
-      normalized.value !== params.authTokenPhoneNumber ||
-      attendeeId !== eventAttendeeId(eventId,
-        `phone:${normalized.value}`)) {
+      normalized.value !== params.authTokenPhoneNumber) {
     fail("A current verified phone attendee is required.");
   }
   const eventRef = db.collection("events").doc(eventId);
@@ -315,10 +313,29 @@ export async function linkVerifiedUidToGuestSeat(params: {
     fail("Guest aliases are not reconciled.");
   }
   const key = attendeeAlias!.canonicalKey as string;
+  const reference = attendee.externalReference;
+  if (reference !== null &&
+      (typeof reference !== "string" || !reference.trim())) {
+    fail("Imported reference is malformed.");
+  }
+  const external = typeof reference === "string" ?
+    reference.trim().toLowerCase() : null;
   const reservationId = hash([eventId, key]);
-  const reservationSnap = await tx.get(db.collection("eventSeatReservations")
-    .doc(reservationId));
+  const [reservationSnap, externalSnap] = await Promise.all([
+    tx.get(db.collection("eventSeatReservations").doc(reservationId)),
+    external === null ? Promise.resolve(null) :
+      tx.get(db.collection("eventSeatIdentityAliases")
+        .doc(seatIdentityAliasId(eventId, "external", external))),
+  ]);
   const reservation = reservationSnap.data();
+  if (external !== null) {
+    const alias = externalSnap?.data();
+    if (!matching(alias, "external", external) ||
+        alias!.canonicalKey !== key ||
+        alias!.identityRevision !== attendeeAlias!.identityRevision) {
+      fail("Imported reference is not reconciled to this guest seat.");
+    }
+  }
   if (!reservation || reservation.eventId !== eventId ||
       reservation.canonicalKey !== key || reservation.active !== true ||
       reservation.identityRevision !== attendeeAlias!.identityRevision) {

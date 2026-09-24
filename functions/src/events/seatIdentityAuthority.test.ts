@@ -183,9 +183,11 @@ test("missing or unreconciled migration fails closed", async () => {
     unavailable);
 });
 
-function guestSeatStore() {
+function guestSeatStore(options: {externalReference?: string} = {}) {
   const store = new FakeStore();
-  const attendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+  const attendeeId = options.externalReference ? eventAttendeeId(eventId,
+    `external:${options.externalReference.toLowerCase()}`) :
+    eventAttendeeId(eventId, `phone:${phone}`);
   const key = "guestSeat";
   store.rows.set(`events/${eventId}`, {clubId: organizerId,
     organizerId, status: "active"});
@@ -193,9 +195,13 @@ function guestSeatStore() {
     migrationRevision: 1, revision: 3});
   store.rows.set(`eventAttendees/${attendeeId}`, {eventId, organizerId,
     source: "hostImport", status: "registered", linkedUid: null,
-    phoneE164: phone});
+    phoneE164: phone,
+    externalReference: options.externalReference ?? null});
   store.alias("attendee", attendeeId, key);
   store.alias("phone", phone, key);
+  if (options.externalReference) {
+    store.alias("external", options.externalReference.toLowerCase(), key);
+  }
   store.rows.set(`eventSeatReservations/${hash(eventId, key)}`, {
     eventId, canonicalKey: key, active: true, identityRevision: 1});
   const link = async (uid = "uid1", tokenPhone = phone) => {
@@ -235,9 +241,28 @@ test("different token phone, duplicate UID seat or missing alias denies",
     existingSeat.store.alias("uid", "uid1", "anotherSeat");
     await assert.rejects(existingSeat.link(), unavailable);
     assert.deepEqual(existingSeat.store.writes, []);
+    const existingProof = guestSeatStore();
+    existingProof.store.proof();
+    await assert.rejects(existingProof.link(), unavailable);
+    assert.deepEqual(existingProof.store.writes, []);
     const missingAlias = guestSeatStore();
     missingAlias.store.rows.delete(`eventSeatIdentityAliases/${
       seatIdentityAliasId(eventId, "phone", phone)}`);
     await assert.rejects(missingAlias.link(), unavailable);
     assert.deepEqual(missingAlias.store.writes, []);
+  });
+
+test("verified phone links external-reference import by its actual ID",
+  async () => {
+    const h = guestSeatStore({externalReference: "ORDER-42"});
+    assert.deepEqual(await h.link(), {canonicalKey: h.key,
+      ledgerRevision: 4, replayed: false});
+    assert.equal(h.store.rows.get(`eventAttendees/${h.attendeeId}`)
+      ?.linkedUid, "uid1");
+    assert.equal(h.store.writes.filter((path) => path.startsWith(
+      "eventSeatReservations/")).length, 0);
+    const wrong = guestSeatStore({externalReference: "ORDER-42"});
+    wrong.store.alias("external", "order-42", "otherSeat");
+    await assert.rejects(wrong.link(), unavailable);
+    assert.deepEqual(wrong.store.writes, []);
   });
