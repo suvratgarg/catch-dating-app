@@ -4,6 +4,8 @@ import {
   PreparedSeatPlan, SeatAuthorityError, SeatCommand, SeatLedger,
   SeatReceipt, SeatReservation, SeatResult, SeatTransaction,
 } from "./seatAuthority";
+import {applySeatBatch, prepareSeatBatch, PreparedSeatBatch,
+  SeatBatchCommand, SeatBatchResult} from "./seatBatch";
 
 const ledgerCollection = "eventSeatLedgers";
 const reservationCollection = "eventSeatReservations";
@@ -184,4 +186,61 @@ export async function prepareFirestoreSeat<Subject>(params: {
 export function applyFirestoreSeat(prepared: FirestoreSeatPreparation):
   SeatResult {
   return applySeatPlan(prepared.seatTransaction, prepared.plan);
+}
+
+export interface FirestoreSeatBatchPreparation {
+  plan: PreparedSeatBatch;
+  seatTransaction: FirestoreSeatTransaction;
+  eventCapacity: number;
+  eventPolicyHash: string;
+}
+
+/**
+ * The caller completes manager, cancellation, waitlist and payment reads in
+ * this same Firestore transaction before applying. No writer is activated.
+ */
+export async function prepareFirestoreSeatBatch<Subject>(params: {
+  db: FirebaseFirestore.Firestore;
+  tx: FirebaseFirestore.Transaction;
+  command: SeatBatchCommand<Subject>;
+  identityAuthority?: SeatIdentityAuthority<Subject>;
+}): Promise<FirestoreSeatBatchPreparation> {
+  const {db, tx, command, identityAuthority} = params;
+  if (!identityAuthority) {
+    throw new SeatAuthorityError("unavailable",
+      "Canonical seat identity authority is not installed.");
+  }
+  const eventSnap = await tx.get(db.collection("events").doc(command.eventId));
+  const event = deriveEventSeatPolicy(eventSnap.data());
+  if (event.status !== "active" &&
+      command.operations.some((row) => row.operation === "reserve")) {
+    throw new SeatAuthorityError("unavailable",
+      "Event is not open for a new seat.");
+  }
+  const seatTransaction = new FirestoreSeatTransaction(db, tx);
+  const plan = await prepareSeatBatch({tx: seatTransaction, command,
+    validateLedger: (ledger) => {
+      if (ledger.capacity !== event.capacity ||
+          ledger.policyHash !== event.policyHash ||
+          ledger.policyVersion !== event.policyVersion) {
+        throw new SeatAuthorityError("unavailable",
+          "Event seat ledger needs policy reconciliation.");
+      }
+    },
+    resolveIdentity: async (subject) => {
+      const resolved = await identityAuthority.resolve({db, tx,
+        eventId: command.eventId, organizerId: event.organizerId, subject});
+      if (!resolved) {
+        throw new SeatAuthorityError("unavailable",
+          "Canonical attendee identity is unresolved or ambiguous.");
+      }
+      return resolved;
+    }});
+  return {plan, seatTransaction, eventCapacity: event.capacity,
+    eventPolicyHash: event.policyHash};
+}
+
+export function applyFirestoreSeatBatch(
+  prepared: FirestoreSeatBatchPreparation): SeatBatchResult {
+  return applySeatBatch(prepared.seatTransaction, prepared.plan);
 }
