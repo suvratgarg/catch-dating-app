@@ -23,7 +23,7 @@ import {CallableRequest, HttpsError, onCall} from
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {adminRolesFromToken} from "../admin/adminAuth";
 import {requireAuth} from "../shared/auth";
-import {requireRuntimeVenueEvent} from "../events/configuredEvent";
+import {requireScheduledEvent} from "../events/configuredEvent";
 import {
   appCheckCallableOptions,
   appCheckCallableOptionsWithLimits,
@@ -1425,6 +1425,23 @@ async function createSession(
   };
 }
 
+/** Rehearsal only needs a named meeting place, never booking-grade GPS. */
+function rehearsalLocationName(event: EventDocument): string {
+  const name = event.meetingLocation?.name?.trim() ||
+    event.meetingPoint?.trim();
+  if (!name) {
+    throw new HttpsError("failed-precondition",
+      "This event needs a valid schedule and venue.");
+  }
+  return name;
+}
+
+function requireRehearsalSourceEvent(event: EventDocument) {
+  const scheduled = requireScheduledEvent(event);
+  rehearsalLocationName(scheduled);
+  return scheduled;
+}
+
 async function sourceSetup(
   db: Firestore,
   organizerId: string,
@@ -1442,7 +1459,7 @@ async function sourceSetup(
       "The source event does not belong to this organizer."
     );
   }
-  const configuredEvent = requireRuntimeVenueEvent(event);
+  const configuredEvent = requireRehearsalSourceEvent(event);
   const durationMinutes = Math.max(
     30,
     Math.min(360, Math.round(
@@ -1469,7 +1486,7 @@ async function sourceSetup(
 
 /** Builds a frozen rehearsal snapshot with synthetic movement only. */
 export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
-  const configuredEvent = requireRuntimeVenueEvent(event);
+  const configuredEvent = requireRehearsalSourceEvent(event);
   const routePlan = configuredEvent.eventFormat.activityDetails?.routePlan ??
     null;
   const itinerary = event.itinerary ?? [];
@@ -1498,8 +1515,7 @@ export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
     title: event.name?.trim() ||
       `${activityLabel(configuredEvent.eventFormat.activityKind)} ` +
         "dress rehearsal",
-    locationName: configuredEvent.meetingLocation.name ||
-      configuredEvent.meetingPoint,
+    locationName: rehearsalLocationName(configuredEvent),
     durationMinutes: Math.max(
       30,
       Math.min(360, Math.round(
@@ -1528,7 +1544,7 @@ export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
         livePositions,
         lateArrivalGuidance: nextStop ?
           `Join at the next published stop: ${nextStop.title}.` :
-          `Meet the route lead at ${configuredEvent.meetingLocation.name}.`,
+          `Meet the route lead at ${rehearsalLocationName(configuredEvent)}.`,
       },
     } : {}),
   };

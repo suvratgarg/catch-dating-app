@@ -103,7 +103,27 @@ test("private basics cannot supply an invented rehearsal venue", () => {
     startTime: admin.firestore.Timestamp.fromMillis(
       Date.parse("2026-08-25T10:00:00.000Z")
     ),
-  } as EventDocument), /valid schedule and venue/);
+  } as EventDocument), /valid schedule and format/);
+});
+
+test("rehearsal accepts a named venue without booking coordinates", () => {
+  const startTime = admin.firestore.Timestamp.fromMillis(1_000_000);
+  const event = {
+    clubId: "organizer-1",
+    startTime,
+    endTime: admin.firestore.Timestamp.fromMillis(1_000_000 + 3_600_000),
+    meetingLocation: {name: "Courtyard"},
+    eventFormat: {
+      version: 1,
+      activityKind: "pubQuiz",
+      interactionModel: "teamRotations",
+    },
+  } as EventDocument;
+  assert.equal(rehearsalSetupFromEvent(event).locationName, "Courtyard");
+  assert.throws(() => rehearsalSetupFromEvent({
+    ...event,
+    meetingLocation: undefined,
+  }), /valid schedule and venue/);
 });
 
 test(
