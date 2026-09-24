@@ -18,6 +18,7 @@ const city = {
 
 function renderForm(question = city, answer?: string) {
   const updateAnswer = vi.fn();
+  const blurQuestion = vi.fn();
   const section = {title: "Your city", questions: [question]};
   usePublicFormController.mockReturnValue({
     stage: "form", form: {organizer: {name: "Saket Run Club"}, definition: {
@@ -25,13 +26,19 @@ function renderForm(question = city, answer?: string) {
       sections: [section],
     }}, activeSection: section, visibleSections: [section], sectionIndex: 0,
     answers: {city: answer}, errors: {}, uploads: {}, updateAnswer,
+    blurQuestion,
     status: {message: "", tone: ""},
   });
   render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
-  return updateAnswer;
+  return Object.assign(updateAnswer, {blurQuestion});
 }
 
 describe("public form choices", () => {
+  it("requests validation when a field loses focus", () => {
+    const change = renderForm(city);
+    fireEvent.blur(screen.getByRole("combobox", {name: "Event city"}));
+    expect(change.blurQuestion).toHaveBeenCalledWith("city");
+  });
   it("renders all five cities in an accessible dropdown and preserves values", () => {
     const change = renderForm(city, "Mumbai");
     const select = screen.getByRole("combobox", {name: "Event city"});

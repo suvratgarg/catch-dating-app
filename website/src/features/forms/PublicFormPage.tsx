@@ -334,6 +334,7 @@ function QuestionStage({
               question.questionId,
               answer
             )}
+            onBlur={() => controller.blurQuestion(question.questionId)}
             onUpload={(files) => controller.uploadAnswer(question, files)}
             question={question}
             upload={controller.uploads[question.questionId]}
@@ -368,6 +369,7 @@ function QuestionField({
   answer,
   error,
   onChange,
+  onBlur,
   onUpload,
   question,
   upload,
@@ -375,6 +377,7 @@ function QuestionField({
   answer: PublicFormAnswer | undefined;
   error?: string;
   onChange: (answer: PublicFormAnswer) => void;
+  onBlur: () => void;
   onUpload: (files: Array<{blob: Blob; name: string}>) => Promise<void>;
   question: Question;
   upload?: {status: "uploading" | "ready" | "error"; label: string};
@@ -401,6 +404,7 @@ function QuestionField({
           label={question.label}
           maxLength={question.validation.maxLength ?? undefined}
           onChange={(event) => onChange(event.target.value)}
+          onBlur={onBlur}
           required={question.required}
           rows={5}
           value={typeof answer === "string" ? answer : ""}
@@ -431,6 +435,7 @@ function QuestionField({
           onChange={(event) => onChange(question.kind === "number" ?
             (event.target.value === "" ? null : event.target.valueAsNumber) :
             event.target.value)}
+          onBlur={onBlur}
           required={question.required}
           type={type}
           value={typeof answer === "string" || typeof answer === "number" ?
@@ -447,6 +452,7 @@ function QuestionField({
           invalid={Boolean(error)}
           label={question.label}
           onChange={(event) => onChange(event.target.value || null)}
+          onBlur={onBlur}
           required={question.required}
           value={typeof answer === "string" ? answer : ""}
         >

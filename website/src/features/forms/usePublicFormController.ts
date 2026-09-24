@@ -348,6 +348,19 @@ export function usePublicFormController(publicFormId: string) {
     setDirtyRevision((value) => value + 1);
   }
 
+  function blurQuestion(questionId: string) {
+    const question = visibleSections.flatMap((section) => section.questions)
+      .find((candidate) => candidate.questionId === questionId);
+    if (!question) return;
+    const error = validatePublicFormAnswers([question], answersRef.current)[questionId];
+    setErrors((current) => {
+      const updated = {...current};
+      if (error) updated[questionId] = error;
+      else delete updated[questionId];
+      return updated;
+    });
+  }
+
   function updateConsent(value: boolean) {
     consentRef.current = value;
     setConsentAccepted(value);
@@ -667,6 +680,7 @@ export function usePublicFormController(publicFormId: string) {
   return {
     activeSection,
     answers,
+    blurQuestion,
     code,
     consentAccepted,
     messagingChoices,

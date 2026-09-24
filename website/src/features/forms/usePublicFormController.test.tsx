@@ -106,6 +106,29 @@ describe("form consent and authenticated draft ownership", () => {
       status: "submitted", completion: {title: "Received"}});
   });
 
+  it("shows a field error when focus leaves it and clears it while editing", async () => {
+    const emailQuestion = {questionId: "email", label: "Email address",
+      kind: "email", required: true, options: [], validation: {
+        minLength: null, maxLength: null, patternPreset: null,
+        customError: null}};
+    const emailForm = {...form, definition: {...form.definition,
+      sections: [{sectionId: "details", title: "Details",
+        questions: [emailQuestion]}]}};
+    getPublicOrganizerForm.mockResolvedValue(emailForm);
+    beginOrganizerFormResponse.mockResolvedValue({...draft, form: emailForm});
+    const {result} = renderHook(() => usePublicFormController(
+      "public-form-1"), {wrapper: wrapper()});
+    await waitFor(() => expect(result.current.stage).toBe("form"));
+    act(() => result.current.updateAnswer("email", "wrong"));
+    expect(result.current.errors).toEqual({});
+    act(() => result.current.blurQuestion("email"));
+    expect(result.current.errors.email).toBe("Email address is invalid.");
+    act(() => result.current.updateAnswer("email", "person@example.com"));
+    expect(result.current.errors).toEqual({});
+    act(() => result.current.blurQuestion("email"));
+    expect(result.current.errors).toEqual({});
+  });
+
   it("recovers a paid response even when the current form is full and republished", async () => {
     getPublicOrganizerForm.mockResolvedValue({...form, availabilityStatus: "full", versionId: "version-2"});
     findOrganizerFormPayment.mockResolvedValue({payment: recoveredPayment});
