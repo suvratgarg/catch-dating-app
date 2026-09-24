@@ -1796,6 +1796,17 @@ Private event reads require a current organizer manager or active viewRoster
 staff grant; deleted users, foreign tenants and expired/revoked staff grants
 are denied. Consumer bookmarks cannot target private events.
 
+`node tool/data/backfill_event_publication.mjs --project <id>` plans the legacy
+publication migration without writes. It validates complete legacy documents,
+rejects contradictory organizer identities and unlabelled progressive records,
+and scans bounded document-ID pages. Apply requires the reviewed plan digest and
+an explicit production flag for the production project. Each transaction
+rechecks the exact source update time and changes only publicationState; an
+interrupted or stale run requires a fresh reviewed plan. Existing private events,
+booking capabilities, provenance, counters and cancellation status are preserved.
+Before switching public readers/rules, deploy explicit publication writers and
+require a complete final dry run with zero legacy candidates and zero blockers.
+
 These contracts and services are not rollout authorization. Private persistence
 remains disabled until the explicit legacy publication backfill, all public
 readers/search projections and integrated privacy checks are complete.
