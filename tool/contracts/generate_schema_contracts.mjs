@@ -15,6 +15,9 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "UpdatePrivateEventDetailsCallablePayload", "source": "callables/update_private_event_details_payload.schema.json", "typeOutput": "functions/src/shared/generated/updatePrivateEventDetailsCallablePayload.ts"},
+  {"name": "PrepareEventOfferHandoffCallablePayload", "source": "callables/prepare_event_offer_handoff_payload.schema.json", "typeOutput": "functions/src/shared/generated/prepareEventOfferHandoffCallablePayload.ts"},
+  {"name": "EventOfferHandoffCallableResponse", "source": "callable_responses/event_offer_handoff_response.schema.json", "typeOutput": "functions/src/shared/generated/eventOfferHandoffCallableResponse.ts"},
   {"name": "ListPrivateEventSetupsCallablePayload", "source": "callables/list_private_event_setups_payload.schema.json", "typeOutput": "functions/src/shared/generated/listPrivateEventSetupsCallablePayload.ts"},
   {"name": "PrivateEventSetupListCallableResponse", "source": "callable_responses/private_event_setup_list_response.schema.json", "typeOutput": "functions/src/shared/generated/privateEventSetupListCallableResponse.ts"},
   {"name": "EventPreferenceIntents", "source": "embedded/event_preference_intents.schema.json", "typeOutput": "functions/src/shared/generated/eventPreferenceIntents.ts"},

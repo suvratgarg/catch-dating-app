@@ -222,6 +222,8 @@ test("manager reopens basics without rich fields or secrets", async () => {
   const result = await getPrivateEventSetup(params);
   assert.equal(result.name, "Sunday Mixer");
   assert.equal(result.detailsConfigured, false);
+  assert.deepEqual(result.eventDetails, {endTimeMillis: null, venueName: null,
+    sourceVenueId: null, eventFormat: null});
   assert.equal(result.startTimeMillis, Date.UTC(2026, 9, 18, 13));
   assert.equal(Object.hasOwn(result, "privatePaymentSecret"), false);
   await assert.rejects(getPrivateEventSetup({...params, actorUid: "stranger"}),
@@ -245,6 +247,7 @@ test("setup reads reject foreign, invalid and published records", async () => {
     [{publicationState: "published"}, "failed-precondition"],
     [{setupRevision: 0}, "failed-precondition"],
     [{eventTimezone: null}, "failed-precondition"],
+    [{endTime: {}}, "failed-precondition"],
   ] as const) {
     h.store.seed(path, {...original, ...patch});
     await assert.rejects(getPrivateEventSetup(params),

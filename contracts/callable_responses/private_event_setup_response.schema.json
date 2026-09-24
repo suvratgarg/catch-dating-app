@@ -18,7 +18,8 @@
     "status",
     "setupDefaults",
     "detailsConfigured",
-    "eventPreferences"
+    "eventPreferences",
+    "eventDetails"
   ],
   "properties": {
     "eventId": {
@@ -113,6 +114,52 @@
           "type": "null"
         }
       ]
+    },
+    "eventDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endTimeMillis",
+        "venueName",
+        "sourceVenueId",
+        "eventFormat"
+      ],
+      "properties": {
+        "endTimeMillis": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "venueName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "sourceVenueId": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            }
+          ]
+        },
+        "eventFormat": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+            }
+          ]
+        }
+      }
     }
   }
 }

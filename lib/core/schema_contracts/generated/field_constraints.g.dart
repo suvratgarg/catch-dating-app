@@ -34877,6 +34877,70 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventOfferHandoffCallableResponseBlockers = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['offerUnavailable', 'offerWithdrawn', 'offerExpired', 'eventMismatch', 'eventCanceled', 'eventArchived', 'eventUnavailable', 'contactMismatch', 'sourceRevoked', 'contactUnavailable', 'contactOptedOut', 'permissionUnavailable', 'termsChanged', 'nameMissing', 'eventMissing', 'eventStarted', 'timeMissing', 'timeZoneInvalid', 'paymentPolicyMissing', 'paymentModeUnsupported', 'currencyMissing', 'paymentLinkMissing', 'paymentLinkInvalid', 'paymentLinkMismatch', 'paymentInstructionsMissing', 'phoneMissing', 'phoneInvalid', 'templateInvalid'],
+    minItems: 1,
+    maxItems: 28,
+  );
+
+  static const eventOfferHandoffCallableResponseBlockersItems = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.blockers.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['offerUnavailable', 'offerWithdrawn', 'offerExpired', 'eventMismatch', 'eventCanceled', 'eventArchived', 'eventUnavailable', 'contactMismatch', 'sourceRevoked', 'contactUnavailable', 'contactOptedOut', 'permissionUnavailable', 'termsChanged', 'nameMissing', 'eventMissing', 'eventStarted', 'timeMissing', 'timeZoneInvalid', 'paymentPolicyMissing', 'paymentModeUnsupported', 'currencyMissing', 'paymentLinkMissing', 'paymentLinkInvalid', 'paymentLinkMismatch', 'paymentInstructionsMissing', 'phoneMissing', 'phoneInvalid', 'templateInvalid'],
+  );
+
+  static const eventOfferHandoffCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferHandoffCallableResponseCopyText = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.copyText',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferHandoffCallableResponseEditableText = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.editableText',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferHandoffCallableResponseKind = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferHandoffCallableResponseOfferId = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferHandoffCallableResponseWhatsappUrl = CatchContractFieldConstraints(
+    path: 'eventOfferHandoffCallableResponse.whatsappUrl',
+    maxLength: 25000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^https://wa\\.me/[1-9][0-9]{7,14}\\?text=',
+  );
+
   static const eventOfferListCallableResponseItems = CatchContractFieldConstraints(
     path: 'eventOfferListCallableResponse.items',
     required: true,
@@ -54835,7 +54899,7 @@ abstract final class CatchContractConstraints {
     path: 'eventSetupReceiptDocument.operation',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['create', 'update', 'preferences'],
+    enumValues: <String>['create', 'update', 'preferences', 'details'],
   );
 
   static const eventSetupReceiptDocumentOrganizerId = CatchContractFieldConstraints(
@@ -97152,6 +97216,46 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const prepareEventOfferHandoffCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferHandoffCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareEventOfferHandoffCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferHandoffCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const prepareEventOfferHandoffCallablePayloadExpectedGeneration = CatchContractFieldConstraints(
+    path: 'prepareEventOfferHandoffCallablePayload.expectedGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const prepareEventOfferHandoffCallablePayloadExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'prepareEventOfferHandoffCallablePayload.expectedOfferRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const prepareEventOfferHandoffCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'prepareEventOfferHandoffCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const prepareEventSuccessRotationDraftCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'prepareEventSuccessRotationDraftCallablePayload.eventId',
     maxLength: 180,
@@ -98529,6 +98633,281 @@ abstract final class CatchContractConstraints {
     path: 'privateEventSetupCallableResponse.detailsConfigured',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEndTimeMillis = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.endTimeMillis',
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityKind = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatInteractionModel = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatVersion = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsSourceVenueId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.sourceVenueId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsVenueName = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.venueName',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const privateEventSetupCallableResponseEventId = CatchContractFieldConstraints(
@@ -115004,6 +115383,334 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
   );
 
+  static const updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.durationMinutes.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.durationMinutes.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 15,
+    maximum: 240,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.groupStrategy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['together', 'paceGroups', 'selfDirected'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'hostOnly', 'authorizedOperators'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 1440,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 30,
+    maximum: 600,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanMovementMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.movementMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'walk', 'ride', 'mixed'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroups = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.id',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm',
+    valueTypes: <String>['integer'],
+    minimum: 120,
+    maximum: 1800,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPath = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.path',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 500,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPathItemsLatitude = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.path.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPathItemsLongitude = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.path.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanRoleKinds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.roleKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+    minItems: 1,
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanRoleKindsItems = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.roleKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['routeLead', 'sweep', 'pacer', 'stopHost', 'marshal', 'photographer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanRouteShape = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.routeShape',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['loop', 'outAndBack', 'pointToPoint'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanStopCadence = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.stopCadence',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'flexibleStops', 'hostedStops'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanStopKinds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.stopKinds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+    minItems: 1,
+    maxItems: 7,
+    uniqueItems: true,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanStopKindsItems = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.stopKinds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['water', 'regroup', 'venue', 'photoSpot', 'viewpoint', 'hazard', 'turnaround'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanVersion = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityKind = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueCustomActivityLabel = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.customActivityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueDefaultModuleIds = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.defaultModuleIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+    uniqueItems: true,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueDefaultModuleIdsItems = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.defaultModuleIds.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueDefaultPlaybookId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.defaultPlaybookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesAccountability = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.accountability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'rollCall', 'sweep'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesAssignmentAlgorithm = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.assignmentAlgorithm',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'pacePods', 'socialPods', 'pairRotations', 'teamBalancer', 'tableSeating'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesCompatibilityPolicy = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.compatibilityPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'socialCohortBalance', 'mutualInterestOnly', 'questionnaireClueOnly'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesDurationShape = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.durationShape',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'rounds', 'courses', 'segments'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesMatchingObjective = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.matchingObjective',
+    valueTypes: <String>['string'],
+    enumValues: <String>['coverage', 'romantic', 'affinity', 'novelty', 'balance', 'spread'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesPhoneAvailability = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.phoneAvailability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['continuous', 'plannedPauses', 'arrivalAndPostEventOnly', 'hostOnlyLive', 'noneDuringActivity'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesRotationSuitability = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.rotationSuitability',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'plannedBreaks', 'continuousRounds'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesUnitOutcome = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueInteractionModel = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.interactionModel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pacePods', 'pairedRotations', 'teamRotations', 'seatedTable', 'freeFormMixer', 'hostLedProgram', 'openFormat'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueVersion = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueValueName = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.expectedSetupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 999999999,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadReviewedDefaultsHash = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.reviewedDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const updatePrivateEventPreferencesCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'updatePrivateEventPreferencesCallablePayload.eventId',
     maxLength: 180,
@@ -124782,6 +125489,14 @@ abstract final class CatchContractConstraints {
     'eventOfferDetailCallableResponse.offer.sourceKind': eventOfferDetailCallableResponseOfferSourceKind,
     'eventOfferDetailCallableResponse.offer.status': eventOfferDetailCallableResponseOfferStatus,
     'eventOfferDetailCallableResponse.offer.updatedAtMillis': eventOfferDetailCallableResponseOfferUpdatedAtMillis,
+    'eventOfferHandoffCallableResponse.blockers': eventOfferHandoffCallableResponseBlockers,
+    'eventOfferHandoffCallableResponse.blockers.items': eventOfferHandoffCallableResponseBlockersItems,
+    'eventOfferHandoffCallableResponse.contactId': eventOfferHandoffCallableResponseContactId,
+    'eventOfferHandoffCallableResponse.copyText': eventOfferHandoffCallableResponseCopyText,
+    'eventOfferHandoffCallableResponse.editableText': eventOfferHandoffCallableResponseEditableText,
+    'eventOfferHandoffCallableResponse.kind': eventOfferHandoffCallableResponseKind,
+    'eventOfferHandoffCallableResponse.offerId': eventOfferHandoffCallableResponseOfferId,
+    'eventOfferHandoffCallableResponse.whatsappUrl': eventOfferHandoffCallableResponseWhatsappUrl,
     'eventOfferListCallableResponse.items': eventOfferListCallableResponseItems,
     'eventOfferListCallableResponse.items.items.contactId': eventOfferListCallableResponseItemsItemsContactId,
     'eventOfferListCallableResponse.items.items.effectiveStatus': eventOfferListCallableResponseItemsItemsEffectiveStatus,
@@ -133255,6 +133970,11 @@ abstract final class CatchContractConstraints {
     'placesAutocompleteCallableResponse.predictions.items.mainText': placesAutocompleteCallableResponsePredictionsItemsMainText,
     'placesAutocompleteCallableResponse.predictions.items.placeId': placesAutocompleteCallableResponsePredictionsItemsPlaceId,
     'placesAutocompleteCallableResponse.predictions.items.secondaryText': placesAutocompleteCallableResponsePredictionsItemsSecondaryText,
+    'prepareEventOfferHandoffCallablePayload.contactId': prepareEventOfferHandoffCallablePayloadContactId,
+    'prepareEventOfferHandoffCallablePayload.eventId': prepareEventOfferHandoffCallablePayloadEventId,
+    'prepareEventOfferHandoffCallablePayload.expectedGeneration': prepareEventOfferHandoffCallablePayloadExpectedGeneration,
+    'prepareEventOfferHandoffCallablePayload.expectedOfferRevision': prepareEventOfferHandoffCallablePayloadExpectedOfferRevision,
+    'prepareEventOfferHandoffCallablePayload.organizerId': prepareEventOfferHandoffCallablePayloadOrganizerId,
     'prepareEventSuccessRotationDraftCallablePayload.eventId': prepareEventSuccessRotationDraftCallablePayloadEventId,
     'prepareEventSuccessRotationDraftCallablePayload.expectedRevision': prepareEventSuccessRotationDraftCallablePayloadExpectedRevision,
     'prepareOrganizerManualSendTaskCallablePayload.contactId': prepareOrganizerManualSendTaskCallablePayloadContactId,
@@ -133439,6 +134159,44 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.city.cityId': privateEventSetupCallableResponseCityCityId,
     'privateEventSetupCallableResponse.city.marketId': privateEventSetupCallableResponseCityMarketId,
     'privateEventSetupCallableResponse.detailsConfigured': privateEventSetupCallableResponseDetailsConfigured,
+    'privateEventSetupCallableResponse.eventDetails.endTimeMillis': privateEventSetupCallableResponseEventDetailsEndTimeMillis,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.groupStrategy': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanGroupStrategy,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.movementMode': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanMovementMode,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroups,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.id': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsId,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.label': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.sortOrder': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.path': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPath,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.path.items.latitude': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPathItemsLatitude,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.path.items.longitude': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanPathItemsLongitude,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.roleKinds': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanRoleKinds,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.roleKinds.items': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanRoleKindsItems,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.routeShape': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanRouteShape,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.stopCadence': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanStopCadence,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.stopKinds': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanStopKinds,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.stopKinds.items': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanStopKindsItems,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.version': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanVersion,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityKind': privateEventSetupCallableResponseEventDetailsEventFormatActivityKind,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.customActivityLabel': privateEventSetupCallableResponseEventDetailsEventFormatCustomActivityLabel,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.defaultModuleIds': privateEventSetupCallableResponseEventDetailsEventFormatDefaultModuleIds,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.defaultModuleIds.items': privateEventSetupCallableResponseEventDetailsEventFormatDefaultModuleIdsItems,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.defaultPlaybookId': privateEventSetupCallableResponseEventDetailsEventFormatDefaultPlaybookId,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.accountability': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesAccountability,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.assignmentAlgorithm': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesAssignmentAlgorithm,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.compatibilityPolicy': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesCompatibilityPolicy,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.durationShape': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesDurationShape,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.matchingObjective': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesMatchingObjective,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.phoneAvailability': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesPhoneAvailability,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.rotationSuitability': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesRotationSuitability,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.unitOutcome': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesUnitOutcome,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.interactionModel': privateEventSetupCallableResponseEventDetailsEventFormatInteractionModel,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.version': privateEventSetupCallableResponseEventDetailsEventFormatVersion,
+    'privateEventSetupCallableResponse.eventDetails.sourceVenueId': privateEventSetupCallableResponseEventDetailsSourceVenueId,
+    'privateEventSetupCallableResponse.eventDetails.venueName': privateEventSetupCallableResponseEventDetailsVenueName,
     'privateEventSetupCallableResponse.eventId': privateEventSetupCallableResponseEventId,
     'privateEventSetupCallableResponse.eventPreferences.paymentTerms.currency': privateEventSetupCallableResponseEventPreferencesPaymentTermsCurrency,
     'privateEventSetupCallableResponse.eventPreferences.paymentTerms.expectedAmountMinor': privateEventSetupCallableResponseEventPreferencesPaymentTermsExpectedAmountMinor,
@@ -135684,6 +136442,51 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventBasicsCallablePayload.expectedSetupRevision': updatePrivateEventBasicsCallablePayloadExpectedSetupRevision,
     'updatePrivateEventBasicsCallablePayload.organizerId': updatePrivateEventBasicsCallablePayloadOrganizerId,
     'updatePrivateEventBasicsCallablePayload.requestId': updatePrivateEventBasicsCallablePayloadRequestId,
+    'updatePrivateEventDetailsCallablePayload.details.durationMinutes.mode': updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesMode,
+    'updatePrivateEventDetailsCallablePayload.details.durationMinutes.value': updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesValue,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.mode': updatePrivateEventDetailsCallablePayloadDetailsEventFormatMode,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.groupStrategy': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanGroupStrategy,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.mode': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyMode,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.staleAfterSeconds': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyStaleAfterSeconds,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.movementMode': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanMovementMode,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroups,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.id': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsId,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.label': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsLabel,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.sortOrder': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsSortOrder,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.paceGroups.items.targetPaceSecondsPerKm': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPaceGroupsItemsTargetPaceSecondsPerKm,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.path': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPath,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.path.items.latitude': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPathItemsLatitude,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.path.items.longitude': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanPathItemsLongitude,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.roleKinds': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanRoleKinds,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.roleKinds.items': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanRoleKindsItems,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.routeShape': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanRouteShape,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.stopCadence': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanStopCadence,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.stopKinds': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanStopKinds,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.stopKinds.items': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanStopKindsItems,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.version': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanVersion,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityKind': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityKind,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.customActivityLabel': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueCustomActivityLabel,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.defaultModuleIds': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueDefaultModuleIds,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.defaultModuleIds.items': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueDefaultModuleIdsItems,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.defaultPlaybookId': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueDefaultPlaybookId,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.accountability': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesAccountability,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.assignmentAlgorithm': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesAssignmentAlgorithm,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.compatibilityPolicy': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesCompatibilityPolicy,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.durationShape': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesDurationShape,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.matchingObjective': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesMatchingObjective,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.phoneAvailability': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesPhoneAvailability,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.rotationSuitability': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesRotationSuitability,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.unitOutcome': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesUnitOutcome,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.interactionModel': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueInteractionModel,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.version': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueVersion,
+    'updatePrivateEventDetailsCallablePayload.details.venue.mode': updatePrivateEventDetailsCallablePayloadDetailsVenueMode,
+    'updatePrivateEventDetailsCallablePayload.details.venue.value.name': updatePrivateEventDetailsCallablePayloadDetailsVenueValueName,
+    'updatePrivateEventDetailsCallablePayload.eventId': updatePrivateEventDetailsCallablePayloadEventId,
+    'updatePrivateEventDetailsCallablePayload.expectedSetupRevision': updatePrivateEventDetailsCallablePayloadExpectedSetupRevision,
+    'updatePrivateEventDetailsCallablePayload.organizerId': updatePrivateEventDetailsCallablePayloadOrganizerId,
+    'updatePrivateEventDetailsCallablePayload.requestId': updatePrivateEventDetailsCallablePayloadRequestId,
+    'updatePrivateEventDetailsCallablePayload.reviewedDefaultsHash': updatePrivateEventDetailsCallablePayloadReviewedDefaultsHash,
     'updatePrivateEventPreferencesCallablePayload.eventId': updatePrivateEventPreferencesCallablePayloadEventId,
     'updatePrivateEventPreferencesCallablePayload.expectedPreferencesRevision': updatePrivateEventPreferencesCallablePayloadExpectedPreferencesRevision,
     'updatePrivateEventPreferencesCallablePayload.expectedSetupRevision': updatePrivateEventPreferencesCallablePayloadExpectedSetupRevision,

@@ -222,6 +222,7 @@ export 'callables/override_event_success_groups_callable_request.g.dart';
 export 'callables/override_event_success_rotations_callable_request.g.dart';
 export 'callables/place_details_callable_request.g.dart';
 export 'callables/places_autocomplete_callable_request.g.dart';
+export 'callables/prepare_event_offer_handoff_callable_request.g.dart';
 export 'callables/prepare_event_success_rotation_draft_callable_request.g.dart';
 export 'callables/preview_event_assignment_features_callable_request.g.dart';
 export 'callables/preview_event_offers_callable_request.g.dart';
@@ -315,6 +316,7 @@ export 'callables/update_organizer_event_setup_defaults_callable_request.g.dart'
 export 'callables/update_organizer_form_draft_callable_request.g.dart';
 export 'callables/update_organizer_program_callable_request.g.dart';
 export 'callables/update_private_event_basics_callable_request.g.dart';
+export 'callables/update_private_event_details_callable_request.g.dart';
 export 'callables/update_private_event_preferences_callable_request.g.dart';
 export 'callables/update_user_profile_patch.g.dart';
 export 'callables/upsert_event_success_layout_callable_request.g.dart';

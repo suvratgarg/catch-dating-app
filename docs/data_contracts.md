@@ -1758,6 +1758,13 @@ The contract layer owns:
 The progressive wizard uses `createPrivateEventSetup`,
 `updatePrivateEventBasics`, `getPrivateEventSetup`, and
 `listPrivateEventSetups` payload contracts.
+`updatePrivateEventDetails` adds or clears duration, venue and format on the
+same private event, with setup revision, reviewed defaults hash and durable
+request identity. Duration and saved venue can inherit reviewed organizer
+defaults. A named venue does not invent coordinates; replacing a saved venue
+clears stale map fields. Neither save publishes the event nor admits a guest.
+The manager read includes `eventDetails` for reopening those actual values;
+event preferences remain separate recommendations.
 Create/edit accept explicit city and timezone decisions, a stable request ID,
 and a reviewed defaults hash when inheriting organizer values. Edit also
 requires the current setup revision. Unknown authority fields are rejected.

@@ -10,6 +10,9 @@ import {updatePrivateEventDetails, UpdatePrivateEventDetailsCommand} from
   "./details";
 import {ProgressiveSetupDependencies} from "./service";
 
+import {validateEventSetupReceiptDocument} from
+  "../../shared/generated/validators/eventSetupReceiptDocument";
+
 type Row = Record<string, unknown>;
 
 class Store {
@@ -163,6 +166,8 @@ test("named venue and inherited duration update private event", async () => {
   assert.equal(event.meetingLocation, undefined);
   assert.equal((event.endTime as admin.firestore.Timestamp).toMillis(),
     start + 90 * 60_000);
+  assert.equal(validateEventSetupReceiptDocument([...store.rows.entries()]
+    .find(([path]) => path.startsWith("eventSetupReceipts/"))?.[1]), true);
   assert.equal(event.publicRegistrationEnabled, false);
   assert.equal(event.publicationState, "private");
   assert.equal(store.writes.filter((path) => path.startsWith("events/")).length,

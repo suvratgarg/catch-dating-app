@@ -30,7 +30,13 @@ import {
   commitEventOffers as commit, getEventOffer as detail,
   listEventOffers as list, mutateEventOffer as mutate,
   previewEventOffers as preview, OfferRepository,
+  prepareEventOfferHandoff as prepareHandoff,
 } from "./eventOfferService";
+
+import {validatePrepareEventOfferHandoffCallablePayload} from
+  "../shared/generated/validators/prepareEventOfferHandoffInput";
+import {validateEventOfferHandoffCallableResponse} from
+  "../shared/generated/validators/eventOfferHandoffOutput";
 
 export interface OfferCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
@@ -143,3 +149,17 @@ export const getEventOffer = onCall(appCheckCallableOptions,
   (request) => getEventOfferHandler(request));
 export const listEventOffers = onCall(appCheckCallableOptions,
   (request) => listEventOffersHandler(request));
+
+/** Prepares editable text only; never sends or records delivery. */
+export async function prepareEventOfferHandoffHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const uid = requireAuth(request);
+  const input = validateCallableWithAjv(request,
+    validatePrepareEventOfferHandoffCallablePayload);
+  return execute({uid, action: "prepareEventOfferHandoff", deps,
+    run: (repository) => prepareHandoff({repository, actor: {uid}, ...input}),
+    validate: validateEventOfferHandoffCallableResponse});
+}
+export const prepareEventOfferHandoff = onCall(appCheckCallableOptions,
+  (request) => prepareEventOfferHandoffHandler(request));

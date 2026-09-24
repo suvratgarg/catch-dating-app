@@ -28,6 +28,12 @@ import {validateListPrivateEventSetupsCallablePayload} from
 import {validatePrivateEventSetupListCallableResponse} from
   "../../shared/generated/validators/privateEventSetupListOutput";
 
+import {updatePrivateEventDetails as updateDetails} from "./details";
+import {validateUpdatePrivateEventDetailsCallablePayload} from
+  "../../shared/generated/validators/updatePrivateEventDetailsInput";
+import {validatePrivateEventSetupMutationCallableResponse} from
+  "../../shared/generated/validators/privateEventSetupMutationOutput";
+
 export interface SetupCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -124,3 +130,22 @@ export async function listPrivateEventSetupsHandler(
 
 export const listPrivateEventSetups = onCall(appCheckCallableOptions,
   (request) => listPrivateEventSetupsHandler(request));
+
+/** Adds optional details without publishing or activating paid admission. */
+export async function updatePrivateEventDetailsHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateUpdatePrivateEventDetailsCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "updatePrivateEventDetails");
+  const result = await updateDetails({actorUid, command,
+    deps: deps.service(db)});
+  if (!validatePrivateEventSetupMutationCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event setup result.");
+  }
+  return result;
+}
+export const updatePrivateEventDetails = onCall(appCheckCallableOptions,
+  (request) => updatePrivateEventDetailsHandler(request));

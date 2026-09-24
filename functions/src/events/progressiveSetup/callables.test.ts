@@ -5,6 +5,7 @@ import {
   createPrivateEventSetupHandler,
   getPrivateEventSetupHandler,
   listPrivateEventSetupsHandler,
+  updatePrivateEventDetailsHandler,
   SetupCallableDependencies,
   updatePrivateEventBasicsHandler,
   updatePrivateEventPreferencesHandler,
@@ -37,7 +38,7 @@ test("callable auth and payload validation precede rate or database access",
     for (const handler of [createPrivateEventSetupHandler,
       updatePrivateEventBasicsHandler,
       updatePrivateEventPreferencesHandler, getPrivateEventSetupHandler,
-      listPrivateEventSetupsHandler]) {
+      listPrivateEventSetupsHandler, updatePrivateEventDetailsHandler]) {
       await assert.rejects(handler(request({}), deps),
         (e) => e instanceof HttpsError && e.code === "unauthenticated");
       await assert.rejects(handler(request({}, "host1"), deps),
@@ -75,4 +76,34 @@ test("create and edit use separate budgets and cannot bypass migration gate",
     }, "host1"), deps),
     (e) => e instanceof HttpsError && e.code === "invalid-argument");
     assert.equal(actions.length, 2);
+  });
+
+test("details rejects unsupported activation fields before a database read",
+  async () => {
+    const command = {organizerId: "org1", eventId: "event1",
+      requestId: "details-one", expectedSetupRevision: 1,
+      reviewedDefaultsHash: "a".repeat(64),
+      details: {durationMinutes: {mode: "set", value: 90}}};
+    const deps: SetupCallableDependencies = {
+      firestore: () => {
+        throw new Error("Unexpected database read");
+      },
+      checkRateLimit: async () => {
+        throw new Error("Unexpected rate");
+      },
+      service: () => {
+        throw new Error("Unexpected mutation");
+      },
+    };
+    for (const details of [
+      {...command.details, publicationState: "published"},
+      {...command.details, capacityLimit: 50},
+      {durationMinutes: {mode: "inherit", value: 90}},
+      {eventFormat: {mode: "inherit"}},
+      {},
+    ]) {
+      await assert.rejects(updatePrivateEventDetailsHandler(
+        request({...command, details}, "host1"), deps),
+      (e) => e instanceof HttpsError && e.code === "invalid-argument");
+    }
   });

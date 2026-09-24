@@ -3308,6 +3308,7 @@
       "exportedFunctions": [
         "createPrivateEventSetup",
         "updatePrivateEventBasics",
+        "updatePrivateEventDetails",
         "updatePrivateEventPreferences"
       ]
     },

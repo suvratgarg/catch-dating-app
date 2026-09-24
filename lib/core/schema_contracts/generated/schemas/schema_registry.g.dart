@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'UpdatePrivateEventDetailsCallablePayload',
+    source: 'callables/update_private_event_details_payload.schema.json',
+    schema: schemaUpdatePrivateEventDetailsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PrepareEventOfferHandoffCallablePayload',
+    source: 'callables/prepare_event_offer_handoff_payload.schema.json',
+    schema: schemaPrepareEventOfferHandoffCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventOfferHandoffCallableResponse',
+    source: 'callable_responses/event_offer_handoff_response.schema.json',
+    schema: schemaEventOfferHandoffCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListPrivateEventSetupsCallablePayload',
     source: 'callables/list_private_event_setups_payload.schema.json',
     schema: schemaListPrivateEventSetupsCallablePayloadSchema,
@@ -4364,6 +4379,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'UpdatePrivateEventDetailsCallablePayload': schemaUpdatePrivateEventDetailsCallablePayloadSchema,
+  'PrepareEventOfferHandoffCallablePayload': schemaPrepareEventOfferHandoffCallablePayloadSchema,
+  'EventOfferHandoffCallableResponse': schemaEventOfferHandoffCallableResponseSchema,
   'ListPrivateEventSetupsCallablePayload': schemaListPrivateEventSetupsCallablePayloadSchema,
   'PrivateEventSetupListCallableResponse': schemaPrivateEventSetupListCallableResponseSchema,
   'EventPreferenceIntents': schemaEventPreferenceIntentsSchema,
@@ -5236,6 +5254,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/update_private_event_details_payload.schema.json': schemaUpdatePrivateEventDetailsCallablePayloadSchema,
+  'callables/prepare_event_offer_handoff_payload.schema.json': schemaPrepareEventOfferHandoffCallablePayloadSchema,
+  'callable_responses/event_offer_handoff_response.schema.json': schemaEventOfferHandoffCallableResponseSchema,
   'callables/list_private_event_setups_payload.schema.json': schemaListPrivateEventSetupsCallablePayloadSchema,
   'callable_responses/private_event_setup_list_response.schema.json': schemaPrivateEventSetupListCallableResponseSchema,
   'embedded/event_preference_intents.schema.json': schemaEventPreferenceIntentsSchema,

@@ -4,7 +4,7 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   commitEventOffersHandler, getEventOfferHandler, listEventOffersHandler,
   mutateEventOfferHandler, OfferCallableDependencies,
-  previewEventOffersHandler,
+  previewEventOffersHandler, prepareEventOfferHandoffHandler,
 } from "./callables";
 import {applyEventOfferAction, EventOffer} from "./eventOfferDomain";
 import type {OfferTransaction} from "./eventOfferService";
@@ -72,7 +72,8 @@ test("all offer endpoints require auth and exact input before database access",
       throw new Error("Unexpected database access");
     };
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
-      mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler]) {
+      mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
+      prepareEventOfferHandoffHandler]) {
       await assert.rejects(handler(request({}, ""), h.deps),
         code("unauthenticated"));
       await assert.rejects(handler(request({actorAuthorized: true}), h.deps),
@@ -132,3 +133,15 @@ test("manual evidence commands cannot inject amount or provider-paid state",
     }
     assert.equal(h.actions.length, 0);
   });
+
+test("handoff rejects stale review before loading recipient data", async () => {
+  const h = fixture();
+  await assert.rejects(prepareEventOfferHandoffHandler(request({...scope,
+    expectedOfferRevision: 99, expectedGeneration: 1}), h.deps),
+  code("failed-precondition"));
+  assert.deepEqual(h.actions, ["prepareEventOfferHandoff"]);
+  h.setAuthorized(false);
+  await assert.rejects(prepareEventOfferHandoffHandler(request({...scope,
+    expectedOfferRevision: 1, expectedGeneration: 1}), h.deps),
+  code("permission-denied"));
+});

@@ -6,6 +6,9 @@ import {
   ReviewedOfferHandoff,
 } from "./message";
 
+import {validateEventOfferHandoffCallableResponse} from
+  "../shared/generated/validators/eventOfferHandoffOutput";
+
 const now = Date.parse("2026-10-01T00:00:00Z");
 
 function reviewed(): ReviewedOfferHandoff {
@@ -31,12 +34,14 @@ function reviewed(): ReviewedOfferHandoff {
 function blockers(input: ReviewedOfferHandoff): string[] {
   const result = prepareOfferHandoff(input);
   assert.equal(result.kind, "blocked");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
   return result.kind === "blocked" ? result.blockers : [];
 }
 
 test("prepares editable individual copy and encoded WhatsApp fallback", () => {
   const result = prepareOfferHandoff(reviewed());
   assert.equal(result.kind, "prepared");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
   if (result.kind !== "prepared") return;
   assert.match(result.editableText, /Hi Asha & Co/);
   assert.match(result.editableText, /Catch & Dance/);
@@ -207,6 +212,7 @@ test("reviewed personal request link is a recipient payment URL", () => {
   input.payment.reusablePaymentPageUrl = null;
   const result = prepareOfferHandoff(input);
   assert.equal(result.kind, "prepared");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
   if (result.kind === "prepared") {
     assert.match(result.editableText, /https:\/\/pay\.example\.test\/a/u);
     assert.equal("providerReceipt" in result, false);

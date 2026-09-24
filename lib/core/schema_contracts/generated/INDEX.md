@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventDetailsCallablePayload.ts` |
+| PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `functions/src/shared/generated/prepareEventOfferHandoffCallablePayload.ts` |
+| EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `functions/src/shared/generated/eventOfferHandoffCallableResponse.ts` |
 | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `functions/src/shared/generated/listPrivateEventSetupsCallablePayload.ts` |
 | PrivateEventSetupListCallableResponse | `callable_responses/private_event_setup_list_response.schema.json` | `functions/src/shared/generated/privateEventSetupListCallableResponse.ts` |
 | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `functions/src/shared/generated/eventPreferenceIntents.ts` |
@@ -886,6 +889,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaUpdatePrivateEventDetailsCallablePayloadSchema` | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_details_callable_payload.g.dart` |
+| `schemaPrepareEventOfferHandoffCallablePayloadSchema` | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_handoff_callable_payload.g.dart` |
+| `schemaEventOfferHandoffCallableResponseSchema` | EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_handoff_callable_response.g.dart` |
 | `schemaListPrivateEventSetupsCallablePayloadSchema` | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_private_event_setups_callable_payload.g.dart` |
 | `schemaPrivateEventSetupListCallableResponseSchema` | PrivateEventSetupListCallableResponse | `callable_responses/private_event_setup_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/private_event_setup_list_callable_response.g.dart` |
 | `schemaEventPreferenceIntentsSchema` | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_preference_intents.g.dart` |
@@ -1760,6 +1766,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| UpdatePrivateEventDetailsCallableRequest | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_details_callable_request.g.dart` |
+| PrepareEventOfferHandoffCallableRequest | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_handoff_callable_request.g.dart` |
 | ListPrivateEventSetupsCallableRequest | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_private_event_setups_callable_request.g.dart` |
 | UpdatePrivateEventPreferencesCallableRequest | UpdatePrivateEventPreferencesCallablePayload | `callables/update_private_event_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_preferences_callable_request.g.dart` |
 | GetOrganizerEventSetupDefaultsCallableRequest | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_event_setup_defaults_callable_request.g.dart` |

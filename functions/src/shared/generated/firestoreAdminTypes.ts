@@ -554,7 +554,7 @@ export interface EventSetupPreferencesDocument {
 }
 
 export interface EventSetupReceiptDocument {
-  operation: "create" | "update" | "preferences";
+  operation: "create" | "update" | "preferences" | "details";
   actorUid: string;
   organizerId: string;
   requestHash: string;

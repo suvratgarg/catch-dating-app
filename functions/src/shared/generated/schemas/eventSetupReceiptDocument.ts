@@ -23,7 +23,8 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
       "enum": [
         "create",
         "update",
-        "preferences"
+        "preferences",
+        "details"
       ]
     },
     "actorUid": {
