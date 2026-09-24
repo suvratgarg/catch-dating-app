@@ -58,6 +58,7 @@
         "availabilityMessage": {"type": ["string", "null"], "maxLength": 500},
         "organizer": {"$ref": "#/definitions/organizerPresentation"},
         "definition": {"$ref": "organizer_form_common.schema.json#/definitions/formDefinition"},
+        "cityOptions": {"type": "array", "maxItems": 100, "items": {"type": "object", "additionalProperties": false, "required": ["marketId", "cityId", "label", "regionName", "countryIsoCode"], "properties": {"marketId": {"type": "string", "maxLength": 120}, "cityId": {"type": "string", "maxLength": 120}, "label": {"type": "string", "maxLength": 160}, "regionName": {"type": "string", "maxLength": 160}, "countryIsoCode": {"type": "string", "minLength": 2, "maxLength": 2}}}},
         "messagingOffer": {"$ref": "#/definitions/messagingOffer"}
       }
     },
@@ -71,6 +72,7 @@
         "form": {"$ref": "#/definitions/publicFormProjection"},
         "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
         "answers": {"$ref": "#/definitions/answerMap"},
+        "prefillSuggestions": {"$ref": "#/definitions/answerMap", "description": "Private values offered only to the verified respondent for review; never written to draft answers until accepted."},
         "consentAccepted": {"type": "boolean"},
         "messagingChoices": {"$ref": "#/definitions/messagingChoices"},
         "identityKind": {"$ref": "#/definitions/responseIdentityKind"},

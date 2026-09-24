@@ -38,6 +38,9 @@ describe("public form organizer branding", () => {
     expect(footer.getByText("Powered by")).toBeTruthy();
     expect(footer.getByRole("link", {name: "Catch Forms"}).getAttribute("href"))
       .toBe("/");
+    expect(footer.getByRole("img", {name: "catch_"}).getAttribute("src"))
+      .toBe("/assets/branding/catch_splash_mark_light.png");
+    expect(footer.queryByText("●")).toBeNull();
     expect(footer.getByText(publicFormsCopy.privacyNote)).toBeTruthy();
   });
 
@@ -52,7 +55,7 @@ describe("public form organizer branding", () => {
     const {rerender} = render(<Branding logoUrl="https://example.com/missing.png" />);
     fireEvent.error(screen.getByRole("img", {name: "Saket Run Club"}));
     expect(within(screen.getByRole("banner")).getByText("Saket Run Club")).toBeTruthy();
-    expect(screen.queryByRole("img")).toBeNull();
+    expect(within(screen.getByRole("banner")).queryByRole("img")).toBeNull();
     rerender(<Branding logoUrl="https://example.com/new.png" />);
     expect(screen.getByRole("img", {name: "Saket Run Club"}).getAttribute("src"))
       .toBe("https://example.com/new.png");
