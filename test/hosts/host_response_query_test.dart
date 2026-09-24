@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -301,6 +302,11 @@ void main() {
       );
       await first;
       expect(controller.view.status, HostResponseQueryStatus.budgetExceeded);
+      expect(controller.view.error, isA<NetworkException>());
+      expect(
+        (controller.view.error! as AppException).code,
+        'too-many-requests',
+      );
       expect(controller.view.total, 0);
 
       final second = controller.apply(request);
@@ -312,6 +318,13 @@ void main() {
       );
       await second;
       expect(controller.view.status, HostResponseQueryStatus.permissionLost);
+      expect(controller.view.error, isA<PermissionException>());
+
+      final third = controller.apply(request);
+      gateway.failNext(const SignInRequiredException('query form responses'));
+      await third;
+      expect(controller.view.status, HostResponseQueryStatus.permissionLost);
+      expect(controller.view.error, isA<SignInRequiredException>());
     },
   );
 }

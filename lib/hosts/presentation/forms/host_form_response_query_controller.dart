@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 
 /// A gateway is implemented only after the manager callable contract is
@@ -105,12 +105,13 @@ class HostResponseQueryController extends ChangeNotifier {
       _publish(_fromPage(request.withCursor(null), page));
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
+      final failure = _normalizeError(error);
       _publish(
         HostResponseQueryView(
-          status: _errorStatus(error),
+          status: _errorStatus(failure),
           request: request.withCursor(null),
           catalog: sameVersion ? _view.catalog : const [],
-          error: error,
+          error: failure,
         ),
       );
     }
@@ -169,14 +170,15 @@ class HostResponseQueryController extends ChangeNotifier {
       );
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
+      final failure = _normalizeError(error);
       _selection = null;
       _publish(
         _copy(
           current,
-          status: _errorStatus(error),
+          status: _errorStatus(failure),
           selectedIds: const {},
           loadingMore: false,
-          error: error,
+          error: failure,
         ),
       );
     }
@@ -260,16 +262,18 @@ class HostResponseQueryController extends ChangeNotifier {
     }
   }
 
-  HostResponseQueryStatus _errorStatus(Object error) {
-    final cause = error is AppException ? error.cause : error;
-    if (cause is FirebaseFunctionsException) {
-      if (cause.code == 'resource-exhausted') {
-        return HostResponseQueryStatus.budgetExceeded;
-      }
-      if (cause.code == 'permission-denied' ||
-          cause.code == 'unauthenticated') {
-        return HostResponseQueryStatus.permissionLost;
-      }
+  AppException _normalizeError(Object error) => normalizeBackendError(
+    error,
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'query form responses',
+      resource: 'form_responses',
+    ),
+  );
+
+  HostResponseQueryStatus _errorStatus(AppException error) {
+    if (error.code == 'too-many-requests') {
+      return HostResponseQueryStatus.budgetExceeded;
     }
     if (error is PermissionException || error is SignInRequiredException) {
       return HostResponseQueryStatus.permissionLost;
