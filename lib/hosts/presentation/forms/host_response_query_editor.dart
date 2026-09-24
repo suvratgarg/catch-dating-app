@@ -5,6 +5,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
+part 'host_response_query_editor_parts.dart';
+
 /// Copy is supplied by the Forms route's localization owner when the manager
 /// callable is mounted. This widget does not introduce a second form model.
 class HostResponseQueryEditorCopy {
@@ -181,7 +183,18 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
         children: [
           Text(copy.title, style: CatchTextStyles.sectionTitle(context)),
           gapH16,
-          if (widget.fields.isNotEmpty) _buildGroup(const [], _root),
+          if (widget.fields.isNotEmpty)
+            _ResponseGroupEditor(
+              root: _root,
+              group: _root,
+              path: const [],
+              fields: widget.fields,
+              copy: copy,
+              defaultCondition: _defaultCondition,
+              onAppend: _append,
+              onReplace: _replace,
+              onSetMatch: _setMatch,
+            ),
           if (widget.fields.isEmpty)
             Text(
               copy.invalidCondition,
@@ -208,291 +221,6 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
           ),
         ],
       ),
-    );
-  }
-
-  // The recursive draft editor keeps one owner for tree mutation and validation.
-  // ignore: catch_no_widget_returning_method
-  Widget _buildGroup(List<int> path, HostResponseGroup group) {
-    final copy = widget.copy;
-    final canAdd = _root.conditionCount < 20;
-    // Root + nested group + condition is the full three-level expression.
-    final canNest = path.isEmpty && canAdd;
-    return Padding(
-      padding: path.isEmpty
-          ? EdgeInsets.zero
-          : CatchInsets.detailInlineRowBottomGap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchChoiceInput<HostResponseMatch>.segmented(
-            key: ValueKey('response-group-${path.join('-')}'),
-            options: [
-              CatchOption(value: HostResponseMatch.all, label: copy.matchAll),
-              CatchOption(value: HostResponseMatch.any, label: copy.matchAny),
-            ],
-            selected: group.match,
-            contractExemption: 'Match mode is a local filter draft choice.',
-            onChanged: (value) => _setMatch(path, value),
-          ),
-          gapH12,
-          for (var index = 0; index < group.children.length; index++) ...[
-            if (group.children[index]
-                case final HostResponseCondition condition)
-              _buildCondition([...path, index], condition)
-            else if (group.children[index] case final HostResponseGroup nested)
-              _buildGroup([...path, index], nested),
-            gapH12,
-          ],
-          Wrap(
-            spacing: CatchSpacing.s3,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              CatchButton(
-                label: copy.addCondition,
-                variant: CatchButtonVariant.secondary,
-                onPressed: canAdd
-                    ? () => _append(path, _defaultCondition())
-                    : null,
-              ),
-              if (canNest)
-                CatchButton(
-                  label: copy.addGroup,
-                  variant: CatchButtonVariant.secondary,
-                  onPressed: () => _append(
-                    path,
-                    HostResponseGroup(
-                      match: HostResponseMatch.any,
-                      children: [_defaultCondition()],
-                    ),
-                  ),
-                ),
-              if (path.isNotEmpty)
-                CatchButton(
-                  label: copy.remove,
-                  variant: CatchButtonVariant.ghost,
-                  onPressed: () => _replace(path, null),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ignore: catch_no_widget_returning_method
-  Widget _buildCondition(List<int> path, HostResponseCondition condition) {
-    final copy = widget.copy;
-    final field = widget.fields.firstWhere(
-      (item) => item.questionId == condition.questionId,
-      orElse: () => widget.fields.first,
-    );
-    final operator = field.operators.contains(condition.operator)
-        ? condition.operator
-        : field.operators.first;
-    return Column(
-      key: ValueKey('response-condition-${path.join('-')}'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: CatchButton(
-                label: '${copy.field}: ${field.label}',
-                variant: CatchButtonVariant.secondary,
-                onPressed: () async {
-                  final chosen = await showCatchSelectionSheet<String>(
-                    context: context,
-                    title: copy.field,
-                    value: field.questionId,
-                    items: [
-                      for (final option in widget.fields)
-                        CatchSelectionMenuItem(
-                          value: option.questionId,
-                          label: option.label,
-                        ),
-                    ],
-                  );
-                  if (chosen == null || !mounted) return;
-                  final selected = widget.fields.firstWhere(
-                    (item) => item.questionId == chosen,
-                  );
-                  _replace(
-                    path,
-                    HostResponseCondition(
-                      questionId: chosen,
-                      operator:
-                          selected.operators.contains(
-                            HostResponseOperator.present,
-                          )
-                          ? HostResponseOperator.present
-                          : selected.operators.first,
-                    ),
-                  );
-                },
-              ),
-            ),
-            gapW8,
-            CatchButton(
-              label: copy.remove,
-              variant: CatchButtonVariant.ghost,
-              onPressed: () => _replace(path, null),
-            ),
-          ],
-        ),
-        gapH8,
-        CatchButton(
-          label: '${copy.condition}: ${copy.operatorLabels[operator]}',
-          variant: CatchButtonVariant.secondary,
-          onPressed: () async {
-            final chosen = await showCatchSelectionSheet<HostResponseOperator>(
-              context: context,
-              title: copy.condition,
-              value: operator,
-              items: [
-                for (final option in field.operators)
-                  CatchSelectionMenuItem(
-                    value: option,
-                    label: copy.operatorLabels[option]!,
-                  ),
-              ],
-            );
-            if (chosen == null || !mounted) return;
-            _replace(
-              path,
-              HostResponseCondition(
-                questionId: field.questionId,
-                operator: chosen,
-                value: chosen == HostResponseOperator.booleanIs ? true : null,
-              ),
-            );
-          },
-        ),
-        gapH8,
-        _buildValue(path, field, condition),
-      ],
-    );
-  }
-
-  // ignore: catch_no_widget_returning_method
-  Widget _buildValue(
-    List<int> path,
-    HostResponseQueryField field,
-    HostResponseCondition condition,
-  ) {
-    final operator = condition.operator;
-    if (operator == HostResponseOperator.present ||
-        operator == HostResponseOperator.missing) {
-      return const SizedBox.shrink();
-    }
-    if (operator == HostResponseOperator.choiceAny ||
-        operator == HostResponseOperator.choiceAll ||
-        operator == HostResponseOperator.choiceNone) {
-      return CatchChoiceInput<String>(
-        key: ValueKey('response-values-${path.join('-')}'),
-        values: field.options.keys.toList(growable: false),
-        selected: condition.values.toSet(),
-        itemLabelBuilder: (value) => field.options[value]!,
-        mode: CatchChipMode.multiple,
-        allowEmptySelection: true,
-        onChanged: (selected) => _replace(
-          path,
-          HostResponseCondition(
-            questionId: field.questionId,
-            operator: operator,
-            values: selected.toList()..sort(),
-          ),
-        ),
-      );
-    }
-    if (operator == HostResponseOperator.booleanIs) {
-      return CatchChoiceInput<bool>.segmented(
-        options: [
-          CatchOption(value: true, label: widget.copy.yes),
-          CatchOption(value: false, label: widget.copy.no),
-        ],
-        selected: condition.value == false ? false : true,
-        contractExemption: 'Boolean answer filter is a local query draft.',
-        onChanged: (value) => _replace(
-          path,
-          HostResponseCondition(
-            questionId: field.questionId,
-            operator: operator,
-            value: value,
-          ),
-        ),
-      );
-    }
-    final range =
-        operator == HostResponseOperator.numberBetween ||
-        operator == HostResponseOperator.dateBetween;
-    if (range) {
-      return Row(
-        children: [
-          Expanded(child: _valueField(path, field, condition, lower: true)),
-          gapW12,
-          Expanded(child: _valueField(path, field, condition, lower: false)),
-        ],
-      );
-    }
-    return _valueField(path, field, condition);
-  }
-
-  // ignore: catch_no_widget_returning_method
-  Widget _valueField(
-    List<int> path,
-    HostResponseQueryField field,
-    HostResponseCondition condition, {
-    bool? lower,
-  }) {
-    final operator = condition.operator;
-    final number = operator.name.startsWith('number');
-    final current = lower == null
-        ? condition.value
-        : lower
-        ? condition.minimum
-        : condition.maximum;
-    return CatchSection.fieldRows(
-      children: [
-        CatchField.input(
-          key: ValueKey('response-value-${path.join('-')}-$lower-$current'),
-          copy: catchFieldCopy(context.l10n),
-          title: lower == null
-              ? widget.copy.value
-              : lower
-              ? widget.copy.minimum
-              : widget.copy.maximum,
-          initialValue: current?.toString(),
-          keyboardType: number
-              ? const TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: true,
-                )
-              : operator.name.startsWith('date')
-              ? TextInputType.datetime
-              : TextInputType.text,
-          maxLength: number
-              ? 24
-              : operator.name.startsWith('date')
-              ? 10
-              : 200,
-          contractExemption:
-              'The manager query validates typed response values.',
-          onBlur: (raw) {
-            final parsed = number ? num.tryParse(raw.trim()) : raw.trim();
-            _replace(
-              path,
-              HostResponseCondition(
-                questionId: field.questionId,
-                operator: operator,
-                value: lower == null ? parsed : null,
-                minimum: lower == true ? parsed : condition.minimum,
-                maximum: lower == false ? parsed : condition.maximum,
-              ),
-            );
-          },
-        ),
-      ],
     );
   }
 }
