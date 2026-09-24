@@ -33,9 +33,8 @@ class EventSetupValue<T> {
   const EventSetupValue.inherit()
     : mode = EventSetupValueMode.inherit,
       value = null;
-  const EventSetupValue.set(T value)
-    : mode = EventSetupValueMode.set,
-      value = value;
+  const EventSetupValue.set(this.value)
+    : mode = EventSetupValueMode.set;
   const EventSetupValue.clear()
     : mode = EventSetupValueMode.clear,
       value = null;
@@ -152,7 +151,9 @@ class PrivateEventBasics {
     final month = int.tryParse(dateParts[1]);
     final day = int.tryParse(dateParts[2]);
     if (year == null || year < 2000 || year > 2100 ||
-        month == null || day == null) return false;
+        month == null || day == null) {
+      return false;
+    }
     final date = DateTime.utc(year, month, day);
     if (date.year != year || date.month != month || date.day != day) {
       return false;

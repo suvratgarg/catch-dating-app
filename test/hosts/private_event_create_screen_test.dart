@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
@@ -117,6 +120,7 @@ void main() {
       CreatePrivateEvent create,
     ) => ProviderScope(
       overrides: [
+        // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
         uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
       ],
       child: MaterialApp(
@@ -210,6 +214,3 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 }
-import 'dart:convert';
-
-import 'package:catch_dating_app/auth/data/auth_repository.dart';

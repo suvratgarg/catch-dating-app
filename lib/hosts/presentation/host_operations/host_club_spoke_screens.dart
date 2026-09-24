@@ -151,7 +151,9 @@ class HostClubSpokeResolver extends ConsumerWidget {
         ),
       );
     }
-    if (uidState.isLoading) return HostLoadingScreen(title: title);
+    if (uidState.isLoading) {
+      return HostLoadingScreen(title: title);
+    }
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(

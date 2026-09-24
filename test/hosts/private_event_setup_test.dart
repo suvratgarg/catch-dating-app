@@ -2,7 +2,7 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final city = EventSetupCity(
+  const city = EventSetupCity(
     cityId: 'in-mh-mumbai',
     marketId: 'in-mh-mumbai',
   );
