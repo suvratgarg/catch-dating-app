@@ -290,6 +290,7 @@ Future<void> pumpConsumerMatchChat(
         ).overrideWith((ref) => Stream.value(otherProfile)),
       ],
       child: MaterialApp(
+        builder: catchNoticeOverlayBuilder,
         theme: AppTheme.light,
         home: ChatScreen(
           matchId: 'match-1',
@@ -1089,6 +1090,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             home: Consumer(
               builder: (context, ref, child) {
                 state = ref.watch(
@@ -1156,6 +1158,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(profile)),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             home: Consumer(
               builder: (context, ref, child) {
                 state = ref.watch(
@@ -1209,6 +1212,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
@@ -1246,6 +1250,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
@@ -1284,6 +1289,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(
               matchId: 'match-1',
@@ -1340,6 +1346,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
@@ -1373,6 +1380,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
@@ -1574,6 +1582,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
@@ -1625,6 +1634,7 @@ void main() {
             }),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
@@ -1666,6 +1676,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
@@ -1741,6 +1752,7 @@ void main() {
               ),
             ],
             child: MaterialApp(
+              builder: catchNoticeOverlayBuilder,
               theme: AppTheme.light,
               home: const ChatScreen(matchId: 'host-inquiry-1'),
             ),
@@ -1803,6 +1815,7 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
@@ -1870,6 +1883,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
@@ -1933,6 +1947,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
@@ -2000,6 +2015,7 @@ void main() {
             ),
           ],
           child: MaterialApp(
+            builder: catchNoticeOverlayBuilder,
             theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),

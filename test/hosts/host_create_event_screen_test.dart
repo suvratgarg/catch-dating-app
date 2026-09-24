@@ -3,6 +3,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -909,7 +910,7 @@ Future<void> _pumpCreateEventFlow(
           data: MediaQuery.of(
             context,
           ).copyWith(alwaysUse24HourFormat: alwaysUse24HourFormat),
-          child: child!,
+          child: CatchNoticeOverlay(child: child!),
         ),
         routerConfig: router,
       ),
