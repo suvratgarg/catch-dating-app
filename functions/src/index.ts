@@ -653,6 +653,10 @@ export {
   listProgramHouseholds,
 } from "./programs/programGuests";
 export {
+  applyProgramFunctionInvitations,
+  recordProgramFunctionRsvp,
+} from "./programRsvp/programRsvpCallables";
+export {
   upsertProgramFunction,
   upsertProgramPickupPoint,
   upsertProgramHotel,

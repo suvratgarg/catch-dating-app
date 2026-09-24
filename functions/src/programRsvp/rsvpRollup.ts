@@ -34,13 +34,15 @@ export function rollupGuestRsvp(
 }
 
 // Caller-facing wrapper: rows for cancelled or missing functions never
-// feed the program-level rollup.
+// feed the program-level rollup, and neither do revoked invitations —
+// an invited:false tombstone is history, not a live response.
 export function rollupGuestRsvpForFunctions(
   rows: ReadonlyArray<FunctionGuestRowLike>,
   functions: FunctionLookup,
 ): ProgramRsvpStatus {
   const index = functionsById(functions);
   return rollupGuestRsvp(rows.filter((row) => {
+    if (row.invited !== true) return false;
     const fn = index.get(row.functionId);
     return fn !== undefined && fn.status !== "cancelled";
   }));
@@ -60,7 +62,7 @@ export function functionCountPatch(
   let expectedCount = 0;
   let checkedInCount = 0;
   for (const row of rows) {
-    if (row.functionId !== fn.functionId) continue;
+    if (row.functionId !== fn.functionId || row.invited !== true) continue;
     const partySize = row.partySize ?? 1;
     if (row.rsvpStatus === "attending") expectedCount += partySize;
     if (row.attendanceStatus === "checkedIn") checkedInCount += partySize;

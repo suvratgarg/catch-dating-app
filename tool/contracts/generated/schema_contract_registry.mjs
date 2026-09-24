@@ -126500,6 +126500,32 @@ export const programFunctionGuestDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "responseSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "staff",
+        "householdLink",
+        "import",
+        null
+      ],
+      "description": "Which channel recorded the current response: staff entry, the signed household RSVP link, or a manifest import. Null while pending."
+    },
+    "recordedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Staff uid who recorded a staff-sourced response; null for household-link and imported responses."
     }
   }
 };
@@ -129952,6 +129978,119 @@ export const upsertProgramGuestCallablePayloadSchema = {
   }
 };
 
+export const applyProgramFunctionInvitationsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/apply_program_function_invitations_payload.schema.json",
+  "title": "ApplyProgramFunctionInvitationsCallablePayload",
+  "description": "Set one program function's invitation mode and, for selectedGuests functions, the explicit invited guest list. The callable diffs the desired list against current programFunctionGuests rows; unknown guest ids are ignored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "functionId",
+    "invitationMode",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "invitationMode": {
+      "type": "string",
+      "enum": [
+        "allGuests",
+        "selectedGuests"
+      ],
+      "description": "Whether the function invites every program guest or only the programFunctionGuests rows marked invited."
+    },
+    "selectedGuestIds": {
+      "type": "array",
+      "maxItems": 2000,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Desired invited guests for selectedGuests mode; ignored when invitationMode is allGuests."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Fences the function document read-modify-write."
+    }
+  }
+};
+
+export const recordProgramFunctionRsvpCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_program_function_rsvp_payload.schema.json",
+  "title": "RecordProgramFunctionRsvpCallablePayload",
+  "description": "Staff-recorded RSVP for one guest on one program function. The server derives the program-level guest rollup and function counters; last response wins per join key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "functionId",
+    "guestId",
+    "rsvpStatus"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Attending party size; null reads as 1."
+    },
+    "responseNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "allowUninvited": {
+      "type": "boolean",
+      "description": "Record a response for a selectedGuests function the guest was not invited to; the row lands invited:true."
+    }
+  }
+};
+
 export const listProgramStaffCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_program_staff_payload.schema.json",
@@ -131313,6 +131452,103 @@ export const programMutationCallableResponseSchema = {
     "alreadyApplied": {
       "type": "boolean",
       "description": "True when an exact clientOperationId replay returned the original result."
+    }
+  }
+};
+
+export const programFunctionInvitationsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_function_invitations_response.schema.json",
+  "title": "ProgramFunctionInvitationsCallableResponse",
+  "description": "Acknowledgement for an invitation-list apply: the committed function revision plus the row diff that landed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "applyProgramFunctionInvitations"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "createdCount",
+    "revokedCount",
+    "keptCount",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The function document id."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revokedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "keptCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact replay returned the original result."
+    }
+  }
+};
+
+export const recordProgramFunctionRsvpCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_program_function_rsvp_response.schema.json",
+  "title": "RecordProgramFunctionRsvpCallableResponse",
+  "description": "Acknowledgement for a recorded function RSVP: the join-key row id, its revision, and the guest's derived program-level RSVP rollup.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "recordProgramFunctionRsvp"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "guestRsvpStatus",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The programFunctionGuests join-key document id."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "guestRsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ],
+      "description": "Derived programGuests.rsvpStatus rollup after this response."
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact replay returned the original result."
     }
   }
 };

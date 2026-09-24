@@ -4879,6 +4879,53 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const applyProgramFunctionInvitationsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'applyProgramFunctionInvitationsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const applyProgramFunctionInvitationsCallablePayloadFunctionId = CatchContractFieldConstraints(
+    path: 'applyProgramFunctionInvitationsCallablePayload.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const applyProgramFunctionInvitationsCallablePayloadInvitationMode = CatchContractFieldConstraints(
+    path: 'applyProgramFunctionInvitationsCallablePayload.invitationMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allGuests', 'selectedGuests'],
+  );
+
+  static const applyProgramFunctionInvitationsCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'applyProgramFunctionInvitationsCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const applyProgramFunctionInvitationsCallablePayloadSelectedGuestIds = CatchContractFieldConstraints(
+    path: 'applyProgramFunctionInvitationsCallablePayload.selectedGuestIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 2000,
+    uniqueItems: true,
+  );
+
+  static const applyProgramFunctionInvitationsCallablePayloadSelectedGuestIdsItems = CatchContractFieldConstraints(
+    path: 'applyProgramFunctionInvitationsCallablePayload.selectedGuestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const approveEventRuntimeClaimCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'approveEventRuntimeClaimCallablePayload.attendeeId',
     maxLength: 180,
@@ -96390,6 +96437,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programFunctionGuestDocumentRecordedByUid = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.recordedByUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const programFunctionGuestDocumentRespondedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programFunctionGuestDocument.respondedAt._nanoseconds',
     required: true,
@@ -96408,6 +96462,12 @@ abstract final class CatchContractConstraints {
     path: 'programFunctionGuestDocument.responseNote',
     maxLength: 500,
     valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentResponseSource = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.responseSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['staff', 'householdLink', 'import'],
   );
 
   static const programFunctionGuestDocumentRevision = CatchContractFieldConstraints(
@@ -96437,6 +96497,52 @@ abstract final class CatchContractConstraints {
     path: 'programFunctionGuestDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const programFunctionInvitationsCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'programFunctionInvitationsCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programFunctionInvitationsCallableResponseCreatedCount = CatchContractFieldConstraints(
+    path: 'programFunctionInvitationsCallableResponse.createdCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programFunctionInvitationsCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'programFunctionInvitationsCallableResponse.entityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionInvitationsCallableResponseKeptCount = CatchContractFieldConstraints(
+    path: 'programFunctionInvitationsCallableResponse.keptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programFunctionInvitationsCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'programFunctionInvitationsCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programFunctionInvitationsCallableResponseRevokedCount = CatchContractFieldConstraints(
+    path: 'programFunctionInvitationsCallableResponse.revokedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const programGuestDocumentContactId = CatchContractFieldConstraints(
@@ -100645,6 +100751,84 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallableResponse.accepted',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadAllowUninvited = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.allowUninvited',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadFunctionId = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadGuestId = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadPartySize = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadResponseNote = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.responseNote',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramFunctionRsvpCallablePayloadRsvpStatus = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallablePayload.rsvpStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
+  static const recordProgramFunctionRsvpCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordProgramFunctionRsvpCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallableResponse.entityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramFunctionRsvpCallableResponseGuestRsvpStatus = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallableResponse.guestRsvpStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
+  static const recordProgramFunctionRsvpCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'recordProgramFunctionRsvpCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const refreshProgramTravelLegCallablePayloadLegId = CatchContractFieldConstraints(
@@ -116308,6 +116492,12 @@ abstract final class CatchContractConstraints {
     'adminUpdateOrganizerDetailsCallablePayload.fields.tags.items': adminUpdateOrganizerDetailsCallablePayloadFieldsTagsItems,
     'adminUpdateOrganizerDetailsCallablePayload.organizerId': adminUpdateOrganizerDetailsCallablePayloadOrganizerId,
     'adminUpdateOrganizerDetailsCallablePayload.reviewNote': adminUpdateOrganizerDetailsCallablePayloadReviewNote,
+    'applyProgramFunctionInvitationsCallablePayload.expectedRevision': applyProgramFunctionInvitationsCallablePayloadExpectedRevision,
+    'applyProgramFunctionInvitationsCallablePayload.functionId': applyProgramFunctionInvitationsCallablePayloadFunctionId,
+    'applyProgramFunctionInvitationsCallablePayload.invitationMode': applyProgramFunctionInvitationsCallablePayloadInvitationMode,
+    'applyProgramFunctionInvitationsCallablePayload.programId': applyProgramFunctionInvitationsCallablePayloadProgramId,
+    'applyProgramFunctionInvitationsCallablePayload.selectedGuestIds': applyProgramFunctionInvitationsCallablePayloadSelectedGuestIds,
+    'applyProgramFunctionInvitationsCallablePayload.selectedGuestIds.items': applyProgramFunctionInvitationsCallablePayloadSelectedGuestIdsItems,
     'approveEventRuntimeClaimCallablePayload.attendeeId': approveEventRuntimeClaimCallablePayloadAttendeeId,
     'approveEventRuntimeClaimCallablePayload.decision': approveEventRuntimeClaimCallablePayloadDecision,
     'approveEventRuntimeClaimCallablePayload.eventId': approveEventRuntimeClaimCallablePayloadEventId,
@@ -128724,13 +128914,21 @@ abstract final class CatchContractConstraints {
     'programFunctionGuestDocument.organizerId': programFunctionGuestDocumentOrganizerId,
     'programFunctionGuestDocument.partySize': programFunctionGuestDocumentPartySize,
     'programFunctionGuestDocument.programId': programFunctionGuestDocumentProgramId,
+    'programFunctionGuestDocument.recordedByUid': programFunctionGuestDocumentRecordedByUid,
     'programFunctionGuestDocument.respondedAt._nanoseconds': programFunctionGuestDocumentRespondedAtNanoseconds,
     'programFunctionGuestDocument.respondedAt._seconds': programFunctionGuestDocumentRespondedAtSeconds,
     'programFunctionGuestDocument.responseNote': programFunctionGuestDocumentResponseNote,
+    'programFunctionGuestDocument.responseSource': programFunctionGuestDocumentResponseSource,
     'programFunctionGuestDocument.revision': programFunctionGuestDocumentRevision,
     'programFunctionGuestDocument.rsvpStatus': programFunctionGuestDocumentRsvpStatus,
     'programFunctionGuestDocument.updatedAt._nanoseconds': programFunctionGuestDocumentUpdatedAtNanoseconds,
     'programFunctionGuestDocument.updatedAt._seconds': programFunctionGuestDocumentUpdatedAtSeconds,
+    'programFunctionInvitationsCallableResponse.alreadyApplied': programFunctionInvitationsCallableResponseAlreadyApplied,
+    'programFunctionInvitationsCallableResponse.createdCount': programFunctionInvitationsCallableResponseCreatedCount,
+    'programFunctionInvitationsCallableResponse.entityId': programFunctionInvitationsCallableResponseEntityId,
+    'programFunctionInvitationsCallableResponse.keptCount': programFunctionInvitationsCallableResponseKeptCount,
+    'programFunctionInvitationsCallableResponse.revision': programFunctionInvitationsCallableResponseRevision,
+    'programFunctionInvitationsCallableResponse.revokedCount': programFunctionInvitationsCallableResponseRevokedCount,
     'programGuestDocument.contactId': programGuestDocumentContactId,
     'programGuestDocument.createdAt._nanoseconds': programGuestDocumentCreatedAtNanoseconds,
     'programGuestDocument.createdAt._seconds': programGuestDocumentCreatedAtSeconds,
@@ -129301,6 +129499,17 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallablePayload.sessionId': recordOrganizerAnalyticsEventCallablePayloadSessionId,
     'recordOrganizerAnalyticsEventCallablePayload.source': recordOrganizerAnalyticsEventCallablePayloadSource,
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
+    'recordProgramFunctionRsvpCallablePayload.allowUninvited': recordProgramFunctionRsvpCallablePayloadAllowUninvited,
+    'recordProgramFunctionRsvpCallablePayload.functionId': recordProgramFunctionRsvpCallablePayloadFunctionId,
+    'recordProgramFunctionRsvpCallablePayload.guestId': recordProgramFunctionRsvpCallablePayloadGuestId,
+    'recordProgramFunctionRsvpCallablePayload.partySize': recordProgramFunctionRsvpCallablePayloadPartySize,
+    'recordProgramFunctionRsvpCallablePayload.programId': recordProgramFunctionRsvpCallablePayloadProgramId,
+    'recordProgramFunctionRsvpCallablePayload.responseNote': recordProgramFunctionRsvpCallablePayloadResponseNote,
+    'recordProgramFunctionRsvpCallablePayload.rsvpStatus': recordProgramFunctionRsvpCallablePayloadRsvpStatus,
+    'recordProgramFunctionRsvpCallableResponse.alreadyApplied': recordProgramFunctionRsvpCallableResponseAlreadyApplied,
+    'recordProgramFunctionRsvpCallableResponse.entityId': recordProgramFunctionRsvpCallableResponseEntityId,
+    'recordProgramFunctionRsvpCallableResponse.guestRsvpStatus': recordProgramFunctionRsvpCallableResponseGuestRsvpStatus,
+    'recordProgramFunctionRsvpCallableResponse.revision': recordProgramFunctionRsvpCallableResponseRevision,
     'refreshProgramTravelLegCallablePayload.legId': refreshProgramTravelLegCallablePayloadLegId,
     'refreshProgramTravelLegCallablePayload.programId': refreshProgramTravelLegCallablePayloadProgramId,
     'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,

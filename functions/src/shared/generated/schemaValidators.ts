@@ -348,6 +348,8 @@ export {validateInviteProgramStaffCallablePayload} from "./validators/inviteProg
 export {validateClaimProgramStaffInviteCallablePayload} from "./validators/claimProgramStaffInviteInput";
 export {validateRevokeProgramStaffInviteCallablePayload} from "./validators/revokeProgramStaffInviteInput";
 export {validateUpsertProgramGuestCallablePayload} from "./validators/upsertProgramGuestInput";
+export {validateApplyProgramFunctionInvitationsCallablePayload} from "./validators/applyProgramFunctionInvitationsInput";
+export {validateRecordProgramFunctionRsvpCallablePayload} from "./validators/recordProgramFunctionRsvpInput";
 export {validateListProgramStaffCallablePayload} from "./validators/listProgramStaffInput";
 export {validateListProgramTripsCallablePayload} from "./validators/listProgramTripsInput";
 export {validateListProgramGuestsCallablePayload} from "./validators/listProgramGuestsInput";
@@ -367,6 +369,8 @@ export {validateProgramStationScopeCallablePayload} from "./validators/programSt
 export {validateGetProgramHotelInboundCallablePayload} from "./validators/getProgramHotelInboundInput";
 export {validateListTransportVendorsCallablePayload} from "./validators/listTransportVendorsInput";
 export {validateProgramMutationCallableResponse} from "./validators/programMutationOutput";
+export {validateProgramFunctionInvitationsCallableResponse} from "./validators/programFunctionInvitationsOutput";
+export {validateRecordProgramFunctionRsvpCallableResponse} from "./validators/recordProgramFunctionRsvpOutput";
 export {validateOrganizerProgramListCallableResponse} from "./validators/organizerProgramListOutput";
 export {validateProgramAccessCallableResponse} from "./validators/programAccessOutput";
 export {validateOrganizerProgramCallableResponse} from "./validators/organizerProgramOutput";

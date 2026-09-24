@@ -1,0 +1,7 @@
+{
+  "programId": "program-1",
+  "functionId": "function-sangeet",
+  "invitationMode": "selectedGuests",
+  "selectedGuestIds": ["guest-1", "guest-2"],
+  "expectedRevision": 3
+}

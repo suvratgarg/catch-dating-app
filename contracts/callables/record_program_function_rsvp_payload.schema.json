@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_program_function_rsvp_payload.schema.json",
+  "title": "RecordProgramFunctionRsvpCallablePayload",
+  "description": "Staff-recorded RSVP for one guest on one program function. The server derives the program-level guest rollup and function counters; last response wins per join key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "functionId",
+    "guestId",
+    "rsvpStatus"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rsvpStatus": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Attending party size; null reads as 1."
+    },
+    "responseNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "allowUninvited": {
+      "type": "boolean",
+      "description": "Record a response for a selectedGuests function the guest was not invited to; the row lands invited:true."
+    }
+  }
+}

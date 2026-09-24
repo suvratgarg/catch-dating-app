@@ -1864,6 +1864,21 @@ const schemaSpecs = [
       "functions/src/shared/generated/upsertProgramGuestCallablePayload.ts",
   },
   {
+    name: "ApplyProgramFunctionInvitationsCallablePayload",
+    source:
+      "callables/apply_program_function_invitations_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "applyProgramFunctionInvitationsCallablePayload.ts",
+  },
+  {
+    name: "RecordProgramFunctionRsvpCallablePayload",
+    source: "callables/record_program_function_rsvp_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordProgramFunctionRsvpCallablePayload.ts",
+  },
+  {
     name: "ListProgramStaffCallablePayload",
     source: "callables/list_program_staff_payload.schema.json",
     typeOutput:
@@ -1989,6 +2004,24 @@ const schemaSpecs = [
     source: "callable_responses/program_mutation_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/programMutationCallableResponse.ts",
+  },
+  {
+    name: "ProgramFunctionInvitationsCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_function_invitations_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programFunctionInvitationsCallableResponse.ts",
+  },
+  {
+    name: "RecordProgramFunctionRsvpCallableResponse",
+    source:
+      "callable_responses/" +
+      "record_program_function_rsvp_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordProgramFunctionRsvpCallableResponse.ts",
   },
   {
     name: "OrganizerProgramListCallableResponse",

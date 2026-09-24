@@ -348,6 +348,8 @@ export {inviteProgramStaffCallablePayloadSchema} from "./schemas/inviteProgramSt
 export {claimProgramStaffInviteCallablePayloadSchema} from "./schemas/claimProgramStaffInviteInput";
 export {revokeProgramStaffInviteCallablePayloadSchema} from "./schemas/revokeProgramStaffInviteInput";
 export {upsertProgramGuestCallablePayloadSchema} from "./schemas/upsertProgramGuestInput";
+export {applyProgramFunctionInvitationsCallablePayloadSchema} from "./schemas/applyProgramFunctionInvitationsInput";
+export {recordProgramFunctionRsvpCallablePayloadSchema} from "./schemas/recordProgramFunctionRsvpInput";
 export {listProgramStaffCallablePayloadSchema} from "./schemas/listProgramStaffInput";
 export {listProgramTripsCallablePayloadSchema} from "./schemas/listProgramTripsInput";
 export {listProgramGuestsCallablePayloadSchema} from "./schemas/listProgramGuestsInput";
@@ -367,6 +369,8 @@ export {programStationScopeCallablePayloadSchema} from "./schemas/programStation
 export {getProgramHotelInboundCallablePayloadSchema} from "./schemas/getProgramHotelInboundInput";
 export {listTransportVendorsCallablePayloadSchema} from "./schemas/listTransportVendorsInput";
 export {programMutationCallableResponseSchema} from "./schemas/programMutationOutput";
+export {programFunctionInvitationsCallableResponseSchema} from "./schemas/programFunctionInvitationsOutput";
+export {recordProgramFunctionRsvpCallableResponseSchema} from "./schemas/recordProgramFunctionRsvpOutput";
 export {organizerProgramListCallableResponseSchema} from "./schemas/organizerProgramListOutput";
 export {programAccessCallableResponseSchema} from "./schemas/programAccessOutput";
 export {organizerProgramCallableResponseSchema} from "./schemas/organizerProgramOutput";

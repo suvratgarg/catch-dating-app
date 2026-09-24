@@ -103,9 +103,13 @@ export function buildConversionPlan(
       invited: true,
       rsvpStatus: response.rsvpStatus,
       // A re-response never clears door state; new rows start expected.
+      // An omitted partySize or note keeps the prior answer — only an
+      // explicit null clears it.
       attendanceStatus: existing?.attendanceStatus ?? "expected",
-      partySize: response.partySize ?? null,
-      responseNote: response.responseNote ?? null,
+      partySize: response.partySize === undefined ?
+        existing?.partySize ?? null : response.partySize,
+      responseNote: response.responseNote === undefined ?
+        existing?.responseNote ?? null : response.responseNote,
       respondedAt: response.respondedAt,
     },
   };
