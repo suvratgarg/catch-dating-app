@@ -143,6 +143,10 @@
           "destination": "/invite/index.html"
         },
         {
+          "source": "/rsvp/**",
+          "destination": "/rsvp/index.html"
+        },
+        {
           "source": "/f/**",
           "destination": "/f/index.html"
         }

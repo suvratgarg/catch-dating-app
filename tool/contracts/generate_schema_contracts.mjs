@@ -1893,6 +1893,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "getProgramHouseholdRsvpViewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "getProgramHouseholdRsvpViewCallablePayload.ts",
+    ],
   },
   {
     name: "SubmitProgramHouseholdRsvpCallablePayload",
@@ -1900,6 +1904,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "submitProgramHouseholdRsvpCallablePayload.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "submitProgramHouseholdRsvpCallablePayload.ts",
+    ],
   },
   {
     name: "ListProgramStaffCallablePayload",
@@ -2063,6 +2071,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "programHouseholdRsvpViewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "programHouseholdRsvpViewCallableResponse.ts",
+    ],
   },
   {
     name: "SubmitProgramHouseholdRsvpCallableResponse",
@@ -2072,6 +2084,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "submitProgramHouseholdRsvpCallableResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "submitProgramHouseholdRsvpCallableResponse.ts",
+    ],
   },
   {
     name: "OrganizerProgramListCallableResponse",

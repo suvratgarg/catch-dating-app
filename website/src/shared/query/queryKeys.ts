@@ -29,6 +29,12 @@ export const websiteQueryKeys = {
     reply: (instanceId: string) =>
       [...websiteQueryKeys.all, "event-assistance", "reply", instanceId] as const,
   },
+  householdRsvp: {
+    view: (instanceId: string) =>
+      [...websiteQueryKeys.all, "household-rsvp", "view", instanceId] as const,
+    submit: (instanceId: string) =>
+      [...websiteQueryKeys.all, "household-rsvp", "submit", instanceId] as const,
+  },
   eventRehearsal: {
     guest: (publicRehearsalId: string) =>
       [...websiteQueryKeys.all, "event-rehearsal", "guest",

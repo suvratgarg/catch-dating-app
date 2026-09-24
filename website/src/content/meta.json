@@ -86,6 +86,13 @@
       "canonicalPath": "/event-update/",
       "twitterDescription": "Your event instructions and response options.",
       "robots": "noindex, follow"
+    },
+    "household_rsvp": {
+      "title": "Your invitation | Catch",
+      "description": "View your household's invited functions and send your RSVP.",
+      "canonicalPath": "/rsvp/",
+      "twitterDescription": "Your invited functions and household RSVP.",
+      "robots": "noindex, follow"
     }
   },
   "listing": {

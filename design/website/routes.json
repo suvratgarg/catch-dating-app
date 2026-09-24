@@ -31,11 +31,23 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["default", "app-download-pending", "waitlist-form"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "app-download-pending",
+          "waitlist-form"
+        ],
         "stateCoverage": {
-          "storybook": ["default"],
-          "manual": ["app-download-pending", "waitlist-form"]
+          "storybook": [
+            "default"
+          ],
+          "manual": [
+            "app-download-pending",
+            "waitlist-form"
+          ]
         }
       }
     },
@@ -53,11 +65,25 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["default", "beta-offer", "host-application", "capture-placeholders"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "beta-offer",
+          "host-application",
+          "capture-placeholders"
+        ],
         "stateCoverage": {
-          "storybook": ["default"],
-          "manual": ["beta-offer", "host-application", "capture-placeholders"]
+          "storybook": [
+            "default"
+          ],
+          "manual": [
+            "beta-offer",
+            "host-application",
+            "capture-placeholders"
+          ]
         }
       }
     },
@@ -75,11 +101,29 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["phone-entry", "otp", "event-intake", "pending-approval", "live-runtime", "unavailable"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "phone-entry",
+          "otp",
+          "event-intake",
+          "pending-approval",
+          "live-runtime",
+          "unavailable"
+        ],
         "stateCoverage": {
-          "storybook": ["phone-entry"],
-          "manual": ["otp", "event-intake", "pending-approval", "live-runtime", "unavailable"]
+          "storybook": [
+            "phone-entry"
+          ],
+          "manual": [
+            "otp",
+            "event-intake",
+            "pending-approval",
+            "live-runtime",
+            "unavailable"
+          ]
         }
       }
     },
@@ -134,11 +178,41 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["loading", "welcome", "live-moment", "fault", "complete", "unavailable", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed", "required-data-request", "required-data-closed"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "welcome",
+          "live-moment",
+          "fault",
+          "complete",
+          "unavailable",
+          "joining-instruction",
+          "reply-saved",
+          "reply-uncertain",
+          "reply-closed",
+          "required-data-request",
+          "required-data-closed"
+        ],
         "stateCoverage": {
-          "storybook": ["live-moment", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed", "required-data-request", "required-data-closed"],
-          "manual": ["loading", "welcome", "fault", "complete", "unavailable"]
+          "storybook": [
+            "live-moment",
+            "joining-instruction",
+            "reply-saved",
+            "reply-uncertain",
+            "reply-closed",
+            "required-data-request",
+            "required-data-closed"
+          ],
+          "manual": [
+            "loading",
+            "welcome",
+            "fault",
+            "complete",
+            "unavailable"
+          ]
         }
       }
     },
@@ -156,11 +230,60 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["loading", "resolved-external", "resolved-runtime", "unavailable"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "resolved-external",
+          "resolved-runtime",
+          "unavailable"
+        ],
         "stateCoverage": {
-          "storybook": ["resolved-external"],
-          "manual": ["loading", "resolved-runtime", "unavailable"]
+          "storybook": [
+            "resolved-external"
+          ],
+          "manual": [
+            "loading",
+            "resolved-runtime",
+            "unavailable"
+          ]
+        }
+      }
+    },
+    {
+      "id": "household_rsvp",
+      "kind": "clientDynamic",
+      "pathPattern": "/rsvp/:householdToken/",
+      "pageKey": "household_rsvp",
+      "source": "website/src/features/householdRsvp/HouseholdRsvpPage.tsx",
+      "metaKey": "household_rsvp",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Private household RSVP surface for organizer programs. The signed path token scopes reads and writes to one household's invited functions; messaging consent is an explicit checkbox, never implied by a positive RSVP.",
+      "review": {
+        "priority": "p0",
+        "status": "manual",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "ready",
+          "saved",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "loading",
+            "ready",
+            "saved",
+            "unavailable"
+          ]
         }
       }
     },
@@ -178,11 +301,28 @@
       "review": {
         "priority": "p0",
         "status": "manual",
-        "viewports": ["desktop", "mobile"],
-        "states": ["loading", "identity", "questions", "review", "complete", "unavailable"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "identity",
+          "questions",
+          "review",
+          "complete",
+          "unavailable"
+        ],
         "stateCoverage": {
           "storybook": [],
-          "manual": ["loading", "identity", "questions", "review", "complete", "unavailable"]
+          "manual": [
+            "loading",
+            "identity",
+            "questions",
+            "review",
+            "complete",
+            "unavailable"
+          ]
         }
       }
     },
@@ -200,11 +340,23 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["default", "filtered", "empty-results"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "filtered",
+          "empty-results"
+        ],
         "stateCoverage": {
-          "storybook": ["default"],
-          "manual": ["filtered", "empty-results"]
+          "storybook": [
+            "default"
+          ],
+          "manual": [
+            "filtered",
+            "empty-results"
+          ]
         }
       }
     },
@@ -222,11 +374,27 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["default", "not-found", "pending-claim", "already-claimed", "claim-unavailable"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "default",
+          "not-found",
+          "pending-claim",
+          "already-claimed",
+          "claim-unavailable"
+        ],
         "stateCoverage": {
-          "storybook": ["default"],
-          "manual": ["not-found", "pending-claim", "already-claimed", "claim-unavailable"]
+          "storybook": [
+            "default"
+          ],
+          "manual": [
+            "not-found",
+            "pending-claim",
+            "already-claimed",
+            "claim-unavailable"
+          ]
         }
       }
     },
@@ -244,11 +412,24 @@
       "review": {
         "priority": "p1",
         "status": "manual",
-        "viewports": ["desktop", "mobile"],
-        "states": ["known-listing", "not-found", "pending-claim", "claim-unavailable"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "known-listing",
+          "not-found",
+          "pending-claim",
+          "claim-unavailable"
+        ],
         "stateCoverage": {
           "storybook": [],
-          "manual": ["known-listing", "not-found", "pending-claim", "claim-unavailable"]
+          "manual": [
+            "known-listing",
+            "not-found",
+            "pending-claim",
+            "claim-unavailable"
+          ]
         }
       }
     },
@@ -266,9 +447,19 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["published"],
-        "stateCoverage": {"storybook": ["published"], "manual": []}
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "published"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "published"
+          ],
+          "manual": []
+        }
       }
     },
     {
@@ -285,9 +476,19 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["published"],
-        "stateCoverage": {"storybook": ["published"], "manual": []}
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "published"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "published"
+          ],
+          "manual": []
+        }
       }
     },
     {
@@ -304,9 +505,19 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["published"],
-        "stateCoverage": {"storybook": ["published"], "manual": []}
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "published"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "published"
+          ],
+          "manual": []
+        }
       }
     },
     {
@@ -324,18 +535,31 @@
       "review": {
         "priority": "p1",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["unknown-route", "missing-organizer-listing"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "unknown-route",
+          "missing-organizer-listing"
+        ],
         "stateCoverage": {
-          "storybook": ["unknown-route"],
-          "manual": ["missing-organizer-listing"]
+          "storybook": [
+            "unknown-route"
+          ],
+          "manual": [
+            "missing-organizer-listing"
+          ]
         }
       }
     },
     {
       "id": "organizer_listing_canonical",
       "kind": "generatedFamily",
-      "pathPatterns": ["/organizers/:slug/", "/organizers/:citySlug/:slug/"],
+      "pathPatterns": [
+        "/organizers/:slug/",
+        "/organizers/:citySlug/:slug/"
+      ],
       "pageKey": "listing",
       "source": "website/src/features/organizers/HostListingPage.tsx",
       "metaFactory": "pageMetaForListing",
@@ -346,11 +570,27 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["indexable", "noindex", "public-api-disabled", "external-events", "claim-cta"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "indexable",
+          "noindex",
+          "public-api-disabled",
+          "external-events",
+          "claim-cta"
+        ],
         "stateCoverage": {
-          "storybook": ["claim-cta"],
-          "manual": ["indexable", "noindex", "public-api-disabled", "external-events"]
+          "storybook": [
+            "claim-cta"
+          ],
+          "manual": [
+            "indexable",
+            "noindex",
+            "public-api-disabled",
+            "external-events"
+          ]
         }
       }
     },
@@ -368,11 +608,19 @@
       "review": {
         "priority": "p0",
         "status": "manual",
-        "viewports": ["desktop"],
-        "states": ["legacy-noindex", "canonical-preserved"],
+        "viewports": [
+          "desktop"
+        ],
+        "states": [
+          "legacy-noindex",
+          "canonical-preserved"
+        ],
         "stateCoverage": {
           "storybook": [],
-          "manual": ["legacy-noindex", "canonical-preserved"]
+          "manual": [
+            "legacy-noindex",
+            "canonical-preserved"
+          ]
         }
       }
     },
@@ -390,11 +638,27 @@
       "review": {
         "priority": "p0",
         "status": "ready",
-        "viewports": ["desktop", "mobile"],
-        "states": ["catch-native", "web-otp-registration", "external-source", "event-reviews", "missing-event"],
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "catch-native",
+          "web-otp-registration",
+          "external-source",
+          "event-reviews",
+          "missing-event"
+        ],
         "stateCoverage": {
-          "storybook": ["catch-native", "web-otp-registration", "external-source", "event-reviews"],
-          "manual": ["missing-event"]
+          "storybook": [
+            "catch-native",
+            "web-otp-registration",
+            "external-source",
+            "event-reviews"
+          ],
+          "manual": [
+            "missing-event"
+          ]
         }
       }
     }
