@@ -1,4 +1,8 @@
 import {createHash} from "node:crypto";
+import type {EventPaymentTerms} from
+  "../events/eventSetupPreferences/types";
+import {eventPaymentTermsHash, validateEventPaymentTerms} from
+  "../events/eventSetupPreferences/resolve";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
@@ -61,6 +65,36 @@ export function parseStoredEventOffer(value: unknown, id: string): EventOffer {
       !Number.isSafeInteger(value.revision) ||
       Number(value.revision) < 1 ||
       !Number.isSafeInteger(value.expiresAtMillis) ||
+      !object(value.paymentSnapshot) ||
+      !Number.isSafeInteger(value.paymentSnapshot.eventPaymentRevision) ||
+      Number(value.paymentSnapshot.eventPaymentRevision) < 1 ||
+      typeof value.paymentSnapshot.eventPaymentHash !== "string" ||
+      !/^[a-f0-9]{64}$/u.test(value.paymentSnapshot.eventPaymentHash) ||
+      !Number.isSafeInteger(value.paymentSnapshot.expectedAmountMinor) ||
+      Number(value.paymentSnapshot.expectedAmountMinor) < 0 ||
+      !["manualInstructions", "reusablePage", "personalRequest",
+        "catchCheckout", null].includes(
+        value.paymentSnapshot.collectionMode as string | null) ||
+      !(value.paymentSnapshot.currency === null ||
+        typeof value.paymentSnapshot.currency === "string") ||
+      (Number(value.paymentSnapshot.expectedAmountMinor) > 0 &&
+        (typeof value.paymentSnapshot.currency !== "string" ||
+          value.paymentSnapshot.currency.length !== 3)) ||
+      !(value.paymentSnapshot.reusablePaymentPageUrl === null ||
+        typeof value.paymentSnapshot.reusablePaymentPageUrl === "string") ||
+      !(value.paymentSnapshot.paymentInstructions === null ||
+        typeof value.paymentSnapshot.paymentInstructions === "string") ||
+      !(value.paymentSnapshot.messageTemplate === null ||
+        typeof value.paymentSnapshot.messageTemplate === "string") ||
+      !(value.paymentSnapshot.personalPaymentLink === null ||
+        typeof value.paymentSnapshot.personalPaymentLink === "string") ||
+      value.paymentSnapshot.personalPaymentLink !==
+        value.organizerPaymentLink ||
+      (value.paymentSnapshot.collectionMode !== "personalRequest" &&
+        value.paymentSnapshot.personalPaymentLink !== null) ||
+      (value.paymentSnapshot.collectionMode === "personalRequest" &&
+        value.paymentSnapshot.personalPaymentLink === null) ||
+      value.paymentSnapshot.expiresAtMillis !== value.expiresAtMillis ||
       !Number.isSafeInteger(value.createdAtMillis) ||
       !Number.isSafeInteger(value.updatedAtMillis) ||
       !(value.offeredAtMillis === null ||
@@ -81,6 +115,19 @@ export function parseStoredEventOffer(value: unknown, id: string): EventOffer {
       !(value.manualPayment.reviewNote === null ||
         typeof value.manualPayment.reviewNote === "string") ||
       typeof value.manualPayment.bankReceiptChecked !== "boolean" ||
+      !(value.manualPayment.attestedAmountMinor === null ||
+        (Number.isSafeInteger(value.manualPayment.attestedAmountMinor) &&
+          Number(value.manualPayment.attestedAmountMinor) >= 0)) ||
+      !(value.manualPayment.attestedCurrency === null ||
+        typeof value.manualPayment.attestedCurrency === "string") ||
+      !(value.manualPayment.attestedEventPaymentRevision === null ||
+        (Number.isSafeInteger(
+          value.manualPayment.attestedEventPaymentRevision) &&
+          Number(value.manualPayment.attestedEventPaymentRevision) > 0)) ||
+      !(value.manualPayment.attestedEventPaymentHash === null ||
+        (typeof value.manualPayment.attestedEventPaymentHash === "string" &&
+          /^[a-f0-9]{64}$/u.test(
+            value.manualPayment.attestedEventPaymentHash))) ||
       (value.status === "offered" && value.offeredAtMillis === null) ||
       (value.status === "draft" && value.offeredAtMillis !== null) ||
       (value.manualPayment.status === "none" &&
@@ -99,7 +146,16 @@ export function parseStoredEventOffer(value: unknown, id: string): EventOffer {
         (value.manualPayment.reviewedByUid === null ||
           value.manualPayment.reviewedAtMillis === null ||
           typeof value.manualPayment.reviewNote !== "string" ||
-          value.manualPayment.reviewNote.trim().length < 3))) {
+          value.manualPayment.reviewNote.trim().length < 3)) ||
+      (value.manualPayment.status === "hostAttestedReceived" &&
+        (value.manualPayment.attestedAmountMinor !==
+          value.paymentSnapshot.expectedAmountMinor ||
+          value.manualPayment.attestedCurrency !==
+            value.paymentSnapshot.currency ||
+          value.manualPayment.attestedEventPaymentRevision !==
+            value.paymentSnapshot.eventPaymentRevision ||
+          value.manualPayment.attestedEventPaymentHash !==
+            value.paymentSnapshot.eventPaymentHash))) {
     throw new OfferDomainError("conflict", "Stored offer is malformed.");
   }
   try {
@@ -120,7 +176,9 @@ function storedActionReceipt(value: unknown, offerId: string,
       value.requestId !== requestId ||
       typeof value.requestHash !== "string" ||
       !Number.isSafeInteger(value.resultingGeneration) ||
-      !Number.isSafeInteger(value.resultingRevision)) {
+      Number(value.resultingGeneration) < 1 ||
+      !Number.isSafeInteger(value.resultingRevision) ||
+      Number(value.resultingRevision) < 1) {
     throw new OfferDomainError("conflict",
       "Stored action receipt is malformed.");
   }
@@ -137,7 +195,9 @@ function storedBatchReceipt(value: unknown, organizerId: string,
       !value.results.every((row) => object(row) &&
         typeof row.offerId === "string" &&
         Number.isSafeInteger(row.revision) &&
-        Number.isSafeInteger(row.generation))) {
+        Number(row.revision) > 0 &&
+        Number.isSafeInteger(row.generation) &&
+        Number(row.generation) > 0)) {
     throw new OfferDomainError("conflict",
       "Stored batch receipt is malformed.");
   }
@@ -290,16 +350,51 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const data = await read("events", eventId) as
             EventDocument | undefined;
           if (!data) return null;
-          if (!data.startTime || !data.updatedAt ||
+          const setupRevision = (data as EventDocument & {
+            setupRevision?: number}).setupRevision;
+          const sourceRevision = Number.isSafeInteger(setupRevision) &&
+            setupRevision! > 0 ? setupRevision! :
+            data.updatedAt?.toMillis();
+          if (!data.startTime ||
               typeof data.clubId !== "string" ||
-              !["active", "cancelled"].includes(data.status)) {
+              !["active", "cancelled"].includes(data.status) ||
+              !Number.isSafeInteger(sourceRevision) ||
+              sourceRevision! < 1) {
             throw new OfferDomainError("conflict",
               "Stored event is malformed.");
           }
           return {organizerId: data.organizerId ?? data.clubId,
             eventId, startsAtMillis: data.startTime.toMillis(),
             cancelled: data.status === "cancelled",
-            updatedAtMillis: data.updatedAt.toMillis()};
+            sourceRevision: sourceRevision!};
+        },
+        eventPaymentTerms: async (eventId): Promise<EventPaymentTerms |
+          null> => {
+          const data = await read("eventSetupPreferences", eventId);
+          if (!data) return null;
+          if (!object(data) || data.eventId !== eventId ||
+              typeof data.organizerId !== "string" ||
+              !object(data.paymentTerms) ||
+              data.revision !== data.paymentTerms.revision) {
+            throw new OfferDomainError("conflict",
+              "Stored event payment terms are malformed.");
+          }
+          const event = await read("events", eventId) as
+            EventDocument | undefined;
+          if (!event || data.organizerId !==
+            (event.organizerId ?? event.clubId)) {
+            throw new OfferDomainError("conflict",
+              "Event payment terms have a foreign organizer.");
+          }
+          const terms = data.paymentTerms as unknown as EventPaymentTerms;
+          try {
+            validateEventPaymentTerms(terms);
+            eventPaymentTermsHash(terms);
+          } catch {
+            throw new OfferDomainError("conflict",
+              "Stored event payment terms are invalid.");
+          }
+          return terms;
         },
         offer: async (offerId) => {
           const data = await read(collections.offers, offerId);

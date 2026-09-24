@@ -1,6 +1,13 @@
 import {createHash} from "node:crypto";
+import {snapshotOfferPaymentTerms} from
+  "../events/eventSetupPreferences/payment";
+import {eventPaymentTermsHash, validateEventPaymentTerms} from
+  "../events/eventSetupPreferences/resolve";
+import type {EventPaymentTerms, OfferPaymentSnapshot} from
+  "../events/eventSetupPreferences/types";
 import {
-  applyEventOfferAction, CurrentOfferContext, EventOffer, eventOfferId,
+  applyEventOfferAction, CurrentOfferContext, EventOffer,
+  EventOfferPaymentSnapshot, eventOfferId,
   OfferAction, OfferActionReceipt, OfferDomainError, OfferTransition,
 } from "./eventOfferDomain";
 
@@ -55,7 +62,7 @@ export interface OfferEvent {
   eventId: string;
   startsAtMillis: number;
   cancelled: boolean;
-  updatedAtMillis: number;
+  sourceRevision: number;
 }
 
 export type OfferSourceState =
@@ -98,6 +105,7 @@ export interface OfferTransaction {
   origin(applicationId: string, responseId: string):
     Promise<OfferOrigin | null>;
   event(eventId: string): Promise<OfferEvent | null>;
+  eventPaymentTerms(eventId: string): Promise<EventPaymentTerms | null>;
   offer(offerId: string): Promise<EventOffer | null>;
   actionReceipt(offerId: string, requestId: string):
     Promise<OfferActionReceipt | null>;
@@ -285,8 +293,62 @@ type ResolvedContext = CurrentOfferContext & {
   authorityFingerprint: string;
 };
 
+function paymentSnapshotFor(input: {paymentTerms: EventPaymentTerms;
+  expiresAtMillis: number; organizerPaymentLink: string | null;
+  nowMillis: number; eventStartsAtMillis: number}):
+  EventOfferPaymentSnapshot {
+  const {paymentTerms: terms, expiresAtMillis, organizerPaymentLink,
+    nowMillis, eventStartsAtMillis} = input;
+  if (terms.expectedAmountMinor === null ||
+      !Number.isSafeInteger(terms.expectedAmountMinor) ||
+      terms.expectedAmountMinor < 0 ||
+      terms.expectedAmountMinor > 0 && !terms.currency) {
+    fail("conflict", "Choose the expected amount and currency explicitly.");
+  }
+  let snapshot: OfferPaymentSnapshot;
+  if (terms.preferredCollection === "personalRequest") {
+    if (!organizerPaymentLink || terms.expectedAmountMinor <= 0) {
+      fail("conflict", "A paid personal request needs its recipient link.");
+    }
+    const validity = terms.offerValidityMinutes;
+    if (!Number.isSafeInteger(validity) || validity === null ||
+        validity < 5 || validity > 10080) {
+      fail("conflict", "Configure offer validity first.");
+    }
+    snapshot = {eventPaymentRevision: terms.revision,
+      eventPaymentHash: eventPaymentTermsHash(terms),
+      reusablePaymentPageUrl: null,
+      paymentInstructions: terms.paymentInstructions,
+      expectedAmountMinor: terms.expectedAmountMinor,
+      currency: terms.currency, messageTemplate: terms.offerMessageTemplate,
+      expiresAtMillis: Math.min(nowMillis + validity * 60_000,
+        eventStartsAtMillis)};
+  } else {
+    if (organizerPaymentLink !== null) {
+      fail("conflict", "This event does not use a personal request link.");
+    }
+    try {
+      snapshot = snapshotOfferPaymentTerms({terms, nowMillis,
+        eventStartsAtMillis});
+    } catch {
+      return fail("conflict", "Event payment terms are not ready for offers.");
+    }
+  }
+  if (!Number.isSafeInteger(expiresAtMillis) ||
+      expiresAtMillis <= nowMillis) {
+    fail("invalid", "Offer expiry is not in the future.");
+  }
+  if (expiresAtMillis > snapshot.expiresAtMillis) {
+    fail("conflict", "Offer expiry exceeds reviewed event payment terms.");
+  }
+  return {...snapshot, expiresAtMillis,
+    collectionMode: terms.preferredCollection,
+    personalPaymentLink: organizerPaymentLink};
+}
+
 async function currentContext(tx: OfferTransaction, actor: OfferActor,
-  row: OfferAuthorityRow): Promise<ResolvedContext> {
+  row: OfferAuthorityRow, offerTerms?: {expiresAtMillis: number;
+    organizerPaymentLink: string | null}): Promise<ResolvedContext> {
   if (!validId(actor.uid) || !validId(row.organizerId) ||
       !validId(row.applicationId) || !validId(row.contactId) ||
       !validId(row.eventId)) fail("invalid", "Invalid offer identity.");
@@ -296,9 +358,9 @@ async function currentContext(tx: OfferTransaction, actor: OfferActor,
   // The source resolver needs the application's immutable response identity.
   const application = await tx.application(row.applicationId,
     row.sourceKind ?? "application");
-  const [source, contact, event] = await Promise.all([
+  const [source, contact, event, paymentTerms] = await Promise.all([
     tx.sourceState(row.applicationId), tx.contact(row.contactId),
-    tx.event(row.eventId),
+    tx.event(row.eventId), tx.eventPaymentTerms(row.eventId),
   ]);
   if (!application || !contact || !event ||
       application.organizerId !== row.organizerId ||
@@ -321,6 +383,22 @@ async function currentContext(tx: OfferTransaction, actor: OfferActor,
       contact.mergedIntoContactId !== null) {
     fail("denied", "Canonical CRM identity is unavailable.");
   }
+  if (!paymentTerms || !Number.isSafeInteger(paymentTerms.revision) ||
+      paymentTerms.revision < 1 ||
+      paymentTerms.expectedAmountMinor === null) {
+    fail("conflict", "Configure explicit event payment terms first.");
+  }
+  try {
+    validateEventPaymentTerms(paymentTerms);
+  } catch {
+    fail("conflict", "Event payment terms are malformed.");
+  }
+  const paymentHash = eventPaymentTermsHash(paymentTerms);
+  const paymentSnapshot = offerTerms ? paymentSnapshotFor({paymentTerms,
+    expiresAtMillis: offerTerms.expiresAtMillis,
+    organizerPaymentLink: offerTerms.organizerPaymentLink,
+    nowMillis: tx.nowMillis(), eventStartsAtMillis: event.startsAtMillis}) :
+    undefined;
   const authorityFingerprint = digest([application.sourceKind,
     application.latestResponseId,
     application.revision, application.reviewStatus,
@@ -329,7 +407,8 @@ async function currentContext(tx: OfferTransaction, actor: OfferActor,
     application.targetKind, application.targetId, source,
     contact.revision, contact.deleted, contact.hidden,
     contact.mergedIntoContactId, origin.currentContactId,
-    event.startsAtMillis, event.cancelled, event.updatedAtMillis]);
+    event.startsAtMillis, event.cancelled, event.sourceRevision,
+    paymentTerms.revision, paymentHash, paymentSnapshot]);
   return {
     organizerId: row.organizerId, eventId: row.eventId,
     contactId: row.contactId, applicationId: row.applicationId,
@@ -345,7 +424,9 @@ async function currentContext(tx: OfferTransaction, actor: OfferActor,
     contactCurrent: !contact.deleted && !contact.hidden,
     eventCurrent: !event.cancelled,
     eventStartsAtMillis: event.startsAtMillis,
-    authorityFingerprint,
+    currentPaymentHash: paymentHash,
+    currentPaymentRevision: paymentTerms.revision,
+    paymentSnapshot, authorityFingerprint,
   };
 }
 
@@ -429,7 +510,9 @@ export async function mutateEventOffer(params: {
         contactCurrent: false, eventCurrent: false,
         eventStartsAtMillis: 0};
     } else {
-      context = await currentContext(tx, actor, row);
+      context = await currentContext(tx, actor, row,
+        action.kind === "createDraft" || action.kind === "reissueDraft" ?
+          action.terms : undefined);
       if (await tx.hasMergedContactOffer(row.organizerId, row.eventId,
         row.contactId)) {
         fail("conflict", "Reconcile an earlier merged-contact offer first.");
@@ -457,7 +540,7 @@ async function previewInTransaction(tx: OfferTransaction,
   const rows: OfferBatchPreview["rows"] = [];
   const authorityFingerprints: string[] = [];
   for (const row of input.rows) {
-    const context = await currentContext(tx, actor, row);
+    const context = await currentContext(tx, actor, row, row);
     const offerId = eventOfferId(context);
     const current = await tx.offer(offerId);
     if (current) {
@@ -528,7 +611,7 @@ export async function commitEventOffers(params: {
     // Firestore transactions require all document reads before the first write.
     const contexts: CurrentOfferContext[] = [];
     for (const row of input.rows) {
-      contexts.push(await currentContext(tx, actor, row));
+      contexts.push(await currentContext(tx, actor, row, row));
     }
     const results: OfferBatchReceipt["results"] = [];
     const effects: Array<{action: OfferAction; before: EventOffer | null;
