@@ -611,7 +611,7 @@ class _PrivateEventCreateScreenState
                                         .hostsEventDetailsStepVisiblecopyRequired
                                     : null,
                               ),
-                              CatchField<CityOption>.choices(
+                              CatchField<CityOption>.control(
                                 copy: fieldCopy,
                                 key: const ValueKey('private-event-city'),
                                 title: context.l10n.hostsPrivateEventCity,
@@ -621,21 +621,25 @@ class _PrivateEventCreateScreenState
                                     ? '${city?.label ?? widget.club.location} · ${context.l10n.hostsPrivateEventFromOrganizer}'
                                     : city?.label ??
                                         context.l10n.hostsPrivateEventChooseCity,
-                                values: cityOptions,
-                                itemLabelBuilder: (option) => option.label,
-                                selected: city == null
-                                    ? const <CityOption>{}
-                                    : {city},
-                                onSelectionChanged: (selection) {
-                                  if (selection.isEmpty) return;
-                                  final picked = selection.single;
-                                  setState(() {
-                                    _city = picked;
-                                    _cityInherited = false;
-                                    _timezoneController.text = picked.timeZone;
-                                    _timezoneInherited = false;
-                                  });
-                                },
+                                child: CatchChoiceInput<CityOption>(
+                                  values: cityOptions,
+                                  itemLabelBuilder: (option) => option.label,
+                                  selected: city == null
+                                      ? const <CityOption>{}
+                                      : {city},
+                                  mode: CatchChipMode.single,
+                                  autoClose: true,
+                                  onChanged: (selection) {
+                                    if (selection.isEmpty) return;
+                                    final picked = selection.single;
+                                    setState(() {
+                                      _city = picked;
+                                      _cityInherited = false;
+                                      _timezoneController.text = picked.timeZone;
+                                      _timezoneInherited = false;
+                                    });
+                                  },
+                                ),
                                 disclosureMode: _cityAccordion.isExpanded('city')
                                     ? CatchFieldMode.controlledExpanded
                                     : CatchFieldMode.controlledCollapsed,

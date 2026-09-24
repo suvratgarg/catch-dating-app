@@ -49,7 +49,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
           first: true,
           title: l10n.hostsEventDefaultsBasics,
           children: [
-            CatchField<int>.choices(
+            CatchField<int>.control(
               copy: copy,
               title: l10n.hostsEventDefaultsUsualDuration,
               contractExemption:
@@ -57,20 +57,24 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.usualDurationMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.usualDurationMinutes!),
-              values: durationChoices,
-              itemLabelBuilder: minutes,
-              selected: preferences.usualDurationMinutes == null
-                  ? const <int>{}
-                  : {preferences.usualDurationMinutes!},
-              onSelectionChanged: editable
-                  ? (selection) {
-                      if (selection.isNotEmpty) {
-                        update(preferences.copyWith(
-                          usualDurationMinutes: selection.single,
-                        ));
+              child: CatchChoiceInput<int>(
+                values: durationChoices,
+                itemLabelBuilder: minutes,
+                selected: preferences.usualDurationMinutes == null
+                    ? const <int>{}
+                    : {preferences.usualDurationMinutes!},
+                mode: CatchChipMode.single,
+                autoClose: true,
+                onChanged: editable
+                    ? (selection) {
+                        if (selection.isNotEmpty) {
+                          update(preferences.copyWith(
+                            usualDurationMinutes: selection.single,
+                          ));
+                        }
                       }
-                    }
-                  : null,
+                    : null,
+              ),
               icon: CatchIcons.scheduleOutlined,
             ),
             if (preferences.usualDurationMinutes != null)
@@ -106,7 +110,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
         CatchSection.fieldRows(
           title: l10n.hostsEventDefaultsOffersHeading,
           children: [
-            CatchField<int>.choices(
+            CatchField<int>.control(
               copy: copy,
               title: l10n.hostsEventDefaultsOfferValidity,
               contractExemption:
@@ -114,20 +118,24 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.offerValidityMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.offerValidityMinutes!),
-              values: validityChoices,
-              itemLabelBuilder: minutes,
-              selected: preferences.offerValidityMinutes == null
-                  ? const <int>{}
-                  : {preferences.offerValidityMinutes!},
-              onSelectionChanged: editable
-                  ? (selection) {
-                      if (selection.isNotEmpty) {
-                        update(preferences.copyWith(
-                          offerValidityMinutes: selection.single,
-                        ));
+              child: CatchChoiceInput<int>(
+                values: validityChoices,
+                itemLabelBuilder: minutes,
+                selected: preferences.offerValidityMinutes == null
+                    ? const <int>{}
+                    : {preferences.offerValidityMinutes!},
+                mode: CatchChipMode.single,
+                autoClose: true,
+                onChanged: editable
+                    ? (selection) {
+                        if (selection.isNotEmpty) {
+                          update(preferences.copyWith(
+                            offerValidityMinutes: selection.single,
+                          ));
+                        }
                       }
-                    }
-                  : null,
+                    : null,
+              ),
               icon: CatchIcons.scheduleOutlined,
             ),
             if (preferences.offerValidityMinutes != null)
@@ -169,7 +177,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
         CatchSection.fieldRows(
           title: l10n.hostsEventDefaultsPaymentHeading,
           children: [
-            CatchField<EventCollectionPreference>.choices(
+            CatchField<EventCollectionPreference>.control(
               copy: copy,
               title: l10n.hostsEventDefaultsCollectionPreference,
               contractExemption:
@@ -177,20 +185,24 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.collectionPreference == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : collectionLabel(preferences.collectionPreference!),
-              values: EventCollectionPreference.values,
-              itemLabelBuilder: collectionLabel,
-              selected: preferences.collectionPreference == null
-                  ? const <EventCollectionPreference>{}
-                  : {preferences.collectionPreference!},
-              onSelectionChanged: editable
-                  ? (selection) {
-                      if (selection.isNotEmpty) {
-                        update(preferences.copyWith(
-                          collectionPreference: selection.single,
-                        ));
+              child: CatchChoiceInput<EventCollectionPreference>(
+                values: EventCollectionPreference.values,
+                itemLabelBuilder: collectionLabel,
+                selected: preferences.collectionPreference == null
+                    ? const <EventCollectionPreference>{}
+                    : {preferences.collectionPreference!},
+                mode: CatchChipMode.single,
+                autoClose: true,
+                onChanged: editable
+                    ? (selection) {
+                        if (selection.isNotEmpty) {
+                          update(preferences.copyWith(
+                            collectionPreference: selection.single,
+                          ));
+                        }
                       }
-                    }
-                  : null,
+                    : null,
+              ),
               helperText: l10n.hostsEventDefaultsCollectionSuggestionHint,
               icon: CatchIcons.paymentsOutlined,
             ),
