@@ -382,6 +382,16 @@ void main() {
           HostApplicationReviewStatus.submitted,
         );
 
+        // Switching views resets the expanding search. Open the Responses
+        // field before typing so this exercises the visible user control.
+        await tester.tap(find.byIcon(CatchIcons.search));
+        await pumpFeatureUiFor(tester, CatchMotion.base);
+        await pumpFeatureUi(tester);
+        expect(
+          tester.widget<CatchSearchField>(find.byType(CatchSearchField)).mode,
+          CatchSearchFieldMode.expanding,
+        );
+
         await tester.enterText(
           find.descendant(
             of: find.byType(CatchSearchField),
@@ -466,8 +476,7 @@ void main() {
         addTearDown(accounts.close);
         final auth = _TestAuth('host-1');
         final nextDirectory = Completer<HostFormsDirectoryState>();
-        final pendingReadDisposals = ValueNotifier<int>(0);
-        addTearDown(pendingReadDisposals.dispose);
+        final pendingReadDisposals = _ReadDisposeProbe();
         String? routeMarker;
         late StateSetter rebuildRoute;
         await tester.pumpWidget(
@@ -514,10 +523,12 @@ void main() {
         await tester.pump();
         expect(find.byKey(const ValueKey('host-form-old')), findsNothing);
         expect(find.byKey(const ValueKey('host-form-new')), findsNothing);
+        // The pending manager read intentionally keeps a loading animation
+        // alive. Advance frames without waiting for a settled screen.
         for (var frame = 0; frame < 5; frame++) {
-          await pumpFeatureUi(tester);
+          await tester.pump();
         }
-        expect(pendingReadDisposals.value, 0);
+        expect(pendingReadDisposals.count, 0);
 
         // Returning to A while B is still pending must start a new A-scoped
         // read; B's later completion must never replace A's visible page.
@@ -676,7 +687,7 @@ class _AccountSwitchDirectoryController extends HostFormsDirectoryController {
     this.auth, this.nextDirectory, this.pendingReadDisposals);
   final _TestAuth auth;
   final Completer<HostFormsDirectoryState> nextDirectory;
-  final ValueNotifier<int> pendingReadDisposals;
+  final _ReadDisposeProbe pendingReadDisposals;
 
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
@@ -686,9 +697,13 @@ class _AccountSwitchDirectoryController extends HostFormsDirectoryController {
         nextCursor: null,
       );
     }
-    ref.onDispose(() => pendingReadDisposals.value++);
+    ref.onDispose(() => pendingReadDisposals.count++);
     return nextDirectory.future;
   }
+}
+
+class _ReadDisposeProbe {
+  int count = 0;
 }
 
 class _FixedHostFormsDirectoryController extends HostFormsDirectoryController {

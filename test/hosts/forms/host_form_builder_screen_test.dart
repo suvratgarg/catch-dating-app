@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
@@ -13,6 +15,7 @@ import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -513,6 +516,12 @@ Future<void> _pumpBuilder(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        if (published) ...[
+          firebaseAuthProvider.overrideWithValue(_BuilderTestAuth()),
+          uidProvider.overrideWithValue(
+            const AsyncData<String?>('builder-host'),
+          ),
+        ],
         hostFormPaymentControllerProvider(
           'org_1',
         ).overrideWith(_PaymentSetup.new),
@@ -551,6 +560,16 @@ class _FakeHostFormResponsesController extends HostFormResponsesController {
     responses: [HostFormResponseSummary.fromMap(_responseSummaryMap())],
     nextCursor: null,
   );
+}
+
+class _BuilderTestAuth extends Fake implements FirebaseAuth {
+  @override
+  User? get currentUser => _BuilderTestUser();
+}
+
+class _BuilderTestUser extends Fake implements User {
+  @override
+  String get uid => 'builder-host';
 }
 
 class _FakeHostFormEditorController extends HostFormEditorController {
