@@ -78,13 +78,27 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final editor = ref.watch(
       hostFormEditorControllerProvider(widget.organizerId, widget.formId),
     );
-    final editorValue = catchAsyncStateFromAsyncValue(editor).value;
     final notifier = ref.read(
       hostFormEditorControllerProvider(
         widget.organizerId,
         widget.formId,
       ).notifier,
     );
+    final editorState = catchAsyncStateFromAsyncValue(editor);
+    final editorValue = editorState.isSettledData &&
+            notifier.editorBoundTo(responseAccountId)
+        ? editorState.value
+        : null;
+    // CatchAsyncBoundary may retain a previous account's AsyncData on refresh.
+    // Only the actor-bound editor can reach the body or its actions.
+    final safeEditor = editorValue != null
+        ? AsyncData<HostFormEditorState>(editorValue)
+        : editorState.isTerminalError
+            ? AsyncError<HostFormEditorState>(
+                editorState.error!,
+                editorState.stackTrace ?? StackTrace.current,
+              )
+            : const AsyncLoading<HostFormEditorState>();
     final compact =
         MediaQuery.sizeOf(context).width <
         CatchFormWorkspaceTokens.formBuilderExpandedBreakpoint;
@@ -161,7 +175,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           top: false,
           bottom: false,
           child: CatchAsyncBoundary<HostFormEditorState>(
-            value: editor,
+            value: safeEditor,
             onRetry: notifier.reload,
             initialLoadTimeout: null,
             loadingBuilder: (_) => const CatchStateViewport.loading(

@@ -1213,7 +1213,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormResponseDetailScreen</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:63</code> | — | — | One detail surface for submitted forms and imported application records. |
 | <code>HostFormShareScreen</code> | <code>lib/hosts/presentation/forms/host_form_share_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormTemplatesScreen</code> | <code>lib/hosts/presentation/forms/host_form_templates_screen.dart:18</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormsScreen</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:49</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormsScreen</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:51</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventManageRouteScreen</code> | <code>lib/hosts/presentation/host_event_manage_route_screen.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:54</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart:12</code> | — | — | No class documentation or registry summary. |

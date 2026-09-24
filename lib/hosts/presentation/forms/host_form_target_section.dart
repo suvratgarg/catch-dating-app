@@ -72,11 +72,6 @@ class _HostFormTargetSectionState
       currentAccountId: _currentAccountId,
     )..addListener(_changed);
     _targets = controller;
-    if (definition.defaultTargetKind == HostFormTargetKind.event) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && identical(_targets, controller)) controller.refresh();
-      });
-    }
   }
 
   @override
@@ -142,6 +137,16 @@ class _HostFormTargetSectionState
         ref.watch(firebaseAuthProvider).currentUser?.uid == accountId &&
         targets?.isCurrentAccount == true;
     if (!targetVisible) return const SizedBox.shrink();
+    if (definition.defaultTargetKind == HostFormTargetKind.event &&
+        targets != null && !targets.loaded && !targets.loading &&
+        !targets.hasLoadFailure) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(_targets, targets) &&
+            targets.isCurrentAccount && !targets.loaded && !targets.loading) {
+          targets.refresh();
+        }
+      });
+    }
     final currentEventId = definition.defaultTargetId;
     final currentEvent = currentEventId == null
         ? null : targets?.event(currentEventId);

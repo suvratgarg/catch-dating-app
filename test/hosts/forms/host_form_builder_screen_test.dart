@@ -559,6 +559,9 @@ class _FakeHostFormEditorController extends HostFormEditorController {
   final HostFormEditorState initialState;
 
   @override
+  bool editorBoundTo(String? accountId) => true;
+
+  @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
       initialState;
 

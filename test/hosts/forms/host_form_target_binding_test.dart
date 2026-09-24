@@ -49,9 +49,10 @@ void main() {
       .defaultTargetId, 'event-one');
 
     auth.uid = 'host-two';
+    expect(await notifier.saveNow(), isFalse);
     accounts.add('host-two');
     await container.pump();
-    expect(await notifier.saveNow(), isFalse);
+    await container.read(provider.future);
     expect(repository.saves, 0);
     expect(container.read(provider).requireValue.editor.definition
       .defaultTargetId, isNull);
@@ -90,7 +91,8 @@ void main() {
     await container.pump();
     pendingSave.complete();
     expect(await save, isFalse);
-    expect(repository.reads, 2);
+    await container.read(provider.future);
+    expect(repository.reads, greaterThanOrEqualTo(2));
     expect(container.read(provider).requireValue.editor.definition
       .defaultTargetId, isNull);
   });

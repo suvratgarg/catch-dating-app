@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
@@ -18,6 +21,7 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -210,6 +214,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
+              firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
               uidProvider.overrideWith((ref) => Stream.value('host-1')),
               hostOperableClubsProvider(
                 'host-1',
@@ -415,6 +420,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
           uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           hostOperableClubsProvider('host-1').overrideWithValue(
             AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
@@ -452,6 +458,89 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final returnToA in [false, true]) {
+    testWidgets(
+      'account switch ${returnToA ? 'return' : 'settle'} hides old forms',
+      (tester) async {
+        final accounts = StreamController<String?>();
+        addTearDown(accounts.close);
+        final auth = _TestAuth('host-1');
+        final nextDirectory = Completer<HostFormsDirectoryState>();
+        final pendingReadDisposals = ValueNotifier<int>(0);
+        addTearDown(pendingReadDisposals.dispose);
+        String? routeMarker;
+        late StateSetter rebuildRoute;
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              firebaseAuthProvider.overrideWithValue(auth),
+              uidProvider.overrideWith((ref) => accounts.stream),
+              hostOperableClubsProvider('host-1').overrideWithValue(
+                AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-1')]),
+              ),
+              hostOperableClubsProvider('host-2').overrideWithValue(
+                AsyncData([buildClub(id: 'forms-club', ownerUserId: 'host-2')]),
+              ),
+              hostFormsDirectoryControllerProvider.overrideWith2(
+                (_) => _AccountSwitchDirectoryController(
+                  auth, nextDirectory, pendingReadDisposals),
+              ),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: StatefulBuilder(
+                builder: (context, setState) {
+                  rebuildRoute = setState;
+                  return HostFormsScreen(initialContactId: routeMarker);
+                },
+              ),
+            ),
+          ),
+        );
+        accounts.add('host-1');
+        await pumpFeatureUi(tester);
+        expect(find.byKey(const ValueKey('host-form-old')), findsOneWidget);
+
+        // FirebaseAuth switches before uidProvider emits. The old manager's row
+        // must disappear in that intermediate frame.
+        auth.uid = 'host-2';
+        rebuildRoute(() => routeMarker = 'switched');
+        await tester.pump();
+        expect(find.byKey(const ValueKey('host-form-old')), findsNothing);
+        expect(find.byType(HostAudienceStateScaffold), findsOneWidget);
+
+        accounts.add('host-2');
+        await tester.pump();
+        await tester.pump();
+        expect(find.byKey(const ValueKey('host-form-old')), findsNothing);
+        expect(find.byKey(const ValueKey('host-form-new')), findsNothing);
+        for (var frame = 0; frame < 5; frame++) {
+          await pumpFeatureUi(tester);
+        }
+        expect(pendingReadDisposals.value, 0);
+
+        // Returning to A while B is still pending must start a new A-scoped
+        // read; B's later completion must never replace A's visible page.
+        if (returnToA) {
+          auth.uid = 'host-1';
+          accounts.add('host-1');
+          await pumpFeatureUi(tester);
+          expect(find.byKey(const ValueKey('host-form-old')), findsOneWidget);
+        }
+
+        nextDirectory.complete(HostFormsDirectoryState(
+          forms: [_formSummary(id: 'new', status: HostFormLifecycleStatus.published)],
+          nextCursor: null,
+        ));
+        await pumpFeatureUi(tester);
+        expect(find.byKey(const ValueKey('host-form-old')),
+            returnToA ? findsOneWidget : findsNothing);
+        expect(find.byKey(const ValueKey('host-form-new')),
+            returnToA ? findsNothing : findsOneWidget);
+      },
+    );
+  }
+
   testWidgets('Forms directory is flat and published row menus stay bounded', (
     tester,
   ) async {
@@ -464,6 +553,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
           hostOperableClubsProvider(
             'host-1',
@@ -527,7 +617,10 @@ Future<void> _pumpFormsRouteState(
   await tester.pumpWidget(
     ProviderScope(
       key: UniqueKey(),
-      overrides: [...overrides],
+      overrides: [
+        firebaseAuthProvider.overrideWithValue(_TestAuth('host-1')),
+        ...overrides,
+      ],
       child: MaterialApp(theme: AppTheme.light, home: screen),
     ),
   );
@@ -562,6 +655,40 @@ void _expectFormsAudienceStateOwner(
         .bodyLayout,
     CatchPageBodyMode.standard,
   );
+}
+
+class _TestAuth extends Fake implements FirebaseAuth {
+  _TestAuth(this.uid);
+  String? uid;
+
+  @override
+  User? get currentUser => uid == null ? null : _TestUser(uid!);
+}
+
+class _TestUser extends Fake implements User {
+  _TestUser(this.uid);
+  @override
+  final String uid;
+}
+
+class _AccountSwitchDirectoryController extends HostFormsDirectoryController {
+  _AccountSwitchDirectoryController(
+    this.auth, this.nextDirectory, this.pendingReadDisposals);
+  final _TestAuth auth;
+  final Completer<HostFormsDirectoryState> nextDirectory;
+  final ValueNotifier<int> pendingReadDisposals;
+
+  @override
+  Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
+    if (auth.uid == 'host-1') {
+      return HostFormsDirectoryState(
+        forms: [_formSummary(id: 'old', status: HostFormLifecycleStatus.published)],
+        nextCursor: null,
+      );
+    }
+    ref.onDispose(() => pendingReadDisposals.value++);
+    return nextDirectory.future;
+  }
 }
 
 class _FixedHostFormsDirectoryController extends HostFormsDirectoryController {

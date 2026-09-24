@@ -146,18 +146,32 @@ class HostFormEditorController extends _$HostFormEditorController
   @override
   int _generation = 0;
   int _idCounter = 0;
+  @override
   final List<HostFormDefinition> _undoStack = [];
+  @override
   final List<HostFormDefinition> _redoStack = [];
 
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async {
     ref.onDispose(() => _saveTimer?.cancel());
+    _saveTimer?.cancel();
+    final buildSerial = ++_reloadSerial;
+    _generation++;
     _targetMutationAccountId = null;
+    _editorAccountId = null;
     _undoStack.clear();
     _redoStack.clear();
+    // Watching the UID rebuilds the editor when the signed-in account changes.
+    final accountId = _watchedAccountId();
+    if (accountId == null) throw StateError('The Host account is not ready.');
     final editor = await ref
         .read(hostFormsRepositoryProvider)
         .getEditor(organizerId: organizerId, formId: formId);
+    if (!ref.mounted || buildSerial != _reloadSerial ||
+        _settledAccountId() != accountId) {
+      throw StateError('The Host account changed while loading the form.');
+    }
+    _editorAccountId = accountId;
     return HostFormEditorState(editor: editor);
   }
 
@@ -434,23 +448,10 @@ class HostFormEditorController extends _$HostFormEditorController
   void removeLogicRule(int index) =>
       _mutate((definition) => definition.removeLogicRule(index));
 
-  @override
-  Future<void> reload() async {
-    _saveTimer?.cancel();
-    _targetMutationAccountId = null;
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final editor = await ref
-          .read(hostFormsRepositoryProvider)
-          .getEditor(organizerId: organizerId, formId: formId);
-      _generation = 0;
-      _undoStack.clear();
-      _redoStack.clear();
-      return HostFormEditorState(editor: editor);
-    });
-  }
-
   Future<bool> validate() async {
+    final actor = _editorAccountId;
+    if (!editorBoundTo(actor)) return false;
+    final serial = _reloadSerial;
     final current = state.asData?.value;
     if (current == null) return false;
     state = AsyncData(
@@ -464,6 +465,9 @@ class HostFormEditorController extends _$HostFormEditorController
             formId: formId,
             definition: current.editor.definition,
           );
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       final latest = state.asData?.value ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -474,6 +478,9 @@ class HostFormEditorController extends _$HostFormEditorController
       );
       return result.valid;
     } on Object catch (error) {
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       state = AsyncData(
         current.copyWith(operationInProgress: false, error: error),
       );
@@ -482,8 +489,13 @@ class HostFormEditorController extends _$HostFormEditorController
   }
 
   Future<bool> publish() async {
+    final actor = _editorAccountId;
+    if (!editorBoundTo(actor)) return false;
     if (!await saveNow()) return false;
+    if (!ref.mounted || !editorBoundTo(actor)) return false;
     if (!await validate()) return false;
+    if (!ref.mounted || !editorBoundTo(actor)) return false;
+    final serial = _reloadSerial;
     final current = state.asData?.value;
     if (current == null) return false;
     state = AsyncData(
@@ -497,6 +509,9 @@ class HostFormEditorController extends _$HostFormEditorController
             formId: formId,
             expectedRevision: current.editor.form.draftRevision,
           );
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       final latest = state.asData?.value ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -507,6 +522,9 @@ class HostFormEditorController extends _$HostFormEditorController
       );
       return true;
     } on Object catch (error) {
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       state = AsyncData(
         current.copyWith(operationInProgress: false, error: error),
       );
@@ -515,6 +533,9 @@ class HostFormEditorController extends _$HostFormEditorController
   }
 
   Future<bool> setLifecycle(HostFormLifecycleAction action) async {
+    final actor = _editorAccountId;
+    if (!editorBoundTo(actor)) return false;
+    final serial = _reloadSerial;
     final current = state.asData?.value;
     if (current == null) return false;
     state = AsyncData(
@@ -529,6 +550,9 @@ class HostFormEditorController extends _$HostFormEditorController
             expectedStatus: current.editor.form.status,
             action: action,
           );
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       final latest = state.asData?.value ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -539,6 +563,9 @@ class HostFormEditorController extends _$HostFormEditorController
       );
       return true;
     } on Object catch (error) {
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       state = AsyncData(
         current.copyWith(operationInProgress: false, error: error),
       );
@@ -550,6 +577,10 @@ class HostFormEditorController extends _$HostFormEditorController
   void _mutate(
     HostFormDefinition Function(HostFormDefinition definition) transform,
   ) {
+    if (!editorBoundTo(_editorAccountId)) {
+      unawaited(reload());
+      return;
+    }
     final current = state.asData?.value;
     if (current == null || current.operationInProgress) return;
     final definition = transform(current.editor.definition);
@@ -561,6 +592,10 @@ class HostFormEditorController extends _$HostFormEditorController
   }
 
   void undo() {
+    if (!editorBoundTo(_editorAccountId)) {
+      unawaited(reload());
+      return;
+    }
     final current = state.asData?.value;
     if (current == null || current.operationInProgress || _undoStack.isEmpty) {
       return;
@@ -571,6 +606,10 @@ class HostFormEditorController extends _$HostFormEditorController
   }
 
   void redo() {
+    if (!editorBoundTo(_editorAccountId)) {
+      unawaited(reload());
+      return;
+    }
     final current = state.asData?.value;
     if (current == null || current.operationInProgress || _redoStack.isEmpty) {
       return;
@@ -595,12 +634,6 @@ class HostFormEditorController extends _$HostFormEditorController
       ),
     );
     _scheduleSave();
-  }
-
-  @override
-  void _scheduleSave() {
-    _saveTimer?.cancel();
-    _saveTimer = Timer(CatchMotion.searchDebounce, () => unawaited(saveNow()));
   }
 
   String _newId(String prefix) {

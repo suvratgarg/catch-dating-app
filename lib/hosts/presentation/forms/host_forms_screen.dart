@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -33,6 +34,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+part 'host_forms_account_binding.dart';
 part 'host_forms_filter_sheet.dart';
 part 'host_response_import.dart';
 
@@ -79,27 +81,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   int _importRevision = 0;
   bool _accountBound = false;
   String? _boundAccountId;
-
-  void _bindAccount(String? accountId) {
-    if (!_accountBound) {
-      _accountBound = true;
-      _boundAccountId = accountId;
-      return;
-    }
-    if (_boundAccountId == accountId) return;
-    _boundAccountId = accountId;
-    _searchDebounce?.cancel();
-    _query = null;
-    _responseQuery = null;
-    _responseFormId = null;
-    _responseContactId = null;
-    _statuses = const {};
-    _purposes = const {};
-    _importRevision++;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _boundAccountId == accountId) _syncRoute();
-    });
-  }
+  int _accountGeneration = 0;
 
   void _completeResponseImport() {
     setState(() {
@@ -163,7 +145,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
-    if (uidState.hasError) {
+    if (uidState.error != null) {
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
@@ -176,12 +158,12 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         ],
       );
     }
-    if (uidState.isLoading) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
+    if (!uidState.isSettledData) {
+      return _loadingFormsRoute();
+    }
+    // A settled stream value can lag a live FirebaseAuth account change.
+    if (uid != null && ref.watch(firebaseAuthProvider).currentUser?.uid != uid) {
+      return _loadingFormsRoute();
     }
     _bindAccount(uid);
     if (uid == null) {
@@ -217,11 +199,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       );
     }
     if (clubsState.isLoading) {
-      return HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
+      return _loadingFormsRoute();
     }
     final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
@@ -243,6 +221,36 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       purposes: _purposes,
       query: _query,
     );
+    final directoryScope = (
+      uid: uid,
+      accountGeneration: _accountGeneration,
+      request: request,
+    );
+    final scopedDirectory = catchAsyncStateFromAsyncValue(
+      ref.watch(_scopedFormsDirectoryProvider(directoryScope)),
+    );
+    if (scopedDirectory.error case final error?) {
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: [
+          CatchLocalizedSliverErrorState(
+            error,
+            context: AppErrorContext.forms,
+            onRetry: () => ref.invalidate(
+              _scopedFormsDirectoryProvider(directoryScope),
+            ),
+          ),
+        ],
+      );
+    }
+    if (!scopedDirectory.isSettledData) {
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
+    }
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
     String? responseVersionId;
     if (canMountHostResponseQuery(
