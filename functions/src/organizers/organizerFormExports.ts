@@ -46,6 +46,7 @@ const exportLifetimeMs = 24 * 60 * 60 * 1000;
 const downloadLifetimeMs = 15 * 60 * 1000;
 const exportPageSize = 250;
 const maxExportRows = 10_000;
+const maxExportScannedResponses = 50_000;
 
 interface ExportRow {
   values: Map<string, string | number | boolean | null>;
@@ -186,24 +187,39 @@ export async function processOrganizerFormExport(
     const versions = new Map<string, OrganizerFormVersionDocument>();
     let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
     let exhausted = false;
-    while (!exhausted && rows.length < maxExportRows) {
+    let scanned = 0;
+    while (!exhausted) {
+      // Reserve one read beyond the scan budget to prove exhaustion.
+      const pageSize = Math.min(exportPageSize,
+        maxExportScannedResponses - scanned + 1);
       let query: FirebaseFirestore.Query = db
         .collection("organizerFormResponses")
         .where("organizerId", "==", document.organizerId)
         .where("formId", "==", document.formId)
         .orderBy("submittedAt", "asc")
         .orderBy(admin.firestore.FieldPath.documentId(), "asc")
-        .limit(exportPageSize);
+        .limit(pageSize);
       if (last) query = query.startAfter(last);
       const snapshot = await query.get();
       if (snapshot.empty) break;
       for (const doc of snapshot.docs) {
+        scanned += 1;
+        if (scanned > maxExportScannedResponses) {
+          throw new HttpsError("resource-exhausted",
+            "Export scan exceeds 50,000 responses. Narrow the filters.");
+        }
         last = doc;
         const response = requireDoc<OrganizerFormResponseDocument>(
           doc,
           "OrganizerFormResponseDocument"
         );
         if (!exportIncludesResponse(document, response)) continue;
+        // A further matching row proves the bounded export would be partial.
+        // Fail the receipt before writing an apparently complete file.
+        if (rows.length === maxExportRows) {
+          throw new HttpsError("resource-exhausted",
+            "Export exceeds 10,000 responses. Narrow the filters.");
+        }
         let version = versions.get(response.versionId);
         if (!version) {
           const versionSnap = await db.collection("organizerFormVersions")
@@ -223,9 +239,8 @@ export async function processOrganizerFormExport(
           values.set(key, exportAnswer(answer.answer));
         }
         rows.push({values});
-        if (rows.length === maxExportRows) break;
       }
-      exhausted = snapshot.size < exportPageSize;
+      exhausted = snapshot.size < pageSize;
     }
     const buffer = document.format === "csv" ?
       Buffer.from(csvFor(columns, rows), "utf8") :

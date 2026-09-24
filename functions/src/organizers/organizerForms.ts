@@ -156,6 +156,9 @@ const formTemplates = (organizerFormTemplateCatalog as unknown as {
 }).templates;
 
 interface FormsCursor {
+  version: 2;
+  organizerId: string;
+  filterHash: string;
   updatedAtMillis: number;
   formId: string;
 }
@@ -385,7 +388,14 @@ export async function listOrganizerFormsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerForms");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const cursor = decodeFormsCursor(data.cursor);
+  const filterHash = createHash("sha256").update(JSON.stringify({
+    organizerId: data.organizerId,
+    statuses: [...data.statuses].sort(),
+    purposes: [...data.purposes].sort(),
+    query: data.query?.trim().toLowerCase() ?? "",
+    order: "updatedAt:desc,id:desc",
+  })).digest("hex");
+  const cursor = decodeFormsCursor(data.cursor, data.organizerId, filterHash);
   const scanLimit = Math.min(Math.max(data.limit * 4, data.limit + 1), 400);
   let query: FirebaseFirestore.Query = db.collection("organizerForms")
     .where("organizerId", "==", data.organizerId)
@@ -433,7 +443,8 @@ export async function listOrganizerFormsHandler(
   return {
     organizerId: data.organizerId,
     items,
-    nextCursor: cursorDoc ? encodeFormsCursor(cursorDoc) : null,
+    nextCursor: cursorDoc ? encodeFormsCursor(cursorDoc,
+      data.organizerId, filterHash) : null,
   };
 }
 
@@ -1590,25 +1601,33 @@ function scopedNestedId(
 }
 
 function encodeFormsCursor(
-  doc: FirebaseFirestore.QueryDocumentSnapshot
+  doc: FirebaseFirestore.QueryDocumentSnapshot,
+  organizerId: string,
+  filterHash: string
 ): string {
   const form = requireDoc<OrganizerFormDocument>(
     doc,
     "OrganizerFormDocument"
   );
   return Buffer.from(JSON.stringify({
+    version: 2,
+    organizerId,
+    filterHash,
     updatedAtMillis: form.updatedAt.toMillis(),
     formId: doc.id,
   } satisfies FormsCursor)).toString("base64url");
 }
 
-function decodeFormsCursor(value: string | null): FormsCursor | null {
+function decodeFormsCursor(value: string | null, organizerId: string,
+  filterHash: string): FormsCursor | null {
   if (!value) return null;
   try {
     const decoded = JSON.parse(
       Buffer.from(value, "base64url").toString("utf8")
     );
     if (!decoded || typeof decoded !== "object" ||
+        decoded.version !== 2 || decoded.organizerId !== organizerId ||
+        decoded.filterHash !== filterHash ||
         !Number.isSafeInteger(decoded.updatedAtMillis) ||
         decoded.updatedAtMillis < 0 ||
         typeof decoded.formId !== "string" ||
@@ -1617,7 +1636,8 @@ function decodeFormsCursor(value: string | null): FormsCursor | null {
     }
     return decoded as FormsCursor;
   } catch {
-    throw new HttpsError("invalid-argument", "Form list cursor is invalid.");
+    throw new HttpsError("invalid-argument",
+      "The form list changed. Refresh to continue.");
   }
 }
 
