@@ -20,7 +20,7 @@ function richEvent(): Row {
     join(__dirname, "../../../contracts/fixtures/valid/event_doc.json"),
     "utf8")) as Row;
   return {...source, clubId: "org1", organizerId: "org1",
-    publicationState: "published", updatedAt: Timestamp.fromMillis(41),
+    publicationState: "published",
     startTime: Timestamp.fromMillis(NOW),
     endTime: Timestamp.fromMillis(NOW + 3_600_000)};
 }
@@ -42,6 +42,9 @@ function privateEvent(): Row {
 
 async function setup(event = richEvent()) {
   const rows = new Map<string, Row>();
+  const updateTimes = new Map<string, Timestamp>();
+  const legacyUpdateTime = new Timestamp(1_800_000_000, 123_456_000);
+  updateTimes.set("events/event1", legacyUpdateTime);
   const readPaths: string[] = [];
   const writePaths: string[] = [];
   rows.set("organizers/org1", {hostUserId: "host1", ownerUserId: "host1",
@@ -60,7 +63,8 @@ async function setup(event = richEvent()) {
         get: async (ref: {path: string}) => {
           assert.equal(pending.length, 0, "all reads precede writes");
           readPaths.push(ref.path);
-          return {exists: rows.has(ref.path), data: () => rows.get(ref.path)};
+          return {exists: rows.has(ref.path), data: () => rows.get(ref.path),
+            updateTime: updateTimes.get(ref.path)};
         },
         set: (ref: {path: string}, value: Row) => {
           writePaths.push(ref.path);
@@ -83,7 +87,8 @@ async function setup(event = richEvent()) {
   const command: ConfigureEventOfferPreferencesCommand = {
     organizerId: "org1", eventId: "event1", requestId: "offer-settings-1",
     expectedPreferencesRevision: 0,
-    expectedEventSourceRevision: event.setupRevision as number ?? 41,
+    expectedEventSourceRevision: event.setupRevision as number ??
+      1_800_000_000_123_456,
     reviewedDefaultsHash: defaults.preferencesHash,
     intents: {usualDurationMinutes: {mode: "clear"},
       preferredVenueId: {mode: "clear"},
@@ -99,7 +104,7 @@ async function setup(event = richEvent()) {
   const deps = {db, serverTimestamp: () => Timestamp.fromMillis(50) as
     unknown as FirebaseFirestore.FieldValue,
   configurationReady: () => ready};
-  return {rows, readPaths, writePaths, command, deps,
+  return {rows, updateTimes, readPaths, writePaths, command, deps,
     setReady: (value: boolean) => ready = value,
     save: (overrides: Partial<ConfigureEventOfferPreferencesCommand> = {},
       actorUid = "host1") => configureEventOfferPreferences({actorUid,
@@ -164,8 +169,8 @@ test("source, prefs and defaults changes reject stale review", async () => {
   for (const kind of ["source", "preferences", "defaults"]) {
     const h = await setup();
     if (kind === "source") {
-      h.rows.set("events/event1",
-        {...h.rows.get("events/event1"), updatedAt: Timestamp.fromMillis(42)});
+      h.updateTimes.set("events/event1",
+        new Timestamp(1_800_000_000, 123_457_000));
     }
     if (kind === "preferences") await h.save();
     if (kind === "defaults") {
@@ -198,9 +203,7 @@ test("tenant, cancelled, manager, deleted and missing revision deny",
       }
       if (kind === "deleted") h.rows.set("deletedUsers/host1", {});
       if (kind === "missingRevision") {
-        const event = {...h.rows.get("events/event1")};
-        delete event.updatedAt;
-        h.rows.set("events/event1", event);
+        h.updateTimes.delete("events/event1");
       }
       await assert.rejects(h.save(), code(kind === "foreign" ? "not-found" :
         kind === "manager" ? "permission-denied" : "failed-precondition"));

@@ -23,6 +23,7 @@ import {resolveIndividualCommunicationPlan} from
   "../communications/organizerCommunicationPlan";
 import {projectEventPreferences} from
   "../events/progressiveSetup/preferences";
+import {eventSourceRevision} from "../events/eventSourceRevision";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {organizerContactOriginId} from
@@ -387,14 +388,11 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             originContactId: data.originContactId};
         },
         event: async (eventId): Promise<OfferEvent | null> => {
-          const data = await read("events", eventId) as
-            EventDocument | undefined;
+          const eventSnap = await firestoreTx.get(
+            this.db.collection("events").doc(eventId));
+          const data = eventSnap.data() as EventDocument | undefined;
           if (!data) return null;
-          const setupRevision = (data as EventDocument & {
-            setupRevision?: number}).setupRevision;
-          const sourceRevision = Number.isSafeInteger(setupRevision) &&
-            setupRevision! > 0 ? setupRevision! :
-            data.updatedAt?.toMillis();
+          const sourceRevision = eventSourceRevision(data, eventSnap);
           const startsAtMillis = data.startTime?.toMillis();
           if (!Number.isSafeInteger(startsAtMillis) ||
               startsAtMillis! <= 0 ||

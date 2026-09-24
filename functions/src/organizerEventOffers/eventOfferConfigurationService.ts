@@ -2,6 +2,7 @@ import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
+import {eventSourceRevision} from "../events/eventSourceRevision";
 import {canonicalJson, eventPaymentTermsFromPreferences,
   resolveEventPreferences} from "../events/eventSetupPreferences/resolve";
 import {EventPreferenceError,
@@ -46,18 +47,6 @@ function validateCommand(command: ConfigureEventOfferPreferencesCommand) {
 
 function digest(value: unknown): string {
   return createHash("sha256").update(canonicalJson(value)).digest("hex");
-}
-
-/** Mirrors the offer adapter; absent legacy revisions fail. */
-function sourceRevision(event: FirebaseFirestore.DocumentData): number {
-  const revision = Number.isSafeInteger(event.setupRevision) &&
-    event.setupRevision > 0 ? event.setupRevision :
-    event.updatedAt?.toMillis?.();
-  if (!Number.isSafeInteger(revision) || revision < 1) {
-    throw new HttpsError("failed-precondition",
-      "Event has no stable offer source revision.");
-  }
-  return revision;
 }
 
 /** Manager-only snapshot update. Existing offers and the event never change. */
@@ -126,7 +115,11 @@ export async function configureEventOfferPreferences(params: {
       throw new HttpsError("failed-precondition",
         "Cancelled events cannot change offer settings.");
     }
-    const currentSourceRevision = sourceRevision(event);
+    const currentSourceRevision = eventSourceRevision(event, eventSnap);
+    if (currentSourceRevision === null) {
+      throw new HttpsError("failed-precondition",
+        "Event has no stable offer source revision.");
+    }
     const saved = projectEventPreferences(preferencesSnap.data(),
       command.organizerId, command.eventId);
     const revision = saved?.revision ?? 0;
