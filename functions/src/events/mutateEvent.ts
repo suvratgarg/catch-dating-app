@@ -108,6 +108,9 @@ import {
 } from "../payments/razorpay";
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {SeatLedger} from "./seatAuthority/seatAuthority";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
 
@@ -477,6 +480,9 @@ export async function updateEventHandler(
       organizerSnap,
       activeParticipations,
       privateAccessSnap,
+      attendeeSnap,
+      offerSnap,
+      seatMode,
     ] =
       await Promise.all([
         tx.get(organizerRef),
@@ -486,6 +492,11 @@ export async function updateEventHandler(
           "attended",
         ]),
         tx.get(privateAccessRef),
+        tx.get(db.collection("eventAttendees")
+          .where("eventId", "==", data.eventId).limit(1)),
+        tx.get(db.collection("organizerEventOffers")
+          .where("eventId", "==", data.eventId).limit(1)),
+        readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
       ]);
     const organizer = assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -494,13 +505,15 @@ export async function updateEventHandler(
     );
     assertValidMergedRunUpdate(event, data.fields);
     assertValidEventConstraints(data.fields.constraints);
-    if (hasScheduleTimeChange(data.fields) && activeParticipations.length > 0) {
+    const hasGuestHistory = activeParticipations.length > 0 ||
+      !attendeeSnap.empty || !offerSnap.empty;
+    if (hasScheduleTimeChange(data.fields) && hasGuestHistory) {
       throw new HttpsError(
         "failed-precondition",
         "Events with participants or waitlisted users cannot be rescheduled."
       );
     }
-    if (hasPolicyChange(data.fields) && activeParticipations.length > 0) {
+    if (hasPolicyChange(data.fields) && hasGuestHistory) {
       throw new HttpsError(
         "failed-precondition",
         "Events with participants or waitlisted users cannot change policy."
@@ -517,10 +530,19 @@ export async function updateEventHandler(
       }),
     };
     const nextEvent = {...event, ...patch};
+    const seatState = seatMode === "ready" ?
+      await prepareEventMutationLedger(db, tx, data.eventId, event,
+        nextEvent) : null;
+    if (seatState && seatState.occupied > 0 &&
+        (hasScheduleTimeChange(data.fields) || hasPolicyChange(data.fields))) {
+      throw new HttpsError("failed-precondition",
+        "Events with reserved seats cannot change schedule or policy.");
+    }
     const nextEndTime = requiredEventEndTime(nextEvent);
     const changedFields = eventPlanChangeFields(event, nextEvent);
     const occurredAt = deps.nowTimestamp?.() ??
       admin.firestore.Timestamp.now();
+    let planChange: EventPlanChangeDocument | null = null;
     if (changedFields.length > 0 &&
         occurredAt.toMillis() < nextEndTime.toMillis()) {
       const revision = (event.planChangeRevision ?? 0) + 1;
@@ -551,7 +573,7 @@ export async function updateEventHandler(
         throw new HttpsError("internal", "Invalid event plan change source.");
       }
       patch.planChangeRevision = revision;
-      tx.create(db.collection(EVENT_PLAN_CHANGES).doc(sourceId), source);
+      planChange = source;
     }
     const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
     if (hasScheduleTimeChange(data.fields)) {
@@ -563,6 +585,14 @@ export async function updateEventHandler(
         startTimeMillis: fieldsStartTimeMillis(event, data.fields),
         endTimeMillis: fieldsEndTimeMillis(event, data.fields),
       });
+    }
+    if (planChange) {
+      tx.create(db.collection(EVENT_PLAN_CHANGES)
+        .doc(planChange.sourceId), planChange);
+    }
+    if (seatState?.update) {
+      tx.set(db.collection("eventSeatLedgers").doc(data.eventId),
+        seatState.update);
     }
     tx.update(eventRef, patch);
     removedStoragePaths = removedMediaStoragePaths({
@@ -664,6 +694,8 @@ export async function cancelEventHandler(
       deletedUserSnap,
       hostUserId
     );
+
+    await readSeatMigrationWriterFence({db, tx, eventId: data.eventId});
 
     if (event.status === "cancelled") {
       cancelledEvent = event;
@@ -811,6 +843,10 @@ export async function deleteEventHandler(
       participationSnap,
       paymentSnap,
       reviewSnap,
+      attendeeSnap,
+      offerSnap,
+      admissionSnap,
+      seatMode,
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(deletedUserRef),
@@ -823,6 +859,13 @@ export async function deleteEventHandler(
       tx.get(db.collection("reviews")
         .where("eventId", "==", data.eventId)
         .limit(1)),
+      tx.get(db.collection("eventAttendees")
+        .where("eventId", "==", data.eventId).limit(1)),
+      tx.get(db.collection("organizerEventOffers")
+        .where("eventId", "==", data.eventId).limit(1)),
+      tx.get(db.collection("organizerFormAdmissions")
+        .where("eventId", "==", data.eventId).limit(1)),
+      readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
     ]);
     assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -832,11 +875,13 @@ export async function deleteEventHandler(
     if (
       !participationSnap.empty ||
       !paymentSnap.empty ||
-      !reviewSnap.empty
+      !reviewSnap.empty || !attendeeSnap.empty || !offerSnap.empty ||
+      !admissionSnap.empty || seatMode === "ready"
     ) {
       throw new HttpsError(
         "failed-precondition",
-        "Events with participants, payments, or reviews must be cancelled."
+        "Events with guest, offer, seat, payment or review history " +
+        "must be cancelled."
       );
     }
 
@@ -865,6 +910,54 @@ export async function deleteEventHandler(
   }
 
   return {deleted: true};
+}
+
+/** Keep permitted event policy edits atomic with their capacity authority. */
+async function prepareEventMutationLedger(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  eventId: string,
+  before: EventDocument,
+  after: EventDocument
+): Promise<{update: SeatLedger | null; occupied: number}> {
+  const snap = await tx.get(db.collection("eventSeatLedgers").doc(eventId));
+  const ledger = snap.data() as SeatLedger | undefined;
+  let previous;
+  let next;
+  try {
+    previous = deriveEventSeatPolicy(before);
+    next = deriveEventSeatPolicy(after);
+  } catch {
+    throw new HttpsError("failed-precondition",
+      "Invalid seat capacity policy.");
+  }
+  if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
+      ledger.capacity !== previous.capacity ||
+      ledger.policyHash !== previous.policyHash ||
+      ledger.policyVersion !== previous.policyVersion ||
+      !Number.isSafeInteger(ledger.occupied) || ledger.occupied < 0 ||
+      ledger.occupied > ledger.capacity ||
+      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
+      ledger.revision >= Number.MAX_SAFE_INTEGER ||
+      !Number.isSafeInteger(ledger.capacityRevision) ||
+      ledger.capacityRevision < 1 ||
+      ledger.capacityRevision >= Number.MAX_SAFE_INTEGER ||
+      !Number.isSafeInteger(ledger.migrationRevision) ||
+      ledger.migrationRevision < 1 || next.capacity < ledger.occupied) {
+    throw new HttpsError("failed-precondition",
+      "Seat capacity needs reconciliation before this edit.");
+  }
+  if (previous.policyHash === next.policyHash) {
+    return {update: null, occupied: ledger.occupied};
+  }
+  if (ledger.occupied > 0) {
+    throw new HttpsError("failed-precondition",
+      "Events with reserved seats cannot change admission policy.");
+  }
+  return {occupied: ledger.occupied, update: {...ledger,
+    capacity: next.capacity, policyHash: next.policyHash,
+    policyVersion: next.policyVersion, revision: ledger.revision + 1,
+    capacityRevision: ledger.capacityRevision + 1}};
 }
 
 async function cleanupRemovedEventMedia(
@@ -1668,6 +1761,11 @@ function buildUpdateEventPatch(
   } else {
     if (fields.capacityLimit !== undefined) {
       patch.capacityLimit = fields.capacityLimit;
+      if (event.eventPolicy) {
+        patch.eventPolicy = normalizePolicy({...event.eventPolicy,
+          admission: {...event.eventPolicy.admission,
+            capacityLimit: fields.capacityLimit}});
+      }
     }
     if (fields.priceInPaise !== undefined) {
       patch.priceInPaise = fields.priceInPaise;
