@@ -54,6 +54,8 @@ import type {
   OrganizerFormResponseDraftDocument,
   OrganizerFormShareLinkDocument,
   OrganizerFormVersionDocument,
+  ParticipantIntakeProfileDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   validateBeginOrganizerFormResponseCallablePayload,
@@ -104,6 +106,9 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {answersForSubmission, reachableFormSections}
   from "./organizerFormLogic";
 import {incrementOrganizerFormFunnel} from "./organizerFormAggregates";
+import {canonicalCityMarketId, publicFormCityOptions,
+  publicFormPrefillSuggestions, reusablePublicFormFields} from
+  "./organizerFormPublicFields";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];
 type PublicFormProjection = GetPublicOrganizerFormCallableResponse;
@@ -290,12 +295,29 @@ export async function beginOrganizerFormResponseHandler(
     });
   }
   const draft = result.draft;
+  let prefillSuggestions: Record<string, AnswerMap[string]> = {};
+  if (identity.kind === "phoneVerified" && identity.uid) {
+    const [deleted, intake, profile] = await Promise.all([
+      db.collection("deletedUsers").doc(identity.uid).get(),
+      db.collection("participantIntakeProfiles").doc(identity.uid).get(),
+      db.collection("users").doc(identity.uid).get(),
+    ]);
+    if (!deleted.exists) {
+      prefillSuggestions = publicFormPrefillSuggestions({
+        definition: resolved.version.definition,
+        intake: intake.data() as ParticipantIntakeProfileDocument | undefined,
+        profile: profile.data() as UserProfileDocument | undefined,
+        verifiedPhone: String(request.auth?.token.phone_number ?? ""),
+      });
+    }
+  }
   return {
     draftId,
     draftToken,
     form: resolved.projection,
     revision: draft.revision,
     answers: draft.answers,
+    prefillSuggestions,
     consentAccepted: draft.consentAccepted,
     ...(draft.messagingDecision ?
       {messagingChoices: formMessagingChoices(draft.messagingDecision)} : {}),
@@ -732,6 +754,37 @@ export async function persistOrganizerFormSubmission(params: {
     tx, db, draft, definition: version.definition,
     answers: submittedAnswers, responseId, now,
   });
+  const reusableFields = draft.respondentUid &&
+    draft.identityKind === "phoneVerified" && draft.consentAccepted ?
+    reusablePublicFormFields(version.definition, submittedAnswers, now) : [];
+  let writeReusableFields = () => undefined;
+  if (reusableFields.length > 0 && draft.respondentUid) {
+    const intakeRef = db.collection("participantIntakeProfiles")
+      .doc(draft.respondentUid);
+    const [intakeSnap, deleted] = await Promise.all([
+      tx.get(intakeRef),
+      tx.get(db.collection("deletedUsers").doc(draft.respondentUid)),
+    ]);
+    if (!deleted.exists) {
+      const previous = intakeSnap.data() as ParticipantIntakeProfileDocument |
+      undefined;
+      const byId = new Map((previous?.fields ?? []).map((field) =>
+        [field.canonicalFieldId, field]));
+      for (const field of reusableFields) {
+        byId.set(field.canonicalFieldId, field);
+      }
+      const updated: ParticipantIntakeProfileDocument = {
+        fields: [...byId.values()].sort((left, right) =>
+          left.canonicalFieldId.localeCompare(right.canonicalFieldId)),
+        revision: (previous?.revision ?? 0) + 1,
+        createdAt: previous?.createdAt ?? now,
+        updatedAt: now,
+      };
+      writeReusableFields = () => {
+        tx.set(intakeRef, updated);
+      };
+    }
+  }
   const response: OrganizerFormResponseDocument = {
     organizerId: draft.organizerId,
     formId: draft.formId,
@@ -760,6 +813,7 @@ export async function persistOrganizerFormSubmission(params: {
   writeMessagingGrants();
   writeMessagingIntent();
   writeProfileProposal();
+  writeReusableFields();
   tx.create(responseRef, response);
   for (const assetRef of submittedAssetRefs) {
     tx.update(assetRef, {
@@ -1030,6 +1084,7 @@ async function resolvePublicForm(
       availabilityMessage: availability.message,
       organizer: presentation,
       definition: definitionToWire(version.definition),
+      cityOptions: publicFormCityOptions(),
       messagingOffer: formMessagingOffer(version.definition),
     },
   };
@@ -1275,6 +1330,11 @@ function validateQuestionAnswer(
   answer: AnswerMap[string]
 ): void {
   if (isEmptyAnswer(answer)) return;
+  if (question.canonicalFieldId === "city" &&
+      question.answerDestination === "catchProfile" &&
+      canonicalCityMarketId(answer) !== answer) {
+    throw invalidAnswer(`${question.label} must be a supported city.`);
+  }
   const invalidType = () => invalidAnswer(
     `${question.label} has an invalid answer.`
   );

@@ -76,6 +76,20 @@ describe("usePublicFormController", () => {
       sourceToken: null,
     });
   });
+
+  it("starts the public form fetch before loading the Auth observer", async () => {
+    let finishFetch!: (value: typeof form) => void;
+    getPublicOrganizerForm.mockImplementation(() => new Promise((resolve) => {
+      finishFetch = resolve;
+    }));
+    const view = renderHook(() => usePublicFormController(
+      "public-form-1"), {wrapper: wrapper()});
+    expect(getPublicOrganizerForm).toHaveBeenCalledOnce();
+    expect(watchPublicFormAuthState).not.toHaveBeenCalled();
+    await act(async () => finishFetch(form));
+    await waitFor(() => expect(view.result.current.stage).toBe("form"));
+    expect(watchPublicFormAuthState).toHaveBeenCalledOnce();
+  });
 });
 
 const form = {
@@ -333,7 +347,8 @@ describe("early non-blocking phone verification", () => {
       sections: [{sectionId: "details", title: "Details",
         questions: [phoneQuestion]}]}};
     getPublicOrganizerForm.mockResolvedValue(verifiedForm);
-    beginOrganizerFormResponse.mockResolvedValue({...draft, form: verifiedForm});
+    beginOrganizerFormResponse.mockResolvedValue({...draft, form: verifiedForm,
+      prefillSuggestions: {name: "Saved name", city: "in-mh-mumbai"}});
     saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2,
       expiresAtMillis: 200000});
     const confirmed = {uid: "person-1", phoneNumber: "+919876543210"};
@@ -358,7 +373,6 @@ describe("early non-blocking phone verification", () => {
     });
     expect(result.current.stage).toBe("form");
     expect(result.current.verificationStep).toBe("code");
-    act(() => result.current.updateAnswer("city", "in-mh-mumbai"));
     await act(async () => {
       await result.current.handleCodeSubmit({preventDefault: vi.fn()} as never);
     });

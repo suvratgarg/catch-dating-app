@@ -334,6 +334,7 @@ function QuestionStage({
           question.questionId !== verifiedPhoneQuestion?.questionId).map((question) => (
           <QuestionField
             answer={controller.answers[question.questionId]}
+            cityOptions={controller.form?.cityOptions ?? []}
             error={controller.errors[question.questionId]}
             key={question.questionId}
             onChange={(answer) => controller.updateAnswer(
@@ -386,6 +387,10 @@ function InlinePhoneVerification({
   }
   return <div className="public-form__verification">
     <p>{publicFormsCopy.phoneVerificationHelp}</p>
+    {question && controller.errors[question.questionId] ?
+      <p className="public-form__error" role="alert">
+        {controller.errors[question.questionId]}
+      </p> : null}
     {controller.verificationStep === "code" ? (
       <PublicFormForm onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
         <TextField
@@ -408,6 +413,7 @@ function InlinePhoneVerification({
       <PublicFormForm onSubmit={controller.handlePhoneSubmit} pending={controller.pending}>
         <PhoneNumberField
           id="public-form-inline-phone"
+          invalid={Boolean(question && controller.errors[question.questionId])}
           label={question?.label ?? publicFormsCopy.phoneLabel}
           onBlur={question ? () => controller.blurQuestion(question.questionId) : undefined}
           onChange={(value) => {
@@ -427,6 +433,7 @@ function InlinePhoneVerification({
 
 function QuestionField({
   answer,
+  cityOptions,
   error,
   onChange,
   onBlur,
@@ -435,6 +442,7 @@ function QuestionField({
   upload,
 }: {
   answer: PublicFormAnswer | undefined;
+  cityOptions: NonNullable<ReturnType<typeof usePublicFormController>["form"]>["cityOptions"];
   error?: string;
   onChange: (answer: PublicFormAnswer) => void;
   onBlur: () => void;
@@ -455,6 +463,25 @@ function QuestionField({
     label: question.label,
     requiredLabel,
   };
+  if (question.canonicalFieldId === "city" &&
+      question.answerDestination === "catchProfile" &&
+      cityOptions && cityOptions.length > 0) {
+    return <PublicFormQuestion {...common}>
+      <SelectField
+        id={`form-question-${question.questionId}`}
+        invalid={Boolean(error)}
+        label={question.label}
+        onBlur={onBlur}
+        onChange={(event) => onChange(event.target.value || null)}
+        required={question.required}
+        value={typeof answer === "string" ? answer : ""}
+      >
+        <option value="">{publicFormsCopy.chooseOne}</option>
+        {cityOptions.map((city) => <option key={city.marketId}
+          value={city.marketId}>{city.label}, {city.regionName}</option>)}
+      </SelectField>
+    </PublicFormQuestion>;
+  }
   if (question.kind === "longText") {
     return (
       <PublicFormQuestion {...common}>

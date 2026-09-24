@@ -975,6 +975,44 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
                 }
               }
             },
+            "cityOptions": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "marketId",
+                  "cityId",
+                  "label",
+                  "regionName",
+                  "countryIsoCode"
+                ],
+                "properties": {
+                  "marketId": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "cityId": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "regionName": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "countryIsoCode": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 2
+                  }
+                }
+              }
+            },
             "messagingOffer": {
               "type": "object",
               "additionalProperties": false,
@@ -1071,6 +1109,44 @@ export const beginOrganizerFormResponseCallableResponseSchema: Record<string, un
               }
             ]
           }
+        },
+        "prefillSuggestions": {
+          "type": "object",
+          "maxProperties": 4000,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10000
+              },
+              {
+                "type": "number",
+                "minimum": -1000000000,
+                "maximum": 1000000000
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              }
+            ]
+          },
+          "description": "Private values offered only to the verified respondent for review; never written to draft answers until accepted."
         },
         "consentAccepted": {
           "type": "boolean"

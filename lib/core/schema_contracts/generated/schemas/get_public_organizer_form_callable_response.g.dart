@@ -951,6 +951,44 @@ const schemaGetPublicOrganizerFormCallableResponseSchema = <String, Object?>{
             },
           },
         },
+        'cityOptions': <String, Object?>{
+          'type': 'array',
+          'maxItems': 100,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'marketId',
+              'cityId',
+              'label',
+              'regionName',
+              'countryIsoCode',
+            ],
+            'properties': <String, Object?>{
+              'marketId': <String, Object?>{
+                'type': 'string',
+                'maxLength': 120,
+              },
+              'cityId': <String, Object?>{
+                'type': 'string',
+                'maxLength': 120,
+              },
+              'label': <String, Object?>{
+                'type': 'string',
+                'maxLength': 160,
+              },
+              'regionName': <String, Object?>{
+                'type': 'string',
+                'maxLength': 160,
+              },
+              'countryIsoCode': <String, Object?>{
+                'type': 'string',
+                'minLength': 2,
+                'maxLength': 2,
+              },
+            },
+          },
+        },
         'messagingOffer': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,

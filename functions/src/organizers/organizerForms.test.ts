@@ -160,6 +160,25 @@ test("Catch profile fields require explicit compatible building blocks", () => {
     issue.code === "privateResponseOnly"));
 });
 
+test("reusable Catch fields stay on page one with built-in behavior", () => {
+  const value = definition();
+  value.identityPolicy = "phoneVerified";
+  const field = value.sections[0].questions[0];
+  field.answerDestination = "catchProfile";
+  field.canonicalFieldId = "givenName";
+  field.prefillPolicy = "participantReviewRequired";
+  assert.deepEqual(validateOrganizerFormDefinition(value), []);
+  field.validation.customError = "Host override";
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "catchFieldCustomValidation"));
+  field.validation.customError = null;
+  value.logicRules = [{ruleId: "rule-1", conditionMode: "all", conditions: [{
+    questionId: field.questionId, operator: "answered", expectedValues: [],
+  }], action: "finish", targetQuestionId: null, targetSectionId: null}];
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "catchFieldCustomLogic"));
+});
+
 test("profile photo cannot promote arbitrary uploads or image collections",
   () => {
     const value = definition();
