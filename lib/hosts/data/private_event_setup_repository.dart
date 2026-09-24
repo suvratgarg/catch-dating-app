@@ -370,7 +370,7 @@ class PrivateEventBasicSummary {
       localStartTime: localStartTime,
       timezone: timezone,
       startTimeMillis: startTimeMillis,
-      status: status,
+      status: status as String,
       setupDefaults: Map<String, Object?>.from(setupDefaults),
       detailsConfigured: detailsConfigured,
     );

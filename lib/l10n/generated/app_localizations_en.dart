@@ -21360,6 +21360,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsPrivateEventDetails => 'Event details';
 
   @override
+  String get hostsPrivateEventEditBasics => 'Edit event basics';
+
+  @override
+  String get hostsPrivateEventEditBasicsBody =>
+      'Change the name, city, date, start time or timezone.';
+
+  @override
+  String get hostsPrivateEventEditBasicsUnavailable =>
+      'Cancelled events cannot be edited.';
+
+  @override
   String get hostsPrivateEventDetailsBody =>
       'Add a venue and end time when needed.';
 
@@ -21438,6 +21449,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventPendingRequest =>
       'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.';
+
+  @override
+  String get hostsPrivateEventPendingUpdate =>
+      'This edit may already have reached Catch. Retry the same save before changing the basics.';
 
   @override
   String get hostsPrivateEventRetrySave => 'Retry the same save';
@@ -21580,6 +21595,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventPendingExitBody =>
       'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.';
+
+  @override
+  String get hostsPrivateEventPendingUpdateExitBody =>
+      'Catch may already have saved this edit. The request is kept on this device. Leave and retry the same save later before changing the basics.';
+
+  @override
+  String get hostsPrivateEventSetupUnavailable =>
+      'Private event setup is not available yet.';
 
   @override
   String get hostsPrivateEventPendingStay => 'Stay and retry';

@@ -34225,6 +34225,24 @@ abstract class AppLocalizations {
   /// **'Event details'**
   String get hostsPrivateEventDetails;
 
+  /// Opens the saved private event basics editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event basics'**
+  String get hostsPrivateEventEditBasics;
+
+  /// Describes the saved private event basics editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the name, city, date, start time or timezone.'**
+  String get hostsPrivateEventEditBasicsBody;
+
+  /// Explains why basics cannot be edited for a cancelled private event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled events cannot be edited.'**
+  String get hostsPrivateEventEditBasicsUnavailable;
+
   /// Copy for the progressive private event setup flow.
   ///
   /// In en, this message translates to:
@@ -34356,6 +34374,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.'**
   String get hostsPrivateEventPendingRequest;
+
+  /// Explains an unresolved idempotent event basics update.
+  ///
+  /// In en, this message translates to:
+  /// **'This edit may already have reached Catch. Retry the same save before changing the basics.'**
+  String get hostsPrivateEventPendingUpdate;
 
   /// Retries an unresolved private event save with its original request identity.
   ///
@@ -34596,6 +34620,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.'**
   String get hostsPrivateEventPendingExitBody;
+
+  /// Explains leaving an unresolved private event basics update.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved this edit. The request is kept on this device. Leave and retry the same save later before changing the basics.'**
+  String get hostsPrivateEventPendingUpdateExitBody;
+
+  /// Shown when a saved private event is opened before the guarded rollout.
+  ///
+  /// In en, this message translates to:
+  /// **'Private event setup is not available yet.'**
+  String get hostsPrivateEventSetupUnavailable;
 
   /// Private event idempotent save and saved-event continuation copy.
   ///

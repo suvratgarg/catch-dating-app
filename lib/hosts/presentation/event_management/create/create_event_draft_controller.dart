@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_update_journal.dart';
+import 'package:catch_dating_app/hosts/data/private_event_update_journal.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
