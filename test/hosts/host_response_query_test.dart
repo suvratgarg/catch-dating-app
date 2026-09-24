@@ -159,24 +159,24 @@ void main() {
     'malformed page and catalog fail instead of showing partial results',
     () {
       expect(
-        () => HostResponseQueryPage.fromCallableData({
-          'items': const [],
+        () => HostResponseQueryPage.fromCallableData(const {
+          'items': [],
           'nextCursor': null,
           'total': 1,
-          'selectedIds': const ['kabir'],
+          'selectedIds': ['kabir'],
           'queryHash': 'query-one',
           'resultHash': 'result-one',
         }),
         throwsFormatException,
       );
       expect(
-        () => HostResponseQueryField.fromMap({
+        HostResponseQueryField.fromMap(const {
           'questionId': 'city',
           'label': 'Event city',
           'kind': 'singleChoice',
-          'operators': const ['choiceAny'],
+          'operators': ['choiceAny'],
           'sortable': true,
-          'options': const [
+          'options': [
             {'value': 'Mumbai', 'label': 'Mumbai'},
           ],
         }).operators,

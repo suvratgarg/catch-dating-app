@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -210,6 +211,8 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
     );
   }
 
+  // The recursive draft editor keeps one owner for tree mutation and validation.
+  // ignore: catch_no_widget_returning_method
   Widget _buildGroup(List<int> path, HostResponseGroup group) {
     final copy = widget.copy;
     final canAdd = _root.conditionCount < 20;
@@ -242,8 +245,8 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
             gapH12,
           ],
           Wrap(
-            spacing: 12,
-            runSpacing: 8,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
             children: [
               CatchButton(
                 label: copy.addCondition,
@@ -277,6 +280,7 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
     );
   }
 
+  // ignore: catch_no_widget_returning_method
   Widget _buildCondition(List<int> path, HostResponseCondition condition) {
     final copy = widget.copy;
     final field = widget.fields.firstWhere(
@@ -370,6 +374,7 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
     );
   }
 
+  // ignore: catch_no_widget_returning_method
   Widget _buildValue(
     List<int> path,
     HostResponseQueryField field,
@@ -433,6 +438,7 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
     return _valueField(path, field, condition);
   }
 
+  // ignore: catch_no_widget_returning_method
   Widget _valueField(
     List<int> path,
     HostResponseQueryField field,
@@ -446,39 +452,47 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
         : lower
         ? condition.minimum
         : condition.maximum;
-    return CatchField.input(
-      key: ValueKey('response-value-${path.join('-')}-$lower-$current'),
-      copy: catchFieldCopy(context.l10n),
-      title: lower == null
-          ? widget.copy.value
-          : lower
-          ? widget.copy.minimum
-          : widget.copy.maximum,
-      initialValue: current?.toString(),
-      keyboardType: number
-          ? const TextInputType.numberWithOptions(decimal: true, signed: true)
-          : operator.name.startsWith('date')
-          ? TextInputType.datetime
-          : TextInputType.text,
-      maxLength: number
-          ? 24
-          : operator.name.startsWith('date')
-          ? 10
-          : 200,
-      contractExemption: 'The manager query validates typed response values.',
-      onBlur: (raw) {
-        final parsed = number ? num.tryParse(raw.trim()) : raw.trim();
-        _replace(
-          path,
-          HostResponseCondition(
-            questionId: field.questionId,
-            operator: operator,
-            value: lower == null ? parsed : null,
-            minimum: lower == true ? parsed : condition.minimum,
-            maximum: lower == false ? parsed : condition.maximum,
-          ),
-        );
-      },
+    return CatchSection.fieldRows(
+      children: [
+        CatchField.input(
+          key: ValueKey('response-value-${path.join('-')}-$lower-$current'),
+          copy: catchFieldCopy(context.l10n),
+          title: lower == null
+              ? widget.copy.value
+              : lower
+              ? widget.copy.minimum
+              : widget.copy.maximum,
+          initialValue: current?.toString(),
+          keyboardType: number
+              ? const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                )
+              : operator.name.startsWith('date')
+              ? TextInputType.datetime
+              : TextInputType.text,
+          maxLength: number
+              ? 24
+              : operator.name.startsWith('date')
+              ? 10
+              : 200,
+          contractExemption:
+              'The manager query validates typed response values.',
+          onBlur: (raw) {
+            final parsed = number ? num.tryParse(raw.trim()) : raw.trim();
+            _replace(
+              path,
+              HostResponseCondition(
+                questionId: field.questionId,
+                operator: operator,
+                value: lower == null ? parsed : null,
+                minimum: lower == true ? parsed : condition.minimum,
+                maximum: lower == false ? parsed : condition.maximum,
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
