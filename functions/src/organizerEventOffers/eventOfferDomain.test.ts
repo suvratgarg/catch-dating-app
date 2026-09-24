@@ -80,6 +80,14 @@ test("draft terms are time-bounded and reuse public HTTPS policy", () => {
   }
 });
 
+test("an earlier event start invalidates old draft terms", () => {
+  const draft = create().offer;
+  assertCode(() => act(draft, {kind: "offer",
+    requestId: "rescheduled-offer", expectedRevision: 1,
+    expectedGeneration: 1}, now + 1,
+  {...context, eventStartsAtMillis: now + 300_000}), "invalid");
+});
+
 test("evidence is not payment; only a manager attests receipt", () => {
   const draft = create().offer;
   assert.equal(draft.manualPayment.status, "none");
@@ -103,11 +111,13 @@ test("evidence is not payment; only a manager attests receipt", () => {
   assertCode(() => act(offered, {kind: "reconcileEvidence",
     requestId: "no-evidence", expectedRevision: offered.revision,
     expectedGeneration: offered.generation,
-    decision: "hostAttestedReceived"}), "conflict");
+    decision: "hostAttestedReceived", reviewNote: "Bank receipt checked",
+    bankReceiptChecked: true}), "conflict");
   const reviewed = act(evidence, {kind: "reconcileEvidence",
     requestId: "review-first", expectedRevision: evidence.revision,
     expectedGeneration: evidence.generation,
-    decision: "hostAttestedReceived"}).offer;
+    decision: "hostAttestedReceived", reviewNote: "Bank receipt checked",
+    bankReceiptChecked: true}).offer;
   assert.equal(reviewed.manualPayment.status, "hostAttestedReceived");
   assert.equal(reviewed.manualPayment.reviewedByUid, "manager-1");
   assert.equal(reviewed.status, "offered");
@@ -193,7 +203,8 @@ test("closure and payment review survive start and revoked source", () => {
   context.eventStartsAtMillis + 2, closedContext).offer;
   const attested = act(evidence, {kind: "reconcileEvidence",
     requestId: "late-review", expectedRevision: 4,
-    expectedGeneration: 1, decision: "hostAttestedReceived"},
+    expectedGeneration: 1, decision: "hostAttestedReceived",
+    reviewNote: "Statement checked", bankReceiptChecked: true},
   context.eventStartsAtMillis + 3, closedContext).offer;
   assert.equal(attested.status, "expired");
   assert.equal(attested.manualPayment.status, "hostAttestedReceived");
@@ -208,7 +219,8 @@ test("closure and payment review survive start and revoked source", () => {
   "conflict");
   assertCode(() => act(attested, {kind: "reconcileEvidence",
     requestId: "outsider-review", expectedRevision: 5,
-    expectedGeneration: 1, decision: "rejected"},
+    expectedGeneration: 1, decision: "rejected",
+    reviewNote: "No matching bank credit", bankReceiptChecked: false},
   context.eventStartsAtMillis + 4,
   {...closedContext, actorAuthorized: false}), "denied");
 });

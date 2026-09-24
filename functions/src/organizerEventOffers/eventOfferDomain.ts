@@ -2,10 +2,9 @@ import {createHash} from "node:crypto";
 import {publicWebhookUrl} from "../organizers/organizerAutomationWebhook";
 
 /**
- * Inert offer rules only. There is no deployed endpoint or storage adapter.
- * A future adapter must read manager authority, the current application/source,
- * canonical CRM contact and event in one transaction, then atomically persist
- * the returned offer and immutable action receipt. A true context flag supplied
+ * Pure offer rules. The server-only storage adapter and service are not
+ * registered as deployed endpoints. They must derive current manager/source,
+ * CRM contact and event authority transactionally; a context flag supplied
  * by a client is never authority. This model does not hold a seat, admit a
  * guest, capture payment, send a message or confirm external delivery.
  * Evidence correction/replacement and reissue after recorded financial
@@ -17,11 +16,14 @@ export interface CurrentOfferContext {
   eventId: string;
   contactId: string;
   applicationId: string;
+  /** Application review or a submitted registration/intake form response. */
+  sourceKind?: "application" | "formResponse";
   applicationTargetKind: "organizer" | "event" | "campaign";
   applicationTargetId: string | null;
   /** Authenticated manager or trusted expiry worker, checked by the adapter. */
   actorUid: string;
   actorAuthorized: boolean;
+  /** Approved application, or eligible submitted registration/intake form. */
   applicationApproved: boolean;
   sourceCurrent: boolean;
   contactCurrent: boolean;
@@ -40,6 +42,8 @@ export interface ManualPaymentReview {
   evidenceRecordedAtMillis: number | null;
   reviewedByUid: string | null;
   reviewedAtMillis: number | null;
+  reviewNote: string | null;
+  bankReceiptChecked: boolean;
 }
 
 export interface EventOffer {
@@ -48,6 +52,7 @@ export interface EventOffer {
   eventId: string;
   contactId: string;
   applicationId: string;
+  sourceKind?: "application" | "formResponse";
   status: OfferStatus;
   /** Reissue advances generation so an old offer cannot authorize a new one. */
   generation: number;
@@ -76,7 +81,7 @@ export type OfferAction =
       expectedGeneration: number; evidenceReference: string})
   | (ActionBase & {kind: "reconcileEvidence";
       expectedGeneration: number; decision: "hostAttestedReceived" |
-      "rejected"});
+      "rejected"; reviewNote: string; bankReceiptChecked: boolean});
 
 /** The adapter stores one immutable receipt per offer ID and request ID. */
 export interface OfferActionReceipt {
@@ -177,7 +182,7 @@ function actionHash(offerId: string, action: OfferAction): string {
       action.evidenceReference.trim()]));
   case "reconcileEvidence":
     return hash(JSON.stringify([...base, action.expectedGeneration,
-      action.decision]));
+      action.decision, action.reviewNote.trim(), action.bankReceiptChecked]));
   default:
     return hash(JSON.stringify([...base, action.expectedGeneration]));
   }
@@ -206,7 +211,7 @@ function validatedTerms(terms: Terms, now: number,
 function blankPayment(): ManualPaymentReview {
   return {status: "none", evidenceReference: null,
     evidenceRecordedAtMillis: null, reviewedByUid: null,
-    reviewedAtMillis: null};
+    reviewedAtMillis: null, reviewNote: null, bankReceiptChecked: false};
 }
 
 /** Pure transition; callers must supply a transactionally current context. */
@@ -257,6 +262,7 @@ export function applyEventOfferAction(params: {
     const created: EventOffer = {offerId,
       organizerId: context.organizerId, eventId: context.eventId,
       contactId: context.contactId, applicationId: context.applicationId,
+      sourceKind: context.sourceKind ?? "application",
       status: "draft", generation: 1, revision: 1,
       expiresAtMillis: terms.expiresAtMillis,
       organizerPaymentLink: terms.organizerPaymentLink,
@@ -269,7 +275,9 @@ export function applyEventOfferAction(params: {
       current.generation !== action.expectedGeneration) {
     throw new OfferDomainError("conflict", "Offer changed; review it again.");
   }
-  if (current.applicationId !== context.applicationId &&
+  if ((current.applicationId !== context.applicationId ||
+      (current.sourceKind ?? "application") !==
+        (context.sourceKind ?? "application")) &&
       action.kind !== "reissueDraft") {
     if (action.kind !== "withdraw" && action.kind !== "expire" &&
         action.kind !== "recordEvidence" &&
@@ -293,6 +301,7 @@ export function applyEventOfferAction(params: {
     const terms = validatedTerms(action.terms, nowMillis,
       context.eventStartsAtMillis);
     next = {...current, applicationId: context.applicationId,
+      sourceKind: context.sourceKind ?? "application",
       status: "draft", generation: current.generation + 1,
       expiresAtMillis: terms.expiresAtMillis,
       organizerPaymentLink: terms.organizerPaymentLink,
@@ -305,6 +314,9 @@ export function applyEventOfferAction(params: {
     if (current.status !== "draft" || nowMillis >= current.expiresAtMillis) {
       throw new OfferDomainError("conflict", "Draft offer is unavailable.");
     }
+    validatedTerms({expiresAtMillis: current.expiresAtMillis,
+      organizerPaymentLink: current.organizerPaymentLink}, nowMillis,
+    context.eventStartsAtMillis);
     next = {...current, status: "offered", offeredAtMillis: nowMillis};
     break;
   case "withdraw":
@@ -332,7 +344,7 @@ export function applyEventOfferAction(params: {
     next = {...current, manualPayment: {
       status: "evidenceSubmitted", evidenceReference: reference,
       evidenceRecordedAtMillis: nowMillis, reviewedByUid: null,
-      reviewedAtMillis: null,
+      reviewedAtMillis: null, reviewNote: null, bankReceiptChecked: false,
     }};
     break;
   }
@@ -342,9 +354,17 @@ export function applyEventOfferAction(params: {
       throw new OfferDomainError("conflict",
         "Current evidence review is unavailable.");
     }
+    requireValid(typeof action.reviewNote === "string" &&
+      action.reviewNote.trim().length >= 3 &&
+      action.reviewNote.trim().length <= 240 &&
+      typeof action.bankReceiptChecked === "boolean" &&
+      (action.decision !== "hostAttestedReceived" ||
+        action.bankReceiptChecked),
+    "Record a review reason and explicitly check the bank receipt.");
     next = {...current, manualPayment: {...current.manualPayment,
       status: action.decision, reviewedByUid: context.actorUid,
-      reviewedAtMillis: nowMillis}};
+      reviewedAtMillis: nowMillis, reviewNote: action.reviewNote.trim(),
+      bankReceiptChecked: action.bankReceiptChecked}};
     break;
   }
   return result({...next, revision: current.revision + 1,
