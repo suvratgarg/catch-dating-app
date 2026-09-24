@@ -140,12 +140,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     super.dispose();
   }
 
-  HostAudienceStateScaffold _loadingFormsRoute() => HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
-
   @override
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
@@ -165,11 +159,19 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       );
     }
     if (!uidState.isSettledData) {
-      return _loadingFormsRoute();
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
     }
     // A settled stream value can lag a live FirebaseAuth account change.
     if (uid != null && ref.watch(firebaseAuthProvider).currentUser?.uid != uid) {
-      return _loadingFormsRoute();
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
     }
     _bindAccount(uid);
     if (uid == null) {
@@ -205,7 +207,11 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       );
     }
     if (clubsState.isLoading) {
-      return _loadingFormsRoute();
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
     }
     final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
