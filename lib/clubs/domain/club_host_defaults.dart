@@ -17,6 +17,10 @@ abstract class ClubHostDefaults with _$ClubHostDefaults {
     @Default(EventSuccessDefaults()) EventSuccessDefaults eventSuccess,
     @Default(<String, EventSuccessDefaults>{})
     Map<String, EventSuccessDefaults> eventSuccessByActivityKind,
+    /// Suggested IANA timezone for future events; never rewrites saved events.
+    String? timezone,
+    /// Server-managed revision used when an event inherits defaults.
+    int? revision,
   }) = _ClubHostDefaults;
 
   factory ClubHostDefaults.fromJson(Map<String, dynamic> json) =>

@@ -164,10 +164,8 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetTitleContinueDraft,
     HostEventEntryIntent.repeatLastEvent =>
       context.l10n.hostsHostEventEntrySheetTitleRepeatLastEvent,
-    HostEventEntryIntent.createWithCatchBookings =>
-      context.l10n.hostsHostEventEntrySheetTitleSellTicketsWithCatch,
-    HostEventEntryIntent.createFromGuestList =>
-      context.l10n.hostsHostEventsListLabelUseGuestList,
+    HostEventEntryIntent.createEvent =>
+      context.l10n.hostsHostEventsListLabelNewEvent,
   };
 
   String _body(BuildContext context) => switch (intent) {
@@ -180,17 +178,13 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetBodyReuseEventSetup(
         eventTitle: state.repeatSource?.title ?? '',
       ),
-    HostEventEntryIntent.createWithCatchBookings =>
-      context.l10n.hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments,
-    HostEventEntryIntent.createFromGuestList =>
-      context.l10n.hostsHostEventEntrySheetBodyImportCsvOrXlsx,
+    HostEventEntryIntent.createEvent =>
+      context.l10n.hostsPrivateEventEntryBody,
   };
 
   IconData get _icon => switch (intent) {
     HostEventEntryIntent.resumeDraft => CatchIcons.editNoteRounded,
     HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
-    HostEventEntryIntent.createWithCatchBookings =>
-      CatchIcons.confirmationNumberOutlined,
-    HostEventEntryIntent.createFromGuestList => CatchIcons.cloudUploadOutlined,
+    HostEventEntryIntent.createEvent => CatchIcons.eventAvailableOutlined,
   };
 }

@@ -6,8 +6,7 @@ import 'package:flutter/foundation.dart';
 enum HostEventEntryIntent {
   resumeDraft,
   repeatLastEvent,
-  createWithCatchBookings,
-  createFromGuestList,
+  createEvent,
 }
 
 /// A starting path, including the exact draft selected in the combined sheet.
@@ -75,10 +74,7 @@ class HostEventEntryState {
         if (matchingDrafts.isNotEmpty) HostEventEntryIntent.resumeDraft,
         if (matchingRepeatSource != null) HostEventEntryIntent.repeatLastEvent,
       ]),
-      startIntents: const <HostEventEntryIntent>[
-        HostEventEntryIntent.createWithCatchBookings,
-        HostEventEntryIntent.createFromGuestList,
-      ],
+      startIntents: const <HostEventEntryIntent>[HostEventEntryIntent.createEvent],
     );
   }
 

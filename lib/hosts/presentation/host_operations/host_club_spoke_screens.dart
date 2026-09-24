@@ -1,5 +1,9 @@
 part of '../host_operations_screen.dart';
 
+// The current updateOrganizer contract rejects progressive default fields.
+// Show these controls only with the versioned defaults save command.
+bool _progressiveEventDefaultsAvailable() => false;
+
 class HostClubEventDefaultsScreen extends StatelessWidget {
   const HostClubEventDefaultsScreen({super.key, required this.clubId});
 
@@ -17,6 +21,39 @@ class HostClubEventDefaultsScreen extends StatelessWidget {
                   CatchSectionList(
                     emptyStateOmitted: true,
                     children: [
+                      if (_progressiveEventDefaultsAvailable())
+                        CatchSection.fieldRows(
+                        first: true,
+                        title: context.l10n.hostsEventDefaultsBasics,
+                        children: [
+                          CatchField.read(
+                            copy: catchFieldCopy(context.l10n),
+                            title: context.l10n.hostsPrivateEventCity,
+                            body: club.location,
+                            icon: CatchIcons.locationOnOutlined,
+                          ),
+                          CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
+                            key: ValueKey(
+                              'host-event-default-timezone-${club.id}-${defaults.timezone}',
+                            ),
+                            title: context.l10n.hostsPrivateEventTimezone,
+                            contractExemption:
+                                'Organizer event timezone default awaits generated schema constraints.',
+                            initialValue: defaults.timezone ?? '',
+                            inputHint: context.l10n.hostsPrivateEventTimezoneHint,
+                            onSubmitted: (value) => apply(
+                              (current) => current.copyWith(
+                                timezone: value.trim().isEmpty
+                                    ? null
+                                    : value.trim(),
+                              ),
+                            ),
+                            helperText: context.l10n.hostsEventDefaultsTimezoneHint,
+                            icon: CatchIcons.languageOutlined,
+                          ),
+                        ],
+                      ),
                       ClubPolicyDefaultsCard(
                         defaults: defaults.eventPolicy,
                         currencyCode: currencyCodeForCityName(club.location),
@@ -296,6 +333,19 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
       first: true,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       children: [
+        if (_progressiveEventDefaultsAvailable()) CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostsPrivateEventCity,
+          body: club.location,
+          icon: CatchIcons.locationOnOutlined,
+        ),
+        if (_progressiveEventDefaultsAvailable()) CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostsPrivateEventTimezone,
+          body: club.hostDefaults.timezone ??
+              context.l10n.hostsEventDefaultsChooseEachEvent,
+          icon: CatchIcons.languageOutlined,
+        ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleDefaultActivity,
