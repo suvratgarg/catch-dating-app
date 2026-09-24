@@ -266,6 +266,65 @@ test("event policy drift leaves staged ledger unavailable", async () => {
     "unreconciled");
 });
 
+test("edited live attendee after staging denies final activation",
+  async () => {
+    const h = setup(150);
+    let changed = false;
+    h.store.beforeTransaction = () => {
+      const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+      if (!changed && run?.phase === "apply" &&
+          run.outputCursor === run.outputCount) {
+        h.store.rows.set("eventAttendees/att000",
+          {...attendee(0), status: "cancelled"});
+        changed = true;
+      }
+    };
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(changed, true);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "unreconciled");
+    assert.equal(h.store.rows.get("eventSeatMigrationFences/event1")?.state,
+      "locked");
+  });
+
+test("new live participation after staging denies final activation",
+  async () => {
+    const h = setup(80);
+    let changed = false;
+    h.store.beforeTransaction = () => {
+      const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+      if (!changed && run?.phase === "apply" &&
+          run.outputCursor === run.outputCount) {
+        h.store.rows.set("eventParticipations/new-edge", {
+          eventId: "event1", organizerId: "org1", uid: "late-uid",
+          status: "waitlisted"});
+        changed = true;
+      }
+    };
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(changed, true);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "unreconciled");
+  });
+
+test("deleted live attendee after staging denies final activation",
+  async () => {
+    const h = setup(80);
+    let changed = false;
+    h.store.beforeTransaction = () => {
+      const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+      if (!changed && run?.phase === "apply" &&
+          run.outputCursor === run.outputCount) {
+        h.store.rows.delete("eventAttendees/att000");
+        changed = true;
+      }
+    };
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(changed, true);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "unreconciled");
+  });
+
 test("missing final page checkpoint cannot claim complete source", async () => {
   const h = setup(26);
   h.store.beforeTransaction = () => {

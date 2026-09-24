@@ -14,10 +14,13 @@ import {planEventSeatMigration, SeatMigrationAttendee,
   SeatMigrationFormReceipt, SeatMigrationParticipation,
   SeatMigrationVerifiedPhone} from "./seatMigration";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {assertLiveMigrationSourcesMatchStage,
+  MAX_LIVE_MIGRATION_SOURCE_ROWS} from
+  "./seatAuthority/liveMigrationSource";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
 const PAGE_SIZE = 25;
-const MAX_SOURCE_ROWS = 250;
+const MAX_SOURCE_ROWS = MAX_LIVE_MIGRATION_SOURCE_ROWS;
 const MAX_OUTPUT_ROWS = 1500;
 const SOURCES = ["eventParticipations", "eventAttendees",
   "organizerContactOrigins"] as const;
@@ -394,7 +397,8 @@ function exactFrozenPlan(raw: FirebaseFirestore.DocumentData | undefined,
 
 async function readPlan(params: {command: PagedSeatBootstrapCommand;
   deps: PagedSeatBootstrapDeps; tx: FirebaseFirestore.Transaction;
-  base: Awaited<ReturnType<typeof readBase>>; run: MigrationRun}) {
+  base: Awaited<ReturnType<typeof readBase>>; run: MigrationRun;
+  verifyLiveSources?: boolean}) {
   const {command, deps, tx, base, run} = params;
   const stageSnap = await tx.get(deps.db.collection("eventSeatMigrationStages")
     .where("eventId", "==", command.eventId)
@@ -425,6 +429,17 @@ async function readPlan(params: {command: PagedSeatBootstrapCommand;
       unavailable("Seat source page count changed.");
     }
   });
+  if (params.verifyLiveSources) {
+    await assertLiveMigrationSourcesMatchStage({db: deps.db, tx,
+      eventId: command.eventId, organizerId: command.organizerId,
+      migrationRevision: command.migrationRevision,
+      fenceToken: run.fenceToken, sourceCounts: run.sourceCounts,
+      staged: stageSnap.docs.map((doc) => {
+        const row = doc.data();
+        return {kind: row.kind as Source, sourceId: row.sourceId as string,
+          value: row.value as FirebaseFirestore.DocumentData};
+      }), project: sourceProjection});
+  }
   const participations = grouped.get("eventParticipations")!.map((row) =>
     row.value as SeatMigrationParticipation);
   const attendees = grouped.get("eventAttendees")!.map((row) =>
@@ -568,7 +583,8 @@ async function applyPage(command: PagedSeatBootstrapCommand,
     if (run.outputCursor === frozen.outputs.length) {
       // The final transaction re-reads current source, CRM and Admin Auth
       // once. Every writer remained fenced throughout the staged pages.
-      const current = await readPlan({command, deps, tx, base, run});
+      const current = await readPlan({command, deps, tx, base, run,
+        verifyLiveSources: true});
       if (current.hash !== frozen.hash) {
         unavailable("Migration source changed before activation.");
       }
