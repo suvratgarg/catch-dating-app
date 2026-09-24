@@ -1,13 +1,22 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
+import {eventPaymentTermsFromPreferences} from
+  "../events/eventSetupPreferences/resolve";
+import type {ResolvedEventPreferences} from
+  "../events/eventSetupPreferences/types";
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
 import {organizerContactOriginId} from
   "../shared/organizerContactOrigins";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
+import {organizerContactChannelStateId} from
+  "../organizers/organizerCampaignModel";
 import {FirestoreEventOfferRepository} from
   "./eventOfferFirestoreRepository";
-import {commitEventOffers, previewEventOffers} from "./eventOfferService";
+import {commitEventOffers, prepareEventOfferHandoff,
+  previewEventOffers} from "./eventOfferService";
 
 const now = 1_800_000_000_000;
 const organizerId = "organizer-one";
@@ -20,6 +29,17 @@ const row = {organizerId, eventId, contactId,
   expiresAtMillis: now + 600_000, organizerPaymentLink: null};
 const input = {organizerId, eventId, mode: "offer" as const, rows: [row]};
 const time = (millis: number) => ({toMillis: () => millis});
+const cleared = {value: null, source: "cleared" as const};
+const preferences: ResolvedEventPreferences = {
+  defaultsRevision: 1, defaultsHash: "a".repeat(64),
+  usualDurationMinutes: cleared, preferredVenueId: cleared,
+  offerValidityMinutes: {value: 30, source: "event"},
+  admissionPreset: cleared, collectionPreference: cleared,
+  currency: {value: "INR", source: "event"},
+  offerMessageTemplate: cleared, paymentInstructions: cleared,
+  reusablePaymentPage: cleared,
+  expectedAmountMinor: {value: 0, source: "event"},
+};
 
 function fixture(conversionStatus: "completed" | "pending" = "completed",
   resultId = contactId): AudienceTestStore {
@@ -46,13 +66,8 @@ function fixture(conversionStatus: "completed" | "pending" = "completed",
     [`organizerContacts/${contactId}`]: {organizerId, revision: 1,
       deletedAt: null, hiddenAt: null, mergedIntoContactId: null},
     [`eventSetupPreferences/${eventId}`]: {organizerId, eventId,
-      revision: 1, paymentTerms: {revision: 1,
-        preferredCollection: null, reusablePaymentPage: null,
-        paymentInstructions: null, expectedAmountMinor: 0,
-        currency: "INR", offerValidityMinutes: 30,
-        offerMessageTemplate: null, sourceDefaultsRevision: 1,
-        sourceDefaultsHash: "a".repeat(64), fieldSources: {}},
-      preferences: {}},
+      revision: 1, paymentTerms: eventPaymentTermsFromPreferences(
+        preferences, 1), preferences},
     [`events/${eventId}`]: {organizerId, clubId: organizerId,
       status: "active", startTime: time(now + 3_600_000),
       updatedAt: time(now)},
@@ -100,4 +115,84 @@ test("actual adapter requires completed matching CRM conversion receipt",
     await assert.rejects(() => previewEventOffers({repository:
       new FirestoreEventOfferRepository(missing.asFirestore(), () => now),
     actor, input}));
+  });
+
+test("private payment projection rejects malformed or foreign snapshots",
+  async () => {
+    const missing = fixture();
+    const path = `eventSetupPreferences/${eventId}`;
+    missing.docs[path] = {...missing.docs[path], preferences: {}};
+    await assert.rejects(() => previewEventOffers({repository:
+      new FirestoreEventOfferRepository(missing.asFirestore(), () => now),
+    actor, input}));
+    const foreign = fixture();
+    foreign.docs[`events/${eventId}`] = {...foreign.docs[`events/${eventId}`],
+      clubId: "another-organizer"};
+    await assert.rejects(() => previewEventOffers({repository:
+      new FirestoreEventOfferRepository(foreign.asFirestore(), () => now),
+    actor, input}));
+    const setupOnly = fixture();
+    setupOnly.docs[`events/${eventId}`] = {
+      ...setupOnly.docs[`events/${eventId}`], updatedAt: undefined,
+      setupRevision: 3};
+    const preview = await previewEventOffers({repository:
+      new FirestoreEventOfferRepository(setupOnly.asFirestore(), () => now),
+    actor, input});
+    assert.equal(preview.rows.length, 1);
+  });
+
+test("actual adapter handoff requires same-source consent and no suppression",
+  async () => {
+    const store = fixture();
+    store.docs[`organizerContacts/${contactId}`] = {
+      ...store.docs[`organizerContacts/${contactId}`],
+      identityState: "verified", displayName: "Asha",
+      linkedUid: "person-one", phoneE164: "+919876543210",
+      whatsappStatus: "optedIn"};
+    store.docs[`events/${eventId}`] = {
+      ...store.docs[`events/${eventId}`], name: "Saturday Social",
+      eventTimezone: "Asia/Kolkata"};
+    const repository = new FirestoreEventOfferRepository(
+      store.asFirestore(), () => now);
+    const preview = await previewEventOffers({repository, actor, input});
+    const receipt = await commitEventOffers({repository, actor,
+      input: {...input, requestId: "consent-handoff-batch",
+        planDigest: preview.planDigest}});
+    const request = {repository, actor, organizerId, eventId, contactId,
+      expectedOfferRevision: receipt.results[0].revision,
+      expectedGeneration: receipt.results[0].generation};
+    const unknown = await prepareEventOfferHandoff(request);
+    assert.equal(unknown.kind, "blocked");
+    const preferenceId = organizerCommunicationPreferenceId(organizerId,
+      "person-one");
+    const scoped = {status: "optedIn", evidenceStatus: "complete",
+      currentReceiptId: "grant-one", endpointE164: "+919876543210",
+      sourceResponseId: responseId, termsVersion: "reviewed-v1",
+      source: "participantSettings", sourceEventId: eventId,
+      updatedAt: time(now)};
+    store.docs[`organizerCommunicationPreferences/${preferenceId}`] = {
+      organizerId, uid: "person-one",
+      whatsapp: {status: "unknown", evidenceStatus: "notApplicable",
+        currentReceiptId: null, termsVersion: null, source: null,
+        sourceEventId: null, updatedAt: null},
+      whatsappPurposes: {eventOperations: scoped}};
+    store.docs["organizerCommunicationPermissionReceipts/grant-one"] = {
+      organizerId, uid: "person-one", channel: "whatsapp",
+      purpose: "eventOperations", decision: "optedIn",
+      evidenceStatus: "complete", endpointE164: "+919876543210",
+      sourceResponseId: responseId, source: "participantSettings",
+      termsVersion: "reviewed-v1", consentCopyHash: "a".repeat(64),
+      grantedAt: time(now), revokedAt: null};
+    const prepared = await prepareEventOfferHandoff(request);
+    assert.equal(prepared.kind, "prepared");
+    const channelId = organizerContactChannelStateId(organizerId,
+      contactId);
+    store.docs[`organizerContactChannelStates/${channelId}`] = {
+      organizerId, contactId, adminSuppressed: true,
+      suppressionStatus: "adminSuppressed"};
+    const suppressed = await prepareEventOfferHandoff(request);
+    assert.equal(suppressed.kind, "blocked");
+    if (suppressed.kind === "blocked") {
+      assert.ok(suppressed.blockers.includes("permissionUnavailable"));
+    }
   });

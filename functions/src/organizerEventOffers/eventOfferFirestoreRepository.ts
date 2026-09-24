@@ -20,6 +20,8 @@ import {effectiveOrganizerWhatsappPurposeStatus,
 import {organizerContactChannelStateId, hashEndpoint} from
   "../organizers/organizerCampaignModel";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
+import {projectEventPreferences} from
+  "../events/progressiveSetup/preferences";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {organizerContactOriginId} from
@@ -364,8 +366,12 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const sourceRevision = Number.isSafeInteger(setupRevision) &&
             setupRevision! > 0 ? setupRevision! :
             data.updatedAt?.toMillis();
-          if (!data.startTime ||
+          const startsAtMillis = data.startTime?.toMillis();
+          if (!Number.isSafeInteger(startsAtMillis) ||
+              startsAtMillis! <= 0 ||
               typeof data.clubId !== "string" ||
+              data.organizerId !== undefined &&
+                data.organizerId !== data.clubId ||
               !["active", "cancelled"].includes(data.status) ||
               !Number.isSafeInteger(sourceRevision) ||
               sourceRevision! < 1) {
@@ -373,7 +379,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               "Stored event is malformed.");
           }
           return {organizerId: data.organizerId ?? data.clubId,
-            eventId, startsAtMillis: data.startTime.toMillis(),
+            eventId, startsAtMillis: startsAtMillis!,
             cancelled: data.status === "cancelled",
             sourceRevision: sourceRevision!};
         },
@@ -382,9 +388,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const data = await read("eventSetupPreferences", eventId);
           if (!data) return null;
           if (!object(data) || data.eventId !== eventId ||
-              typeof data.organizerId !== "string" ||
-              !object(data.paymentTerms) ||
-              data.revision !== data.paymentTerms.revision) {
+              typeof data.organizerId !== "string") {
             throw new OfferDomainError("conflict",
               "Stored event payment terms are malformed.");
           }
@@ -395,8 +399,12 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             throw new OfferDomainError("conflict",
               "Event payment terms have a foreign organizer.");
           }
-          const terms = data.paymentTerms as unknown as EventPaymentTerms;
+          let terms: EventPaymentTerms;
           try {
+            const projected = projectEventPreferences(data,
+              data.organizerId, eventId);
+            if (!projected) throw new Error("missing preferences");
+            terms = projected.paymentTerms as EventPaymentTerms;
             validateEventPaymentTerms(terms);
             eventPaymentTermsHash(terms);
           } catch {
