@@ -9572,12 +9572,6 @@ abstract class AppLocalizations {
   /// **'Create event'**
   String get hostsHostEventsListLabelNewEvent;
 
-  /// CTA to create an external companion event from an existing booking-platform guest list.
-  ///
-  /// In en, this message translates to:
-  /// **'Use guest list'**
-  String get hostsHostEventsListLabelUseGuestList;
-
   /// Section label for resuming existing event work.
   ///
   /// In en, this message translates to:
@@ -9602,12 +9596,6 @@ abstract class AppLocalizations {
   /// **'Repeat last event'**
   String get hostsHostEventEntrySheetTitleRepeatLastEvent;
 
-  /// Action title for creating an event that uses Catch bookings.
-  ///
-  /// In en, this message translates to:
-  /// **'Sell tickets with Catch'**
-  String get hostsHostEventEntrySheetTitleSellTicketsWithCatch;
-
   /// Supporting copy showing how many event drafts are available.
   ///
   /// In en, this message translates to:
@@ -9621,18 +9609,6 @@ abstract class AppLocalizations {
   String hostsHostEventEntrySheetBodyReuseEventSetup({
     required String eventTitle,
   });
-
-  /// Supporting copy for the Catch-bookings event path.
-  ///
-  /// In en, this message translates to:
-  /// **'Tickets, waitlist, and payments in one place.'**
-  String get hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments;
-
-  /// Supporting copy for creating an event from an external guest list.
-  ///
-  /// In en, this message translates to:
-  /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
-  String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
   /// Peer view containing live and upcoming events.
   ///
@@ -34080,6 +34056,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Row {row}: choose a supported city or leave it blank.'**
   String hostsOperationalRosterIssueInvalidCity({required int row});
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the basics, then add guests, registration and payments as needed.'**
+  String get hostsPrivateEventEntryBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the basics'**
+  String get hostsPrivateEventBasicsHeading;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get hostsPrivateEventCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city'**
+  String get hostsPrivateEventChooseCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get hostsPrivateEventTimezone;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Asia/Kolkata'**
+  String get hostsPrivateEventTimezoneHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested by city. Review before saving.'**
+  String get hostsPrivateEventTimezoneSuggestion;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'From organizer'**
+  String get hostsPrivateEventFromOrganizer;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer city'**
+  String get hostsPrivateEventUseOrganizerCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer timezone'**
+  String get hostsPrivateEventUseOrganizerTimezone;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'More basics'**
+  String get hostsPrivateEventMoreBasics;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue and end time can be added later'**
+  String get hostsPrivateEventMoreBasicsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'After saving'**
+  String get hostsPrivateEventAfterSave;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a venue and end time when you are ready to set up registration or a public listing.'**
+  String get hostsPrivateEventAfterSaveBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is saved privately. You can link a form after saving.'**
+  String get hostsPrivateEventSaveHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & continue'**
+  String get hostsPrivateEventSaveContinue;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer defaults changed. Review the city and timezone before saving.'**
+  String get hostsPrivateEventDefaultsChanged;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Review current defaults'**
+  String get hostsPrivateEventReviewDefaults;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved event'**
+  String get hostsPrivateEventSavedTitle;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get hostsPrivateEventPrivateTitle;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to link to forms. Registration and public listing are off.'**
+  String get hostsPrivateEventPrivateBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue setup when you need it'**
+  String get hostsPrivateEventSetupHeading;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to selected responses'**
+  String get hostsPrivateEventReturnResponses;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selection stays in Responses.'**
+  String get hostsPrivateEventReturnResponsesBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Link a registration form'**
+  String get hostsPrivateEventLinkForm;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect responses and offer places for this event.'**
+  String get hostsPrivateEventLinkFormBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event-bound form setup is not available yet.'**
+  String get hostsPrivateEventLinkFormUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event details'**
+  String get hostsPrivateEventDetails;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a venue and end time when needed.'**
+  String get hostsPrivateEventDetailsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue and end-time editing is not available yet.'**
+  String get hostsPrivateEventDetailsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a guest list'**
+  String get hostsPrivateEventImportGuests;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add existing registrations to the roster.'**
+  String get hostsPrivateEventImportGuestsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Private-event roster import is not available yet.'**
+  String get hostsPrivateEventImportGuestsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept registrations with Catch'**
+  String get hostsPrivateEventCatchRegistration;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the admission policy and check payment readiness.'**
+  String get hostsPrivateEventCatchRegistrationBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration requires an admission policy and booking setup.'**
+  String get hostsPrivateEventCatchRegistrationUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostsPrivateEventPayments;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add external collection instructions.'**
+  String get hostsPrivateEventPaymentsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event payment settings are not available yet.'**
+  String get hostsPrivateEventPaymentsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Public listing'**
+  String get hostsPrivateEventPublicListing;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published.'**
+  String get hostsPrivateEventPublicListingBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published. Add public details before listing.'**
+  String get hostsPrivateEventPublicListingUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Live event guide'**
+  String get hostsPrivateEventGuide;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional.'**
+  String get hostsPrivateEventGuideBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional guide setup is not available yet.'**
+  String get hostsPrivateEventGuideUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests from imports and Catch registration can share one roster. Offers do not confirm attendance.'**
+  String get hostsPrivateEventRosterNote;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Basics'**
+  String get hostsEventDefaultsBasics;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for new events. Existing events keep their saved timezone.'**
+  String get hostsEventDefaultsTimezoneHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose on each event'**
+  String get hostsEventDefaultsChooseEachEvent;
+
+  /// Explains an unresolved idempotent event save.
+  ///
+  /// In en, this message translates to:
+  /// **'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.'**
+  String get hostsPrivateEventPendingRequest;
+
+  /// Retries an unresolved private event save with its original request identity.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry the same save'**
+  String get hostsPrivateEventRetrySave;
+
+  /// Shows a retained import plan after the canonical event is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list ready to import'**
+  String get hostsPrivateEventPendingRoster;
+
+  /// Explains the retained import file and why it is not yet applied.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} can be imported after event roster setup is available.'**
+  String hostsPrivateEventPendingRosterBody({required String fileName});
 }
 
 class _AppLocalizationsDelegate
