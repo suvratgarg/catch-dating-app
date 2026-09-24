@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
@@ -43,6 +45,68 @@ void main() {
         DateTime(2090, 10, 4));
     expect(restoredPrivateEventStart(legacy),
         const TimeOfDay(hour: 8, minute: 15));
+  });
+
+  testWidgets('trusted organizer read binds inherited basics to server hash', (
+    tester,
+  ) async {
+    final date = DateUtils.dateOnly(DateTime.now().add(const Duration(days: 2)));
+    final localDate = '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final hash = List.filled(64, 'b').join();
+    final draft = EventDraft(
+      id: 'inherited-draft', clubId: 'club-1', savedAt: DateTime.now(),
+      name: 'Saturday mixer',
+      eventCityId: 'in-mh-mumbai', eventMarketId: 'in-mh-mumbai',
+      eventLocalDate: localDate, eventLocalStartTime: '19:00',
+      eventTimezone: 'Asia/Kolkata',
+      eventCityMode: 'inherit', eventTimezoneMode: 'inherit',
+      eventReviewedDefaultsHash: hash,
+    );
+    PrivateEventBasics? sent;
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
+        uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+      ],
+      child: MaterialApp(
+        theme: CatchTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PrivateEventCreateScreen(
+          club: buildClub(),
+          initialDraft: draft,
+          promptForDraftsOnStart: false,
+          readOrganizerDefaults: (_) async => ManagerEventSetupDefaults(
+            organizerId: 'club-1',
+            cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
+            timezone: 'Asia/Kolkata',
+            organizerDefaultsRevision: 7,
+            basicsReviewedHash: hash,
+            preferencesRevision: 0,
+            preferences: const ManagerEventSetupPreferences(
+              timezone: 'Asia/Kolkata',
+            ),
+            preferencesHash: hash,
+            reviewedDefaultsHash: hash,
+          ),
+          create: ({required organizerId, required requestId,
+              required basics}) async {
+            sent = basics;
+            return const PrivateEventCreateReceipt(
+              eventId: 'event-inherited', setupRevision: 1, replayed: false,
+            );
+          },
+        ),
+      ),
+    ));
+    await pumpUntilFound(tester, find.byKey(const ValueKey('private-event-save')));
+    await tester.tap(find.byKey(const ValueKey('private-event-save')));
+    await pumpFeatureUi(tester);
+    expect(sent?.city.mode, EventSetupValueMode.inherit);
+    expect(sent?.timezone.mode, EventSetupValueMode.inherit);
+    expect(sent?.reviewedDefaultsHash, hash);
   });
 
   testWidgets('one first-save request opens the private setup workspace', (

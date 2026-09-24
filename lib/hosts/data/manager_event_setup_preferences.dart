@@ -103,7 +103,7 @@ class ManagerEventSetupPreferences {
     if (page != null && page is! Map) {
       throw const FormatException('Invalid reusable payment page');
     }
-    final pageData = page == null ? null : Map<String, Object?>.from(page);
+    final pageData = page == null ? null : Map<String, Object?>.from(page as Map);
     if (pageData != null &&
         (pageData.length != 2 ||
             pageData['url'] is! String ||

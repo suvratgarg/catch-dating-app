@@ -50,7 +50,8 @@ class ManagerEventSetupDefaults {
     if (cityRaw != null && cityRaw is! Map) {
       throw const FormatException('Invalid organizer city');
     }
-    final city = cityRaw == null ? null : Map<String, Object?>.from(cityRaw);
+    final city = cityRaw == null ? null :
+        Map<String, Object?>.from(cityRaw as Map);
     if (city != null &&
         (city.length != 2 || city['cityId'] is! String ||
             city['marketId'] is! String ||

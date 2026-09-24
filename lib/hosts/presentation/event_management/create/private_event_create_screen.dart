@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -9,6 +10,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -26,10 +28,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'private_event_create_body.dart';
 
-// Inheritance requires a manager-authorized defaults read with its reviewed
-// hash. An unversioned Club snapshot can only suggest an explicit set value.
-bool _trustedOrganizerDefaultsReadAvailable() => false;
-
 /// The first page of the single progressive event editor.
 ///
 /// No rich Event model is constructed here: the receipt identifies a private
@@ -46,6 +44,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
     this.create,
     this.update,
     this.readSaved,
+    this.readOrganizerDefaults,
     this.onSaved,
   }) : assert(
          initialSavedEventId == null ||
@@ -62,6 +61,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
   final CreatePrivateEvent? create;
   final UpdatePrivateEventBasics? update;
   final ReadPrivateEventBasics? readSaved;
+  final ReadPrivateEventOrganizerDefaults? readOrganizerDefaults;
   final ValueChanged<PrivateEventCreateReceipt>? onSaved;
 
   @override
@@ -88,6 +88,9 @@ class _PrivateEventCreateScreenState
   bool _loadingSavedEvent = false;
   bool _canEditSavedBasics = true;
   String? _readError;
+  ManagerEventSetupDefaults? _managerDefaults;
+  bool _loadingManagerDefaults = false;
+  String? _managerDefaultsError;
   bool _saving = false;
   bool _showErrors = false;
   bool _moreBasicsOpen = false;
@@ -99,6 +102,7 @@ class _PrivateEventCreateScreenState
   String? _submittedPayloadJson;
   late String _localDraftId;
   EventDraft? _activeDraft;
+  bool _trustedOrganizerDefaultsReadAvailable() => _managerDefaults != null;
 
   @override
   void initState() {
@@ -141,8 +145,7 @@ class _PrivateEventCreateScreenState
           option.effectiveMarketId == widget.club.locationMarketId) {
         _city = option;
         if (_timezoneController.text.isEmpty) {
-          _timezoneController.text =
-              widget.club.hostDefaults.timezone ?? option.timeZone;
+          _timezoneController.text = option.timeZone;
         }
         break;
       }
@@ -166,9 +169,15 @@ class _PrivateEventCreateScreenState
     _nameController.addListener(_refresh);
     _timezoneController.addListener(_refresh);
     _cityAccordion.addListener(_refresh);
+    if (widget.readOrganizerDefaults != null) {
+      _loadingManagerDefaults = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          unawaited(_PrivateEventCreateBody(this)._loadOrganizerDefaults()));
+    }
     if (widget.initialSavedEventId != null) {
       _loadingSavedEvent = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadSavedEvent());
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          _PrivateEventCreateBody(this)._loadSavedEvent());
     } else if (_receipt != null) {
       _savedCity = _city == null
           ? null
@@ -178,91 +187,17 @@ class _PrivateEventCreateScreenState
             );
       _savedBasics = _currentExplicitBasics;
       _loadingSavedEvent = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadPendingUpdate());
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          _PrivateEventCreateBody(this)._loadPendingUpdate());
     }
     if (widget.promptForDraftsOnStart &&
         widget.initialSavedEventId == null &&
         widget.initialDraft == null &&
         widget.initialPrefill == null &&
         widget.initialRosterImportPlan == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _checkForDrafts());
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          _PrivateEventCreateBody(this)._checkForDrafts());
     }
-  }
-
-  Future<void> _checkForDrafts() async {
-    try {
-      final drafts = await ref
-          .read(createEventDraftControllerProvider.notifier)
-          .loadDrafts(clubId: widget.club.id);
-      if (!mounted || drafts.isEmpty) return;
-      final picked = await showHostEventEntrySheet(
-        context: context,
-        state: HostEventEntryState.resolve(
-          organizerId: widget.club.id,
-          drafts: drafts,
-        ),
-      );
-      if (!mounted || picked?.draft == null) return;
-      final draft = picked!.draft!;
-      if (draft.clubId != widget.club.id) return;
-      setState(() => _restorePickedDraft(draft));
-    } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
-    }
-  }
-
-  void _restorePickedDraft(EventDraft draft) {
-    _activeDraft = draft;
-    _localDraftId = draft.id;
-    _requestId = draft.eventCreateRequestId ?? _newRequestId();
-    _submittedSignature = draft.eventCreatePayloadSignature;
-    _submittedPayloadJson = draft.eventCreatePayloadJson;
-    _receipt = draft.eventCreateReceiptEventId != null &&
-            draft.eventCreateReceiptRevision != null
-        ? PrivateEventCreateReceipt(
-            eventId: draft.eventCreateReceiptEventId!,
-            setupRevision: draft.eventCreateReceiptRevision!,
-            replayed: true,
-          )
-        : null;
-    _nameController.text = draft.name ?? '';
-    _city = null;
-    for (final option in defaultCityOptions) {
-      if (option.effectiveCityId == draft.eventCityId &&
-          option.effectiveMarketId == draft.eventMarketId) {
-        _city = option;
-        break;
-      }
-    }
-    _city ??= defaultCityOptions.where((option) =>
-        option.effectiveCityId == widget.club.locationCityId &&
-        option.effectiveMarketId == widget.club.locationMarketId).firstOrNull;
-    _timezoneController.text = draft.eventTimezone ??
-        widget.club.hostDefaults.timezone ??
-        _city?.timeZone ?? '';
-    _date = restoredPrivateEventDate(draft, rejectPast: false);
-    _start = restoredPrivateEventStart(draft);
-    _cityInherited = _trustedOrganizerDefaultsReadAvailable() &&
-        draft.eventCityMode == 'inherit';
-    _timezoneInherited = _trustedOrganizerDefaultsReadAvailable() &&
-        draft.eventTimezoneMode == 'inherit';
-    _defaultsChanged = (_cityInherited || _timezoneInherited) &&
-        draft.eventReviewedDefaultsHash != _organizerDefaultsHash;
-    _savedCity = _city == null
-        ? null
-        : EventSetupCity(
-            cityId: _city!.effectiveCityId,
-            marketId: _city!.effectiveMarketId,
-          );
-    _savedBasics = _receipt == null ? null : _currentExplicitBasics;
-    _pendingUpdate = null;
-    _editingSavedBasics = false;
-    if (_receipt != null) {
-      _loadingSavedEvent = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadPendingUpdate());
-    }
-    _showErrors = false;
-    _error = null;
   }
 
   @override
@@ -366,117 +301,31 @@ class _PrivateEventCreateScreenState
     _defaultsChanged = false;
   }
 
-  Future<void> _loadSavedEvent() async {
-    final eventId = widget.initialSavedEventId!;
-    try {
-      final controller = ref.read(createEventDraftControllerProvider.notifier);
-      final summary = await (widget.readSaved ?? controller.getPrivateEventSetup)(
-        organizerId: widget.club.id,
-        eventId: eventId,
-      );
-      if (!mounted) return;
-      if (summary.eventId != eventId || summary.organizerId != widget.club.id) {
-        throw const FormatException('Private event read changed identity');
-      }
-      final basics = PrivateEventBasics(
-        name: summary.name,
-        city: EventSetupValue.set(summary.city),
-        localDate: summary.localDate,
-        localStartTime: summary.localStartTime,
-        timezone: EventSetupValue.set(summary.timezone),
-      );
-      final drafts = await controller.loadDrafts(clubId: widget.club.id);
-      if (!mounted) return;
-      _activeDraft = drafts.where((draft) =>
-          draft.eventCreateReceiptEventId == eventId).firstOrNull;
-      _localDraftId = _activeDraft?.id ?? 'private-event-$eventId';
-      _requestId = _activeDraft?.eventCreateRequestId ?? _requestId;
-      _submittedSignature = _activeDraft?.eventCreatePayloadSignature;
-      _submittedPayloadJson = _activeDraft?.eventCreatePayloadJson;
-      setState(() {
-        _applyExplicitBasics(basics);
-        _receipt = PrivateEventCreateReceipt(
-          eventId: summary.eventId,
-          setupRevision: summary.setupRevision,
-          replayed: true,
-        );
-        _savedBasics = basics;
-        _canEditSavedBasics = summary.canEditBasics;
-      });
-      await _loadPendingUpdate();
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _readError = appErrorMessage(
-          error,
-          l10n: context.l10n,
-          context: AppErrorContext.event,
-        );
-        _loadingSavedEvent = false;
-      });
-    }
-  }
-
-  Future<void> _loadPendingUpdate() async {
-    final receipt = _receipt;
-    if (receipt == null) return;
-    try {
-      final pending = await ref
-          .read(createEventDraftControllerProvider.notifier)
-          .loadPendingBasicsUpdate(
-            organizerId: widget.club.id,
-            eventId: receipt.eventId,
-          );
-      if (!mounted) return;
-      setState(() {
-        _pendingUpdate = pending;
-        _editingSavedBasics = pending != null;
-        if (pending != null &&
-            pending.basics.city.mode == EventSetupValueMode.set &&
-            pending.basics.timezone.mode == EventSetupValueMode.set) {
-          _applyExplicitBasics(pending.basics);
-        }
-        _loadingSavedEvent = false;
-      });
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _readError = appErrorMessage(
-          error,
-          l10n: context.l10n,
-          context: AppErrorContext.event,
-        );
-        _loadingSavedEvent = false;
-      });
-    }
-  }
-
-  String get _organizerDefaultsHash => organizerEventDefaultsHash(
-    cityId: widget.club.locationCityId,
-    marketId: widget.club.locationMarketId,
-    timezone: widget.club.hostDefaults.timezone,
-    revision: widget.club.hostDefaults.revision,
-  );
+  String get _organizerDefaultsHash =>
+      _managerDefaults?.basicsReviewedHash ?? '';
 
   void _restoreOrganizerCity() {
-    if (widget.club.locationCityId.isEmpty ||
-        widget.club.locationMarketId.isEmpty) {
+    final defaults = _managerDefaults;
+    if (defaults?.cityId == null || defaults?.marketId == null) {
       return;
     }
     setState(() {
       _cityInherited = _trustedOrganizerDefaultsReadAvailable();
       for (final option in defaultCityOptions) {
-        if (option.effectiveCityId == widget.club.locationCityId &&
-            option.effectiveMarketId == widget.club.locationMarketId) {
+        if (option.effectiveCityId == defaults!.cityId &&
+            option.effectiveMarketId == defaults.marketId) {
           _city = option;
           break;
         }
       }
+      _savedCity = EventSetupCity(
+        cityId: defaults!.cityId!, marketId: defaults.marketId!,
+      );
     });
   }
 
   void _restoreOrganizerTimezone() {
-    final inherited = widget.club.hostDefaults.timezone;
+    final inherited = _managerDefaults?.timezone;
     if (inherited == null || inherited.trim().isEmpty) return;
     setState(() {
       _timezoneInherited = _trustedOrganizerDefaultsReadAvailable();
@@ -488,7 +337,8 @@ class _PrivateEventCreateScreenState
     if (_cityInherited) _restoreOrganizerCity();
     if (_timezoneInherited) _restoreOrganizerTimezone();
     setState(() {
-      _defaultsChanged = false;
+      _defaultsChanged = (_cityInherited && _managerDefaults?.cityId == null) ||
+          (_timezoneInherited && _managerDefaults?.timezone == null);
       _error = null;
     });
   }
@@ -524,264 +374,325 @@ class _PrivateEventCreateScreenState
     if (time != null && mounted) setState(() => _start = time);
   }
 
-  Future<void> _save() async {
-    if (_saving) return;
-    if (_receipt != null) {
-      await _saveUpdate();
-      return;
+  @override
+  Widget build(BuildContext context) {
+    if (_loadingManagerDefaults) {
+      return const HostCreateEventRouteLoadingScreen();
     }
-    final pendingPayload = _submittedPayloadJson;
-    if (_defaultsChanged && pendingPayload == null) {
-      setState(() {
-        _error = context.l10n.hostsPrivateEventDefaultsChanged;
-      });
-      return;
-    }
-    PrivateEventBasics? basics;
-    if (pendingPayload != null) {
-      try {
-        basics = PrivateEventBasics.fromJson(
-          Map<String, dynamic>.from(jsonDecode(pendingPayload) as Map),
-        );
-      } catch (_) {
-        setState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
-        return;
-      }
-    } else {
-      basics = _basics;
-    }
-    if (basics == null || !basics.isValid) {
-      setState(() => _showErrors = true);
-      return;
-    }
-    final signature = jsonEncode(basics.toJson());
-    if (_submittedSignature != null && _submittedSignature != signature) {
-      setState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
-      return;
-    }
-    FocusScope.of(context).unfocus();
-    setState(() {
-      _saving = true;
-      _error = null;
-    });
-    var requestSent = false;
-    try {
-      // Persist the exact idempotency key and body before the network call.
-      // A lost response or app restart must resume this same operation.
-      _submittedSignature = signature;
-      _submittedPayloadJson = signature;
-      await _persistDraft();
-      requestSent = true;
-      final receipt = await (widget.create ??
-          ref.read(createEventDraftControllerProvider.notifier).createPrivateEvent)(
-        organizerId: widget.club.id,
-        requestId: _requestId,
-        basics: basics,
-      );
-      if (!mounted) return;
-      await _persistDraft(receipt: receipt);
-      if (!mounted) return;
-      setState(() {
-        _receipt = receipt;
-        _savedBasics = _currentExplicitBasics;
-      });
-      widget.onSaved?.call(receipt);
-    } catch (error) {
-      if (!mounted) return;
-      if (!requestSent) {
-        _submittedSignature = null;
-        _submittedPayloadJson = null;
-      }
-      // Even an authorization or validation response cannot prove this
-      // request never committed: an earlier response may have been lost.
-      // Keep the exact request and body until an authoritative receipt arrives.
-      setState(
-        () => _error = appErrorMessage(
-          error,
-          l10n: context.l10n,
-          context: AppErrorContext.event,
+    if (_managerDefaultsError != null) {
+      return CatchScaffold.stepFlow(
+        body: CatchErrorState(
+          title: context.l10n.hostsEventDefaultsManagerUnavailable,
+          message: _managerDefaultsError!,
+          retryLabel: context.l10n.hostsPrivateEventRetryDefaultsRead,
+          onRetry: () => unawaited(
+            _PrivateEventCreateBody(this)._loadOrganizerDefaults(),
+          ),
+          actions: const [CatchErrorBackButton()],
         ),
       );
-      showCatchErrorSnackBar(context, error);
-    } finally {
-      if (mounted) setState(() => _saving = false);
     }
-  }
-
-  Future<void> _saveUpdate() async {
+    final t = CatchTokens.of(context);
     final receipt = _receipt;
-    if (receipt == null || !_canEditSavedBasics) return;
-    final existing = _pendingUpdate;
-    final basics = existing?.basics ?? _basics;
-    if (basics == null || !basics.isValid) {
-      setState(() => _showErrors = true);
-      return;
+    if (_loadingSavedEvent) {
+      return const HostCreateEventRouteLoadingScreen();
     }
-    if (existing == null &&
-        jsonEncode(basics.toJson()) == jsonEncode(_savedBasics?.toJson())) {
-      setState(() => _editingSavedBasics = false);
-      return;
-    }
-    final request = existing ?? PrivateEventBasicsUpdateRequest(
-      organizerId: widget.club.id,
-      eventId: receipt.eventId,
-      requestId: _newRequestId(),
-      expectedSetupRevision: receipt.setupRevision,
-      basics: basics,
-    );
-    FocusScope.of(context).unfocus();
-    setState(() {
-      _saving = true;
-      _error = null;
-    });
-    try {
-      // The journal write must finish before any network attempt. Every
-      // subsequent attempt reuses its complete command, even after a lost
-      // response, a restart, or an intervening authorization failure.
-      if (existing == null) {
-        await ref
-            .read(createEventDraftControllerProvider.notifier)
-            .savePendingBasicsUpdate(request);
-        _pendingUpdate = request;
-      }
-      final updated = await (widget.update ?? ref
-              .read(createEventDraftControllerProvider.notifier)
-              .updatePrivateEventBasics)(request);
-      if (!mounted) return;
-      if (updated.eventId != request.eventId) {
-        throw const FormatException('Basics update changed event identity');
-      }
-      await _persistDraft(receipt: updated);
-      if (!mounted) return;
-      await ref
-          .read(createEventDraftControllerProvider.notifier)
-          .clearPendingBasicsUpdate(request);
-      if (!mounted) return;
-      setState(() {
-        _receipt = updated;
-        _savedBasics = _currentExplicitBasics;
-        _pendingUpdate = null;
-        _editingSavedBasics = false;
-      });
-    } catch (error) {
-      if (!mounted) return;
-      setState(() => _error = appErrorMessage(
-        error,
-        l10n: context.l10n,
-        context: AppErrorContext.event,
-      ));
-      showCatchErrorSnackBar(context, error);
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-  }
-
-  Future<void> _close() async {
-    if (_saving) return;
-    if (_pendingUpdate != null ||
-        (_receipt == null && _submittedPayloadJson != null)) {
-      final leave = await showCatchAdaptiveDialog<bool>(
-        context: context,
-        title: context.l10n.hostsPrivateEventPendingExitTitle,
-        message: _pendingUpdate == null
-            ? context.l10n.hostsPrivateEventPendingExitBody
-            : context.l10n.hostsPrivateEventPendingUpdateExitBody,
-        actions: [
-          CatchDialogAction(
-            label: context.l10n.hostsPrivateEventPendingStay,
-            value: false,
-          ),
-          CatchDialogAction(
-            label: context.l10n.hostsPrivateEventPendingLeave,
-            value: true,
-            isDefault: true,
-          ),
-        ],
-        barrierDismissible: false,
+    if (_readError != null) {
+      return CatchScaffold.stepFlow(
+        body: CatchErrorState(
+          title: context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+          message: _readError!,
+          actions: const [CatchErrorBackButton()],
+        ),
       );
-      if (!mounted || leave != true) return;
-      setState(() => _allowPop = true);
-      Navigator.of(context).pop();
-      return;
     }
-    if (_editingSavedBasics) {
-      final saved = _savedBasics;
-      setState(() {
-        if (saved != null) _applyExplicitBasics(saved);
-        _editingSavedBasics = false;
-        _error = null;
-        _showErrors = false;
-      });
-      return;
+    if (receipt != null && !_editingSavedBasics) {
+      return PrivateEventSetupScreen(
+        club: widget.club,
+        receipt: receipt,
+        name: _nameController.text.trim(),
+        date: _date!,
+        start: _start!,
+        cityLabel: _city?.label ?? _savedCityLabel ?? widget.club.location,
+        pendingRosterFileName: widget.initialRosterImportPlan?.fileName,
+        onEditBasics: _canEditSavedBasics
+            ? () => setState(() => _editingSavedBasics = true)
+            : null,
+        onClose: _PrivateEventCreateBody(this)._close,
+      );
     }
-    if (_receipt != null || !_hasChanges) {
-      setState(() => _allowPop = true);
-      Navigator.of(context).pop();
-      return;
-    }
-    final decision = await showHostDraftExitDialog(context);
-    if (!mounted || decision == null) return;
-    switch (decision) {
-      case HostDraftExitDecision.keepEditing:
-        return;
-      case HostDraftExitDecision.discardAndExit:
-        setState(() => _allowPop = true);
-        Navigator.of(context).pop();
-        return;
-      case HostDraftExitDecision.saveDraftAndExit:
-        try {
-          await _persistDraft();
-          if (mounted) {
-            setState(() => _allowPop = true);
-            Navigator.of(context).pop();
-          }
-        } catch (error) {
-          if (mounted) showCatchErrorSnackBar(context, error);
-        }
-    }
-  }
+    final fieldCopy = catchFieldCopy(context.l10n);
+    final city = _city;
+    final date = _date;
+    final start = _start;
+    final cityOptions = defaultCityOptions
+        .where((option) => option.eventCreatable)
+        .toList();
 
-  Future<void> _persistDraft({PrivateEventCreateReceipt? receipt}) async {
-    final old = _activeDraft;
-    final draft = (old ??
-            EventDraft(
-              id: _localDraftId,
-              clubId: widget.club.id,
-              savedAt: DateTime.now(),
-            ))
-        .copyWith(
-          savedAt: DateTime.now(),
-          name: _nameController.text.trim(),
-          eventCityId: _city?.effectiveCityId ?? _savedCity?.cityId,
-          eventMarketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
-          eventLocalDate: _date == null ? null : _localDate,
-          eventLocalStartTime: _start == null ? null : _localStartTime,
-          eventTimezone: _timezoneController.text.trim(),
-          eventCityMode: _cityInherited ? 'inherit' : 'set',
-          eventTimezoneMode: _timezoneInherited ? 'inherit' : 'set',
-          eventReviewedDefaultsHash: _cityInherited || _timezoneInherited
-              ? _organizerDefaultsHash
-              : null,
-          eventCreateRequestId: _requestId,
-          eventCreatePayloadSignature: _submittedSignature,
-          eventCreatePayloadJson: _submittedPayloadJson,
-          eventCreateReceiptEventId:
-              receipt?.eventId ?? old?.eventCreateReceiptEventId,
-          eventCreateReceiptRevision:
-              receipt?.setupRevision ?? old?.eventCreateReceiptRevision,
-          selectedDateMillis: _date?.millisecondsSinceEpoch,
-          selectedStartHour: _start?.hour,
-          selectedStartMinute: _start?.minute,
-        );
-    await ref
-        .read(createEventDraftControllerProvider.notifier)
-        .saveDraft(draft);
-    _activeDraft = draft;
-    ref.invalidate(clubEventDraftsProvider(clubId: widget.club.id));
+    return PopScope(
+      canPop: _allowPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _PrivateEventCreateBody(this)._close();
+      },
+      child: CatchScaffold.stepFlow(
+        backgroundColor: t.bg,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchStepHeader(
+              title: receipt == null
+                  ? context.l10n.hostsHostEventsListLabelNewEvent
+                  : context.l10n.hostsPrivateEventEditBasics,
+              subtitle: widget.club.name,
+              stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+              compactStepLabelBuilder:
+                  catchStepHeaderCompactLabelBuilder(context.l10n),
+              onBack: _saving ? null : _PrivateEventCreateBody(this)._close,
+              leadingType: CatchTopBarNavigationMode.back,
+            ),
+            Expanded(
+              child: AbsorbPointer(
+                absorbing: _saving ||
+                    (receipt == null
+                        ? _submittedSignature != null
+                        : _pendingUpdate != null),
+                child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.hostCreateEventFormLaneMaxWidth,
+                  ),
+                  child: ListView(
+                    padding: CatchInsets.formStepBodyWithBottomActions,
+                    children: [
+                      if (_defaultsChanged) ...[
+                        CatchBanner.error(
+                            message: context.l10n.hostsPrivateEventDefaultsChanged,
+                        ),
+                        CatchButton(
+                          label: context.l10n.hostsPrivateEventReviewDefaults,
+                          onPressed: _reviewCurrentDefaults,
+                          variant: CatchButtonVariant.secondary,
+                        ),
+                        gapH4,
+                      ],
+                      if (receipt == null && _submittedSignature != null) ...[
+                        CatchBanner.error(
+                          message: context.l10n.hostsPrivateEventPendingRequest,
+                        ),
+                        gapH4,
+                      ],
+                      if (_pendingUpdate != null) ...[
+                        CatchBanner.error(
+                          message: context.l10n.hostsPrivateEventPendingUpdate,
+                        ),
+                        gapH4,
+                      ],
+                      CatchSectionList(
+                        emptyStateOmitted: true,
+                        children: [
+                          CatchSection.fieldRows(
+                            first: true,
+                            title: context.l10n.hostsPrivateEventBasicsHeading,
+                            children: [
+                              CatchField.input(
+                                copy: fieldCopy,
+                                key: const ValueKey('private-event-name'),
+                                title: context
+                                    .l10n.hostsEventDetailsStepTitleEventName,
+                                contractExemption:
+                                    'Private event first-save schema is owned by the event setup command.',
+                                controller: _nameController,
+                                inputHint: context
+                                    .l10n.hostsEventDetailsStepPlaceholderEventName,
+                                textCapitalization: TextCapitalization.words,
+                                error: _showErrors &&
+                                        _nameController.text.trim().isEmpty
+                                    ? context.l10n
+                                        .hostsEventDetailsStepVisiblecopyRequired
+                                    : null,
+                              ),
+                              CatchField<CityOption>.control(
+                                copy: fieldCopy,
+                                key: const ValueKey('private-event-city'),
+                                title: context.l10n.hostsPrivateEventCity,
+                                contractExemption:
+                                    'Private event city is validated by the event setup command.',
+                                body: _cityInherited
+                                    ? '${city?.label ?? widget.club.location} · ${context.l10n.hostsPrivateEventFromOrganizer}'
+                                    : city?.label ?? _savedCityLabel ??
+                                        context.l10n.hostsPrivateEventChooseCity,
+                                disclosureMode: _cityAccordion.isExpanded('city')
+                                    ? CatchFieldMode.controlledExpanded
+                                    : CatchFieldMode.controlledCollapsed,
+                                onOpenChanged: (open) {
+                                  if (open) {
+                                    _cityAccordion.toggle('city');
+                                  } else {
+                                    _cityAccordion.collapse();
+                                  }
+                                },
+                                icon: CatchIcons.locationOnOutlined,
+                                error: _showErrors && city == null &&
+                                        _savedCity == null &&
+                                        !_cityInherited
+                                    ? context.l10n.hostsPrivateEventChooseCity
+                                    : null,
+                                child: CatchChoiceInput<CityOption>(
+                                  values: cityOptions,
+                                  itemLabelBuilder: (option) => option.label,
+                                  selected: city == null
+                                      ? const <CityOption>{}
+                                      : {city},
+                                  mode: CatchChipMode.single,
+                                  autoClose: true,
+                                  onChanged: (selection) {
+                                    if (selection.isEmpty) return;
+                                    final picked = selection.single;
+                                    setState(() {
+                                      _city = picked;
+                                      _cityInherited = false;
+                                      _timezoneController.text = picked.timeZone;
+                                      _timezoneInherited = false;
+                                    });
+                                  },
+                                ),
+                              ),
+                              if (!_cityInherited &&
+                                  _managerDefaults?.cityId != null)
+                                CatchField.action(
+                                  copy: fieldCopy,
+                                  title: context.l10n.hostsPrivateEventUseOrganizerCity,
+                                  body: _city?.label ?? widget.club.location,
+                                  onTap: _restoreOrganizerCity,
+                                ),
+                              CatchField.nav(
+                                copy: fieldCopy,
+                                key: const ValueKey('private-event-date'),
+                                title: context.l10n.hostsWhenStepLabelDate,
+                                body: date == null
+                                    ? context
+                                        .l10n.hostsWhenStepPlaceholderSelectADate
+                                    : MaterialLocalizations.of(context)
+                                        .formatMediumDate(date),
+                                icon: CatchIcons.calendarTodayOutlined,
+                                error: _showErrors && date == null
+                                    ? context.l10n
+                                        .hostsWhenStepVisiblecopyPleaseSelectADate
+                                    : null,
+                                onTap: _saving ? null : _pickDate,
+                              ),
+                              CatchField.nav(
+                                copy: fieldCopy,
+                                key: const ValueKey('private-event-start'),
+                                title: context.l10n.hostsWhenStepLabelStartTime,
+                                body: start == null
+                                    ? context.l10n
+                                        .hostsWhenStepPlaceholderSelectStartTime
+                                    : start.format(context),
+                                icon: CatchIcons.scheduleOutlined,
+                                error: _showErrors && start == null
+                                    ? context.l10n.hostsWhenStepVisiblecopyRequired
+                                    : null,
+                                onTap: _saving ? null : _pickStart,
+                              ),
+                              CatchField.input(
+                                copy: fieldCopy,
+                                key: const ValueKey('private-event-timezone'),
+                                title: context.l10n.hostsPrivateEventTimezone,
+                                contractExemption:
+                                    'Private event IANA timezone schema is pending generated constraints.',
+                                controller: _timezoneController,
+                                inputHint: context.l10n.hostsPrivateEventTimezoneHint,
+                                helperText: context.l10n.hostsPrivateEventTimezoneSuggestion,
+                                onChanged: (_) {
+                                  if (_timezoneInherited) {
+                                    setState(() => _timezoneInherited = false);
+                                  }
+                                },
+                                error: _showErrors &&
+                                        _timezoneController.text.trim().isEmpty &&
+                                        !_timezoneInherited
+                                    ? context.l10n
+                                        .hostsWhenStepVisiblecopyRequired
+                                    : null,
+                              ),
+                              if (_timezoneInherited)
+                                CatchField.read(
+                                  copy: fieldCopy,
+                                  title: context.l10n.hostsPrivateEventFromOrganizer,
+                                  body: _managerDefaults?.timezone,
+                                )
+                              else if (_managerDefaults?.timezone != null)
+                                CatchField.action(
+                                  copy: fieldCopy,
+                                  title: context.l10n.hostsPrivateEventUseOrganizerTimezone,
+                                  body: _managerDefaults?.timezone,
+                                  onTap: _restoreOrganizerTimezone,
+                                ),
+                              CatchField.nav(
+                                copy: fieldCopy,
+                                title: context.l10n.hostsPrivateEventMoreBasics,
+                                body: context.l10n.hostsPrivateEventMoreBasicsBody,
+                                icon: CatchIcons.tuneRounded,
+                                onTap: () => setState(
+                                  () => _moreBasicsOpen = !_moreBasicsOpen,
+                                ),
+                              ),
+                              if (_moreBasicsOpen)
+                                CatchField.read(
+                                  copy: fieldCopy,
+                                  title: context.l10n.hostsPrivateEventAfterSave,
+                                  body: context.l10n.hostsPrivateEventAfterSaveBody,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      gapH4,
+                      Text(
+                        context.l10n.hostsPrivateEventSaveHint,
+                        style: Theme.of(context)
+                            .textTheme.bodyMedium?.copyWith(color: t.ink2),
+                      ),
+                      if (_error != null) ...[
+                        gapH4,
+                        CatchBanner.error(message: _error!),
+                      ],
+                    ],
+                  ),
+                ),
+                ),
+              ),
+            ),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: CatchInsets.pageBodyTight,
+                child: CatchButton(
+                  key: const ValueKey('private-event-save'),
+                  label: receipt != null
+                      ? (_pendingUpdate == null
+                          ? context.l10n.hostsEventEditSaveChanges
+                          : context.l10n.hostsPrivateEventRetrySave)
+                      : (_submittedSignature == null
+                          ? context.l10n.hostsPrivateEventSaveContinue
+                          : context.l10n.hostsPrivateEventRetrySave),
+                  onPressed: _saving ||
+                          (receipt != null && !_canEditSavedBasics)
+                      ? null
+                      : _PrivateEventCreateBody(this)._save,
+                  status: _saving
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  fullWidth: true,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
-
-  @override
-  Widget build(BuildContext context) =>
-      _PrivateEventCreateBody(this)._buildPrivateEventCreateBody(context);
 
 }

@@ -80,6 +80,7 @@ part 'host_operations/host_clubs_scaffold.dart';
 part 'host_operations/host_organizer.dart';
 part 'host_operations/host_audience.dart';
 part 'host_operations/host_club_edit_tab.dart';
+part 'host_operations/host_club_event_defaults_screen.dart';
 part 'host_operations/host_club_spoke_screens.dart';
 part 'host_operations/host_club_live_guide_screen.dart';
 part 'host_operations/host_club_team_screen.dart';

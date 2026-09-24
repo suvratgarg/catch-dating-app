@@ -796,7 +796,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CreateEventLoadingBody</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:39</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventLoadingFooter</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:92</code> | — | — | No class documentation or registry summary. |
 | <code>LoadingChipRow</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:70</code> | — | — | No class documentation or registry summary. |
-| <code>HostCreateEventRouteStateView</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:146</code> | — | — | No class documentation or registry summary. |
+| <code>HostCreateEventRouteStateView</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:148</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventAdaptiveWorkspace</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart:14</code> | — | — | Route-owned adaptive composition for Create Event. |
 | <code>CreateEventConsequencePane</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart:233</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventFormLane</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart:156</code> | — | — | No class documentation or registry summary. |
@@ -871,10 +871,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostWhatsappSetupPane</code> | <code>lib/hosts/presentation/host_operations/host_audience.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubEditTab</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_tab.dart:25</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubMediaSummary</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_tab.dart:899</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubDefaultsEditor</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:367</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubReadOnlyEventDefaults</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:453</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubSpokeResolver</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:212</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:336</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubDefaultsEditor</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:162</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubReadOnlyEventDefaults</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:248</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubSpokeResolver</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:7</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:131</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
 | <code>HostTeamProfileRows</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:528</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:455</code> | — | — | No class documentation or registry summary. |
@@ -1195,10 +1195,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:59</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:70</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventSuccessScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_success_screen.dart:15</code> | — | — | No class documentation or registry summary. |
-| <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:37</code> | — | — | The first page of the single progressive event editor. |
+| <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:35</code> | — | — | The first page of the single progressive event editor. |
 | <code>PrivateEventSetupScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_setup_screen.dart:14</code> | — | — | Progressive actions for one already-saved canonical event. |
 | <code>HostCreateEventRouteLoadingScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:56</code> | — | — | No class documentation or registry summary. |
+| <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:58</code> | — | — | No class documentation or registry summary. |
 | <code>RoutePathBuilderScreen</code> | <code>lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart:10</code> | — | — | Tap-to-build route geometry used by moving event formats. |
 | <code>HostFormAnalyticsScreen</code> | <code>lib/hosts/presentation/forms/host_form_analytics_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormAutomationsScreen</code> | <code>lib/hosts/presentation/forms/host_form_automations_screen.dart:22</code> | — | — | No class documentation or registry summary. |
@@ -1211,9 +1211,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventManageRouteScreen</code> | <code>lib/hosts/presentation/host_event_manage_route_screen.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:54</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart:12</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubLiveGuideScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubPaymentsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_payments_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubTeamScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubsScreen</code> | <code>lib/hosts/presentation/host_operations/host_clubs_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostLoadingScreen</code> | <code>lib/hosts/presentation/host_operations/host_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |

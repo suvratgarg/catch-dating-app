@@ -28560,6 +28560,8 @@
   "@hostsEventDefaultsPendingUpdateBody": {"description": "Explains frozen manager defaults update after uncertain response.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
   "hostsEventDefaultsRetryUpdate": "Retry previous defaults save",
   "@hostsEventDefaultsRetryUpdate": {"description": "Replays the same manager defaults update.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
+  "hostsPrivateEventRetryDefaultsRead": "Retry organizer defaults read",
+  "@hostsPrivateEventRetryDefaultsRead": {"description": "Retries the manager-authorized defaults read before private event inheritance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventPendingExitTitle": "Save still unresolved",
   "@hostsPrivateEventPendingExitTitle": {"description": "Private event idempotent save and saved-event continuation copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventPendingExitBody": "Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.",
