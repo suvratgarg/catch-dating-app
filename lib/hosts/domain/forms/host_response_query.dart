@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// The manager query is bound to one immutable published form version.
 enum HostResponseMatch { all, any }
@@ -388,7 +388,7 @@ class HostResponseQueryRow {
       submittedAt: DateTime.fromMillisecondsSinceEpoch(submittedAt),
       withdrawnAt: withdrawnAt == null
           ? null
-          : DateTime.fromMillisecondsSinceEpoch(withdrawnAt),
+          : DateTime.fromMillisecondsSinceEpoch(withdrawnAt as int),
     );
   }
 

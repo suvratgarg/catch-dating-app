@@ -160,10 +160,10 @@ void main() {
     () {
       expect(
         () => HostResponseQueryPage.fromCallableData({
-          'items': [],
+          'items': const [],
           'nextCursor': null,
           'total': 1,
-          'selectedIds': ['kabir'],
+          'selectedIds': const ['kabir'],
           'queryHash': 'query-one',
           'resultHash': 'result-one',
         }),
@@ -174,9 +174,9 @@ void main() {
           'questionId': 'city',
           'label': 'Event city',
           'kind': 'singleChoice',
-          'operators': ['choiceAny'],
+          'operators': const ['choiceAny'],
           'sortable': true,
-          'options': [
+          'options': const [
             {'value': 'Mumbai', 'label': 'Mumbai'},
           ],
         }).operators,
@@ -184,13 +184,13 @@ void main() {
       );
 
       final page = HostResponseQueryPage.fromCallableData({
-        'form': {
+        'form': const {
           'formId': 'form',
           'title': 'Sunday run RSVP',
           'versionId': 'form_v3',
           'version': 3,
         },
-        'fieldCatalog': [
+        'fieldCatalog': const [
           {
             'questionId': 'city',
             'label': 'Event city',
@@ -205,7 +205,7 @@ void main() {
         'items': [_rowMap('kabir')],
         'total': 1,
         'nextCursor': null,
-        'selectedIds': ['kabir'],
+        'selectedIds': const ['kabir'],
         'queryHash': 'query-one',
         'resultHash': 'result-one',
       });
