@@ -31,6 +31,12 @@ abstract class EventPreferencesEditorController extends ChangeNotifier {
   Future<void> load();
   Future<void> retryPending();
   Future<void> save(PrivateEventPreferenceIntents intents);
+
+  /// Surface an inline editor validation failure through the owned state.
+  void reportError(Object cause) {
+    error = cause;
+    notifyListeners();
+  }
 }
 
 /// Event-scoped editor state. Once a command is sent, every retry uses the
@@ -55,10 +61,14 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
   final PrivateEventPreferencesJournal journal;
 
   PrivateEventBasicSummary? event;
+  @override
   ManagerEventSetupDefaults? defaults;
   PrivateEventPreferencesUpdateRequest? pending;
+  @override
   Object? error;
+  @override
   bool loading = false;
+  @override
   bool saving = false;
   bool _disposed = false;
 
@@ -89,9 +99,11 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
     super.dispose();
   }
 
+  @override
   bool get canEdit => event?.canEditBasics == true && defaults != null &&
       pending == null && !loading && !saving;
 
+  @override
   Future<void> load() async {
     loading = true;
     error = null;
@@ -123,6 +135,7 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
     }
   }
 
+  @override
   Future<void> save(PrivateEventPreferenceIntents intents) async {
     if (!canEdit) return;
     final request = PrivateEventPreferencesUpdateRequest(
@@ -156,6 +169,7 @@ class PrivateEventPreferencesController extends EventPreferencesEditorController
     }
   }
 
+  @override
   Future<void> retryPending() async {
     if (pending == null || saving) return;
     saving = true;

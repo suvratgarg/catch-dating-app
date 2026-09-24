@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
@@ -123,7 +124,7 @@ class _HostEventOfferPreferencesScreenState
   @override
   Widget build(BuildContext context) {
     if (widget.initialController == null) {
-      final auth = ref.watch(uidProvider);
+      final auth = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
       if (auth.isLoading) {
         return const CatchScaffold.stepFlow(
           body: Center(child: CircularProgressIndicator()),
@@ -132,7 +133,7 @@ class _HostEventOfferPreferencesScreenState
       if (auth.hasError) {
         _error = auth.error;
       } else {
-        final uid = auth.asData?.value;
+        final uid = auth.isSettledData ? auth.value : null;
         if (uid == null || uid.isEmpty) {
           _error = const SignInRequiredException('edit event offer settings');
         } else {

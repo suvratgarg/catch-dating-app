@@ -15,10 +15,10 @@ import 'package:flutter/material.dart';
 /// controls; each controller retains its own authoritative command protocol.
 class PrivateEventPreferencesScreen extends AnimatedWidget {
   const PrivateEventPreferencesScreen({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onBack,
-  }) : super(key: key, listenable: controller);
+  }) : super(listenable: controller);
 
   final EventPreferencesEditorController controller;
   final VoidCallback onBack;
@@ -297,6 +297,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                                       });
                                       return null;
                                     } catch (_) {
+                                      // CatchField displays the returned validation error inline.
                                       return l10n.hostsEventPreferenceInvalidValue;
                                     }
                                   },
@@ -312,8 +313,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                                         field.key, value,
                                       );
                                     } catch (error) {
-                                      controller.error = error;
-                                      controller.notifyListeners();
+                                      controller.reportError(error);
                                       return;
                                     }
                                     if (field.key == 'reusablePaymentPage') {
@@ -342,8 +342,7 @@ class PrivateEventPreferencesScreen extends AnimatedWidget {
                                       });
                                       unawaited(controller.save(next));
                                     } catch (error) {
-                                      controller.error = error;
-                                      controller.notifyListeners();
+                                      controller.reportError(error);
                                     }
                                   } : null,
                                 ),
