@@ -1,5 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 
 type ScheduledFields = "endTime" | "eventFormat";
 type PolicyFields = "capacityLimit" | "priceInPaise";
@@ -53,9 +54,12 @@ export function requireScheduledEvent(
 export function isEventPolicyTerms(
   event: EventDocument | null | undefined
 ): event is EventPolicyTermsDocument {
-  return !!event && Number.isInteger(event.capacityLimit) &&
-    event.capacityLimit > 0 && Number.isInteger(event.priceInPaise) &&
-    event.priceInPaise >= 0;
+  if (!event) return false;
+  const {capacityLimit, priceInPaise} = event;
+  return typeof capacityLimit === "number" &&
+    Number.isInteger(capacityLimit) && capacityLimit > 0 &&
+    typeof priceInPaise === "number" &&
+    Number.isInteger(priceInPaise) && priceInPaise >= 0;
 }
 
 export function requireEventPolicyTerms(
@@ -114,14 +118,7 @@ export function requireConfiguredEvent(
 export function isPublicConfiguredEvent(
   event: EventDocument | null | undefined
 ): event is ConfiguredEventDocument {
-  if (!isConfiguredEvent(event)) return false;
-  const metadata = event as ConfiguredEventDocument & {
-    publicationState?: unknown;
-    setupRevision?: unknown;
-  };
-  return Object.prototype.hasOwnProperty.call(metadata, "publicationState") ?
-    metadata.publicationState === "published" :
-    !Object.prototype.hasOwnProperty.call(metadata, "setupRevision");
+  return isConfiguredEvent(event) && isEventPubliclyAccessible(event);
 }
 
 export function requirePublicConfiguredEvent(

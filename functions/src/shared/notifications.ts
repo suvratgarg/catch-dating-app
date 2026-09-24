@@ -4,6 +4,7 @@ import type {
   PublicProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {notificationCopy} from "./notificationCopy";
+import {eventTitleLabel} from "./eventLabels";
 
 export interface FcmParams {
   token: string;
@@ -283,8 +284,11 @@ export function eventActivityNotificationCopy(
   type: ActivityNotificationType,
   event: EventDocument
 ): {title: string; body: string} {
-  const eventLabel = `${formatDistance(event.distanceKm)} event`;
-  const locationName = event.meetingLocation?.name ?? event.meetingPoint;
+  const eventLabel = typeof event.distanceKm === "number" &&
+    Number.isFinite(event.distanceKm) ?
+    `${formatDistance(event.distanceKm)} event` : eventTitleLabel(event);
+  const locationName = event.meetingLocation?.name?.trim() ||
+    event.meetingPoint?.trim() || "Venue to be confirmed";
   const key = switchEventNotificationKey(type);
   return notificationCopy(key, {eventLabel, locationName});
 }
@@ -297,8 +301,11 @@ export function eventActivityNotificationCopy(
 export function eventCompanionReadyNotificationCopy(
   event: EventDocument
 ): {title: string; body: string} {
-  const eventLabel = `${formatDistance(event.distanceKm)} event`;
-  const locationName = event.meetingLocation?.name ?? event.meetingPoint;
+  const eventLabel = typeof event.distanceKm === "number" &&
+    Number.isFinite(event.distanceKm) ?
+    `${formatDistance(event.distanceKm)} event` : eventTitleLabel(event);
+  const locationName = event.meetingLocation?.name?.trim() ||
+    event.meetingPoint?.trim() || "Venue to be confirmed";
   return notificationCopy("eventCompanionReady", {eventLabel, locationName});
 }
 
