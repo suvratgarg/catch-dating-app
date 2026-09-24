@@ -621,6 +621,21 @@ class _PrivateEventCreateScreenState
                                     ? '${city?.label ?? widget.club.location} · ${context.l10n.hostsPrivateEventFromOrganizer}'
                                     : city?.label ??
                                         context.l10n.hostsPrivateEventChooseCity,
+                                disclosureMode: _cityAccordion.isExpanded('city')
+                                    ? CatchFieldMode.controlledExpanded
+                                    : CatchFieldMode.controlledCollapsed,
+                                onOpenChanged: (open) {
+                                  if (open) {
+                                    _cityAccordion.toggle('city');
+                                  } else {
+                                    _cityAccordion.collapse();
+                                  }
+                                },
+                                icon: CatchIcons.locationOnOutlined,
+                                error: _showErrors && city == null &&
+                                        !_cityInherited
+                                    ? context.l10n.hostsPrivateEventChooseCity
+                                    : null,
                                 child: CatchChoiceInput<CityOption>(
                                   values: cityOptions,
                                   itemLabelBuilder: (option) => option.label,
@@ -640,21 +655,6 @@ class _PrivateEventCreateScreenState
                                     });
                                   },
                                 ),
-                                disclosureMode: _cityAccordion.isExpanded('city')
-                                    ? CatchFieldMode.controlledExpanded
-                                    : CatchFieldMode.controlledCollapsed,
-                                onOpenChanged: (open) {
-                                  if (open) {
-                                    _cityAccordion.toggle('city');
-                                  } else {
-                                    _cityAccordion.collapse();
-                                  }
-                                },
-                                icon: CatchIcons.locationOnOutlined,
-                                error: _showErrors && city == null &&
-                                        !_cityInherited
-                                    ? context.l10n.hostsPrivateEventChooseCity
-                                    : null,
                               ),
                               if (!_cityInherited &&
                                   widget.club.locationCityId.isNotEmpty)

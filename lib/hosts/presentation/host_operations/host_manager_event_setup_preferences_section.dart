@@ -57,6 +57,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.usualDurationMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.usualDurationMinutes!),
+              icon: CatchIcons.scheduleOutlined,
               child: CatchChoiceInput<int>(
                 values: durationChoices,
                 itemLabelBuilder: minutes,
@@ -75,7 +76,6 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                       }
                     : null,
               ),
-              icon: CatchIcons.scheduleOutlined,
             ),
             if (preferences.usualDurationMinutes != null)
               CatchField.action(
@@ -118,6 +118,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.offerValidityMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.offerValidityMinutes!),
+              icon: CatchIcons.scheduleOutlined,
               child: CatchChoiceInput<int>(
                 values: validityChoices,
                 itemLabelBuilder: minutes,
@@ -136,7 +137,6 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                       }
                     : null,
               ),
-              icon: CatchIcons.scheduleOutlined,
             ),
             if (preferences.offerValidityMinutes != null)
               CatchField.action(
@@ -185,6 +185,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.collectionPreference == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : collectionLabel(preferences.collectionPreference!),
+              helperText: l10n.hostsEventDefaultsCollectionSuggestionHint,
+              icon: CatchIcons.paymentsOutlined,
               child: CatchChoiceInput<EventCollectionPreference>(
                 values: EventCollectionPreference.values,
                 itemLabelBuilder: collectionLabel,
@@ -203,8 +205,6 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                       }
                     : null,
               ),
-              helperText: l10n.hostsEventDefaultsCollectionSuggestionHint,
-              icon: CatchIcons.paymentsOutlined,
             ),
             if (preferences.collectionPreference != null)
               CatchField.action(
