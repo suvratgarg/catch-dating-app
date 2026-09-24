@@ -249,7 +249,7 @@ void main() {
       ),
     ));
     await tester.ensureVisible(find.text('Live event guide'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(tester.takeException(), isNull);
     await tester.tap(find.text('Live event guide'));
     await tester.pump();

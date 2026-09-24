@@ -217,7 +217,9 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                   ? (value) {
                       final normalized = value.trim().toUpperCase();
                       if (normalized.isNotEmpty &&
-                          !RegExp(r'^[A-Z]{3}$').hasMatch(normalized)) return;
+                          !RegExp(r'^[A-Z]{3}$').hasMatch(normalized)) {
+                        return;
+                      }
                       update(preferences.copyWith(
                         currency: normalized.isEmpty ? null : normalized,
                       ));

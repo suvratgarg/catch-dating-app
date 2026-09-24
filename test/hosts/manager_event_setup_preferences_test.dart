@@ -6,6 +6,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   test('manager preferences can set and clear without public serialization', () {
     const original = ManagerEventSetupPreferences(
@@ -80,11 +82,11 @@ void main() {
     await tester.enterText(input, 'https://example.com/pay');
     expect(value.reusablePaymentPage, isNull);
     await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Confirm reusable payment page'), findsOneWidget);
     expect(value.reusablePaymentPage, isNull);
     await tester.tap(find.text('Cancel'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(value.reusablePaymentPage, isNull);
   });
 
@@ -125,12 +127,12 @@ void main() {
       theme: CatchTheme.light,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: MediaQuery(
+      home: const MediaQuery(
         data: const MediaQueryData(
           size: Size(360, 800),
           textScaler: TextScaler.linear(2),
         ),
-        child: const Scaffold(
+        child: Scaffold(
           body: SingleChildScrollView(
             child: HostManagerEventSetupPreferencesSection(
               preferences: ManagerEventSetupPreferences(),
@@ -140,7 +142,7 @@ void main() {
       ),
     ));
     await tester.ensureVisible(find.text('Reusable organizer payment page'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Reusable organizer payment page'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

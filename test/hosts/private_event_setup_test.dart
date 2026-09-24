@@ -8,7 +8,7 @@ void main() {
   );
 
   test('first save encodes only the required private basics', () {
-    final basics = PrivateEventBasics(
+    const basics = PrivateEventBasics(
       name: '  Saturday mixer  ',
       city: EventSetupValue.set(city),
       localDate: '2026-09-26',
@@ -68,7 +68,7 @@ void main() {
   test('invalid local calendar date and time never submit', () {
     PrivateEventBasics basics(String date, String time) => PrivateEventBasics(
       name: 'Run',
-      city: EventSetupValue.set(city),
+      city: const EventSetupValue.set(city),
       localDate: date,
       localStartTime: time,
       timezone: const EventSetupValue.set('Asia/Kolkata'),
