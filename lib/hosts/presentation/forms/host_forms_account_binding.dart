@@ -62,6 +62,7 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
               .duplicate(source: form, requestId: _requestId('duplicate'));
           if (!_directoryRequestCurrent(request)) return;
           ref.invalidate(hostFormsDirectoryControllerProvider(request));
+          if (!context.mounted) return;
           await context.pushNamed(
             Routes.hostFormBuilderScreen.name,
             pathParameters: {'formId': duplicate.form.formId},
@@ -112,6 +113,7 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
       }
     } on Object catch (error) {
       if (!_directoryRequestCurrent(request)) return;
+      if (!context.mounted) return;
       showCatchErrorSnackBar(context, error);
     }
   }
