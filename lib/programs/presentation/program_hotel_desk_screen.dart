@@ -65,32 +65,12 @@ class _ProgramHotelDeskScreenState
       retainDataOn: const {},
       value: inboundAsync,
       onRetry: _resetPages,
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsHotelTitle,
-          subtitle: context.l10n.programsHotelSubtitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      loadingBuilder: (_) => _routeScaffold(
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsHotelTitle,
-          subtitle: context.l10n.programsHotelSubtitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      errorBuilder: (_, error, _, onBoundaryRetry) => _routeScaffold(
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
@@ -100,23 +80,31 @@ class _ProgramHotelDeskScreenState
           ),
         ),
       ),
-      builder: (context, inbound) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: inbound.hotelName,
-          subtitle: context.l10n.programsHotelSubtitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      builder: (context, inbound) => _routeScaffold(
+        title: inbound.hotelName,
         body: CatchRouteBody.standardSections(
           sections: _inboundSections(context, inbound),
         ),
       ),
     );
   }
+
+  CatchRouteScaffold _routeScaffold({
+    String? title,
+    required CatchRouteBody body,
+  }) => CatchRouteScaffold(
+    topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+      title: title ?? context.l10n.programsHotelTitle,
+      subtitle: context.l10n.programsHotelSubtitle,
+      emphasis: scrolledUnder
+          ? CatchTopBarEmphasis.divided
+          : CatchTopBarEmphasis.plain,
+      navigation: const CatchTopBarNavigation(
+        mode: CatchTopBarNavigationMode.back,
+      ),
+    ),
+    body: body,
+  );
 
   List<CatchSectionListItem> _inboundSections(
     BuildContext context,
