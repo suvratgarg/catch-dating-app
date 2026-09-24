@@ -1,6 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
+import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
 
 const eventIdPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 
@@ -34,12 +35,24 @@ export async function assertPrivateEventBasicsEditable(params: {
       event.status !== "active" ||
       event.clubId !== event.organizerId ||
       event.eventOrigin !== undefined ||
+      event.eventSuccessPlanId !== undefined ||
       !Number.isSafeInteger(event.setupRevision) ||
       Number(event.setupRevision) < 1 ||
       event.bookedCount !== 0 || event.checkedInCount !== 0 ||
       event.waitlistedCount !== 0) {
     throw new HttpsError("failed-precondition",
       "Event basics are no longer an uncommitted private setup.");
+  }
+
+  if (event.endTime !== undefined) {
+    const end = event.endTime as unknown as FirebaseFirestore.Timestamp;
+    const start = event.startTime as unknown as FirebaseFirestore.Timestamp;
+    const duration = end?.toMillis?.() - start?.toMillis?.();
+    if (!Number.isSafeInteger(duration) || duration <= 0 ||
+        duration > EVENT_MAX_DURATION_MINUTES * 60_000) {
+      throw new HttpsError("failed-precondition",
+        "Review event duration before editing basics.");
+    }
   }
 
   // Every query is an equality on the canonical eventId field and reads at
@@ -51,5 +64,20 @@ export async function assertPrivateEventBasicsEditable(params: {
       throw new HttpsError("failed-precondition",
         "This event has roster, offer or payment commitments.");
     }
+  }
+}
+
+/** Same transaction-bound authority for edit controls and mutation guards. */
+export async function canEditPrivateEventBasics(
+  params: Parameters<typeof assertPrivateEventBasicsEditable>[0]
+): Promise<boolean> {
+  try {
+    await assertPrivateEventBasicsEditable(params);
+    return true;
+  } catch (error) {
+    if (error instanceof HttpsError && error.code === "failed-precondition") {
+      return false;
+    }
+    throw error;
   }
 }

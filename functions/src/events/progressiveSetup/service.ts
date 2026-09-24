@@ -8,6 +8,7 @@ import {validateCreatePrivateEventSetupCallablePayload} from
 import {validateUpdatePrivateEventBasicsCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventBasicsInput";
 import {requireDoc} from "../../shared/validation";
+import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
 import {
   normalizePrivateEventBasics,
   PrivateEventBasicsInput,
@@ -181,7 +182,8 @@ export async function updatePrivateEventBasics(params: {
       organizerSnap, deletedSnap, actorUid
     );
     const event = eventSnap.data() as Record<string, unknown> | undefined;
-    if (!event || event.organizerId !== command.organizerId) {
+    if (!event || event.organizerId !== command.organizerId ||
+        event.clubId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
     }
     if (receiptSnap.exists) {
@@ -197,11 +199,9 @@ export async function updatePrivateEventBasics(params: {
       throw new HttpsError("failed-precondition",
         "Only active private event basics can be edited here.");
     }
-    if (event.endTime !== undefined ||
-        event.meetingLocation !== undefined ||
-        event.eventSuccessPlanId !== undefined) {
+    if (event.eventSuccessPlanId !== undefined) {
       throw new HttpsError("failed-precondition",
-        "Use the event details editor after scheduling setup.");
+        "An event plan already depends on these basics.");
     }
     const revision = requireRevision(event);
     if (revision !== command.expectedSetupRevision) {
@@ -214,6 +214,26 @@ export async function updatePrivateEventBasics(params: {
       defaults: organizerDefaults(command.organizerId, organizer,
         defaultsSnap.data(), db),
     });
+    if ((basics.eventCityId !== event.eventCityId ||
+        basics.eventMarketId !== event.eventMarketId) &&
+        (event.meetingLocation !== undefined ||
+        event.meetingPoint !== undefined ||
+        event.sourceVenueId !== undefined)) {
+      throw new HttpsError("failed-precondition",
+        "Clear the venue in Details before changing the event city.");
+    }
+    let shiftedEnd: FirebaseFirestore.Timestamp | undefined;
+    if (event.endTime !== undefined) {
+      const oldStart = event.startTime as FirebaseFirestore.Timestamp;
+      const oldEnd = event.endTime as FirebaseFirestore.Timestamp;
+      const duration = oldEnd?.toMillis?.() - oldStart?.toMillis?.();
+      if (!Number.isSafeInteger(duration) || duration <= 0 ||
+          duration > EVENT_MAX_DURATION_MINUTES * 60_000) {
+        throw new HttpsError("failed-precondition",
+          "Review the event duration in Details before editing basics.");
+      }
+      shiftedEnd = deps.timestampFromMillis(basics.startTimeMillis + duration);
+    }
     tx.update(eventRef, {
       name: basics.name,
       eventCityId: basics.eventCityId,
@@ -222,6 +242,7 @@ export async function updatePrivateEventBasics(params: {
       eventLocalStartTime: basics.eventLocalStartTime,
       eventTimezone: basics.eventTimezone,
       startTime: deps.timestampFromMillis(basics.startTimeMillis),
+      ...(shiftedEnd === undefined ? {} : {endTime: shiftedEnd}),
       setupDefaults: basics.setupDefaults,
       setupRevision: revision + 1,
       updatedAt: deps.serverTimestamp(),

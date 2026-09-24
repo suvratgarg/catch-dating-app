@@ -380,6 +380,11 @@
     "demoOpsCommand": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
     },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "Server creation time of a progressively configured event.",
+      "x-catch-ownership": "callable-owned"
+    },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned",

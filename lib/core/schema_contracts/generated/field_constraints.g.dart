@@ -31301,6 +31301,20 @@ abstract final class CatchContractConstraints {
     maximum: 120,
   );
 
+  static const eventDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventDocumentCrossPathsDiscoveryEnabled = CatchContractFieldConstraints(
     path: 'eventDocument.crossPathsDiscoveryEnabled',
     valueTypes: <String>['boolean'],
@@ -99313,6 +99327,18 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const privateEventSetupCallableResponseCanChangeCity = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.canChangeCity',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupCallableResponseCanEditBasics = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.canEditBasics',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const privateEventSetupCallableResponseCityCityId = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.city.cityId',
     maxLength: 180,
@@ -125696,6 +125722,8 @@ abstract final class CatchContractConstraints {
     'eventDocument.constraints.maxMen': eventDocumentConstraintsMaxMen,
     'eventDocument.constraints.maxWomen': eventDocumentConstraintsMaxWomen,
     'eventDocument.constraints.minAge': eventDocumentConstraintsMinAge,
+    'eventDocument.createdAt._nanoseconds': eventDocumentCreatedAtNanoseconds,
+    'eventDocument.createdAt._seconds': eventDocumentCreatedAtSeconds,
     'eventDocument.crossPathsDiscoveryEnabled': eventDocumentCrossPathsDiscoveryEnabled,
     'eventDocument.crossPathsPairConfirmedCount': eventDocumentCrossPathsPairConfirmedCount,
     'eventDocument.crossPathsPairHeldCohortCounts': eventDocumentCrossPathsPairHeldCohortCounts,
@@ -134955,6 +134983,8 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.sample': previewOrganizerSavedAudienceCallableResponseSample,
     'previewOrganizerSavedAudienceCallableResponse.sample.items.contactId': previewOrganizerSavedAudienceCallableResponseSampleItemsContactId,
     'previewOrganizerSavedAudienceCallableResponse.sample.items.displayName': previewOrganizerSavedAudienceCallableResponseSampleItemsDisplayName,
+    'privateEventSetupCallableResponse.canChangeCity': privateEventSetupCallableResponseCanChangeCity,
+    'privateEventSetupCallableResponse.canEditBasics': privateEventSetupCallableResponseCanEditBasics,
     'privateEventSetupCallableResponse.city.cityId': privateEventSetupCallableResponseCityCityId,
     'privateEventSetupCallableResponse.city.marketId': privateEventSetupCallableResponseCityMarketId,
     'privateEventSetupCallableResponse.detailsConfigured': privateEventSetupCallableResponseDetailsConfigured,

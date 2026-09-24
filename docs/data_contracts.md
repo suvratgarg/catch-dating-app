@@ -1787,6 +1787,12 @@ expires after 24 hours; every page rechecks current manager and deleted-account
 authority. It cannot expose private payment settings. Basic date/city edits
 check roster, import, participation, waitlist, offer and payment commitments
 inside the same transaction before changing the canonical event.
+The single-event read exposes `canEditBasics` using those same commitment reads,
+and `canChangeCity` is false while a venue snapshot exists. Adding details alone
+does not freeze uncommitted basics: moving the start preserves configured
+duration and the venue/format snapshot. Clear the venue through Details before
+changing city. A dependent event plan or guest/offer/payment history still blocks
+basics edits. These UI affordances never replace the transaction's final checks.
 
 Event rules now distinguish direct reads from lists. Public list queries must
 constrain publicationState to published; a missing-field legacy fallback must

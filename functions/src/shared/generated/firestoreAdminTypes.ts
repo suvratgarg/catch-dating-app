@@ -8422,6 +8422,7 @@ export interface EventDocument {
     updatedAt: FirebaseFirestore.Timestamp;
     updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
   };
+  createdAt?: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
   /**
    * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.

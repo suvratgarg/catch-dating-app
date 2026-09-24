@@ -7,6 +7,8 @@ import type {EventPaymentTerms} from "./eventPaymentTerms";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
 
 export interface PrivateEventSetupCallableResponse {
+  canEditBasics: boolean;
+  canChangeCity: boolean;
   eventId: string;
   organizerId: string;
   setupRevision: number;

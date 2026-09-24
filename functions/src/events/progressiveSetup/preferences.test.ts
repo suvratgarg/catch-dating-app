@@ -26,14 +26,23 @@ async function setup() {
   let migrationReady = true;
   const db = {
     collection: (name: string) => ({doc: (id = "event1") =>
-      ({path: `${name}/${id}`, id})}),
+      ({path: `${name}/${id}`, id}),
+    where: (_field: string, _op: string, eventId: string) => ({
+      limit: (count: number) => {
+        assert.equal(count, 1);
+        return {path: name, queryEventId: eventId};
+      },
+    })}),
     runTransaction: async <T>(run: (tx: unknown) => Promise<T>) => {
       const writes: Array<() => void> = [];
       const result = await run({
-        get: async (ref: {path: string}) => {
+        get: async (ref: {path: string; queryEventId?: string}) => {
           assert.equal(writes.length, 0, "All authority reads precede writes");
           readPaths.push(ref.path);
-          return {exists: rows.has(ref.path), data: () => rows.get(ref.path)};
+          return {exists: rows.has(ref.path), data: () => rows.get(ref.path),
+            empty: ![...rows].some(([path, row]) =>
+              path.startsWith(`${ref.path}/`) &&
+              row.eventId === ref.queryEventId)};
         },
         create: (ref: {path: string}, value: Row) => writes.push(() => {
           assert.equal(rows.has(ref.path), false);

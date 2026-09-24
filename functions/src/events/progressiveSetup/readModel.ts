@@ -7,6 +7,7 @@ import {validatePrivateEventSetupCallableResponse} from
   "../../shared/generated/validators/privateEventSetupOutput";
 import {projectEventPreferences} from "./preferences";
 import {authorizeSetupManager} from "./service";
+import {canEditPrivateEventBasics} from "./commitments";
 
 /** Reads a manager projection without decoding a fully configured event. */
 export async function getPrivateEventSetup(params: {
@@ -43,10 +44,15 @@ export async function getPrivateEventSetup(params: {
           endTimeMillis <= event.startTime?.toMillis?.())) {
       throw new HttpsError("failed-precondition", "Event duration is invalid.");
     }
+    const canEditBasics = await canEditPrivateEventBasics({tx, db,
+      eventId: command.eventId, event});
     const result: unknown = {
       eventId: command.eventId,
       organizerId: command.organizerId,
       setupRevision: event.setupRevision,
+      canEditBasics,
+      canChangeCity: canEditBasics && event.meetingLocation === undefined &&
+        event.meetingPoint === undefined && event.sourceVenueId === undefined,
       eventDetails: {
         endTimeMillis,
         venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,

@@ -7,6 +7,8 @@ import {getManagerEventSetupDefaults} from
 import {eventSetupDefaultsDependencies} from
   "../../organizers/eventSetupDefaults/dependencies";
 import {HttpsError} from "firebase-functions/v2/https";
+import {validateEventDocument} from
+  "../../shared/generated/validators/eventDocument";
 import {localStartMillis, normalizePrivateEventBasics} from "./basics";
 import {resolveField, resolveProgressiveSetupDefaults} from "./defaults";
 import {
@@ -23,7 +25,13 @@ class FakeStore {
 
   collection(path: string) {
     return {doc: (id?: string) => ({path: `${path}/${id ?? ++this.nextId}`,
-      id: id ?? String(this.nextId)})};
+      id: id ?? String(this.nextId)}),
+    where: (_field: string, _op: string, eventId: string) => ({
+      limit: (count: number) => {
+        assert.equal(count, 1);
+        return {path, queryEventId: eventId};
+      },
+    })};
   }
 
   seed(path: string, value: Row) {
@@ -43,9 +51,12 @@ class FakeStore {
   }) => Promise<T>): Promise<T> {
     const writes: Array<() => void> = [];
     const tx = {
-      get: async (ref: {path: string}) => ({
+      get: async (ref: {path: string; queryEventId?: string}) => ({
         exists: this.rows.has(ref.path),
         data: () => this.rows.get(ref.path),
+        empty: ![...this.rows].some(([path, row]) =>
+          path.startsWith(`${ref.path}/`) &&
+          row.eventId === ref.queryEventId),
       }),
       create: (ref: {path: string}, data: Row) => writes.push(() => {
         assert.equal(this.rows.has(ref.path), false);
@@ -86,7 +97,7 @@ function setup() {
     db: store as unknown as FirebaseFirestore.Firestore,
     privacyMigrationReady: () => migrationReady,
     timestampFromMillis: Timestamp.fromMillis,
-    serverTimestamp: () => ({serverTime: true}) as unknown as
+    serverTimestamp: () => Timestamp.fromMillis(1000) as unknown as
       FirebaseFirestore.FieldValue,
     assertBasicsEditable: async () => {
       if (!editable) {
@@ -147,6 +158,8 @@ test("private create is gated and idempotent", async () => {
   assert.equal(saved.name, "Sunday Mixer");
   assert.equal(saved.publicationState, "private");
   assert.equal(saved.publicRegistrationEnabled, false);
+  assert.equal(validateEventDocument(saved), true,
+    JSON.stringify(validateEventDocument.errors));
   for (const key of ["endTime", "meetingLocation", "capacityLimit",
     "priceInPaise", "discoveryMarketId", "eventOrigin"]) {
     assert.equal(Object.hasOwn(saved, key), false, key);
@@ -186,6 +199,81 @@ test("private basics update fences revision and commitments", async () => {
     command: {...command, requestId: "request-333"}, deps: h.deps}),
   (error) => code(error) === "aborted");
 });
+
+test("uncommitted basics edits preserve venue and shift configured duration",
+  async () => {
+    const h = setup();
+    const created = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "details-create", basics},
+      deps: h.deps});
+    const path = `events/${created.eventId}`;
+    const original = h.store.read(path)!;
+    const start = (original.startTime as Timestamp).toMillis();
+    const venue = {name: "Clubhouse", latitude: 19.1, longitude: 72.8};
+    h.store.seed(path, {...original, endTime: Timestamp.fromMillis(start +
+      90 * 60_000), meetingLocation: venue, meetingPoint: venue.name});
+    const command = {organizerId: "org1", eventId: created.eventId,
+      requestId: "details-basics-update", expectedSetupRevision: 1,
+      basics: {...basics, localStartTime: "19:30"}};
+    await updatePrivateEventBasics({actorUid: "host1", command, deps: h.deps});
+    const updated = h.store.read(path)!;
+    assert.equal((updated.startTime as Timestamp).toMillis(),
+      start + 60 * 60_000);
+    assert.equal((updated.endTime as Timestamp).toMillis(),
+      start + 150 * 60_000);
+    assert.deepEqual(updated.meetingLocation, venue);
+    assert.equal(updated.bookedCount, 0);
+    assert.deepEqual(await updatePrivateEventBasics({actorUid: "host1",
+      command, deps: h.deps}), {eventId: created.eventId,
+      setupRevision: 2, replayed: true});
+  });
+
+test("basics edit preserves venue city and existing plan dependencies",
+  async () => {
+    for (const patch of [{meetingPoint: "Existing venue"},
+      {eventSuccessPlanId: "existing-plan"}, {endTime: {}},
+      {clubId: "foreign"}]) {
+      const h = setup();
+      const created = await createPrivateEventSetup({actorUid: "host1",
+        command: {organizerId: "org1", requestId: "guard-create", basics},
+        deps: h.deps});
+      const path = `events/${created.eventId}`;
+      h.store.seed(path, {...h.store.read(path), ...patch});
+      const before = h.store.read(path);
+      const nextBasics = patch.meetingPoint ? {...basics,
+        city: {mode: "set" as const, value: {
+          cityId: "in-ka-bangalore", marketId: "in-ka-bangalore",
+        }}} : basics;
+      await assert.rejects(updatePrivateEventBasics({actorUid: "host1",
+        command: {organizerId: "org1", eventId: created.eventId,
+          requestId: "guard-edit-1", expectedSetupRevision: 1,
+          basics: nextBasics}, deps: h.deps}));
+      assert.deepEqual(h.store.read(path), before);
+    }
+  });
+
+test("manager read uses current commitment authority for editing controls",
+  async () => {
+    const h = setup();
+    const created = await createPrivateEventSetup({actorUid: "host1",
+      command: {organizerId: "org1", requestId: "editable-create", basics},
+      deps: h.deps});
+    const params = {actorUid: "host1", db: h.deps.db,
+      command: {organizerId: "org1", eventId: created.eventId}};
+    let result = await getPrivateEventSetup(params);
+    assert.equal(result.canEditBasics, true);
+    assert.equal(result.canChangeCity, true);
+    const path = `events/${created.eventId}`;
+    h.store.seed(path, {...h.store.read(path), meetingPoint: "Clubhouse"});
+    result = await getPrivateEventSetup(params);
+    assert.equal(result.canEditBasics, true);
+    assert.equal(result.canChangeCity, false);
+    h.store.seed("organizerEventOffers/offer", {eventId: created.eventId,
+      status: "withdrawn"});
+    result = await getPrivateEventSetup(params);
+    assert.equal(result.canEditBasics, false);
+    assert.equal(result.canChangeCity, false);
+  });
 
 
 test("replays preserve the original revision after later edits", async () => {

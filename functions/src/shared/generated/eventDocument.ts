@@ -406,6 +406,13 @@ export type EventDocument = {
    */
   demoOpsCommand?: string;
   /**
+   * Server creation time of a progressively configured event.
+   */
+  createdAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  /**
    * Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it.
    */
   updatedAt?: {

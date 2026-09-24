@@ -23,9 +23,17 @@ export const privateEventSetupCallableResponseSchema: Record<string, unknown> = 
     "setupDefaults",
     "detailsConfigured",
     "eventPreferences",
-    "eventDetails"
+    "eventDetails",
+    "canEditBasics",
+    "canChangeCity"
   ],
   "properties": {
+    "canEditBasics": {
+      "type": "boolean"
+    },
+    "canChangeCity": {
+      "type": "boolean"
+    },
     "eventId": {
       "type": "string",
       "minLength": 1,

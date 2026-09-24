@@ -26,8 +26,16 @@ const schemaPrivateEventSetupCallableResponseSchema = <String, Object?>{
     'detailsConfigured',
     'eventPreferences',
     'eventDetails',
+    'canEditBasics',
+    'canChangeCity',
   ],
   'properties': <String, Object?>{
+    'canEditBasics': <String, Object?>{
+      'type': 'boolean',
+    },
+    'canChangeCity': <String, Object?>{
+      'type': 'boolean',
+    },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

@@ -19,9 +19,17 @@
     "setupDefaults",
     "detailsConfigured",
     "eventPreferences",
-    "eventDetails"
+    "eventDetails",
+    "canEditBasics",
+    "canChangeCity"
   ],
   "properties": {
+    "canEditBasics": {
+      "type": "boolean"
+    },
+    "canChangeCity": {
+      "type": "boolean"
+    },
     "eventId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },

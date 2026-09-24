@@ -1736,6 +1736,27 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
     },
+    "createdAt": {
+      "type": "object",
+      "description": "Server creation time of a progressively configured event.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "updatedAt": {
       "type": "object",
       "description": "Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it.",
