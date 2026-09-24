@@ -45,6 +45,21 @@ declare("lib/hosts/presentation/customers/host_customer_timeline.dart",
 declare("lib/routing/host_inbox_route.dart", "lib/routing/go_router.dart", null,
   ["hostInboxScreenForUri"], ["HostInboxScreen"]);
 
+
+// Async branches retain their typed body specs and retry lifecycle. Each
+// existing screen owns exactly one factory returning the canonical scaffold;
+// arbitrary Widget helpers or factories moved to another owner stay rejected.
+for (const [file, owner] of [
+  ["lib/hosts/presentation/host_event_operator_screen.dart", "HostEventOperatorScreen"],
+  ["lib/programs/presentation/program_arrivals_screen.dart", "ProgramArrivalsScreen"],
+  ["lib/programs/presentation/program_dispatch_screen.dart", "_ProgramDispatchScreenState"],
+  ["lib/programs/presentation/program_hotel_desk_screen.dart", "_ProgramHotelDeskScreenState"],
+  ["lib/programs/presentation/program_trips_screen.dart", "_ProgramTripsScreenState"],
+  ["lib/programs/presentation/program_work_screen.dart", null],
+]) {
+  declare(file, file, owner, ["_routeScaffold"], ["CatchRouteScaffold"]);
+}
+
 export function isOwnedCompositionRenderer(entry) {
   return declarations.some((expected) => Object.entries(expected)
     .every(([key, value]) => entry[key] === value));
