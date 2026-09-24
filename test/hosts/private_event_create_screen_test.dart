@@ -98,6 +98,20 @@ void main() {
               eventId: 'event-inherited', setupRevision: 1, replayed: false,
             );
           },
+          readSaved: ({required organizerId, required eventId}) async =>
+              PrivateEventBasicSummary(
+                eventId: eventId, organizerId: organizerId,
+                setupRevision: 1, name: 'Saturday mixer',
+                city: const EventSetupCity(
+                  cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
+                ),
+                localDate: localDate, localStartTime: '19:00',
+                timezone: 'Asia/Kolkata',
+                startTimeMillis: date.millisecondsSinceEpoch,
+                status: 'active', setupDefaults: const {},
+                detailsConfigured: false, eventPreferences: null,
+                canEditBasics: true, canChangeCity: true,
+              ),
         ),
       ),
     ));
@@ -162,6 +176,20 @@ void main() {
                 replayed: false,
               );
             },
+            readSaved: ({required organizerId, required eventId}) async =>
+                PrivateEventBasicSummary(
+                  eventId: eventId, organizerId: organizerId,
+                  setupRevision: 3, name: 'Server-confirmed Saturday mixer',
+                  city: const EventSetupCity(
+                    cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
+                  ),
+                  localDate: localDate, localStartTime: '19:00',
+                  timezone: 'Asia/Kolkata',
+                  startTimeMillis: date.millisecondsSinceEpoch,
+                  status: 'active', setupDefaults: const {},
+                  detailsConfigured: false, eventPreferences: null,
+                canEditBasics: true, canChangeCity: true,
+                ),
           ),
         ),
       ),
@@ -178,6 +206,7 @@ void main() {
     expect(submitted?.localStartTime, '19:00');
     expect(find.text('Private'), findsOneWidget);
     expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
+    expect(find.text('Server-confirmed Saturday mixer'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -235,6 +264,7 @@ void main() {
                 startTimeMillis: date.millisecondsSinceEpoch,
                 status: 'active', setupDefaults: const {},
                 detailsConfigured: false, eventPreferences: null,
+                canEditBasics: true, canChangeCity: true,
               ),
         ),
       ),
@@ -331,13 +361,15 @@ void main() {
         '${date.year.toString().padLeft(4, '0')}-'
         '${date.month.toString().padLeft(2, '0')}-'
         '${date.day.toString().padLeft(2, '0')}';
-    final read = PrivateEventBasicSummary.fromResponse({
+    var canonicalName = 'Saturday mixer';
+    var canonicalRevision = 2;
+    PrivateEventBasicSummary read() => PrivateEventBasicSummary.fromResponse({
       'eventId': 'event-1',
       'organizerId': 'club-1',
-      'setupRevision': 2,
+      'setupRevision': canonicalRevision,
       'publicationState': 'private',
       'status': 'active',
-      'name': 'Saturday mixer',
+      'name': canonicalName,
       'city': {'cityId': 'in-mh-mumbai', 'marketId': 'in-mh-mumbai'},
       'localDate': localDate,
       'localStartTime': '19:00',
@@ -345,6 +377,8 @@ void main() {
       'startTimeMillis': date.millisecondsSinceEpoch,
       'setupDefaults': <String, Object?>{},
       'detailsConfigured': false,
+      'canEditBasics': true,
+      'canChangeCity': true,
       'eventDetails': <String, Object?>{
         'endTimeMillis': null, 'venueName': null,
         'sourceVenueId': null, 'eventFormat': null,
@@ -368,7 +402,7 @@ void main() {
           readSaved: ({required organizerId, required eventId}) async {
             expect(organizerId, 'club-1');
             expect(eventId, 'event-1');
-            return read;
+            return read();
           },
           create: ({required organizerId, required requestId, required basics}) async {
             createCalls++;
@@ -384,6 +418,8 @@ void main() {
                 message: 'Manager access temporarily changed',
               );
             }
+            canonicalName = request.basics.name;
+            canonicalRevision = 3;
             return const PrivateEventCreateReceipt(
               eventId: 'event-1',
               setupRevision: 3,
@@ -433,6 +469,61 @@ void main() {
     expect(createCalls, 0);
     expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
     expect(find.text('Sunday mixer'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('failed manager reread blocks stale setup until retry succeeds', (
+    tester,
+  ) async {
+    final date = DateUtils.dateOnly(DateTime.now().add(const Duration(days: 2)));
+    final localDate =
+        '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    var reads = 0;
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
+        uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+      ],
+      child: MaterialApp(
+        theme: CatchTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PrivateEventCreateScreen(
+          club: buildClub(),
+          initialSavedEventId: 'event-1',
+          readSaved: ({required organizerId, required eventId}) async {
+            reads++;
+            if (reads == 1) throw StateError('manager read unavailable');
+            return PrivateEventBasicSummary(
+              eventId: eventId, organizerId: organizerId,
+              setupRevision: 2, name: 'Authoritative event',
+              city: const EventSetupCity(
+                cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
+              ),
+              localDate: localDate, localStartTime: '19:00',
+              timezone: 'Asia/Kolkata',
+              startTimeMillis: date.millisecondsSinceEpoch,
+              status: 'active', setupDefaults: const {},
+              detailsConfigured: false, eventPreferences: null,
+              canEditBasics: true, canChangeCity: false,
+            );
+          },
+        ),
+      ),
+    ));
+    await pumpFeatureUi(tester);
+    expect(find.byType(PrivateEventSetupScreen), findsNothing);
+    expect(find.text('Authoritative event'), findsNothing);
+    await tester.tap(find.text('Retry event read'));
+    await pumpUntilFound(tester, find.byType(PrivateEventSetupScreen));
+    expect(reads, 2);
+    expect(find.text('Authoritative event'), findsWidgets);
+    await tester.tap(find.text('Edit event basics'));
+    await pumpFeatureUi(tester);
+    expect(find.byKey(const ValueKey('private-event-city')), findsOneWidget);
+    expect(find.byType(CatchChip), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

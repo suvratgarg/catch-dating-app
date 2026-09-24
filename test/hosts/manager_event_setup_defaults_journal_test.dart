@@ -98,4 +98,24 @@ void main() {
     ), isNull);
     reopened.dispose();
   });
+
+  test('failed manager reread cannot edit a stale defaults snapshot', () async {
+    var denied = false;
+    final controller = HostManagerEventSetupDefaultsController(
+      organizerId: 'club-1', userId: 'host-1',
+      read: (_) async {
+        if (denied) throw StateError('manager access revoked');
+        return snapshot(0);
+      },
+      write: (_) async => throw StateError('must not write'),
+    );
+    await controller.load();
+    expect(controller.canEdit, isTrue);
+    denied = true;
+    await controller.load();
+    expect(controller.current, isNull);
+    expect(controller.canEdit, isFalse);
+    expect(controller.error, isNotNull);
+    controller.dispose();
+  });
 }

@@ -180,6 +180,8 @@ void main() {
       'startTimeMillis': 1790449200000,
       'setupDefaults': <String, Object?>{},
       'detailsConfigured': false,
+      'canEditBasics': true,
+      'canChangeCity': true,
       'eventDetails': <String, Object?>{
         'endTimeMillis': null, 'venueName': null,
         'sourceVenueId': null, 'eventFormat': null,
@@ -191,6 +193,7 @@ void main() {
     expect(summary.setupRevision, 3);
     expect(summary.city.cityId, 'in-mh-mumbai');
     expect(summary.canEditBasics, isTrue);
+    expect(summary.canChangeCity, isTrue);
     expect(summary.eventPreferences, isNull);
     expect(summary.eventDetails.endTimeMillis, isNull);
     expect(summary.eventDetails.venueName, isNull);
@@ -219,8 +222,25 @@ void main() {
       PrivateEventBasicSummary.fromResponse({
         ...response,
         'status': 'cancelled',
+        'canEditBasics': false,
+        'canChangeCity': false,
       }).canEditBasics,
       isFalse,
+    );
+    for (final flag in ['canEditBasics', 'canChangeCity']) {
+      final withoutFlag = {...response}..remove(flag);
+      expect(
+        () => PrivateEventBasicSummary.fromResponse(withoutFlag),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => PrivateEventBasicSummary.fromResponse({
+        ...response,
+        'canEditBasics': false,
+        'canChangeCity': true,
+      }),
+      throwsFormatException,
     );
   });
 

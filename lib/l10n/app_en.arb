@@ -28562,6 +28562,8 @@
   "@hostsEventDefaultsRetryUpdate": {"description": "Replays the same manager defaults update.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_club_spoke_screens"},
   "hostsPrivateEventRetryDefaultsRead": "Retry organizer defaults read",
   "@hostsPrivateEventRetryDefaultsRead": {"description": "Retries the manager-authorized defaults read before private event inheritance.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
+  "hostsPrivateEventRetrySavedRead": "Retry event read",
+  "@hostsPrivateEventRetrySavedRead": {"description": "Retries the manager-authorized read of a saved private event.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventPendingExitTitle": "Save still unresolved",
   "@hostsPrivateEventPendingExitTitle": {"description": "Private event idempotent save and saved-event continuation copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
   "hostsPrivateEventPendingExitBody": "Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.",
@@ -28748,5 +28750,15 @@
   "hostsEventPreferencePublishedTitle": "Published event offers",
   "@hostsEventPreferencePublishedTitle": {"description": "Published event offer preferences context.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
   "hostsEventPreferencePublishedHint": "These settings apply to future offers. Existing offers keep their recorded terms.",
-  "@hostsEventPreferencePublishedHint": {"description": "Published event offer preferences context.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96}
+  "@hostsEventPreferencePublishedHint": {"description": "Published event offer preferences context.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
+  "hostsPrivateEventInventoryTitle": "Private event setups",
+  "@hostsPrivateEventInventoryTitle": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
+  "hostsPrivateEventInventoryLoading": "Loading private events…",
+  "@hostsPrivateEventInventoryLoading": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
+  "hostsPrivateEventInventoryEmpty": "No upcoming private event setups.",
+  "@hostsPrivateEventInventoryEmpty": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
+  "hostsPrivateEventInventoryLoadMore": "Load more private events",
+  "@hostsPrivateEventInventoryLoadMore": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96},
+  "hostsPrivateEventInventoryError": "Could not load private events.",
+  "@hostsPrivateEventInventoryError": {"description": "Manager private event inventory copy.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management", "x-max-chars": 96}
 }

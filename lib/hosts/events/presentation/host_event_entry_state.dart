@@ -7,19 +7,27 @@ enum HostEventEntryIntent {
   resumeDraft,
   repeatLastEvent,
   createEvent,
+  resumePrivateEvent,
 }
 
 /// A starting path, including the exact draft selected in the combined sheet.
 @immutable
 class HostEventEntrySelection {
   const HostEventEntrySelection.start(this.intent)
-    : assert(intent != HostEventEntryIntent.resumeDraft),
-      draft = null;
+    : assert(intent != HostEventEntryIntent.resumeDraft &&
+          intent != HostEventEntryIntent.resumePrivateEvent),
+      draft = null,
+      savedEventId = null;
   const HostEventEntrySelection.resume(EventDraft this.draft)
-    : intent = HostEventEntryIntent.resumeDraft;
+    : intent = HostEventEntryIntent.resumeDraft,
+      savedEventId = null;
+  const HostEventEntrySelection.saved(this.savedEventId)
+    : intent = HostEventEntryIntent.resumePrivateEvent,
+      draft = null;
 
   final HostEventEntryIntent intent;
   final EventDraft? draft;
+  final String? savedEventId;
 }
 
 typedef HostEventEntryCallback =

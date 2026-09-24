@@ -59,6 +59,8 @@ class PrivateEventDetailsController extends ChangeNotifier {
   Future<void> load() async {
     loading = true;
     error = null;
+    event = null;
+    defaults = null;
     notifyListeners();
     try {
       pending = await journal.load(

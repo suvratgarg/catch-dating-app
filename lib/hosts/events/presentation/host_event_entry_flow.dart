@@ -40,6 +40,15 @@ Future<void> runHostEventEntryFlow({
       );
     case HostEventEntryIntent.createEvent:
       await _openCreateEvent(context: context, ref: ref, club: club);
+    case HostEventEntryIntent.resumePrivateEvent:
+      final eventId = selection.savedEventId;
+      if (eventId == null || eventId.isEmpty) return;
+      await _openCreateEvent(
+        context: context,
+        ref: ref,
+        club: club,
+        initialSavedEventId: eventId,
+      );
   }
 }
 
@@ -48,6 +57,7 @@ Future<void> _openCreateEvent({
   required WidgetRef ref,
   required Club club,
   EventDraft? initialDraft,
+  String? initialSavedEventId,
 }) async {
   await context.pushNamed(
     Routes.hostCreateEventScreen.name,
@@ -55,6 +65,7 @@ Future<void> _openCreateEvent({
     extra: HostCreateEventRouteArguments(
       initialClub: club,
       initialDraft: initialDraft,
+      initialSavedEventId: initialSavedEventId,
       externalBookingMode: initialDraft?.externalBookingMode ?? false,
       promptForDrafts: false,
     ),

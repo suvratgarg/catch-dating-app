@@ -119,4 +119,25 @@ void main() {
     ), isNull);
     reopened.dispose();
   });
+
+  test('failed private settings reread disables stale editing', () async {
+    var denied = false;
+    final controller = PrivateEventPreferencesController(
+      userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
+      readEvent: ({required organizerId, required eventId}) async {
+        if (denied) throw StateError('manager access revoked');
+        return event(3);
+      },
+      readDefaults: (_) async => defaults(),
+      write: (_) async => throw StateError('must not write'),
+    );
+    await controller.load();
+    expect(controller.canEdit, isTrue);
+    denied = true;
+    await controller.load();
+    expect(controller.event, isNull);
+    expect(controller.defaults, isNull);
+    expect(controller.canEdit, isFalse);
+    controller.dispose();
+  });
 }

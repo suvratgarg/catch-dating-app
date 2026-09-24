@@ -23,6 +23,7 @@ class HostEventOfferPreferencesScreen extends ConsumerStatefulWidget {
     required this.onBack,
     this.eventName,
     this.initialController,
+    this.controllerForUser,
   });
 
   final String organizerId;
@@ -31,6 +32,8 @@ class HostEventOfferPreferencesScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
   /// Injectable so previews and focused rendering need no live Firebase call.
   final EventOfferPreferencesController? initialController;
+  /// Allows the auth transition to be rendered without a live callable.
+  final EventOfferPreferencesController Function(String uid)? controllerForUser;
 
   @override
   ConsumerState<HostEventOfferPreferencesScreen> createState() =>
@@ -40,37 +43,50 @@ class HostEventOfferPreferencesScreen extends ConsumerStatefulWidget {
 class _HostEventOfferPreferencesScreenState
     extends ConsumerState<HostEventOfferPreferencesScreen> {
   EventOfferPreferencesController? _controller;
+  String? _controllerUid;
   Object? _error;
 
   @override
   void initState() {
     super.initState();
+    _controller = widget.initialController;
+  }
+
+  void _bindSignedInManager(String uid) {
+    if (_controllerUid == uid && _controller != null) {
+      _error = null;
+      return;
+    }
+    _controller?.dispose();
+    _controller = null;
+    _controllerUid = uid;
+    _error = null;
     try {
-      final provided = widget.initialController;
-      if (provided != null) {
-        _controller = provided;
-        return;
+      late final EventOfferPreferencesController controller;
+      final factory = widget.controllerForUser;
+      if (factory != null) {
+        controller = factory(uid);
+      } else {
+        final functions = ref.read(firebaseFunctionsProvider);
+        final offers = EventOfferPreferencesRepository(functions);
+        final defaults = ManagerEventSetupDefaultsRepository(functions);
+        controller = EventOfferPreferencesController(
+          userId: uid,
+          organizerId: widget.organizerId,
+          eventId: widget.eventId,
+          displayName: widget.eventName,
+          readConfiguration: offers.get,
+          readDefaults: defaults.get,
+          write: offers.configure,
+        );
       }
-      final uid = ref.read(uidProvider).asData?.value;
-      if (uid == null || uid.isEmpty) {
-        throw const SignInRequiredException('edit event offer settings');
-      }
-      final functions = ref.read(firebaseFunctionsProvider);
-      final offers = EventOfferPreferencesRepository(functions);
-      final defaults = ManagerEventSetupDefaultsRepository(functions);
-      final controller = EventOfferPreferencesController(
-        userId: uid,
-        organizerId: widget.organizerId,
-        eventId: widget.eventId,
-        displayName: widget.eventName,
-        readConfiguration: offers.get,
-        readDefaults: defaults.get,
-        write: offers.configure,
-      );
       _controller = controller;
-      unawaited(controller.load());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(_controller, controller)) {
+          unawaited(controller.load());
+        }
+      });
     } catch (error) {
-      // The error state below remains visible until the Host leaves this route.
       _error = error;
     }
   }
@@ -83,8 +99,26 @@ class _HostEventOfferPreferencesScreenState
 
   @override
   Widget build(BuildContext context) {
+    if (widget.initialController == null) {
+      final auth = ref.watch(uidProvider);
+      if (auth.isLoading) {
+        return const CatchScaffold.stepFlow(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (auth.hasError) {
+        _error = auth.error;
+      } else {
+        final uid = auth.asData?.value;
+        if (uid == null || uid.isEmpty) {
+          _error = const SignInRequiredException('edit event offer settings');
+        } else {
+          _bindSignedInManager(uid);
+        }
+      }
+    }
     final controller = _controller;
-    if (controller != null) {
+    if (controller != null && _error == null) {
       return PrivateEventPreferencesScreen(
         controller: controller,
         onBack: widget.onBack,
@@ -96,6 +130,15 @@ class _HostEventOfferPreferencesScreenState
         message: appErrorMessage(_error ??
             const FormatException('Offer settings unavailable'),
             l10n: context.l10n, context: AppErrorContext.event),
+        retryLabel: context.l10n.hostsPrivateEventRetryDefaultsRead,
+        onRetry: () {
+          _controller?.dispose();
+          _controller = null;
+          _controllerUid = null;
+          _error = null;
+          ref.invalidate(uidProvider);
+          setState(() {});
+        },
         actions: [
           CatchErrorBackButton(onPressed: widget.onBack),
         ],

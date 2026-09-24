@@ -42,6 +42,8 @@ class HostManagerEventSetupDefaultsController extends ChangeNotifier {
   Future<void> load() async {
     loading = true;
     error = null;
+    // A failed fresh authority read must not leave the prior snapshot editable.
+    current = null;
     notifyListeners();
     try {
       // Restore the frozen command before allowing any fresh edit.

@@ -114,4 +114,42 @@ void main() {
       eventId: 'event-1'), isNull);
     reopened.dispose();
   });
+
+  test('failed details reread disables stale editing', () async {
+    final hash = List.filled(64, 'a').join();
+    var denied = false;
+    final controller = PrivateEventDetailsController(
+      userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
+      readEvent: ({required organizerId, required eventId}) async {
+        if (denied) throw StateError('manager access revoked');
+        return const PrivateEventBasicSummary(
+          eventId: 'event-1', organizerId: 'club-1', setupRevision: 2,
+          name: 'Saturday mixer',
+          city: EventSetupCity(
+            cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
+          ),
+          localDate: '2026-10-03', localStartTime: '19:00',
+          timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
+          status: 'active', setupDefaults: {}, detailsConfigured: false,
+          eventPreferences: null,
+        );
+      },
+      readDefaults: (_) async => ManagerEventSetupDefaults(
+        organizerId: 'club-1', cityId: null, marketId: null,
+        timezone: null, organizerDefaultsRevision: null,
+        basicsReviewedHash: hash, preferencesRevision: 0,
+        preferences: const ManagerEventSetupPreferences(),
+        preferencesHash: hash, reviewedDefaultsHash: hash,
+      ),
+      write: (_) async => throw StateError('must not write'),
+    );
+    await controller.load();
+    expect(controller.canEdit, isTrue);
+    denied = true;
+    await controller.load();
+    expect(controller.event, isNull);
+    expect(controller.defaults, isNull);
+    expect(controller.canEdit, isFalse);
+    controller.dispose();
+  });
 }

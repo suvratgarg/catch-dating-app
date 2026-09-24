@@ -9,8 +9,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -104,7 +104,9 @@ class _PrivateEventCreateScreenState
   bool _editingDetails = false;
   PrivateEventDetailsController? _detailsController;
   bool _loadingSavedEvent = false;
-  bool _canEditSavedBasics = true;
+  bool _canEditSavedBasics = false;
+  bool _canChangeSavedCity = false;
+  bool _savedEventActive = false;
   String? _readError;
   ManagerEventSetupDefaults? _managerDefaults;
   bool _loadingManagerDefaults = false;
@@ -430,6 +432,15 @@ class _PrivateEventCreateScreenState
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
           message: _readError!,
+          retryLabel: context.l10n.hostsPrivateEventRetrySavedRead,
+          onRetry: () {
+            final eventId = _receipt?.eventId ?? widget.initialSavedEventId;
+            if (eventId != null) {
+              unawaited(_PrivateEventCreateBody(this)._loadSavedEvent(
+                savedEventId: eventId,
+              ));
+            }
+          },
           actions: const [CatchErrorBackButton()],
         ),
       );
@@ -455,13 +466,13 @@ class _PrivateEventCreateScreenState
         start: _start!,
         cityLabel: _city?.label ?? _savedCityLabel ?? widget.club.location,
         pendingRosterFileName: widget.initialRosterImportPlan?.fileName,
-        onEditBasics: _canEditSavedBasics
+        onEditBasics: _canEditSavedBasics || _pendingUpdate != null
             ? () => setState(() => _editingSavedBasics = true)
             : null,
-        onEditPayments: _canEditSavedBasics
+        onEditPayments: _savedEventActive
             ? () => _PrivateEventCreateBody(this)._openPreferences()
             : null,
-        onEditDetails: _canEditSavedBasics
+        onEditDetails: _savedEventActive
             ? () => _PrivateEventCreateBody(this)._openDetails()
             : null,
         onClose: _PrivateEventCreateBody(this)._close,
@@ -558,7 +569,17 @@ class _PrivateEventCreateScreenState
                                         .hostsEventDetailsStepVisiblecopyRequired
                                     : null,
                               ),
-                              CatchField<CityOption>.control(
+                              if (receipt != null && !_canChangeSavedCity &&
+                                  _pendingUpdate == null)
+                                CatchField.read(
+                                  copy: fieldCopy,
+                                  key: const ValueKey('private-event-city'),
+                                  title: context.l10n.hostsPrivateEventCity,
+                                  body: city?.label ?? _savedCityLabel ??
+                                      widget.club.location,
+                                  icon: CatchIcons.locationOnOutlined,
+                                )
+                              else CatchField<CityOption>.control(
                                 copy: fieldCopy,
                                 key: const ValueKey('private-event-city'),
                                 title: context.l10n.hostsPrivateEventCity,
@@ -604,7 +625,8 @@ class _PrivateEventCreateScreenState
                                   },
                                 ),
                               ),
-                              if (!_cityInherited &&
+                              if ((receipt == null || _canChangeSavedCity) &&
+                                  !_cityInherited &&
                                   _managerDefaults?.cityId != null)
                                 CatchField.action(
                                   copy: fieldCopy,
@@ -725,7 +747,8 @@ class _PrivateEventCreateScreenState
                           ? context.l10n.hostsPrivateEventSaveContinue
                           : context.l10n.hostsPrivateEventRetrySave),
                   onPressed: _saving ||
-                          (receipt != null && !_canEditSavedBasics)
+                          (receipt != null &&
+                              !_canEditSavedBasics && _pendingUpdate == null)
                       ? null
                       : _PrivateEventCreateBody(this)._save,
                   status: _saving

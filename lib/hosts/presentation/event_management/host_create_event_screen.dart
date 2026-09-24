@@ -15,17 +15,13 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 export 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
-
-// Enable only after the private create callable, schema migration, and public
-// read/index guards are deployed together. The current endpoint still creates
-// public events from the fully specified legacy wizard.
-bool _privateEventSetupAvailable() => false;
 
 class HostCreateEventRouteArguments {
   const HostCreateEventRouteArguments({
@@ -200,7 +196,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.ready when _privateEventSetupAvailable() =>
+      HostCreateEventRouteStatus.ready when privateEventSetupAvailable() =>
         PrivateEventCreateScreen(
         club: state.club!,
         initialDraft: initialDraft,

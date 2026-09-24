@@ -110,4 +110,25 @@ void main() {
     ), isNull);
     reopened.dispose();
   });
+
+  test('failed offer reread clears old editable authority', () async {
+    var denied = false;
+    final controller = EventOfferPreferencesController(
+      userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
+      readConfiguration: ({required organizerId, required eventId}) async {
+        if (denied) throw StateError('manager access revoked');
+        return configuration(0);
+      },
+      readDefaults: (_) async => defaults(),
+      write: (_) async => throw StateError('must not write'),
+    );
+    await controller.load();
+    expect(controller.canEdit, isTrue);
+    denied = true;
+    await controller.load();
+    expect(controller.configuration, isNull);
+    expect(controller.defaults, isNull);
+    expect(controller.canEdit, isFalse);
+    controller.dispose();
+  });
 }

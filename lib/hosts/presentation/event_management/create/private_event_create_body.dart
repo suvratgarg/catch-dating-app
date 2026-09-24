@@ -276,6 +276,10 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   Future<void> _loadSavedEvent({String? savedEventId}) async {
     final eventId = savedEventId ?? widget.initialSavedEventId!;
+    _mutateScreenState(() {
+      _loadingSavedEvent = true;
+      _readError = null;
+    });
     try {
       final controller = ref.read(createEventDraftControllerProvider.notifier);
       final summary = await (widget.readSaved ?? controller.getPrivateEventSetup)(
@@ -310,11 +314,17 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         );
         _savedBasics = basics;
         _canEditSavedBasics = summary.canEditBasics;
+        _canChangeSavedCity = summary.canChangeCity;
+        _savedEventActive = summary.status == 'active';
       });
       await _loadPendingUpdate();
     } catch (error) {
       if (!mounted) return;
       _mutateScreenState(() {
+        _savedBasics = null;
+        _canEditSavedBasics = false;
+        _canChangeSavedCity = false;
+        _savedEventActive = false;
         _readError = appErrorMessage(
           error,
           l10n: context.l10n,
@@ -349,6 +359,10 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     } catch (error) {
       if (!mounted) return;
       _mutateScreenState(() {
+        _savedBasics = null;
+        _canEditSavedBasics = false;
+        _canChangeSavedCity = false;
+        _savedEventActive = false;
         _readError = appErrorMessage(
           error,
           l10n: context.l10n,
@@ -418,9 +432,14 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted) return;
       _mutateScreenState(() {
         _receipt = receipt;
-        _savedBasics = _currentExplicitBasics;
+        _loadingSavedEvent = true;
       });
-      widget.onSaved?.call(receipt);
+      // Replay receipts contain the revision of the original command, which
+      // may now be older than the canonical event. Read the manager projection
+      // before enabling any further edit or presenting its setup actions.
+      await _loadSavedEvent(savedEventId: receipt.eventId);
+      if (!mounted || _readError != null) return;
+      widget.onSaved?.call(_receipt!);
     } catch (error) {
       if (!mounted) return;
       if (!requestSent) {
@@ -445,13 +464,24 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   Future<void> _saveUpdate() async {
     final receipt = _receipt;
-    if (receipt == null || !_canEditSavedBasics) return;
+    if (receipt == null ||
+        (!_canEditSavedBasics && _pendingUpdate == null)) return;
     final existing = _pendingUpdate;
     if (_defaultsChanged && existing == null) {
       _mutateScreenState(() => _error = context.l10n.hostsPrivateEventDefaultsChanged);
       return;
     }
     final basics = existing?.basics ?? _basics;
+    if (existing == null && !_canChangeSavedCity) {
+      final currentCity = basics?.city.value;
+      if (currentCity == null ||
+          currentCity.cityId != _savedCity?.cityId ||
+          currentCity.marketId != _savedCity?.marketId) {
+        _mutateScreenState(() => _error =
+            context.l10n.hostsPrivateEventSetupUnavailable);
+        return;
+      }
+    }
     if (basics == null || !basics.isValid) {
       _mutateScreenState(() => _showErrors = true);
       return;
@@ -492,13 +522,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       }
       await _persistDraft(receipt: updated);
       if (!mounted) return;
+      await _loadSavedEvent(savedEventId: receipt.eventId);
+      if (!mounted || _readError != null) return;
       await ref
           .read(createEventDraftControllerProvider.notifier)
           .clearPendingBasicsUpdate(request);
       if (!mounted) return;
       _mutateScreenState(() {
-        _receipt = updated;
-        _savedBasics = _currentExplicitBasics;
         _pendingUpdate = null;
         _editingSavedBasics = false;
       });

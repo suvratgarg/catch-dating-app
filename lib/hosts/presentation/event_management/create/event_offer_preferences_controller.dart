@@ -83,6 +83,8 @@ class EventOfferPreferencesController extends EventPreferencesEditorController {
   Future<void> load() async {
     loading = true;
     error = null;
+    configuration = null;
+    defaults = null;
     notifyListeners();
     try {
       pending = await journal.load(
