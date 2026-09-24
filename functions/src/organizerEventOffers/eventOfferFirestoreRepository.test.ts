@@ -9,10 +9,9 @@ import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
 import {organizerContactOriginId} from
   "../shared/organizerContactOrigins";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
-import {organizerContactChannelStateId} from
+import {organizerContactChannelStateId, hashEndpoint} from
   "../organizers/organizerCampaignModel";
+import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {FirestoreEventOfferRepository} from
   "./eventOfferFirestoreRepository";
 import {commitEventOffers, prepareEventOfferHandoff,
@@ -141,14 +140,14 @@ test("private payment projection rejects malformed or foreign snapshots",
     assert.equal(preview.rows.length, 1);
   });
 
-test("actual adapter handoff requires same-source consent and no suppression",
+test("app-free manual handoff respects opt-out, admin suppression and STOP",
   async () => {
     const store = fixture();
     store.docs[`organizerContacts/${contactId}`] = {
       ...store.docs[`organizerContacts/${contactId}`],
-      identityState: "verified", displayName: "Asha",
-      linkedUid: "person-one", phoneE164: "+919876543210",
-      whatsappStatus: "optedIn"};
+      identityState: "unlinked", displayName: "Asha",
+      linkedUid: null, phoneE164: "+919876543210",
+      whatsappStatus: "unknown"};
     store.docs[`events/${eventId}`] = {
       ...store.docs[`events/${eventId}`], name: "Saturday Social",
       eventTimezone: "Asia/Kolkata"};
@@ -161,30 +160,16 @@ test("actual adapter handoff requires same-source consent and no suppression",
     const request = {repository, actor, organizerId, eventId, contactId,
       expectedOfferRevision: receipt.results[0].revision,
       expectedGeneration: receipt.results[0].generation};
-    const unknown = await prepareEventOfferHandoff(request);
-    assert.equal(unknown.kind, "blocked");
-    const preferenceId = organizerCommunicationPreferenceId(organizerId,
-      "person-one");
-    const scoped = {status: "optedIn", evidenceStatus: "complete",
-      currentReceiptId: "grant-one", endpointE164: "+919876543210",
-      sourceResponseId: responseId, termsVersion: "reviewed-v1",
-      source: "participantSettings", sourceEventId: eventId,
-      updatedAt: time(now)};
-    store.docs[`organizerCommunicationPreferences/${preferenceId}`] = {
-      organizerId, uid: "person-one",
-      whatsapp: {status: "unknown", evidenceStatus: "notApplicable",
-        currentReceiptId: null, termsVersion: null, source: null,
-        sourceEventId: null, updatedAt: null},
-      whatsappPurposes: {eventOperations: scoped}};
-    store.docs["organizerCommunicationPermissionReceipts/grant-one"] = {
-      organizerId, uid: "person-one", channel: "whatsapp",
-      purpose: "eventOperations", decision: "optedIn",
-      evidenceStatus: "complete", endpointE164: "+919876543210",
-      sourceResponseId: responseId, source: "participantSettings",
-      termsVersion: "reviewed-v1", consentCopyHash: "a".repeat(64),
-      grantedAt: time(now), revokedAt: null};
     const prepared = await prepareEventOfferHandoff(request);
     assert.equal(prepared.kind, "prepared");
+    assert.equal("sent" in prepared, false);
+    store.docs[`organizerContacts/${contactId}`].whatsappStatus = "optedOut";
+    const optedOut = await prepareEventOfferHandoff(request);
+    assert.equal(optedOut.kind, "blocked");
+    if (optedOut.kind === "blocked") {
+      assert.ok(optedOut.blockers.includes("contactOptedOut"));
+    }
+    store.docs[`organizerContacts/${contactId}`].whatsappStatus = "unknown";
     const channelId = organizerContactChannelStateId(organizerId,
       contactId);
     store.docs[`organizerContactChannelStates/${channelId}`] = {
@@ -194,5 +179,15 @@ test("actual adapter handoff requires same-source consent and no suppression",
     assert.equal(suppressed.kind, "blocked");
     if (suppressed.kind === "blocked") {
       assert.ok(suppressed.blockers.includes("permissionUnavailable"));
+    }
+    delete store.docs[`organizerContactChannelStates/${channelId}`];
+    const stopId = whatsappStopId(organizerId,
+      hashEndpoint("+919876543210"));
+    store.docs[`organizerWhatsappEndpointStops/${stopId}`] =
+      {organizerId, endpointHash: hashEndpoint("+919876543210")};
+    const stopped = await prepareEventOfferHandoff(request);
+    assert.equal(stopped.kind, "blocked");
+    if (stopped.kind === "blocked") {
+      assert.ok(stopped.blockers.includes("permissionUnavailable"));
     }
   });
