@@ -13,7 +13,7 @@ void main() {
       city: EventSetupValue.set(city),
       localDate: '2026-09-26',
       localStartTime: '19:00',
-      timezone: const EventSetupValue.set('Asia/Kolkata'),
+      timezone: EventSetupValue.set('Asia/Kolkata'),
     );
 
     expect(basics.isValid, isTrue);

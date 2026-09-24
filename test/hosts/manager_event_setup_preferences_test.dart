@@ -128,7 +128,7 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const MediaQuery(
-        data: const MediaQueryData(
+        data: MediaQueryData(
           size: Size(360, 800),
           textScaler: TextScaler.linear(2),
         ),
