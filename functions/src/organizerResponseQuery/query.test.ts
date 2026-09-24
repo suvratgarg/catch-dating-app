@@ -69,7 +69,8 @@ test("ALL/ANY typed filters share exact page and selected IDs", async () => {
   assert.throws(() => resolveSelectedResponseIds(query, result,
     ["z"], result.resultHash), {code: "invalid-argument"});
   assert.throws(() => resolveSelectedResponseIds(query, result,
-    ["b"], "stale"), {code: "invalid-argument"});
+    ["b"], "stale"), {code: "aborted", details: {
+    reason: "response-query-stale", action: "refresh"}});
   const next = compileResponseQuery({...input, limit: 1,
     cursor: first.nextCursor}, definition);
   assert.equal(next.hash, query.hash, "page size does not change selection");
@@ -79,11 +80,13 @@ test("ALL/ANY typed filters share exact page and selected IDs", async () => {
     {questionId: "city", op: "choiceAny", values: ["Mumbai"]}]},
   cursor: first.nextCursor}, definition);
   assert.throws(() => pageResponseQuery(changed, result),
-    {code: "invalid-argument"});
+    {code: "aborted", details: {reason: "response-query-stale",
+      action: "refresh"}});
   const stale = await materializeResponseQuery(query, source([
     ...rows, row("new", {city: "Delhi", age: 21})]));
   assert.throws(() => pageResponseQuery(next, stale),
-    {code: "invalid-argument", message: /Refresh/u});
+    {code: "aborted", details: {reason: "response-query-stale",
+      action: "refresh"}});
   const changedDisplay = await materializeResponseQuery(query,
     source(rows, "Renamed"));
   const oldDisplay = await materializeResponseQuery(query,

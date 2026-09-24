@@ -94,6 +94,15 @@ function invalid(message: string): never {
   throw new HttpsError("invalid-argument", message);
 }
 
+/** Stable callable detail; clients must inspect details.reason, not prose. */
+export const responseQueryStaleReason = "response-query-stale";
+
+export function staleResponseQuery(): never {
+  throw new HttpsError("aborted",
+    "Response results changed. Refresh to continue.",
+    {reason: responseQueryStaleReason, action: "refresh"});
+}
+
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     invalid("Response query must be an object.");
@@ -425,8 +434,7 @@ export async function materializeResponseQuery(query: CompiledResponseQuery,
   if (digest(snapshot.definition) !== query.definitionHash ||
       !snapshot.formTitle || !Number.isInteger(snapshot.version) ||
       snapshot.version < 1) {
-    throw new HttpsError("aborted",
-      "Published form metadata changed. Refresh to continue.");
+    staleResponseQuery();
   }
   const scanned = snapshot.rows;
   if (scanned.length > maxScanRows) {
@@ -475,7 +483,7 @@ export function resolveSelectedResponseIds(query: CompiledResponseQuery,
   expectedResultHash: string): string[] {
   if (result.queryHash !== query.hash ||
       result.resultHash !== expectedResultHash) {
-    invalid("Response results changed. Refresh to continue.");
+    staleResponseQuery();
   }
   const selected = new Set(result.selectedIds);
   if (!Array.isArray(requestedIds) || requestedIds.length > maxScanRows ||
@@ -490,22 +498,23 @@ export function resolveSelectedResponseIds(query: CompiledResponseQuery,
 export function pageResponseQuery(query: CompiledResponseQuery,
   result: MaterializedResponseQuery): {items: ResponseQueryRow[];
   nextCursor: string | null; total: number} {
-  if (result.queryHash !== query.hash) invalid("Response query changed.");
+  if (result.queryHash !== query.hash) staleResponseQuery();
   let offset = 0;
   if (query.spec.cursor) {
+    let cursor: Record<string, unknown>;
     try {
-      const cursor = JSON.parse(Buffer.from(query.spec.cursor, "base64url")
+      cursor = JSON.parse(Buffer.from(query.spec.cursor, "base64url")
         .toString("utf8")) as Record<string, unknown>;
-      if (cursor.version !== 1 || cursor.queryHash !== query.hash ||
-          cursor.resultHash !== result.resultHash ||
-          !Number.isSafeInteger(cursor.offset) || Number(cursor.offset) < 1 ||
-          Number(cursor.offset) > result.rows.length) {
-        throw new Error("stale");
-      }
-      offset = Number(cursor.offset);
     } catch {
-      invalid("Response results changed. Refresh to continue.");
+      invalid("Response cursor is invalid.");
     }
+    if (cursor.version !== 1 || cursor.queryHash !== query.hash ||
+        cursor.resultHash !== result.resultHash ||
+        !Number.isSafeInteger(cursor.offset) || Number(cursor.offset) < 1 ||
+        Number(cursor.offset) > result.rows.length) {
+      staleResponseQuery();
+    }
+    offset = Number(cursor.offset);
   }
   const end = Math.min(offset + query.spec.limit, result.rows.length);
   return {items: result.rows.slice(offset, end), total: result.rows.length,
