@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 

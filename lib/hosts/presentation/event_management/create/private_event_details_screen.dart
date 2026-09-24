@@ -121,7 +121,7 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 title: l10n.hostsPrivateEventDetailCurrentDuration,
                                 body: duration == null
                                     ? l10n.hostsPrivateEventDetailNotSet
-                                    : l10n.hostsPrivateEventDetailMinutes(duration),
+                                    : l10n.hostsPrivateEventDetailMinutes(minutes: duration),
                                 icon: CatchIcons.scheduleOutlined,
                               ),
                               CatchField.input(
@@ -146,9 +146,8 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                   final minutes = int.tryParse(text.trim());
                                   if (minutes == null || minutes < 15 ||
                                       minutes > 240) {
-                                    controller.error = const FormatException(
-                                      'Invalid event duration');
-                                    controller.notifyListeners();
+                                    controller.reportValidationError(const FormatException(
+                                      'Invalid event duration'));
                                     return;
                                   }
                                   unawaited(controller.save(
@@ -164,7 +163,7 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 body: suggestedDuration == null
                                     ? l10n.hostsPrivateEventDetailNoDurationSuggestion
                                     : l10n.hostsPrivateEventDetailMinutes(
-                                        suggestedDuration),
+                                        minutes: suggestedDuration),
                                 onTap: editable && suggestedDuration != null
                                     ? () => unawaited(controller.save(
                                         const PrivateEventDetailsPatch(
@@ -213,9 +212,8 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                 onSubmitted: editable ? (text) {
                                   final name = text.trim();
                                   if (name.isEmpty || name.length > 240) {
-                                    controller.error = const FormatException(
-                                      'Invalid event venue');
-                                    controller.notifyListeners();
+                                    controller.reportValidationError(const FormatException(
+                                      'Invalid event venue'));
                                     return;
                                   }
                                   unawaited(controller.save(

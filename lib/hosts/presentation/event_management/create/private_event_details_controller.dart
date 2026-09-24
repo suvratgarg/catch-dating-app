@@ -56,6 +56,11 @@ class PrivateEventDetailsController extends ChangeNotifier {
   bool get canEdit => event?.canEditBasics == true && defaults != null &&
       pending == null && !loading && !saving;
 
+  void reportValidationError(Object cause) {
+    error = cause;
+    notifyListeners();
+  }
+
   Future<void> load() async {
     loading = true;
     error = null;

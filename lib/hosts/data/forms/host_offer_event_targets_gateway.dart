@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 /// A manager-only offer target. This is a picker projection, never authority
@@ -111,7 +112,7 @@ class HostOfferEventConfiguration {
       startsAt: DateTime.fromMillisecondsSinceEpoch(starts),
       serverNow: DateTime.fromMillisecondsSinceEpoch(now),
       paymentTerms: terms == null ? null : Map.unmodifiable(
-        terms.cast<String, Object?>()),
+        (terms as Map).cast<String, Object?>()),
       suggestedExpiresAt: expiry == null ? null :
         DateTime.fromMillisecondsSinceEpoch(expiry as int),
     );
