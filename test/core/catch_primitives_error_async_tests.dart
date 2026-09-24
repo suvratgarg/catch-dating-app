@@ -570,32 +570,34 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: Scaffold(
-            body: Consumer(
-              builder: (context, ref, _) {
-                final state = ref.watch(mutation);
-                return Column(
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          await mutation.run(ref, (_) async {
-                            throw const NetworkException(
-                              'timeout',
-                              'The request timed out. Please try again.',
-                            );
-                          });
-                        } catch (_) {}
-                      },
-                      child: const Text('Save'),
-                    ),
-                    CatchLocalizedErrorBanner.mutation(
-                      mutation: state,
-                      onRetry: () => retryCount++,
-                    ),
-                  ],
-                );
-              },
+          home: CatchNoticeOverlay(
+            child: Scaffold(
+              body: Consumer(
+                builder: (context, ref, _) {
+                  final state = ref.watch(mutation);
+                  return Column(
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          try {
+                            await mutation.run(ref, (_) async {
+                              throw const NetworkException(
+                                'timeout',
+                                'The request timed out. Please try again.',
+                              );
+                            });
+                          } catch (_) {}
+                        },
+                        child: const Text('Save'),
+                      ),
+                      CatchLocalizedErrorBanner.mutation(
+                        mutation: state,
+                        onRetry: () => retryCount++,
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -629,39 +631,41 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: Scaffold(
-            body: Consumer(
-              builder: (context, ref, _) {
-                listenToCatchMutationErrors(
-                  context,
-                  ref,
-                  mutations: [saveMutation, deleteMutation],
-                );
-                return Column(
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          await saveMutation.run(ref, (_) async {
-                            throw StateError('save failed');
-                          });
-                        } catch (_) {}
-                      },
-                      child: const Text('Save'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          await deleteMutation.run(ref, (_) async {
-                            throw StateError('delete failed');
-                          });
-                        } catch (_) {}
-                      },
-                      child: const Text('Delete'),
-                    ),
-                  ],
-                );
-              },
+          home: CatchNoticeOverlay(
+            child: Scaffold(
+              body: Consumer(
+                builder: (context, ref, _) {
+                  listenToCatchMutationErrors(
+                    context,
+                    ref,
+                    mutations: [saveMutation, deleteMutation],
+                  );
+                  return Column(
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          try {
+                            await saveMutation.run(ref, (_) async {
+                              throw StateError('save failed');
+                            });
+                          } catch (_) {}
+                        },
+                        child: const Text('Save'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          try {
+                            await deleteMutation.run(ref, (_) async {
+                              throw StateError('delete failed');
+                            });
+                          } catch (_) {}
+                        },
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -671,9 +675,11 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     await tester.tap(find.text('Delete'));
     await pumpFeatureUi(tester);
 
+    expect(find.text('Something went wrong'), findsOneWidget);
     expect(
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
+    expect(find.byType(CatchNotice), findsOneWidget);
   });
 }
