@@ -196,13 +196,49 @@ test("authority, revision and defaults changes fail before writes",
     assert.equal(store.writes.length, 0);
   });
 
-test("current roster commitment blocks details edit", async () => {
-  const {store, save} = await setup();
-  store.rows.set("eventAttendees/person1", {eventId: "event1",
-    status: "cancelled"});
-  await assert.rejects(save(), (error) => code(error,
-    "failed-precondition"));
+test("venue and duration remain editable after offers and roster import",
+  async () => {
+    const {store, save} = await setup();
+    const offer = {eventId: "event1", status: "offered",
+      paymentSnapshot: {expectedAmountMinor: 25000, currency: "INR"}};
+    store.rows.set("organizerEventOffers/offer1", offer);
+    store.rows.set("eventAttendees/person1", {eventId: "event1",
+      status: "confirmed"});
+    store.rows.get("events/event1")!.bookedCount = 1;
+    await save();
+    const event = store.rows.get("events/event1")!;
+    assert.equal(event.meetingPoint, "Courtyard");
+    assert.equal((event.endTime as admin.firestore.Timestamp).toMillis(),
+      start + 90 * 60_000);
+    assert.equal(event.bookedCount, 1);
+    assert.deepEqual(store.rows.get("organizerEventOffers/offer1"), offer);
+    assert.equal(store.rows.get("eventAttendees/person1")!.status,
+      "confirmed");
+    assert.ok(store.writes.every((path) => path === "events/event1" ||
+      path.startsWith("eventSetupReceipts/")));
+  });
+
+test("format changes still reject an existing offer commitment", async () => {
+  const {store, command, save} = await setup();
+  store.rows.set("organizerEventOffers/offer1", {eventId: "event1",
+    status: "offered"});
+  await assert.rejects(save({...command, details: {eventFormat: {
+    mode: "set", value: {version: 1, activityKind: "singlesMixer",
+      interactionModel: "freeFormMixer"}}}}),
+  (error) => code(error, "failed-precondition"));
   assert.equal(store.writes.length, 0);
+});
+
+test("unchanged format does not block later venue completion", async () => {
+  const {store, command, save} = await setup();
+  const format = {version: 1 as const, activityKind: "singlesMixer" as const,
+    interactionModel: "freeFormMixer" as const};
+  store.rows.get("events/event1")!.eventFormat = format;
+  store.rows.set("eventAttendees/person1", {eventId: "event1"});
+  await save({...command, details: {...command.details,
+    eventFormat: {mode: "set", value: format}}});
+  assert.deepEqual(store.rows.get("events/event1")!.eventFormat, format);
+  assert.equal(store.rows.get("events/event1")!.meetingPoint, "Courtyard");
 });
 
 test("saved venue must remain owned and active", async () => {

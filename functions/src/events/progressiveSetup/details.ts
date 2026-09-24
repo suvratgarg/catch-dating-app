@@ -122,10 +122,6 @@ export async function updatePrivateEventDetails(params: {
       throw new HttpsError("aborted",
         "Organizer defaults changed. Review them before saving.");
     }
-    const guard = deps.assertBasicsEditable ??
-      assertPrivateEventBasicsEditable;
-    await guard({tx, db, eventId: command.eventId, event});
-
     const venueDecision = command.details.venue;
     const preferredVenueId = venueDecision?.mode === "inherit" ?
       defaults.preferences.preferredVenueId : undefined;
@@ -198,6 +194,16 @@ export async function updatePrivateEventDetails(params: {
     if (formatDecision?.mode === "clear") drop("eventFormat");
     if (formatDecision?.mode === "set") {
       set("eventFormat", formatDecision.value);
+    }
+    // Hosts can complete location/duration after offers or roster import.
+    // Format changes can alter cohort/rotation expectations, so they retain
+    // the same commitment guard as date/city changes. Unchanged format is
+    // harmless when a client saves the complete details form.
+    if (canonicalJson(event.eventFormat ?? null) !==
+        canonicalJson(next.eventFormat ?? null)) {
+      const guard = deps.assertBasicsEditable ??
+        assertPrivateEventBasicsEditable;
+      await guard({tx, db, eventId: command.eventId, event});
     }
     if (!validateEventDocument(next)) {
       throw new HttpsError("invalid-argument", "Invalid event details.");

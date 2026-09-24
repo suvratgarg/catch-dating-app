@@ -1764,7 +1764,11 @@ request identity. Duration and saved venue can inherit reviewed organizer
 defaults. A named venue does not invent coordinates; replacing a saved venue
 clears stale map fields. Neither save publishes the event nor admits a guest.
 The manager read includes `eventDetails` for reopening those actual values;
-event preferences remain separate recommendations.
+event preferences remain separate recommendations. Hosts can add or edit venue
+and duration after creating offers or importing a roster. Changing format still
+requires an uncommitted event because it can change guest/rotation expectations;
+saving an unchanged format does not block later detail completion. None of these
+writes changes existing offer payment snapshots or guest admission state.
 Create/edit accept explicit city and timezone decisions, a stable request ID,
 and a reviewed defaults hash when inheriting organizer values. Edit also
 requires the current setup revision. Unknown authority fields are rejected.
