@@ -60,6 +60,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_con
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';

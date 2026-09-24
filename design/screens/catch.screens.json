@@ -13882,14 +13882,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CreateEventStepHeader"
+              "HostWizardStepHeader"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/event_management/widgets/create_event_step_header.dart",
-              "symbol": "CreateEventStepHeader"
+              "file": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
+              "symbol": "HostWizardStepHeader"
             },
             "currentOwner": "CreateEventScreen",
-            "targetOwner": "provider-free create event step header",
+            "targetOwner": "shared provider-free Host wizard step header",
             "dependencies": [
               "catch.top_bar"
             ],
