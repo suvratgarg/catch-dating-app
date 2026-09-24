@@ -132,6 +132,18 @@ interface EventMutationDeps {
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
+/** Rich legacy edits cannot promote or fill a progressive private event. */
+function assertLegacyMutationTarget(data: unknown): void {
+  if (!data || typeof data !== "object") return;
+  const event = data as Record<string, unknown>;
+  if (Object.prototype.hasOwnProperty.call(event, "setupRevision") ||
+      (Object.prototype.hasOwnProperty.call(event, "publicationState") &&
+        event.publicationState !== "published")) {
+    throw new HttpsError("failed-precondition",
+      "Use progressive event setup for this event.");
+  }
+}
+
 type ParsedEventConstraints = NonNullable<
   CreateEventCallablePayload["constraints"]
 >;
@@ -448,6 +460,7 @@ export async function updateEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    assertLegacyMutationTarget(eventSnap.data());
 
     const event = requireDoc<EventDocument>(
 
@@ -636,6 +649,7 @@ export async function cancelEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    assertLegacyMutationTarget(eventSnap.data());
 
     const event = requireDoc<EventDocument>(
 
@@ -795,6 +809,7 @@ export async function deleteEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    assertLegacyMutationTarget(eventSnap.data());
 
     const event = requireDoc<EventDocument>(
 

@@ -5,6 +5,14 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateEventSetupReceiptDocument} from "./validators/eventSetupReceiptDocument";
+export {validateOrganizerEventSetupPreferences} from "./validators/organizerEventSetupPreferences";
+export {validateGetOrganizerEventSetupDefaultsCallablePayload} from "./validators/getOrganizerEventSetupDefaultsInput";
+export {validateUpdateOrganizerEventSetupDefaultsCallablePayload} from "./validators/updateOrganizerEventSetupDefaultsInput";
+export {validateOrganizerEventSetupDefaultsCallableResponse} from "./validators/organizerEventSetupDefaultsOutput";
+export {validateUpdateOrganizerEventSetupDefaultsCallableResponse} from "./validators/updateOrganizerEventSetupDefaultsOutput";
+export {validateOrganizerEventSetupDefaultsDocument} from "./validators/organizerEventSetupDefaultsDocument";
+export {validateOrganizerEventSetupDefaultReceiptDocument} from "./validators/organizerEventSetupDefaultReceiptDocument";
 export {validateEventRehearsalMilestoneDocument} from "./validators/eventRehearsalMilestoneDocument";
 export {validateGetEventRehearsalSummaryCallablePayload} from "./validators/getEventRehearsalSummaryInput";
 export {validateEventRehearsalSummaryCallableResponse} from "./validators/eventRehearsalSummaryOutput";
@@ -517,6 +525,14 @@ export {validateArchiveClubCallablePayload} from "./validators/archiveClubInput"
 export {validateDeleteClubCallablePayload} from "./validators/deleteClubInput";
 export {validateClubMembershipCallablePayload} from "./validators/clubMembershipInput";
 export {validateSetClubNotificationPreferenceCallablePayload} from "./validators/setClubNotificationPreferenceInput";
+export {validateEventSetupDefaults} from "./validators/eventSetupDefaults";
+export {validateCreatePrivateEventSetupCallablePayload} from "./validators/createPrivateEventSetupInput";
+export {validateUpdatePrivateEventBasicsCallablePayload} from "./validators/updatePrivateEventBasicsInput";
+export {validateGetPrivateEventSetupCallablePayload} from "./validators/getPrivateEventSetupInput";
+export {validatePrivateEventSetupMutationCallableResponse} from "./validators/privateEventSetupMutationOutput";
+export {validatePrivateEventSetupCallableResponse} from "./validators/privateEventSetupOutput";
+export {validateQueryOrganizerFormResponsesCallablePayload} from "./validators/queryOrganizerFormResponsesInput";
+export {validateQueryOrganizerFormResponsesCallableResponse} from "./validators/queryOrganizerFormResponsesOutput";
 export {validateCreateEventCallablePayload} from "./validators/createEventInput";
 export {validateUpdateEventCallablePayload} from "./validators/updateEventInput";
 export {validateCancelEventCallablePayload} from "./validators/cancelEventInput";

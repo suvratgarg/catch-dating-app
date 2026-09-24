@@ -1,7 +1,7 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.5.0
-updated: 2026-09-15
+version: 4.6.1
+updated: 2026-09-24
 owner: host_tooling
 status: active
 ---
@@ -36,6 +36,41 @@ requirement. Hosts can adopt the system one capability at a time and may remain
 on any rung indefinitely.
 
 ## Product Promise
+
+### Unified progressive event setup
+
+The approved setup flow has one Create event entry and one canonical event ID.
+The first save requires name, structured city, local date/start and timezone;
+venue, end time, capacity and price remain absent until a selected capability
+requires them. Organizer defaults are materialized as a revisioned snapshot;
+explicit override and clear differ from inheritance. Importing guests, accepting
+Catch registrations, configuring collection and publishing are subsequent
+capabilities of that event, not new event types. Operational existence never
+implies publication, registration, payment or confirmed admission.
+
+Organizer documents are publicly readable. Payment instructions, reusable
+payment links and offer message templates therefore belong in manager-only
+setup preferences, not the public organizer `hostDefaults` object. The defaults
+resolver consumes an authorized projection of those preferences and safe public
+defaults under a revision fence. Its input shape is not a persistence schema.
+Manager preference storage, read authority and versioned saving must be connected
+before these controls are enabled.
+
+The initial backend privacy guards recognize `publicationState: published` as
+public and reject private, unknown or null states. Existing records without
+either publication state or `setupRevision` retain their legacy behavior. Search,
+public registration, invite landing and Catch booking enforce this distinction.
+The public organizer next-event projection scans at most 500 upcoming events in
+25-row pages within its write transaction, skips private records, and clears the
+projection with a structured warning if that compatibility budget is exhausted.
+A canonical indexed publication query remains the migration target.
+
+These guards are a prerequisite, not permission to enable private creation.
+Firestore rules, canonical optional-field schemas, all public readers and side
+effects, transactional creation and generated clients must migrate before the
+first-page save is exposed. The manager event summary must accept absent venue,
+capacity and price. Public/private state is independent of lifecycle, immutable
+origin, booking authority and attendee commitments.
 
 The minimum Host promise is:
 

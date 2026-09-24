@@ -1127,6 +1127,28 @@ test("createEventHandler rejects club schedule conflicts", async () => {
   );
 });
 
+test("private basics have no interval but malformed public schedules fail",
+  async () => {
+    const privateSetup = harness({
+      "organizers/club-1": club(),
+      "events/private-basics": event({endTime: undefined,
+        publicationState: "private", setupRevision: 1}),
+    });
+    await createEventHandler(request("host-1", payload()), privateSetup.deps);
+    assert.ok(privateSetup.firestore.get("events/event-1"));
+
+    const malformedPublic = harness({
+      "organizers/club-1": club(),
+      "events/malformed-public": event({endTime: undefined,
+        publicationState: "published"}),
+    });
+    await assert.rejects(
+      createEventHandler(request("host-1", payload()), malformedPublic.deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+    assert.equal(malformedPublic.firestore.get("events/event-1"), undefined);
+  });
+
 test("createEventHandler allows adjacent club schedules", async () => {
   const h = harness({
     "organizers/club-1": club(),
@@ -1153,6 +1175,29 @@ test("createEventHandler rejects events over the shared max duration", async (
     (error) => assertHttpsCode(error, "invalid-argument")
   );
 });
+
+test("legacy rich mutations cannot edit progressive private basics",
+  async () => {
+    const h = harness({
+      "organizers/club-1": club(),
+      "events/event-1": {organizerId: "club-1", clubId: "club-1",
+        name: "Private basics", status: "active", publicationState: "private",
+        setupRevision: 1, startTime: ts("2026-05-02T01:30:00.000Z")},
+    });
+    const changes = [
+      updateEventHandler(request("host-1", {eventId: "event-1",
+        fields: {name: "Public by accident"}}), h.deps),
+      cancelEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
+      deleteEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
+    ];
+    for (const change of changes) {
+      await assert.rejects(change,
+        (error) => assertHttpsCode(error, "failed-precondition"));
+    }
+    assert.equal(h.firestore.get("events/event-1")?.publicationState,
+      "private");
+    assert.equal(h.notifications.length, 0);
+  });
 
 test("updateEventHandler updates only host-editable event fields", async () => {
   const h = harness({

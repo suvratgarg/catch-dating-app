@@ -1121,6 +1121,45 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps organizer event setup defaults and receipts server-only", async () => {
+      for (const collectionName of ["organizerEventSetupDefaults",
+        "organizerEventSetupDefaultReceipts"]) {
+        await seed([collectionName, "organizer-1"], {
+          organizerId: "organizer-1", revision: 1,
+          eventSetup: {paymentInstructions: "Manager-only instructions"},
+        });
+        for (const uid of ["owner-1", "owner-2"]) {
+          const db = authedDb(uid);
+          const ref = doc(db, collectionName, "organizer-1");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {revision: 2}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            organizerId: "organizer-1", revision: 1,
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "organizer-1"))));
+        }
+      }
+    });
+
+    it("keeps private event setup receipts server-only", async () => {
+      await seed(["eventSetupReceipts", "receipt-1"], {
+        organizerId: "organizer-1", actorUid: "owner-1", eventId: "event-1",
+        operation: "create", appliedRevision: 1,
+      });
+      for (const uid of ["owner-1", "owner-2"]) {
+        const db = authedDb(uid);
+        const ref = doc(db, "eventSetupReceipts", "receipt-1");
+        await assertFails(getDoc(ref));
+        await assertFails(deleteDoc(ref));
+        await assertFails(updateDoc(ref, {appliedRevision: 2}));
+        await assertFails(setDoc(doc(db, "eventSetupReceipts", "forged"), {
+          organizerId: "organizer-1", actorUid: uid, appliedRevision: 1,
+        }));
+      }
+    });
+
     it("keeps form payment state server-only", async () => {
       for (const collectionName of ["organizerPaymentConnections",
         "organizerPaymentOauthStates", "organizerFormPayments",

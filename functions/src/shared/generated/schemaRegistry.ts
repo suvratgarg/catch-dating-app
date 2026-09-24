@@ -5,6 +5,14 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventSetupReceiptDocumentSchema} from "./schemas/eventSetupReceiptDocument";
+export {organizerEventSetupPreferencesSchema} from "./schemas/organizerEventSetupPreferences";
+export {getOrganizerEventSetupDefaultsCallablePayloadSchema} from "./schemas/getOrganizerEventSetupDefaultsInput";
+export {updateOrganizerEventSetupDefaultsCallablePayloadSchema} from "./schemas/updateOrganizerEventSetupDefaultsInput";
+export {organizerEventSetupDefaultsCallableResponseSchema} from "./schemas/organizerEventSetupDefaultsOutput";
+export {updateOrganizerEventSetupDefaultsCallableResponseSchema} from "./schemas/updateOrganizerEventSetupDefaultsOutput";
+export {organizerEventSetupDefaultsDocumentSchema} from "./schemas/organizerEventSetupDefaultsDocument";
+export {organizerEventSetupDefaultReceiptDocumentSchema} from "./schemas/organizerEventSetupDefaultReceiptDocument";
 export {eventRehearsalMilestoneDocumentSchema} from "./schemas/eventRehearsalMilestoneDocument";
 export {getEventRehearsalSummaryCallablePayloadSchema} from "./schemas/getEventRehearsalSummaryInput";
 export {eventRehearsalSummaryCallableResponseSchema} from "./schemas/eventRehearsalSummaryOutput";
@@ -517,6 +525,14 @@ export {archiveClubCallablePayloadSchema} from "./schemas/archiveClubInput";
 export {deleteClubCallablePayloadSchema} from "./schemas/deleteClubInput";
 export {clubMembershipCallablePayloadSchema} from "./schemas/clubMembershipInput";
 export {setClubNotificationPreferenceCallablePayloadSchema} from "./schemas/setClubNotificationPreferenceInput";
+export {eventSetupDefaultsSchema} from "./schemas/eventSetupDefaults";
+export {createPrivateEventSetupCallablePayloadSchema} from "./schemas/createPrivateEventSetupInput";
+export {updatePrivateEventBasicsCallablePayloadSchema} from "./schemas/updatePrivateEventBasicsInput";
+export {getPrivateEventSetupCallablePayloadSchema} from "./schemas/getPrivateEventSetupInput";
+export {privateEventSetupMutationCallableResponseSchema} from "./schemas/privateEventSetupMutationOutput";
+export {privateEventSetupCallableResponseSchema} from "./schemas/privateEventSetupOutput";
+export {queryOrganizerFormResponsesCallablePayloadSchema} from "./schemas/queryOrganizerFormResponsesInput";
+export {queryOrganizerFormResponsesCallableResponseSchema} from "./schemas/queryOrganizerFormResponsesOutput";
 export {createEventCallablePayloadSchema} from "./schemas/createEventInput";
 export {updateEventCallablePayloadSchema} from "./schemas/updateEventInput";
 export {cancelEventCallablePayloadSchema} from "./schemas/cancelEventInput";

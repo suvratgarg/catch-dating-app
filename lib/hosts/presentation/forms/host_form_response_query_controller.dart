@@ -1,13 +1,11 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:flutter/foundation.dart';
 
-/// A gateway is implemented only after the manager callable contract is
-/// registered. The controller never treats a read result as bulk authority.
-abstract interface class HostResponseQueryGateway {
-  Future<HostResponseQueryPage> query(HostResponseQueryRequest request);
-}
+export 'package:catch_dating_app/hosts/data/host_response_query_repository.dart'
+    show HostResponseQueryGateway;
 
 enum HostResponseQueryStatus {
   idle,
@@ -272,6 +270,9 @@ class HostResponseQueryController extends ChangeNotifier {
   );
 
   HostResponseQueryStatus _errorStatus(AppException error) {
+    if (error.code == 'response-query-stale') {
+      return HostResponseQueryStatus.stale;
+    }
     if (error.code == 'too-many-requests') {
       return HostResponseQueryStatus.budgetExceeded;
     }

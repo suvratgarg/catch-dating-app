@@ -5,6 +5,7 @@ import {
   buildEventSearchRecord,
   clubSearchIndexSettings,
   eventSearchIndexSettings,
+  syncAlgoliaEventIndexHandler,
 } from "./algoliaExploreIndex.js";
 import type {
   ClubDocument,
@@ -87,6 +88,7 @@ function organizer(
 function event(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
     clubId: "club-1",
+    organizerId: "club-1",
     startTime: timestamp("2026-05-30T01:30:00.000Z"),
     endTime: timestamp("2026-05-30T02:30:00.000Z"),
     meetingPoint: "Saket Square",
@@ -173,6 +175,19 @@ test("buildEventSearchRecord omits cancelled events", () => {
   );
 });
 
+test("private and malformed setup events never enter a visible organizer index",
+  () => {
+    for (const state of [{publicationState: "private"},
+      {publicationState: null}, {setupRevision: 1}]) {
+      assert.equal(buildEventSearchRecord("private-event", {
+        ...event(), ...state,
+      }, organizer()), null);
+    }
+    assert.ok(buildEventSearchRecord("published-event", {
+      ...event(), ...{publicationState: "published", setupRevision: 2},
+    }, organizer()));
+  });
+
 test("index settings expose required filters", () => {
   assert.deepEqual(clubSearchIndexSettings().attributesForFaceting, [
     "filterOnly(locationMarketId)",
@@ -185,3 +200,43 @@ test("index settings expose required filters", () => {
     "filterOnly(clubId)",
   ]);
 });
+
+test("late published trigger cannot reindex the current private event",
+  async () => {
+    const current = {...event(), publicationState: "private", setupRevision: 2};
+    const methods: string[] = [];
+    const deps = searchDeps(() => current, async (init) => {
+      methods.push(init.method!);
+    });
+    await syncAlgoliaEventIndexHandler("event-1", event(), deps);
+    assert.deepEqual(methods, ["DELETE"]);
+  });
+
+test("publication change during index write deletes the stale projection",
+  async () => {
+    let current = {...event(), publicationState: "published", setupRevision: 1};
+    const methods: string[] = [];
+    const deps = searchDeps(() => current, async (init) => {
+      methods.push(init.method!);
+      if (init.method === "PUT") {
+        current = {...current, publicationState: "private", setupRevision: 2};
+      }
+    });
+    await syncAlgoliaEventIndexHandler("event-1", event(), deps);
+    assert.deepEqual(methods, ["PUT", "DELETE"]);
+  });
+
+function searchDeps(currentEvent: () => EventDocument,
+  onFetch: (init: RequestInit) => Promise<void>) {
+  return {
+    firestore: () => ({collection: (path: string) => ({
+      doc: () => ({get: async () => ({exists: true,
+        data: () => path === "events" ? currentEvent() : organizer()})}),
+    })}) as unknown as FirebaseFirestore.Firestore,
+    writeApiKey: () => "test-key",
+    fetchImpl: (async (_url: unknown, init: RequestInit) => {
+      await onFetch(init);
+      return {ok: true} as Response;
+    }) as typeof fetch,
+  };
+}

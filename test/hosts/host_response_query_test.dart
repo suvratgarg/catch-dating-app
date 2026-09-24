@@ -282,6 +282,41 @@ void main() {
     expect(controller.view.request?.sort.direction, 'asc');
   });
 
+  test('typed repository stale failure clears selection and asks refresh',
+      () async {
+    final gateway = _QueueGateway();
+    final controller = HostResponseQueryController(gateway);
+    addTearDown(controller.dispose);
+    const request = HostResponseQueryRequest(
+      organizerId: 'org',
+      formId: 'form',
+      versionId: 'form_v3',
+    );
+    final first = controller.apply(request);
+    gateway.completeNext(_queryPage(
+      ids: ['kabir', 'maya'],
+      visible: ['kabir'],
+      hash: 'before',
+      nextCursor: 'page-two',
+    ));
+    await first;
+    controller.toggleSelection('kabir');
+
+    final more = controller.loadMore();
+    gateway.failNext(const BackendOperationException(
+      code: 'response-query-stale',
+      message: 'Refresh to continue.',
+      context: BackendErrorContext(
+        service: BackendService.functions,
+        action: 'query form responses',
+      ),
+    ));
+    await more;
+    expect(controller.view.status, HostResponseQueryStatus.stale);
+    expect(controller.view.selectedIds, isEmpty);
+    expect(controller.selectionIntent, isNull);
+  });
+
   test(
     'scan budget and permission loss are separate from zero matches',
     () async {

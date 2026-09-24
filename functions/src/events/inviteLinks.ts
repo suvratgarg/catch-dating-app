@@ -1,6 +1,7 @@
 import * as crypto from "crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
+import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {
   CallableRequest,
   HttpsError,
@@ -704,32 +705,7 @@ export async function resolveEventInviteLandingHandler(
   }
   const linkRef = db.collection("eventInviteLinks").doc(resolved.inviteLinkId);
   const eventRef = db.collection("events").doc(resolved.link.eventId!);
-  const eventSnap = await eventRef.get();
-  if (!eventSnap.exists) {
-    throw new HttpsError("not-found", "Invitation not found.");
-  }
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
   const now = deps.timestamp();
-  const windowEnd = resolved.link.attributionWindowEndsAt as
-    FirebaseFirestore.Timestamp | null | undefined;
-  if (event.status !== "active" || resolved.link.disabledAt != null ||
-      (windowEnd && windowEnd.toMillis() < now.toMillis())) {
-    throw new HttpsError("not-found", "Invitation is no longer available.");
-  }
-  const destinationKind = resolved.link.destinationKind ?? "catchEvent";
-  const destinationUrl = inviteDestinationUrl({
-    event,
-    eventId: resolved.link.eventId!,
-    destinationKind,
-    inviteToken: payload.inviteToken,
-    inviteLinkId: resolved.inviteLinkId,
-  });
-  if (destinationKind === "catchEvent" &&
-      event.publicRegistrationEnabled !== true) {
-    throw new HttpsError(
-      "failed-precondition", "Website registration is not enabled."
-    );
-  }
   const touchRef = inviteTouchRef({
     db,
     inviteLinkId: resolved.inviteLinkId,
@@ -737,53 +713,66 @@ export async function resolveEventInviteLandingHandler(
     sessionId: payload.sessionId ?? null,
     now,
   });
-  await db.runTransaction(async (tx) => {
-    const [freshLinkSnap, existingTouch] = await Promise.all([
-      tx.get(linkRef),
-      tx.get(touchRef),
+  return db.runTransaction(async (tx) => {
+    const [freshEventSnap, freshLinkSnap, existingTouch] = await Promise.all([
+      tx.get(eventRef), tx.get(linkRef), tx.get(touchRef),
     ]);
     const link = freshLinkSnap.data() as
       Partial<EventInviteLinkDocument> | undefined;
-    if (!link || link.disabledAt != null ||
+    const event = freshEventSnap.data() as EventDocument | undefined;
+    const windowEnd = link?.attributionWindowEndsAt as
+      FirebaseFirestore.Timestamp | null | undefined;
+    if (!event || !link || link.eventId !== resolved.link.eventId ||
+        event.status !== "active" || !isEventPubliclyAccessible(event) ||
+        link.disabledAt != null ||
         link.tokenHash !== inviteLinkTokenHash(payload.inviteToken) ||
-        existingTouch.exists) return;
-    const likelyHuman = request.auth != null ||
-      typeof payload.sessionId === "string";
-    tx.set(linkRef, {
-      openCount: deps.increment(1),
-      likelyHumanOpenCount: deps.increment(likelyHuman ? 1 : 0),
-      updatedAt: deps.serverTimestamp(),
-    }, {merge: true});
-    tx.create(touchRef, {
-      eventId: link.eventId,
-      organizerId: stringOrNull(link.organizerId) ?? link.clubId,
-      inviteLinkId: resolved.inviteLinkId,
-      touchKind: "open",
-      surface: "marketingWeb",
-      actorUid: request.auth?.uid ?? null,
-      sessionHash: payload.sessionId ? inviteLinkTokenHash(
-        `${resolved.inviteLinkId}|${payload.sessionId}`
-      ) : null,
-      likelyHuman,
-      botReason: likelyHuman ? null : "missingClientSignal",
-      attributionEligible: likelyHuman,
-      createdAt: now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(
-        now.toMillis() + inviteTouchRetentionMillis
-      ),
+        (windowEnd && windowEnd.toMillis() < now.toMillis())) {
+      throw new HttpsError("not-found", "Invitation is no longer available.");
+    }
+    const destinationKind = link.destinationKind ?? "catchEvent";
+    if (destinationKind === "catchEvent" &&
+        event.publicRegistrationEnabled !== true) {
+      throw new HttpsError("failed-precondition",
+        "Website registration is not enabled.");
+    }
+    const destinationUrl = inviteDestinationUrl({
+      event, eventId: resolved.link.eventId!, destinationKind,
+      inviteToken: payload.inviteToken, inviteLinkId: resolved.inviteLinkId,
     });
+    if (!existingTouch.exists) {
+      const likelyHuman = request.auth != null ||
+        typeof payload.sessionId === "string";
+      tx.set(linkRef, {
+        openCount: deps.increment(1),
+        likelyHumanOpenCount: deps.increment(likelyHuman ? 1 : 0),
+        updatedAt: deps.serverTimestamp(),
+      }, {merge: true});
+      tx.create(touchRef, {
+        eventId: link.eventId,
+        organizerId: stringOrNull(link.organizerId) ?? link.clubId,
+        inviteLinkId: resolved.inviteLinkId,
+        touchKind: "open", surface: "marketingWeb",
+        actorUid: request.auth?.uid ?? null,
+        sessionHash: payload.sessionId ? inviteLinkTokenHash(
+          `${resolved.inviteLinkId}|${payload.sessionId}`
+        ) : null,
+        likelyHuman, botReason: likelyHuman ? null : "missingClientSignal",
+        attributionEligible: likelyHuman, createdAt: now,
+        expiresAt: admin.firestore.Timestamp.fromMillis(
+          now.toMillis() + inviteTouchRetentionMillis),
+      });
+    }
+    const customLabel = event.eventFormat.customActivityLabel?.trim();
+    return {
+      eventId: resolved.link.eventId!,
+      title: customLabel || inviteActivityTitle(event.eventFormat.activityKind),
+      startTimeMillis: event.startTime.toMillis(),
+      endTimeMillis: event.endTime.toMillis(),
+      locationName: event.meetingLocation.name || event.meetingPoint,
+      destinationKind, destinationUrl,
+      sourceLabel: inviteSourceLabel(event, destinationKind),
+    };
   });
-  const customLabel = event.eventFormat.customActivityLabel?.trim();
-  return {
-    eventId: resolved.link.eventId!,
-    title: customLabel || inviteActivityTitle(event.eventFormat.activityKind),
-    startTimeMillis: event.startTime.toMillis(),
-    endTimeMillis: event.endTime.toMillis(),
-    locationName: event.meetingLocation.name || event.meetingPoint,
-    destinationKind,
-    destinationUrl,
-    sourceLabel: inviteSourceLabel(event, destinationKind),
-  };
 }
 
 /** Records only a Catch-owned share action, never a claimed send. */

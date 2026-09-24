@@ -15,6 +15,42 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "EventSetupReceiptDocument", source: "firestore/event_setup_receipts.schema.json", typeOutput: "functions/src/shared/generated/eventSetupReceiptDocument.ts"},
+{
+    "name": "OrganizerEventSetupPreferences",
+    "source": "embedded/organizer_event_setup_preferences.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupPreferences.ts"
+},
+{
+    "name": "GetOrganizerEventSetupDefaultsCallablePayload",
+    "source": "callables/get_organizer_event_setup_defaults_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getOrganizerEventSetupDefaultsCallablePayload.ts"
+},
+{
+    "name": "UpdateOrganizerEventSetupDefaultsCallablePayload",
+    "source": "callables/update_organizer_event_setup_defaults_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallablePayload.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultsCallableResponse",
+    "source": "callable_responses/organizer_event_setup_defaults_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultsCallableResponse.ts"
+},
+{
+    "name": "UpdateOrganizerEventSetupDefaultsCallableResponse",
+    "source": "callable_responses/update_organizer_event_setup_defaults_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallableResponse.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultsDocument",
+    "source": "firestore/organizer_event_setup_defaults.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultsDocument.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultReceiptDocument",
+    "source": "firestore/organizer_event_setup_default_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultReceiptDocument.ts"
+},
   {
     "name": "EventRehearsalMilestoneDocument",
     "source": "firestore/event_rehearsal_milestones.schema.json",
@@ -2919,6 +2955,46 @@ const schemaSpecs = [
     source: "callables/set_club_notification_preference_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts",
+  },
+  {
+    name: "EventSetupDefaults",
+    source: "embedded/event_setup_defaults.schema.json",
+    typeOutput: "functions/src/shared/generated/eventSetupDefaults.ts",
+  },
+  {
+    name: "CreatePrivateEventSetupCallablePayload",
+    source: "callables/create_private_event_setup_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/createPrivateEventSetupCallablePayload.ts",
+  },
+  {
+    name: "UpdatePrivateEventBasicsCallablePayload",
+    source: "callables/update_private_event_basics_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updatePrivateEventBasicsCallablePayload.ts",
+  },
+  {
+    name: "GetPrivateEventSetupCallablePayload",
+    source: "callables/get_private_event_setup_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getPrivateEventSetupCallablePayload.ts",
+  },
+  {
+    name: "PrivateEventSetupMutationCallableResponse",
+    source: "callable_responses/private_event_setup_mutation_response.schema.json",
+    typeOutput: "functions/src/shared/generated/privateEventSetupMutationCallableResponse.ts",
+  },
+  {
+    name: "PrivateEventSetupCallableResponse",
+    source: "callable_responses/private_event_setup_response.schema.json",
+    typeOutput: "functions/src/shared/generated/privateEventSetupCallableResponse.ts",
+  },
+  {
+    name: "QueryOrganizerFormResponsesCallablePayload",
+    source: "callables/query_organizer_form_responses_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/queryOrganizerFormResponsesCallablePayload.ts",
+  },
+  {
+    name: "QueryOrganizerFormResponsesCallableResponse",
+    source: "callable_responses/query_organizer_form_responses_response.schema.json",
+    typeOutput: "functions/src/shared/generated/queryOrganizerFormResponsesCallableResponse.ts",
   },
   {
     name: "CreateEventCallablePayload",

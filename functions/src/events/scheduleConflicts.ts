@@ -395,6 +395,20 @@ function eventDocOverlaps(
   endTimeMillis: number
 ): boolean {
   if (event.status === "cancelled") return false;
+  const progressive = event as EventDocument & {
+    publicationState?: unknown;
+    setupRevision?: unknown;
+  };
+  // First-page private events have a start but no committed end or schedule
+  // lock. They cannot reserve an interval until details are configured.
+  if (event.endTime == null && progressive.publicationState === "private" &&
+      Number.isSafeInteger(progressive.setupRevision) &&
+      (progressive.setupRevision as number) >= 1) return false;
+  if (typeof event.startTime?.toMillis !== "function" ||
+      typeof event.endTime?.toMillis !== "function") {
+    throw new HttpsError("failed-precondition",
+      "An active event has an incomplete schedule.");
+  }
   return intervalsOverlap(
     startTimeMillis,
     endTimeMillis,
