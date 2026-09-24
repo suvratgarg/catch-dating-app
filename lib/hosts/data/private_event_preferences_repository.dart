@@ -15,6 +15,35 @@ final _idPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
 final _requestPattern = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$');
 final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
 
+/// Parses a Host-entered override before constructing the full ten-field
+/// command. URL reuse still requires separate, explicit Host attestation.
+Map<String, Object?> privateEventPreferenceSetIntentForInput(
+    String field, String value) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) throw const FormatException('Empty event preference');
+  switch (field) {
+    case 'usualDurationMinutes':
+    case 'offerValidityMinutes':
+    case 'expectedAmountMinor':
+      final minutesOrAmount = int.tryParse(trimmed);
+      if (minutesOrAmount == null) {
+        throw const FormatException('Invalid numeric event preference');
+      }
+      return {'mode': 'set', 'value': minutesOrAmount};
+    case 'currency':
+      return {'mode': 'set', 'value': trimmed.toUpperCase()};
+    case 'reusablePaymentPage':
+      if (!isCanonicalPublicPaymentPageUrl(trimmed)) {
+        throw const FormatException('Invalid reusable event payment page');
+      }
+      return {'mode': 'set', 'value': {
+        'url': trimmed, 'reusableForEvents': true,
+      }};
+    default:
+      return {'mode': 'set', 'value': trimmed};
+  }
+}
+
 /// All ten event-local intentions are required by the command. A null field
 /// has no meaning: inherit, set and clear must remain distinguishable.
 class PrivateEventPreferenceIntents {

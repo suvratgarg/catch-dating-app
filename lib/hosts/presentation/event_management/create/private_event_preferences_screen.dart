@@ -280,23 +280,13 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                   onValidate: (text) {
                                     final value = text?.trim() ?? '';
                                     if (value.isEmpty) return null;
-                                    Object? encoded = value;
-                                    if (field.key == 'usualDurationMinutes' ||
-                                        field.key == 'offerValidityMinutes' ||
-                                        field.key == 'expectedAmountMinor') {
-                                      encoded = int.tryParse(value);
-                                    } else if (field.key == 'currency') {
-                                      encoded = value.toUpperCase();
-                                    } else if (field.key == 'reusablePaymentPage') {
-                                      if (!isCanonicalPublicPaymentPageUrl(value)) {
-                                        return l10n.hostsEventDefaultsInvalidReusablePage;
-                                      }
-                                      encoded = {'url': value, 'reusableForEvents': true};
-                                    }
                                     try {
+                                      final intent = privateEventPreferenceSetIntentForInput(
+                                        field.key, value,
+                                      );
                                       PrivateEventPreferenceIntents.fromJson({
                                         ...intentsJson,
-                                        field.key: {'mode': 'set', 'value': encoded},
+                                        field.key: intent,
                                       });
                                       return null;
                                     } catch (_) {
@@ -309,15 +299,15 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                       saveField(field.key, {'mode': 'clear'});
                                       return;
                                     }
-                                    Object? encoded = value;
-                                    if (field.key == 'usualDurationMinutes' ||
-                                        field.key == 'offerValidityMinutes' ||
-                                        field.key == 'expectedAmountMinor') {
-                                      encoded = int.tryParse(value);
-                                    } else if (field.key == 'currency') {
-                                      encoded = value.toUpperCase();
-                                    } else if (field.key == 'reusablePaymentPage') {
-                                      if (!isCanonicalPublicPaymentPageUrl(value)) return;
+                                    Map<String, Object?> intent;
+                                    try {
+                                      intent = privateEventPreferenceSetIntentForInput(
+                                        field.key, value,
+                                      );
+                                    } catch (_) {
+                                      return;
+                                    }
+                                    if (field.key == 'reusablePaymentPage') {
                                       final confirmed = await showCatchAdaptiveDialog<bool>(
                                         context: context,
                                         title: l10n.hostsEventDefaultsReusableConfirmTitle,
@@ -335,13 +325,11 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                         barrierDismissible: false,
                                       );
                                       if (!context.mounted || confirmed != true) return;
-                                      encoded = {'url': value, 'reusableForEvents': true};
                                     }
-                                    if (encoded == null) return;
                                     try {
                                       final next = PrivateEventPreferenceIntents.fromJson({
                                         ...intentsJson,
-                                        field.key: {'mode': 'set', 'value': encoded},
+                                        field.key: intent,
                                       });
                                       unawaited(controller.save(next));
                                     } catch (_) {

@@ -10431,6 +10431,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'PrivateEventPreferencesScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Private event payment preferences',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventPreferencesScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PrivateEventSetupScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
