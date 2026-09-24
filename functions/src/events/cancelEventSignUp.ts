@@ -43,7 +43,8 @@ import {
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
-import {FirestoreSeatIdentityAuthority} from "./seatIdentityAuthority";
+import {prepareCatchUidSeatIdentity,
+  prepareVerifiedUidGuestSeatLink} from "./seatIdentityAuthority";
 import {applyFirestoreSeatBatch, FirestoreSeatBatchPreparation,
   FirestoreSeatTransaction, prepareFirestoreSeatBatch} from
   "./seatAuthority/firestoreAdapter";
@@ -79,6 +80,7 @@ interface CancelEventSignUpDeps {
     action: string
   ) => Promise<void>;
   nowMillis: () => number;
+  loadCurrentAuthPhone: (uid: string) => Promise<string | null>;
   refundPayment: (paymentId: string, amountInPaise: number) => Promise<void>;
   sendNotification: (push: PromotionPush) => Promise<void>;
 }
@@ -93,6 +95,8 @@ const defaultDeps: CancelEventSignUpDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
   nowMillis: () => Date.now(),
+  loadCurrentAuthPhone: async (uid) =>
+    (await admin.auth().getUser(uid)).phoneNumber ?? null,
   refundPayment: async (paymentId, amountInPaise) => {
     const razorpay = createRazorpayClient();
     await razorpay.payments.refund(paymentId, {amount: amountInPaise});
@@ -227,13 +231,40 @@ export async function cancelEventSignUpHandler(
       new FirestoreSeatTransaction(db, tx) : null;
     const seatLedger = seatTransaction ?
       await seatTransaction.ledger(eventId) : null;
+    let retainedGuestSeat = false;
+    if (seatMode === "ready") {
+      const currentAuthPhone = await deps.loadCurrentAuthPhone(userId);
+      const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
+        eventId, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        currentAuthPhoneNumber: currentAuthPhone});
+      if (preparedIdentity.identity.key.startsWith("guest_")) {
+        if (!currentAuthPhone) {
+          throw new HttpsError("failed-precondition",
+            "Current guest seat identity is unavailable.");
+        }
+        const guests = await tx.get(db.collection("eventAttendees")
+          .where("eventId", "==", eventId)
+          .where("linkedUid", "==", userId).limit(2));
+        if (guests.docs.length !== 1) {
+          throw new HttpsError("failed-precondition",
+            "Linked guest seat needs reconciliation.");
+        }
+        await prepareVerifiedUidGuestSeatLink({db, tx, eventId,
+          organizerId: event.organizerId ?? event.clubId,
+          attendeeId: guests.docs[0].id, uid: userId,
+          authTokenPhoneNumber: currentAuthPhone,
+          now: admin.firestore.Timestamp.fromMillis(deps.nowMillis())});
+        retainedGuestSeat = true;
+      }
+    }
     const currentSignedUpCount = seatLedger?.occupied ??
       event.bookedCount ??
         activeParticipations.filter((edge) =>
           edge.data.status === "signedUp").length;
     const currentWaitlistedCount = event.waitlistedCount ??
         waitlistedParticipations.length;
-    let nextBookedCount = Math.max(0, currentSignedUpCount - 1);
+    let nextBookedCount = Math.max(0,
+      currentSignedUpCount - (retainedGuestSeat ? 0 : 1));
     let nextWaitlistedCount = currentWaitlistedCount;
     const newGenderCounts = {...event.genderCounts};
     newGenderCounts[cancellerGender] =
@@ -259,7 +290,8 @@ export async function cancelEventSignUpHandler(
 
     // Promote the first waitlist user who passes gender-cap and block checks.
     const activePeerIds = participantUids(activeParticipations, userId);
-    for (const waitlistedParticipation of isEventPubliclyAccessible(event) ?
+    for (const waitlistedParticipation of !retainedGuestSeat &&
+      isEventPubliclyAccessible(event) ?
       waitlistedParticipations : []) {
       const waitlistUserId = waitlistedParticipation.data.uid;
       const waitlistUserSnap =
@@ -302,14 +334,14 @@ export async function cancelEventSignUpHandler(
         }
         promotedScheduleClaim =
           await prepareUserEventScheduleClaimInTransaction(tx, db, {
-          uid: waitlistUserId,
-          eventId,
-          clubId: event.clubId,
+            uid: waitlistUserId,
+            eventId,
+            clubId: event.clubId,
 
-          organizerId: event.organizerId ?? event.clubId,
-          startTimeMillis: event.startTime.toMillis(),
-          endTimeMillis: scheduledEvent.endTime.toMillis(),
-        });
+            organizerId: event.organizerId ?? event.clubId,
+            startTimeMillis: event.startTime.toMillis(),
+            endTimeMillis: scheduledEvent.endTime.toMillis(),
+          });
       } catch (error) {
         if (error instanceof HttpsError &&
               error.code === "failed-precondition") {
@@ -390,26 +422,27 @@ export async function cancelEventSignUpHandler(
     }
 
     let seatPreparation: FirestoreSeatBatchPreparation | null = null;
-    if (seatMode === "ready") {
+    let applySeatIdentities: Array<() => void> = [];
+    if (seatMode === "ready" && !retainedGuestSeat) {
       if (!seatLedger || !seatTransaction) {
         throw new HttpsError("failed-precondition",
           "Event seat authority is unavailable.");
       }
-      const authority = new FirestoreSeatIdentityAuthority();
       const organizerId = event.organizerId ?? event.clubId;
       const uids = promotedUid ? [userId, promotedUid] : [userId];
-      const identities = await Promise.all(uids.map((uid) =>
-        authority.resolve({db, tx, eventId, organizerId,
-          subject: {kind: "verifiedUid", uid}})));
-      if (identities.some((identity) => identity === null)) {
-        throw new HttpsError("failed-precondition",
-          "Verified seat identity is unavailable.");
-      }
+      const preparedIdentities = await Promise.all(uids.map(async (uid) =>
+        prepareCatchUidSeatIdentity({db, tx, eventId, organizerId, uid,
+          currentAuthPhoneNumber: await deps.loadCurrentAuthPhone(uid)})));
+      const identities = preparedIdentities.map((row) => row.identity);
+      applySeatIdentities = preparedIdentities.map((row) => row.apply);
       const reservations = await Promise.all(identities.map((identity) =>
-        seatTransaction.reservation(eventId, identity!.key)));
+        seatTransaction.reservation(eventId, identity.key)));
       const releaseRevision = reservations[0]?.revision ?? 0;
       seatPreparation = await prepareFirestoreSeatBatch({db, tx,
-        identityAuthority: authority,
+        identityAuthority: {resolve: async ({subject}) => {
+          const index = uids.indexOf(subject.uid);
+          return index < 0 ? null : identities[index];
+        }},
         command: {eventId,
           batchId: `cancel_${userId}_${releaseRevision}`,
           expectedLedgerRevision: seatLedger.revision,
@@ -427,6 +460,7 @@ export async function cancelEventSignUpHandler(
     }
 
     if (seatPreparation) applyFirestoreSeatBatch(seatPreparation);
+    for (const applyIdentity of applySeatIdentities) applyIdentity();
     promotedScheduleClaim?.apply();
     tx.update(eventRef, {
       bookedCount: nextBookedCount,

@@ -1,4 +1,5 @@
-import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {onCall, HttpsError, CallableRequest} from
+  "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import type {
   EventDocument,
@@ -45,15 +46,29 @@ import {
   incrementInviteLinkCounterInTransaction,
   inviteAttributionWriteFields,
   resolveInviteAttribution,
+  InviteAttribution,
 } from "./inviteLinks";
+
+interface WaitlistDeps {
+  firestore: () => FirebaseFirestore.Firestore;
+  checkRateLimit: typeof checkRateLimit;
+  resolveInviteAttribution: (params: {db: FirebaseFirestore.Firestore;
+    eventId: string; inviteLinkId?: string | null}) =>
+    Promise<InviteAttribution | null>;
+}
+
+const defaultDeps: WaitlistDeps = {
+  firestore: () => admin.firestore(), checkRateLimit,
+  resolveInviteAttribution,
+};
 
 /**
  * Adds a user to an event waitlist after applying the same block boundary as
  * booking. Kept server-side so block state is not exposed through rules.
  */
-export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
-  request
-) => {
+export async function joinEventWaitlistHandler(
+  request: CallableRequest<unknown>, deps: WaitlistDeps = defaultDeps
+): Promise<{waitlisted: boolean}> {
   const userId = requireAuth(request);
   const {eventId, inviteCode, inviteLinkId} =
     validateCallableWithAjv<EventIdCallablePayload>(
@@ -62,9 +77,9 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       normalizeEventIdPayload
     );
 
-  const db = admin.firestore();
-  await checkRateLimit(db, userId, "joinEventWaitlist");
-  const inviteAttribution = await resolveInviteAttribution({
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, userId, "joinEventWaitlist");
+  const inviteAttribution = await deps.resolveInviteAttribution({
     db,
     eventId,
     inviteLinkId,
@@ -211,15 +226,18 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
   });
 
   return {waitlisted: true};
-});
+}
+
+export const joinEventWaitlist = onCall(appCheckCallableOptions,
+  (request) => joinEventWaitlistHandler(request));
 
 /**
  * Removes the caller from an event waitlist through the same callable boundary
  * as joining, so clients never update the canonical event document directly.
  */
-export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
-  request
-) => {
+export async function leaveEventWaitlistHandler(
+  request: CallableRequest<unknown>, deps: WaitlistDeps = defaultDeps
+): Promise<{waitlisted: boolean}> {
   const userId = requireAuth(request);
   const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
     request,
@@ -227,8 +245,8 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
     normalizeEventIdPayload
   );
 
-  const db = admin.firestore();
-  await checkRateLimit(db, userId, "leaveEventWaitlist");
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, userId, "leaveEventWaitlist");
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
@@ -302,4 +320,7 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
   });
 
   return {waitlisted: false};
-});
+}
+
+export const leaveEventWaitlist = onCall(appCheckCallableOptions,
+  (request) => leaveEventWaitlistHandler(request));

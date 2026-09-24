@@ -220,17 +220,19 @@ export async function prepareUserEventScheduleClaimInTransaction(
   return {apply: () => {
     if (applied) throw new Error("Schedule claim already applied.");
     applied = true;
-    for (const {slot, ref} of refs) tx.set(ref, {
-      ownerType: "user",
-      ownerId: params.uid,
-      slot,
-      eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
-      uid: params.uid,
-      startTimeMillis: params.startTimeMillis,
-      endTimeMillis: params.endTimeMillis,
-    });
+    for (const {slot, ref} of refs) {
+      tx.set(ref, {
+        ownerType: "user",
+        ownerId: params.uid,
+        slot,
+        eventId: params.eventId,
+        clubId: params.clubId,
+        organizerId: params.organizerId ?? params.clubId,
+        uid: params.uid,
+        startTimeMillis: params.startTimeMillis,
+        endTimeMillis: params.endTimeMillis,
+      });
+    }
   }};
 }
 

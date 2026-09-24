@@ -230,12 +230,86 @@ export class FirestoreSeatIdentityAuthority {
 }
 
 /**
+ * Read-only preparation for a Catch UID whose current phone comes from Admin
+ * Auth, not a form or client assertion. Writes are staged only after the
+ * booking transaction has completed every other authority read.
+ */
+export async function prepareCatchUidSeatIdentity(params: {
+  db: FirebaseFirestore.Firestore;
+  tx: FirebaseFirestore.Transaction;
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  currentAuthPhoneNumber: string | null;
+}): Promise<{identity: CanonicalSeatIdentity; apply: () => void}> {
+  const {db, tx, eventId, organizerId, uid} = params;
+  if (![eventId, organizerId, uid].every(validId)) {
+    throw new SeatIdentityAuthorityError("invalid",
+      "Invalid Catch seat scope.");
+  }
+  const phone = params.currentAuthPhoneNumber === null ? null :
+    currentPhone(params.currentAuthPhoneNumber);
+  const ledgerSnap = await tx.get(db.collection("eventSeatLedgers")
+    .doc(eventId));
+  const ledger = ledgerSnap.data();
+  if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
+      !Number.isSafeInteger(ledger.migrationRevision) ||
+      ledger.migrationRevision < 1) fail("Seat migration is not ready.");
+  const uidAliasRef = db.collection("eventSeatIdentityAliases")
+    .doc(seatIdentityAliasId(eventId, "uid", uid));
+  const proofRef = db.collection("eventSeatVerifiedPhones")
+    .doc(seatVerifiedPhoneProofId(eventId, uid));
+  const phoneAliasRef = phone === null ? null :
+    db.collection("eventSeatIdentityAliases")
+      .doc(seatIdentityAliasId(eventId, "phone", phone));
+  const [uidAliasSnap, proofSnap, phoneAliasSnap] = await Promise.all([
+    tx.get(uidAliasRef), tx.get(proofRef),
+    phoneAliasRef ? tx.get(phoneAliasRef) : Promise.resolve(null),
+  ]);
+  const uidAlias = uidAliasSnap.data();
+  const proof = proofSnap.data();
+  const phoneAlias = phoneAliasSnap?.data();
+  if (uidAlias || proof) {
+    if (!uidAlias || !proof || proof.phoneE164 !== phone) {
+      fail("Current Auth phone and persisted seat identity disagree.");
+    }
+    const identity = await new FirestoreSeatIdentityAuthority().resolve({
+      db, tx, eventId, organizerId, subject: {kind: "verifiedUid", uid},
+    });
+    if (!identity) fail("Current Catch seat identity is unavailable.");
+    return {identity, apply: () => undefined};
+  }
+  if (phone === null) {
+    fail("A verified current phone is required to enroll a new Catch seat.");
+  }
+  if (phoneAlias) {
+    fail("This phone already has a guest seat; link it before reserving.");
+  }
+  const key = "uid_" + hash([eventId, uid]).slice(0, 48);
+  const aliasBase = {eventId, organizerId, canonicalKey: key,
+    identityRevision: 1, migrationRevision: ledger.migrationRevision,
+    state: "ready"};
+  let applied = false;
+  return {identity: {key, revision: 1}, apply: () => {
+    if (applied) throw new Error("Catch identity enrollment already staged.");
+    applied = true;
+    tx.create(uidAliasRef, {...aliasBase, kind: "uid",
+      valueHash: seatIdentityValueHash("uid", uid)});
+    tx.create(phoneAliasRef!, {...aliasBase, kind: "phone",
+      valueHash: seatIdentityValueHash("phone", phone)});
+    tx.create(proofRef, {eventId, organizerId, uid,
+      phoneE164: phone, migrationRevision: ledger.migrationRevision,
+      state: "current"});
+  }};
+}
+
+/**
  * Attaches a verified UID to an existing guest reservation, without taking a
  * second seat. The caller must pass the current callable Auth token phone and
  * use this exact transaction for its public-registration attendee write.
  * Distinct existing UID seats remain a manual reconciliation conflict.
  */
-export async function linkVerifiedUidToGuestSeat(params: {
+export async function prepareVerifiedUidGuestSeatLink(params: {
   db: FirebaseFirestore.Firestore;
   tx: FirebaseFirestore.Transaction;
   eventId: string;
@@ -245,7 +319,7 @@ export async function linkVerifiedUidToGuestSeat(params: {
   authTokenPhoneNumber: string;
   now: FirebaseFirestore.Timestamp;
 }): Promise<{canonicalKey: string; ledgerRevision: number;
-  replayed: boolean}> {
+  replayed: boolean; apply: () => void}> {
   const {db, tx, eventId, organizerId, attendeeId, uid, now} = params;
   if (![eventId, organizerId, attendeeId, uid].every(validId)) {
     throw new SeatIdentityAuthorityError("invalid", "Invalid seat link.");
@@ -354,17 +428,30 @@ export async function linkVerifiedUidToGuestSeat(params: {
       fail("Verified UID already has another seat or stale evidence.");
     }
     return {canonicalKey: key, ledgerRevision: ledger.revision,
-      replayed: true};
+      replayed: true, apply: () => undefined};
   }
-  tx.create(uidAliasRef, {eventId, organizerId, kind: "uid",
-    valueHash: seatIdentityValueHash("uid", uid), canonicalKey: key,
-    identityRevision: attendeeAlias!.identityRevision,
-    migrationRevision: ledger.migrationRevision, state: "ready"});
-  tx.create(proofRef, {eventId, organizerId, uid,
-    phoneE164: normalized.value,
-    migrationRevision: ledger.migrationRevision, state: "current"});
-  tx.update(attendeeRef, {linkedUid: uid, linkedAt: now, updatedAt: now});
-  tx.update(ledgerRef, {revision: ledger.revision + 1});
+  let applied = false;
   return {canonicalKey: key, ledgerRevision: ledger.revision + 1,
-    replayed: false};
+    replayed: false, apply: () => {
+      if (applied) throw new Error("Guest seat link already staged.");
+      applied = true;
+      tx.create(uidAliasRef, {eventId, organizerId, kind: "uid",
+        valueHash: seatIdentityValueHash("uid", uid), canonicalKey: key,
+        identityRevision: attendeeAlias!.identityRevision,
+        migrationRevision: ledger.migrationRevision, state: "ready"});
+      tx.create(proofRef, {eventId, organizerId, uid,
+        phoneE164: normalized.value,
+        migrationRevision: ledger.migrationRevision, state: "current"});
+      tx.update(attendeeRef, {linkedUid: uid, linkedAt: now, updatedAt: now});
+      tx.update(ledgerRef, {revision: ledger.revision + 1});
+    }};
+}
+
+export async function linkVerifiedUidToGuestSeat(params: Parameters<
+  typeof prepareVerifiedUidGuestSeatLink>[0]): Promise<{
+  canonicalKey: string; ledgerRevision: number; replayed: boolean}> {
+  const prepared = await prepareVerifiedUidGuestSeatLink(params);
+  prepared.apply();
+  return {canonicalKey: prepared.canonicalKey,
+    ledgerRevision: prepared.ledgerRevision, replayed: prepared.replayed};
 }
