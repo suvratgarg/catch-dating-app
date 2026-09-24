@@ -66,7 +66,9 @@ function validateCommand(command: ConfigureEventOfferPreferencesCommand) {
         !["set", "clear", "inherit"].includes(intent.mode) ||
         key === "expectedAmountMinor" && intent.mode === "inherit" ||
         intent.mode === "set" && !Object.hasOwn(intent, "value") ||
-        intent.mode !== "set" && Object.hasOwn(intent, "value")) {
+        intent.mode !== "set" && Object.hasOwn(intent, "value") ||
+        Object.keys(intent).sort().join(",") !==
+          (intent.mode === "set" ? "mode,value" : "mode")) {
       throw new HttpsError("invalid-argument", "Invalid setting decision.");
     }
   }
