@@ -162,6 +162,7 @@ CatchField<T> _catchFieldStepper<T>({
   CatchContractFieldConstraints? contract,
   required num value,
   required ValueChanged<num>? onChanged,
+  VoidCallback? onClear,
   num? min,
   num? max,
   num? step,
@@ -191,6 +192,18 @@ CatchField<T> _catchFieldStepper<T>({
   final effectiveMin = CatchContractFieldPolicy.effectiveMinimum(contract, min);
   final effectiveMax = CatchContractFieldPolicy.effectiveMaximum(contract, max);
   final effectiveStep = CatchContractFieldPolicy.effectiveStep(contract, step);
+  final stepper = CatchStepper(
+    value: value,
+    min: effectiveMin,
+    max: effectiveMax,
+    step: effectiveStep,
+    unit: unit,
+    valueLabelBuilder: valueLabelBuilder,
+    decreaseSemanticLabel: decreaseSemanticLabel,
+    increaseSemanticLabel: increaseSemanticLabel,
+    enabled: status != CatchFieldStatus.saving,
+    onChanged: onChanged,
+  );
   return CatchField<T>.control(
     copy: copy,
     key: key,
@@ -211,18 +224,23 @@ CatchField<T> _catchFieldStepper<T>({
     emptyValueText: emptyValueText,
     error: error,
     errorText: errorText,
-    child: CatchStepper(
-      value: value,
-      min: effectiveMin,
-      max: effectiveMax,
-      step: effectiveStep,
-      unit: unit,
-      valueLabelBuilder: valueLabelBuilder,
-      decreaseSemanticLabel: decreaseSemanticLabel,
-      increaseSemanticLabel: increaseSemanticLabel,
-      enabled: status != CatchFieldStatus.saving,
-      onChanged: onChanged,
-    ),
+    child: onClear == null
+        ? stepper
+        : OverflowBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            overflowAlignment: OverflowBarAlignment.end,
+            spacing: CatchSpacing.s2,
+            children: [
+              IntrinsicWidth(child: stepper),
+              IconButton(
+                key: const ValueKey('catch-field-stepper-clear'),
+                tooltip: copy.clearTooltip(title),
+                constraints: CatchFieldTrailingRow.clearTargetConstraints,
+                icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
+                onPressed: status == CatchFieldStatus.saving ? null : onClear,
+              ),
+            ],
+          ),
   );
 }
 

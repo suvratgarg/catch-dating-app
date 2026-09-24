@@ -25,6 +25,10 @@ export interface ProgramHouseholdDocument {
    */
   deliveryPreference: "whatsapp" | "sms" | "email" | "none";
   /**
+   * Optional side assignment used for per-side counts and seating; labels are configured on the program.
+   */
+  side?: ("partnerA" | "partnerB" | "mutual") | null;
+  /**
    * Serialized Firestore Timestamp fixture shape.
    */
   createdAt: {

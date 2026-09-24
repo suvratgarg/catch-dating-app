@@ -91,6 +91,24 @@
       "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessStructureConfig",
       "x-catch-ownership": "callable-owned"
     },
+    "assignmentFeatureRules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {"$ref": "../shared/assignment_feature_common.schema.json#/definitions/featureRule"},
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureRevision": {
+      "type": "integer", "minimum": 0, "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureRequestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureConfigHash": {
+      "type": "string", "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300,

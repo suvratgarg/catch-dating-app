@@ -375,6 +375,11 @@ export {
   generateEventSuccessRotations,
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
+export {configureEventAssignmentFeatures,
+  listEventAssignmentFeatureChoices,
+  previewEventAssignmentFeatures,
+  setEventAssignmentFeatureConsent} from
+  "./eventSuccess/assignmentFeatureActions";
 export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
@@ -611,6 +616,7 @@ export {promoteFormCommunicationIntent} from
 
 export {getEventChatAccess, updateEventChatAccess}
   from "./chats/eventChatAccess";
+export {manageEventChatMember} from "./chats/manageEventChatMember";
 
 export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
   from "./chats/eventChatMessages";

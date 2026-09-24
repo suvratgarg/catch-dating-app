@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.149.0
-updated: 2026-09-23
+version: 1.150.0
+updated: 2026-09-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -2000,6 +2000,11 @@ replaces `eventParticipations`:
   ticket-buyer key shared by guests expected to arrive together. Adapters keep
   it separate from attendee-level external references, imports include it in
   their canonical payload hash, and it remains private roster data;
+- optional `cityMarketId` is a catalog-normalized, organizer-reported import
+  field with `citySource` provenance. The Host preview rejects unknown mapped
+  cities; re-imports preserve an existing city when omitted. This private roster
+  fact never updates a user's city, event admission, runtime profile, or
+  assignment readiness. Participant-owned runtime answers remain separate;
 - optional attendee revenue fields retain organizer-reported CSV amounts,
   explicit organizer-entered per-guest estimates, or financially complete
   provider facts with their currency and allocation provenance. Repeated equal
@@ -2499,7 +2504,10 @@ references are returned. Free responses have no payment row. Refund and manual
 review states remain financial facts and do not change application review.
 
 `findOrganizerFormPayment` resolves the public form id with a bounded unique
-lookup, then reads only the authenticated respondent's latest form payment.
+lookup, then scans a bounded recent window for the authenticated respondent's
+newest recoverable form payment. Newer expired or refunded attempts without a
+response do not conceal an earlier paid receipt or financial review; a
+saturated window fails explicitly instead of silently declaring no payment.
 Discovery does not call the provider or depend on the current published version,
 fee, availability or browser storage. Ended attempts without a response do not
 block a fresh start; completed responses remain recoverable, including refunds.
@@ -2790,6 +2798,38 @@ return a bounded JPEG preview rather than a reusable download URL. A second
 transaction rechecks all permissions and selected source revisions after image
 processing. Selection and viewing interfaces must discard stale cached values
 when the signed-in account changes or current permission fails.
+
+### Private Program Functions And Guests
+
+`programFunctionGuests/{functionGuestId}` is the per-function invitation,
+RSVP, and door-attendance join record under `organizerPrograms/{programId}`;
+the document id is the deterministic `${functionId}_${guestId}` join key so
+invites and reviewed responses upsert idempotently. Per-function truth lives
+only here: `programGuests.rsvpStatus` is a server-maintained rollup (any
+attending -> attending, else strongest other response) and writers never set
+it directly, and `programFunctions.expectedCount`/`checkedInCount` roll up
+`partySize` over attending and checked-in rows. `programFunctions` may carry
+`dressCode`, `instructions`, `venueLocation`, `invitationMode`
+(`allGuests` treats every invited program guest as implicitly invited,
+`selectedGuests` reads only rows marked `invited`), and `checkInEnabled`.
+
+`programStaffDuty` covers `programCoordinator`, `guestRelations`,
+`communications`, `functionCheckIn`, `functionLead`, `airportGreeter`,
+`transportDispatcher`, `hotelDesk`, `reconciliationViewer`, and
+`stakeholderViewer`; grant and invite duties may scope to `functionIds`,
+`pickupPointIds`, or `hotelIds`. `programHouseholds.side`
+(`partnerA`/`partnerB`/`mutual`) labels a household's side for reporting,
+with display labels configurable via `organizerPrograms.householdSideLabels`.
+`organizerPrograms.entitlement` snapshots the granted SKU's limits and
+capability allowlist at grant time so program-scoped limit checks do not
+drift with later catalog edits.
+
+`organizerCampaigns.recipientSource` names where recipients resolve:
+`savedAudience` (default, backed by `savedAudienceId`) or
+`programSelection`, which draws from programFunctionGuests/programGuests
+with function selection, RSVP-status filters, and household dedupe. The
+document field ships ahead of its callable payload and dispatcher wiring;
+clients cannot set it through `upsertOrganizerCampaign` today.
 
 ### Organizer Application Intake
 

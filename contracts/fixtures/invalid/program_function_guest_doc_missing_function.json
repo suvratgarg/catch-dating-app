@@ -1,0 +1,11 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "guestId": "guest-1",
+  "invited": true,
+  "rsvpStatus": "attending",
+  "attendanceStatus": "expected",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}

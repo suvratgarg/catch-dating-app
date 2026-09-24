@@ -3,7 +3,6 @@ import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -175,31 +174,6 @@ class SavedEventsAgendaSliver extends StatelessWidget {
             CatchLayout.detailScreenHorizontalPadding,
             CatchLayout.agendaListBottomPadding,
           ),
-    );
-  }
-}
-
-class SavedEventsLoading extends StatelessWidget {
-  const SavedEventsLoading({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const CustomScrollView(slivers: [EventAgendaSliverSkeleton()]);
-  }
-}
-
-class SavedEventsError extends StatelessWidget {
-  const SavedEventsError({super.key, required this.error, this.onRetry});
-
-  final Object error;
-  final VoidCallback? onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchLocalizedErrorState(
-      error,
-      context: AppErrorContext.event,
-      onRetry: onRetry,
     );
   }
 }

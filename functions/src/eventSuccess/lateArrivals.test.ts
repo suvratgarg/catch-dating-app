@@ -177,6 +177,8 @@ test("late insertion patches only an unpublished draft", async () => {
       uid: "guest-1",
       roundIndex: 1,
       baseAssignmentRevision: 4,
+      assignmentFeatureGuard: {revision: 1, configHash: "hash-1",
+        snapshots: [{uid: "guest-1", featureId: "feature-1"}]},
       assignment: {
         eventId: "event-1",
         organizerId: "club-1",
@@ -225,6 +227,10 @@ test("late insertion patches only an unpublished draft", async () => {
   assert.ok(firestore.docs.has(
     "eventSuccessAssignmentDrafts/event-1_guided_rotations_late-1"
   ));
+  assert.deepEqual(firestore.docs.get(
+    "eventSuccessAssignmentDrafts/event-1_guided_rotations_late-1"
+  )?.assignmentFeatureGuard, {revision: 1, configHash: "hash-1",
+    snapshots: []});
   assert.equal(
     firestore.docs.get("eventSuccessLateArrivals/event-1_late-1")?.status,
     "insertedIntoOpenPair"

@@ -748,7 +748,7 @@ void _registerExploreClubCardsTests() {
                     bottomHeight: const CatchTopBar.primaryRail(
                       title: 'Explore',
                     ).contentHeightFor(context),
-                    bottom: ExploreBrowseHeaderContent(
+                    bottom: _exploreCoverHeader(
                       query: container.read(exploreSearchQueryProvider),
                       onQueryChanged: (value) => container
                           .read(exploreSearchQueryProvider.notifier)

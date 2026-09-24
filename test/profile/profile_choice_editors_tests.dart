@@ -108,11 +108,13 @@ void _registerProfileChoiceEditorsTests() {
     final collapsedTileHeight = tester.getSize(emailTile).height;
 
     await tester.tap(emailTile);
+    await _pumpProfileSheet(tester);
     await tester.enterText(
       _editableTextForProfileField('Email'),
       'hi@catch.app',
     );
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    await _tapInlineDone(tester);
     await _pumpProfileSheet(tester);
 
     final expandedTileHeight = tester.getSize(emailTile).height;
@@ -133,7 +135,7 @@ void _registerProfileChoiceEditorsTests() {
     await tester.tap(heightTile);
     await _pumpProfileSheet(tester);
 
-    expect(tester.widget<CatchField>(heightTile).isOptional, isFalse);
+    expect(tester.widget<CatchField>(heightTile).isOptional, isTrue);
     expect(find.text('172 cm'), findsNWidgets(2));
     expect(find.text('120-220 cm'), findsNothing);
     expect(find.byTooltip('Decrease height'), findsOneWidget);
@@ -482,7 +484,7 @@ void _registerProfileChoiceEditorsTests() {
         of: educationTile,
         matching: find.textContaining('Optional'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
@@ -511,7 +513,7 @@ void _registerProfileChoiceEditorsTests() {
     expect(_catchChip(EducationLevel.highSchool.label), findsNothing);
   });
 
-  testWidgets('languages can clear the last value without Optional copy', (
+  testWidgets('languages can clear the last value with Optional copy', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository();
@@ -530,7 +532,7 @@ void _registerProfileChoiceEditorsTests() {
         of: languagesTile,
         matching: find.textContaining('Optional'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
     await tester.tap(_catchChip(Language.english.label));
     await _pumpProfileSheet(tester);

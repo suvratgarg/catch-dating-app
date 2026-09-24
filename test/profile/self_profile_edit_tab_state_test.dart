@@ -163,7 +163,15 @@ void main() {
               as CatchFormTextRow;
       expect(instagram.currentValue, 'suvrat_events');
       expect(instagram.currentFieldValue, 'suvrat_events');
-      expect(instagram.leadingUnit, '@');
+      expect(instagram.leadingUnit, isNull);
+      final handle = 'a' * 30;
+      var draft = TextEditingValue(text: '@$handle');
+      for (final formatter in instagram.effectiveInputFormatters!) {
+        draft = formatter.formatEditUpdate(TextEditingValue.empty, draft);
+      }
+      expect(draft.text, handle);
+      expect(instagram.validate(instagram.normalizeInput!(draft.text)), isNull);
+      expect(instagram.toFieldValue!(''), isNull);
 
       final height =
           state.basicRows.singleWhere((row) => row.id == 'height')
@@ -174,7 +182,7 @@ void main() {
           state.aboutRows.singleWhere((row) => row.id == 'education')
               as CatchFormSingleChoiceRow;
       expect(education.allowEmptySelection, isTrue);
-      expect(education.showOptionalLabel, isFalse);
+      expect(education.showOptionalLabel, isTrue);
 
       final religion =
           state.aboutRows.singleWhere((row) => row.id == 'religion')
@@ -186,7 +194,15 @@ void main() {
           state.aboutRows.singleWhere((row) => row.id == 'languages')
               as CatchFormMultiChoiceRow;
       expect(languages.allowEmptySelection, isTrue);
-      expect(languages.showOptionalLabel, isFalse);
+      expect(languages.showOptionalLabel, isTrue);
+
+      for (final id in ['city', 'relationshipGoal']) {
+        final row =
+            state.aboutRows.singleWhere((row) => row.id == id)
+                as CatchFormSingleChoiceRow;
+        expect(row.allowEmptySelection, isTrue);
+        expect(row.showOptionalLabel, isTrue);
+      }
 
       final paceRange =
           state.runningRows.first as SelfProfileRangeFieldRowDescriptor;

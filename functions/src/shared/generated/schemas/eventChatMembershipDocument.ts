@@ -40,7 +40,9 @@ export const eventChatMembershipDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "joined",
-        "left"
+        "left",
+        "removed",
+        "banned"
       ]
     },
     "revision": {
@@ -140,6 +142,48 @@ export const eventChatMembershipDocumentSchema: Record<string, unknown> = {
           "maximum": 999999999
         }
       }
+    },
+    "notificationsMuted": {
+      "type": "boolean"
+    },
+    "removedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "removedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "description": "Explicit room participation. Current admission and claimed identity must still be rechecked on every access.",

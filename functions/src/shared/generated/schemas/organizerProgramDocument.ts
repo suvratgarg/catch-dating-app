@@ -117,6 +117,114 @@ export const organizerProgramDocumentSchema: Record<string, unknown> = {
         ]
       }
     },
+    "entitlement": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sku",
+            "limits",
+            "capabilitiesAllowed",
+            "grantedAtMillis",
+            "receiptRef"
+          ],
+          "description": "Immutable copy of the organizer entitlement terms captured when the program was created; later plan changes do not rewrite program history.",
+          "properties": {
+            "sku": {
+              "type": "string",
+              "pattern": "^[a-z0-9_]{1,60}$",
+              "description": "Catalog key from contracts/catalogs/organizer_entitlement_skus.json at grant time."
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "guests",
+                "functions",
+                "staffAssignments",
+                "momentsPerFunction"
+              ],
+              "properties": {
+                "guests": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000
+                },
+                "functions": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "staffAssignments": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "momentsPerFunction": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 50
+                }
+              }
+            },
+            "capabilitiesAllowed": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "arrivalsTransport",
+                  "accommodation",
+                  "forms",
+                  "messaging"
+                ]
+              },
+              "description": "Ceiling on organizerPrograms.capabilities; an enabled capability must also appear here."
+            },
+            "grantedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "receiptRef": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180,
+              "description": "Manual invoice or checkout reference recorded by the granting admin."
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Immutable snapshot of the organizer entitlement terms captured at program creation. Absent on programs predating entitlements; owning callables treat absence as the unpaid default ceiling."
+    },
+    "householdSideLabels": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "partnerA": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "partnerB": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        }
+      },
+      "description": "Optional display labels for programHouseholds.side (such as bride/groom or two family names); defaults to generic partner labels."
+    },
     "transportSettings": {
       "type": "object",
       "additionalProperties": false,

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skeleton.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -27,54 +26,6 @@ Widget exploreSkeletonListStates(BuildContext context) {
           child: SingleChildScrollView(
             padding: CatchInsets.pageBody,
             child: ExploreFeedSkeleton(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory skeleton list',
-  type: ClubDirectorySkeletonList,
-  path: '[Explore]/Sections',
-)
-Widget clubDirectorySkeletonListStates(BuildContext context) {
-  return WidgetbookScrollCatalogFrame(
-    title: 'ClubDirectorySkeletonList',
-    catalogId: 'section.explore.list.directory_skeleton_list',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'loading stack',
-        child: const WidgetbookExploreDeviceFrame(
-          height: WidgetbookPreviewLayout.celebrationViewportHeight,
-          child: SingleChildScrollView(
-            padding: CatchInsets.pageBody,
-            child: ClubDirectorySkeletonList(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Directory skeleton card',
-  type: ClubDirectorySkeletonCard,
-  path: '[Explore]/Sections',
-)
-Widget clubDirectorySkeletonCardStates(BuildContext context) {
-  return WidgetbookScrollCatalogFrame(
-    title: 'ClubDirectorySkeletonCard',
-    catalogId: 'section.explore.list.directory_skeleton_card',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'single card',
-        child: const WidgetbookExploreDeviceFrame(
-          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-          child: Padding(
-            padding: CatchInsets.pageBody,
-            child: ClubDirectorySkeletonCard(),
           ),
         ),
       ),

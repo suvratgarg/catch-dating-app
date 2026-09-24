@@ -88,10 +88,15 @@ const schemaProgramAccessCallableResponseSchema = <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
               'programCoordinator',
+              'guestRelations',
+              'communications',
+              'functionCheckIn',
+              'functionLead',
               'airportGreeter',
               'hotelDesk',
               'transportDispatcher',
               'reconciliationViewer',
+              'stakeholderViewer',
             ],
           },
           'pickupPointIds': <String, Object?>{
@@ -115,6 +120,17 @@ const schemaProgramAccessCallableResponseSchema = <String, Object?>{
               'maxLength': 180,
             },
             'description': 'Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.',
+          },
+          'functionIds': <String, Object?>{
+            'type': 'array',
+            'maxItems': 64,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'description': 'Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed.',
           },
           'expiresAtMillis': <String, Object?>{
             'type': 'integer',

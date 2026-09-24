@@ -1643,6 +1643,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /programFunctionGuests/{functionGuestId} {
+      allow read, write: if false;
+    }
+
     match /programHouseholds/{householdId} {
       allow read, write: if false;
     }
@@ -2334,6 +2338,10 @@ service cloud.firestore {
         && resource.data.moduleId == 'guided_rotations'
         && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
+    }
+
+    match /eventAssignmentFeatureConsents/{consentId} {
+      allow read, write: if false;
     }
 
     match /eventSuccessPresence/{presenceId} {

@@ -40,6 +40,7 @@ class CatchFieldContentRow extends StatelessWidget {
     String? label,
     String? value,
     Widget? body,
+    String? labelError,
     String? supportText,
     String? counterText,
     CatchFieldContentRowStatus status = CatchFieldContentRowStatus.idle,
@@ -60,6 +61,7 @@ class CatchFieldContentRow extends StatelessWidget {
          label: label,
          value: value,
          body: body,
+         labelError: labelError,
          supportText: supportText,
          counterText: counterText,
          status: status,
@@ -167,6 +169,8 @@ class CatchFieldContentRow extends StatelessWidget {
       CatchFieldTone.normal => t.ink,
     };
     final supportColor = CatchFieldSupportRow.resolveColor(context, helperTone);
+    final labelError = content.labelError?.trim();
+    final hasLabelError = labelError?.isNotEmpty == true;
     final labelText = label?.trim();
     final valueText = value?.trim();
     final hasLabel = labelText != null && labelText.isNotEmpty;
@@ -208,7 +212,7 @@ class CatchFieldContentRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (hasLabel)
+        if (hasLabel || hasLabelError)
           Padding(
             key: const ValueKey<String>('catch-field-label-content'),
             padding: EdgeInsetsDirectional.only(end: headerTrailingReserve),
@@ -220,14 +224,19 @@ class CatchFieldContentRow extends StatelessWidget {
               ),
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: badgeLabel?.trim().isNotEmpty == true
+                child: hasLabelError
+                    ? Semantics(
+                        liveRegion: true,
+                        child: Text(labelError!, style: effectiveLabelStyle),
+                      )
+                    : badgeLabel?.trim().isNotEmpty == true
                     ? Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Flexible(
                             child: CatchFieldLabelText.inline(
                               copy: labelCopy,
-                              label: labelText,
+                              label: labelText!,
                               style: effectiveLabelStyle,
                               maxLines: titleMaxLines,
                               mode: isOptional
@@ -244,7 +253,7 @@ class CatchFieldContentRow extends StatelessWidget {
                       )
                     : CatchFieldLabelText.inline(
                         copy: labelCopy,
-                        label: labelText,
+                        label: labelText!,
                         style: effectiveLabelStyle,
                         maxLines: titleMaxLines,
                         mode: isOptional
@@ -301,6 +310,7 @@ typedef _FieldDescriptionContent = ({
 });
 
 typedef _FieldValueContent = ({
+  String? labelError,
   String? label,
   String? value,
   Widget? body,

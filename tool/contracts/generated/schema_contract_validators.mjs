@@ -225,6 +225,16 @@ import {
   updateEventChatAccessCallablePayloadSchema,
   getEventChatAccessCallableResponseSchema,
   updateEventChatAccessCallableResponseSchema,
+  manageEventChatMemberCallablePayloadSchema,
+  manageEventChatMemberCallableResponseSchema,
+  setEventAssignmentFeatureConsentCallablePayloadSchema,
+  setEventAssignmentFeatureConsentCallableResponseSchema,
+  configureEventAssignmentFeaturesCallablePayloadSchema,
+  configureEventAssignmentFeaturesCallableResponseSchema,
+  previewEventAssignmentFeaturesCallablePayloadSchema,
+  previewEventAssignmentFeaturesCallableResponseSchema,
+  listEventAssignmentFeatureChoicesCallablePayloadSchema,
+  listEventAssignmentFeatureChoicesCallableResponseSchema,
   listParticipantMessagingPreferencesCallablePayloadSchema,
   listParticipantMessagingPreferencesCallableResponseSchema,
   withdrawParticipantMessagingPermissionCallablePayloadSchema,
@@ -312,6 +322,7 @@ import {
   eventStaffGrantDocumentSchema,
   organizerProgramDocumentSchema,
   programFunctionDocumentSchema,
+  programFunctionGuestDocumentSchema,
   programGuestDocumentSchema,
   programHouseholdDocumentSchema,
   programStaffGrantDocumentSchema,
@@ -397,6 +408,7 @@ import {
   eventBroadcastDocumentSchema,
   eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
+  eventAssignmentFeatureConsentDocumentSchema,
   eventSuccessConversationGraphDocumentSchema,
   organizerEventSuccessLayoutDocumentSchema,
   organizerEventVenueDocumentSchema,
@@ -1065,6 +1077,16 @@ export const validateGetEventChatAccessCallablePayload = ajv.compile(getEventCha
 export const validateUpdateEventChatAccessCallablePayload = ajv.compile(updateEventChatAccessCallablePayloadSchema);
 export const validateGetEventChatAccessCallableResponse = ajv.compile(getEventChatAccessCallableResponseSchema);
 export const validateUpdateEventChatAccessCallableResponse = ajv.compile(updateEventChatAccessCallableResponseSchema);
+export const validateManageEventChatMemberCallablePayload = ajv.compile(manageEventChatMemberCallablePayloadSchema);
+export const validateManageEventChatMemberCallableResponse = ajv.compile(manageEventChatMemberCallableResponseSchema);
+export const validateSetEventAssignmentFeatureConsentCallablePayload = ajv.compile(setEventAssignmentFeatureConsentCallablePayloadSchema);
+export const validateSetEventAssignmentFeatureConsentCallableResponse = ajv.compile(setEventAssignmentFeatureConsentCallableResponseSchema);
+export const validateConfigureEventAssignmentFeaturesCallablePayload = ajv.compile(configureEventAssignmentFeaturesCallablePayloadSchema);
+export const validateConfigureEventAssignmentFeaturesCallableResponse = ajv.compile(configureEventAssignmentFeaturesCallableResponseSchema);
+export const validatePreviewEventAssignmentFeaturesCallablePayload = ajv.compile(previewEventAssignmentFeaturesCallablePayloadSchema);
+export const validatePreviewEventAssignmentFeaturesCallableResponse = ajv.compile(previewEventAssignmentFeaturesCallableResponseSchema);
+export const validateListEventAssignmentFeatureChoicesCallablePayload = ajv.compile(listEventAssignmentFeatureChoicesCallablePayloadSchema);
+export const validateListEventAssignmentFeatureChoicesCallableResponse = ajv.compile(listEventAssignmentFeatureChoicesCallableResponseSchema);
 export const validateListParticipantMessagingPreferencesCallablePayload = ajv.compile(listParticipantMessagingPreferencesCallablePayloadSchema);
 export const validateListParticipantMessagingPreferencesCallableResponse = ajv.compile(listParticipantMessagingPreferencesCallableResponseSchema);
 export const validateWithdrawParticipantMessagingPermissionCallablePayload = ajv.compile(withdrawParticipantMessagingPermissionCallablePayloadSchema);
@@ -1152,6 +1174,7 @@ export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSc
 export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
 export const validateOrganizerProgramDocument = ajv.compile(organizerProgramDocumentSchema);
 export const validateProgramFunctionDocument = ajv.compile(programFunctionDocumentSchema);
+export const validateProgramFunctionGuestDocument = ajv.compile(programFunctionGuestDocumentSchema);
 export const validateProgramGuestDocument = ajv.compile(programGuestDocumentSchema);
 export const validateProgramHouseholdDocument = ajv.compile(programHouseholdDocumentSchema);
 export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDocumentSchema);
@@ -1237,6 +1260,7 @@ export const validateCrossPathsPairHoldDocument = ajv.compile(crossPathsPairHold
 export const validateEventBroadcastDocument = ajv.compile(eventBroadcastDocumentSchema);
 export const validateEventWaitlistOfferDocument = ajv.compile(eventWaitlistOfferDocumentSchema);
 export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
+export const validateEventAssignmentFeatureConsentDocument = ajv.compile(eventAssignmentFeatureConsentDocumentSchema);
 export const validateEventSuccessConversationGraphDocument = ajv.compile(eventSuccessConversationGraphDocumentSchema);
 export const validateOrganizerEventSuccessLayoutDocument = ajv.compile(organizerEventSuccessLayoutDocumentSchema);
 export const validateOrganizerEventVenueDocument = ajv.compile(organizerEventVenueDocumentSchema);

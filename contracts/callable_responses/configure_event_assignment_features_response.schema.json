@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/configure_event_assignment_features_response.schema.json",
+  "title": "ConfigureEventAssignmentFeaturesCallableResponse",
+  "description": "Saved soft-feature configuration revision, never a participant authorization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "revision", "replayed"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "replayed": {"type": "boolean"}
+  }
+}

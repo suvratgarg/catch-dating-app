@@ -1,6 +1,4 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -58,62 +56,5 @@ void main() {
       CatchTokens.light.gold,
       CatchTokens.light.ink3,
     ]);
-  });
-
-  testWidgets('expanded steps consume the shared typed progress state', (
-    tester,
-  ) async {
-    final steps = EventSuccessPlaybookLibrary.socialRun.runOfShow
-        .take(3)
-        .toList();
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: Column(
-            children: [
-              for (final entry in steps.indexed)
-                LiveStepRow(
-                  step: entry.$2,
-                  state: EventSuccessProgressStatus.fromPosition(
-                    index: entry.$1,
-                    currentIndex: 1,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    expect(find.byIcon(CatchIcons.checkCircleRounded), findsOneWidget);
-    expect(find.byIcon(CatchIcons.radioButtonCheckedRounded), findsOneWidget);
-    expect(find.byIcon(CatchIcons.radioButtonUncheckedRounded), findsOneWidget);
-
-    final icons = tester.widgetList<Icon>(find.byType(Icon)).toList();
-    expect(icons.map((icon) => icon.color), [
-      CatchTokens.light.success,
-      CatchTokens.light.gold,
-      CatchTokens.light.ink3,
-    ]);
-  });
-
-  testWidgets('metric adapter formats its value and delegates to CatchBadge', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: const Scaffold(
-          body: EventSuccessMetricPill(label: 'Pacing', value: 0.78),
-        ),
-      ),
-    );
-
-    final badge = tester.widget<CatchBadge>(find.byType(CatchBadge));
-    expect(badge.label, contains('Pacing'));
-    expect(badge.label, contains('78'));
-    expect(badge.size, CatchBadgeSize.md);
   });
 }

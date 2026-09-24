@@ -20,6 +20,7 @@ import {validateEventChatReactionDocument as validReaction} from
 import {validateEventChatPresenceDocument as validPresence} from
   "../shared/generated/validators/eventChatPresenceDocument";
 import {blockDocId} from "../safety/blocking";
+import {chatHash} from "./eventChatMessageShared";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("event messages fence retries, protect replies and expire typing",
@@ -74,10 +75,16 @@ test("event messages fence retries, protect replies and expire typing",
       await change(host, "join", 0);
       await change(person, "join", 0);
       const firstRequest = message(host, "  Welcome everyone 👋  ");
-      const duplicates = await Promise.all([send(firstRequest, deps),
-        send(firstRequest, deps)]);
+      const candidates: {eventId: string; messageId: string}[] = [];
+      const sendDeps = {...deps, notificationDispatch: async (item: {
+        eventId: string; messageId: string}) => {
+        candidates.push(item);
+      }};
+      const duplicates = await Promise.all([send(firstRequest, sendDeps),
+        send(firstRequest, sendDeps)]);
       const first = duplicates[0];
       assert.deepEqual(duplicates.map((r) => r.replayed).sort(), [false, true]);
+      assert.deepEqual(candidates, [{eventId, messageId: first.messageId}]);
       assert.ok(validSend(first));
       assert.equal(first.sequence, 1);
       await assert.rejects(send({...firstRequest, data: {
@@ -105,6 +112,22 @@ test("event messages fence retries, protect replies and expire typing",
           await change(host, "open", 2);
           const next = await send(message(host, "Reopened"), deps);
           assert.equal(next.sequence, 4);
+        });
+      await t.test("distinct concurrent sends allocate unique ordered pages",
+        async () => {
+          const [a, b] = await Promise.all([
+            send(message(person, "Concurrent attendee update"), deps),
+            send(message(host, "Concurrent host update"), deps),
+          ]);
+          assert.deepEqual([a.sequence, b.sequence].sort((x, y) => x - y),
+            [5, 6]);
+          const newest = await page(person, null, 2);
+          assert.deepEqual(newest.messages.map((row) => row.sequence),
+            [6, 5]);
+          assert.equal(newest.nextBeforeSequence, 5);
+          const older = await page(person, newest.nextBeforeSequence, 2);
+          assert.deepEqual(older.messages.map((row) => row.sequence),
+            [4, 3]);
         });
       await t.test("one reaction per person, CAS and payload-bound replay",
         async () => {
@@ -207,6 +230,21 @@ test("event messages fence retries, protect replies and expire typing",
           paths.push(...flags.docs.map((d) => d.ref));
           assert.equal(flags.docs[0].data().status, "pending");
         });
+      await t.test("pre-change text receipt still replays", async () => {
+        const old = message(person, "Legacy replay");
+        const oldId = chatHash([eventId, person,
+          (old.data as {requestId: string}).requestId]);
+        const source = (await ref("eventChatMessages", first.messageId).get())
+          .data()!;
+        await ref("eventChatMessages", oldId).set({...source,
+          uid: person, sequence: 100, text: "Legacy replay",
+          replyToMessageId: null,
+          payloadHash: chatHash(["Legacy replay", null])});
+        assert.deepEqual(await send(old, deps), {messageId: oldId,
+          sequence: 100, replayed: true});
+        await assert.rejects(send({...old, data: {...old.data as object,
+          text: "Changed"}}, deps), {code: "already-exists"});
+      });
       await t.test("revocation and tombstones deny reads and writes",
         async () => {
           await assert.rejects(page(stranger), {code: "permission-denied"});

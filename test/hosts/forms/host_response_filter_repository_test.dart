@@ -4,6 +4,19 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('response page exposes the server-owned published version scope', () {
+    final page = HostFormResponsePage.fromCallableData(const {
+      'organizerId': 'org',
+      'items': <Object?>[],
+      'nextCursor': null,
+      'versionScope': {
+        'activeVersionId': 'form_v3',
+        'publishedVersion': 3,
+      },
+    });
+    expect(page.versionScope?.activeVersionId, 'form_v3');
+    expect(page.versionScope?.publishedVersion, 3);
+  });
   test(
     'multiple answers and combined questions survive pagination serialization',
     () async {
@@ -12,6 +25,7 @@ void main() {
       const request = HostFormResponseListRequest(
         organizerId: 'org',
         formId: 'form',
+        versionId: 'form_v2',
         answerFilters: {
           'city': {'Mumbai', 'Delhi'},
           'diet': {'vegetarian', 'vegan'},
@@ -19,6 +33,7 @@ void main() {
       );
       await repository.listResponses(request.copyWith(cursor: 'next'));
       expect(functions.payload['cursor'], 'next');
+      expect(functions.payload['versionId'], 'form_v2');
       expect(functions.payload['answerFilters'], [
         {
           'questionId': 'city',
@@ -29,6 +44,19 @@ void main() {
           'values': ['vegan', 'vegetarian'],
         },
       ]);
+      expect(request.copyWith(cursor: 'next').versionId, 'form_v2');
+      expect(
+        request,
+        isNot(const HostFormResponseListRequest(
+          organizerId: 'org',
+          formId: 'form',
+          versionId: 'form_v1',
+          answerFilters: {
+            'city': {'Mumbai', 'Delhi'},
+            'diet': {'vegetarian', 'vegan'},
+          },
+        )),
+      );
     },
   );
 }

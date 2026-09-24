@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -32,58 +31,6 @@ List<String> visibleClubTags(
       .toList(growable: false);
   if (limit == null || tags.length <= limit) return tags;
   return tags.take(limit).toList(growable: false);
-}
-
-class ClubMemberSeal extends StatelessWidget {
-  const ClubMemberSeal({
-    super.key,
-    required this.label,
-    required this.accent,
-    this.compact = false,
-  });
-
-  final String label;
-  final Color accent;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final size = compact
-        ? CatchLayout.clubMemberSealCompactExtent
-        : CatchLayout.clubMemberSealExtent;
-    final displayLabel = label.replaceFirst(' ', '\n');
-
-    return CatchSurface(
-      width: size,
-      height: size,
-      radius: CatchRadius.pill,
-      backgroundColor: t.surface.withValues(
-        alpha: compact
-            ? CatchOpacity.clubMemberSealCompactFill
-            : CatchOpacity.clubMemberSealFill,
-      ),
-      borderColor: accent.withValues(alpha: CatchOpacity.clubMemberSealBorder),
-      borderWidth: CatchStroke.avatarRing,
-      child: Padding(
-        padding: CatchInsets.iconChipContent,
-        child: Center(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              displayLabel,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.clubMemberSeal(
-                context,
-                color: compact ? CatchClubColors.compactMemberSealInk : accent,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class ClubTagWrap extends StatelessWidget {
@@ -156,24 +103,6 @@ class ClubHostIdentityLine extends StatelessWidget {
         ),
         if (trailing != null) ...[gapW10, trailing!],
       ],
-    );
-  }
-}
-
-class ClubHostRoleBadge extends StatelessWidget {
-  const ClubHostRoleBadge({super.key, required this.role});
-
-  final ClubHostRole role;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchBadge(
-      label: role == ClubHostRole.owner
-          ? context.l10n.clubsClubIdentityAtomsLabelOwner
-          : context.l10n.clubsClubIdentityAtomsLabelHost,
-      tone: role == ClubHostRole.owner
-          ? CatchBadgeTone.brand
-          : CatchBadgeTone.neutral,
     );
   }
 }

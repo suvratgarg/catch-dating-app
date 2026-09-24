@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 6,
-  "updated": "2026-07-18",
+  "version": 7,
+  "updated": "2026-09-24",
   "owner": "design_system",
   "goal": "Define production Flutter field surfaces that should converge on CatchField and CatchSection while preserving specialized controls.",
   "sourceDocs": [
@@ -288,13 +288,6 @@
       "reason": "The create-club photo widgets remain specialized children inside the completed CatchSection migration.",
       "anchors": [
         {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFieldLabelText", "expected": 2}
-      ]
-    },
-    {
-      "id": "FIELD-SURFACE-EXCLUSION-EVENT-SUCCESS-FEATURE-BLOCKS",
-      "reason": "Review-only feature-block composition; production host setup is tracked separately.",
-      "anchors": [
-        {"file": "lib/event_success/presentation/event_success_feature_blocks.dart", "symbol": "CatchChip.selectable", "expected": 1}
       ]
     }
   ]

@@ -345,6 +345,7 @@ extension _CatchFieldRendering on _CatchFieldState {
               headerTrailingReserve: _contentTrailingReserve,
               label: inlineAddAtRest ? null : _title,
               body: input,
+              labelError: error,
               status: error?.isNotEmpty == true
                   ? CatchFieldContentRowStatus.error
                   : _active
@@ -590,10 +591,29 @@ extension _CatchFieldRendering on _CatchFieldState {
                     savingLabel: widget.copy.savingLabel,
                     revealTargetKey: _actionBarRevealTargetKey,
                     loading: _isSaving,
+                    leading:
+                        widget._explicitSaveInput && widget.maxLength != null
+                        ? ValueListenableBuilder<TextEditingValue>(
+                            valueListenable: _controller,
+                            builder: (context, value, _) => Text(
+                              '${value.text.characters.length} / ${widget.maxLength}',
+                              key: const ValueKey('catch-field-action-counter'),
+                              style:
+                                  CatchTextStyles.monoLabel(
+                                    context,
+                                    color: t.ink3,
+                                  ).copyWith(
+                                    fontSize: CatchFieldTokens.counterFontSize,
+                                  ),
+                            ),
+                          )
+                        : null,
                     onCancel: _handleCancel,
                     onSubmit: _handleSubmit,
                   );
-            final rootError = _hasControl ? _displayError?.trim() : null;
+            final rootError = _hasControl && !widget._explicitSaveInput
+                ? _displayError?.trim()
+                : null;
             final content = Column(
               mainAxisSize: MainAxisSize.min,
               children: [

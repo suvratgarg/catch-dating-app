@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
@@ -41,6 +42,26 @@ String? chatRouteFromMessageData(Map<String, Object?> data) {
   final id = Uri.encodeComponent(matchId);
   if (AppConfig.appRole.isHost) return '/host/inbox/$id';
   return '/chats/$id';
+}
+
+/// Event-room pushes carry an event id, never a match id or network URL.
+String? eventChatRouteFromMessageData(Map<String, Object?> data) {
+  if (data['type'] != 'eventChatMessage') return null;
+  final eventId = data['eventId'];
+  if (eventId is! String ||
+      eventId.isEmpty ||
+      eventId.length > 180 ||
+      eventId.trim() != eventId ||
+      eventId == '.' ||
+      eventId == '..' ||
+      eventId.contains('/') ||
+      eventId.contains('\\')) {
+    return null;
+  }
+  return Routes.eventChatScreen.path.replaceFirst(
+    ':eventId',
+    Uri.encodeComponent(eventId),
+  );
 }
 
 String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
@@ -97,12 +118,16 @@ String? organizerRouteFromMessageData(Map<String, Object?> data) {
   return '/organizers/$organizerId';
 }
 
-String? routeFromMessageData(Map<String, Object?> data) =>
-    hostEventManageRouteFromMessageData(data) ??
-    chatRouteFromMessageData(data) ??
-    eventCompanionRouteFromMessageData(data) ??
-    eventDetailRouteFromMessageData(data) ??
-    organizerRouteFromMessageData(data);
+String? routeFromMessageData(Map<String, Object?> data) {
+  if (data['type'] == 'eventChatMessage') {
+    return eventChatRouteFromMessageData(data);
+  }
+  return hostEventManageRouteFromMessageData(data) ??
+      chatRouteFromMessageData(data) ??
+      eventCompanionRouteFromMessageData(data) ??
+      eventDetailRouteFromMessageData(data) ??
+      organizerRouteFromMessageData(data);
+}
 
 void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
   final route = routeFromMessageData(data);

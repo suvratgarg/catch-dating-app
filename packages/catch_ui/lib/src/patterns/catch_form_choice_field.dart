@@ -33,6 +33,17 @@ class _CatchFormChoiceFieldState<P, T>
     extends State<CatchFormChoiceField<P, T>> {
   late Set<T> _selected = widget.descriptor.selectedValues;
   final _saveState = CatchFormSaveState();
+  Set<T>? _committed;
+
+  Set<T> get _savedSelection => _committed ?? widget.descriptor.selectedValues;
+
+  @override
+  void initState() {
+    super.initState();
+    _saveState.addListener(_saveChanged);
+  }
+
+  void _saveChanged() => setState(() {});
 
   @override
   void didUpdateWidget(CatchFormChoiceField<P, T> oldWidget) {
@@ -43,6 +54,7 @@ class _CatchFormChoiceFieldState<P, T>
           oldWidget.descriptor.selectedValues,
           widget.descriptor.selectedValues,
         )) {
+      _committed = null;
       _selected = widget.descriptor.selectedValues;
     }
   }
@@ -55,7 +67,7 @@ class _CatchFormChoiceFieldState<P, T>
 
   void _cancel() {
     setState(() {
-      _selected = widget.descriptor.selectedValues;
+      _selected = Set.of(_savedSelection);
       _saveState.reset();
     });
     widget.scope.collapse();
@@ -63,45 +75,18 @@ class _CatchFormChoiceFieldState<P, T>
 
   Future<void> _submit() async {
     if (_saveState.saving) return;
-    final current = widget.descriptor.selectedValues;
+    final current = _savedSelection;
     if (_selected.length == current.length && _selected.containsAll(current)) {
       _cancel();
       return;
     }
-    setState(() {
-      _saveState
-        ..saving = true
-        ..error = null
-        ..status = CatchFieldStatus.saving;
-    });
-    try {
-      final saved = await widget.scope.save(
-        widget.descriptor.patchForSelection(_selected),
-      );
-      if (!mounted) return;
-      if (!saved) {
-        setState(() {
-          _saveState
-            ..saving = false
-            ..status = CatchFieldStatus.idle;
-        });
-        return;
-      }
-      setState(() {
-        _saveState
-          ..saving = false
-          ..status = CatchFieldStatus.saved;
-      });
-      widget.scope.collapse();
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _saveState
-          ..saving = false
-          ..status = CatchFieldStatus.idle
-          ..error = error;
-      });
-    }
+    final selection = Set<T>.of(_selected);
+    final saved = await _saveState.submit(
+      () => widget.scope.save(widget.descriptor.patchForSelection(selection)),
+    );
+    if (!saved || !mounted) return;
+    _committed = selection;
+    widget.scope.collapse();
   }
 
   @override
@@ -110,7 +95,14 @@ class _CatchFormChoiceFieldState<P, T>
     final error = _saveState.error;
     final addable = _selected.isEmpty && descriptor.isAddAffordanceWhenEmpty;
     return CatchField<T>.choices(
-      copy: widget.scope.fieldCopy,
+      copy:
+          descriptor.allowEmptySelection &&
+              _selected.isEmpty &&
+              _savedSelection.isNotEmpty
+          ? widget.scope.fieldCopy.copyWith(
+              doneLabel: widget.scope.fieldCopy.clearLabel,
+            )
+          : widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,
       emptyValueText: descriptor.emptyValueText,

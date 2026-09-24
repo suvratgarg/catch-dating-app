@@ -8,6 +8,13 @@
 export interface ListOrganizerFormResponsesCallableResponse {
   organizerId: string;
   /**
+   * Published native form version scope; null for all forms or imported forms. Version IDs are formId_vN for N from 1 through publishedVersion.
+   */
+  versionScope?: {
+    activeVersionId: string | null;
+    publishedVersion: number;
+  } | null;
+  /**
    * @maxItems 100
    */
   items: {

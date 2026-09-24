@@ -24,6 +24,9 @@ export interface ProgramGuestDocument {
    */
   externalReference: string | null;
   invitationStatus: "notInvited" | "invited" | "delivered" | "responded";
+  /**
+   * Derived program-wide rollup maintained by the server from programFunctionGuests rows (any attending -> attending, else strongest other response). Per-function truth lives only on programFunctionGuests; writers never set this directly.
+   */
   rsvpStatus: "pending" | "attending" | "declined" | "maybe";
   source: "manual" | "import" | "formResponse";
   /**

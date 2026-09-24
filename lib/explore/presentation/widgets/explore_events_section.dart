@@ -132,66 +132,6 @@ List<Widget> buildExploreEventsSlivers(
   };
 }
 
-/// Compatibility shim — earlier call sites used `const ExploreEventsSection()`
-/// as a single sliver. New call sites should prefer
-/// [buildExploreEventsSlivers] so the slivers are spread into the parent
-/// flat slivers list.
-class ExploreEventsSection extends StatelessWidget {
-  const ExploreEventsSection({
-    super.key,
-    this.feedAsync = const AsyncData(ExploreFeedViewModel(items: [])),
-    this.filters = const ExploreFilterSelection(),
-    this.searchQuery = '',
-    this.onRetry,
-    this.onClearSearch,
-    this.onClearFilters,
-    this.onSetTimeFilter,
-    this.onEventSelected,
-    this.onExternalEventOpened,
-    this.crossPathsSuggestions = const [],
-    this.onCrossPathsProfileSelected,
-    this.onCrossPathsImpression,
-    this.onClubSelected,
-  });
-
-  final AsyncValue<ExploreFeedViewModel> feedAsync;
-  final ExploreFilterSelection filters;
-  final String searchQuery;
-  final VoidCallback? onRetry;
-  final VoidCallback? onClearSearch;
-  final VoidCallback? onClearFilters;
-  final ValueChanged<ExploreTimeFilter>? onSetTimeFilter;
-  final ExploreEventSelected? onEventSelected;
-  final ValueChanged<ExploreExternalEventItem>? onExternalEventOpened;
-  final List<CrossPathsSuggestion> crossPathsSuggestions;
-  final CrossPathsProfileSelected? onCrossPathsProfileSelected;
-  final CrossPathsImpression? onCrossPathsImpression;
-  final ValueChanged<Club>? onClubSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final slivers = buildExploreEventsSlivers(
-      feedAsync,
-      l10n: context.l10n,
-      filters: filters,
-      searchQuery: searchQuery,
-      onRetry: onRetry,
-      onClearSearch: onClearSearch,
-      onClearFilters: onClearFilters,
-      onSetTimeFilter: onSetTimeFilter,
-      onEventSelected: onEventSelected,
-      onExternalEventOpened: onExternalEventOpened,
-      crossPathsSuggestions: crossPathsSuggestions,
-      onCrossPathsProfileSelected: onCrossPathsProfileSelected,
-      onCrossPathsImpression: onCrossPathsImpression,
-      onClubSelected: onClubSelected,
-      pinnedDayHeaders: false,
-    );
-    if (slivers.length == 1) return slivers.single;
-    return SliverMainAxisGroup(slivers: slivers);
-  }
-}
-
 class ExploreFeedContentSliver extends StatelessWidget {
   const ExploreFeedContentSliver({
     super.key,

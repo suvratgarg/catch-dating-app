@@ -62,6 +62,14 @@
       "format": "email",
       "maxLength": 320
     },
+    "cityMarketId": {
+      "description": "Private organizer-reported roster city; never a verified participant profile or eligibility input.",
+      "anyOf": [{"$ref": "../shared/profile_common.schema.json#/definitions/marketId"}, {"type": "null"}]
+    },
+    "citySource": {
+      "type": ["string", "null"],
+      "enum": ["hostImport", "hostManual", null]
+    },
     "externalReference": {
       "type": ["string", "null"],
       "minLength": 1,

@@ -204,11 +204,11 @@
               "kind": "route",
               "authority": {
                 "registry": "flutter_screens",
-                "id": "screen.catches.hub"
+                "id": "screen.dashboard.home"
               }
             }
           ],
-          "description": "Exits the current event deck to the preceding route or canonical Catches hub fallback."
+          "description": "Exits the current event deck to the preceding route or Dashboard fallback via the legacy Catches redirect."
         }
       ],
       "stateIds": [

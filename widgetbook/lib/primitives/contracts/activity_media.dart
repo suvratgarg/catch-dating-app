@@ -2,7 +2,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
@@ -191,81 +190,6 @@ Widget catchPolaroidContractStates(BuildContext context) {
           kicker: 'Crossed paths',
           name: 'A long profile name, 31',
           meta: 'Runner · Lower Parel',
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchActivityArt,
-  path: '[Core primitives]/Activity',
-)
-Widget catchActivityArtContractStates(BuildContext context) {
-  return WidgetbookContractFrame(
-    title: 'CatchActivityArt',
-    contractId: 'catch.activity_art',
-    states: const [
-      'default',
-      'activity-kind-variants',
-      'dim',
-      'with-overlay-child',
-      'custom-size',
-    ],
-    children: [
-      const WidgetbookContractStateCard(
-        label: 'default',
-        child: CatchActivityArt(activityKind: ActivityKind.socialRun),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'activity-kind-variants',
-        child: WidgetbookContractWrap(
-          children: [
-            SizedBox(
-              width: WidgetbookPreviewLayout.activityArtPairWidth,
-              child: CatchActivityArt(
-                activityKind: ActivityKind.pickleball,
-                height: WidgetbookPreviewLayout.activityArtPairHeight,
-              ),
-            ),
-            SizedBox(
-              width: WidgetbookPreviewLayout.activityArtPairWidth,
-              child: CatchActivityArt(
-                activityKind: ActivityKind.dinner,
-                height: WidgetbookPreviewLayout.activityArtPairHeight,
-              ),
-            ),
-          ],
-        ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'dim',
-        child: CatchActivityArt(activityKind: ActivityKind.pubQuiz, dim: true),
-      ),
-      WidgetbookContractStateCard(
-        label: 'with-overlay-child',
-        child: CatchActivityArt(
-          activityKind: ActivityKind.cycling,
-          dim: true,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: CatchBadge(label: 'Tonight', tone: CatchBadgeTone.gold),
-            ),
-          ),
-        ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'custom-size',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.activityArtCustomWidth,
-          child: CatchActivityArt(
-            activityKind: ActivityKind.yoga,
-            height: WidgetbookPreviewLayout.activityArtCustomHeight,
-            radius: CatchRadius.md,
-          ),
         ),
       ),
     ],

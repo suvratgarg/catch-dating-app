@@ -63,15 +63,6 @@ part 'create_event_draft_actions.dart';
 
 DateTime _systemNow() => DateTime.now();
 
-class CreateEventUnsavedChangesDialog extends StatelessWidget {
-  const CreateEventUnsavedChangesDialog({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const HostDraftExitDialog();
-  }
-}
-
 Future<HostDraftExitDecision?> showCreateEventUnsavedChangesDialog(
   BuildContext context,
 ) => showHostDraftExitDialog(context);

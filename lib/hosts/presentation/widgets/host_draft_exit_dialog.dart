@@ -23,19 +23,6 @@ List<CatchDialogAction<HostDraftExitDecision>> hostDraftExitDialogActions(
   ),
 ];
 
-class HostDraftExitDialog extends StatelessWidget {
-  const HostDraftExitDialog({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchDialog<HostDraftExitDecision>.confirmation(
-      title: context.l10n.hostsDraftExitTitle,
-      message: context.l10n.hostsDraftExitMessage,
-      actions: hostDraftExitDialogActions(context.l10n),
-    );
-  }
-}
-
 Future<HostDraftExitDecision?> showHostDraftExitDialog(BuildContext context) {
   return showCatchAdaptiveDialog<HostDraftExitDecision>(
     context: context,

@@ -336,6 +336,117 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       ],
       'x-catch-ownership': 'callable-owned',
     },
+    'assignmentFeatureRules': <String, Object?>{
+      'type': 'array',
+      'maxItems': 8,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'featureId',
+          'formId',
+          'versionId',
+          'questionId',
+          'transformVersion',
+          'kind',
+          'mode',
+          'weight',
+        ],
+        'properties': <String, Object?>{
+          'featureId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'formId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'versionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'questionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'transformVersion': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 1000000,
+          },
+          'kind': <String, Object?>{
+            'enum': <Object?>[
+              'category',
+              'set',
+              'number',
+              'ordinal',
+            ],
+          },
+          'mode': <String, Object?>{
+            'enum': <Object?>[
+              'preferSimilar',
+              'preferDifferent',
+              'balanceAcrossGroups',
+            ],
+          },
+          'weight': <String, Object?>{
+            'type': 'number',
+            'minimum': 0,
+            'maximum': 100,
+          },
+          'optionIds': <String, Object?>{
+            'type': 'array',
+            'maxItems': 40,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+          },
+          'scoreByOptionId': <String, Object?>{
+            'type': 'object',
+            'maxProperties': 40,
+            'propertyNames': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'additionalProperties': <String, Object?>{
+              'type': 'number',
+            },
+          },
+          'minimum': <String, Object?>{
+            'type': 'number',
+          },
+          'maximum': <String, Object?>{
+            'type': 'number',
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentFeatureRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentFeatureRequestId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentFeatureConfigHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
     'hostGoal': <String, Object?>{
       'type': 'string',
       'maxLength': 300,

@@ -27,7 +27,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          mode: HostEventParticipantsMode.live,
+          eventId: event.id,
+        ),
+      ),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(
@@ -233,7 +238,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          mode: HostEventParticipantsMode.live,
+          eventId: event.id,
+        ),
+      ),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(
@@ -251,7 +261,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          mode: HostEventParticipantsMode.live,
+          eventId: event.id,
+        ),
+      ),
       overrides: [
         attendanceSheetViewModelProvider(
           event.id,
@@ -281,7 +296,10 @@ void main() {
       Scaffold(
         body: SingleChildScrollView(
           // The panel is embedded in the event workspace's scroll owner.
-          child: HostEventAttendancePanel(eventId: event.id),
+          child: HostEventParticipantsPanel(
+            mode: HostEventParticipantsMode.live,
+            eventId: event.id,
+          ),
         ),
       ),
       overrides: [
