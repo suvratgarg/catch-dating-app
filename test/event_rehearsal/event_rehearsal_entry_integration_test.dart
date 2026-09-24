@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
