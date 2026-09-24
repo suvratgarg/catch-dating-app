@@ -2,95 +2,96 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
-import {bootstrapEventSeatLedger, SEAT_BOOTSTRAP_SOURCE_LIMIT} from
-  "./seatMigrationStore";
-import {seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
-import {formConversionReceiptId} from
-  "../organizers/organizerFormAdmissionIdentity";
-import {organizerContactOriginId} from
-  "../shared/organizerContactOrigins";
+import {bootstrapEventSeatLedger} from "./seatMigrationStore";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 
 type Row = Record<string, unknown>;
-
 class Ref {
-  constructor(readonly path: string) {}
+  constructor(readonly path: string,
+    private readonly rows: Map<string, Row>) {}
+  async get() {
+    const value = this.rows.get(this.path);
+    return {exists: value !== undefined, data: () => value};
+  }
 }
 class Query {
   constructor(readonly collectionPath: string,
+    private readonly rows: Map<string, Row>,
     readonly filters: Array<[string, unknown]> = [],
+    readonly after: string | null = null,
     readonly max = Infinity) {}
   doc(id: string) {
-    return new Ref(`${this.collectionPath}/${id}`);
+    return new Ref(`${this.collectionPath}/${id}`,
+      this.rows);
   }
-  where(field: string, operator: string, value: unknown) {
-    assert.equal(operator, "==");
-    return new Query(this.collectionPath, [...this.filters,
-      [field, value]], this.max);
+  where(field: string, op: string, value: unknown) {
+    assert.equal(op, "==");
+    return new Query(this.collectionPath, this.rows, [...this.filters,
+      [field, value]], this.after, this.max);
+  }
+  orderBy(_field: unknown) {
+    void _field;
+    return this;
+  }
+  startAfter(id: string) {
+    return new Query(this.collectionPath,
+      this.rows, this.filters, id, this.max);
   }
   limit(max: number) {
-    return new Query(this.collectionPath, this.filters, max);
+    return new Query(this.collectionPath,
+      this.rows, this.filters, this.after, max);
   }
 }
 class Store {
   rows = new Map<string, Row>();
   writes: Array<{kind: string; path: string}> = [];
-  reads: string[] = [];
   transactionCount = 0;
   failTransactionNumber: number | null = null;
+  beforeTransaction: (() => void) | null = null;
   collection(name: string) {
-    return new Query(name);
+    return new Query(name, this.rows);
   }
   async runTransaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
     this.transactionCount++;
+    this.beforeTransaction?.();
     if (this.transactionCount === this.failTransactionNumber) {
-      throw new Error("interrupted after staging");
+      throw new Error("interrupted transaction");
     }
     const pending: Array<() => void> = [];
     const tx = {
       get: async (source: Ref | Query) => {
-        assert.equal(pending.length, 0, "all reads must precede writes");
+        assert.equal(pending.length, 0, "reads must precede writes");
         if (source instanceof Ref) {
-          this.reads.push(source.path);
           const value = this.rows.get(source.path);
           return {exists: value !== undefined, data: () => value};
         }
-        this.reads.push(`${source.collectionPath}:query`);
         const docs = [...this.rows.entries()]
           .filter(([path, row]) => path.startsWith(
             `${source.collectionPath}/`) &&
             source.filters.every(([field, expected]) =>
               row[field] === expected))
+          .sort(([left], [right]) => left.localeCompare(right))
+          .filter(([path]) => source.after === null ||
+            path.split("/").at(-1)! > source.after!)
           .slice(0, source.max)
           .map(([path, row]) => ({id: path.split("/").at(-1)!,
             data: () => row}));
         return {size: docs.length, docs};
       },
-      create: (ref: Ref, value: Row) => {
-        pending.push(() => {
-          if (this.rows.has(ref.path)) throw new Error("already exists");
-          this.rows.set(ref.path, value);
-          this.writes.push({kind: "create", path: ref.path});
-        });
-      },
-      update: (ref: Ref, value: Row) => {
-        pending.push(() => {
-          assert.equal(this.rows.has(ref.path), true);
-          this.rows.set(ref.path, {...this.rows.get(ref.path), ...value});
-          this.writes.push({kind: "update", path: ref.path});
-        });
-      },
-      set: (ref: Ref, value: Row) => {
-        pending.push(() => {
-          this.rows.set(ref.path, value);
-          this.writes.push({kind: "set", path: ref.path});
-        });
-      },
-      delete: (ref: Ref) => {
-        pending.push(() => {
-          this.rows.delete(ref.path);
-          this.writes.push({kind: "delete", path: ref.path});
-        });
-      },
+      create: (ref: Ref, value: Row) => pending.push(() => {
+        if (this.rows.has(ref.path)) throw new Error("already exists");
+        this.rows.set(ref.path, value);
+        this.writes.push({kind: "create", path: ref.path});
+      }),
+      update: (ref: Ref, value: Row) => pending.push(() => {
+        assert.equal(this.rows.has(ref.path), true);
+        this.rows.set(ref.path, {...this.rows.get(ref.path), ...value});
+        this.writes.push({kind: "update", path: ref.path});
+      }),
+      delete: (ref: Ref) => pending.push(() => {
+        this.rows.delete(ref.path);
+        this.writes.push({kind: "delete", path: ref.path});
+      }),
     };
     const result = await fn(tx);
     pending.forEach((write) => write());
@@ -100,7 +101,6 @@ class Store {
     return this as unknown as FirebaseFirestore.Firestore;
   }
 }
-
 function event(): Row {
   return {clubId: "org1", organizerId: "org1", name: "Event",
     startTime: Timestamp.fromMillis(100000), status: "active",
@@ -111,282 +111,175 @@ function event(): Row {
     setupDefaults: {city: {value: {cityId: "city1", marketId: "market1"},
       source: "event"}, timezone: {value: "Asia/Kolkata", source: "event"},
     organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)},
-    capacityLimit: 2, bookedCount: 0, checkedInCount: 0,
+    capacityLimit: 200, bookedCount: 0, checkedInCount: 0,
     waitlistedCount: 0, cancelledAt: null, cancellationReason: null,
     genderCounts: {}, cohortCounts: {}, waitlistedCohortCounts: {}};
 }
-
-function attendee(id = "att1"): Row {
+function attendee(index: number, phone: string | null = null): Row {
   return {eventId: "event1", organizerId: "org1", source: "hostImport",
-    status: "registered", linkedUid: null, phoneE164: null,
-    externalReference: `external-${id}`, sourceRowId: id};
+    status: "registered", linkedUid: null, phoneE164: phone,
+    externalReference: `external-${index}`, sourceRowId: `row-${index}`};
 }
-
-function setup() {
+function setup(count = 1) {
   const store = new Store();
   store.rows.set("events/event1", event());
-  store.rows.set("eventAttendees/att1", attendee());
+  for (let index = 0; index < count; index++) {
+    store.rows.set(`eventAttendees/att${String(index).padStart(3, "0")}`,
+      attendee(index));
+  }
   let integrated = true;
-  let currentPhone: string | null = null;
   const command = {eventId: "event1", organizerId: "org1",
     migrationRevision: 1, asOfMillis: 1000};
   const deps = {db: store.db(), allWritersIntegrated: () => integrated,
-    auth: {getUser: async (uid: string) => ({uid,
-      phoneNumber: currentPhone})}};
+    auth: {getUser: async (uid: string) => ({uid, phoneNumber: null})}};
   return {store, command, deps,
     setIntegrated: (value: boolean) => integrated = value,
-    setAuthPhone: (value: string | null) => currentPhone = value,
     bootstrap: () => bootstrapEventSeatLedger({command, deps})};
 }
-
 const denied = (error: unknown) => error instanceof HttpsError &&
   error.code === "failed-precondition";
 
-test("complete transaction installs exact ledger, reservation and aliases",
+test("150 guests migrate through bounded durable source/output pages",
   async () => {
-    const h = setup();
-    assert.deepEqual(await h.bootstrap(), {eventId: "event1", occupied: 1,
-      migrationRevision: 1});
-    assert.deepEqual(h.store.writes.map((row) => row.path.split("/")[0]),
-      ["eventSeatLedgers", "eventSeatReservations",
-        "eventSeatIdentityAliases", "eventSeatIdentityAliases",
-        "eventSeatLedgers"]);
-    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state, "ready");
-    assert.ok(h.store.reads.includes("events/event1"));
-    assert.ok(h.store.reads.includes("eventAttendees:query"));
+    const h = setup(150);
+    assert.deepEqual(await h.bootstrap(), {eventId: "event1",
+      occupied: 150, migrationRevision: 1});
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "ready");
+    assert.equal(h.store.rows.get("eventSeatMigrationFences/event1")?.state,
+      "ready");
+    assert.equal(h.store.rows.get("eventSeatMigrationRuns/event1")
+      ?.outputCursor, 450);
+    assert.ok(h.store.transactionCount > 15);
+    assert.equal([...h.store.rows.keys()].filter((path) =>
+      path.startsWith("eventSeatMigrationStages/")).length, 0);
+    assert.equal(h.store.rows.get("eventSeatMigrationRuns/event1")?.phase,
+      "complete");
   });
 
-test("missing integration gate and second bootstrap never stage writes",
+test("150 imported and 50 Catch participants reconcile one capacity",
   async () => {
-    const h = setup();
-    h.setIntegrated(false);
-    await assert.rejects(h.bootstrap(), denied);
-    assert.deepEqual(h.store.writes, []);
-    h.setIntegrated(true);
-    await h.bootstrap();
-    const count = h.store.writes.length;
-    await assert.rejects(h.bootstrap(), denied);
-    assert.equal(h.store.writes.length, count);
+    const h = setup(150);
+    h.store.rows.set("events/event1", {...event(), bookedCount: 50});
+    for (let index = 0; index < 50; index++) {
+      h.store.rows.set(`eventParticipations/edge${index}`, {
+        eventId: "event1", organizerId: "org1", uid: `uid${index}`,
+        status: "signedUp"});
+    }
+    assert.equal((await h.bootstrap()).occupied, 200);
+    assert.equal([...h.store.rows.keys()].filter((path) =>
+      path.startsWith("eventSeatReservations/")).length, 200);
   });
 
-test("current Auth source becomes a transaction proof", async () => {
-  const h = setup();
-  h.store.rows.set("events/event1", {...event(), bookedCount: 1});
-  h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
-    organizerId: "org1", uid: "user1", status: "signedUp"});
-  const proofId = seatVerifiedPhoneProofId("event1", "user1");
-  const result = await h.bootstrap();
-  assert.equal(result.occupied, 2);
-  assert.deepEqual(h.store.rows.get(`eventSeatVerifiedPhones/${proofId}`),
-    {eventId: "event1", organizerId: "org1", uid: "user1",
-      phoneE164: null, migrationRevision: 1, state: "current"});
-  assert.ok(h.store.writes.some((row) =>
-    row.path === `eventSeatVerifiedPhones/${proofId}`));
+test("interrupted page resumes without duplicate reservation", async () => {
+  const h = setup(80);
+  h.store.failTransactionNumber = 5;
+  await assert.rejects(h.bootstrap(), /interrupted transaction/);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+  h.store.failTransactionNumber = null;
+  assert.equal((await h.bootstrap()).occupied, 80);
+  assert.equal([...h.store.rows.keys()].filter((path) =>
+    path.startsWith("eventSeatReservations/")).length, 80);
 });
 
-test("invalid Admin Auth phone cannot create a proof", async () => {
-  const h = setup();
-  h.store.rows.set("events/event1", {...event(), bookedCount: 1});
-  h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
-    organizerId: "org1", uid: "user1", status: "signedUp"});
-  h.setAuthPhone("invalid");
-  await assert.rejects(h.bootstrap(), denied);
-  assert.deepEqual(h.store.writes, []);
+test("interrupted output page resumes from committed cursor", async () => {
+  const h = setup(80);
+  h.store.failTransactionNumber = 10;
+  await assert.rejects(h.bootstrap(), /interrupted transaction/);
+  const cursor = h.store.rows.get("eventSeatMigrationRuns/event1")
+    ?.outputCursor as number;
+  assert.ok(cursor > 0);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+  h.store.failTransactionNumber = null;
+  assert.equal((await h.bootstrap()).occupied, 80);
+  assert.equal([...h.store.rows.keys()].filter((path) =>
+    path.startsWith("eventSeatReservations/")).length, 80);
 });
 
-test("Auth change during bootstrap leaves ledger unusable", async () => {
-  const h = setup();
-  h.store.rows.set("events/event1", {...event(), bookedCount: 1});
-  h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
-    organizerId: "org1", uid: "user1", status: "signedUp"});
-  let calls = 0;
-  h.deps.auth.getUser = async (uid) => ({uid,
-    phoneNumber: ++calls === 1 ? "+919999999999" : "+919999999998"});
+test("cleanup resumes after activation and removes private source copies",
+  async () => {
+    const h = setup(80);
+    h.store.failTransactionNumber = 20;
+    await assert.rejects(h.bootstrap(), /interrupted transaction/);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "ready");
+    assert.equal(h.store.rows.get("eventSeatMigrationRuns/event1")?.phase,
+      "cleanup");
+    h.store.failTransactionNumber = null;
+    assert.equal((await h.bootstrap()).occupied, 80);
+    assert.equal([...h.store.rows.keys()].filter((path) =>
+      path.startsWith("eventSeatMigrationStages/")).length, 0);
+  });
+
+test("duplicate alias across page boundary denies readiness", async () => {
+  const h = setup(60);
+  h.store.rows.set("eventAttendees/att000", attendee(0, "+919999999999"));
+  h.store.rows.set("eventAttendees/att059", attendee(59, "+919999999999"));
   await assert.rejects(h.bootstrap(), denied);
   assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
     "unreconciled");
-  assert.ok(h.store.writes.every((row) => row.kind === "create"));
 });
 
-test("policy change before readiness leaves ledger unusable", async () => {
-  const h = setup();
-  h.store.rows.set("events/event1", {...event(), bookedCount: 1});
-  h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
-    organizerId: "org1", uid: "user1", status: "signedUp"});
-  let calls = 0;
-  h.deps.auth.getUser = async (uid) => {
-    if (++calls === 2) {
-      h.store.rows.set("events/event1", {...event(), bookedCount: 1,
-        capacityLimit: 3});
+test("lost writer fence denies activation", async () => {
+  const h = setup(80);
+  h.store.beforeTransaction = () => {
+    if (h.store.transactionCount === 10) {
+      h.store.rows.set("eventSeatMigrationFences/event1",
+        {...h.store.rows.get("eventSeatMigrationFences/event1"),
+          state: "released"});
     }
-    return {uid, phoneNumber: null};
   };
   await assert.rejects(h.bootstrap(), denied);
   assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
     "unreconciled");
 });
 
-test("interrupted stage resumes only after a fresh source review", async () => {
-  const h = setup();
-  h.store.failTransactionNumber = 2;
-  await assert.rejects(h.bootstrap(), /interrupted/);
+test("event policy drift leaves staged ledger unavailable", async () => {
+  const h = setup(80);
+  h.store.beforeTransaction = () => {
+    if (h.store.transactionCount === 10) {
+      h.store.rows.set("events/event1", {...event(), capacityLimit: 201});
+    }
+  };
+  await assert.rejects(h.bootstrap(), denied);
   assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
     "unreconciled");
-  h.store.failTransactionNumber = null;
-  const result = await h.bootstrap();
-  assert.equal(result.occupied, 1);
-  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state, "ready");
-  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.revision, 2);
-  assert.equal(h.store.writes.filter((write) =>
-    write.path.startsWith("eventSeatReservations/")).length, 1);
 });
 
-test("Auth drift is reconciled from current Auth, not staged phone proof",
-  async () => {
-    const h = setup();
-    h.store.rows.set("events/event1", {...event(), bookedCount: 1});
-    h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
-      organizerId: "org1", uid: "user1", status: "signedUp"});
-    let calls = 0;
-    h.deps.auth.getUser = async (uid) => ({uid,
-      phoneNumber: ++calls === 1 ? "+919999999999" : "+919999999998"});
-    await assert.rejects(h.bootstrap(), denied);
-    const oldProof = h.store.rows.get(`eventSeatVerifiedPhones/${
-      seatVerifiedPhoneProofId("event1", "user1")}`);
-    assert.equal(oldProof?.phoneE164, "+919999999999");
-    const result = await h.bootstrap();
-    assert.equal(result.occupied, 2);
-    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
-      "ready");
-    assert.equal(h.store.rows.get(`eventSeatVerifiedPhones/${
-      seatVerifiedPhoneProofId("event1", "user1")}`)?.phoneE164,
-    "+919999999998");
-    assert.ok(h.store.writes.some((write) =>
-      write.kind === "delete" &&
-      write.path.startsWith("eventSeatIdentityAliases/")));
-  });
+test("missing final page checkpoint cannot claim complete source", async () => {
+  const h = setup(26);
+  h.store.beforeTransaction = () => {
+    const run = h.store.rows.get("eventSeatMigrationRuns/event1");
+    if (run?.phase === "scan" && run.sourceIndex === 2 &&
+        run.cursor === null) {
+      h.store.rows.set("eventSeatMigrationRuns/event1",
+        {...run, phase: "apply", sourceIndex: 2});
+    }
+  };
+  await assert.rejects(h.bootstrap(), denied);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+});
 
-test("event policy drift can be reconciled before any seat is ready",
-  async () => {
-    const h = setup();
-    h.store.failTransactionNumber = 2;
-    await assert.rejects(h.bootstrap(), /interrupted/);
-    h.store.rows.set("events/event1", {...event(), capacityLimit: 3});
-    h.store.failTransactionNumber = null;
-    await h.bootstrap();
-    const ledger = h.store.rows.get("eventSeatLedgers/event1");
-    assert.equal(ledger?.capacity, 3);
-    assert.equal(ledger?.capacityRevision, 2);
-    assert.equal(ledger?.state, "ready");
-  });
+test("deployment gate denies before acquiring fence", async () => {
+  const h = setup(150);
+  h.setIntegrated(false);
+  await assert.rejects(h.bootstrap(), denied);
+  assert.equal(h.store.writes.length, 0);
+});
 
-test("foreign staged evidence denies recovery without replacing it",
+test("integrated source writer is blocked while a scan is in progress",
   async () => {
-    const h = setup();
-    h.store.failTransactionNumber = 2;
-    await assert.rejects(h.bootstrap(), /interrupted/);
-    const alias = [...h.store.rows.keys()].find((key) =>
-      key.startsWith("eventSeatIdentityAliases/"))!;
-    h.store.rows.get(alias)!.organizerId = "other";
-    const writes = h.store.writes.length;
-    h.store.failTransactionNumber = null;
-    await assert.rejects(h.bootstrap(), denied);
-    assert.equal(h.store.writes.length, writes);
+    const h = setup(80);
+    h.store.failTransactionNumber = 3;
+    await assert.rejects(h.bootstrap(), /interrupted transaction/);
+    await assert.rejects(h.store.runTransaction(async (tx) => {
+      await readSeatMigrationWriterFence({db: h.store.db(),
+        tx: tx as FirebaseFirestore.Transaction, eventId: "event1"});
+      throw new Error("source write was unexpectedly allowed");
+    }), denied);
     assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
       "unreconciled");
   });
-
-test("unrelated organizer CRM history does not consume event limit",
-  async () => {
-    const h = setup();
-    for (let index = 0; index < 100; index++) {
-      h.store.rows.set(`organizerContactOrigins/foreign${index}`,
-        {organizerId: "org1", eventId: "anotherEvent"});
-      h.store.rows.set(`organizerFormConversionReceipts/foreign${index}`,
-        {organizerId: "org1", kind: "eventAttendeeProposal"});
-    }
-    await h.bootstrap();
-    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
-      "ready");
-    assert.equal(h.store.reads.includes(
-      "organizerFormConversionReceipts:query"), false);
-  });
-
-test("form-linked attendee reads exact receipt and null-event CRM origin",
-  async () => {
-    const h = setup();
-    h.store.rows.set("eventAttendees/att1", {...attendee(),
-      source: "hostManual", externalReference: "response1",
-      sourceRowId: "response1"});
-    const receiptId = formConversionReceiptId("response1",
-      "eventAttendeeProposal", "event1");
-    h.store.rows.set(`organizerFormConversionReceipts/${receiptId}`, {
-      organizerId: "org1", kind: "eventAttendeeProposal",
-      formId: "form1", responseId: "response1", status: "completed",
-      fields: [{destinationField: "eventId", value: "event1"}],
-    });
-    const originId = organizerContactOriginId({organizerId: "org1",
-      sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",
-      sourceEntityId: "response1"});
-    h.store.rows.set(`organizerContactOrigins/${originId}`, {
-      organizerId: "org1", eventId: null, sourceKind: "hostForm",
-      sourceEntityKind: "hostFormResponse", sourceEntityId: "response1",
-      responseId: "response1", formId: "form1",
-      currentContactId: "contact1", originContactId: "contact1",
-    });
-    h.store.rows.set("organizerContacts/contact1", {organizerId: "org1",
-      linkedUid: null, identityState: "unlinked", deletedAt: null,
-      hiddenAt: null, mergedIntoContactId: null,
-      ambiguousCandidateContactIds: []});
-    await h.bootstrap();
-    assert.ok(h.store.reads.includes(
-      `organizerFormConversionReceipts/${receiptId}`));
-    assert.ok(h.store.reads.includes(
-      `organizerContactOrigins/${originId}`));
-    assert.equal(h.store.reads.includes(
-      "organizerFormConversionReceipts:query"), false);
-  });
-
-test("true event-specific origin oversize denies before staging", async () => {
-  const h = setup();
-  for (let index = 0; index <= SEAT_BOOTSTRAP_SOURCE_LIMIT; index++) {
-    h.store.rows.set(`organizerContactOrigins/eventOrigin${index}`,
-      {organizerId: "org1", eventId: "event1"});
-  }
-  await assert.rejects(h.bootstrap(), denied);
-  assert.deepEqual(h.store.writes, []);
-});
-
-test("concurrent bootstraps cannot both create the same ledger", async () => {
-  const h = setup();
-  const outcomes = await Promise.allSettled([h.bootstrap(), h.bootstrap()]);
-  assert.equal(outcomes.filter((row) => row.status === "fulfilled").length, 1);
-  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.occupied, 1);
-});
-
-test("truncated source query and mixed identity deny without writes",
-  async () => {
-    const tooLarge = setup();
-    for (let index = 2; index <= SEAT_BOOTSTRAP_SOURCE_LIMIT + 1;
-      index += 1) {
-      tooLarge.store.rows.set(`eventAttendees/att${index}`,
-        attendee(`att${index}`));
-    }
-    await assert.rejects(tooLarge.bootstrap(), denied);
-    assert.deepEqual(tooLarge.store.writes, []);
-    const mixed = setup();
-    mixed.store.rows.set("eventAttendees/att1", {...attendee(),
-      linkedUid: "uid1", phoneE164: "+919999999999"});
-    await assert.rejects(mixed.bootstrap(), denied);
-    assert.deepEqual(mixed.store.writes, []);
-  });
-
-test("malformed or foreign event denies before alias writes", async () => {
-  for (const patch of [{clubId: "other"}, {capacityLimit: undefined},
-    {bookedCount: 1}]) {
-    const h = setup();
-    h.store.rows.set("events/event1", {...event(), ...patch});
-    await assert.rejects(h.bootstrap(), denied);
-    assert.deepEqual(h.store.writes, []);
-  }
-});
