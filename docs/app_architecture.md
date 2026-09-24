@@ -1980,7 +1980,7 @@ Candidate patterns:
 | Exception types | `lib/exceptions/app_exception.dart` |
 | Backend error wrapping | `lib/core/backend_error_util.dart` |
 | Frontend/local op context | `lib/core/app_error_context.dart` |
-| User-facing backend messages | `lib/core/backend_error_message.dart` |
+| User-facing backend messages | `lib/core/app_error_message.dart` (`appErrorDescriptor` / `appErrorMessage`) |
 | UI-facing title/message facade | `lib/core/app_error_message.dart` |
 | Central error logger and `AsyncErrorLogger` | `lib/exceptions/error_logger.dart` |
 | Analytics error events | `lib/core/analytics/app_analytics.dart` |
