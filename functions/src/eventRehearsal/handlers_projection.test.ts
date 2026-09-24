@@ -20,6 +20,8 @@ test("source rehearsal freezes synthetic movement", () => {
   );
   const setup = rehearsalSetupFromEvent({
     name: "Monsoon Miles",
+    publicationState: "private",
+    setupRevision: 1,
     clubId: "organizer-1",
     startTime,
     endTime,
@@ -90,6 +92,18 @@ test("source rehearsal freezes synthetic movement", () => {
     setup.movementSimulation?.lateArrivalGuidance,
     "Join at the next published stop: Water regroup."
   );
+});
+
+test("private basics cannot supply an invented rehearsal venue", () => {
+  assert.throws(() => rehearsalSetupFromEvent({
+    name: "Monsoon Miles",
+    clubId: "organizer-1",
+    publicationState: "private",
+    setupRevision: 1,
+    startTime: admin.firestore.Timestamp.fromMillis(
+      Date.parse("2026-08-25T10:00:00.000Z")
+    ),
+  } as EventDocument), /valid schedule and venue/);
 });
 
 test(

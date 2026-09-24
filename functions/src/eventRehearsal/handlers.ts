@@ -23,6 +23,7 @@ import {CallableRequest, HttpsError, onCall} from
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {adminRolesFromToken} from "../admin/adminAuth";
 import {requireAuth} from "../shared/auth";
+import {requireRuntimeVenueEvent} from "../events/configuredEvent";
 import {
   appCheckCallableOptions,
   appCheckCallableOptionsWithLimits,
@@ -1441,23 +1442,26 @@ async function sourceSetup(
       "The source event does not belong to this organizer."
     );
   }
+  const configuredEvent = requireRuntimeVenueEvent(event);
   const durationMinutes = Math.max(
     30,
     Math.min(360, Math.round(
-      (event.endTime.toMillis() - event.startTime.toMillis()) / 60000
+      (configuredEvent.endTime.toMillis() -
+        configuredEvent.startTime.toMillis()) / 60000
     ))
   );
-  const setup = rehearsalSetupFromEvent(event);
+  const setup = rehearsalSetupFromEvent(configuredEvent);
   return {
     clubId: event.clubId,
     revision: sha256(JSON.stringify({
       name: event.name ?? null,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: configuredEvent.endTime.toMillis(),
       meetingLocation: event.meetingLocation,
       itinerary: event.itinerary ?? [],
-      routePlan: event.eventFormat.activityDetails?.routePlan ?? null,
-      unitOutcome: eventSuccessPrimitivesFor(event.eventFormat).unitOutcome,
+      routePlan: configuredEvent.eventFormat.activityDetails?.routePlan ?? null,
+      unitOutcome: eventSuccessPrimitivesFor(
+        configuredEvent.eventFormat).unitOutcome,
     })).slice(0, 32),
     setup: {...setup, durationMinutes},
   };
@@ -1465,7 +1469,9 @@ async function sourceSetup(
 
 /** Builds a frozen rehearsal snapshot with synthetic movement only. */
 export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
-  const routePlan = event.eventFormat.activityDetails?.routePlan ?? null;
+  const configuredEvent = requireRuntimeVenueEvent(event);
+  const routePlan = configuredEvent.eventFormat.activityDetails?.routePlan ??
+    null;
   const itinerary = event.itinerary ?? [];
   const path = routePlan?.path ?? [];
   const trackingMode = routePlan?.version === 2 ?
@@ -1488,19 +1494,23 @@ export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
     item.kind === "stop" || item.kind === "finish" || Boolean(item.location)
   );
   return {
-    eventFormat: {...event.eventFormat, version: 1},
+    eventFormat: {...configuredEvent.eventFormat, version: 1},
     title: event.name?.trim() ||
-      `${activityLabel(event.eventFormat.activityKind)} dress rehearsal`,
-    locationName: event.meetingLocation.name || event.meetingPoint,
+      `${activityLabel(configuredEvent.eventFormat.activityKind)} ` +
+        "dress rehearsal",
+    locationName: configuredEvent.meetingLocation.name ||
+      configuredEvent.meetingPoint,
     durationMinutes: Math.max(
       30,
       Math.min(360, Math.round(
-        (event.endTime.toMillis() - event.startTime.toMillis()) / 60000
+        (configuredEvent.endTime.toMillis() -
+          configuredEvent.startTime.toMillis()) / 60000
       ))
     ),
     hostGoal: "Help every guest understand what happens next.",
     attendeePrompt: "Introduce yourself to someone you have not met yet.",
-    unitOutcome: eventSuccessPrimitivesFor(event.eventFormat).unitOutcome,
+    unitOutcome: eventSuccessPrimitivesFor(
+      configuredEvent.eventFormat).unitOutcome,
     moduleIds: [
       "arrival",
       "firstHello",
@@ -1518,7 +1528,7 @@ export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
         livePositions,
         lateArrivalGuidance: nextStop ?
           `Join at the next published stop: ${nextStop.title}.` :
-          `Meet the route lead at ${event.meetingLocation.name}.`,
+          `Meet the route lead at ${configuredEvent.meetingLocation.name}.`,
       },
     } : {}),
   };
@@ -2223,7 +2233,7 @@ function safeHashEquals(expected: string, actual: string): boolean {
   return timingSafeEqual(Buffer.from(expected), Buffer.from(actual));
 }
 
-function activityLabel(value: EventDocument["discoveryActivityKind"]): string {
+function activityLabel(value: string): string {
   return value.replace(/([a-z])([A-Z])/gu, "$1 $2")
     .replace(/^./u, (letter) => letter.toUpperCase());
 }
