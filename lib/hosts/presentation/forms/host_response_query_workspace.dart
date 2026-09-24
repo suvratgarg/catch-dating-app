@@ -306,7 +306,8 @@ class _HostResponseQueryWorkspaceState
                   CatchField.content(
                     key: ValueKey('query-response-${row.responseId}'),
                     copy: catchFieldCopy(context.l10n),
-                    title: row.identity.primaryLabel,
+                    title: row.identity.primaryLabel ??
+                        context.l10n.hostFormResponsesAnonymous,
                     body: row.status.name == 'withdrawn'
                         ? copy.withdrawn
                         : row.formTitle,

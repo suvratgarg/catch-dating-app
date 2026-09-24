@@ -77,12 +77,12 @@ class HostEventOfferController extends ChangeNotifier {
     required DateTime now,
     required DateTime eventStartsAt,
   }) async {
-    draft.validate(now: now, eventStartsAt: eventStartsAt);
     final generation = ++_generation;
     _publish(
       HostOfferFlowView(status: HostOfferFlowStatus.previewing, draft: draft),
     );
     try {
+      draft.validate(now: now, eventStartsAt: eventStartsAt);
       final preview = await _gateway.preview(draft);
       if (!_isCurrent(generation)) return;
       if (preview.rows.length != draft.rows.length ||
