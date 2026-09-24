@@ -325,6 +325,7 @@ export {eventStaffGrantDocumentSchema} from "./schemas/eventStaffGrantDocument";
 export {organizerProgramDocumentSchema} from "./schemas/organizerProgramDocument";
 export {programFunctionDocumentSchema} from "./schemas/programFunctionDocument";
 export {programFunctionGuestDocumentSchema} from "./schemas/programFunctionGuestDocument";
+export {programDoorJournalDocumentSchema} from "./schemas/programDoorJournalDocument";
 export {programGuestDocumentSchema} from "./schemas/programGuestDocument";
 export {programHouseholdDocumentSchema} from "./schemas/programHouseholdDocument";
 export {programStaffGrantDocumentSchema} from "./schemas/programStaffGrantDocument";
@@ -352,6 +353,7 @@ export {listProgramStaffCallablePayloadSchema} from "./schemas/listProgramStaffI
 export {listProgramTripsCallablePayloadSchema} from "./schemas/listProgramTripsInput";
 export {listProgramGuestsCallablePayloadSchema} from "./schemas/listProgramGuestsInput";
 export {upsertProgramHouseholdCallablePayloadSchema} from "./schemas/upsertProgramHouseholdInput";
+export {recordProgramDoorJournalCallablePayloadSchema} from "./schemas/recordProgramDoorJournalInput";
 export {upsertProgramFunctionCallablePayloadSchema} from "./schemas/upsertProgramFunctionInput";
 export {upsertProgramPickupPointCallablePayloadSchema} from "./schemas/upsertProgramPickupPointInput";
 export {upsertProgramHotelCallablePayloadSchema} from "./schemas/upsertProgramHotelInput";
@@ -376,6 +378,7 @@ export {programGuestListCallableResponseSchema} from "./schemas/programGuestList
 export {programArrivalsRosterCallableResponseSchema} from "./schemas/programArrivalsRosterOutput";
 export {programTransportPlanCallableResponseSchema} from "./schemas/programTransportPlanOutput";
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";
+export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
 export {programManifestImportCallableResponseSchema} from "./schemas/programManifestImportOutput";
 export {dispatchProgramTripCallableResponseSchema} from "./schemas/dispatchProgramTripOutput";
 export {transportVendorListCallableResponseSchema} from "./schemas/transportVendorListOutput";

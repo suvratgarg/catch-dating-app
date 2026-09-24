@@ -101,6 +101,14 @@ class FakeTransaction {
   set(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.setDoc(ref.path, data));
   }
+  create(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => {
+      if (this.firestore.getDoc(ref.path) !== undefined) {
+        throw new Error(`Document already exists: ${ref.path}`);
+      }
+      this.firestore.setDoc(ref.path, data);
+    });
+  }
   update(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.updateDoc(ref.path, data));
   }

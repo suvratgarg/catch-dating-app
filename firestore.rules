@@ -1647,6 +1647,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /programDoorJournal/{journalId} {
+      allow read, write: if false;
+    }
+
     match /programHouseholds/{householdId} {
       allow read, write: if false;
     }

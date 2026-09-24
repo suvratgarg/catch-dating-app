@@ -2813,6 +2813,16 @@ it directly, and `programFunctions.expectedCount`/`checkedInCount` roll up
 (`allGuests` treats every invited program guest as implicitly invited,
 `selectedGuests` reads only rows marked `invited`), and `checkInEnabled`.
 
+`programDoorJournal/{journalId}` is the append-only door-attendance fact
+log: `recordProgramDoorJournal` hashes each operation's scope, function,
+guest, action, timestamp, and actor into the document id so device retries
+and offline outbox replays collapse onto one entry. Every appended fact
+also updates the `programFunctionGuests` row and recomputes
+`programFunctions.checkedInCount` inside the same transaction; rejected
+operations report per-operation reasons (`alreadyCheckedIn`,
+`notCheckedIn`, `functionCheckInDisabled`, `duplicateJournalId`,
+`invalidTransition`) without blocking the batch's valid writes.
+
 `programStaffDuty` covers `programCoordinator`, `guestRelations`,
 `communications`, `functionCheckIn`, `functionLead`, `airportGreeter`,
 `transportDispatcher`, `hotelDesk`, `reconciliationViewer`, and

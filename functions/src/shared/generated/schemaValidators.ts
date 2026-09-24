@@ -325,6 +325,7 @@ export {validateEventStaffGrantDocument} from "./validators/eventStaffGrantDocum
 export {validateOrganizerProgramDocument} from "./validators/organizerProgramDocument";
 export {validateProgramFunctionDocument} from "./validators/programFunctionDocument";
 export {validateProgramFunctionGuestDocument} from "./validators/programFunctionGuestDocument";
+export {validateProgramDoorJournalDocument} from "./validators/programDoorJournalDocument";
 export {validateProgramGuestDocument} from "./validators/programGuestDocument";
 export {validateProgramHouseholdDocument} from "./validators/programHouseholdDocument";
 export {validateProgramStaffGrantDocument} from "./validators/programStaffGrantDocument";
@@ -352,6 +353,7 @@ export {validateListProgramStaffCallablePayload} from "./validators/listProgramS
 export {validateListProgramTripsCallablePayload} from "./validators/listProgramTripsInput";
 export {validateListProgramGuestsCallablePayload} from "./validators/listProgramGuestsInput";
 export {validateUpsertProgramHouseholdCallablePayload} from "./validators/upsertProgramHouseholdInput";
+export {validateRecordProgramDoorJournalCallablePayload} from "./validators/recordProgramDoorJournalInput";
 export {validateUpsertProgramFunctionCallablePayload} from "./validators/upsertProgramFunctionInput";
 export {validateUpsertProgramPickupPointCallablePayload} from "./validators/upsertProgramPickupPointInput";
 export {validateUpsertProgramHotelCallablePayload} from "./validators/upsertProgramHotelInput";
@@ -376,6 +378,7 @@ export {validateProgramGuestListCallableResponse} from "./validators/programGues
 export {validateProgramArrivalsRosterCallableResponse} from "./validators/programArrivalsRosterOutput";
 export {validateProgramTransportPlanCallableResponse} from "./validators/programTransportPlanOutput";
 export {validateProgramHotelInboundCallableResponse} from "./validators/programHotelInboundOutput";
+export {validateRecordProgramDoorJournalCallableResponse} from "./validators/recordProgramDoorJournalOutput";
 export {validateProgramManifestImportCallableResponse} from "./validators/programManifestImportOutput";
 export {validateDispatchProgramTripCallableResponse} from "./validators/dispatchProgramTripOutput";
 export {validateTransportVendorListCallableResponse} from "./validators/transportVendorListOutput";
