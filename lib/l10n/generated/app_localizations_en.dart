@@ -5989,6 +5989,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostEventsListLabelNewEvent => 'Create event';
 
   @override
+  String get hostsHostEventsListLabelUseGuestList => 'Use guest list';
+
+  @override
   String get hostsHostEventEntrySheetSectionContinueExisting => 'Continue';
 
   @override
@@ -6000,6 +6003,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostEventEntrySheetTitleRepeatLastEvent =>
       'Repeat last event';
+
+  @override
+  String get hostsHostEventEntrySheetTitleSellTicketsWithCatch =>
+      'Sell tickets with Catch';
 
   @override
   String hostsHostEventEntrySheetBodySavedDraftCount({required int count}) {
@@ -6018,6 +6025,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Reuse the setup from $eventTitle and choose a new date.';
   }
+
+  @override
+  String get hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments =>
+      'Tickets, waitlist, and payments in one place.';
+
+  @override
+  String get hostsHostEventEntrySheetBodyImportCsvOrXlsx =>
+      'Import CSV or XLSX; ticketing stays on your existing platform.';
 
   @override
   String get hostEventsUpcomingTab => 'Upcoming';
@@ -21263,190 +21278,5 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostsOperationalRosterIssueInvalidCity({required int row}) {
     return 'Row $row: choose a supported city or leave it blank.';
-  }
-
-  @override
-  String get hostsPrivateEventEntryBody =>
-      'Save the basics, then add guests, registration and payments as needed.';
-
-  @override
-  String get hostsPrivateEventBasicsHeading => 'Start with the basics';
-
-  @override
-  String get hostsPrivateEventCity => 'City';
-
-  @override
-  String get hostsPrivateEventChooseCity => 'Choose a city';
-
-  @override
-  String get hostsPrivateEventTimezone => 'Timezone';
-
-  @override
-  String get hostsPrivateEventTimezoneHint => 'Asia/Kolkata';
-
-  @override
-  String get hostsPrivateEventTimezoneSuggestion =>
-      'Suggested by city. Review before saving.';
-
-  @override
-  String get hostsPrivateEventFromOrganizer => 'From organizer';
-
-  @override
-  String get hostsPrivateEventUseOrganizerCity => 'Use organizer city';
-
-  @override
-  String get hostsPrivateEventUseOrganizerTimezone => 'Use organizer timezone';
-
-  @override
-  String get hostsPrivateEventMoreBasics => 'More basics';
-
-  @override
-  String get hostsPrivateEventMoreBasicsBody =>
-      'Venue and end time can be added later';
-
-  @override
-  String get hostsPrivateEventAfterSave => 'After saving';
-
-  @override
-  String get hostsPrivateEventAfterSaveBody =>
-      'Add a venue and end time when you are ready to set up registration or a public listing.';
-
-  @override
-  String get hostsPrivateEventSaveHint =>
-      'The event is saved privately. You can link a form after saving.';
-
-  @override
-  String get hostsPrivateEventSaveContinue => 'Save & continue';
-
-  @override
-  String get hostsPrivateEventDefaultsChanged =>
-      'Organizer defaults changed. Review the city and timezone before saving.';
-
-  @override
-  String get hostsPrivateEventReviewDefaults => 'Review current defaults';
-
-  @override
-  String get hostsPrivateEventSavedTitle => 'Saved event';
-
-  @override
-  String get hostsPrivateEventPrivateTitle => 'Private';
-
-  @override
-  String get hostsPrivateEventPrivateBody =>
-      'Ready to link to forms. Registration and public listing are off.';
-
-  @override
-  String get hostsPrivateEventSetupHeading => 'Continue setup when you need it';
-
-  @override
-  String get hostsPrivateEventReturnResponses => 'Return to selected responses';
-
-  @override
-  String get hostsPrivateEventReturnResponsesBody =>
-      'Your selection stays in Responses.';
-
-  @override
-  String get hostsPrivateEventLinkForm => 'Link a registration form';
-
-  @override
-  String get hostsPrivateEventLinkFormBody =>
-      'Collect responses and offer places for this event.';
-
-  @override
-  String get hostsPrivateEventLinkFormUnavailable =>
-      'Event-bound form setup is not available yet.';
-
-  @override
-  String get hostsPrivateEventDetails => 'Event details';
-
-  @override
-  String get hostsPrivateEventDetailsBody =>
-      'Add a venue and end time when needed.';
-
-  @override
-  String get hostsPrivateEventDetailsUnavailable =>
-      'Venue and end-time editing is not available yet.';
-
-  @override
-  String get hostsPrivateEventImportGuests => 'Import a guest list';
-
-  @override
-  String get hostsPrivateEventImportGuestsBody =>
-      'Add existing registrations to the roster.';
-
-  @override
-  String get hostsPrivateEventImportGuestsUnavailable =>
-      'Private-event roster import is not available yet.';
-
-  @override
-  String get hostsPrivateEventCatchRegistration =>
-      'Accept registrations with Catch';
-
-  @override
-  String get hostsPrivateEventCatchRegistrationBody =>
-      'Choose the admission policy and check payment readiness.';
-
-  @override
-  String get hostsPrivateEventCatchRegistrationUnavailable =>
-      'Registration requires an admission policy and booking setup.';
-
-  @override
-  String get hostsPrivateEventPayments => 'Payments';
-
-  @override
-  String get hostsPrivateEventPaymentsBody =>
-      'Add external collection instructions.';
-
-  @override
-  String get hostsPrivateEventPaymentsUnavailable =>
-      'Event payment settings are not available yet.';
-
-  @override
-  String get hostsPrivateEventPublicListing => 'Public listing';
-
-  @override
-  String get hostsPrivateEventPublicListingBody => 'Not published.';
-
-  @override
-  String get hostsPrivateEventPublicListingUnavailable =>
-      'Not published. Add public details before listing.';
-
-  @override
-  String get hostsPrivateEventGuide => 'Live event guide';
-
-  @override
-  String get hostsPrivateEventGuideBody => 'Optional.';
-
-  @override
-  String get hostsPrivateEventGuideUnavailable =>
-      'Optional guide setup is not available yet.';
-
-  @override
-  String get hostsPrivateEventRosterNote =>
-      'Guests from imports and Catch registration can share one roster. Offers do not confirm attendance.';
-
-  @override
-  String get hostsEventDefaultsBasics => 'Basics';
-
-  @override
-  String get hostsEventDefaultsTimezoneHint =>
-      'Suggested for new events. Existing events keep their saved timezone.';
-
-  @override
-  String get hostsEventDefaultsChooseEachEvent => 'Choose on each event';
-
-  @override
-  String get hostsPrivateEventPendingRequest =>
-      'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.';
-
-  @override
-  String get hostsPrivateEventRetrySave => 'Retry the same save';
-
-  @override
-  String get hostsPrivateEventPendingRoster => 'Guest list ready to import';
-
-  @override
-  String hostsPrivateEventPendingRosterBody({required String fileName}) {
-    return '$fileName can be imported after event roster setup is available.';
   }
 }
