@@ -62,13 +62,15 @@ class HostResponseQueryWorkspaceCopy {
 class HostResponseQueryCapability {
   const HostResponseQueryCapability({
     required this.versionId,
-    required this.gateway,
     required this.copy,
+    this.gateway,
     this.onReviewSelection,
   });
 
   final String versionId;
-  final HostResponseQueryGateway gateway;
+  /// Optional test/custom gateway; the Forms panel creates one state-owned
+  /// repository when this capability is explicitly enabled by its route.
+  final HostResponseQueryGateway? gateway;
   final HostResponseQueryWorkspaceCopy copy;
   final void Function(List<String> ids, String resultHash)? onReviewSelection;
 }

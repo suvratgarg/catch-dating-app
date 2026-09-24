@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -6,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
@@ -71,7 +73,10 @@ class _HostFormResponsesPanelState
   void initState() {
     super.initState();
     if (widget.queryCapability case final capability?) {
-      _queryController = HostResponseQueryController(capability.gateway);
+      _queryController = HostResponseQueryController(
+        capability.gateway ??
+            HostResponseQueryRepository(ref.read(firebaseFunctionsProvider)),
+      );
     }
   }
 
@@ -84,12 +89,23 @@ class _HostFormResponsesPanelState
   @override
   void didUpdateWidget(covariant HostFormResponsesPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.queryCapability?.gateway != widget.queryCapability?.gateway) {
+    if (oldWidget.queryCapability?.gateway != widget.queryCapability?.gateway ||
+        oldWidget.queryCapability?.versionId !=
+            widget.queryCapability?.versionId ||
+        (oldWidget.queryCapability == null) !=
+            (widget.queryCapability == null) ||
+        oldWidget.formId != widget.formId ||
+        oldWidget.organizerId != widget.organizerId) {
       _queryController?.dispose();
       final capability = widget.queryCapability;
       _queryController = capability == null
           ? null
-          : HostResponseQueryController(capability.gateway);
+          : HostResponseQueryController(
+              capability.gateway ??
+                  HostResponseQueryRepository(
+                    ref.read(firebaseFunctionsProvider),
+                  ),
+            );
     }
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId) {
