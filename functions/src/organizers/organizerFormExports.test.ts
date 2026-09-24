@@ -15,6 +15,8 @@ function exportFixture(overflow: boolean) {
       organizerId: "org-1", formId: "form-1", status: "pending",
       format: "csv", statuses: ["submitted"], versionId: null,
       fromMillis: null, toMillis: null, rowCount: 0, storagePath: null,
+      createdAt: timestamp, updatedAt: timestamp,
+      expiresAt: admin.firestore.Timestamp.fromMillis(86_401_000),
     },
     "organizerFormVersions/version-1": {version: 1},
   };
@@ -389,3 +391,84 @@ test("unsupported typed fields produce a terminal failure without any export",
     await assert.rejects(requestOrganizerFormExportHandler(request, h.deps),
       {code: "permission-denied"});
   });
+
+
+for (const state of ["pending", "running"] as const) {
+  test(`retry settles abandoned ${state} export without restarting it`,
+    async () => {
+      const h = await typedFixture();
+      const request = exportRequest(h);
+      const first = await requestOrganizerFormExportHandler(request, h.deps);
+      const path = `organizerFormExports/${first.exportId}`;
+      h.store.docs[path].status = state;
+      let now = 600_999;
+      const deps = {...h.deps,
+        timestamp: () => admin.firestore.Timestamp.fromMillis(now)};
+      const active = await requestOrganizerFormExportHandler(request, deps);
+      assert.equal(active.status, state);
+      // A status poll must not extend the worker deadline.
+      now++;
+      const terminal = await requestOrganizerFormExportHandler(request, deps);
+      assert.equal(terminal.exportId, first.exportId);
+      assert.equal(terminal.status, "failed");
+      assert.equal(terminal.errorCode, "export_interrupted");
+      assert.equal(terminal.downloadUrl, null);
+      await processOrganizerFormExport(first.exportId, deps);
+      assert.equal(h.saves.length, 0);
+      assert.equal((await requestOrganizerFormExportHandler(request, deps))
+        .status, "failed");
+    });
+}
+
+test("delayed trigger rejects an abandoned pending export before upload",
+  async () => {
+    const h = await typedFixture();
+    const receipt = await requestOrganizerFormExportHandler(exportRequest(h),
+      h.deps);
+    await processOrganizerFormExport(receipt.exportId, {...h.deps,
+      timestamp: () => admin.firestore.Timestamp.fromMillis(601_000)});
+    assert.equal(h.store.docs[`organizerFormExports/${receipt.exportId}`]
+      .errorCode, "export_interrupted");
+    assert.equal(h.saves.length, 0);
+  });
+
+test("late worker cannot overwrite interruption during object upload",
+  async () => {
+    for (const failUpload of [false, true]) {
+      const h = await typedFixture();
+      const request = exportRequest(h);
+      const receipt = await requestOrganizerFormExportHandler(request, h.deps);
+      let now = 1000;
+      const deps = {...h.deps,
+        timestamp: () => admin.firestore.Timestamp.fromMillis(now),
+        storageBucket: () => ({file: () => ({save: async () => {
+          now = 601_000;
+          const interrupted = await requestOrganizerFormExportHandler(request,
+            deps);
+          assert.equal(interrupted.errorCode, "export_interrupted");
+          if (failUpload) throw new Error("Interrupted upload");
+        }})}) as unknown as ReturnType<typeof h.deps.storageBucket>};
+      if (failUpload) {
+        await assert.rejects(processOrganizerFormExport(receipt.exportId,
+          deps), /Interrupted upload/u);
+      } else {
+        await processOrganizerFormExport(receipt.exportId, deps);
+      }
+      const terminal = await requestOrganizerFormExportHandler(request, deps);
+      assert.equal(terminal.status, "failed");
+      assert.equal(terminal.errorCode, "export_interrupted");
+      assert.equal(terminal.downloadUrl, null);
+      assert.equal(h.store.docs[`organizerFormExports/${receipt.exportId}`]
+        .storagePath, null);
+    }
+  });
+
+function exportRequest(h: Awaited<ReturnType<typeof typedFixture>>) {
+  return {auth: {uid: "host-1"}, data: {
+    organizerId: "org-1", formId: "form-1", requestId: "interrupted-export",
+    format: "csv", statuses: ["submitted"], versionId: "version-1",
+    fromMillis: null, toMillis: null, responseQuery: typedQuery,
+    expectedResultHash: h.result.resultHash,
+    expectedQueryHash: h.result.queryHash,
+  }} as import("firebase-functions/v2/https").CallableRequest<unknown>;
+}

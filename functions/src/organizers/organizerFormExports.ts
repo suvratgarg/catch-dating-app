@@ -46,6 +46,8 @@ const defaultDeps: FormExportDeps = {
 
 const exportLifetimeMs = 24 * 60 * 60 * 1000;
 const downloadLifetimeMs = 15 * 60 * 1000;
+// Longer than the 540-second worker limit; polling never extends this lease.
+const exportWorkerDeadlineMs = 10 * 60 * 1000;
 const exportPageSize = 250;
 const maxExportRows = 10_000;
 const maxExportScannedResponses = 50_000;
@@ -102,7 +104,7 @@ export async function requestOrganizerFormExportHandler(
     data.requestId
   );
   const exportRef = db.collection("organizerFormExports").doc(exportId);
-  let document = await db.runTransaction(async (tx) => {
+  const document = await db.runTransaction(async (tx) => {
     await requireOrganizerManager({db, organizerId: data.organizerId,
       actorUid, transaction: tx});
     if ((await tx.get(db.collection("deletedUsers").doc(actorUid))).exists) {
@@ -115,7 +117,13 @@ export async function requestOrganizerFormExportHandler(
         "OrganizerFormExportDocument"
       );
       assertSameExport(existing, data, actorUid);
-      return existing;
+      const now = deps.timestamp();
+      const patch = interruptedExport(existing, now) ??
+        (existing.status === "completed" &&
+          existing.expiresAt.toMillis() <= now.toMillis() ?
+          {status: "expired" as const, updatedAt: now} : null);
+      if (patch) tx.update(exportRef, patch);
+      return patch ? {...existing, ...patch} : existing;
     }
     const formSnap = await tx.get(db.collection("organizerForms")
       .doc(data.formId));
@@ -165,11 +173,6 @@ export async function requestOrganizerFormExportHandler(
     tx.create(exportRef, created);
     return created;
   });
-  if (document.expiresAt.toMillis() <= deps.timestamp().toMillis() &&
-      document.status === "completed") {
-    await exportRef.update({status: "expired", updatedAt: deps.timestamp()});
-    document = {...document, status: "expired"};
-  }
   return exportProjection(exportId, document, deps);
 }
 
@@ -188,8 +191,15 @@ export async function processOrganizerFormExport(
       "OrganizerFormExportDocument"
     );
     if (current.status !== "pending") return null;
-    tx.update(exportRef, {status: "running", updatedAt: deps.timestamp()});
-    return current;
+    const now = deps.timestamp();
+    const interrupted = interruptedExport(current, now);
+    if (interrupted) {
+      tx.update(exportRef, interrupted);
+      return null;
+    }
+    const running = {...current, status: "running" as const, updatedAt: now};
+    tx.update(exportRef, {status: running.status, updatedAt: now});
+    return running;
   });
   if (!document) return;
   try {
@@ -317,7 +327,7 @@ export async function processOrganizerFormExport(
       },
     });
     const now = deps.timestamp();
-    await exportRef.update({
+    await settleExport(db, exportRef, document, deps, {
       status: "completed",
       rowCount: rows.length,
       storagePath,
@@ -327,7 +337,7 @@ export async function processOrganizerFormExport(
       completedAt: now,
     });
   } catch (error) {
-    await exportRef.update({
+    await settleExport(db, exportRef, document, deps, {
       status: "failed",
       errorCode: error instanceof HttpsError && error.code === "aborted" &&
         (error.details as {reason?: string})?.reason ===
@@ -337,6 +347,40 @@ export async function processOrganizerFormExport(
     });
     throw error;
   }
+}
+
+/** A retry settles an abandoned command; it never changes its query or ID. */
+function interruptedExport(
+  document: OrganizerFormExportDocument,
+  now: FirebaseFirestore.Timestamp
+): Partial<OrganizerFormExportDocument> | null {
+  if (document.status !== "pending" && document.status !== "running") {
+    return null;
+  }
+  if (now.toMillis() - document.updatedAt.toMillis() < exportWorkerDeadlineMs &&
+      document.expiresAt.toMillis() > now.toMillis()) return null;
+  return {status: "failed", errorCode: "export_interrupted",
+    errorMessage: "Export was interrupted. Refresh responses and export again.",
+    storagePath: null, rowCount: 0, updatedAt: now};
+}
+
+/** A late worker must not resurrect an interrupted or settled receipt. */
+async function settleExport(
+  db: FirebaseFirestore.Firestore,
+  ref: FirebaseFirestore.DocumentReference,
+  running: OrganizerFormExportDocument,
+  deps: FormExportDeps,
+  patch: Partial<OrganizerFormExportDocument>
+): Promise<void> {
+  await db.runTransaction(async (tx) => {
+    const snapshot = await tx.get(ref);
+    if (!snapshot.exists) return;
+    const current = requireDoc<OrganizerFormExportDocument>(snapshot,
+      "OrganizerFormExportDocument");
+    if (current.status !== "running" || !current.updatedAt.isEqual(
+      running.updatedAt)) return;
+    tx.update(ref, interruptedExport(current, deps.timestamp()) ?? patch);
+  });
 }
 
 function baseExportValues(

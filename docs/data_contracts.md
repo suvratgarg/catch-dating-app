@@ -2567,6 +2567,11 @@ The worker rejects stale or unsupported filters with a terminal failed receipt
 before writing any export object. Exact request replay requires current manager
 and account authority but does not recompile an old query merely to retrieve its
 receipt; this permits durable client journals to settle after form changes.
+Pending or running exports older than ten minutes settle as `export_interrupted`
+on an authorized status retry. Polling does not extend the deadline. The user
+can refresh the response set and start a new export; the original command is
+never silently restarted. Delayed workers cannot overwrite that terminal
+receipt or publish a download for it.
 
 `requestOrganizerFormExport` accepts optional `responseQuery`,
 `expectedQueryHash` and `expectedResultHash` together. Typed exports use the
