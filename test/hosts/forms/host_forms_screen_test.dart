@@ -535,7 +535,12 @@ void main() {
         if (returnToA) {
           auth.uid = 'host-1';
           accounts.add('host-1');
-          await pumpFeatureUi(tester);
+          // Wait for the account-scoped read, not just the next scheduled frame.
+          // Keep asserting that the original account's row actually returns.
+          await pumpUntilFound(
+            tester,
+            find.byKey(const ValueKey('host-form-old')),
+          );
           expect(find.byKey(const ValueKey('host-form-old')), findsOneWidget);
         }
 
