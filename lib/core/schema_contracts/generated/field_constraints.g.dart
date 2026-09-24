@@ -8150,6 +8150,200 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['application', 'formResponse'],
   );
 
+  static const commitOrganizerFormAdmissionCallablePayloadContactId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadExpectedLedgerRevision = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.expectedLedgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadExpectedOfferGeneration = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.expectedOfferGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.expectedOfferRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadOfferId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseAdmittedAtMillis = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.admittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseCanonicalSeatKey = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.canonicalSeatKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseContactId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseOfferId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseReceiptId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseRequestHash = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseRequestId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseResponseId = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseResultingLedgerRevision = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.resultingLedgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const commitOrganizerFormAdmissionCallableResponseSeatAlreadyOccupied = CatchContractFieldConstraints(
+    path: 'commitOrganizerFormAdmissionCallableResponse.seatAlreadyOccupied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const completeEventSuccessFirstHelloMissionCallablePayloadAnswerId = CatchContractFieldConstraints(
     path: 'completeEventSuccessFirstHelloMissionCallablePayload.answerId',
     maxLength: 64,
@@ -87976,6 +88170,299 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerFormAdmissionReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentAdmittedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.admittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentCanonicalSeatKey = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.canonicalSeatKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentContactId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentExpectedLedgerRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.expectedLedgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentExpectedOfferGeneration = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.expectedOfferGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentExpectedOfferRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.expectedOfferRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentAttestedAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.attestedAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentAttestedCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.attestedCurrency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentAttestedEventPaymentHash = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.attestedEventPaymentHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentAttestedEventPaymentRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.attestedEventPaymentRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentBankReceiptChecked = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.bankReceiptChecked',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentEvidenceRecordedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.evidenceRecordedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentEvidenceReference = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.evidenceReference',
+    maxLength: 240,
+    minLength: 3,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentReviewedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.reviewedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentReviewedByUid = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.reviewedByUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentReviewNote = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.reviewNote',
+    maxLength: 240,
+    minLength: 3,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentManualPaymentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.manualPayment.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'evidenceSubmitted', 'hostAttestedReceived', 'rejected'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentOfferId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotCollectionMode = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.collectionMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotEventPaymentHash = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.eventPaymentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotEventPaymentRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.eventPaymentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.expectedAmountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotMessageTemplate = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.messageTemplate',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotPaymentInstructions = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.paymentInstructions',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotPersonalPaymentLink = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.personalPaymentLink',
+    maxLength: 2048,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentPaymentSnapshotReusablePaymentPageUrl = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.paymentSnapshot.reusablePaymentPageUrl',
+    maxLength: 2048,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.requestId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const organizerFormAdmissionReceiptDocumentResultingLedgerRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.resultingLedgerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentSeatAlreadyOccupied = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.seatAlreadyOccupied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerFormAggregateDocumentChoiceCounts = CatchContractFieldConstraints(
     path: 'organizerFormAggregateDocument.choiceCounts',
     required: true,
@@ -122814,6 +123301,29 @@ abstract final class CatchContractConstraints {
     'commitEventOffersCallablePayload.rows.items.organizerId': commitEventOffersCallablePayloadRowsItemsOrganizerId,
     'commitEventOffersCallablePayload.rows.items.organizerPaymentLink': commitEventOffersCallablePayloadRowsItemsOrganizerPaymentLink,
     'commitEventOffersCallablePayload.rows.items.sourceKind': commitEventOffersCallablePayloadRowsItemsSourceKind,
+    'commitOrganizerFormAdmissionCallablePayload.contactId': commitOrganizerFormAdmissionCallablePayloadContactId,
+    'commitOrganizerFormAdmissionCallablePayload.eventId': commitOrganizerFormAdmissionCallablePayloadEventId,
+    'commitOrganizerFormAdmissionCallablePayload.expectedLedgerRevision': commitOrganizerFormAdmissionCallablePayloadExpectedLedgerRevision,
+    'commitOrganizerFormAdmissionCallablePayload.expectedOfferGeneration': commitOrganizerFormAdmissionCallablePayloadExpectedOfferGeneration,
+    'commitOrganizerFormAdmissionCallablePayload.expectedOfferRevision': commitOrganizerFormAdmissionCallablePayloadExpectedOfferRevision,
+    'commitOrganizerFormAdmissionCallablePayload.offerId': commitOrganizerFormAdmissionCallablePayloadOfferId,
+    'commitOrganizerFormAdmissionCallablePayload.organizerId': commitOrganizerFormAdmissionCallablePayloadOrganizerId,
+    'commitOrganizerFormAdmissionCallablePayload.requestId': commitOrganizerFormAdmissionCallablePayloadRequestId,
+    'commitOrganizerFormAdmissionCallablePayload.responseId': commitOrganizerFormAdmissionCallablePayloadResponseId,
+    'commitOrganizerFormAdmissionCallableResponse.admittedAtMillis': commitOrganizerFormAdmissionCallableResponseAdmittedAtMillis,
+    'commitOrganizerFormAdmissionCallableResponse.attendeeId': commitOrganizerFormAdmissionCallableResponseAttendeeId,
+    'commitOrganizerFormAdmissionCallableResponse.canonicalSeatKey': commitOrganizerFormAdmissionCallableResponseCanonicalSeatKey,
+    'commitOrganizerFormAdmissionCallableResponse.contactId': commitOrganizerFormAdmissionCallableResponseContactId,
+    'commitOrganizerFormAdmissionCallableResponse.eventId': commitOrganizerFormAdmissionCallableResponseEventId,
+    'commitOrganizerFormAdmissionCallableResponse.offerId': commitOrganizerFormAdmissionCallableResponseOfferId,
+    'commitOrganizerFormAdmissionCallableResponse.organizerId': commitOrganizerFormAdmissionCallableResponseOrganizerId,
+    'commitOrganizerFormAdmissionCallableResponse.receiptId': commitOrganizerFormAdmissionCallableResponseReceiptId,
+    'commitOrganizerFormAdmissionCallableResponse.replayed': commitOrganizerFormAdmissionCallableResponseReplayed,
+    'commitOrganizerFormAdmissionCallableResponse.requestHash': commitOrganizerFormAdmissionCallableResponseRequestHash,
+    'commitOrganizerFormAdmissionCallableResponse.requestId': commitOrganizerFormAdmissionCallableResponseRequestId,
+    'commitOrganizerFormAdmissionCallableResponse.responseId': commitOrganizerFormAdmissionCallableResponseResponseId,
+    'commitOrganizerFormAdmissionCallableResponse.resultingLedgerRevision': commitOrganizerFormAdmissionCallableResponseResultingLedgerRevision,
+    'commitOrganizerFormAdmissionCallableResponse.seatAlreadyOccupied': commitOrganizerFormAdmissionCallableResponseSeatAlreadyOccupied,
     'completeEventSuccessFirstHelloMissionCallablePayload.answerId': completeEventSuccessFirstHelloMissionCallablePayloadAnswerId,
     'completeEventSuccessFirstHelloMissionCallablePayload.eventId': completeEventSuccessFirstHelloMissionCallablePayloadEventId,
     'completeOrganizerWhatsappConnectionCallablePayload.authorizationCode': completeOrganizerWhatsappConnectionCallablePayloadAuthorizationCode,
@@ -133591,6 +134101,44 @@ abstract final class CatchContractConstraints {
     'organizerFollowDocument.uid': organizerFollowDocumentUid,
     'organizerFollowDocument.unfollowedAt._nanoseconds': organizerFollowDocumentUnfollowedAtNanoseconds,
     'organizerFollowDocument.unfollowedAt._seconds': organizerFollowDocumentUnfollowedAtSeconds,
+    'organizerFormAdmissionReceiptDocument.actorUid': organizerFormAdmissionReceiptDocumentActorUid,
+    'organizerFormAdmissionReceiptDocument.admittedAtMillis': organizerFormAdmissionReceiptDocumentAdmittedAtMillis,
+    'organizerFormAdmissionReceiptDocument.attendeeId': organizerFormAdmissionReceiptDocumentAttendeeId,
+    'organizerFormAdmissionReceiptDocument.canonicalSeatKey': organizerFormAdmissionReceiptDocumentCanonicalSeatKey,
+    'organizerFormAdmissionReceiptDocument.contactId': organizerFormAdmissionReceiptDocumentContactId,
+    'organizerFormAdmissionReceiptDocument.eventId': organizerFormAdmissionReceiptDocumentEventId,
+    'organizerFormAdmissionReceiptDocument.expectedLedgerRevision': organizerFormAdmissionReceiptDocumentExpectedLedgerRevision,
+    'organizerFormAdmissionReceiptDocument.expectedOfferGeneration': organizerFormAdmissionReceiptDocumentExpectedOfferGeneration,
+    'organizerFormAdmissionReceiptDocument.expectedOfferRevision': organizerFormAdmissionReceiptDocumentExpectedOfferRevision,
+    'organizerFormAdmissionReceiptDocument.manualPayment.attestedAmountMinor': organizerFormAdmissionReceiptDocumentManualPaymentAttestedAmountMinor,
+    'organizerFormAdmissionReceiptDocument.manualPayment.attestedCurrency': organizerFormAdmissionReceiptDocumentManualPaymentAttestedCurrency,
+    'organizerFormAdmissionReceiptDocument.manualPayment.attestedEventPaymentHash': organizerFormAdmissionReceiptDocumentManualPaymentAttestedEventPaymentHash,
+    'organizerFormAdmissionReceiptDocument.manualPayment.attestedEventPaymentRevision': organizerFormAdmissionReceiptDocumentManualPaymentAttestedEventPaymentRevision,
+    'organizerFormAdmissionReceiptDocument.manualPayment.bankReceiptChecked': organizerFormAdmissionReceiptDocumentManualPaymentBankReceiptChecked,
+    'organizerFormAdmissionReceiptDocument.manualPayment.evidenceRecordedAtMillis': organizerFormAdmissionReceiptDocumentManualPaymentEvidenceRecordedAtMillis,
+    'organizerFormAdmissionReceiptDocument.manualPayment.evidenceReference': organizerFormAdmissionReceiptDocumentManualPaymentEvidenceReference,
+    'organizerFormAdmissionReceiptDocument.manualPayment.reviewedAtMillis': organizerFormAdmissionReceiptDocumentManualPaymentReviewedAtMillis,
+    'organizerFormAdmissionReceiptDocument.manualPayment.reviewedByUid': organizerFormAdmissionReceiptDocumentManualPaymentReviewedByUid,
+    'organizerFormAdmissionReceiptDocument.manualPayment.reviewNote': organizerFormAdmissionReceiptDocumentManualPaymentReviewNote,
+    'organizerFormAdmissionReceiptDocument.manualPayment.status': organizerFormAdmissionReceiptDocumentManualPaymentStatus,
+    'organizerFormAdmissionReceiptDocument.offerId': organizerFormAdmissionReceiptDocumentOfferId,
+    'organizerFormAdmissionReceiptDocument.organizerId': organizerFormAdmissionReceiptDocumentOrganizerId,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.collectionMode': organizerFormAdmissionReceiptDocumentPaymentSnapshotCollectionMode,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.currency': organizerFormAdmissionReceiptDocumentPaymentSnapshotCurrency,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.eventPaymentHash': organizerFormAdmissionReceiptDocumentPaymentSnapshotEventPaymentHash,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.eventPaymentRevision': organizerFormAdmissionReceiptDocumentPaymentSnapshotEventPaymentRevision,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.expectedAmountMinor': organizerFormAdmissionReceiptDocumentPaymentSnapshotExpectedAmountMinor,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.expiresAtMillis': organizerFormAdmissionReceiptDocumentPaymentSnapshotExpiresAtMillis,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.messageTemplate': organizerFormAdmissionReceiptDocumentPaymentSnapshotMessageTemplate,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.paymentInstructions': organizerFormAdmissionReceiptDocumentPaymentSnapshotPaymentInstructions,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.personalPaymentLink': organizerFormAdmissionReceiptDocumentPaymentSnapshotPersonalPaymentLink,
+    'organizerFormAdmissionReceiptDocument.paymentSnapshot.reusablePaymentPageUrl': organizerFormAdmissionReceiptDocumentPaymentSnapshotReusablePaymentPageUrl,
+    'organizerFormAdmissionReceiptDocument.receiptId': organizerFormAdmissionReceiptDocumentReceiptId,
+    'organizerFormAdmissionReceiptDocument.requestHash': organizerFormAdmissionReceiptDocumentRequestHash,
+    'organizerFormAdmissionReceiptDocument.requestId': organizerFormAdmissionReceiptDocumentRequestId,
+    'organizerFormAdmissionReceiptDocument.responseId': organizerFormAdmissionReceiptDocumentResponseId,
+    'organizerFormAdmissionReceiptDocument.resultingLedgerRevision': organizerFormAdmissionReceiptDocumentResultingLedgerRevision,
+    'organizerFormAdmissionReceiptDocument.seatAlreadyOccupied': organizerFormAdmissionReceiptDocumentSeatAlreadyOccupied,
     'organizerFormAggregateDocument.choiceCounts': organizerFormAggregateDocumentChoiceCounts,
     'organizerFormAggregateDocument.choiceCounts.items.count': organizerFormAggregateDocumentChoiceCountsItemsCount,
     'organizerFormAggregateDocument.choiceCounts.items.label': organizerFormAggregateDocumentChoiceCountsItemsLabel,

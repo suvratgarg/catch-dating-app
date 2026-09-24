@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  commitOrganizerFormAdmissionCallablePayloadSchema,
+  commitOrganizerFormAdmissionCallableResponseSchema,
+  organizerFormAdmissionReceiptDocumentSchema,
   configureEventOfferPreferencesCallablePayloadSchema,
   configureEventOfferPreferencesCallableResponseSchema,
   eventOfferConfigurationReceiptDocumentSchema,
@@ -906,6 +909,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateCommitOrganizerFormAdmissionCallablePayload = ajv.compile(commitOrganizerFormAdmissionCallablePayloadSchema);
+export const validateCommitOrganizerFormAdmissionCallableResponse = ajv.compile(commitOrganizerFormAdmissionCallableResponseSchema);
+export const validateOrganizerFormAdmissionReceiptDocument = ajv.compile(organizerFormAdmissionReceiptDocumentSchema);
 export const validateConfigureEventOfferPreferencesCallablePayload = ajv.compile(configureEventOfferPreferencesCallablePayloadSchema);
 export const validateConfigureEventOfferPreferencesCallableResponse = ajv.compile(configureEventOfferPreferencesCallableResponseSchema);
 export const validateEventOfferConfigurationReceiptDocument = ajv.compile(eventOfferConfigurationReceiptDocumentSchema);

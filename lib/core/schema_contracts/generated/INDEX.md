@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts` |
+| CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts` |
+| OrganizerFormAdmissionReceiptDocument | `firestore/organizer_form_admission_receipts.schema.json` | `functions/src/shared/generated/organizerFormAdmissionReceiptDocument.ts` |
 | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `functions/src/shared/generated/configureEventOfferPreferencesCallablePayload.ts` |
 | ConfigureEventOfferPreferencesCallableResponse | `callable_responses/configure_event_offer_preferences_response.schema.json` | `functions/src/shared/generated/configureEventOfferPreferencesCallableResponse.ts` |
 | EventOfferConfigurationReceiptDocument | `firestore/event_offer_configuration_receipts.schema.json` | `functions/src/shared/generated/eventOfferConfigurationReceiptDocument.ts` |
@@ -896,6 +899,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaCommitOrganizerFormAdmissionCallablePayloadSchema` | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_payload.g.dart` |
+| `schemaCommitOrganizerFormAdmissionCallableResponseSchema` | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_response.g.dart` |
+| `schemaOrganizerFormAdmissionReceiptDocumentSchema` | OrganizerFormAdmissionReceiptDocument | `firestore/organizer_form_admission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_receipt_document.g.dart` |
 | `schemaConfigureEventOfferPreferencesCallablePayloadSchema` | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_offer_preferences_callable_payload.g.dart` |
 | `schemaConfigureEventOfferPreferencesCallableResponseSchema` | ConfigureEventOfferPreferencesCallableResponse | `callable_responses/configure_event_offer_preferences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_offer_preferences_callable_response.g.dart` |
 | `schemaEventOfferConfigurationReceiptDocumentSchema` | EventOfferConfigurationReceiptDocument | `firestore/event_offer_configuration_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_configuration_receipt_document.g.dart` |
@@ -1780,6 +1786,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |
 | ConfigureEventOfferPreferencesCallableRequest | ConfigureEventOfferPreferencesCallablePayload | `callables/configure_event_offer_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/configure_event_offer_preferences_callable_request.g.dart` |
 | ListOfferEventTargetsCallableRequest | ListOfferEventTargetsCallablePayload | `callables/list_offer_event_targets_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_offer_event_targets_callable_request.g.dart` |
 | GetEventOfferConfigurationCallableRequest | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_offer_configuration_callable_request.g.dart` |

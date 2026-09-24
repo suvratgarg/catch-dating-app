@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'CommitOrganizerFormAdmissionCallablePayload',
+    source: 'callables/commit_organizer_form_admission_payload.schema.json',
+    schema: schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CommitOrganizerFormAdmissionCallableResponse',
+    source: 'callable_responses/commit_organizer_form_admission_response.schema.json',
+    schema: schemaCommitOrganizerFormAdmissionCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerFormAdmissionReceiptDocument',
+    source: 'firestore/organizer_form_admission_receipts.schema.json',
+    schema: schemaOrganizerFormAdmissionReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ConfigureEventOfferPreferencesCallablePayload',
     source: 'callables/configure_event_offer_preferences_payload.schema.json',
     schema: schemaConfigureEventOfferPreferencesCallablePayloadSchema,
@@ -4414,6 +4429,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'CommitOrganizerFormAdmissionCallablePayload': schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
+  'CommitOrganizerFormAdmissionCallableResponse': schemaCommitOrganizerFormAdmissionCallableResponseSchema,
+  'OrganizerFormAdmissionReceiptDocument': schemaOrganizerFormAdmissionReceiptDocumentSchema,
   'ConfigureEventOfferPreferencesCallablePayload': schemaConfigureEventOfferPreferencesCallablePayloadSchema,
   'ConfigureEventOfferPreferencesCallableResponse': schemaConfigureEventOfferPreferencesCallableResponseSchema,
   'EventOfferConfigurationReceiptDocument': schemaEventOfferConfigurationReceiptDocumentSchema,
@@ -5296,6 +5314,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/commit_organizer_form_admission_payload.schema.json': schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
+  'callable_responses/commit_organizer_form_admission_response.schema.json': schemaCommitOrganizerFormAdmissionCallableResponseSchema,
+  'firestore/organizer_form_admission_receipts.schema.json': schemaOrganizerFormAdmissionReceiptDocumentSchema,
   'callables/configure_event_offer_preferences_payload.schema.json': schemaConfigureEventOfferPreferencesCallablePayloadSchema,
   'callable_responses/configure_event_offer_preferences_response.schema.json': schemaConfigureEventOfferPreferencesCallableResponseSchema,
   'firestore/event_offer_configuration_receipts.schema.json': schemaEventOfferConfigurationReceiptDocumentSchema,

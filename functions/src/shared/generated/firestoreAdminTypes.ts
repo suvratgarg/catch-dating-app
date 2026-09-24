@@ -544,6 +544,28 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface OrganizerFormAdmissionReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  responseId: string;
+  contactId: string;
+  offerId: string;
+  expectedOfferRevision: number;
+  expectedOfferGeneration: number;
+  expectedLedgerRevision: number;
+  requestId: string;
+  receiptId: string;
+  attendeeId: string;
+  canonicalSeatKey: string;
+  requestHash: string;
+  resultingLedgerRevision: number;
+  admittedAtMillis: number;
+  seatAlreadyOccupied: boolean;
+  actorUid: string;
+  paymentSnapshot: EventOfferPaymentSnapshot;
+  manualPayment: EventOfferManualPayment;
+}
+
 export interface EventOfferConfigurationReceiptDocument {
   actorUid: string;
   organizerId: string;

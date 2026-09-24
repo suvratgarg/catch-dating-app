@@ -63,6 +63,7 @@ export 'callables/claim_participant_form_profile_callable_request.g.dart';
 export 'callables/claim_program_staff_invite_callable_request.g.dart';
 export 'callables/club_membership_callable_request.g.dart';
 export 'callables/commit_event_offers_callable_request.g.dart';
+export 'callables/commit_organizer_form_admission_callable_request.g.dart';
 export 'callables/complete_event_success_first_hello_mission_callable_request.g.dart';
 export 'callables/complete_organizer_whatsapp_connection_callable_request.g.dart';
 export 'callables/configure_event_assignment_features_callable_request.g.dart';

@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateCommitOrganizerFormAdmissionCallablePayload} from "./validators/commitOrganizerFormAdmissionInput";
+export {validateCommitOrganizerFormAdmissionCallableResponse} from "./validators/commitOrganizerFormAdmissionOutput";
+export {validateOrganizerFormAdmissionReceiptDocument} from "./validators/organizerFormAdmissionReceiptDocument";
 export {validateConfigureEventOfferPreferencesCallablePayload} from "./validators/configureEventOfferPreferencesInput";
 export {validateConfigureEventOfferPreferencesCallableResponse} from "./validators/configureEventOfferPreferencesOutput";
 export {validateEventOfferConfigurationReceiptDocument} from "./validators/eventOfferConfigurationReceiptDocument";

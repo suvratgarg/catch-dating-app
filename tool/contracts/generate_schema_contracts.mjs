@@ -15,6 +15,9 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "CommitOrganizerFormAdmissionCallablePayload", "source": "callables/commit_organizer_form_admission_payload.schema.json", "typeOutput": "functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts"},
+  {"name": "CommitOrganizerFormAdmissionCallableResponse", "source": "callable_responses/commit_organizer_form_admission_response.schema.json", "typeOutput": "functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts"},
+  {"name": "OrganizerFormAdmissionReceiptDocument", "source": "firestore/organizer_form_admission_receipts.schema.json", "typeOutput": "functions/src/shared/generated/organizerFormAdmissionReceiptDocument.ts"},
   {"name": "ConfigureEventOfferPreferencesCallablePayload", "source": "callables/configure_event_offer_preferences_payload.schema.json", "typeOutput": "functions/src/shared/generated/configureEventOfferPreferencesCallablePayload.ts"},
   {"name": "ConfigureEventOfferPreferencesCallableResponse", "source": "callable_responses/configure_event_offer_preferences_response.schema.json", "typeOutput": "functions/src/shared/generated/configureEventOfferPreferencesCallableResponse.ts"},
   {"name": "EventOfferConfigurationReceiptDocument", "source": "firestore/event_offer_configuration_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventOfferConfigurationReceiptDocument.ts"},
