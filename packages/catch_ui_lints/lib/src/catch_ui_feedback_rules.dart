@@ -145,6 +145,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
           'clearSnackBars',
           'hideCurrentSnackBar',
           'removeCurrentSnackBar',
+          'clearMaterialBanners',
           'hideCurrentMaterialBanner',
           'removeCurrentMaterialBanner',
         }.contains(element.name);

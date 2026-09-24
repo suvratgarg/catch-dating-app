@@ -704,6 +704,9 @@ typedef SnackAlias = material.SnackBar;
   messenger.clearSnackBars();
   messenger.hideCurrentSnackBar();
   messenger.removeCurrentSnackBar();
+  messenger.clearMaterialBanners();
+  messenger.hideCurrentMaterialBanner();
+  messenger.removeCurrentMaterialBanner();
   final publishSnack = messenger.showSnackBar;
   final publishBanner = material.ScaffoldMessenger.of(context).showMaterialBanner;
   final material.ScaffoldMessengerState? typedMessenger = maybeMessenger;
@@ -715,8 +718,8 @@ typedef SnackAlias = material.SnackBar;
     publishBanner, typedMessenger, messengerWidget, app];
 }
 DART
-  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 30
-  expect_probe exact catch_use_canonical_feedback 30
+  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 33
+  expect_probe exact catch_use_canonical_feedback 33
   stage_probe "status placement $feedback_scope" <<'DART'
 import 'package:catch_ui/catch_ui.dart' as ui;
 typedef StripAlias = ui.CatchBanner;
