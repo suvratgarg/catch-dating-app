@@ -231,6 +231,8 @@ import 'package:widgetbook_workspace/geometry/specimens/top_bars.dart'
     as _widgetbook_workspace_geometry_specimens_top_bars;
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
+import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_event_offer_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
@@ -241,6 +243,8 @@ import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
+import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_response_export_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
     as _widgetbook_workspace_hosts_host_response_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
@@ -10263,6 +10267,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormTargetSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reusable or fixed event intake',
+                    builder:
+                        _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                            .hostFormTargetSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormValidationFieldLanes',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10384,6 +10399,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostEventOfferPreferencesScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Published event offer preferences',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .hostEventOfferPreferencesScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostManagerEventSetupPreferencesSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10391,6 +10417,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_unified_event_setup_use_cases
                         .hostManagerEventSetupPreferencesSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostPrivateEventSetupInventorySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Private event manager inventory',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .hostPrivateEventSetupInventorySectionPreview,
               ),
             ],
           ),
@@ -10431,6 +10468,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'PrivateEventDetailsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Saved private event details',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventDetailsScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'PrivateEventPreferencesScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10467,6 +10515,47 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostEventOfferWorkspaceSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CRM contact conversion required',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferNeedsContact,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Existing offer review',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferExisting,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'No upcoming offer target',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferTargetEmpty,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Offer review ready',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferPrepared,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Offer target loading',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferTargetLoading,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Offer target unavailable',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_offer_use_cases
+                            .hostOfferTargetFailure,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostManualPaymentReviewSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10496,6 +10585,29 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_rsvp_review_use_cases
                             .responseConditionValuePreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseExportAction',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filtered CSV ready on action',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_export_use_cases
+                            .hostResponseExportReady,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filtered export needs fresh results',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_export_use_cases
+                            .hostResponseExportStale,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Filtered export pending replay',
+                    builder:
+                        _widgetbook_workspace_hosts_host_response_export_use_cases
+                            .hostResponseExportPending,
                   ),
                 ],
               ),

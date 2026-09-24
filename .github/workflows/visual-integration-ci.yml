@@ -136,7 +136,7 @@ jobs:
 
       - name: Verify committed Flutter outputs are current
         run: |
-          git diff --exit-code -- widgetbook/lib/main.directories.g.dart lib/event_success/data/event_assignment_feature_choice_repository.g.dart lib/events/domain/event_draft.freezed.dart lib/events/domain/event_draft.g.dart lib/clubs/domain/club_host_defaults.freezed.dart lib/clubs/domain/club_host_defaults.g.dart
+          git diff --exit-code -- widgetbook/lib/main.directories.g.dart lib/event_success/data/event_assignment_feature_choice_repository.g.dart lib/events/domain/event_draft.freezed.dart lib/events/domain/event_draft.g.dart lib/clubs/domain/club_host_defaults.freezed.dart lib/clubs/domain/club_host_defaults.g.dart lib/hosts/presentation/forms/host_forms_controller.g.dart
           git ls-files --error-unmatch -- lib/event_success/data/event_assignment_feature_choice_repository.g.dart > /dev/null
 
       - name: Widgetbook corpus contract gates
