@@ -272,7 +272,7 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                                       : {currentFormat.activityKind},
                                   mode: CatchChipMode.single,
                                   autoClose: true,
-                                  onChanged: editable ? (selection) {
+                                  onChanged: controller.canEditFormat ? (selection) {
                                     if (selection.isEmpty) return;
                                     unawaited(controller.save(
                                       PrivateEventDetailsPatch(
@@ -289,7 +289,7 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                               CatchField.action(
                                 copy: copy,
                                 title: l10n.hostsPrivateEventDetailClearFormat,
-                                onTap: editable && currentFormat != null
+                                onTap: controller.canEditFormat && currentFormat != null
                                     ? () => unawaited(controller.save(
                                         const PrivateEventDetailsPatch(
                                           eventFormat: EventSetupValue.clear(),

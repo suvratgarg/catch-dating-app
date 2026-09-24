@@ -53,8 +53,11 @@ class PrivateEventDetailsController extends ChangeNotifier {
     super.dispose();
   }
 
-  bool get canEdit => event?.canEditBasics == true && defaults != null &&
+  // Venue and duration can be completed after guests or offers exist. Only
+  // a format change remains subject to the basic-event commitment guard.
+  bool get canEdit => !_disposed && event?.status == 'active' && defaults != null &&
       pending == null && !loading && !saving;
+  bool get canEditFormat => canEdit && event?.canEditBasics == true;
 
   void reportValidationError(Object cause) {
     error = cause;
@@ -94,6 +97,10 @@ class PrivateEventDetailsController extends ChangeNotifier {
 
   Future<void> save(PrivateEventDetailsPatch details) async {
     if (!canEdit) return;
+    if (details.eventFormat != null && !canEditFormat) {
+      reportValidationError(StateError('Event format is locked by commitments.'));
+      return;
+    }
     final request = PrivateEventDetailsUpdateRequest(
       organizerId: organizerId,
       eventId: eventId,
@@ -151,10 +158,11 @@ class PrivateEventDetailsController extends ChangeNotifier {
     pending = null;
     // The acknowledged event revision is unknown until the authorized reread.
     event = null;
-    event = await readEvent(organizerId: organizerId, eventId: eventId);
-    if (event!.eventId != eventId || event!.organizerId != organizerId) {
+    final refreshed = await readEvent(organizerId: organizerId, eventId: eventId);
+    if (refreshed.eventId != eventId || refreshed.organizerId != organizerId) {
       throw const FormatException('Private event reread changed identity');
     }
+    event = refreshed;
     error = null;
     notifyListeners();
   }

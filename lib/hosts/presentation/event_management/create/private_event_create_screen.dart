@@ -408,6 +408,9 @@ class _PrivateEventCreateScreenState
 
   @override
   Widget build(BuildContext context) {
+    // Keep the action controller alive while a manager read is in flight;
+    // its draft journal is read again after that asynchronous boundary.
+    ref.watch(createEventDraftControllerProvider);
     if (_loadingManagerDefaults) {
       return const HostCreateEventRouteLoadingScreen();
     }

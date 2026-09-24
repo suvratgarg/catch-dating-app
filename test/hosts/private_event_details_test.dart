@@ -90,6 +90,14 @@ void main() {
         );
     final first = controller();
     await first.load();
+    // Existing guests lock basic/format changes, not later venue or duration.
+    expect(first.canEdit, isTrue);
+    expect(first.canEditFormat, isFalse);
+    await first.save(const PrivateEventDetailsPatch(
+      eventFormat: EventSetupValue.clear()));
+    expect(sentBodies, isEmpty);
+    expect(first.pending, isNull);
+    expect(first.error, isA<StateError>());
     await first.save(const PrivateEventDetailsPatch(
       durationMinutes: EventSetupValue.inherit()));
     expect(first.pending, isNotNull);
@@ -152,4 +160,54 @@ void main() {
     expect(controller.canEdit, isFalse);
     controller.dispose();
   });
+
+  test('wrong-identity reread never unlocks another event after save', () async {
+    final hash = List.filled(64, 'a').join();
+    var saved = false;
+    var cancelled = false;
+    final controller = PrivateEventDetailsController(
+      userId: 'host-1', organizerId: 'club-1', eventId: 'event-1',
+      readEvent: ({required organizerId, required eventId}) async =>
+          PrivateEventBasicSummary(
+            eventId: saved ? 'other-event' : eventId,
+            organizerId: organizerId, setupRevision: saved ? 3 : 2,
+            name: 'Saturday mixer',
+            city: const EventSetupCity(
+              cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+            localDate: '2026-10-03', localStartTime: '19:00',
+            timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
+            status: cancelled ? 'cancelled' : 'active', setupDefaults: const {},
+            detailsConfigured: false, eventPreferences: null,
+          ),
+      readDefaults: (_) async => ManagerEventSetupDefaults(
+        organizerId: 'club-1', cityId: null, marketId: null,
+        timezone: null, organizerDefaultsRevision: null,
+        basicsReviewedHash: hash, preferencesRevision: 0,
+        preferences: const ManagerEventSetupPreferences(),
+        preferencesHash: hash, reviewedDefaultsHash: hash,
+      ),
+      write: (_) async {
+        saved = true;
+        return const PrivateEventCreateReceipt(
+          eventId: 'event-1', setupRevision: 3, replayed: false);
+      },
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+    await controller.save(const PrivateEventDetailsPatch(
+      venue: EventSetupValue.set('Town Hall')));
+    expect(controller.pending, isNull);
+    expect(controller.event, isNull);
+    expect(controller.canEdit, isFalse);
+    expect(controller.error, isA<FormatException>());
+
+    saved = false;
+    cancelled = true;
+    await controller.load();
+    expect(controller.canEdit, isFalse);
+    await controller.save(const PrivateEventDetailsPatch(
+      venue: EventSetupValue.set('Another venue')));
+    expect(saved, isFalse);
+  });
+
 }

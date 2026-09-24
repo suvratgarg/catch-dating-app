@@ -69,8 +69,10 @@ void main() {
     await pumpFeatureUi(tester);
     expect(tester.takeException(), isNull);
     final action = find.text('Use suggested duration');
-    await tester.ensureVisible(action);
-    await tester.tap(action);
+    await ensureCentered(tester, action);
+    await tester.pump();
+    expect(action.hitTestable(), findsOneWidget);
+    await tester.tap(action.hitTestable());
     await pumpFeatureUi(tester);
     expect(sent?.details.toJson(), {
       'durationMinutes': {'mode': 'inherit'},

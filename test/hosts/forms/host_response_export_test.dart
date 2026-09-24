@@ -178,7 +178,8 @@ void main() {
       versionId: 'form_v2', requestId: 'export_request_123',
       format: HostFormExportFormat.csv, statuses: const ['submitted'],
       responseQuery: _request.toJson(), expectedQueryHash: 'query-hash',
-      expectedResultHash: 'result-hash', createdAtMillis: 1000);
+      expectedResultHash: 'result-hash',
+      createdAtMillis: DateTime.now().millisecondsSinceEpoch);
     repository.failFirst = true;
     await expectLater(gateway().execute(command), throwsA(isA<TimeoutException>()));
     final recovered = await gateway().pending(accountId: 'manager',
@@ -205,7 +206,8 @@ void main() {
       versionId: 'form_v2', requestId: 'immutable_request',
       format: HostFormExportFormat.csv, statuses: statuses,
       responseQuery: rawQuery, expectedQueryHash: 'query-hash',
-      expectedResultHash: 'result-hash', createdAtMillis: 1000);
+      expectedResultHash: 'result-hash',
+      createdAtMillis: DateTime.now().millisecondsSinceEpoch);
     values[0] = 'Mumbai';
     predicate['op'] = 'missing';
     rawQuery['cursor'] = 'another-page';

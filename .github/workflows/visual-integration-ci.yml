@@ -30,7 +30,8 @@ jobs:
             --build-filter=lib/events/domain/event_draft.freezed.dart \
             --build-filter=lib/events/domain/event_draft.g.dart \
             --build-filter=lib/clubs/domain/club_host_defaults.freezed.dart \
-            --build-filter=lib/clubs/domain/club_host_defaults.g.dart
+            --build-filter=lib/clubs/domain/club_host_defaults.g.dart \
+            --build-filter=lib/hosts/presentation/forms/host_forms_controller.g.dart
           # A clean filtered build deletes tracked outputs outside its filter.
           # Restore those unchanged outputs before downstream package analysis.
           python3 - <<'PY'
@@ -42,6 +43,7 @@ jobs:
               'lib/events/domain/event_draft.g.dart',
               'lib/clubs/domain/club_host_defaults.freezed.dart',
               'lib/clubs/domain/club_host_defaults.g.dart',
+              'lib/hosts/presentation/forms/host_forms_controller.g.dart',
           }
           for target in targets:
               if not Path(target).is_file():
@@ -94,6 +96,7 @@ jobs:
                   pathlib.Path('lib/events/domain/event_draft.g.dart'),
                   pathlib.Path('lib/clubs/domain/club_host_defaults.freezed.dart'),
                   pathlib.Path('lib/clubs/domain/club_host_defaults.g.dart'),
+                  pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.g.dart'),
               ])
           if os.environ['WIDGETBOOK_CODEGEN'] == 'success':
               generated.append(pathlib.Path('widgetbook/lib/main.directories.g.dart'))
@@ -101,7 +104,9 @@ jobs:
                      pathlib.Path('pubspec.yaml'), pathlib.Path('pubspec.lock'),
                      pathlib.Path('lib/event_success/data/event_assignment_feature_choice_repository.dart'),
                      pathlib.Path('lib/events/domain/event_draft.dart'),
-                     pathlib.Path('lib/clubs/domain/club_host_defaults.dart')]
+                     pathlib.Path('lib/clubs/domain/club_host_defaults.dart'),
+                     pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.dart'),
+                     pathlib.Path('lib/hosts/presentation/forms/host_form_target_controller.dart')]
           sources += sorted(path for path in pathlib.Path('widgetbook/lib').rglob('*.dart')
                             if not path.name.endswith('.g.dart'))
           digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
