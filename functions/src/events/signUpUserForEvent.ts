@@ -23,7 +23,15 @@ import {
   eventActivityNotificationCopy,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
-import {claimUserEventScheduleInTransaction} from "./scheduleConflicts";
+import {prepareUserEventScheduleClaimInTransaction} from
+  "./scheduleConflicts";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {prepareCatchUidSeatIdentity,
+  prepareVerifiedUidGuestSeatLink, seatIdentityAliasId} from
+  "./seatIdentityAuthority";
+import {applyFirestoreSeat, FirestoreSeatPreparation,
+  FirestoreSeatTransaction, prepareFirestoreSeat} from
+  "./seatAuthority/firestoreAdapter";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -76,6 +84,8 @@ export async function signUpUserForEvent(
     hasHostApproval?: boolean;
     inviteAttribution?: InviteAttribution | null;
     crossPathsPairHoldId?: string | null;
+    /** Server-only test seam; production reads current Admin Auth identity. */
+    loadCurrentAuthPhone?: (uid: string) => Promise<string | null>;
   } = {}
 ): Promise<void> {
   const eventRef = db.collection("events").doc(eventId);
@@ -117,6 +127,7 @@ export async function signUpUserForEvent(
       "EventDocument"
 
     );
+    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
     const pairHoldSnap = pairHoldRef ? await tx.get(pairHoldRef) : null;
     const pairHold = pairHoldSnap?.exists ?
       requireDoc<CrossPathsPairHoldDocument>(
@@ -254,7 +265,50 @@ export async function signUpUserForEvent(
     const signedUpCount = activeParticipations
       .filter((participation) => participation.data.status === "signedUp")
       .length;
-    const currentBookedCount = event.bookedCount ?? signedUpCount;
+    const seatTransaction = seatMode === "ready" ?
+      new FirestoreSeatTransaction(db, tx) : null;
+    const seatLedger = seatTransaction ?
+      await seatTransaction.ledger(eventId) : null;
+    let currentAuthPhone: string | null = null;
+    let guestLink: Awaited<ReturnType<
+      typeof prepareVerifiedUidGuestSeatLink>> | null = null;
+    if (seatMode === "ready") {
+      currentAuthPhone = options.loadCurrentAuthPhone ?
+        await options.loadCurrentAuthPhone(userId) :
+        (await admin.auth().getUser(userId)).phoneNumber ?? null;
+      if (currentAuthPhone) {
+        const uidAliasRef = db.collection("eventSeatIdentityAliases")
+          .doc(seatIdentityAliasId(eventId, "uid", userId));
+        const phoneAliasRef = db.collection("eventSeatIdentityAliases")
+          .doc(seatIdentityAliasId(eventId, "phone", currentAuthPhone));
+        const [uidAliasSnap, phoneAliasSnap] = await Promise.all([
+          tx.get(uidAliasRef), tx.get(phoneAliasRef),
+        ]);
+        if (phoneAliasSnap.exists && (!uidAliasSnap.exists ||
+            String(phoneAliasSnap.data()?.canonicalKey)
+              .startsWith("guest_"))) {
+          if (pairHold) {
+            throw new HttpsError("failed-precondition",
+              "A guest seat cannot consume a separate pair hold.");
+          }
+          const matchingAttendees = await tx.get(db
+            .collection("eventAttendees")
+            .where("eventId", "==", eventId)
+            .where("phoneE164", "==", currentAuthPhone).limit(2));
+          if (matchingAttendees.docs.length !== 1) {
+            throw new HttpsError("failed-precondition",
+              "Guest seat identity needs reconciliation.");
+          }
+          guestLink = await prepareVerifiedUidGuestSeatLink({db, tx,
+            eventId, organizerId: event.organizerId ?? event.clubId,
+            attendeeId: matchingAttendees.docs[0].id,
+            uid: userId, authTokenPhoneNumber: currentAuthPhone,
+            now: admin.firestore.Timestamp.now()});
+        }
+      }
+    }
+    const currentBookedCount = seatLedger?.occupied ??
+      event.bookedCount ?? signedUpCount;
     const baseRoster = {
       ...rosterFromEvent(event),
       totalBooked: currentBookedCount +
@@ -267,17 +321,17 @@ export async function signUpUserForEvent(
       baseRoster,
       {excludeUid: userId}
     );
-    const admissionRoster = pairHold ? {
+    const admissionRoster = pairHold || guestLink ? {
       ...reservedRoster,
       totalBooked: Math.max(0, reservedRoster.totalBooked - 1),
-      bookedCountsByCohort: decrementCount(
+      bookedCountsByCohort: pairHold ? decrementCount(
         reservedRoster.bookedCountsByCohort,
         pairHold.requesterCohortId
-      ),
-      crossPathsPairHeldCount: Math.max(
+      ) : reservedRoster.bookedCountsByCohort,
+      crossPathsPairHeldCount: pairHold ? Math.max(
         0,
         (reservedRoster.crossPathsPairHeldCount ?? 0) - 1
-      ),
+      ) : reservedRoster.crossPathsPairHeldCount,
     } : reservedRoster;
     assertPolicyAllowsSignup({
       policy,
@@ -288,25 +342,54 @@ export async function signUpUserForEvent(
       admissionMode: pairHold ? "crossPathsPair" : "general",
     });
 
-    await claimUserEventScheduleInTransaction(tx, db, {
-      uid: userId,
-      eventId,
-      clubId: event.clubId,
+    const scheduleClaim = await prepareUserEventScheduleClaimInTransaction(
+      tx, db, {
+        uid: userId,
+        eventId,
+        clubId: event.clubId,
 
-      organizerId: event.organizerId ?? event.clubId,
-      startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: configuredEvent.endTime.toMillis(),
-    });
+        organizerId: event.organizerId ?? event.clubId,
+        startTimeMillis: event.startTime.toMillis(),
+        endTimeMillis: configuredEvent.endTime.toMillis(),
+      });
+
+    let seatPreparation: FirestoreSeatPreparation | null = null;
+    let applySeatIdentity: (() => void) | null = null;
+    if (seatMode === "ready" && !guestLink) {
+      if (!seatLedger || !seatTransaction) {
+        throw new HttpsError("failed-precondition",
+          "Event seat authority is unavailable.");
+      }
+      const subject = {kind: "verifiedUid" as const, uid: userId};
+      const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
+        eventId, organizerId: event.organizerId ?? event.clubId,
+        uid: userId, currentAuthPhoneNumber: currentAuthPhone});
+      const identity = preparedIdentity.identity;
+      applySeatIdentity = preparedIdentity.apply;
+      const reservation = await seatTransaction.reservation(eventId,
+        identity.key);
+      seatPreparation = await prepareFirestoreSeat({db, tx,
+        identityAuthority: {resolve: async () => identity},
+        command: {eventId, subject,
+          operation: "reserve",
+          requestId: `signup_${userId}_${reservation?.revision ?? 0}`,
+          expectedLedgerRevision: seatLedger.revision,
+          expectedCapacityRevision: seatLedger.capacityRevision,
+          expectedMigrationRevision: seatLedger.migrationRevision,
+          expectedReservationRevision: reservation?.revision ?? 0,
+          nowMillis: Date.now()}});
+    }
 
     const wasWaitlisted = existingParticipation?.status === "waitlisted";
-    const nextBookedCount = currentBookedCount + 1;
+    const nextBookedCount = currentBookedCount + (guestLink ? 0 : 1);
     const notificationType = wasWaitlisted ?
       "waitlistPromotion" :
       "eventSignup";
     const notificationCopy =
       eventActivityNotificationCopy(notificationType, event);
     const eventUpdate: Record<string, unknown> = {
-      bookedCount: admin.firestore.FieldValue.increment(1),
+      bookedCount: seatMode === "ready" ? nextBookedCount :
+        admin.firestore.FieldValue.increment(1),
       [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
       cohortCounts: incrementCount(event.cohortCounts ?? {}, cohortId),
       ...eventDiscoveryProjection({
@@ -334,6 +417,10 @@ export async function signUpUserForEvent(
       );
     }
 
+    if (seatPreparation) applyFirestoreSeat(seatPreparation);
+    guestLink?.apply();
+    applySeatIdentity?.();
+    scheduleClaim.apply();
     tx.update(eventRef, eventUpdate);
     const attribution = attributionForSignup({
       existingParticipation,

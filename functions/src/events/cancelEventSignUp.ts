@@ -39,9 +39,15 @@ import {
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
 import {
-  claimUserEventScheduleInTransaction,
+  prepareUserEventScheduleClaimInTransaction,
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {FirestoreSeatIdentityAuthority,
+  prepareCatchUidSeatIdentity} from "./seatIdentityAuthority";
+import {applyFirestoreSeatBatch, FirestoreSeatBatchPreparation,
+  FirestoreSeatTransaction, prepareFirestoreSeatBatch} from
+  "./seatAuthority/firestoreAdapter";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {
   assertPolicyAllowsSignup,
@@ -74,6 +80,7 @@ interface CancelEventSignUpDeps {
     action: string
   ) => Promise<void>;
   nowMillis: () => number;
+  loadCurrentAuthPhone: (uid: string) => Promise<string | null>;
   refundPayment: (paymentId: string, amountInPaise: number) => Promise<void>;
   sendNotification: (push: PromotionPush) => Promise<void>;
 }
@@ -88,6 +95,8 @@ const defaultDeps: CancelEventSignUpDeps = {
   firestore: () => admin.firestore(),
   checkRateLimit,
   nowMillis: () => Date.now(),
+  loadCurrentAuthPhone: async (uid) =>
+    (await admin.auth().getUser(uid)).phoneNumber ?? null,
   refundPayment: async (paymentId, amountInPaise) => {
     const razorpay = createRazorpayClient();
     await razorpay.payments.refund(paymentId, {amount: amountInPaise});
@@ -146,10 +155,9 @@ export async function cancelEventSignUpHandler(
     .limit(1)
     .get();
   const paymentDoc = paymentQuery.empty ? null : paymentQuery.docs[0];
-  const promotionPushes: PromotionPush[] = [];
-  const refundPlan: {value: RefundPlan | null} = {value: null};
-
-  await db.runTransaction(async (tx) => {
+  const committed = await db.runTransaction(async (tx) => {
+    const promotionPushes: PromotionPush[] = [];
+    let refundPlan: RefundPlan | null = null;
     const [
       eventSnap,
       userSnap,
@@ -181,6 +189,7 @@ export async function cancelEventSignUpHandler(
       "EventDocument"
 
     );
+    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
@@ -191,7 +200,7 @@ export async function cancelEventSignUpHandler(
 
     // Idempotent — already not signed up.
     if (participation?.status !== "signedUp") {
-      return;
+      return {cancelled: false, promotionPushes, refundPlan};
     }
     const scheduledEvent = requireEventTimeRange(event);
 
@@ -210,19 +219,65 @@ export async function cancelEventSignUpHandler(
         startTimeMillis: event.startTime.toMillis(),
         nowMillis: deps.nowMillis(),
       });
-      refundPlan.value = cancellationQuote.refundAmountInPaise > 0 ? {
+      refundPlan = cancellationQuote.refundAmountInPaise > 0 ? {
         paymentId: payment.paymentId,
         amountInPaise: cancellationQuote.refundAmountInPaise,
         paymentRef: paymentDoc.ref,
       } : null;
     }
 
-    const currentSignedUpCount = event.bookedCount ??
+    const seatTransaction = seatMode === "ready" ?
+      new FirestoreSeatTransaction(db, tx) : null;
+    const seatLedger = seatTransaction ?
+      await seatTransaction.ledger(eventId) : null;
+    let retainedGuestSeat = false;
+    if (seatMode === "ready") {
+      const currentAuthPhone = await deps.loadCurrentAuthPhone(userId);
+      const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
+        eventId, organizerId: event.organizerId ?? event.clubId, uid: userId,
+        currentAuthPhoneNumber: currentAuthPhone});
+      const guests = await tx.get(db.collection("eventAttendees")
+        .where("eventId", "==", eventId)
+        .where("linkedUid", "==", userId).limit(2));
+      const independentGuests = guests.docs.filter((guest) => {
+        const row = guest.data();
+        return ["hostImport", "hostManual", "providerSync"]
+          .includes(row.source) &&
+          ["registered", "checkedIn"].includes(row.status);
+      });
+      if (guests.docs.length > 1 || independentGuests.length > 1) {
+        throw new HttpsError("failed-precondition",
+          "Linked guest seat needs reconciliation.");
+      }
+      if (independentGuests.length === 1) {
+        const guestIdentity = await new FirestoreSeatIdentityAuthority()
+          .resolve({db, tx, eventId,
+            organizerId: event.organizerId ?? event.clubId,
+            subject: {kind: "importAttendee",
+              attendeeId: independentGuests[0].id}});
+        if (!guestIdentity || guestIdentity.key !==
+            preparedIdentity.identity.key ||
+            guestIdentity.revision !== preparedIdentity.identity.revision) {
+          throw new HttpsError("failed-precondition",
+            "Linked guest seat needs reconciliation.");
+        }
+        const reservation = await seatTransaction!.reservation(eventId,
+          guestIdentity.key);
+        if (!reservation?.active) {
+          throw new HttpsError("failed-precondition",
+            "Linked guest reservation is unavailable.");
+        }
+        retainedGuestSeat = true;
+      }
+    }
+    const currentSignedUpCount = seatLedger?.occupied ??
+      event.bookedCount ??
         activeParticipations.filter((edge) =>
           edge.data.status === "signedUp").length;
     const currentWaitlistedCount = event.waitlistedCount ??
         waitlistedParticipations.length;
-    let nextBookedCount = Math.max(0, currentSignedUpCount - 1);
+    let nextBookedCount = Math.max(0,
+      currentSignedUpCount - (retainedGuestSeat ? 0 : 1));
     let nextWaitlistedCount = currentWaitlistedCount;
     const newGenderCounts = {...event.genderCounts};
     newGenderCounts[cancellerGender] =
@@ -243,10 +298,13 @@ export async function cancelEventSignUpHandler(
     let promotedNotification:
         {uid: string; token?: string; title: string; body: string} | null =
         null;
+    let promotedUid: string | null = null;
+    let promotedScheduleClaim: {apply: () => void} | null = null;
 
     // Promote the first waitlist user who passes gender-cap and block checks.
     const activePeerIds = participantUids(activeParticipations, userId);
-    for (const waitlistedParticipation of isEventPubliclyAccessible(event) ?
+    for (const waitlistedParticipation of !retainedGuestSeat &&
+      isEventPubliclyAccessible(event) ?
       waitlistedParticipations : []) {
       const waitlistUserId = waitlistedParticipation.data.uid;
       const waitlistUserSnap =
@@ -287,15 +345,16 @@ export async function cancelEventSignUpHandler(
         if (quotedAmountInPaise > 0) {
           continue;
         }
-        await claimUserEventScheduleInTransaction(tx, db, {
-          uid: waitlistUserId,
-          eventId,
-          clubId: event.clubId,
+        promotedScheduleClaim =
+          await prepareUserEventScheduleClaimInTransaction(tx, db, {
+            uid: waitlistUserId,
+            eventId,
+            clubId: event.clubId,
 
-          organizerId: event.organizerId ?? event.clubId,
-          startTimeMillis: event.startTime.toMillis(),
-          endTimeMillis: scheduledEvent.endTime.toMillis(),
-        });
+            organizerId: event.organizerId ?? event.clubId,
+            startTimeMillis: event.startTime.toMillis(),
+            endTimeMillis: scheduledEvent.endTime.toMillis(),
+          });
       } catch (error) {
         if (error instanceof HttpsError &&
               error.code === "failed-precondition") {
@@ -305,6 +364,7 @@ export async function cancelEventSignUpHandler(
       }
 
       // Promote this user.
+      promotedUid = waitlistUserId;
       const promotedOfferId = eventWaitlistOfferId(eventId, waitlistUserId);
       const promotionTimestamp =
           admin.firestore.Timestamp.fromMillis(deps.nowMillis());
@@ -374,6 +434,47 @@ export async function cancelEventSignUpHandler(
       break;
     }
 
+    let seatPreparation: FirestoreSeatBatchPreparation | null = null;
+    let applySeatIdentities: Array<() => void> = [];
+    if (seatMode === "ready" && !retainedGuestSeat) {
+      if (!seatLedger || !seatTransaction) {
+        throw new HttpsError("failed-precondition",
+          "Event seat authority is unavailable.");
+      }
+      const organizerId = event.organizerId ?? event.clubId;
+      const uids = promotedUid ? [userId, promotedUid] : [userId];
+      const preparedIdentities = await Promise.all(uids.map(async (uid) =>
+        prepareCatchUidSeatIdentity({db, tx, eventId, organizerId, uid,
+          currentAuthPhoneNumber: await deps.loadCurrentAuthPhone(uid)})));
+      const identities = preparedIdentities.map((row) => row.identity);
+      applySeatIdentities = preparedIdentities.map((row) => row.apply);
+      const reservations = await Promise.all(identities.map((identity) =>
+        seatTransaction.reservation(eventId, identity.key)));
+      const releaseRevision = reservations[0]?.revision ?? 0;
+      seatPreparation = await prepareFirestoreSeatBatch({db, tx,
+        identityAuthority: {resolve: async ({subject}) => {
+          const index = uids.indexOf(subject.uid);
+          return index < 0 ? null : identities[index];
+        }},
+        command: {eventId,
+          batchId: `cancel_${userId}_${releaseRevision}`,
+          expectedLedgerRevision: seatLedger.revision,
+          expectedCapacityRevision: seatLedger.capacityRevision,
+          expectedMigrationRevision: seatLedger.migrationRevision,
+          nowMillis: deps.nowMillis(),
+          operations: uids.map((uid, index) => ({
+            subject: {kind: "verifiedUid" as const, uid},
+            operation: index === 0 ? "release" as const : "reserve" as const,
+            requestId: index === 0 ?
+              `cancel_${uid}_${releaseRevision}` :
+              `promote_${uid}_${reservations[index]?.revision ?? 0}`,
+            expectedReservationRevision: reservations[index]?.revision ?? 0,
+          }))}});
+    }
+
+    if (seatPreparation) applyFirestoreSeatBatch(seatPreparation);
+    for (const applyIdentity of applySeatIdentities) applyIdentity();
+    promotedScheduleClaim?.apply();
     tx.update(eventRef, {
       bookedCount: nextBookedCount,
       waitlistedCount: nextWaitlistedCount,
@@ -437,9 +538,10 @@ export async function cancelEventSignUpHandler(
         });
       }
     }
+    return {cancelled: true, promotionPushes, refundPlan};
   });
 
-  for (const promotionPush of promotionPushes) {
+  for (const promotionPush of committed.promotionPushes) {
     try {
       await deps.sendNotification(promotionPush);
     } catch (notificationError) {
@@ -458,24 +560,24 @@ export async function cancelEventSignUpHandler(
   }
 
   // Issue a refund outside the transaction when the selected policy allows it.
-  if (refundPlan.value) {
+  if (committed.refundPlan) {
     try {
       await deps.refundPayment(
-        refundPlan.value.paymentId,
-        refundPlan.value.amountInPaise
+        committed.refundPlan.paymentId,
+        committed.refundPlan.amountInPaise
       );
-      await refundPlan.value.paymentRef.update({status: "refunded"});
+      await committed.refundPlan.paymentRef.update({status: "refunded"});
     } catch (refundError) {
       // Log and continue — cancellation itself succeeded; refund can be
       // retried manually via the Razorpay dashboard.
       logger.error(
         "Refund failed for payment",
-        refundPlan.value.paymentId,
+        committed.refundPlan.paymentId,
         refundError
       );
     }
   }
-  return {cancelled: true};
+  return {cancelled: committed.cancelled};
 }
 
 export const cancelEventSignUp = onCall(

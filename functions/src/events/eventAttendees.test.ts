@@ -16,6 +16,7 @@ import {
   registerPublicEventHandler,
   setEventAttendeeAttendanceHandler,
 } from "./eventAttendees";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 
 type FakeData = Record<string, unknown>;
 
@@ -458,6 +459,54 @@ test("re-import cannot transfer a claimed attendee's verified endpoint",
     await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
       payload: changed}, deps), /conflicts with a claimed attendee/u);
     assert.equal(firestore.get(attendeePath)?.phoneE164, "+919876543210");
+  });
+
+test("ready Host import reserves full batch or writes no attendee or receipt",
+  async () => {
+    const now = admin.firestore.Timestamp.fromMillis(1000);
+    const event = {clubId: "organizer-1", organizerId: "organizer-1",
+      status: "active", capacityLimit: 2, bookedCount: 0,
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null}};
+    const policy = deriveEventSeatPolicy(event);
+    const firestore = new FakeFirestore({
+      "events/event-1": event,
+      "organizers/organizer-1": {hostUserId: "host-1",
+        ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 2,
+        occupied: 0, revision: 1, capacityRevision: 1,
+        policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+        migrationRevision: 1, state: "ready"},
+    });
+    const deps = {firestore: () => firestore as unknown as
+      FirebaseFirestore.Firestore, checkRateLimit: async () => undefined,
+    timestamp: () => now};
+    const rows = ["+919876543210", "+919876543211"].map((phone, i) => ({
+      rowId: String(i + 1), displayName: `Guest ${i + 1}`, phone,
+      email: null, externalReference: `guest-${i + 1}`,
+      arrivalGroup: `order-${i + 1}`, ticketType: null,
+      status: "registered" as const,
+    }));
+    const payload = {eventId: "event-1", importKey: "ready-one",
+      fileName: "roster.csv", format: "csv" as const, rows};
+    const first = await importEventAttendeesForHost({hostUid: "host-1",
+      payload}, deps);
+    assert.equal(first.createdCount, 2);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 2);
+    assert.equal(firestore.get("events/event-1")?.bookedCount, 2);
+    assert.equal((await importEventAttendeesForHost({hostUid: "host-1",
+      payload}, deps)).replayed, true);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 2);
+    const third = {...payload, importKey: "ready-overflow",
+      rows: [{...rows[0], rowId: "3", phone: "+919876543212",
+        externalReference: "guest-3"}]};
+    await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+      payload: third}, deps));
+    assert.equal(firestore.get(`eventAttendees/${eventAttendeeId("event-1",
+      "external:guest-3")}`), undefined);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 2);
+    assert.equal(firestore.get("events/event-1")?.bookedCount, 2);
   });
 
 test("import rejects unsupported city values before writing a row", () => {
