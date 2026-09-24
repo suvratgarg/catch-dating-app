@@ -22,6 +22,37 @@ class HostFormDefinition {
     formDefinitionStringValue(_json['purpose']),
     'form purpose',
   );
+  HostFormTargetKind get defaultTargetKind => formDefinitionEnumByName(
+    HostFormTargetKind.values,
+    formDefinitionStringValue(_json['defaultTargetKind']),
+    'form target',
+  );
+  String? get defaultTargetId =>
+      formDefinitionNullableString(_json['defaultTargetId']);
+
+  HostFormDefinition withTarget({
+    required HostFormTargetKind kind,
+    String? eventId,
+  }) {
+    if (kind == HostFormTargetKind.campaign ||
+        kind == HostFormTargetKind.event &&
+            (eventId == null || eventId.trim().isEmpty) ||
+        kind == HostFormTargetKind.organizer && eventId != null) {
+      throw ArgumentError('Choose a reusable form or a specific event.');
+    }
+    if (kind == defaultTargetKind &&
+        (kind == HostFormTargetKind.organizer
+            ? defaultTargetId == null
+            : defaultTargetId == eventId)) {
+      return this;
+    }
+    final next = toJson();
+    next['defaultTargetKind'] = kind.name;
+    next['defaultTargetId'] = kind == HostFormTargetKind.event
+        ? eventId!.trim()
+        : null;
+    return HostFormDefinition._(next);
+  }
   HostFormIdentityPolicy get identityPolicy => formDefinitionEnumByName(
     HostFormIdentityPolicy.values,
     formDefinitionStringValue(_json['identityPolicy']),

@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
@@ -21,6 +25,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_forms_controller.g.dart';
+part 'host_form_target_controller.dart';
 
 @immutable
 class HostFormsDirectoryState {
@@ -136,17 +141,18 @@ class HostFormEditorState {
 }
 
 @riverpod
-class HostFormEditorController extends _$HostFormEditorController {
-  Timer? _saveTimer;
+class HostFormEditorController extends _$HostFormEditorController
+    with HostFormEditorTargetMixin {
+  @override
   int _generation = 0;
   int _idCounter = 0;
-  bool _saveRunning = false;
   final List<HostFormDefinition> _undoStack = [];
   final List<HostFormDefinition> _redoStack = [];
 
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async {
     ref.onDispose(() => _saveTimer?.cancel());
+    _targetMutationAccountId = null;
     _undoStack.clear();
     _redoStack.clear();
     final editor = await ref
@@ -428,73 +434,10 @@ class HostFormEditorController extends _$HostFormEditorController {
   void removeLogicRule(int index) =>
       _mutate((definition) => definition.removeLogicRule(index));
 
-  Future<bool> saveNow() async {
-    _saveTimer?.cancel();
-    if (_saveRunning) {
-      while (_saveRunning) {
-        await Future<void>.delayed(CatchMotion.fast);
-      }
-      return state.asData?.value.saveState == HostFormSaveState.saved;
-    }
-    final current = state.asData?.value;
-    if (current == null) return false;
-    if (current.saveState == HostFormSaveState.saved) return true;
-    _saveRunning = true;
-    final generation = _generation;
-    final definition = current.editor.definition;
-    final expectedRevision = current.editor.form.draftRevision;
-    state = AsyncData(
-      current.copyWith(saveState: HostFormSaveState.saving, clearError: true),
-    );
-    try {
-      final saved = await ref
-          .read(hostFormsRepositoryProvider)
-          .updateDraft(
-            organizerId: organizerId,
-            formId: formId,
-            expectedRevision: expectedRevision,
-            definition: definition,
-          );
-      final latest = state.asData?.value;
-      if (latest == null) return false;
-      if (generation == _generation) {
-        state = AsyncData(
-          latest.copyWith(
-            editor: saved,
-            saveState: HostFormSaveState.saved,
-            clearError: true,
-          ),
-        );
-      } else {
-        state = AsyncData(
-          latest.copyWith(
-            editor: latest.editor.copyWith(form: saved.form),
-            saveState: HostFormSaveState.dirty,
-            clearError: true,
-          ),
-        );
-        _scheduleSave();
-      }
-      return generation == _generation;
-    } on Object catch (error) {
-      final latest = state.asData?.value ?? current;
-      final conflict = error is AppException && error.code == 'aborted';
-      state = AsyncData(
-        latest.copyWith(
-          saveState: conflict
-              ? HostFormSaveState.conflict
-              : HostFormSaveState.failed,
-          error: error,
-        ),
-      );
-      return false;
-    } finally {
-      _saveRunning = false;
-    }
-  }
-
+  @override
   Future<void> reload() async {
     _saveTimer?.cancel();
+    _targetMutationAccountId = null;
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final editor = await ref
@@ -603,6 +546,7 @@ class HostFormEditorController extends _$HostFormEditorController {
     }
   }
 
+  @override
   void _mutate(
     HostFormDefinition Function(HostFormDefinition definition) transform,
   ) {
@@ -653,6 +597,7 @@ class HostFormEditorController extends _$HostFormEditorController {
     _scheduleSave();
   }
 
+  @override
   void _scheduleSave() {
     _saveTimer?.cancel();
     _saveTimer = Timer(CatchMotion.searchDebounce, () => unawaited(saveNow()));

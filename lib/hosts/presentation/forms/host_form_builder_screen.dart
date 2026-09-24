@@ -291,6 +291,10 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       organizerId: widget.organizerId,
                       definition: value.editor.definition,
                       notifier: notifier,
+                      accountId: responseAccountId,
+                      enableEventTargetSettings: privateEventSetupAvailable(),
+                      hasPublishedVersion:
+                          value.editor.form.activeVersionId != null,
                     ),
                   ],
                 ),
