@@ -4,7 +4,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-part 'host_response_query_editor_parts.dart';
+part 'host_response_query_editor_parts_section.dart';
 
 /// Copy is supplied by the Forms route's localization owner when the manager
 /// callable is mounted. This widget does not introduce a second form model.
@@ -50,8 +50,8 @@ class HostResponseQueryEditorCopy {
 
 /// A bounded editor for one immutable published version's permitted fields.
 /// The caller owns loading, page state and the actual manager callable.
-class HostResponseQueryEditor extends StatefulWidget {
-  const HostResponseQueryEditor({
+class HostResponseQueryEditorSection extends StatefulWidget {
+  const HostResponseQueryEditorSection({
     super.key,
     required this.fields,
     required this.copy,
@@ -65,11 +65,12 @@ class HostResponseQueryEditor extends StatefulWidget {
   final ValueChanged<HostResponsePredicate?> onApply;
 
   @override
-  State<HostResponseQueryEditor> createState() =>
-      _HostResponseQueryEditorState();
+  State<HostResponseQueryEditorSection> createState() =>
+      _HostResponseQueryEditorSectionState();
 }
 
-class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
+class _HostResponseQueryEditorSectionState
+    extends State<HostResponseQueryEditorSection> {
   late HostResponseGroup _root;
 
   @override
@@ -79,7 +80,7 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
   }
 
   @override
-  void didUpdateWidget(covariant HostResponseQueryEditor oldWidget) {
+  void didUpdateWidget(covariant HostResponseQueryEditorSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.initial, widget.initial) ||
         !identical(oldWidget.fields, widget.fields)) {
@@ -183,7 +184,7 @@ class _HostResponseQueryEditorState extends State<HostResponseQueryEditor> {
           Text(copy.title, style: CatchTextStyles.sectionTitle(context)),
           gapH16,
           if (widget.fields.isNotEmpty)
-            _ResponseGroupEditor(
+            HostResponseGroupSection(
               root: _root,
               group: _root,
               path: const [],

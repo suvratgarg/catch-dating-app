@@ -15,7 +15,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_c
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -109,7 +109,7 @@ class _HostFormResponsesPanelState
         queryController != null &&
         widget.formId != null) {
       return SliverToBoxAdapter(
-        child: HostResponseQueryWorkspace(
+        child: HostResponseQueryWorkspaceSection(
           controller: queryController,
           request: HostResponseQueryRequest(
             organizerId: widget.organizerId,

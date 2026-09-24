@@ -1,9 +1,9 @@
-part of 'host_response_query_editor.dart';
+part of 'host_response_query_editor_section.dart';
 
 /// Recursive group rendering is a widget tree. The editor state alone owns
 /// draft mutation, so replacing any branch creates one new immutable root.
-class _ResponseGroupEditor extends StatelessWidget {
-  const _ResponseGroupEditor({
+class HostResponseGroupSection extends StatelessWidget {
+  const HostResponseGroupSection({
     required this.root,
     required this.group,
     required this.path,
@@ -50,7 +50,7 @@ class _ResponseGroupEditor extends StatelessWidget {
           for (var index = 0; index < group.children.length; index++) ...[
             if (group.children[index]
                 case final HostResponseCondition condition)
-              _ResponseConditionEditor(
+              HostResponseConditionSection(
                 path: [...path, index],
                 condition: condition,
                 fields: fields,
@@ -58,7 +58,7 @@ class _ResponseGroupEditor extends StatelessWidget {
                 onReplace: onReplace,
               )
             else if (group.children[index] case final HostResponseGroup nested)
-              _ResponseGroupEditor(
+              HostResponseGroupSection(
                 root: root,
                 group: nested,
                 path: [...path, index],
@@ -108,8 +108,8 @@ class _ResponseGroupEditor extends StatelessWidget {
   }
 }
 
-class _ResponseConditionEditor extends StatelessWidget {
-  const _ResponseConditionEditor({
+class HostResponseConditionSection extends StatelessWidget {
+  const HostResponseConditionSection({
     required this.path,
     required this.condition,
     required this.fields,
@@ -211,7 +211,7 @@ class _ResponseConditionEditor extends StatelessWidget {
           },
         ),
         gapH8,
-        _ResponseConditionValue(
+        HostResponseConditionValueSection(
           path: path,
           field: field,
           condition: condition,
@@ -223,8 +223,8 @@ class _ResponseConditionEditor extends StatelessWidget {
   }
 }
 
-class _ResponseConditionValue extends StatelessWidget {
-  const _ResponseConditionValue({
+class HostResponseConditionValueSection extends StatelessWidget {
+  const HostResponseConditionValueSection({
     required this.path,
     required this.field,
     required this.condition,
@@ -290,7 +290,7 @@ class _ResponseConditionValue extends StatelessWidget {
       return Row(
         children: [
           Expanded(
-            child: _ResponseValueField(
+            child: HostResponseValueFieldSection(
               path: path,
               field: field,
               condition: condition,
@@ -301,7 +301,7 @@ class _ResponseConditionValue extends StatelessWidget {
           ),
           gapW12,
           Expanded(
-            child: _ResponseValueField(
+            child: HostResponseValueFieldSection(
               path: path,
               field: field,
               condition: condition,
@@ -313,7 +313,7 @@ class _ResponseConditionValue extends StatelessWidget {
         ],
       );
     }
-    return _ResponseValueField(
+    return HostResponseValueFieldSection(
       path: path,
       field: field,
       condition: condition,
@@ -323,8 +323,8 @@ class _ResponseConditionValue extends StatelessWidget {
   }
 }
 
-class _ResponseValueField extends StatelessWidget {
-  const _ResponseValueField({
+class HostResponseValueFieldSection extends StatelessWidget {
+  const HostResponseValueFieldSection({
     required this.path,
     required this.field,
     required this.condition,

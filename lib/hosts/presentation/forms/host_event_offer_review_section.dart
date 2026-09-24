@@ -52,8 +52,8 @@ class HostEventOfferReviewCopy {
 
 /// One selected current CRM contact and manager-visible future event are
 /// supplied by the parent flow. Preview never reserves or admits a guest.
-class HostEventOfferReview extends StatelessWidget {
-  const HostEventOfferReview({
+class HostEventOfferReviewSection extends StatelessWidget {
+  const HostEventOfferReviewSection({
     super.key,
     required this.controller,
     required this.draft,
@@ -150,8 +150,8 @@ class HostEventOfferReview extends StatelessWidget {
 
 /// Reference text is an unverified assertion. Host review is a deliberate
 /// manual bank check, with no provider capture or event admission consequence.
-class HostManualPaymentReviewPanel extends StatefulWidget {
-  const HostManualPaymentReviewPanel({
+class HostManualPaymentReviewSection extends StatefulWidget {
+  const HostManualPaymentReviewSection({
     super.key,
     required this.controller,
     required this.offer,
@@ -169,12 +169,12 @@ class HostManualPaymentReviewPanel extends StatefulWidget {
   final ValueChanged<HostEventOffer> onUpdated;
 
   @override
-  State<HostManualPaymentReviewPanel> createState() =>
-      _HostManualPaymentReviewPanelState();
+  State<HostManualPaymentReviewSection> createState() =>
+      _HostManualPaymentReviewSectionState();
 }
 
-class _HostManualPaymentReviewPanelState
-    extends State<HostManualPaymentReviewPanel> {
+class _HostManualPaymentReviewSectionState
+    extends State<HostManualPaymentReviewSection> {
   String _reference = '';
   String _note = '';
   bool _bankReceiptChecked = false;

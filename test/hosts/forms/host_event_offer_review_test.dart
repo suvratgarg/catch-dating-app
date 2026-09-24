@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,7 +33,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: HostEventOfferReview(
+          body: HostEventOfferReviewSection(
             controller: controller,
             draft: draft,
             eventTitle: 'Sunday run',

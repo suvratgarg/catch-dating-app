@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -75,7 +75,7 @@ Future<void> _pumpEditor(
       theme: AppTheme.light,
       home: Scaffold(
         body: SingleChildScrollView(
-          child: HostResponseQueryEditor(
+          child: HostResponseQueryEditorSection(
             fields: const [
               HostResponseQueryField(
                 questionId: 'city',

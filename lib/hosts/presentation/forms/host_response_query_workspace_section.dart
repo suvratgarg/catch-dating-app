@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +73,8 @@ class HostResponseQueryCapability {
 /// Manager query workspace for one published form version. Its bulk callback
 /// carries review intent only; the write endpoint must independently recheck
 /// current manager, response, identity, query hash and conversion authority.
-class HostResponseQueryWorkspace extends StatefulWidget {
-  const HostResponseQueryWorkspace({
+class HostResponseQueryWorkspaceSection extends StatefulWidget {
+  const HostResponseQueryWorkspaceSection({
     super.key,
     required this.controller,
     required this.request,
@@ -90,12 +90,12 @@ class HostResponseQueryWorkspace extends StatefulWidget {
   final void Function(List<String> ids, String resultHash)? onReviewSelection;
 
   @override
-  State<HostResponseQueryWorkspace> createState() =>
-      _HostResponseQueryWorkspaceState();
+  State<HostResponseQueryWorkspaceSection> createState() =>
+      _HostResponseQueryWorkspaceSectionState();
 }
 
-class _HostResponseQueryWorkspaceState
-    extends State<HostResponseQueryWorkspace> {
+class _HostResponseQueryWorkspaceSectionState
+    extends State<HostResponseQueryWorkspaceSection> {
   late HostResponseQueryRequest _request;
   bool _showFilter = false;
 
@@ -109,7 +109,7 @@ class _HostResponseQueryWorkspaceState
   }
 
   @override
-  void didUpdateWidget(covariant HostResponseQueryWorkspace oldWidget) {
+  void didUpdateWidget(covariant HostResponseQueryWorkspaceSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     final changed =
         jsonEncode(oldWidget.request.toJson()) !=
@@ -220,7 +220,7 @@ class _HostResponseQueryWorkspaceState
                 ),
                 if (_showFilter && view.catalog.isNotEmpty) ...[
                   gapH16,
-                  HostResponseQueryEditor(
+                  HostResponseQueryEditorSection(
                     fields: view.catalog,
                     copy: copy.editor,
                     initial: _request.predicate,
@@ -305,7 +305,8 @@ class _HostResponseQueryWorkspaceState
                   CatchField.content(
                     key: ValueKey('query-response-${row.responseId}'),
                     copy: catchFieldCopy(context.l10n),
-                    title: row.identity.primaryLabel ??
+                    title:
+                        row.identity.primaryLabel ??
                         context.l10n.hostFormResponsesAnonymous,
                     body: row.status.name == 'withdrawn'
                         ? copy.withdrawn
