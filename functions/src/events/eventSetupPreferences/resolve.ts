@@ -38,7 +38,7 @@ export function organizerEventDefaultsHash(
       paymentInstructions:
         defaults.eventSetup?.paymentInstructions ?? null,
       reusablePaymentPage:
-        defaults.eventSetup?.reusablePaymentPage ?? null,
+        copyReusablePage(defaults.eventSetup?.reusablePaymentPage ?? null),
     },
   });
 }
@@ -56,6 +56,9 @@ export function resolveEventPreferences(input: {
       "Organizer defaults changed. Review them before saving.");
   }
   const setup = defaults.eventSetup ?? {};
+  if ((intents.expectedAmountMinor as {mode: string})?.mode === "inherit") {
+    invalid("Expected amount must be chosen for this event.");
+  }
   const resolved: ResolvedEventPreferences = {
     defaultsRevision: defaults.revision,
     defaultsHash,
@@ -79,6 +82,8 @@ export function resolveEventPreferences(input: {
     expectedAmountMinor: resolve(intents.expectedAmountMinor, undefined),
   };
   validateResolved(resolved);
+  resolved.reusablePaymentPage = {...resolved.reusablePaymentPage,
+    value: copyReusablePage(resolved.reusablePaymentPage.value)};
   return resolved;
 }
 
@@ -88,10 +93,12 @@ export function eventPaymentTermsFromPreferences(
   revision: number
 ): EventPaymentTerms {
   requireInteger(revision, 1, 1_000_000_000, "Event payment revision");
+  validateResolved(preferences);
   return {
     revision,
     preferredCollection: preferences.collectionPreference.value,
-    reusablePaymentPage: preferences.reusablePaymentPage.value,
+    reusablePaymentPage: copyReusablePage(
+      preferences.reusablePaymentPage.value),
     paymentInstructions: preferences.paymentInstructions.value,
     expectedAmountMinor: preferences.expectedAmountMinor.value,
     currency: preferences.currency.value,
@@ -241,6 +248,11 @@ function validateValues(value: {
   if (value.reusablePaymentPage !== null) {
     validateReusablePage(value.reusablePaymentPage);
   }
+}
+
+function copyReusablePage(page: ReusablePaymentPage | null):
+  ReusablePaymentPage | null {
+  return page === null ? null : {url: page.url, reusableForEvents: true};
 }
 
 function validateReusablePage(page: ReusablePaymentPage): void {

@@ -191,3 +191,23 @@ test("change preview preserves historical offered terms", () => {
   assert.equal(eventPaymentTermsHash(reordered),
     eventPaymentTermsHash(current));
 });
+
+
+test("resolved payment snapshots do not retain mutable defaults references",
+  () => {
+    const source: OrganizerEventDefaults = {...defaults,
+      eventSetup: {...defaults.eventSetup,
+        reusablePaymentPage: {...reusablePage}}};
+    const preferences = resolved(intents(), source);
+    const terms = eventPaymentTermsFromPreferences(preferences, 1);
+    source.eventSetup!.reusablePaymentPage!.url =
+      "https://payments.example.com/changed-default";
+    assert.equal(preferences.reusablePaymentPage.value?.url, reusablePage.url);
+    preferences.reusablePaymentPage.value!.url =
+      "https://payments.example.com/changed-editor";
+    assert.equal(terms.reusablePaymentPage?.url, reusablePage.url);
+    const input = intents();
+    input.expectedAmountMinor = {mode: "inherit"} as never;
+    assert.throws(() => resolved(input),
+      (error) => isError(error, "invalid"));
+  });
