@@ -62,26 +62,51 @@ export async function deleteAccountEventParticipations(params: {
   }
   const participations = await db.collection("eventParticipations")
     .where("uid", "==", uid).get();
+  const linkedAttendees = await db.collection("eventAttendees")
+    .where("linkedUid", "==", uid).get();
+  const byEvent = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
   for (const found of participations.docs) {
+    const eventId = found.data().eventId;
+    if (!ID.test(eventId) || byEvent.has(eventId)) {
+      unavailable("Account participation sources need reconciliation.");
+    }
+    byEvent.set(eventId, found);
+  }
+  const eventIds = new Set(byEvent.keys());
+  for (const attendee of linkedAttendees.docs) {
+    const eventId = attendee.data().eventId;
+    if (!ID.test(eventId)) {
+      unavailable("Linked attendee event identity is malformed.");
+    }
+    eventIds.add(eventId);
+  }
+  for (const eventId of eventIds) {
+    const found = byEvent.get(eventId);
     await db.runTransaction(async (tx) => {
-      const currentSnap = await tx.get(found.ref);
-      const current = currentSnap.data() as EventParticipationDocument |
+      const currentSnap = found ? await tx.get(found.ref) : null;
+      const current = currentSnap?.data() as EventParticipationDocument |
         undefined;
-      if (!current) return;
-      const eventId = current.eventId;
-      if (current.uid !== uid || !ID.test(eventId)) {
+      if (current && (current.uid !== uid || current.eventId !== eventId)) {
         unavailable("Current participation identity is malformed.");
       }
       const eventRef = db.collection("events").doc(eventId);
       const eventSnap = await tx.get(eventRef);
       const event = eventSnap.data();
       const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
-      const status = current.status;
-      if (!["signedUp", "attended", "waitlisted", "cancelled", "deleted"]
+      const linked = await tx.get(db.collection("eventAttendees")
+        .where("eventId", "==", eventId)
+        .where("linkedUid", "==", uid).limit(3));
+      if (linked.docs.length > 2) {
+        unavailable("Linked attendee sources need reconciliation.");
+      }
+      const status = current?.status;
+      if (!current && linked.docs.length === 0) return;
+      if (status !== undefined && !["signedUp", "attended", "waitlisted",
+        "cancelled", "deleted"]
         .includes(status)) {
         unavailable("Participation status is malformed.");
       }
-      if (status === "deleted") {
+      if (status === "deleted" && linked.docs.length === 0) {
         if (seatMode === "ready") {
           const uidAlias = (await tx.get(db.collection(
             "eventSeatIdentityAliases").doc(seatIdentityAliasId(eventId,
@@ -97,21 +122,28 @@ export async function deleteAccountEventParticipations(params: {
         return;
       }
       if (seatMode === "legacy") {
-        const patch = legacyEventPatch(current);
+        const patch = current && status !== "deleted" ?
+          legacyEventPatch(current) : {};
         if (Object.keys(patch).length > 0) {
           if (!event) unavailable("Event aggregate is unavailable.");
           tx.update(eventRef, patch);
         }
-        tx.set(found.ref, {status: "deleted", updatedAt: now,
-          deletedAt: now}, {merge: true});
+        for (const row of linked.docs) {
+          tx.update(row.ref, {linkedUid: null, linkedAt: null,
+            updatedAt: now});
+        }
+        if (current && status !== "deleted") {
+          tx.set(found!.ref, {status: "deleted", updatedAt: now,
+            deletedAt: now}, {merge: true});
+        }
         return;
       }
       if (!event || !ID.test(event.clubId) ||
           event.organizerId !== undefined &&
           event.organizerId !== event.clubId ||
-          current.clubId !== event.clubId ||
-          current.organizerId !== undefined &&
-          current.organizerId !== event.clubId) {
+          current && (current.clubId !== event.clubId ||
+            current.organizerId !== undefined &&
+            current.organizerId !== event.clubId)) {
         unavailable("Ready event or participation tenant is malformed.");
       }
       const ledgerTx = new FirestoreSeatTransaction(db, tx);
@@ -148,50 +180,51 @@ export async function deleteAccountEventParticipations(params: {
       }
       let seatPreparation: Awaited<ReturnType<
         typeof prepareFirestoreSeat>> | null = null;
-      if (active) {
-        const reservation = await ledgerTx.reservation(eventId, identity.key);
+      const independent = linked.docs.filter((guest) => {
+        const row = guest.data();
+        if (!["registered", "checkedIn"].includes(row.status)) {
+          return false;
+        }
+        if (!["catchBooking", "hostImport", "hostManual", "webOtp",
+          "providerSync"].includes(row.source)) {
+          unavailable("Linked attendee source needs reconciliation.");
+        }
+        if (row.source === "catchBooking") {
+          catchRows.push(guest);
+          return false;
+        }
+        return true;
+      });
+      if (independent.length > 1 || catchRows.length > 1) {
+        unavailable("Linked Host seats need reconciliation.");
+      }
+      for (const guest of [...independent, ...catchRows]) {
+        const hostIdentity = await new FirestoreSeatIdentityAuthority()
+          .resolve({db, tx, eventId, organizerId: event.clubId,
+            subject: {kind: "importAttendee",
+              attendeeId: guest.id}});
+        if (!hostIdentity || hostIdentity.key !== identity.key ||
+            hostIdentity.revision !== identity.revision) {
+          unavailable("Linked attendee seat needs reconciliation.");
+        }
+      }
+      retainHostSeat = independent.length === 1;
+      const reservation = await ledgerTx.reservation(eventId, identity.key);
+      if (active || retainHostSeat) {
         if (!reservation?.active ||
             reservation.identityRevision !== identity.revision) {
-          unavailable("Current Catch reservation is unavailable.");
+          unavailable("Current occupied reservation is unavailable.");
         }
-        const guests = await tx.get(db.collection("eventAttendees")
-          .where("eventId", "==", eventId)
-          .where("linkedUid", "==", uid).limit(3));
-        if (guests.docs.length > 2) {
-          unavailable("Linked attendee sources need reconciliation.");
-        }
-        const independent = guests.docs.filter((guest) => {
-          const row = guest.data();
-          if (!["registered", "checkedIn"].includes(row.status)) {
-            return false;
-          }
-          if (!["catchBooking", "hostImport", "hostManual", "webOtp",
-            "providerSync"].includes(row.source)) {
-            unavailable("Linked attendee source needs reconciliation.");
-          }
-          if (row.source === "catchBooking") {
-            catchRows.push(guest);
-            return false;
-          }
-          return true;
-        });
-        if (independent.length > 1 || catchRows.length > 1) {
-          unavailable("Linked Host seats need reconciliation.");
-        }
-        for (const guest of [...independent, ...catchRows]) {
-          const hostIdentity = await new FirestoreSeatIdentityAuthority()
-            .resolve({db, tx, eventId, organizerId: event.clubId,
-              subject: {kind: "importAttendee",
-                attendeeId: guest.id}});
-          if (!hostIdentity || hostIdentity.key !== identity.key ||
-              hostIdentity.revision !== identity.revision) {
-            unavailable("Linked attendee seat needs reconciliation.");
-          }
-        }
-        retainHostSeat = independent.length === 1;
+      } else if (reservation?.active) {
+        unavailable("Unaccounted active reservation needs reconciliation.");
+      }
+      if (!active && catchRows.length > 0) {
+        unavailable("Catch attendee has no active participation.");
+      }
+      if (active) {
         if (!retainHostSeat) {
           const requestId = "delete_" + createHash("sha256")
-            .update(`${eventId}\u001f${uid}\u001f${reservation.revision}`)
+            .update(`${eventId}\u001f${uid}\u001f${reservation!.revision}`)
             .digest("hex").slice(0, 48);
           seatPreparation = await prepareFirestoreSeat({db, tx,
             identityAuthority: {resolve: async () => identity},
@@ -200,7 +233,7 @@ export async function deleteAccountEventParticipations(params: {
               expectedLedgerRevision: ledger.revision,
               expectedCapacityRevision: ledger.capacityRevision,
               expectedMigrationRevision: ledger.migrationRevision,
-              expectedReservationRevision: reservation.revision,
+              expectedReservationRevision: reservation!.revision,
               nowMillis}});
         }
       }
@@ -209,7 +242,7 @@ export async function deleteAccountEventParticipations(params: {
         const expected = ledger.occupied - (retainHostSeat ? 0 : 1);
         if (expected < 0) unavailable("Seat count needs reconciliation.");
         patch.bookedCount = expected;
-        if (current.genderAtSignup) {
+        if (current?.genderAtSignup) {
           const genders = event.genderCounts;
           if (!genders || typeof genders !== "object" ||
               Array.isArray(genders)) {
@@ -219,7 +252,8 @@ export async function deleteAccountEventParticipations(params: {
             genders[current.genderAtSignup], "Event gender count");
         }
       }
-      if (status === "attended") {
+      if (status === "attended" &&
+          !independent.some((row) => row.data().status === "checkedIn")) {
         patch.checkedInCount = decrement(event.checkedInCount,
           "Event check-in count");
       } else if (status === "waitlisted") {
@@ -235,12 +269,16 @@ export async function deleteAccountEventParticipations(params: {
           .doc(seatIdentityAliasId(eventId, "phone", proof.phoneE164)),
         {state: "retired"});
       }
-      for (const catchRow of catchRows) {
-        tx.update(catchRow.ref, {status: "cancelled", updatedAt: now});
+      for (const row of linked.docs) {
+        tx.update(row.ref, {linkedUid: null, linkedAt: null,
+          ...(catchRows.some((guest) => guest.id === row.id) ?
+            {status: "cancelled"} : {}), updatedAt: now});
       }
       if (Object.keys(patch).length > 0) tx.update(eventRef, patch);
-      tx.set(found.ref, {status: "deleted", updatedAt: now,
-        deletedAt: now}, {merge: true});
+      if (current && status !== "deleted") {
+        tx.set(found!.ref, {status: "deleted", updatedAt: now,
+          deletedAt: now}, {merge: true});
+      }
     });
   }
 }

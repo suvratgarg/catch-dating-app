@@ -978,6 +978,64 @@ test("deletion retains an independently imported occupied Host seat",
     true);
   });
 
+test("attendee-only Host seat unlinks within the ready transaction",
+  async () => {
+    const seed = readySeatSeed({host: true});
+    delete seed["eventParticipations/event1_runner1"];
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}});
+    const command = {db: h.deps.firestore(), uid: "runner1",
+      now: admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: 1000};
+    await deleteAccountEventParticipations(command);
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+    assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
+      true);
+    assert.equal(h.rows["eventAttendees/att1"].linkedUid, null);
+    assert.equal(h.rows["eventAttendees/att1"].status, "registered");
+    assert.equal(h.rows[`eventSeatIdentityAliases/${seatIdentityAliasId(
+      "event1", "uid", "runner1")}`].state, "retired");
+    await deleteAccountEventParticipations(command);
+    assert.equal(h.rows["eventSeatLedgers/event1"].revision, 1);
+  });
+
+test("an independent checked-in Host row retains its event check-in",
+  async () => {
+    const seed = readySeatSeed({host: true, status: "attended"});
+    seed["eventAttendees/att1"].status = "checkedIn";
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}});
+    await deleteAccountEventParticipations({db: h.deps.firestore(),
+      uid: "runner1", now: admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: 1000});
+    assert.equal(h.rows["events/event1"].checkedInCount, 1);
+    assert.equal(h.rows["eventAttendees/att1"].status, "checkedIn");
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+  });
+
+test("a Host link created after discovery is included in the seat decision",
+  async () => {
+    const seed = readySeatSeed();
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}, beforeTransaction: () => {
+        seed["eventAttendees/att1"] = {eventId: "event1",
+          organizerId: "org1", source: "hostImport", status: "registered",
+          linkedUid: "runner1", phoneE164: null,
+          externalReference: null};
+        seed[`eventSeatIdentityAliases/${seatIdentityAliasId(
+          "event1", "attendee", "att1")}`] = {eventId: "event1",
+          organizerId: "org1", kind: "attendee",
+          valueHash: seatIdentityValueHash("attendee", "att1"),
+          canonicalKey: "canonical_runner1", identityRevision: 1,
+          migrationRevision: 1, state: "ready"};
+      }});
+    await deleteAccountEventParticipations({db: h.deps.firestore(),
+      uid: "runner1", now: admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: 1000});
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+    assert.equal(h.rows["eventAttendees/att1"].linkedUid, null);
+  });
+
 test("deletion releases only the Catch seat beside an imported guest",
   async () => {
     const seed = readySeatSeed();
