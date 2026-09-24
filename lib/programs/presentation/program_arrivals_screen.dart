@@ -56,32 +56,12 @@ class ProgramArrivalsScreen extends ConsumerWidget {
       onRetry: () => ref.invalidate(
         programArrivalsRosterProvider(programId, pickupPointId),
       ),
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: stationLabel,
-          subtitle: context.l10n.programsArrivalsTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      loadingBuilder: (_) => _routeScaffold(
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: stationLabel,
-          subtitle: context.l10n.programsArrivalsTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      errorBuilder: (_, error, _, onBoundaryRetry) => _routeScaffold(
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
@@ -90,17 +70,7 @@ class ProgramArrivalsScreen extends ConsumerWidget {
           ),
         ),
       ),
-      builder: (context, result) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: stationLabel,
-          subtitle: context.l10n.programsArrivalsTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      builder: (context, result) => _routeScaffold(
         body: CatchRouteBody.standardSections(
           sections: [
             if (result.snapshotAt != null)
@@ -143,6 +113,21 @@ class ProgramArrivalsScreen extends ConsumerWidget {
       ),
     );
   }
+
+  CatchRouteScaffold _routeScaffold({required CatchRouteBody body}) =>
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: stationLabel,
+          subtitle: context.l10n.programsArrivalsTitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
+        body: body,
+      );
 }
 
 List<CatchSectionListItem> _rosterSections(

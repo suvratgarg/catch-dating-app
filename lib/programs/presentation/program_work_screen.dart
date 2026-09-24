@@ -104,30 +104,12 @@ class _ProgramWorkScreenState extends ConsumerState<ProgramWorkScreen> {
       onRetry: () => ref.invalidate(
         programWorkEntryProvider(widget.programId, widget.inviteId),
       ),
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsWorkShellTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      loadingBuilder: (_) => _routeScaffold(
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsWorkShellTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      errorBuilder: (_, error, _, onBoundaryRetry) => _routeScaffold(
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
@@ -194,17 +176,8 @@ class ProgramWorkPageBody extends StatelessWidget {
         access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now) ||
         access.hasDuty(ProgramStaffDuty.reconciliationViewer, now: now);
 
-    return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-        title: access.title,
-        subtitle: context.l10n.programsWorkShellTitle,
-        emphasis: scrolledUnder
-            ? CatchTopBarEmphasis.divided
-            : CatchTopBarEmphasis.plain,
-        navigation: const CatchTopBarNavigation(
-          mode: CatchTopBarNavigationMode.back,
-        ),
-      ),
+    return _routeScaffold(
+      title: access.title,
       body: CatchRouteBody.standardSections(
         sections: [
           if (snapshotAt != null)
@@ -362,3 +335,20 @@ class ProgramWorkPageBody extends StatelessWidget {
     );
   }
 }
+
+CatchRouteScaffold _routeScaffold({
+  String? title,
+  required CatchRouteBody body,
+}) => CatchRouteScaffold(
+  topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+    title: title ?? context.l10n.programsWorkShellTitle,
+    subtitle: title == null ? null : context.l10n.programsWorkShellTitle,
+    emphasis: scrolledUnder
+        ? CatchTopBarEmphasis.divided
+        : CatchTopBarEmphasis.plain,
+    navigation: const CatchTopBarNavigation(
+      mode: CatchTopBarNavigationMode.back,
+    ),
+  ),
+  body: body,
+);

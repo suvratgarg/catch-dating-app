@@ -47,32 +47,12 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
       retainDataOn: const {},
       value: tripsAsync,
       onRetry: _latest,
-      loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsTripsTitle,
-          subtitle: context.l10n.programsTripsSubtitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      loadingBuilder: (_) => _routeScaffold(
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsTripsTitle,
-          subtitle: context.l10n.programsTripsSubtitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      errorBuilder: (_, error, _, onBoundaryRetry) => _routeScaffold(
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
@@ -82,17 +62,7 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
           ),
         ),
       ),
-      builder: (context, list) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: context.l10n.programsTripsTitle,
-          subtitle: context.l10n.programsTripsSubtitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
+      builder: (context, list) => _routeScaffold(
         body: CatchRouteBody.standardSections(
           sections: [
             if (_cursors.isNotEmpty || list.nextCursor != null)
@@ -149,6 +119,21 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
       ),
     );
   }
+
+  CatchRouteScaffold _routeScaffold({required CatchRouteBody body}) =>
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: context.l10n.programsTripsTitle,
+          subtitle: context.l10n.programsTripsSubtitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
+        body: body,
+      );
 }
 
 class ProgramTripLedgerRow extends ConsumerStatefulWidget {
