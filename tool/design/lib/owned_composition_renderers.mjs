@@ -45,6 +45,7 @@ declare("lib/hosts/presentation/customers/host_customer_timeline.dart",
 declare("lib/routing/host_inbox_route.dart", "lib/routing/go_router.dart", null,
   ["hostInboxScreenForUri"], ["HostInboxScreen"]);
 
+
 export function isOwnedCompositionRenderer(entry) {
   return declarations.some((expected) => Object.entries(expected)
     .every(([key, value]) => entry[key] === value));

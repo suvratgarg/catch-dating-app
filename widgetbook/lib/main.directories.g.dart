@@ -9028,7 +9028,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CreateClubStepHeader',
+            name: 'HostWizardStepHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header states',
@@ -9084,16 +9084,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_operations_create_event_routes
                         .createEventScreenCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CreateEventStepHeader',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Header states',
-                builder: _widgetbook_workspace_hosts_operations_wizard_chrome
-                    .createEventStepHeaderCatalogStates,
               ),
             ],
           ),
@@ -9182,6 +9172,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_hosts_operations_create_event_details
                         .draftPickerSheetCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWizardStepHeader',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Header states',
+                builder: _widgetbook_workspace_hosts_operations_wizard_chrome
+                    .createEventStepHeaderCatalogStates,
               ),
             ],
           ),
@@ -9642,6 +9642,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostAudienceNoOrganizerEmptyState',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'No-organizer state',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomersNoOrganizerStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostAudienceSourceRuleFields',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9902,17 +9913,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomersDirectoryStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCustomersNoOrganizer',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'No-organizer state',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_customer_components
-                            .hostCustomersNoOrganizerStates,
                   ),
                 ],
               ),

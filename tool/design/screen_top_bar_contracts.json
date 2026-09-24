@@ -568,11 +568,11 @@
       "reason": "Form identity and its workspace tabs are content beneath the canonical compact Form route bar; route navigation remains in CatchTopBar."
     },
     {
-      "path": "lib/hosts/presentation/club_management/create/widgets/create_club_step_header.dart",
-      "symbol": "CreateClubStepHeader",
+      "path": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
+      "symbol": "HostWizardStepHeader",
       "role": "step-flow",
       "owner": "CatchStepHeader",
-      "reason": "Create Club is a create-only wizard and delegates progress plus back navigation to the canonical step header."
+      "reason": "Club and Event creation share one localized step adapter; CatchStepHeader owns progress and navigation."
     },
     {
       "path": "lib/chats/presentation/widgets/chat_share_card.dart",
@@ -601,13 +601,6 @@
       "role": "screen",
       "owner": "CatchTopBar.screen",
       "reason": "Explore discovery delegates its body-owned floating screen chrome to the canonical screen top bar."
-    },
-    {
-      "path": "lib/hosts/presentation/event_management/widgets/create_event_step_header.dart",
-      "symbol": "CreateEventStepHeader",
-      "role": "step-flow",
-      "owner": "CatchStepHeader",
-      "reason": "Create Event delegates wizard progress and navigation chrome to the canonical step header."
     },
     {
       "path": "lib/onboarding/presentation/onboarding_screen.dart",

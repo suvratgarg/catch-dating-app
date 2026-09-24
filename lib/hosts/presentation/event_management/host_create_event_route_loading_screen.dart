@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -16,11 +16,11 @@ class HostCreateEventRouteLoadingScreen extends StatelessWidget {
       safeArea: CatchScaffoldPlacement.top,
       body: Column(
         children: [
-          CreateEventStepHeader(
+          HostWizardStepHeader(
             title: context
                 .l10n
                 .hostsHostCreateEventRouteLoadingScreenTitleEventBasics,
-            clubName: context
+            subtitle: context
                 .l10n
                 .hostsHostCreateEventRouteLoadingScreenBodyLoadingClub,
             currentStep: 0,
