@@ -742,7 +742,15 @@ void _registerProfileShellLayoutTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
+            body: ProfileTabContent(
+              user: user,
+              uploadState: const PhotoUploadState(),
+              builder: (context, children) => ListView(
+                key: const ValueKey('profile-tab-scroll-view'),
+                padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+                children: children,
+              ),
+            ),
           ),
         ),
       ),
@@ -761,7 +769,10 @@ void _registerProfileShellLayoutTests() {
       final tile = _profileInfoTile(label);
       await _dragProfileTabUntilVisible(tester, tile);
       expect(
-        find.descendant(of: tile, matching: find.text(emptyValue)),
+        find.descendant(
+          of: tile,
+          matching: find.textContaining(emptyValue, findRichText: true),
+        ),
         findsOneWidget,
       );
       expect(

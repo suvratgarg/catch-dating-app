@@ -20,8 +20,6 @@ import 'support/triage_inventory.dart';
 const _referenceCases = <String, String>{
   'Core catalog/Menus/CatchMenuRow/Catalog states': 'menu_row',
   'Core catalog/Typography/CatchMetadataText/Catalog states': 'mono_label',
-  'Core catalog/Typography/CatchSectionHeaderTitle/Catalog states':
-      'section_label',
   'Core catalog/Inputs/CatchControlSurface/Catalog states': 'control_shell',
   'Core catalog/Navigation/CatchPageIndicator/Catalog states': 'page_dots',
   'Core catalog/Data display/CatchMetricTile/Catalog states': 'stat_column',
@@ -103,7 +101,7 @@ void main() {
     expect(renderer.visited.toSet().length, registered);
     // Pin the reviewed designation inventory, including toolbar inheritance.
     // Exact visitation below also rejects missing or duplicate registrations.
-    expect(coreGoldenIds, hasLength(303));
+    expect(coreGoldenIds, hasLength(301));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),

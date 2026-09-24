@@ -632,6 +632,31 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
           ],
           'x-catch-ownership': 'callable-owned',
         },
+        'assignmentFeatureAudit': <String, Object?>{
+          'description': 'Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.',
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'algorithmVersion',
+            'configHash',
+            'inputSnapshotId',
+          ],
+          'properties': <String, Object?>{
+            'algorithmVersion': <String, Object?>{
+              'const': 'typed-soft-features-v1',
+            },
+            'configHash': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 128,
+            },
+            'inputSnapshotId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+          'x-catch-ownership': 'callable-owned',
+        },
         'createdAt': <String, Object?>{
           'type': 'object',
           'description': 'Serialized Firestore Timestamp fixture shape.',
@@ -747,6 +772,166 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
           'type': 'integer',
           'minimum': 0,
           'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'assignmentFeatureGuard': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'configHash',
+        'snapshots',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'configHash': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 128,
+        },
+        'snapshots': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'eventId',
+              'organizerId',
+              'uid',
+              'featureId',
+              'formId',
+              'versionId',
+              'questionId',
+              'transformVersion',
+              'responseId',
+              'consentReceiptId',
+              'value',
+            ],
+            'properties': <String, Object?>{
+              'eventId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'organizerId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'uid': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'featureId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'formId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'versionId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'questionId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'transformVersion': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 1000000,
+              },
+              'consentReceiptId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'responseId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'value': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'optionId',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'enum': <Object?>[
+                          'category',
+                          'ordinal',
+                        ],
+                      },
+                      'optionId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'optionIds',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'set',
+                      },
+                      'optionIds': <String, Object?>{
+                        'type': 'array',
+                        'minItems': 1,
+                        'maxItems': 40,
+                        'uniqueItems': true,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 180,
+                        },
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'value',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'number',
+                      },
+                      'value': <String, Object?>{
+                        'type': 'number',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
         },
       },
       'x-catch-ownership': 'callable-owned',

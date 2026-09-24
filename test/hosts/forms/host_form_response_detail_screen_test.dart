@@ -10,12 +10,14 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_deta
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../support/catch_test_fonts.dart';
@@ -38,7 +40,7 @@ void main() {
           await tester.ensureVisible(payment);
           await pumpFeatureUi(tester);
           expect(tester.getSize(payment).height, greaterThanOrEqualTo(44));
-          await _capturePayment(tester, 'response-$label');
+          await _captureDetail(tester, 'response-$label');
           await tester.tap(payment);
           await pumpFeatureUi(tester);
           await pumpFeatureUiFor(tester, CatchMotion.slow);
@@ -49,7 +51,7 @@ void main() {
           expect(sheet.payment.amountPaise, 10000);
           expect(sheet.onOpenResponse, isNull);
           expect(tester.takeException(), isNull);
-          await _capturePayment(tester, 'payment-$label');
+          await _captureDetail(tester, 'payment-$label');
         });
       }
     }
@@ -250,6 +252,184 @@ void main() {
     expect(find.text('I love meeting new people in the city.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Next after review removal loads the next filtered page, then Previous', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(900, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    const request = HostFormResponseListRequest(
+      organizerId: 'org_1',
+      formId: 'form_1',
+      versionId: 'form_1_v2',
+      includeApplications: true,
+      answerFilters: {'city': {'Mumbai', 'Delhi'}},
+    );
+    final details = {
+      for (final (id, name) in [
+        ('response_a', 'Asha'),
+        ('response_b', 'Bina'),
+        ('response_c', 'Cara'),
+      ])
+        id: _queueDetail(id, name),
+    };
+    final queue = _ReviewQueueController(details);
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, _) => Scaffold(
+            body: TextButton(
+              onPressed: () => context.pushNamed(
+                Routes.hostFormResponseDetailScreen.name,
+                pathParameters: {'responseId': 'response_b'},
+                queryParameters: {'organizerId': 'org_1'},
+                extra: const HostResponseReviewQueue(
+                  request: request,
+                  entryId: 'response:response_b',
+                  index: 1,
+                ),
+              ),
+              child: const Text('Open review'),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/responses/:responseId',
+          name: Routes.hostFormResponseDetailScreen.name,
+          builder: (_, state) => HostFormResponseDetailScreen(
+            organizerId: 'org_1',
+            responseId: state.pathParameters['responseId']!,
+            queue: state.extra as HostResponseReviewQueue?,
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final container = ProviderContainer(
+      overrides: [
+        hostFormResponsesControllerProvider.overrideWith2((_) => queue),
+        for (final entry in details.entries) ...[
+          hostFormResponseDetailProvider(
+            organizerId: 'org_1',
+            responseId: entry.key,
+          ).overrideWith((_) async => entry.value),
+          hostFormResponseCanApplyProvider(
+            organizerId: 'org_1',
+            responseId: entry.key,
+          ).overrideWith((_) => false),
+        ],
+      ],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          theme: AppTheme.light,
+          builder: (context, child) => RepaintBoundary(
+            key: const ValueKey('response-payment-capture'),
+            child: child!,
+          ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Open review'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Bina'), findsOneWidget);
+    await _captureDetail(
+      tester,
+      'review-filtered-before',
+      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+    );
+
+    queue._reviewed = true;
+    container.invalidate(hostFormResponsesControllerProvider(request));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.widgetWithText(CatchButton, 'Next'));
+    await pumpFeatureUi(tester);
+    expect(queue._loadMoreCalls, 1);
+    expect(find.text('Cara'), findsOneWidget);
+    expect(queue._requests.every((value) => value == request), isTrue);
+    await _captureDetail(
+      tester,
+      'review-filtered-next-page',
+      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+    );
+    await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Asha'), findsOneWidget);
+    await _captureDetail(
+      tester,
+      'review-filtered-previous',
+      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+    );
+    expect(tester.takeException(), isNull);
+  });
+}
+
+HostFormResponseDetail _queueDetail(String id, String name) {
+  final data = _detailMap();
+  final response = Map<String, Object?>.from(
+    data['response']! as Map<String, Object?>,
+  );
+  response['responseId'] = id;
+  response['formId'] = 'form_1';
+  response['versionId'] = 'form_1_v2';
+  response['version'] = 2;
+  response['identity'] = {
+    'displayName': name,
+    'email': null,
+    'phoneE164': null,
+    'origin': 'respondentGranted',
+  };
+  data['response'] = response;
+  return HostFormResponseDetail.fromCallableData(data);
+}
+
+class _ReviewQueueController extends HostFormResponsesController {
+  _ReviewQueueController(this._details);
+  final Map<String, HostFormResponseDetail> _details;
+  final List<HostFormResponseListRequest> _requests = [];
+  bool _reviewed = false;
+  int _loadMoreCalls = 0;
+
+  List<HostFormInboxEntry> get _firstPage => [
+    HostFormInboxEntry.fromResponse(_details['response_a']!.response),
+    if (!_reviewed)
+      HostFormInboxEntry.fromResponse(_details['response_b']!.response),
+  ];
+
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async {
+    _requests.add(request);
+    return HostFormResponsesState(
+      responses: const [],
+      entries: _firstPage,
+      nextCursor: 'next-page',
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    _loadMoreCalls++;
+    state = AsyncData(
+      HostFormResponsesState(
+        responses: const [],
+        entries: [
+          ..._firstPage,
+          HostFormInboxEntry.fromResponse(_details['response_c']!.response),
+        ],
+        nextCursor: null,
+      ),
+    );
+  }
 }
 
 Future<void> _pumpDetail(
@@ -414,8 +594,12 @@ HostApplicationDetail _application({bool revoked = false}) =>
           : 'submittedFormResponse',
     );
 
-Future<void> _capturePayment(WidgetTester tester, String name) async {
-  final directory = Platform.environment['CATCH_RESPONSE_PAYMENT_REVIEW_DIR'];
+Future<void> _captureDetail(
+  WidgetTester tester,
+  String name, {
+  String directoryEnv = 'CATCH_RESPONSE_PAYMENT_REVIEW_DIR',
+}) async {
+  final directory = Platform.environment[directoryEnv];
   if (directory == null) return;
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(const ValueKey('response-payment-capture')),

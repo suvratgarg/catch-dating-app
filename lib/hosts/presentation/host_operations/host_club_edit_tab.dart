@@ -688,7 +688,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         ),
       ];
     }
-
     return [
       CatchFormSingleChoiceRow<UpdateClubPatch, _HostOrganizerTypeOption>(
         itemLabel: (value) => value.label,
@@ -782,7 +781,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         ),
       ];
     }
-
     return [
       CatchFormTextRow<UpdateClubPatch>(
         validationCopy: catchFormValidationCopy(context.l10n),
@@ -791,9 +789,11 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         label: context.l10n.hostsHostClubProfileLabelInstagram,
         currentValue: club.instagramHandle ?? '',
         currentFieldValue: club.instagramHandle,
-        placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub,
+        placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub
+            .replaceFirst(RegExp(r'^@'), ''),
         keyboardType: TextInputType.text,
-        normalizeInput: _normalizeSingleLineInput,
+        normalizeInput: (value) =>
+            _normalizeSingleLineInput(value).replaceFirst(RegExp(r'^@'), ''),
         toFieldValue: _optionalStringFieldValue,
         contract: CatchContractConstraints.updateClubPatchInstagramHandle,
         patchForValue: (value) => UpdateClubPatch(instagramHandle: value),

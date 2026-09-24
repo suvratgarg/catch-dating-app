@@ -12,6 +12,8 @@ export interface EventChatMessageDeps {
   db: () => FirebaseFirestore.Firestore;
   now: () => Timestamp;
   rateLimit: typeof checkRateLimit;
+  notificationDispatch?: (message: {eventId: string; messageId: string}) =>
+    Promise<unknown>;
 }
 export const messageDefaults: EventChatMessageDeps = {
   db: () => admin.firestore(), now: () => Timestamp.now(),

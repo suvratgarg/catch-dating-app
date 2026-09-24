@@ -348,7 +348,8 @@
       "rationale": "Same titled-surface + text-block + trailing-boxes skeleton, both event_success. Stays feature-level (single-feature composition). Codex must diff bodies below the shared prefix and escalate if not isomorphic.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "implemented-WO-006"
+      "status": "implemented-WO-006",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessSkeletonSurface. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: ChatShareCardSheet/CatchShareCardSheet (containment 0.69)",
@@ -645,7 +646,8 @@
       "rationale": "Composition relationships, not duplication: one member instantiates the other (screen wraps its body/content via builder). Fingerprint similarity is pass-through plumbing. Rule K1.",
       "decidedBy": "claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ProfileTab. Active sibling behavior is retained."
     },
     {
       "clusterId": "c036-card (directory)",
@@ -1334,7 +1336,8 @@
       "rationale": "K1 composition relationship from prior c046/c043/c057 decision: ProfileTab instantiates ProfileTabContent, so the match is wrapper/content composition.",
       "decidedBy": "codex-rule:K1",
       "date": "2026-07-03",
-      "status": "recorded-WO-015"
+      "status": "recorded-WO-015",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ProfileTab. Active sibling behavior is retained."
     },
     {
       "clusterId": "c042-editor",
@@ -1562,7 +1565,8 @@
       "rationale": "K5 concept mismatch: the shared icon/text/surface skeleton spans companion beats, live host cards, setup notices, and user analytics rows with different typography, token roles, and data contracts. REVIEW (claude, 2026-07-03): low-cohesion chained cluster (union-find noise); member pairs individually triaged elsewhere.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessPromptCard, EventSuccessSetupNoticeBanner. Active sibling behavior is retained."
     },
     {
       "clusterId": "c006-sliver-body",
@@ -1686,7 +1690,8 @@
       "rationale": "K4 churn threshold: the overlap is generic skeleton surface/column/row scaffolding, but a shared widget would need chart, host summary, club host, and browse-grid knobs for distinct loading concepts.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
-      "status": "recorded-WO-015"
+      "status": "recorded-WO-015",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventTypeBrowseSkeleton. Active sibling behavior is retained."
     },
     {
       "clusterId": "c018-card",
@@ -1774,7 +1779,8 @@
       "rationale": "K4 churn threshold: both render skeleton section surfaces, but the event-success primitive owns title/text/trailing counts while the profile surface skeleton owns profile-line count and surface padding.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
-      "status": "recorded-WO-015"
+      "status": "recorded-WO-015",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessSkeletonSurface. Active sibling behavior is retained."
     },
     {
       "clusterId": "c031-activity-attribute-goal-chips",
@@ -2798,7 +2804,8 @@
       "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks. REVIEW (claude, 2026-07-03): deferred to next review batch — likely R2 inlines; conditional order in WO-020. WO-020 REVIEW (codex, 2026-07-03): keep distinct; ExploreListEmptyState is a ConsumerWidget that clears exploreSearchQueryProvider/exploreFiltersProvider directly, while ExploreScreenEmptyState maps ExploreDiscoveryEmptyState.kind and receives route callbacks.",
       "decidedBy": "codex-rule:no-exact -> codex",
       "date": "2026-07-03",
-      "status": "recorded-WO-020"
+      "status": "recorded-WO-020",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ExploreListEmptyState. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: EventCheckInCelebrationScreen/EventJoinedCelebrationScreen",
@@ -3122,7 +3129,8 @@
       "rationale": "K4 churn threshold: both are Event Success summary cards with badges, but attendance and playbook summaries carry different data contracts and row structure.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "recorded-WO-015-ranked-pair",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: PlaybookSummaryCard. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: RevealGroupSlotRow/RevealSlotRow",
@@ -3591,7 +3599,8 @@
       "rationale": "K5 concept mismatch: event action cards model event badges, meta rows, gradients, and action lists while host empty action cards are simple empty-state CTA surfaces. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: HostEmptyActionCard. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: ClubDetailBody/ClubDetailLoadingBody",
@@ -3645,7 +3654,8 @@
       "rationale": "K5 concept mismatch: dashboard title chrome and explore browse/search/city-picker chrome are different app-header concepts despite similar text layout. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ExploreBrowseHeaderContent. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: CompanionPaperScaffold/CompanionStageScaffold",
@@ -3681,7 +3691,8 @@
       "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy. AUDIT (claude, 2026-07-03): K2 misapplied — bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): audit flip reverted — code read shows genuinely different widgets (swipes-hub tile with art block + catch/recap actions vs analytics list row with divider/selected state). Original K2 keep stands.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: AttendedEventTile. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: EventSuccessPromptCard/StagePromptCard",
@@ -3699,7 +3710,8 @@
       "rationale": "K4 churn threshold: both render social-mission prompt copy, but raised feature cards and companion stage panels use different shells and typography.",
       "decidedBy": "codex-rule:K4",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "recorded-WO-015-ranked-pair",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessPromptCard. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: EditHostedEventRouteScreen/EditHostedEventScreen",
@@ -3843,7 +3855,8 @@
       "rationale": "K2 domain fork: booking-conflict event rows and explore external-event rows consume different event row models, status tags, glyphs, and tap behavior.",
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "recorded-WO-015-ranked-pair",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: BookingConflictEventRow. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsEventList/HostInviteLinksList",
@@ -3951,7 +3964,8 @@
       "rationale": "K5 concept mismatch: directory loading skeleton cards and rich club share cards are different surfaces despite similar card outlines. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ClubDirectorySkeletonCard. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: EventDetailTicketSurface/EventSuccessSkeletonSurface",
@@ -3969,7 +3983,8 @@
       "rationale": "K5 concept mismatch: event-detail ticket surfaces are live ticket chrome while Event Success skeleton surfaces are loading placeholders. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessSkeletonSurface. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: HostOrganizerHeader/HostTodayHeader",
@@ -4023,7 +4038,8 @@
       "rationale": "K5 concept mismatch: explore browse headers own search/city chrome while peek rails own compact preview navigation and feed state. REVIEW (claude, 2026-07-03): cross-concept structural coincidence; different design intents (per K5 read of names/roles against prior batch context).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ExploreBrowseHeaderContent. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: EventPolicyLabScreen/EventSuccessLabScreen",
@@ -4059,7 +4075,8 @@
       "rationale": "K2 domain fork: wingman candidate rows and host request rows use different Event Success models, actions, and host/attendee contexts.",
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
-      "status": "recorded-WO-015-ranked-pair"
+      "status": "recorded-WO-015-ranked-pair",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: WingmanCandidateRow. Active sibling behavior is retained."
     },
     {
       "clusterId": "ranked-pair: HostAnalyticsMetricGridSkeleton/VibeGridSkeleton",
@@ -4718,7 +4735,8 @@
       "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) — keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar — keep. HostSettingsClubsEmptyState is a single supporting Text with one call site — inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site — inline it (WO-022).",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "executed-WO-022"
+      "status": "executed-WO-022",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: CatchesHubEmptyState. Active sibling behavior is retained."
     },
     {
       "clusterId": "n003-host-card",
@@ -4912,7 +4930,8 @@
       "rationale": "Name-family review: three distinct concepts — a month/day date block (md radius, fixed extent; 'Pill' is a misnomer), the core uppercase mono status pill with soft/dark tones, and the Event Success percentage metric chip (21 usages, above the merge bar). LEXICON: reserve 'Pill' for pill-radius chips; EventCompactDatePill is a rename candidate at ratification.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessMetricPill. Active sibling behavior is retained."
     },
     {
       "clusterId": "n021-event-surface",
@@ -4934,7 +4953,8 @@
       "rationale": "Name-family review: EventHeroSurface is a 3-line widget alias for the catchHeroSurface() transition helper with one call site — inline and delete (WO-022). EventDetailTicketHeroSurface is K1 composition (conditional hero wrapper over the ticket surface). EventSuccessHeroSurface is an unrelated gradient shell. LEXICON: 'hero' means transition wrapper in events but prominent gradient shell in event_success — disambiguate at ratification.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "executed-WO-022"
+      "status": "executed-WO-022",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessHeroSurface. Active sibling behavior is retained."
     },
     {
       "clusterId": "n007-event-body",
@@ -5136,7 +5156,8 @@
       "rationale": "Name-family review (batch 2): ManualQaToggleRow is a 1:1 pass-through over CatchField.toggle with 2 call sites — inline (WO-023). ModuleToggleRow keeps: rich selected-surface module toggle.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "executed-WO-023"
+      "status": "executed-WO-023",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ModuleToggleRow. Active sibling behavior is retained."
     },
     {
       "clusterId": "n013-host-panel",
@@ -5162,7 +5183,8 @@
       "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsPanel(mode: live) — the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: HostClubManagementPanel, HostEventAttendancePanel. Active sibling behavior is retained."
     },
     {
       "clusterId": "n016-host-card",
@@ -5220,7 +5242,8 @@
       "rationale": "Name-family review (batch 2): core CatchSkeletonList is the uniform-list primitive; the two feature lists are non-uniform mimics it cannot express (explore mixes three different card heights/gaps; club directory repeats a custom skeleton card). Parameterizing would move jitter to call sites (c010/c011 precedent).",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ClubDirectorySkeletonList. Active sibling behavior is retained."
     },
     {
       "clusterId": "n144-async-loading + n213-screen-loading",
@@ -5410,7 +5433,8 @@
       "rationale": "Name-family review (batch 2): internal cells of the roster-board kit: a sealed-union action dispatcher vs a selectable tile — different slots of one kit.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: CatchRosterTileCell. Active sibling behavior is retained."
     },
     {
       "clusterId": "n190-explore-lead",
@@ -5614,7 +5638,8 @@
       "rationale": "Name-family review (batch 2): the surviving controllers remain provider-wiring architecture layers. HOST-CLUB-EDIT-CONSOLIDATION-001 deletes HostOrganizerPayoutPromptController because it watched the same payment account as HostPaymentAccountControllerCard and created a second payout owner.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "executed-HOST-CLUB-EDIT-CONSOLIDATION-001"
+      "status": "executed-HOST-CLUB-EDIT-CONSOLIDATION-001",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: PaymentReferralBannerController. Active sibling behavior is retained."
     },
     {
       "clusterId": "n033-calendar-skeleton",
@@ -5676,7 +5701,8 @@
       "rationale": "Name-family review (batch 2): agenda list/tile vs event-detail mechanism list and photo-strip tile — different content contracts; stem-only match.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventAgendaList. Active sibling behavior is retained."
     },
     {
       "clusterId": "n124-club-tile",
@@ -5832,7 +5858,8 @@
       "rationale": "Name-family review (batch 2): loaded discovery list vs its skeleton (ClubDirectorySkeletonList, kept under n059); loading/loaded pair precedent.",
       "decidedBy": "claude",
       "date": "2026-07-04",
-      "status": "recorded"
+      "status": "recorded",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: ClubDiscoverList. Active sibling behavior is retained."
     },
     {
       "clusterId": "n019-onboarding-step",
@@ -6142,8 +6169,14 @@
       "clusterId": "concept-discovery:skeleton-list-vs-hairline-list",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchSkeletonList", "action": "keep"},
-        {"name": "HairlineList", "action": "keep"}
+        {
+          "name": "CatchSkeletonList",
+          "action": "keep"
+        },
+        {
+          "name": "HairlineList",
+          "action": "keep"
+        }
       ],
       "rationale": "K4 churn threshold: both emit short Columns, but CatchSkeletonList owns repeated loading cards while HairlineList owns caller-built content separated by dividers. A shared API would need content-builder, loading-shape, divider, height, and spacing knobs and would erase distinct intent.",
       "decidedBy": "codex-rule:K4",
@@ -6154,28 +6187,65 @@
       "clusterId": "concept-discovery:feature-skeleton-layouts-a",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ClubHostLoadingSkeleton", "action": "keep"},
-        {"name": "EventDetailCompanionSkeleton", "action": "keep"},
-        {"name": "EventTypeBrowseSkeleton", "action": "keep"},
-        {"name": "HostChartSkeleton", "action": "keep"},
-        {"name": "HostSummarySkeleton", "action": "keep"}
+        {
+          "name": "ClubHostLoadingSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailCompanionSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventTypeBrowseSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostChartSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostSummarySkeleton",
+          "action": "keep"
+        }
       ],
       "rationale": "K3 already-sharing-internals: every member delegates visual placeholder rendering to CatchSkeleton while retaining feature-specific content geometry. They are loading compositions under the loading-family decision, not competing primitive concepts.",
       "decidedBy": "codex-rule:K3",
       "date": "2026-07-18",
-      "status": "recorded-concept-reconciliation"
+      "status": "recorded-concept-reconciliation",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventTypeBrowseSkeleton. Active sibling behavior is retained."
     },
     {
       "clusterId": "concept-discovery:cross-domain-info-surfaces",
       "decision": "keep-distinct",
       "members": [
-        {"name": "AfterglowBeatRow", "action": "keep"},
-        {"name": "EventSuccessCountdownNotice", "action": "keep"},
-        {"name": "EmptyRosterMessage", "action": "keep"},
-        {"name": "PaperPrivacyCard", "action": "keep"},
-        {"name": "StagePrivacyLine", "action": "keep"},
-        {"name": "SwipeWindowBanner", "action": "keep"},
-        {"name": "EventSuccessRevealWaitingNotice", "action": "keep"}
+        {
+          "name": "AfterglowBeatRow",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessCountdownNotice",
+          "action": "keep"
+        },
+        {
+          "name": "EmptyRosterMessage",
+          "action": "keep"
+        },
+        {
+          "name": "PaperPrivacyCard",
+          "action": "keep"
+        },
+        {
+          "name": "StagePrivacyLine",
+          "action": "keep"
+        },
+        {
+          "name": "SwipeWindowBanner",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessRevealWaitingNotice",
+          "action": "keep"
+        }
       ],
       "rationale": "K5 reconciliation of prior reviewed c002-afterglow-beat-row and c007-attendee-prompt-preview decisions: animation, empty roster, privacy, swipe-window, and reveal-state surfaces have different typography, tokens, state, and domain invariants. Their low parameter compatibility is structural coincidence.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6186,10 +6256,22 @@
       "clusterId": "concept-discovery:badge-wrap-adapters",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ClubTagWrap", "action": "keep"},
-        {"name": "PeopleTokenRow", "action": "keep"},
-        {"name": "EventSuccessPodSummaryRow", "action": "keep"},
-        {"name": "EventSuccessPodAssignmentSection", "action": "keep"}
+        {
+          "name": "ClubTagWrap",
+          "action": "keep"
+        },
+        {
+          "name": "PeopleTokenRow",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessPodSummaryRow",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessPodAssignmentSection",
+          "action": "keep"
+        }
       ],
       "rationale": "K2 plus K3: all members already share CatchBadge rendering, while each maps a different domain invariant—club tags, profile loading, assignment counts, or visible pod membership. The shared Wrap skeleton is not another widget concept.",
       "decidedBy": "codex-rule:K2+K3",
@@ -6200,9 +6282,18 @@
       "clusterId": "concept-discovery:feature-skeleton-layouts-b",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventDetailSocialSkeleton", "action": "keep"},
-        {"name": "HostAnalyticsMetricGridSkeleton", "action": "keep"},
-        {"name": "HostTabRailSkeleton", "action": "keep"}
+        {
+          "name": "EventDetailSocialSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostAnalyticsMetricGridSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "HostTabRailSkeleton",
+          "action": "keep"
+        }
       ],
       "rationale": "K3 already-sharing-internals: the members use CatchSkeleton for different social, analytics-grid, and tab-rail geometry. They are feature loading layouts, not duplicate primary concepts.",
       "decidedBy": "codex-rule:K3",
@@ -6213,8 +6304,14 @@
       "clusterId": "concept-discovery:profile-tab-live-vs-skeleton-sliver",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ProfileTabSkeletonSliverBody", "action": "keep"},
-        {"name": "ProfileTabSliverBody", "action": "keep"}
+        {
+          "name": "ProfileTabSkeletonSliverBody",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileTabSliverBody",
+          "action": "keep"
+        }
       ],
       "rationale": "K4 reconciliation of prior c006-sliver-body: only the sliver padding/adapter/constraint shell overlaps. Live profile editing owns user and upload state; the loading body owns deterministic placeholder sections. Unification would require state and child-builder knobs without reducing concepts.",
       "decidedBy": "codex-rule:K4 -> prior-reviewed-ledger",
@@ -6225,9 +6322,18 @@
       "clusterId": "concept-discovery:icon-text-content-rows",
       "decision": "keep-distinct",
       "members": [
-        {"name": "PaperExpectationRow", "action": "keep"},
-        {"name": "PreviewLine", "action": "keep"},
-        {"name": "ProfileFacts", "action": "keep"}
+        {
+          "name": "PaperExpectationRow",
+          "action": "keep"
+        },
+        {
+          "name": "PreviewLine",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileFacts",
+          "action": "keep"
+        }
       ],
       "rationale": "K5 reconciliation of prior c007-attendee-prompt-preview: paper expectations, companion preview lines, and profile fact sections use different typography, icon scale, section ownership, and data contracts. A row-like silhouette does not establish concept identity.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6238,8 +6344,14 @@
       "clusterId": "concept-discovery:swipe-reaction-controls",
       "decision": "escalate-owner-review",
       "members": [
-        {"name": "CatchesPassButton", "action": "review"},
-        {"name": "ReactionControlButton", "action": "review"}
+        {
+          "name": "CatchesPassButton",
+          "action": "review"
+        },
+        {
+          "name": "ReactionControlButton",
+          "action": "review"
+        }
       ],
       "rationale": "Both feature widgets independently implement semantic/tooltip ownership, disabled opacity, circular Material and InkWell chrome, pending spinners, and icon states. Their size, elevation, palette, localization, and stable test-key differences may be representable through CatchIconButton plus behavior adapters, but accepting that visual/API convergence belongs to the swipe-reaction-control-boundary owner review.",
       "decidedBy": "owner-review-requested -> codex",
@@ -6250,9 +6362,18 @@
       "clusterId": "concept-discovery:feature-skeleton-layouts-c",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventDetailHintSkeleton", "action": "keep"},
-        {"name": "EventDetailMechanismSkeleton", "action": "keep"},
-        {"name": "ProfileSurfaceFactsSkeleton", "action": "keep"}
+        {
+          "name": "EventDetailHintSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "EventDetailMechanismSkeleton",
+          "action": "keep"
+        },
+        {
+          "name": "ProfileSurfaceFactsSkeleton",
+          "action": "keep"
+        }
       ],
       "rationale": "K3 already-sharing-internals: all three use CatchSkeleton primitives but preserve different hint, mechanism, and profile-facts geometry. Their feature composition names remain useful without creating concepts.",
       "decidedBy": "codex-rule:K3",
@@ -6263,8 +6384,14 @@
       "clusterId": "concept-discovery:host-report-metric-sections",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventSuccessFunnelSection", "action": "keep"},
-        {"name": "EventSuccessReportQualitySection", "action": "keep"}
+        {
+          "name": "EventSuccessFunnelSection",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessReportQualitySection",
+          "action": "keep"
+        }
       ],
       "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: both deliberately compose CatchSection and CatchAnalyticsMetricGrid, while one owns event-funnel metrics and the other report-reliability signals. The shared renderer is already canonical; the classes are domain data adapters, not new concepts.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6275,20 +6402,33 @@
       "clusterId": "concept-discovery:conversation-vs-progress-row",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ConversationCueRow", "action": "keep"},
-        {"name": "LiveStepRow", "action": "keep"}
+        {
+          "name": "ConversationCueRow",
+          "action": "keep"
+        },
+        {
+          "name": "LiveStepRow",
+          "action": "keep"
+        }
       ],
       "rationale": "K5 and the approved progress-cues family: LiveStepRow consumes future/current/complete state and duration semantics; ConversationCueRow renders contextual discussion copy and a badge. They share only an icon/text row skeleton.",
       "decidedBy": "codex-rule:K5 -> user-approved:progress-cues",
       "date": "2026-07-18",
-      "status": "recorded-concept-reconciliation"
+      "status": "recorded-concept-reconciliation",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: LiveStepRow. Active sibling behavior is retained."
     },
     {
       "clusterId": "concept-discovery:profile-hero-vs-photo-block",
       "decision": "keep-distinct",
       "members": [
-        {"name": "ProfileHeroWidget", "action": "keep"},
-        {"name": "ProfilePhotoBlock", "action": "keep"}
+        {
+          "name": "ProfileHeroWidget",
+          "action": "keep"
+        },
+        {
+          "name": "ProfilePhotoBlock",
+          "action": "keep"
+        }
       ],
       "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionControls. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
       "decidedBy": "codex-rule:K3",
@@ -6299,20 +6439,33 @@
       "clusterId": "concept-discovery:prompt-vs-analytics-empty-state",
       "decision": "keep-distinct",
       "members": [
-        {"name": "EventSuccessPromptCard", "action": "keep"},
-        {"name": "UserAnalyticsEmptyState", "action": "keep"}
+        {
+          "name": "EventSuccessPromptCard",
+          "action": "keep"
+        },
+        {
+          "name": "UserAnalyticsEmptyState",
+          "action": "keep"
+        }
       ],
       "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: a social-mission prompt and an analytics no-data state have different semantic roles, typography, token emphasis, and feature ownership. Preserving both compositions does not assert separate primitive concepts.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
       "date": "2026-07-18",
-      "status": "recorded-concept-reconciliation"
+      "status": "recorded-concept-reconciliation",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: EventSuccessPromptCard. Active sibling behavior is retained."
     },
     {
       "clusterId": "concept-discovery:hero-metric-vs-reveal-copy",
       "decision": "keep-distinct",
       "members": [
-        {"name": "HostTodayHeroMetric", "action": "keep"},
-        {"name": "EventSuccessRevealHeader", "action": "keep"}
+        {
+          "name": "HostTodayHeroMetric",
+          "action": "keep"
+        },
+        {
+          "name": "EventSuccessRevealHeader",
+          "action": "keep"
+        }
       ],
       "rationale": "K5 concept mismatch: HostTodayHeroMetric is a value plus mono metric label; RevealHostCopy is narrative headline plus supporting body. Different typography contracts and semantic content make the two-text Column a structural false positive.",
       "decidedBy": "codex-rule:K5",
@@ -6324,14 +6477,42 @@
       "decision": "split-contract-concepts",
       "canonicalSymbol": "CatchSkeleton + CatchLoadingIndicator + CatchAsyncValueView",
       "members": [
-        {"name": "CatchSkeleton", "action": "canonical-concept"},
-        {"name": "CatchSkeletonList", "action": "register-member", "note": "catch.skeleton"},
-        {"name": "CatchAsyncScreenLoading", "action": "register-member", "note": "catch.skeleton"},
-        {"name": "CatchAsyncSliverLoading", "action": "register-member", "note": "catch.skeleton"},
-        {"name": "CatchLoadingIndicator", "action": "canonical-concept"},
-        {"name": "CatchAsyncValueView", "action": "canonical-concept"},
-        {"name": "CatchAsyncValueSliver", "action": "register-member", "note": "catch.async_value"},
-        {"name": "CatchStartupLoadingScreen", "action": "register-composition"}
+        {
+          "name": "CatchSkeleton",
+          "action": "canonical-concept"
+        },
+        {
+          "name": "CatchSkeletonList",
+          "action": "register-member",
+          "note": "catch.skeleton"
+        },
+        {
+          "name": "CatchAsyncScreenLoading",
+          "action": "register-member",
+          "note": "catch.skeleton"
+        },
+        {
+          "name": "CatchAsyncSliverLoading",
+          "action": "register-member",
+          "note": "catch.skeleton"
+        },
+        {
+          "name": "CatchLoadingIndicator",
+          "action": "canonical-concept"
+        },
+        {
+          "name": "CatchAsyncValueView",
+          "action": "canonical-concept"
+        },
+        {
+          "name": "CatchAsyncValueSliver",
+          "action": "register-member",
+          "note": "catch.async_value"
+        },
+        {
+          "name": "CatchStartupLoadingScreen",
+          "action": "register-composition"
+        }
       ],
       "rationale": "Owner approval establishes three independent concepts based on semantic responsibility rather than the shared circumstance of waiting: content-shaped skeletons, indeterminate progress, and async data-state boundaries. The branded startup surface is a composition over the indicator. Stable Dart class names remain unchanged; the contract registry and formal previews now expose the actual concept boundaries.",
       "decidedBy": "owner-approved -> codex",
@@ -6343,8 +6524,14 @@
       "decision": "qualify-distinct-compositions",
       "canonicalSymbol": "HostBroadcastComposerSheet",
       "members": [
-        {"name": "HostBroadcastComposerSheet", "action": "canonical"},
-        {"name": "ChatBlastComposerSheet", "action": "rename-and-keep"}
+        {
+          "name": "HostBroadcastComposerSheet",
+          "action": "canonical"
+        },
+        {
+          "name": "ChatBlastComposerSheet",
+          "action": "rename-and-keep"
+        }
       ],
       "rationale": "The event-aware Hosts sheet owns the canonical host-broadcast workflow. The eventless Chats review surface remains useful but is explicitly named ChatBlastComposerSheet, eliminating the deterministic namespace collision without merging distinct workflow behavior.",
       "decidedBy": "owner-approved -> codex",
@@ -6356,9 +6543,20 @@
       "decision": "unify-renderer-keep-adapters",
       "canonicalSymbol": "CatchIconButton",
       "members": [
-        {"name": "CatchIconButton", "action": "canonical"},
-        {"name": "CatchesPassButton", "action": "unify", "note": "retain pass semantics and SwipeKeys.passButton"},
-        {"name": "ReactionControlButton", "action": "unify", "note": "retain reaction palette and pending semantics"}
+        {
+          "name": "CatchIconButton",
+          "action": "canonical"
+        },
+        {
+          "name": "CatchesPassButton",
+          "action": "unify",
+          "note": "retain pass semantics and SwipeKeys.passButton"
+        },
+        {
+          "name": "ReactionControlButton",
+          "action": "unify",
+          "note": "retain reaction palette and pending semantics"
+        }
       ],
       "rationale": "Both feature controls now delegate circular icon-action rendering to CatchIconButton while retaining behavior-bearing adapters. This removes duplicate renderer ownership without promoting pass or reaction behavior into a new core concept.",
       "decidedBy": "owner-approved -> codex",
@@ -6369,8 +6567,14 @@
       "clusterId": "concept-discovery:club-cover-vs-directory-image",
       "decision": "keep-distinct",
       "members": [
-        {"name": "CatchClubCover", "action": "keep"},
-        {"name": "ClubImage", "action": "keep"}
+        {
+          "name": "CatchClubCover",
+          "action": "keep"
+        },
+        {
+          "name": "ClubImage",
+          "action": "keep"
+        }
       ],
       "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. CatchClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
@@ -6508,7 +6712,8 @@
       "rationale": "The typography engine and source semantics establish three responsibilities: kicker typography, compact factual metadata, and a structural heading with Semantics(header: true). Preserve their rendering and rename by responsibility. The kicker fieldSection choice changes weight and tracking, so the enum becomes CatchKickerTextVariant. The same physical heading was registered as both catch.ui_label and catch.section.label; retain the cross-stack catch.ui_label identity as anatomy of catch.section and remove its duplicate member registration. A seeded regression rejects duplicate physical Widget identities. Menu and Image metadata also records reviewed complementary contracts: action vs selected-value menus share their menu renderer, and image loading vs treatment compose without duplicate loading implementations.",
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
-      "status": "implemented-source-pending-phase-4-ci"
+      "status": "implemented-source-pending-phase-4-ci",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: CatchSectionHeaderTitle. Active sibling behavior is retained."
     },
     {
       "clusterId": "pattern-family:icon-presentation-canonical-tile",
@@ -7140,7 +7345,8 @@
       "rationale": "Complete source and rendered comparison found duplicate fractional-fill logic and a zero-width series painter. The seeded paint-size probe measured [0, 0, 0] widths before repair. One BarIndicator now owns ratio bounds, width allocation and typed rounded/square rendering; BarSeriesIndicator owns the series frame, maximum and semantics. Page/loading comparisons establish distinct indicator use cases. The reviewed visual delta restores the previously invisible series; standalone bars retain their output.",
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
-      "status": "implemented-source-pending-phase-4-ci"
+      "status": "implemented-source-pending-phase-4-ci",
+      "retirementNote": "2026-09-23 user-approved gallery review supersedes keep/repair outcomes only for the now-unused members: CatchBarSeriesIndicator. Active sibling behavior is retained."
     },
     {
       "clusterId": "pattern-family:inline-feedback-canonical-banner",

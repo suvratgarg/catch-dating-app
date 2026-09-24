@@ -791,26 +791,6 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(taps, 1);
   });
 
-  testWidgets(
-    'CatchActivityArt renders generated activity backdrop with child',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const SizedBox(
-            width: 220,
-            child: CatchActivityArt(
-              activityKind: ActivityKind.yoga,
-              dim: true,
-              child: Center(child: Text('Ticket meta')),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('Ticket meta'), findsOneWidget);
-    },
-  );
-
   testWidgets('CatchNetworkImage composes branded fallback renderer', (
     tester,
   ) async {

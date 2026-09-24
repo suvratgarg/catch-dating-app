@@ -302,8 +302,14 @@ test(
           assert.equal(visible.introduction, preview.preview?.introduction);
           assert.deepEqual(visible.coreFields, preview.preview?.coreFields);
           assert.deepEqual(visible.cardFields, preview.preview?.cardFields);
-          await change("leave", 1);
-          await change("join", 2);
+          await change("mute", 1);
+          const muted = await read();
+          assert.equal(muted.introduction, visible.introduction);
+          assert.deepEqual(muted.cardFields, visible.cardFields);
+          await change("unmute", 2);
+          assert.deepEqual((await read()).cardFields, visible.cardFields);
+          await change("leave", 3);
+          await change("join", 4);
           const rejoined = await read();
           assert.equal(rejoined.displayName, "Sara");
           assert.equal(rejoined.introduction, null);
@@ -331,6 +337,27 @@ test(
           assert.equal(own.canShare, true);
           assert.equal(own.selection, null);
           await assert.rejects(read(stranger), {code: "permission-denied"});
+        },
+      );
+      await t.test(
+        "muting does not revoke a choice made after joining",
+        async () => {
+          await save();
+          const before = await read();
+          assert.deepEqual(before.cardFields,
+            [{label: "Favourite drink", value: "Tequila"}]);
+          await change("mute", 1);
+          assert.deepEqual((await read()).cardFields, before.cardFields);
+          await change("unmute", 2);
+          assert.deepEqual((await read()).cardFields, before.cardFields);
+          await change("leave", 3);
+          await change("join", 4);
+          assert.deepEqual((await read()).cardFields, []);
+          await ref("eventChatMemberships",
+            eventChatMembershipId(eventId, person)).update({revision: 1});
+          await ref("eventChatProfileShares",
+            eventChatMembershipId(eventId, person)).delete();
+          revision = 0;
         },
       );
       await t.test(

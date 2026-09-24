@@ -9,7 +9,6 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -55,24 +54,6 @@ PickedClubProfileImage _createClubProfileImage() {
       mimeType: 'image/png',
     ),
     bytes: bytes,
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Loading state',
-  type: HostClubEditorLoadingScreen,
-  path: '[P1 product surfaces]/Host operations',
-)
-Widget hostClubEditorLoadingScreenState(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'HostClubEditorLoadingScreen',
-    contractId: 'screen.host.club.editor.loading',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'form-shaped skeleton',
-        child: WidgetbookHostDeviceFrame(child: HostClubEditorLoadingScreen()),
-      ),
-    ],
   );
 }
 

@@ -41,30 +41,6 @@ List<Widget> buildClubDirectorySlivers({
   ];
 }
 
-/// Compatibility wrapper — kept so the `ClubDiscoverList()` constructor call
-/// remains a valid sliver expression at existing call sites.
-class ClubDiscoverList extends StatelessWidget {
-  const ClubDiscoverList({
-    super.key,
-    required this.clubs,
-    required this.joinedClubIds,
-  });
-
-  final List<Club> clubs;
-  final Set<String> joinedClubIds;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverMainAxisGroup(
-      slivers: buildClubDirectorySlivers(
-        context: context,
-        clubs: clubs,
-        joinedClubIds: joinedClubIds,
-      ),
-    );
-  }
-}
-
 void _openClubDetail(BuildContext context, Club club) {
   context.pushNamed(
     Routes.clubDetailScreen.name,

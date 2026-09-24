@@ -606,57 +606,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event companion';
 
   @override
-  String get eventSuccessEventSuccessFeatureBlocksTitleHostSetupFlow =>
-      'Host setup flow';
-
-  @override
-  String
-  get eventSuccessEventSuccessFeatureBlocksSubtitleChooseTheFormatEvent =>
-      'Choose the format, event structure, assignment tools, and safety gates before an event goes live.';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksTextFormat => 'Format';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksTextEventStructure =>
-      'Event structure';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksTextExperienceArchitecture =>
-      'Experience architecture';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksTitleLiveHostMode =>
-      'Live host mode';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksSubtitleAPhoneFriendlyGuide =>
-      'A phone-friendly guide for check-in, welcome, the current instruction, and the next social cue.';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelCheckedIn =>
-      'Checked in';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelRunOfShow =>
-      'Run of show';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksTitleAttendeeCompanion =>
-      'Attendee companion';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksSubtitleTheAttendeeSeesOnly =>
-      'The attendee sees only what helps them participate: check-in, assignment, prompt, and host help.';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelCheckIn => 'Check in';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksTextAskHostForHelp =>
-      'Ask host for help';
-
-  @override
   String get eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport =>
       'Post-event host report';
 
@@ -691,17 +640,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessFeatureBlocksTextImproveNextTime =>
       'Improve next time';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelBeforeLaunch =>
-      'Before launch';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelRequested => 'Requested';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelHostVisible =>
-      'Host visible';
 
   @override
   String get eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet =>
@@ -998,25 +936,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventsSavedEventsScreenMessageSaveEventsYouWant =>
       'Save events you want to revisit before booking.';
-
-  @override
-  String get eventsBookingConflictSheetLabelBookingTimeConflict =>
-      'Booking time conflict';
-
-  @override
-  String get eventsBookingConflictSheetTextThatSTheSame =>
-      'That\'s the same time slot';
-
-  @override
-  String get eventsBookingConflictSheetLabelCancelExistingBookThis =>
-      'Cancel existing & book this';
-
-  @override
-  String get eventsBookingConflictSheetLabelKeepBoth => 'Keep both';
-
-  @override
-  String get eventsBookingConflictSheetLabelKeepExistingOnly =>
-      'Keep existing only';
 
   @override
   String get eventsEventDetailBodyTitleBringSomeoneIntoThe =>
@@ -1367,26 +1286,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exploreExploreFilterRailTextArea => 'AREA';
-
-  @override
-  String get exploreExploreListTitleNoClubsMatchThis =>
-      'No organizers match this search';
-
-  @override
-  String get exploreExploreListMessageClearTheSearchOr =>
-      'Clear the search or filters to bring nearby organizers back into view.';
-
-  @override
-  String get exploreExploreListMessageTryAnotherClubNeighborhood =>
-      'Try another organizer, neighborhood, host, or tag.';
-
-  @override
-  String get exploreExploreListTitleNoClubsMatchThese =>
-      'No organizers match these filters';
-
-  @override
-  String get exploreExploreListMessageClearOneOrMore =>
-      'Clear one or more filters to bring nearby organizers back into view.';
 
   @override
   String get forceUpdateUpdateRequiredScreenTextUpdateRequired =>
@@ -2261,36 +2160,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCatchRosterBoardLabelDeclineRequest => 'Decline request';
 
   @override
-  String get hostsHostClubToolsTextManageThisClubPublish =>
-      'Manage this organizer, publish events, and track upcoming demand.';
-
-  @override
-  String get hostsHostClubToolsLabelBooked => 'Booked';
-
-  @override
-  String get hostsHostClubToolsLabelWaitlist => 'Waitlist';
-
-  @override
-  String get hostsHostClubToolsLabelBaseEst => 'Base est.';
-
-  @override
-  String get hostsHostClubToolsLabelRevenue => 'Revenue';
-
-  @override
-  String get hostsHostClubToolsTextBaseEstimateUsesStarting =>
-      'Base estimate uses starting prices; demand-priced bookings may settle higher.';
-
-  @override
-  String get hostsHostClubToolsLabelAddEvent => 'Add event';
-
-  @override
-  String get hostsHostClubToolsLabelPostQuotaUsed => 'Post quota used';
-
-  @override
   String get hostsHostClubToolsLabelPostUpdate => 'Post update';
-
-  @override
-  String get hostsHostClubToolsLabelEditClub => 'Edit organizer';
 
   @override
   String get hostsHostClubToolsTitlePostToFollowers => 'Post to followers';
@@ -3168,52 +3038,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get swipesFiltersScreenLabelApplyFilters => 'Apply filters';
 
   @override
-  String get swipesSwipeHubScreenTitleOpenCatchWindows => 'Open catch windows';
-
-  @override
-  String get swipesSwipeHubScreenTextAfterTheEvent => 'After the event';
-
-  @override
-  String get swipesSwipeHubScreenLabelStartCatching => 'Start catching';
-
-  @override
-  String get swipesSwipeHubScreenText24hWindowOpen => '24H WINDOW OPEN';
-
-  @override
-  String get swipesSwipeHubScreenTextYouRanTogetherNow =>
-      'You ran together. Now you can catch.';
-
-  @override
-  String get swipesSwipeHubScreenLabelClosesIn => 'Closes in';
-
-  @override
-  String get swipesSwipeHubScreenLabelRoster => 'Roster';
-
-  @override
-  String get swipesSwipeHubScreenTitleNoActiveCatches => 'No active catches';
-
-  @override
-  String get swipesSwipeHubScreenMessageBookAGroupEvent =>
-      'Book a group event, show up, and your 24-hour catch window opens here after check-in.';
-
-  @override
-  String get swipesSwipeHubScreenLabelFindAnEvent => 'Find an event';
-
-  @override
-  String get swipesSwipeHubScreenTextDatingStaysLockedUntil =>
-      'Dating stays locked until you actually run together. No cold stranger browsing.';
-
-  @override
   String get swipesSwipeScreenTooltipBackToCatches => 'Back to Catches';
 
   @override
   String get swipesSwipeScreenTooltipFilters => 'Filters';
-
-  @override
-  String get swipesAttendedEventTileTextOpenCatchWindow => 'OPEN CATCH WINDOW';
-
-  @override
-  String get swipesAttendedEventTileLabelRecap => 'Recap';
 
   @override
   String get swipesCatchesPassButtonMessagePassing => 'Passing';
@@ -3313,12 +3141,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardEventFocusRailLabelReviewPending => 'Review pending';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelHostOnly => 'Host only';
-
-  @override
-  String get eventSuccessEventSuccessFeatureBlocksLabelAttendee => 'Attendee';
 
   @override
   String get eventSuccessEventSuccessSetupBodyLabelNoTimer => 'No timer';
@@ -3632,12 +3454,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
 
   @override
-  String get hostsHostClubToolsLabelHostTools => 'Host tools';
-
-  @override
-  String get hostsHostClubToolsLabelClub => 'Organizer';
-
-  @override
   String get hostsHostEventToolsLabelHostEvent => 'Host event';
 
   @override
@@ -3717,72 +3533,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventSuccessEventSuccessFeatureBlocksDetailCheckedincountBookedcount({
-    required Object checkedInCount,
-    required Object bookedCount,
-  }) {
-    return '$checkedInCount/$bookedCount';
-  }
-
-  @override
-  String eventSuccessEventSuccessFeatureBlocksDetailValue1Length({
-    required Object value1,
-    required Object length,
-  }) {
-    return '$value1/$length';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessFeatureBlocksTextAttendeeExperienceAttendeeexperience({
-    required Object attendeeExperience,
-  }) {
-    return 'Attendee experience: $attendeeExperience';
-  }
-
-  @override
   String eventSuccessEventSuccessFeatureBlocksLabelRound({
     required Object round,
   }) {
     return '$round%';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessFeatureBlocksLabelTargetattendeecountTargetAttendees({
-    required Object targetAttendeeCount,
-  }) {
-    return '$targetAttendeeCount target attendees';
-  }
-
-  @override
-  String eventSuccessEventSuccessFeatureBlocksLabelLengthLivePhoneTools({
-    required Object length,
-  }) {
-    return '$length live phone tools';
-  }
-
-  @override
-  String eventSuccessEventSuccessFeatureBlocksLabelTitleTool({
-    required Object title,
-  }) {
-    return '$title tool';
-  }
-
-  @override
-  String eventSuccessEventSuccessFeatureBlocksTextDurationminutesMinLabel({
-    required Object durationMinutes,
-    required Object label,
-  }) {
-    return '$durationMinutes min · $label';
-  }
-
-  @override
-  String eventSuccessEventSuccessFeatureBlocksTextLabelRound({
-    required Object label,
-    required Object round,
-  }) {
-    return '$label $round%';
   }
 
   @override
@@ -3910,13 +3664,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object remainingCount,
   }) {
     return 'Show $remainingCount more activity types';
-  }
-
-  @override
-  String exploreExploreListTitleNoClubsInCitylabel({
-    required Object cityLabel,
-  }) {
-    return 'No organizers in $cityLabel yet';
   }
 
   @override
@@ -4411,22 +4158,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'This event is no longer available.';
 
   @override
-  String swipesSwipeHubScreenTextLength({required Object length}) {
-    return '$length';
-  }
-
-  @override
-  String get swipesSwipeHubScreenTitleCatches => 'Catches';
-
-  @override
   String swipesSwipeScreenTextCatchesRemainingcountLeft({
     required Object remainingCount,
   }) {
     return 'Catches · $remainingCount left';
   }
-
-  @override
-  String get swipesAttendedEventTileLabelCatch => 'Catch';
 
   @override
   String swipesCatchProfileViewTextNameAge({
@@ -4490,22 +4226,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get userProfileInlineEditorPromptLabelAddAnotherPrompt =>
       'Add another prompt';
-
-  @override
-  String userProfileInlineEditorTextTextDisplayvalue({
-    required Object displayValue,
-  }) {
-    return '+ $displayValue';
-  }
-
-  @override
-  String userProfileInlineEditorTextTextProfileInlineDisplayLabel({
-    required Object label,
-    required Object displayValue,
-    required Object isAddAffordance,
-  }) {
-    return 'profile-inline-display-$label-$displayValue-$isAddAffordance';
-  }
 
   @override
   String get userProfileProfileSliverHeaderLabelEdit => 'Edit';
@@ -6648,15 +6368,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessEventSuccessHostReportTitleS => 's';
 
   @override
-  String get eventsBookingConflictSheetTextYouReAlreadyBooked =>
-      'You\'re already booked for something then. Keep both if you can make it work, or swap one out.';
-
-  @override
   String get exploreExploreScreenMessageTryAnotherCityFrom =>
-      'Try another city from the location control, or create the first organizer when you are ready to host.';
-
-  @override
-  String get exploreExploreListMessageTryAnotherCityFrom =>
       'Try another city from the location control, or create the first organizer when you are ready to host.';
 
   @override
@@ -9140,13 +8852,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventsLocationPickerScreenVisiblecopySearching => 'Searching...';
 
   @override
-  String get eventsBookingConflictSheetVisiblecopyAlreadyBooked =>
-      'Already booked';
-
-  @override
-  String get eventsBookingConflictSheetVisiblecopyNew => 'New';
-
-  @override
   String get eventsEventDetailCtaVisiblecopyOfferActive => 'Offer active';
 
   @override
@@ -9854,20 +9559,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String
   get hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed =>
       'HostPaymentAccountControllerCard.refresh failed';
-
-  @override
-  String hostsHostClubToolsVisiblecopyTotalbooked({
-    required Object totalBooked,
-  }) {
-    return '$totalBooked';
-  }
-
-  @override
-  String hostsHostClubToolsVisiblecopyTotalwaitlist({
-    required Object totalWaitlist,
-  }) {
-    return '$totalWaitlist';
-  }
 
   @override
   String get hostsHostEventAttendancePanelVisiblecopyRevenueCsvReady =>
@@ -10601,30 +10292,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessEventSuccessHostSharedLabelReport => 'Report';
-
-  @override
-  String get eventsEventStatsGridVisiblecopyKm => 'km';
-
-  @override
-  String get eventsEventStatsGridLabelDistance => 'Distance';
-
-  @override
-  String get eventsEventStatsGridLabelActivity => 'Activity';
-
-  @override
-  String get eventsEventStatsGridLabelSpotsTaken => 'Spots taken';
-
-  @override
-  String get eventsEventStatsGridVisiblecopyPaceLevel => 'Pace level';
-
-  @override
-  String get eventsEventStatsGridVisiblecopySkillLevel => 'Skill level';
-
-  @override
-  String get eventsEventStatsGridVisiblecopyIntensity => 'Intensity';
-
-  @override
-  String get eventsEventStatsGridVisiblecopyEnergy => 'Energy';
 
   @override
   String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
@@ -20499,6 +20166,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatClose => 'Close event chat';
 
   @override
+  String get eventChatSchedule => 'Schedule room hours';
+
+  @override
+  String get eventChatPause => 'Pause posting';
+
+  @override
+  String get eventChatAnnouncementsOnly => 'Announcements only';
+
+  @override
+  String get eventChatResume => 'Resume posting';
+
+  @override
+  String get eventChatArchive => 'Archive room';
+
+  @override
+  String get eventChatArchiveDisclosure =>
+      'Archiving permanently closes this room. Members will no longer read or post messages, and you cannot reopen it.';
+
+  @override
+  String get eventChatMute => 'Mute room notifications';
+
+  @override
+  String get eventChatUnmute => 'Unmute room notifications';
+
+  @override
+  String get eventChatAnnouncement => 'Announcement';
+
+  @override
+  String get eventChatInvalidSchedule =>
+      'Choose a future opening and a later closing time.';
+
+  @override
+  String get eventChatReadOnly =>
+      'Posting is paused. You can still read messages.';
+
+  @override
+  String get eventChatAnnouncementsReadOnly =>
+      'Only hosts can post announcements right now. You can still read messages.';
+
+  @override
+  String get eventChatRemoved => 'Message removed.';
+
+  @override
+  String get eventChatRemoveMember => 'Remove from room';
+
+  @override
+  String get eventChatBanMember => 'Ban from room';
+
+  @override
+  String get eventChatReinstateMember => 'Allow rejoin';
+
+  @override
+  String get eventChatMemberRemoved => 'Removed from room';
+
+  @override
+  String get eventChatMemberBanned => 'Banned from room';
+
+  @override
+  String get eventChatMemberActions => 'Member actions';
+
+  @override
+  String get eventChatRemoveMemberDisclosure =>
+      'They will lose access to this room until a host allows them to rejoin. Their event booking is unchanged.';
+
+  @override
+  String get eventChatBanMemberDisclosure =>
+      'They cannot access or rejoin this room until a host allows them to rejoin. Their event booking is unchanged.';
+
+  @override
+  String get eventChatReinstateMemberDisclosure =>
+      'They can choose to join again if they still have event admission. This does not join them automatically.';
+
+  @override
   String get eventChatLeave => 'Leave chat';
 
   @override
@@ -20821,7 +20561,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatBlocked => 'Sender blocked.';
 
   @override
-  String get eventChatRemoved => 'Message removed.';
+  String get eventChatMembershipRemoved =>
+      'Your room membership is unavailable. Contact the host if you need help.';
 
   @override
   String get programsWorkShellTitle => 'Program operations';
@@ -21382,5 +21123,160 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String hostResponseFilterSelectionLimit({required int count}) {
     return 'Choose up to $count options per question.';
+  }
+
+  @override
+  String get eventMatchingTitle => 'Use form answers for event matching';
+
+  @override
+  String get eventMatchingDisclosure =>
+      'Choose whether Catch may use each reviewed answer as a soft matching preference for this event. This does not change admission or safety rules.';
+
+  @override
+  String get eventMatchingAnswerLabel => 'Answer to use';
+
+  @override
+  String get eventMatchingAllow => 'Allow for this event';
+
+  @override
+  String get eventMatchingWithdraw => 'Stop using this answer';
+
+  @override
+  String get eventMatchingUnavailable =>
+      'This answer is no longer available for event matching.';
+
+  @override
+  String get eventMatchingNoChoices =>
+      'The Host has not chosen any form questions for this event.';
+
+  @override
+  String get eventMatchingSaved => 'Your choice is saved for this event.';
+
+  @override
+  String get eventMatchingCoverageNote =>
+      'Only answers you allow for this event can be used. You can withdraw permission later.';
+
+  @override
+  String get eventMatchingHostTitle => 'Form answer matching';
+
+  @override
+  String get eventMatchingHostDescription =>
+      'Choose published custom questions as soft preferences. Guest permission is separate, and safety and admission rules always apply.';
+
+  @override
+  String get eventMatchingHostUnsupported =>
+      'Structured answer matching is not available for sequence layouts.';
+
+  @override
+  String get eventMatchingHostSelectForm => 'Choose a published form';
+
+  @override
+  String get eventMatchingHostNoForms =>
+      'No published forms are available for this organizer.';
+
+  @override
+  String get eventMatchingHostNoQuestions =>
+      'This published version has no custom choice or number questions.';
+
+  @override
+  String get eventMatchingHostLoadMore => 'Load more forms';
+
+  @override
+  String get eventMatchingHostAddQuestion => 'Add matching question';
+
+  @override
+  String get eventMatchingHostSavedRules => 'Matching preferences';
+
+  @override
+  String get eventMatchingHostCategory => 'Choice category';
+
+  @override
+  String get eventMatchingHostSet => 'Choice set';
+
+  @override
+  String get eventMatchingHostNumber => 'Number';
+
+  @override
+  String get eventMatchingHostOrdinal => 'Ordered choices';
+
+  @override
+  String get eventMatchingHostSimilar => 'Prefer similar answers';
+
+  @override
+  String get eventMatchingHostDifferent => 'Prefer different answers';
+
+  @override
+  String get eventMatchingHostBalance => 'Balance answers across groups';
+
+  @override
+  String get eventMatchingHostWeight => 'Preference strength';
+
+  @override
+  String get eventMatchingHostMinimum => 'Minimum answer';
+
+  @override
+  String get eventMatchingHostMaximum => 'Maximum answer';
+
+  @override
+  String get eventMatchingHostMissingBounds =>
+      'This form did not publish a number range. Set a finite minimum and maximum before using this question.';
+
+  @override
+  String get eventMatchingHostPreview => 'Preview roster coverage';
+
+  @override
+  String eventMatchingHostCoverage({required int usable, required int roster}) {
+    return '$usable of $roster current roster members have usable permitted answers';
+  }
+
+  @override
+  String get eventMatchingHostCoverageNote =>
+      'Coverage uses the current event roster; live assignment eligibility may differ.';
+
+  @override
+  String get eventMatchingHostSave => 'Save matching preferences';
+
+  @override
+  String get eventMatchingHostRemove => 'Remove question';
+
+  @override
+  String get eventMatchingHostRefresh => 'Refresh matching setup';
+
+  @override
+  String get eventMatchingHostConflict =>
+      'Matching setup changed elsewhere. Review the latest version before saving again.';
+
+  @override
+  String get eventMatchingHostValidation =>
+      'Review the question mapping before previewing or saving.';
+
+  @override
+  String get eventMatchingHostActiveVersion => 'Active published version';
+
+  @override
+  String get eventMatchingHostLimit =>
+      'Choose up to eight matching questions for this event.';
+
+  @override
+  String get eventMatchingHostTransform => 'Answer type';
+
+  @override
+  String get eventMatchingHostPreference => 'Matching preference';
+
+  @override
+  String get eventMatchingHostMoveEarlier => 'Move this choice earlier';
+
+  @override
+  String get eventMatchingHostDecreaseWeight => 'Decrease preference strength';
+
+  @override
+  String get eventMatchingHostIncreaseWeight => 'Increase preference strength';
+
+  @override
+  String get hostsOperationalRosterFieldCity => 'City';
+
+  @override
+  String hostsOperationalRosterIssueInvalidCity({required int row}) {
+    return 'Row $row: choose a supported city or leave it blank.';
   }
 }

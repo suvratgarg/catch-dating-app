@@ -73,6 +73,17 @@
       ],
       "description": "Invitation delivery preference; does not grant messaging consent by itself."
     },
+    "side": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/programHouseholdSide"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional side assignment used for per-side counts and seating; labels are configured on the program."
+    },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     },

@@ -59,6 +59,37 @@
         "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
       }
     },
+    "entitlement": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/programEntitlementSnapshot"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Immutable snapshot of the organizer entitlement terms captured at program creation. Absent on programs predating entitlements; owning callables treat absence as the unpaid default ceiling."
+    },
+    "householdSideLabels": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "partnerA": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "partnerB": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        }
+      },
+      "description": "Optional display labels for programHouseholds.side (such as bride/groom or two family names); defaults to generic partner labels."
+    },
     "transportSettings": {
       "$ref": "../shared/program_common.schema.json#/definitions/programTransportSettings"
     },

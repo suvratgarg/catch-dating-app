@@ -8,55 +8,39 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchBarSeriesIndicator,
+  type: CatchBarIndicator,
   path: '[Core primitives]/Data display',
 )
-Widget catchMiniBarChartContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return WidgetbookContractFrame(
-    title: 'CatchBarSeriesIndicator',
-    contractId: 'catch.mini_bar_chart',
-    states: const [
-      'default',
-      'empty',
-      'zero-values',
-      'color-override',
-      'semantic-label',
-    ],
-    children: [
-      const WidgetbookContractStateCard(
-        label: 'default',
-        child: CatchBarSeriesIndicator(values: [2, 6, 3, 8, 5, 9, 7]),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'empty',
-        child: CatchBarSeriesIndicator(values: []),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'zero-values',
-        child: CatchBarSeriesIndicator(values: [0, 0, 0, 0], maxValue: 10),
-      ),
-      WidgetbookContractStateCard(
-        label: 'color-override',
-        child: CatchBarSeriesIndicator(
-          values: const [1, 3, 6, 4, 8],
-          filledColor: t.primary,
-          emptyColor: t.primarySoft,
-          backgroundColor: t.raised,
-          borderColor: t.primary.withValues(alpha: CatchOpacity.mutedBorder),
+Widget catchMiniBarChartContractStates(BuildContext context) =>
+    WidgetbookContractFrame(
+      title: 'CatchBarIndicator',
+      contractId: 'catch.mini_bar_chart',
+      states: const ['default', 'zero-values', 'color-override'],
+      children: [
+        for (final value in [0, 2, 8, 12])
+          WidgetbookContractStateCard(
+            label: value == 0 ? 'zero-values' : 'default',
+            child: SizedBox(
+              width: 40,
+              height: 100,
+              child: CatchBarIndicator(value: value, maxValue: 8),
+            ),
+          ),
+        WidgetbookContractStateCard(
+          label: 'color-override',
+          child: SizedBox(
+            width: 40,
+            height: 100,
+            child: CatchBarIndicator(
+              value: 4,
+              maxValue: 8,
+              filledColor: CatchTokens.of(context).primary,
+              emptyColor: CatchTokens.of(context).primarySoft,
+            ),
+          ),
         ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'semantic-label',
-        child: CatchBarSeriesIndicator(
-          values: [4, 5, 7, 8, 6],
-          semanticLabel: 'Weekly attendance trend',
-        ),
-      ),
-    ],
-  );
-}
+      ],
+    );
 
 @widgetbook.UseCase(
   name: 'Contract states',

@@ -5,20 +5,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: "BlockHeader",
-  type: BlockHeader,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictBlockHeader(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "BlockHeader",
-  );
-}
-
-@widgetbook.UseCase(
   name: "ConversationCueRow",
   type: ConversationCueRow,
   path:
@@ -29,22 +15,6 @@ Widget eventSuccessStrictConversationCueRow(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.featureBlocks,
     componentName: "ConversationCueRow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessAttendeeCompanionPreview",
-  type: EventSuccessAttendeeCompanionPreview,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessAttendeeCompanionPreview(
-  BuildContext context,
-) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessAttendeeCompanionPreview",
   );
 }
 
@@ -63,34 +33,6 @@ Widget eventSuccessStrictEventSuccessConversationCueCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessHostSetupFlow",
-  type: EventSuccessHostSetupFlow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessHostSetupFlow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessHostSetupFlow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessLiveHostMode",
-  type: EventSuccessLiveHostMode,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessLiveHostMode(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessLiveHostMode",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessPostEventReport",
   type: EventSuccessPostEventReport,
   path:
@@ -105,20 +47,6 @@ Widget eventSuccessStrictEventSuccessPostEventReport(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessPromptCard",
-  type: EventSuccessPromptCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictEventSuccessPromptCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "EventSuccessPromptCard",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessRecommendationTile",
   type: EventSuccessRecommendationTile,
   path:
@@ -129,75 +57,5 @@ Widget eventSuccessStrictEventSuccessRecommendationTile(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.featureBlocks,
     componentName: "EventSuccessRecommendationTile",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "IssueList",
-  type: IssueList,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictIssueList(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "IssueList",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ModuleToggleRow",
-  type: ModuleToggleRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictModuleToggleRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "ModuleToggleRow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "PlaybookSummaryCard",
-  type: PlaybookSummaryCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictPlaybookSummaryCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "PlaybookSummaryCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "ProgressRow",
-  type: ProgressRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictProgressRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "ProgressRow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "WingmanCandidateRow",
-  type: WingmanCandidateRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Feature block folded states",
-)
-Widget eventSuccessStrictWingmanCandidateRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.featureBlocks,
-    componentName: "WingmanCandidateRow",
   );
 }

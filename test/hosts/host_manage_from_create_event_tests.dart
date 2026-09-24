@@ -131,6 +131,17 @@ void _registerHostManageFromCreateEventTests() {
           watchEventAttendeesProvider(
             event.id,
           ).overrideWith((ref) => Stream.value(operationalAttendees)),
+          hostEventRosterInsightsProvider(event.id).overrideWith(
+            (ref) async => HostEventRosterInsights(
+              eventId: event.id,
+              organizerId: event.clubId,
+              cutoffAt: event.startTime,
+              sourceCoverage: HostRosterInsightCoverage.exact,
+              spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
+              rows: const <HostEventRosterInsight>[],
+              computedAt: now,
+            ),
+          ),
           publicProfileRepositoryProvider.overrideWith((ref) => publicProfiles),
           watchEventSuccessPlanProvider(
             event.id,

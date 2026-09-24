@@ -111,7 +111,10 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onDeleteEvent: () async {},
       onSharePrivateLink: (_) {},
     ),
-    'HostEventAttendancePanel' => HostEventAttendancePanel(eventId: event.id),
+    'Live attendance participants' => HostEventParticipantsPanel(
+      mode: HostEventParticipantsMode.live,
+      eventId: event.id,
+    ),
     'HostEventParticipantsSectionList' => HostEventParticipantsSectionList(
       viewModel: viewModel,
       mode: HostEventParticipantsMode.live,
@@ -434,12 +437,12 @@ Widget hostStrictHostEventActionsSectionCatalogStates(BuildContext context) =>
     _hostEventManageExactCatalog(context, 'HostEventActionsSection');
 
 @widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventAttendancePanel,
+  name: 'Live attendance catalog',
+  type: HostEventParticipantsPanel,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostEventAttendancePanelCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventAttendancePanel');
+    _hostEventManageExactCatalog(context, 'Live attendance participants');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

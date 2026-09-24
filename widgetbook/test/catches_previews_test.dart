@@ -1,9 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:widgetbook_workspace/catches/catalog/hub.dart';
 import 'package:widgetbook_workspace/catches/catalog/profile_sections.dart';
 
 void main() {
@@ -11,7 +9,6 @@ void main() {
     for (final (name, builder, type, count)
         in <(String, WidgetBuilder, Type, int)>[
           ('running profile', profileRunningStates, ProfileRunning, 1),
-          ('attended events', attendedEventTileStates, AttendedEventTile, 2),
         ]) {
       testWidgets('$name preview fits its content at text scale $scale', (
         tester,

@@ -6,6 +6,7 @@ import type {
   PublicProfileDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {HttpsError} from "firebase-functions/v2/https";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireDoc} from "../shared/validation";
 import {eventRuntimeParticipantId} from "./eventRuntime";
@@ -33,16 +34,24 @@ export interface EventSuccessRosterParticipant {
 /** Loads both Consumer booking edges and ready event-scoped runtime edges. */
 export async function loadEventSuccessRoster(
   db: FirebaseFirestore.Firestore,
-  eventId: string
+  eventId: string,
+  maxEntries?: number
 ): Promise<EventSuccessRosterParticipant[]> {
+  const participationQuery = db.collection("eventParticipations")
+    .where("eventId", "==", eventId);
+  const runtimeQuery = db.collection("eventRuntimeParticipants")
+    .where("eventId", "==", eventId);
   const [participationSnap, runtimeSnap] = await Promise.all([
-    db.collection("eventParticipations")
-      .where("eventId", "==", eventId)
-      .get(),
-    db.collection("eventRuntimeParticipants")
-      .where("eventId", "==", eventId)
-      .get(),
+    (maxEntries === undefined ? participationQuery :
+      participationQuery.limit(maxEntries + 1)).get(),
+    (maxEntries === undefined ? runtimeQuery :
+      runtimeQuery.limit(maxEntries + 1)).get(),
   ]);
+  if (maxEntries !== undefined &&
+      participationSnap.size + runtimeSnap.size > maxEntries) {
+    throw new HttpsError("failed-precondition",
+      "Event roster exceeds supported preview cohort.");
+  }
   const consumerEdges = participationSnap.docs.map((snap) =>
     requireDoc<EventParticipationDocument>(
       snap,

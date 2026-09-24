@@ -7,7 +7,6 @@ import 'package:catch_dating_app/event_success/presentation/host_report/event_su
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
-import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_setup_notice_banner.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,6 @@ void main() {
         1,
       ),
       (eventSuccessStrictReadinessIssues, EventSuccessReadinessField, 1),
-      (eventSuccessStrictNoticeCard, EventSuccessSetupNoticeBanner, 1),
       (eventSuccessStrictReportTab, EventSuccessHostReportPageBody, 1),
       (previewEventSuccessReportEmptyState, EventSuccessReportEmptyState, 1),
       (

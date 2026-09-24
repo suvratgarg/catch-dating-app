@@ -511,6 +511,8 @@ extension _CatchFieldBehavior on _CatchFieldState {
       widget._hasInputLeading;
   bool get _usesRowTextEntryTrailing =>
       _isEdit &&
+      (!widget._explicitSaveInput ||
+          (_isOpen && !_isSaving && widget.enabled)) &&
       !_usesUnderlineChrome &&
       !_compactTextEntry &&
       (widget.showClearButton ||

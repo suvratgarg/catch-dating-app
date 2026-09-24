@@ -100,6 +100,7 @@ class EventAttendeeImportRow {
     required this.status,
     this.phone,
     this.email,
+    this.cityMarketId,
     this.externalReference,
     this.arrivalGroup,
     this.ticketType,
@@ -113,6 +114,7 @@ class EventAttendeeImportRow {
   final EventAttendeeStatus status;
   final String? phone;
   final String? email;
+  final String? cityMarketId;
   final String? externalReference;
   final String? arrivalGroup;
   final String? ticketType;
@@ -126,6 +128,7 @@ class EventAttendeeImportRow {
     'status': status.name,
     'phone': phone,
     'email': email,
+    'cityMarketId': cityMarketId,
     'externalReference': externalReference,
     'arrivalGroup': arrivalGroup,
     'ticketType': ticketType,

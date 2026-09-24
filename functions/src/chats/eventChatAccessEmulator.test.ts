@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {randomUUID} from "node:crypto";
+import {createHash, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
@@ -90,6 +90,17 @@ test("Firestore room access follows current authority and explicit choices",
       assert.deepEqual(joins.map((r) => r.replayed).sort(), [false, true]);
       assert.equal(validMember((await member(person).get()).data()), true);
       assert.equal((await view(person)).canReadMessages, true);
+      const oldClose = change(host, "close", 1);
+      const oldHash = (value: unknown) => createHash("sha256")
+        .update(JSON.stringify(value)).digest("hex");
+      await ref("eventChatAccessReceipts", oldHash([host,
+        (oldClose.data as {requestId: string}).requestId])).set({eventId,
+        uid: host, payloadHash: oldHash([eventId, "close", 1, null]),
+        revision: 2, createdAt: Timestamp.now()});
+      assert.deepEqual(await update(oldClose, deps),
+        {revision: 2, replayed: true});
+      await assert.rejects(update({...oldClose, data: {...oldClose.data as
+        object, action: "open"}}, deps), {code: "already-exists"});
       assert.deepEqual((await ref("users", person).get()).data(), profile);
       assert.equal((await participation.get()).data()?.status, "signedUp");
       await assert.rejects(update(change(person, "open", 1), deps),

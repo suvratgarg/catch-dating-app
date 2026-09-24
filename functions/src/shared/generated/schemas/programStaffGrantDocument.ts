@@ -72,10 +72,15 @@ export const programStaffGrantDocumentSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "programCoordinator",
+              "guestRelations",
+              "communications",
+              "functionCheckIn",
+              "functionLead",
               "airportGreeter",
               "hotelDesk",
               "transportDispatcher",
-              "reconciliationViewer"
+              "reconciliationViewer",
+              "stakeholderViewer"
             ]
           },
           "pickupPointIds": {
@@ -99,6 +104,17 @@ export const programStaffGrantDocumentSchema: Record<string, unknown> = {
               "maxLength": 180
             },
             "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "functionIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
           },
           "expiresAtMillis": {
             "type": "integer",

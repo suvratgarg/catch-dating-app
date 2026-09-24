@@ -4,9 +4,22 @@
 
 export interface UpdateEventChatAccessCallablePayload {
   eventId: string;
-  action: "open" | "close" | "join" | "leave";
+  action:
+    | "open"
+    | "close"
+    | "join"
+    | "leave"
+    | "mute"
+    | "unmute"
+    | "pause"
+    | "announcementsOnly"
+    | "resume"
+    | "schedule"
+    | "archive";
   expectedRevision: number;
   requestId: string;
   termsVersion: "event-chat-v1" | null;
   expectedUid: string;
+  opensAtMillis?: number;
+  closesAtMillis?: number;
 }

@@ -30,6 +30,7 @@ export const listEventChatsCallableResponseSchema: Record<string, unknown> = {
           "canManage",
           "canJoin",
           "canReadMessages",
+          "canPostMessages",
           "profileClaimRequired",
           "termsVersion"
         ],
@@ -67,14 +68,32 @@ export const listEventChatsCallableResponseSchema: Record<string, unknown> = {
                 "type": "string",
                 "enum": [
                   "notCreated",
+                  "scheduled",
                   "open",
-                  "closed"
+                  "announcementsOnly",
+                  "paused",
+                  "closed",
+                  "archived"
                 ]
               },
               "revision": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "opensAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "closesAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
               }
             }
           },
@@ -91,13 +110,18 @@ export const listEventChatsCallableResponseSchema: Record<string, unknown> = {
                 "enum": [
                   "notJoined",
                   "joined",
-                  "left"
+                  "left",
+                  "removed",
+                  "banned"
                 ]
               },
               "revision": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "notificationsMuted": {
+                "type": "boolean"
               }
             }
           },
@@ -108,6 +132,9 @@ export const listEventChatsCallableResponseSchema: Record<string, unknown> = {
             "type": "boolean"
           },
           "canReadMessages": {
+            "type": "boolean"
+          },
+          "canPostMessages": {
             "type": "boolean"
           },
           "profileClaimRequired": {

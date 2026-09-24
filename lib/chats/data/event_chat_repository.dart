@@ -130,8 +130,10 @@ class EventChatRepository {
     String uid,
     EventChatAccess reviewed,
     EventChatAction action,
-    String requestId,
-  ) async {
+    String requestId, {
+    DateTime? opensAt,
+    DateTime? closesAt,
+  }) async {
     await _call(
       'updateEventChatAccess',
       UpdateEventChatAccessCallableRequest(
@@ -143,6 +145,8 @@ class EventChatRepository {
         termsVersion: action == EventChatAction.join
             ? reviewed.termsVersion
             : null,
+        opensAtMillis: opensAt?.millisecondsSinceEpoch,
+        closesAtMillis: closesAt?.millisecondsSinceEpoch,
       ).toJson(),
     );
   }
@@ -164,6 +168,44 @@ class EventChatRepository {
         requestId: requestId,
       ).toJson(),
     );
+  }
+
+  Future<void> sendAnnouncement(
+    String uid,
+    String eventId,
+    String text,
+    String? replyToMessageId,
+    String requestId,
+  ) async {
+    await _call(
+      'sendEventChatMessage',
+      SendEventChatMessageCallableRequest(
+        expectedUid: uid,
+        eventId: eventId,
+        text: text,
+        replyToMessageId: replyToMessageId,
+        requestId: requestId,
+        kind: 'announcement',
+      ).toJson(),
+    );
+  }
+
+  Future<void> manageMember(
+    String uid,
+    EventChatAccess reviewed,
+    String targetUid,
+    String action,
+    int expectedRevision,
+    String requestId,
+  ) async {
+    await _call('manageEventChatMember', {
+      'expectedUid': uid,
+      'eventId': reviewed.eventId,
+      'targetUid': targetUid,
+      'action': action,
+      'expectedRevision': expectedRevision,
+      'requestId': requestId,
+    });
   }
 
   Future<void> react(

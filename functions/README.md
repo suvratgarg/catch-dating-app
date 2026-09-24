@@ -97,7 +97,8 @@ options when specific functions need higher or lower limits.
 | `manageOrganizerFormPaymentConnection` / `organizerFormPaymentOauthCallback` | `src/payments/formPayments/formPaymentHandlers.ts`, `formPaymentTriggers.ts` | Connect organizer Razorpay accounts with one-use OAuth and verified webhooks; secrets stay in the vault |
 | `prepareOrganizerFormPayment` / `getOrganizerFormPayment` / `findOrganizerFormPayment` / `organizerFormPaymentWebhook` / `onOrganizerFormPaymentWebhook` / `reconcileOrganizerFormPayments` | `src/payments/formPayments/` | Freeze verified form fees, discover account-owned payments, recover merchant checkout, verify captured state, submit atomically or refund invalid/expired reservations |
 | `getPublicOrganizerForm` / `beginOrganizerFormResponse` / `saveOrganizerFormResponseDraft` / `submitOrganizerFormResponse` / `withdrawOrganizerFormResponse` | `src/organizers/organizerForms.ts` | Resolve bounded public form versions and run app-free, revisioned, idempotent respondent draft, submit, and withdrawal workflows |
-| `getEventChatAccess` / `updateEventChatAccess` | `src/chats/eventChatAccess.ts` | Current admission-based event-room availability, explicit join/leave and Host open/close; no roster or profile sharing grant |
+| `getEventChatAccess` / `updateEventChatAccess` | `src/chats/eventChatAccess.ts` | Current admission-based room access, explicit join/leave, mute, Host schedule/mode/close/archive; no roster or profile sharing grant |
+| `manageEventChatMember` | `src/chats/manageEventChatMember.ts` | Manager-only revisioned remove/ban/reinstate; reinstatement requires current admission and never auto-joins |
 | `sendEventChatMessage` / `setEventChatReaction` / `setEventChatTyping` | `src/chats/eventChatMessages.ts` | Current-member message writes, payload-bound retries, revision-fenced reactions and expiring typing |
 | `listEventChatMessages` | `src/chats/listEventChatMessages.ts` | Bounded ordered history, current reply resolution and typing hints; server-side block/deletion privacy |
 | `actOnEventChatMessage` | `src/chats/eventChatMessageActions.ts` | Account-bound report/block/remove actions; server-derived targets, current authority and idempotent safety receipts |
@@ -143,6 +144,8 @@ options when specific functions need higher or lower limits.
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
+| `configureEventAssignmentFeatures` / `previewEventAssignmentFeatures` / `setEventAssignmentFeatureConsent` | `src/eventSuccess/assignmentFeatureActions.ts` | Map exact published custom questions to bounded soft matching rules, preview aggregate roster coverage and trusted source labels, and independently grant or withdraw verified respondent answer use. Preview reveals no answers or participant identities; sequence topology is unsupported. |
+| `listEventAssignmentFeatureChoices` | `src/eventSuccess/assignmentFeatureActions.ts` | Show a verified respondent their own eligible answer labels and retained historical matching grants for withdrawal, including grants whose Host mapping was removed. |
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override revision-fenced Host-only rotation drafts |
 | `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state and confirmed, idempotent prepared-round publication |
 | `upsertEventSuccessLayout` / `getEventSuccessSpatialLayout` / `controlEventSuccessSpatial` | `src/eventSuccess/layoutAssets.ts` | Persist reusable room layouts, resolve event spatial state, and control revision-fenced live reveal placement |
@@ -187,6 +190,17 @@ options when specific functions need higher or lower limits.
 | `adminRecordMarketingReviewDecision` | `src/admin/marketingOps.ts` | Admin audited marketing review decision, no publish |
 | `adminCreateMarketingContentDraft` | `src/admin/marketingOps.ts` | Admin editable marketing draft creation, no post publish |
 | `adminListOrganizerDetails` / `adminGetOrganizerDetails` / `adminUpdateOrganizerDetails` | `src/admin/clubDetails.ts` | Admin canonical organizer directory, detail, and audited safe patch surface |
+
+Event chat notification candidates are checked after a new message commits, but
+dispatch is disabled by default. The seam uses current admission, membership,
+room, block, mute, account, push preference, and installation checks with the
+shared notification helpers. It atomically creates a deterministic hidden
+`message` Activity receipt before sending a generic `eventChatMessage` payload
+to an injected synthetic sink. The client derives the room route from a
+validated event ID. There is no live provider or durable delivery queue, and
+sink failure after receipt creation is at-most-once and may lose that push.
+Fan-out fails closed above 100 candidate members. Private member answers never
+enter previews.
 
 ### Firestore-triggered
 

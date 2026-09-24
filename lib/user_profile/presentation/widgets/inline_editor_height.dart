@@ -38,7 +38,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   final InlineSaveCallback onSaved;
   final VoidCallback onCancel;
-  final UpdateUserProfilePatch Function(int value) patchForValue;
+  final UpdateUserProfilePatch Function(int? value) patchForValue;
   final CatchContractFieldConstraints contract;
   final Future<bool> Function(UpdateUserProfilePatch patch)? savePatch;
   final bool isAddAffordance;
@@ -51,7 +51,12 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
 class _ProfileInlineHeightEditorState
     extends ConsumerState<ProfileInlineHeightEditor>
     with InlineSaveState<ProfileInlineHeightEditor> {
-  late int _heightCm = normalizeHeightCm(widget.currentValue);
+  late int? _heightCm = widget.currentValue;
+  int? _committedHeight;
+  bool _hasCommittedHeight = false;
+
+  int? get _savedHeight =>
+      _hasCommittedHeight ? _committedHeight : widget.currentValue;
   CatchFieldStatus _status = CatchFieldStatus.idle;
   Timer? _savedStatusTimer;
 
@@ -59,7 +64,8 @@ class _ProfileInlineHeightEditorState
   void didUpdateWidget(covariant ProfileInlineHeightEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentValue != widget.currentValue) {
-      _heightCm = normalizeHeightCm(widget.currentValue);
+      _hasCommittedHeight = false;
+      _heightCm = widget.currentValue;
     }
   }
 
@@ -71,8 +77,9 @@ class _ProfileInlineHeightEditorState
 
   void _cancel() {
     _savedStatusTimer?.cancel();
+    clearSaveError();
     setState(() {
-      _heightCm = normalizeHeightCm(widget.currentValue);
+      _heightCm = _savedHeight;
       _status = CatchFieldStatus.idle;
     });
     widget.onCancel();
@@ -80,11 +87,12 @@ class _ProfileInlineHeightEditorState
 
   Future<void> _submit() async {
     if (isSaving) return;
-    if (_heightCm == widget.currentValue) {
+    if (_heightCm == _savedHeight) {
       _cancel();
       return;
     }
-    final patch = widget.patchForValue(_heightCm);
+    final submittedHeight = _heightCm;
+    final patch = widget.patchForValue(submittedHeight);
     final savePatch = widget.savePatch;
     final saved = savePatch == null
         ? await saveFields(patch)
@@ -94,6 +102,8 @@ class _ProfileInlineHeightEditorState
             }
           });
     if (saved && mounted) {
+      _committedHeight = submittedHeight;
+      _hasCommittedHeight = true;
       _showSaved();
       widget.onSaved();
     }
@@ -109,24 +119,26 @@ class _ProfileInlineHeightEditorState
 
   @override
   Widget build(BuildContext context) {
-    final body = widget.isExpanded
-        ? context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
-            heightCm: _heightCm,
-          )
-        : widget.isAddAffordance
+    final copy = catchFieldCopy(context.l10n);
+    final displayedHeight = widget.isExpanded ? _heightCm : _savedHeight;
+    final addable = displayedHeight == null;
+    final body = displayedHeight == null
         ? null
-        : widget.value;
+        : context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
+            heightCm: displayedHeight,
+          );
     return CatchFieldLanes.single(
       child: CatchField.stepper(
-        copy: catchFieldCopy(context.l10n),
+        copy: _heightCm == null && _savedHeight != null
+            ? copy.copyWith(doneLabel: copy.clearLabel)
+            : copy,
         icon: widget.icon,
         title: widget.label,
         contract: widget.contract,
         body: body,
-        addable: widget.isAddAffordance,
-        tone: widget.isAddAffordance
-            ? CatchFieldTone.primary
-            : CatchFieldTone.normal,
+        addable: addable,
+        labelMode: CatchFieldLabelTextMode.optional,
+        tone: addable ? CatchFieldTone.primary : CatchFieldTone.normal,
         disclosureMode: widget.isExpanded
             ? CatchFieldMode.controlledExpanded
             : CatchFieldMode.controlledCollapsed,
@@ -137,19 +149,31 @@ class _ProfileInlineHeightEditorState
 
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
-        value: _heightCm,
+        value: _heightCm ?? normalizeHeightCm(null),
+        onClear: _heightCm == null
+            ? null
+            : () {
+                _savedStatusTimer?.cancel();
+                clearSaveError();
+                setState(() {
+                  _heightCm = null;
+                  _status = CatchFieldStatus.idle;
+                });
+              },
         min: minimumHeightCm,
         max: maximumHeightCm,
-        valueLabelBuilder: (value) =>
-            context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
-              heightCm: value.toInt(),
-            ),
+        valueLabelBuilder: (value) => _heightCm == null
+            ? '—'
+            : context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
+                heightCm: value.toInt(),
+              ),
         decreaseSemanticLabel:
             context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
         increaseSemanticLabel:
             context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
         onChanged: (value) {
           _savedStatusTimer?.cancel();
+          clearSaveError();
           setState(() {
             _heightCm = value.toInt();
             _status = CatchFieldStatus.idle;

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
+import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,21 @@ class ParticipantsRepository extends Fake implements EventChatRepository {
   final reads = <({String uid, Map<String, Object?>? cursor})>[];
   Future<EventChatParticipantPage> Function(String, Map<String, Object?>?)
   read = (_, _) async => page('Sara');
+  @override
+  Future<EventChatAccess> access(String eventId) async => EventChatAccess(
+    eventId: eventId,
+    title: 'Event',
+    organizerId: 'org',
+    roomStatus: 'open',
+    roomRevision: 1,
+    membershipStatus: 'joined',
+    membershipRevision: 1,
+    canManage: false,
+    canJoin: true,
+    canReadMessages: true,
+    profileClaimRequired: false,
+    termsVersion: 'event-chat-v1',
+  );
   @override
   Future<EventChatParticipantPage> participants(
     String uid,

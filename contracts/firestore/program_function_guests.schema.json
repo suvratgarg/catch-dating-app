@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_function_guests.schema.json",
+  "title": "ProgramFunctionGuestDocument",
+  "description": "Server-owned per-function invitation, RSVP and door-attendance join record. One document per (functionId, guestId) pair; the document id is the deterministic `${functionId}_${guestId}` join key so invites and responses upsert idempotently. Per-function truth lives here; programGuests.rsvpStatus is only a derived rollup.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programFunctionGuests",
+  "x-firestore-path": "programFunctionGuests/{functionGuestId}",
+  "x-document-id-field": "functionGuestId",
+  "x-owner": "program guest management, RSVP conversion, and function check-in callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "functionId",
+    "guestId",
+    "invited",
+    "rsvpStatus",
+    "attendanceStatus",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "functionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "invited": {
+      "type": "boolean",
+      "description": "Whether this guest is on the function's invitation list. Rows exist only for functions with invitationMode=selectedGuests when invited=false; allGuests functions may omit rows entirely."
+    },
+    "rsvpStatus": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"
+    },
+    "attendanceStatus": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programFunctionAttendanceStatus"
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Attending party size including children when the guest RSVPs for more than themselves; null reads as 1."
+    },
+    "respondedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "When the guest's current RSVP response was recorded; null while still pending."
+    },
+    "responseNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "description": "Optional guest note captured with the response, such as dietary or plus-one detail."
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

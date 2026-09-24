@@ -104,6 +104,7 @@ const schemaProgramGuestDocumentSchema = <String, Object?>{
         'declined',
         'maybe',
       ],
+      'description': 'Derived program-wide rollup maintained by the server from programFunctionGuests rows (any attending -> attending, else strongest other response). Per-function truth lives only on programFunctionGuests; writers never set this directly.',
     },
     'source': <String, Object?>{
       'type': 'string',

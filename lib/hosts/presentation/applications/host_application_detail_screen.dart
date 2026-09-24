@@ -7,13 +7,16 @@ class HostApplicationDetailScreen extends StatelessWidget {
     super.key,
     required this.organizerId,
     required this.applicationId,
+    this.queue,
   });
   final String organizerId;
   final String applicationId;
+  final HostResponseReviewQueue? queue;
   @override
   Widget build(BuildContext context) =>
       HostFormResponseDetailScreen.application(
         organizerId: organizerId,
         applicationId: applicationId,
+        queue: queue,
       );
 }

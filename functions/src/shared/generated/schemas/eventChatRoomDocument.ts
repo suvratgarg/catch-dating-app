@@ -33,7 +33,10 @@ export const eventChatRoomDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "open",
-        "closed"
+        "announcementsOnly",
+        "paused",
+        "closed",
+        "archived"
       ]
     },
     "revision": {
@@ -95,6 +98,20 @@ export const eventChatRoomDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "opensAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "closesAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
     }
   },
   "description": "Host-controlled event conversation availability. No attendee admission or profile data.",

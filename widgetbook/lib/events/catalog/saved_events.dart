@@ -143,21 +143,6 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Route error',
-  type: SavedEventsError,
-  path: '[Events]/Sections',
-)
-Widget savedEventsErrorState(BuildContext context) {
-  return SizedBox(
-    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-    child: SavedEventsError(
-      error: StateError('Saved events failed'),
-      onRetry: widgetbookNoop,
-    ),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Club names error sliver',
   type: SavedEventsClubNamesErrorSliver,
   path: '[Events]/Sections',

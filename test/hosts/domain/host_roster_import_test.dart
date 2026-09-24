@@ -31,6 +31,24 @@ void main() {
     expect(mapped.rows.last.status, EventAttendeeStatus.waitlisted);
   });
 
+  test('roster city preview maps known aliases and flags unknown cities', () {
+    final table = parseHostRosterFile(
+      fileName: 'guests.csv',
+      bytes: Uint8List.fromList(utf8.encode(
+        'Name,Phone,Guest City,Status\n'
+        'Asha Shah,+919876543210,Bangalore,Confirmed\n'
+        'Ravi Rao,+919812345678,Atlantis,Confirmed',
+      )),
+    );
+    expect(table.suggestedMapping[HostRosterField.city], 2);
+    final mapped = table.mapRows(table.suggestedMapping);
+    expect(mapped.rows, hasLength(1));
+    expect(mapped.rows.single.cityMarketId, 'in-ka-bengaluru');
+    expect(mapped.rows.single.toJson()['cityMarketId'], 'in-ka-bengaluru');
+    expect(mapped.issues.single.type, HostRosterRowIssueType.invalidCity);
+    expect(mapped.issues.single.rowNumber, 3);
+  });
+
   test('Luma export is detected and maps provider-specific fields', () {
     final table = parseHostRosterFile(
       fileName: 'luma-guests.csv',

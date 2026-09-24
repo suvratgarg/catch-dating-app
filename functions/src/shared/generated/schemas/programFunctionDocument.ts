@@ -93,6 +93,109 @@ export const programFunctionDocumentSchema: Record<string, unknown> = {
       ],
       "maxLength": 500
     },
+    "venueLocation": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+          "required": [
+            "name",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "placeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional precise venue pin selected from Places or dropped manually; venueName remains the display string."
+    },
+    "dressCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140,
+      "description": "Short wardrobe guidance shown on invitations and reminders, such as 'Pastel formal' or 'Poolside casual'."
+    },
+    "instructions": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000,
+      "description": "Guest-facing instructions for this function (entry gate, shuttle note, what to bring). Never carries staff-only detail."
+    },
+    "invitationMode": {
+      "type": "string",
+      "enum": [
+        "allGuests",
+        "selectedGuests"
+      ],
+      "description": "Absent on functions written before per-function invitations; reads as allGuests."
+    },
+    "checkInEnabled": {
+      "type": "boolean",
+      "description": "When true, functionCheckIn/functionLead duties may mark programFunctionGuests attendanceStatus at the door."
+    },
+    "expectedCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Server-maintained rollup of attending party sizes for catering and venue counts."
+    },
+    "checkedInCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Server-maintained rollup of programFunctionGuests attendanceStatus=checkedIn."
+    },
     "status": {
       "type": "string",
       "enum": [
