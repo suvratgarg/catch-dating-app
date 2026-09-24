@@ -144,28 +144,43 @@ test("private-only events clear the old public projection", async () => {
   });
 });
 
-test("next-event compatibility scan clears stale data at its read budget",
+test("indexed next-event read skips more than 500 private rows", async () => {
+  const start = timestamp("2026-05-13T10:00:00.000Z");
+  const initial: Record<string, Record<string, unknown>> = {
+    "organizers/organizer-1": {nextEventLabel: "Old label"},
+    "events/z-public": event("organizer-1", start, "Public gate"),
+  };
+  for (let i = 0; i < 501; i++) {
+    initial[`events/p-${i}`] = {
+      ...event("organizer-1", start, "Private gate"),
+      publicationState: "private", setupRevision: 1,
+    };
+  }
+  const firestore = fakeFirestore(initial);
+  await refreshOrganizerNextEvent("organizer-1", {
+    firestore: () => firestore as never,
+    nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+  });
+  assert.equal(firestore.queryReads(), 1);
+  assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
+    "Public gate");
+});
+
+test("unbackfilled legacy records are omitted from indexed projection",
   async () => {
     const start = timestamp("2026-05-13T10:00:00.000Z");
-    const initial: Record<string, Record<string, unknown>> = {
-      "organizers/organizer-1": {nextEventLabel: "Private old label"},
-      "events/z-public": event("organizer-1", start, "Beyond budget"),
-    };
-    for (let i = 0; i < 501; i++) {
-      initial[`events/p-${i}`] = {
-        ...event("organizer-1", start, "Private gate"),
-        publicationState: "private", setupRevision: 1,
-      };
-    }
-    const firestore = fakeFirestore(initial);
+    const firestore = fakeFirestore({
+      "organizers/organizer-1": {nextEventLabel: "Old label"},
+      "events/legacy": {organizerId: "organizer-1", status: "active",
+        startTime: start, meetingPoint: "Legacy gate"},
+    });
     await refreshOrganizerNextEvent("organizer-1", {
       firestore: () => firestore as never,
       nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
     });
-    assert.equal(firestore.queryReads(), 20);
-    assert.deepEqual(firestore.get("organizers/organizer-1"), {
-      nextEventAt: null, nextEventLabel: null,
-    });
+    assert.equal(firestore.queryReads(), 1);
+    assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
+      null);
   });
 
 function event(
@@ -174,7 +189,8 @@ function event(
   meetingPoint: string,
   status = "active"
 ) {
-  return {organizerId, startTime, meetingPoint, status};
+  return {organizerId, publicationState: "published", startTime,
+    meetingPoint, status};
 }
 
 function timestamp(iso: string): FirebaseFirestore.Timestamp {

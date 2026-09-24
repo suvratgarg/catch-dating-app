@@ -1,7 +1,5 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import * as logger from "firebase-functions/logger";
-import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -29,46 +27,36 @@ export async function refreshOrganizerNextEvent(
   const db = deps.firestore();
   const organizerRef = db.collection("organizers").doc(organizerId);
   const now = deps.nowTimestamp();
-  const exhausted = await db.runTransaction(async (tx) => {
+  await db.runTransaction(async (tx) => {
     const organizerSnap = await tx.get(organizerRef);
-    if (!organizerSnap.exists) return false;
-    const baseQuery = db.collection("events")
+    if (!organizerSnap.exists) return;
+    // The legacy publication backfill is a release prerequisite. The same
+    // indexed predicate is used by public collection readers.
+    /* firestore-index: events (
+      organizerId:ASCENDING, publicationState:ASCENDING, status:ASCENDING,
+      startTime:ASCENDING, __name__:ASCENDING
+    ) */
+    const query = db.collection("events")
       .where("organizerId", "==", organizerId)
+      .where("publicationState", "==", "published")
       .where("status", "==", "active")
       .where("startTime", ">=", now)
       .orderBy("startTime", "asc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "asc");
-    let nextEvent: EventDocument | undefined;
-    let last: FirebaseFirestore.QueryDocumentSnapshot | undefined;
-    let complete = false;
-    // Legacy public events have no publication field. Scan bounded pages until
-    // that compatibility population can be migrated to an indexed predicate.
-    for (let pageNumber = 0; pageNumber < 20; pageNumber++) {
-      const query = last ? baseQuery.startAfter(last) : baseQuery;
-      const page = await tx.get(query.limit(25));
-      nextEvent = page.docs.map((doc) => doc.data() as EventDocument)
-        .find(isEventPubliclyAccessible);
-      if (nextEvent || page.size < 25) {
-        complete = true;
-        break;
-      }
-      last = page.docs[page.docs.length - 1];
-    }
-    // Clear a stale projection even when the budget is exhausted: never retain
-    // a now-private event's label or schedule on the public organizer record.
+      .orderBy(admin.firestore.FieldPath.documentId(), "asc")
+      .limit(1);
+    const page = await tx.get(query);
+    const nextEvent = page.docs[0]?.data() as EventDocument | undefined;
+    // Query results are current event documents in this transaction snapshot.
+    // A contradictory row must not project a public label.
+    const visible = nextEvent?.publicationState === "published" &&
+      nextEvent.organizerId === organizerId &&
+      nextEvent.status === "active" ? nextEvent : undefined;
     tx.set(organizerRef, {
-      nextEventAt: nextEvent?.startTime ?? null,
-      nextEventLabel: nextEvent ?
-        nextEvent.meetingLocation?.name ?? nextEvent.meetingPoint ?? null :
-        null,
+      nextEventAt: visible?.startTime ?? null,
+      nextEventLabel: visible ?
+        visible.meetingLocation?.name ?? visible.meetingPoint ?? null : null,
     }, {merge: true});
-    return !complete;
   });
-  if (exhausted) {
-    logger.warn("Public next-event projection scan exhausted", {
-      organizerId, maxScannedEvents: 500,
-    });
-  }
 }
 
 /**

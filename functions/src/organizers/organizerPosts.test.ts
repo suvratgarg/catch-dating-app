@@ -417,6 +417,72 @@ test("delivery receipts make replay safe and exclude blocked recipients",
     assert.equal(h.pushes.length, 1);
   });
 
+test("linked private event suppresses every delayed follower receipt",
+  async () => {
+    const h = deliveryHarness();
+    h.firestore.update("organizers/organizer-1/posts/post-1",
+      {eventId: "event-1"});
+    h.firestore.create("events/event-1", {
+      organizerId: "organizer-1", publicationState: "private",
+    });
+    const result = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(result?.deliveryStatus, "partial");
+    assert.equal(result?.recipientCount, 3);
+    assert.equal(result?.excludedCount, 3);
+    assert.equal(result?.activityAvailableCount, 0);
+    assert.equal(result?.pushAttemptedCount, 0);
+    assert.deepEqual(h.activities, []);
+    assert.deepEqual(h.pushes, []);
+    const receipt = h.firestore.get(`organizerPostDeliveryRecipients/${
+      organizerFollowerReceiptId("post-1", "user-1")}`)!;
+    assert.equal(receipt.errorCode, "linked-event-not-public");
+    assert.deepEqual(h.firestore.get(
+      "organizerPostDeliveryOperations/post-1")?.errorCodes,
+    ["linked-event-not-public"]);
+  });
+
+test("a linked event becoming private between pages stays suppressed",
+  async () => {
+    const h = deliveryHarness({pageSize: 2});
+    h.firestore.update("organizers/organizer-1/posts/post-1",
+      {eventId: "event-1"});
+    h.firestore.create("events/event-1", {
+      organizerId: "organizer-1", publicationState: "published",
+    });
+    const first = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(first?.deliveryStatus, "pending");
+    assert.deepEqual(h.activities, ["user-1"]);
+    h.firestore.update("events/event-1", {publicationState: "private"});
+    const second = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(second?.deliveryStatus, "partial");
+    assert.equal(second?.recipientCount, 3);
+    assert.equal(second?.excludedCount, 2);
+    assert.deepEqual(h.activities, ["user-1"]);
+    assert.deepEqual(h.pushes.map((push) => push.token), ["token-1"]);
+    const replay = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(replay?.deliveryStatus, "partial");
+    assert.equal(h.activities.length, 1);
+  });
+
+test("republishing after a suppressed page cannot resume delayed delivery",
+  async () => {
+    const h = deliveryHarness({pageSize: 1});
+    h.firestore.update("organizers/organizer-1/posts/post-1",
+      {eventId: "event-1"});
+    h.firestore.create("events/event-1", {
+      organizerId: "organizer-1", publicationState: "published",
+    });
+    await dispatchOrganizerPostDelivery("post-1", h.deps);
+    h.firestore.update("events/event-1", {publicationState: "private"});
+    await dispatchOrganizerPostDelivery("post-1", h.deps);
+    h.firestore.update("events/event-1", {publicationState: "published"});
+    const final = await dispatchOrganizerPostDelivery("post-1", h.deps);
+    assert.equal(final?.deliveryStatus, "partial");
+    assert.equal(final?.excludedCount, 3);
+    assert.deepEqual(h.activities, []);
+    assert.deepEqual(h.pushes, []);
+  });
+
 test("existing Activity records an unknown push outcome without resending",
   async () => {
     const h = deliveryHarness({
