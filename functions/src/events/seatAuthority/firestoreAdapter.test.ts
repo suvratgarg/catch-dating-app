@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "node:crypto";
 import {applyFirestoreSeat, applyFirestoreSeatBatch,
+  assertCurrentReadySeatSnapshot,
   prepareFirestoreSeat, prepareFirestoreSeatBatch,
   SeatIdentityAuthority} from "./firestoreAdapter";
 import {SeatAuthorityError, SeatCommand, SeatLedger} from "./seatAuthority";
@@ -228,4 +229,64 @@ test("batch adapter rejects changed policy or unresolved identity",
       tx: ambiguous.tx, command: batchCommand(), identityAuthority: authority}),
     unavailable("unresolved"));
     assert.deepEqual(ambiguous.writes, []);
+  });
+
+function retainedSnapshot() {
+  return {event: event(), eventId: "event-1", organizerId: "org-1",
+    identity: {key: "contact-contact-1", revision: 3},
+    ledger: {...ledger(), occupied: 1},
+    reservation: {eventId: "event-1", canonicalKey: "contact-contact-1",
+      identityRevision: 3, active: true, revision: 1,
+      reservedAtMillis: 1000, releasedAtMillis: null as number | null},
+    expectedActive: true};
+}
+
+test("retained seats validate without occupancy changes or fabricated receipts",
+  () => {
+    const snapshot = retainedSnapshot();
+    const before = JSON.stringify(snapshot);
+    assertCurrentReadySeatSnapshot(snapshot);
+    assert.equal(JSON.stringify(snapshot), before);
+    // Cancellation preserves a valid reservation for history/cleanup;
+    // permission to check in or admit remains the caller's business rule.
+    assertCurrentReadySeatSnapshot({...snapshot,
+      event: {...snapshot.event, status: "cancelled"}});
+    assertCurrentReadySeatSnapshot({...snapshot,
+      ledger: {...snapshot.ledger, occupied: 0},
+      reservation: {...snapshot.reservation, active: false,
+        releasedAtMillis: 2000}, expectedActive: false});
+    assertCurrentReadySeatSnapshot({...snapshot,
+      ledger: {...snapshot.ledger, occupied: 0},
+      reservation: null, expectedActive: false});
+  });
+
+test("retained seat checks reject corrupt lineage, stale policy and identity",
+  () => {
+    const base = retainedSnapshot();
+    const changes = [
+      {...base, organizerId: "foreign"},
+      {...base, identity: {...base.identity, revision: 4}},
+      {...base, identity: {...base.identity, revision: 0}},
+      {...base, expectedActive: false},
+      {...base, reservation: null},
+      ...[
+        {eventId: "foreign"}, {occupied: 0}, {occupied: 3},
+        {occupied: -1}, {revision: Number.MAX_SAFE_INTEGER},
+        {revision: NaN}, {capacityRevision: 0}, {migrationRevision: 0},
+        {policyHash: "f".repeat(64)}, {capacity: 3},
+      ].map((patch) => ({...base, ledger: {...base.ledger, ...patch}})),
+      ...[
+        {eventId: "foreign"}, {canonicalKey: "wrong"},
+        {identityRevision: 4}, {revision: 0},
+        {revision: Number.MAX_SAFE_INTEGER}, {reservedAtMillis: -1},
+        {releasedAtMillis: 2000}, {active: false},
+      ].map((patch) => ({...base,
+        reservation: {...base.reservation, ...patch}})),
+      {...base, event: {...event(), eventPolicy: {version: 2,
+        admission: {capacityLimit: 2, manualApprovalRequired: true}}}},
+    ];
+    for (const snapshot of changes) {
+      assert.throws(() => assertCurrentReadySeatSnapshot(snapshot),
+        unavailable(""));
+    }
   });

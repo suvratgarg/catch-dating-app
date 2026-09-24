@@ -101,6 +101,49 @@ function hash(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
 
+/** Validate existing authority without creating a reservation or receipt.
+ * Identity revision equality remains a caller decision for historical replay.
+ */
+export function assertReadySeatState(eventId: string,
+  identity: CanonicalSeatIdentity, ledger: SeatLedger | null,
+  reservation: SeatReservation | null): asserts ledger is SeatLedger {
+  if (!validId(eventId) || !validId(identity.key) ||
+      !nonnegative(identity.revision)) {
+    fail("invalid", "A current canonical identity is required.");
+  }
+  if (!ledger || ledger.eventId !== eventId ||
+      ledger.state !== "ready" || !Number.isSafeInteger(ledger.capacity) ||
+      ledger.capacity < 1 || !nonnegative(ledger.occupied) ||
+      ledger.occupied > ledger.capacity || !nonnegative(ledger.revision) ||
+      ledger.revision === Number.MAX_SAFE_INTEGER ||
+      !nonnegative(ledger.capacityRevision) ||
+      ledger.capacityRevision === 0 ||
+      !["legacy", "v1", "v2"].includes(ledger.policyVersion) ||
+      typeof ledger.policyHash !== "string" ||
+      !/^[a-f0-9]{64}$/u.test(ledger.policyHash) ||
+      !nonnegative(ledger.migrationRevision) ||
+      ledger.migrationRevision === 0) {
+    fail("unavailable", "Seat authority is not reconciled and ready.");
+  }
+  if (reservation && (reservation.eventId !== eventId ||
+      reservation.canonicalKey !== identity.key ||
+      !nonnegative(reservation.revision) ||
+      reservation.revision < 1 ||
+      reservation.revision === Number.MAX_SAFE_INTEGER ||
+      !nonnegative(reservation.identityRevision) ||
+      !nonnegative(reservation.reservedAtMillis) ||
+      !(reservation.releasedAtMillis === null ||
+        nonnegative(reservation.releasedAtMillis)) ||
+      reservation.active && reservation.releasedAtMillis !== null ||
+      !reservation.active && reservation.releasedAtMillis === null ||
+      typeof reservation.active !== "boolean")) {
+    fail("unavailable", "Seat reservation is malformed.");
+  }
+  if (reservation?.active && ledger.occupied === 0) {
+    fail("unavailable", "Active seat conflicts with zero occupancy.");
+  }
+}
+
 /**
  * Read-only preparation. Caller owns actor, event, admission and payment
  * authorization in the same transaction before applying the returned plan.
@@ -131,37 +174,7 @@ export async function prepareSeatCommand<Subject>(params: {
     tx.reservation(command.eventId, identity.key),
     tx.receipt(command.eventId, command.requestId),
   ]);
-  if (!ledger || ledger.eventId !== command.eventId ||
-      ledger.state !== "ready" || !Number.isSafeInteger(ledger.capacity) ||
-      ledger.capacity < 1 || !nonnegative(ledger.occupied) ||
-      ledger.occupied > ledger.capacity || !nonnegative(ledger.revision) ||
-      ledger.revision === Number.MAX_SAFE_INTEGER ||
-      !nonnegative(ledger.capacityRevision) ||
-      ledger.capacityRevision === 0 ||
-      !["legacy", "v1", "v2"].includes(ledger.policyVersion) ||
-      typeof ledger.policyHash !== "string" ||
-      !/^[a-f0-9]{64}$/u.test(ledger.policyHash) ||
-      !nonnegative(ledger.migrationRevision) ||
-      ledger.migrationRevision === 0) {
-    fail("unavailable", "Seat authority is not reconciled and ready.");
-  }
-  if (reservation && (reservation.eventId !== command.eventId ||
-      reservation.canonicalKey !== identity.key ||
-      !nonnegative(reservation.revision) ||
-      reservation.revision < 1 ||
-      reservation.revision === Number.MAX_SAFE_INTEGER ||
-      !nonnegative(reservation.identityRevision) ||
-      !nonnegative(reservation.reservedAtMillis) ||
-      !(reservation.releasedAtMillis === null ||
-        nonnegative(reservation.releasedAtMillis)) ||
-      reservation.active && reservation.releasedAtMillis !== null ||
-      !reservation.active && reservation.releasedAtMillis === null ||
-      typeof reservation.active !== "boolean")) {
-    fail("unavailable", "Seat reservation is malformed.");
-  }
-  if (reservation?.active && ledger.occupied === 0) {
-    fail("unavailable", "Active seat conflicts with zero occupancy.");
-  }
+  assertReadySeatState(command.eventId, identity, ledger, reservation);
   const requestHash = hash([command.eventId, command.operation,
     command.requestId, identity.key, identity.revision,
     command.expectedLedgerRevision, command.expectedCapacityRevision,

@@ -1,6 +1,7 @@
 import {createHash} from "crypto";
 import {
-  applySeatPlan, CanonicalSeatIdentity, prepareSeatCommand,
+  applySeatPlan, assertReadySeatState, CanonicalSeatIdentity,
+  prepareSeatCommand,
   PreparedSeatPlan, SeatAuthorityError, SeatCommand, SeatLedger,
   SeatReceipt, SeatReservation, SeatResult, SeatTransaction,
 } from "./seatAuthority";
@@ -138,6 +139,34 @@ export function deriveEventSeatPolicy(value: unknown): {
     value.organizerId.length > 0 ? value.organizerId : String(value.clubId),
   capacity: value.capacityLimit as number, policyHash, policyVersion,
   status: value.status as "active" | "cancelled"};
+}
+
+/** Validate a retained seat in the caller's current transaction, with no
+ * occupancy writes or artificial reserve/release receipt. Caller owns reads,
+ * manager/guest authority and whether the event must still be active.
+ */
+export function assertCurrentReadySeatSnapshot(params: {
+  event: unknown;
+  eventId: string;
+  organizerId: string;
+  identity: CanonicalSeatIdentity;
+  ledger: SeatLedger | null;
+  reservation: SeatReservation | null;
+  expectedActive?: boolean;
+}): void {
+  const {eventId, organizerId, identity, ledger, reservation} = params;
+  const policy = deriveEventSeatPolicy(params.event);
+  assertReadySeatState(eventId, identity, ledger, reservation);
+  if (policy.organizerId !== organizerId || identity.revision < 1 ||
+      ledger.capacity !== policy.capacity ||
+      ledger.policyHash !== policy.policyHash ||
+      ledger.policyVersion !== policy.policyVersion ||
+      reservation && reservation.identityRevision !== identity.revision ||
+      params.expectedActive !== undefined &&
+        (reservation?.active === true) !== params.expectedActive) {
+    throw new SeatAuthorityError("unavailable",
+      "Current event, identity and reserved seat authority disagree.");
+  }
 }
 
 /**
