@@ -114,7 +114,12 @@ function event(overrides: FakeData = {}): FakeData {
     clubId: "club-1",
     organizerId: "organizer-1",
     status: "active",
+    startTime: timestamp("2026-08-11T12:00:00.000Z"),
     endTime: timestamp("2026-08-11T15:00:00.000Z"),
+    meetingPoint: "Quiz hall",
+    meetingLocation: {name: "Quiz hall", latitude: 19, longitude: 72},
+    capacityLimit: 20,
+    priceInPaise: 0,
     eventFormat: {
       version: 1,
       activityKind: "pubQuiz",
@@ -202,6 +207,16 @@ test(
     ]);
   }
 );
+
+test("private setup cannot expose an attendee conversation graph", async () => {
+  const h = harness({"events/event-1": event({
+    publicationState: "private",
+    setupRevision: 1,
+  })});
+  await assert.rejects(getEventSuccessConversationGraphHandler(
+    request({eventId: "event-1"}), h.deps
+  ), (error) => hasCode(error, "failed-precondition"));
+});
 
 test("configured opt-out preselects only assigned attendees", async () => {
   const h = harness({

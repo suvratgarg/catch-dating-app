@@ -123,6 +123,27 @@ test("signUpForFreeEventHandler rejects paid events", async () => {
   );
 });
 
+test("private or missing-price setup cannot enter free signup", async () => {
+  for (const candidate of [
+    {publicationState: "private", setupRevision: 1},
+    {priceInPaise: undefined},
+    {capacityLimit: undefined},
+  ]) {
+    let signedUp = false;
+    await assert.rejects(signUpForFreeEventHandler(
+      request("runner-1", {eventId: "event-1"}),
+      {
+        ...deps({events: {"event-1": candidate}}),
+        signUpForEvent: async () => {
+          signedUp = true;
+        },
+      }
+    ), isHttpsError("failed-precondition",
+      "This event is not ready for booking."));
+    assert.equal(signedUp, false);
+  }
+});
+
 test(
   "signUpForFreeEventHandler requires host approval for request events",
   async () => {
@@ -260,7 +281,7 @@ function deps({
           get: async () => {
             if (path === "events") onEventRead?.();
             const data = path === "events" ?
-              events[id] :
+              events[id] && {...configuredEventFixture(), ...events[id]} :
               path === "users" ?
                 users[id] :
                 path === "eventPrivateAccess" ?
@@ -290,6 +311,24 @@ function deps({
     ) => {
       signUpCalls.push({eventId, userId, options});
     },
+  };
+}
+
+function configuredEventFixture(): Record<string, unknown> {
+  const time = (millis: number) => ({toMillis: () => millis});
+  return {
+    clubId: "club-1",
+    startTime: time(1_000),
+    endTime: time(2_000),
+    meetingPoint: "Park gate",
+    meetingLocation: {name: "Park", latitude: 19, longitude: 72},
+    eventFormat: {
+      version: 1,
+      activityKind: "running",
+      interactionModel: "pacePods",
+    },
+    capacityLimit: 20,
+    priceInPaise: 0,
   };
 }
 

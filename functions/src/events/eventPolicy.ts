@@ -4,6 +4,7 @@ import type {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventParticipationId} from "../shared/relationshipDocuments";
+import {requireConfiguredEvent} from "./configuredEvent";
 
 export const cohortIds = {
   menInterestedInWomen: "menInterestedInWomen",
@@ -110,11 +111,12 @@ export interface EventRosterSnapshot {
 export function eventPolicyFromEvent(
   event: EventDocument
 ): EventPolicyBundleDocument {
+  const configured = requireConfiguredEvent(event);
   const policy = (event as EventDocument & {
     eventPolicy?: EventPolicyBundleDocument | null;
   }).eventPolicy;
   if (policy) return normalizePolicy(policy);
-  return legacyPolicyFromEvent(event);
+  return legacyPolicyFromEvent(configured);
 }
 
 export function normalizePolicy(policy: EventPolicyBundleDocument):
@@ -172,14 +174,15 @@ export function normalizePolicy(policy: EventPolicyBundleDocument):
 export function legacyPolicyFromEvent(
   event: EventDocument
 ): EventPolicyBundleDocument {
-  const maxMen = event.constraints?.maxMen;
-  const maxWomen = event.constraints?.maxWomen;
+  const configured = requireConfiguredEvent(event);
+  const maxMen = configured.constraints?.maxMen;
+  const maxWomen = configured.constraints?.maxWomen;
   const hasCaps = maxMen != null || maxWomen != null;
   return {
     version: 1,
     admission: {
       format: hasCaps ? "fixedCohortCaps" : "open",
-      capacityLimit: event.capacityLimit,
+      capacityLimit: configured.capacityLimit,
       waitlistPolicy: {
         mode: "rankedOffer",
         offerWindowMinutes: 20,
@@ -206,12 +209,12 @@ export function legacyPolicyFromEvent(
       },
     },
     pricing: {
-      basePriceInPaise: event.priceInPaise,
+      basePriceInPaise: configured.priceInPaise,
       cohortAdjustmentsInPaise: {},
       demandPricingRules: [],
     },
     cancellation: {
-      policyId: event.priceInPaise === 0 ? "notApplicable" : "standard",
+      policyId: configured.priceInPaise === 0 ? "notApplicable" : "standard",
     },
     settlement: {hostPayoutTiming: "afterEventCompletion"},
   };

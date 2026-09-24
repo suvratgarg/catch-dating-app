@@ -28,6 +28,8 @@ import {fetchUidsBlockedWithViewer} from "../shared/candidateVisibility";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {requireConfiguredEvent,
+  type ConfiguredEventDocument} from "../events/configuredEvent";
 import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
@@ -58,7 +60,7 @@ const defaultDeps: ConversationGraphDeps = {
 };
 
 interface ConversationGraphContext {
-  event: EventDocument;
+  event: ConfiguredEventDocument;
   plan: EventSuccessPlanDocument | null;
   candidates: GetEventSuccessConversationGraphCallableResponse["candidates"];
   assignedUids: Set<string>;
@@ -189,7 +191,9 @@ export function conversationGraphConsentMode(
     "optOut" : "optIn";
 }
 
-export function conversationGraphPrompt(event: EventDocument): string {
+export function conversationGraphPrompt(
+  event: ConfiguredEventDocument
+): string {
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const interactionModel = effectiveInteractionModelFor(
     event.eventFormat.interactionModel,
@@ -235,7 +239,8 @@ async function loadConversationGraphContext(params: {
   if (!eventSnap.exists) {
     throw new HttpsError("not-found", "Event not found.");
   }
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+  const event = requireConfiguredEvent(
+    requireDoc<EventDocument>(eventSnap, "EventDocument"));
   if (event.status === "cancelled" || event.endTime.toMillis() > nowMillis) {
     throw new HttpsError(
       "failed-precondition",

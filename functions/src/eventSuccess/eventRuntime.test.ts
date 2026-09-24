@@ -198,6 +198,8 @@ function event(overrides: FakeData = {}): FakeData {
       latitude: 19.1,
       longitude: 72.8,
     },
+    capacityLimit: 20,
+    priceInPaise: 0,
     eventFormat: {
       version: 1,
       activityKind: "singlesMixer",
@@ -461,6 +463,17 @@ test("bootstrap returns bounded event and own state", async () => {
     completedAtMillis: null,
   });
   assert.equal((result.event as FakeData).organizerId, undefined);
+});
+
+test("private setup cannot open the public runtime bootstrap", async () => {
+  const h = harness({"events/event-1": event({
+    publicationState: "private",
+    setupRevision: 1,
+  })});
+  await assert.rejects(getEventRuntimeBootstrapHandler(request(
+    "runner-1", {publicRuntimeId: "runtime_123456789012345678901234"}
+  ), h.deps), (error) => error instanceof HttpsError &&
+    error.code === "failed-precondition");
 });
 
 test("authored movement and fresh positions reach bootstrap", async () => {

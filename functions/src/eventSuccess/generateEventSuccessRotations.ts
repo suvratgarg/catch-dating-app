@@ -24,6 +24,8 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {requireConfiguredEvent,
+  type ConfiguredEventDocument} from "../events/configuredEvent";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,
@@ -570,7 +572,7 @@ async function loadRotationEventContext(
   eventId: string,
   uid?: string
 ): Promise<{
-  event: EventDocument;
+  event: ConfiguredEventDocument;
   plan: EventSuccessPlanDocument;
   rotationIntervalMinutes: number;
   questionnaireMode: QuestionnaireScoringMode;
@@ -592,13 +594,13 @@ async function loadRotationEventContext(
       "Event-success setup has not been saved.");
   }
 
-  const event = requireDoc<EventDocument>(
+  const event = requireConfiguredEvent(requireDoc<EventDocument>(
 
     eventSnap,
 
     "EventDocument"
 
-  );
+  ));
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition",
       "This event has been cancelled.");
