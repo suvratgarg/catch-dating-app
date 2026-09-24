@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
@@ -16,6 +20,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_forms_repository.g.dart';
@@ -355,6 +360,9 @@ class HostFormsRepository {
     String? versionId,
     DateTime? from,
     DateTime? to,
+    Map<String, Object?>? responseQuery,
+    String? expectedQueryHash,
+    String? expectedResultHash,
   }) => _call(
     name: 'requestOrganizerFormExport',
     payload: RequestOrganizerFormExportCallableRequest(
@@ -366,6 +374,9 @@ class HostFormsRepository {
       versionId: versionId,
       fromMillis: from?.millisecondsSinceEpoch,
       toMillis: to?.millisecondsSinceEpoch,
+      responseQuery: responseQuery,
+      expectedQueryHash: expectedQueryHash,
+      expectedResultHash: expectedResultHash,
     ).toJson(),
     action: 'export organizer form responses',
     parse: HostFormExportReceipt.fromCallableData,
@@ -501,6 +512,97 @@ class HostFormsRepository {
     ),
     mapper: mapMissingCallableAsUnavailable,
   );
+}
+
+class _ExportStillPreparing implements Exception {
+  const _ExportStillPreparing(this.receipt);
+  final HostFormExportReceipt receipt;
+}
+
+/// Replays one exact filtered export after a timeout or app restart. A pending
+/// receipt stays in the journal until the server reports a terminal state.
+class JournalHostResponseExportGateway implements HostResponseExportGateway {
+  JournalHostResponseExportGateway({
+    required HostFormsRepository repository,
+    required Future<CommandJournalStorage> Function() storage,
+    required String? Function() currentAccountId,
+  }) : _repository = repository,
+       _journal = LocalCommandJournal<HostResponseExportCommand>(
+         storage: storage,
+         namespace: 'host_response_export',
+         currentAccountId: currentAccountId,
+         codec: LocalCommandCodec(
+           encode: (entry) => entry.toJson(),
+           decode: HostResponseExportCommand.fromJson,
+           scope: (entry) => entry.scope,
+           resources: (entry) => {'form:${entry.formId}'},
+         ),
+       );
+
+  final HostFormsRepository _repository;
+  final LocalCommandJournal<HostResponseExportCommand> _journal;
+
+  @override
+  Future<HostResponseExportCommand?> pending({required String accountId,
+    required String organizerId, required String formId}) async {
+    final entries = await _journal.load(accountId, scope: '$organizerId|$formId');
+    if (entries.length > 1) {
+      throw StateError('Resolve the saved response exports in order.');
+    }
+    return entries.firstOrNull;
+  }
+
+  @override
+  Future<HostFormExportReceipt> execute(
+    HostResponseExportCommand command) async {
+    final saved = await pending(accountId: command.accountId,
+      organizerId: command.organizerId, formId: command.formId);
+    if (saved != null) {
+      if (jsonEncode(saved.toJson()) != jsonEncode(command.toJson())) {
+        throw StateError('Resolve the saved response export first.');
+      }
+    } else {
+      await _journal.append(command.accountId, command);
+    }
+    HostFormExportReceipt? terminal;
+    try {
+      await _journal.flush(command.accountId, command.scope, (entry) async {
+        if (entry.requestId != command.requestId) {
+          throw StateError('Another response export is pending.');
+        }
+        final receipt = await _repository.requestExport(
+          organizerId: entry.organizerId,
+          formId: entry.formId,
+          requestId: entry.requestId,
+          format: entry.format,
+          statuses: entry.statuses.map(HostFormResponseStatus.values.byName)
+              .toSet(),
+          versionId: entry.versionId,
+          responseQuery: entry.responseQuery,
+          expectedQueryHash: entry.expectedQueryHash,
+          expectedResultHash: entry.expectedResultHash,
+        );
+        final digest = sha256.convert(utf8.encode([
+          entry.organizerId, entry.formId, entry.requestId,
+        ].join('\u001f'))).toString().substring(0, 32);
+        if (receipt.exportId != 'formexport_$digest' ||
+            receipt.format != entry.format) {
+          throw const FormatException('Response export receipt is invalid.');
+        }
+        if (receipt.status == HostFormExportStatus.pending ||
+            receipt.status == HostFormExportStatus.running) {
+          throw _ExportStillPreparing(receipt);
+        }
+        terminal = receipt;
+      });
+    } on _ExportStillPreparing catch (waiting) {
+      return waiting.receipt;
+    }
+    if (terminal == null) {
+      throw StateError('Response export is already being checked.');
+    }
+    return terminal!;
+  }
 }
 
 // keepalive: one stateless callable facade is shared by every Forms route.
