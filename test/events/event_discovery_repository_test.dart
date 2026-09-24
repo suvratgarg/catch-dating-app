@@ -262,6 +262,33 @@ void main() {
       expect(second.items.map((event) => event.id), ['event-3']);
       expect(second.hasMore, isFalse);
     });
+
+    test('private event cannot occupy the first public cursor page', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = EventDiscoveryRepository(firestore);
+      final now = DateTime(2026, 5, 26, 10);
+      final private = buildEvent(
+        id: 'private-first',
+        startTime: now.add(const Duration(hours: 1)),
+      );
+      final public = buildEvent(
+        id: 'published-second',
+        startTime: now.add(const Duration(hours: 2)),
+      );
+      await _seedDiscoverableEvent(firestore, private);
+      await _seedDiscoverableEvent(firestore, public);
+      await firestore.collection('events').doc(private.id).update({
+        'publicationState': 'private',
+      });
+
+      final page = await repository.fetchDiscoverableEventsPage(
+        EventDiscoveryQuery.forCity(
+          marketId: 'in-mh-mumbai', startAt: now, limit: 1,
+        ),
+      );
+      expect(page.items.map((event) => event.id), ['published-second']);
+      expect(page.hasMore, isFalse);
+    });
   });
 }
 
@@ -284,6 +311,7 @@ Future<void> _seedDiscoverableEvent(
   final longitude = event.effectiveStartingPointLng;
   return firestore.collection('events').doc(event.id).set({
     ...event.toJson(),
+    'publicationState': 'published',
     'discoveryCityName': cityName,
     'discoveryMarketId': marketId,
     'discoveryActivityKind': event.activityKind.name,

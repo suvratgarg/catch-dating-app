@@ -157,6 +157,7 @@ Stream<List<Event>> watchEventsByIdStream({
           final chunk = chunks[i];
           final sub = eventsRef
               .where(FieldPath.documentId, whereIn: chunk)
+              .where('publicationState', isEqualTo: 'published')
               .limit(ReadLimitPolicy.multiIdChunk)
               .snapshots()
               .listen((eventSnap) {
@@ -225,8 +226,10 @@ Stream<List<Event>> watchEventsForClubIdsStream({
       final eventsByChunk = <int, List<Event>>{};
       for (var index = 0; index < chunks.length; index += 1) {
         final chunk = chunks[index];
+        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING)
         final sub = eventsRef
             .where('organizerId', whereIn: chunk)
+            .where('publicationState', isEqualTo: 'published')
             .limit(ReadLimitPolicy.boundedWorkingSet)
             .snapshots()
             .listen((snapshot) {
