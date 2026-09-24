@@ -54,19 +54,20 @@ class HostFormExportReceipt {
 /// response; a later query is a new command only after this one resolves.
 @immutable
 class HostResponseExportCommand {
-  const HostResponseExportCommand({
+  HostResponseExportCommand({
     required this.accountId,
     required this.organizerId,
     required this.formId,
     required this.versionId,
     required this.requestId,
     required this.format,
-    required this.statuses,
-    required this.responseQuery,
+    required List<String> statuses,
+    required Map<String, Object?> responseQuery,
     required this.expectedQueryHash,
     required this.expectedResultHash,
     required this.createdAtMillis,
-  });
+  }) : statuses = List<String>.unmodifiable(statuses),
+       responseQuery = _freezeExportQuery(responseQuery);
 
   factory HostResponseExportCommand.fromJson(Map<String, Object?> map) {
     final rawQuery = map['responseQuery'];
@@ -82,9 +83,8 @@ class HostResponseExportCommand {
       versionId: map['versionId']! as String,
       requestId: map['clientOperationId']! as String,
       format: HostFormExportFormat.values.byName(map['format']! as String),
-      statuses: List<String>.unmodifiable(rawStatuses.cast<String>()),
-      responseQuery: Map<String, Object?>.unmodifiable(
-        rawQuery.cast<String, Object?>()),
+      statuses: rawStatuses.cast<String>(),
+      responseQuery: rawQuery.cast<String, Object?>(),
       expectedQueryHash: map['expectedQueryHash']! as String,
       expectedResultHash: map['expectedResultHash']! as String,
       createdAtMillis: map['createdAtMillis']! as int,
@@ -125,6 +125,28 @@ class HostResponseExportCommand {
     'expectedQueryHash': expectedQueryHash,
     'expectedResultHash': expectedResultHash,
   };
+}
+
+Map<String, Object?> _freezeExportQuery(Map<String, Object?> value) =>
+    _freezeExportValue(value) as Map<String, Object?>;
+
+Object? _freezeExportValue(Object? value) {
+  if (value is Map) {
+    if (value.keys.any((key) => key is! String)) {
+      throw const FormatException('Response export query keys are invalid.');
+    }
+    return Map<String, Object?>.unmodifiable({
+      for (final key in value.keys.cast<String>())
+        key: _freezeExportValue(value[key]),
+    });
+  }
+  if (value is List) {
+    return List<Object?>.unmodifiable(value.map(_freezeExportValue));
+  }
+  if (value == null || value is String || value is num || value is bool) {
+    return value;
+  }
+  throw const FormatException('Response export query value is invalid.');
 }
 
 /// Data-layer adapter owns durable request identity and callable replay.
