@@ -188,13 +188,12 @@ async function queueRelationshipCleanup(params: {
   writer: BatchQueue;
 }) {
   const {db, uid, now, writer} = params;
-  // Read linked Host attendee evidence before its identity is redacted below.
-  // The migration fence and participation update share one transaction.
+  // The migration fence, participation and linked attendee identity update
+  // share one transaction, including attendee-only imported seats.
   await deleteAccountEventParticipations({db, uid, now,
     nowMillis: Date.now()});
   await Promise.all([
     queueClubMembershipCleanup(db, uid, now, writer),
-    queueEventAttendeeIdentityCleanup(db, uid, now, writer),
     queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
@@ -213,26 +212,6 @@ async function queueRelationshipCleanup(params: {
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
-}
-
-/**
- * Removes the deleted Catch identity from retained organizer roster history.
- */
-async function queueEventAttendeeIdentityCleanup(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  now: FirebaseFirestore.FieldValue,
-  writer: BatchQueue
-) {
-  const attendees = await db
-    .collection("eventAttendees")
-    .where("linkedUid", "==", uid)
-    .get();
-  attendees.forEach((doc) => writer.update(doc.ref, {
-    linkedUid: null,
-    linkedAt: null,
-    updatedAt: now,
-  }));
 }
 
 /** Removes Catch identity linkage from retained organizer CRM projections. */
