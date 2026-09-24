@@ -8,6 +8,102 @@ part of 'host_forms_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// The actor is part of this generated family's identity. It forces a fresh
+/// manager read before a newly signed-in account can see directory rows.
+
+@ProviderFor(hostFormsAccountDirectory)
+final hostFormsAccountDirectoryProvider = HostFormsAccountDirectoryFamily._();
+
+/// The actor is part of this generated family's identity. It forces a fresh
+/// manager read before a newly signed-in account can see directory rows.
+
+final class HostFormsAccountDirectoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostFormsDirectoryState>,
+          HostFormsDirectoryState,
+          FutureOr<HostFormsDirectoryState>
+        >
+    with
+        $FutureModifier<HostFormsDirectoryState>,
+        $FutureProvider<HostFormsDirectoryState> {
+  /// The actor is part of this generated family's identity. It forces a fresh
+  /// manager read before a newly signed-in account can see directory rows.
+  HostFormsAccountDirectoryProvider._({
+    required HostFormsAccountDirectoryFamily super.from,
+    required HostFormAccountDirectoryScope super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostFormsAccountDirectoryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostFormsAccountDirectoryHash();
+
+  @override
+  String toString() {
+    return r'hostFormsAccountDirectoryProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<HostFormsDirectoryState> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<HostFormsDirectoryState> create(Ref ref) {
+    final argument = this.argument as HostFormAccountDirectoryScope;
+    return hostFormsAccountDirectory(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostFormsAccountDirectoryProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostFormsAccountDirectoryHash() =>
+    r'c47368cf0f33bbfcff6ee4d11074d2302a34b0c8';
+
+/// The actor is part of this generated family's identity. It forces a fresh
+/// manager read before a newly signed-in account can see directory rows.
+
+final class HostFormsAccountDirectoryFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostFormsDirectoryState>,
+          HostFormAccountDirectoryScope
+        > {
+  HostFormsAccountDirectoryFamily._()
+    : super(
+        retry: null,
+        name: r'hostFormsAccountDirectoryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The actor is part of this generated family's identity. It forces a fresh
+  /// manager read before a newly signed-in account can see directory rows.
+
+  HostFormsAccountDirectoryProvider call(HostFormAccountDirectoryScope scope) =>
+      HostFormsAccountDirectoryProvider._(argument: scope, from: this);
+
+  @override
+  String toString() => r'hostFormsAccountDirectoryProvider';
+}
 
 @ProviderFor(HostFormsDirectoryController)
 final hostFormsDirectoryControllerProvider =
@@ -158,7 +254,7 @@ final class HostFormEditorControllerProvider
 }
 
 String _$hostFormEditorControllerHash() =>
-    r'dbd53c0870a07f767348c97bc1201dae257dc598';
+    r'503c67c537015ebf6a28c0e58c378f7b473f767a';
 
 final class HostFormEditorControllerFamily extends $Family
     with
