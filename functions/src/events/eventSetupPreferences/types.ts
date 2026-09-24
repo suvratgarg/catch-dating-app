@@ -11,7 +11,13 @@ export type AdmissionPreset =
   "openCapacity" | "inviteOnly" | "balancedSingles" |
   "fixedCohortCaps";
 
-/** Existing hostDefaults owner; timezone/revision remain at its root. */
+/**
+ * Manager-authorized resolution projection, not an organizer document schema.
+ * Public hostDefaults may supply safe fields, but payment instructions, reusable
+ * links and message templates require manager-only storage and reads. The
+ * adapter must combine authorized inputs under a revision fence; never persist
+ * this whole projection into the publicly readable organizer document.
+ */
 export interface OrganizerEventDefaults {
   revision: number;
   timezone?: string;

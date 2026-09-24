@@ -1,6 +1,6 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.6.0
+version: 4.6.1
 updated: 2026-09-24
 owner: host_tooling
 status: active
@@ -47,6 +47,14 @@ explicit override and clear differ from inheritance. Importing guests, accepting
 Catch registrations, configuring collection and publishing are subsequent
 capabilities of that event, not new event types. Operational existence never
 implies publication, registration, payment or confirmed admission.
+
+Organizer documents are publicly readable. Payment instructions, reusable
+payment links and offer message templates therefore belong in manager-only
+setup preferences, not the public organizer `hostDefaults` object. The defaults
+resolver consumes an authorized projection of those preferences and safe public
+defaults under a revision fence. Its input shape is not a persistence schema.
+Manager preference storage, read authority and versioned saving must be connected
+before these controls are enabled.
 
 The initial backend privacy guards recognize `publicationState: published` as
 public and reject private, unknown or null states. Existing records without
