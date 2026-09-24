@@ -49,6 +49,26 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
           first: true,
           title: l10n.hostsEventDefaultsBasics,
           children: [
+            CatchField.input(
+              copy: copy,
+              key: ValueKey('manager-event-timezone-${preferences.timezone}'),
+              title: l10n.hostsPrivateEventTimezone,
+              contractExemption: 'Manager-only private event timezone suggestion.',
+              initialValue: preferences.timezone ?? '',
+              inputHint: l10n.hostsPrivateEventTimezoneHint,
+              helperText: l10n.hostsEventDefaultsTimezoneHint,
+              inputMode: inputMode,
+              maxLength: 100,
+              onSubmitted: editable
+                  ? (value) {
+                      final trimmed = value.trim();
+                      if (trimmed.length > 100) return;
+                      update(preferences.copyWith(
+                        timezone: trimmed.isEmpty ? null : trimmed,
+                      ));
+                    }
+                  : null,
+            ),
             CatchField<int>.control(
               copy: copy,
               title: l10n.hostsEventDefaultsUsualDuration,
@@ -296,8 +316,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                           preferences.reusablePaymentPage?.reusableForEvents == true) {
                         return;
                       }
-                      // Changing the URL first retires any previous attestation.
-                      update(preferences.copyWith(reusablePaymentPage: null));
+                      // Do not send a clear while confirmation is pending:
+                      // the replacement needs one revision-fenced command.
                       final confirmed = await showCatchAdaptiveDialog<bool>(
                         context: context,
                         title: l10n.hostsEventDefaultsReusableConfirmTitle,

@@ -50,7 +50,7 @@ void main() {
   test('late clear cannot erase a later request for the same event', () async {
     const journal = PrivateEventUpdateJournal();
     await journal.save(userId: 'host-1', request: request);
-    final next = PrivateEventBasicsUpdateRequest(
+    const next = PrivateEventBasicsUpdateRequest(
       organizerId: 'club-1',
       eventId: 'event-1',
       requestId: 'update-2',

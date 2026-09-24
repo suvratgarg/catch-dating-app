@@ -639,16 +639,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialPrefill,
                     _ => null,
                   },
-                  initialDraft: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialDraft,
-                    _ => null,
-                  },
-                  initialSavedEventId: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialSavedEventId,
-                    _ => null,
-                  },
+                  initialDraft: extra is HostCreateEventRouteArguments
+                      ? extra.initialDraft : null,
+
+                  initialSavedEventId: extra is HostCreateEventRouteArguments
+                      ? extra.initialSavedEventId : null,
                   externalBookingMode: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.externalBookingMode,

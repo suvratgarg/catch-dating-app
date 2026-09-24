@@ -313,7 +313,7 @@ void main() {
     );
 
     await tester.pumpWidget(app());
-    await pumpFeatureUi(tester);
+    await pumpUntilFound(tester, find.byType(PrivateEventSetupScreen));
     expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
     await tester.tap(find.text('Edit event basics'));
     await pumpFeatureUi(tester);
@@ -334,7 +334,7 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(app());
-    await pumpFeatureUi(tester);
+    await pumpUntilFound(tester, find.byKey(const ValueKey('private-event-save')));
     expect(find.text('Retry the same save'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('private-event-save')));
     await pumpFeatureUi(tester);

@@ -4,7 +4,7 @@ part of '../host_operations_screen.dart';
 // Show these controls only with the versioned defaults save command.
 bool _progressiveEventDefaultsAvailable() => false;
 
-class HostClubEventDefaultsScreen extends StatelessWidget {
+class HostClubEventDefaultsScreen extends ConsumerStatefulWidget {
   const HostClubEventDefaultsScreen({
     super.key,
     required this.clubId,
@@ -20,11 +20,130 @@ class HostClubEventDefaultsScreen extends StatelessWidget {
       onManagerEventSetupPreferencesChanged;
 
   @override
+  ConsumerState<HostClubEventDefaultsScreen> createState() =>
+      _HostClubEventDefaultsScreenState();
+}
+
+class _HostClubEventDefaultsScreenState
+    extends ConsumerState<HostClubEventDefaultsScreen> {
+  HostManagerEventSetupDefaultsController? _managerController;
+  String? _managerUid;
+
+  void _bindManager(String uid) {
+    if (_managerUid == uid && _managerController != null) return;
+    _managerController?.removeListener(_onManagerChanged);
+    _managerController?.dispose();
+    _managerUid = uid;
+    final repository = ManagerEventSetupDefaultsRepository(
+      ref.read(firebaseFunctionsProvider),
+    );
+    final controller = HostManagerEventSetupDefaultsController(
+      organizerId: widget.clubId,
+      userId: uid,
+      read: repository.get,
+      write: repository.update,
+    );
+    _managerController = controller;
+    controller.addListener(_onManagerChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && identical(_managerController, controller)) {
+        unawaited(controller.load());
+      }
+    });
+  }
+
+  void _onManagerChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _managerController?.removeListener(_onManagerChanged);
+    _managerController?.dispose();
+    super.dispose();
+  }
+
+  Widget _managerSection(BuildContext context) {
+    final injected = widget.managerEventSetupPreferences;
+    if (injected != null) {
+      return HostManagerEventSetupPreferencesSection(
+        preferences: injected,
+        onChanged: widget.onManagerEventSetupPreferencesChanged,
+      );
+    }
+    final controller = _managerController;
+    final projection = controller?.current;
+    if (projection == null) {
+      return CatchSection.fieldRows(
+        title: context.l10n.hostsEventDefaultsPaymentHeading,
+        children: [
+          CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostsEventDefaultsManagerUnavailable,
+            body: context.l10n.hostsEventDefaultsManagerUnavailableBody,
+            icon: CatchIcons.lockOutline,
+          ),
+          if (controller?.pending != null)
+            CatchField.action(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostsEventDefaultsRetryUpdate,
+              body: context.l10n.hostsEventDefaultsPendingUpdateBody,
+              onTap: controller!.saving
+                  ? null
+                  : () => unawaited(controller.retryPending()),
+            ),
+        ],
+      );
+    }
+    return CatchSectionList(
+      emptyStateOmitted: true,
+      children: [
+        HostManagerEventSetupPreferencesSection(
+          preferences: projection.preferences,
+          onChanged: controller!.canEdit
+              ? (next) => unawaited(controller.save(next))
+              : null,
+        ),
+        if (controller.pending != null)
+          CatchSection.fieldRows(
+            title: context.l10n.hostsEventDefaultsManagerUnavailable,
+            children: [
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventDefaultsPendingUpdate,
+                body: context.l10n.hostsEventDefaultsPendingUpdateBody,
+                icon: CatchIcons.lockOutline,
+              ),
+              CatchField.action(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventDefaultsRetryUpdate,
+                onTap: controller.saving
+                    ? null
+                    : () => unawaited(controller.retryPending()),
+              ),
+            ],
+          ),
+        if (controller.error != null)
+          CatchFieldSupportRow(
+            text: context.l10n.hostsEventDefaultsManagerUnavailableBody,
+            color: CatchTokens.of(context).danger,
+            showErrorIcon: true,
+          ),
+      ],
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return HostClubSpokeResolver._(
-      clubId: clubId,
+      clubId: widget.clubId,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
-      builder: (context, club, _, isOwner) => isOwner
+      builder: (context, club, uid, isOwner) {
+        if (_progressiveEventDefaultsAvailable() && isOwner &&
+            widget.managerEventSetupPreferences == null) {
+          _bindManager(uid);
+        }
+        return isOwner
           ? HostClubDefaultsEditor._(
               club: club,
               builder: (context, defaults, apply, errorMessage, _) =>
@@ -42,25 +161,20 @@ class HostClubEventDefaultsScreen extends StatelessWidget {
                             body: club.location,
                             icon: CatchIcons.locationOnOutlined,
                           ),
-                          CatchField.input(
+                          CatchFieldSupportRow(
+                            text: context.l10n.hostsEventDefaultsCitySource,
+                            color: CatchTokens.of(context).ink2,
+                          ),
+                          CatchField.read(
                             copy: catchFieldCopy(context.l10n),
-                            key: ValueKey(
-                              'host-event-default-timezone-${club.id}-${defaults.timezone}',
-                            ),
                             title: context.l10n.hostsPrivateEventTimezone,
-                            contractExemption:
-                                'Organizer event timezone default awaits generated schema constraints.',
-                            initialValue: defaults.timezone ?? '',
-                            inputHint: context.l10n.hostsPrivateEventTimezoneHint,
-                            onSubmitted: (value) => apply(
-                              (current) => current.copyWith(
-                                timezone: value.trim().isEmpty
-                                    ? null
-                                    : value.trim(),
-                              ),
-                            ),
-                            helperText: context.l10n.hostsEventDefaultsTimezoneHint,
+                            body: _managerController?.current?.timezone ??
+                                context.l10n.hostsEventDefaultsChooseEachEvent,
                             icon: CatchIcons.languageOutlined,
+                          ),
+                          CatchFieldSupportRow(
+                            text: context.l10n.hostsEventDefaultsTimezoneSource,
+                            color: CatchTokens.of(context).ink2,
                           ),
                         ],
                       ),
@@ -79,23 +193,7 @@ class HostClubEventDefaultsScreen extends StatelessWidget {
                         ),
                       ),
                       if (_progressiveEventDefaultsAvailable())
-                        if (managerEventSetupPreferences != null)
-                          HostManagerEventSetupPreferencesSection(
-                            preferences: managerEventSetupPreferences!,
-                            onChanged: onManagerEventSetupPreferencesChanged,
-                          )
-                        else
-                          CatchSection.fieldRows(
-                            title: context.l10n.hostsEventDefaultsPaymentHeading,
-                            children: [
-                              CatchField.read(
-                                copy: catchFieldCopy(context.l10n),
-                                title: context.l10n.hostsEventDefaultsManagerUnavailable,
-                                body: context.l10n.hostsEventDefaultsManagerUnavailableBody,
-                                icon: CatchIcons.lockOutline,
-                              ),
-                            ],
-                          ),
+                        _managerSection(context),
                       if (errorMessage != null)
                         CatchFieldSupportRow(
                           text: errorMessage,
@@ -106,6 +204,7 @@ class HostClubEventDefaultsScreen extends StatelessWidget {
                   ),
             )
           : HostClubReadOnlyEventDefaults._(club: club),
+      },
     );
   }
 }

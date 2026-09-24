@@ -11,6 +11,7 @@ import '../test_pump_helpers.dart';
 void main() {
   test('manager preferences can set and clear without public serialization', () {
     const original = ManagerEventSetupPreferences(
+      timezone: 'Asia/Kolkata',
       usualDurationMinutes: 90,
       offerValidityMinutes: 1440,
       collectionPreference: EventCollectionPreference.reusablePage,
@@ -28,6 +29,7 @@ void main() {
       reusablePaymentPage: null,
     );
     expect(cleared.usualDurationMinutes, 90);
+    expect(cleared.timezone, 'Asia/Kolkata');
     expect(cleared.collectionPreference, isNull);
     expect(cleared.paymentInstructions, isNull);
     expect(cleared.reusablePaymentPage, isNull);

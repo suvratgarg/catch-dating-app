@@ -58,6 +58,7 @@ const _unchangedPreference = Object();
 
 class ManagerEventSetupPreferences {
   const ManagerEventSetupPreferences({
+    this.timezone,
     this.usualDurationMinutes,
     this.preferredVenueId,
     this.offerValidityMinutes,
@@ -68,6 +69,7 @@ class ManagerEventSetupPreferences {
     this.reusablePaymentPage,
   });
 
+  final String? timezone;
   final int? usualDurationMinutes;
   final String? preferredVenueId;
   final int? offerValidityMinutes;
@@ -77,7 +79,98 @@ class ManagerEventSetupPreferences {
   final String? paymentInstructions;
   final ReusableOrganizerPaymentPage? reusablePaymentPage;
 
+  /// The private server projection is sparse: missing means no suggestion.
+  /// A present null is invalid and must never be treated as a clear command.
+  factory ManagerEventSetupPreferences.fromSparseJson(
+    Map<String, Object?> json,
+  ) {
+    const keys = {
+      'timezone', 'usualDurationMinutes', 'preferredVenueId', 'offerValidityMinutes',
+      'collectionPreference', 'currency', 'offerMessageTemplate',
+      'paymentInstructions', 'reusablePaymentPage',
+    };
+    if (json.keys.any((key) => !keys.contains(key)) ||
+        json.values.any((value) => value == null)) {
+      throw const FormatException('Invalid private setup preferences');
+    }
+    final collection = json['collectionPreference'];
+    final page = json['reusablePaymentPage'];
+    if (collection != null &&
+        (collection is! String ||
+            !EventCollectionPreference.values.any((v) => v.name == collection))) {
+      throw const FormatException('Invalid collection preference');
+    }
+    if (page != null && page is! Map) {
+      throw const FormatException('Invalid reusable payment page');
+    }
+    final pageData = page == null ? null : Map<String, Object?>.from(page);
+    if (pageData != null &&
+        (pageData.length != 2 ||
+            pageData['url'] is! String ||
+            pageData['reusableForEvents'] != true)) {
+      throw const FormatException('Invalid reusable payment page');
+    }
+    final preferences = ManagerEventSetupPreferences(
+      timezone: json['timezone'] as String?,
+      usualDurationMinutes: json['usualDurationMinutes'] as int?,
+      preferredVenueId: json['preferredVenueId'] as String?,
+      offerValidityMinutes: json['offerValidityMinutes'] as int?,
+      collectionPreference: collection == null ? null :
+          EventCollectionPreference.values.byName(collection as String),
+      currency: json['currency'] as String?,
+      offerMessageTemplate: json['offerMessageTemplate'] as String?,
+      paymentInstructions: json['paymentInstructions'] as String?,
+      reusablePaymentPage: pageData == null ? null :
+          ReusableOrganizerPaymentPage(
+            pageData['url'] as String, reusableForEvents: true),
+    );
+    if (!preferences.isValid) {
+      throw const FormatException('Invalid private setup preferences');
+    }
+    return preferences;
+  }
+
+  bool get isValid =>
+      (timezone == null || (timezone!.isNotEmpty && timezone!.length <= 100)) &&
+      (usualDurationMinutes == null ||
+          (usualDurationMinutes! >= 15 && usualDurationMinutes! <= 240)) &&
+      (preferredVenueId == null || _validId(preferredVenueId!)) &&
+      (offerValidityMinutes == null ||
+          (offerValidityMinutes! >= 5 && offerValidityMinutes! <= 10080)) &&
+      (currency == null || RegExp(r'^[A-Z]{3}$').hasMatch(currency!)) &&
+      (offerMessageTemplate == null ||
+          (offerMessageTemplate!.isNotEmpty &&
+              offerMessageTemplate!.length <= 1000)) &&
+      (paymentInstructions == null ||
+          (paymentInstructions!.isNotEmpty &&
+              paymentInstructions!.length <= 1000)) &&
+      (reusablePaymentPage == null ||
+          (reusablePaymentPage!.reusableForEvents &&
+              isCanonicalPublicPaymentPageUrl(reusablePaymentPage!.url)));
+
+  Map<String, Object?> toSparseJson() => {
+    if (timezone != null) 'timezone': timezone,
+    if (usualDurationMinutes != null)
+      'usualDurationMinutes': usualDurationMinutes,
+    if (preferredVenueId != null) 'preferredVenueId': preferredVenueId,
+    if (offerValidityMinutes != null)
+      'offerValidityMinutes': offerValidityMinutes,
+    if (collectionPreference != null)
+      'collectionPreference': collectionPreference!.name,
+    if (currency != null) 'currency': currency,
+    if (offerMessageTemplate != null)
+      'offerMessageTemplate': offerMessageTemplate,
+    if (paymentInstructions != null)
+      'paymentInstructions': paymentInstructions,
+    if (reusablePaymentPage != null)
+      'reusablePaymentPage': {
+        'url': reusablePaymentPage!.url,
+        'reusableForEvents': true,
+      },
+  };
+
   ManagerEventSetupPreferences copyWith({
+    Object? timezone = _unchangedPreference,
     Object? usualDurationMinutes = _unchangedPreference,
     Object? preferredVenueId = _unchangedPreference,
     Object? offerValidityMinutes = _unchangedPreference,
@@ -87,6 +180,9 @@ class ManagerEventSetupPreferences {
     Object? paymentInstructions = _unchangedPreference,
     Object? reusablePaymentPage = _unchangedPreference,
   }) => ManagerEventSetupPreferences(
+    timezone: identical(timezone, _unchangedPreference)
+        ? this.timezone
+        : timezone as String?,
     usualDurationMinutes: identical(usualDurationMinutes, _unchangedPreference)
         ? this.usualDurationMinutes
         : usualDurationMinutes as int?,
@@ -113,3 +209,6 @@ class ManagerEventSetupPreferences {
         : reusablePaymentPage as ReusableOrganizerPaymentPage?,
   );
 }
+
+bool _validId(String value) =>
+    RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$').hasMatch(value);
