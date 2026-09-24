@@ -153,7 +153,7 @@ final class HostFormsDirectoryControllerProvider
 }
 
 String _$hostFormsDirectoryControllerHash() =>
-    r'41428a72b0ccc5c72c1d36d19a98c6b60d05efa4';
+    r'59b0fe697b1fd334c4e9c0fbe489b4aa81e09bd4';
 
 final class HostFormsDirectoryControllerFamily extends $Family
     with
