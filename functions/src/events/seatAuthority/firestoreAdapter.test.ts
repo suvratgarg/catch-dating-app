@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {applyFirestoreSeat, prepareFirestoreSeat,
+import {createHash} from "node:crypto";
+import {applyFirestoreSeat, applyFirestoreSeatBatch,
+  prepareFirestoreSeat, prepareFirestoreSeatBatch,
   SeatIdentityAuthority} from "./firestoreAdapter";
 import {SeatAuthorityError, SeatCommand, SeatLedger} from "./seatAuthority";
+import {SeatBatchCommand} from "./seatBatch";
 
 type Subject = {contactId: string; uid: string};
 const event = () => ({organizerId: "org-1", status: "active",
@@ -30,19 +33,23 @@ class FakeStore {
   ]);
   reads: string[] = [];
   writes: Array<{kind: string; path: string}> = [];
+  timeline: string[] = [];
   db = {collection: (name: string) => ({doc: (id: string) =>
     ({path: `${name}/${id}`})})} as unknown as FirebaseFirestore.Firestore;
   tx = {
     get: async (ref: {path: string}) => {
       this.reads.push(ref.path);
+      this.timeline.push(`read:${ref.path}`);
       const data = this.docs.get(ref.path);
       return {exists: data !== undefined, data: () => data};
     },
     set: (ref: {path: string}) => {
       this.writes.push({kind: "set", path: ref.path});
+      this.timeline.push(`write:${ref.path}`);
     },
     create: (ref: {path: string}) => {
       this.writes.push({kind: "create", path: ref.path});
+      this.timeline.push(`write:${ref.path}`);
     },
   } as unknown as FirebaseFirestore.Transaction;
 }
@@ -148,5 +155,75 @@ test("bookedCount-only event update keeps reconciled policy authority",
     const prepared = await prepareFirestoreSeat({db: store.db,
       tx: store.tx, command: command(), identityAuthority: authority});
     assert.equal(prepared.eventPolicyHash, ledger().policyHash);
-    assert.deepEqual(store.writes, []);
+    assert.equal(store.writes.length, 0);
+  });
+
+const batchCommand = (): SeatBatchCommand<Subject> => ({
+  eventId: "event-1", batchId: "transfer-1",
+  expectedLedgerRevision: 1, expectedCapacityRevision: 100,
+  expectedMigrationRevision: 1, nowMillis: 2000,
+  operations: [
+    {subject: {contactId: "contact-1", uid: "uid-1"},
+      operation: "release", requestId: "cancel-1",
+      expectedReservationRevision: 1},
+    {subject: {contactId: "contact-2", uid: "uid-2"},
+      operation: "reserve", requestId: "promote-1",
+      expectedReservationRevision: 0},
+  ],
+});
+const seatPath = (key: string) => "eventSeatReservations/" +
+  createHash("sha256").update(`event-1\u001f${key}`).digest("hex");
+function batchStore(): FakeStore {
+  const store = new FakeStore();
+  store.docs.set("eventSeatLedgers/event-1", {...ledger(), occupied: 1});
+  store.docs.set(seatPath("contact-contact-1"), {
+    eventId: "event-1", canonicalKey: "contact-contact-1",
+    identityRevision: 3, active: true, revision: 1,
+    reservedAtMillis: 1000, releasedAtMillis: null,
+  });
+  store.docs.set("organizerContacts/contact-2", {organizerId: "org-1",
+    identityState: "verified", linkedUid: "uid-2", revision: 1,
+    deletedAt: null, mergedIntoContactId: null});
+  return store;
+}
+
+test("batch adapter reads one ledger and both identities before writes",
+  async () => {
+    const store = batchStore();
+    const prepared = await prepareFirestoreSeatBatch({db: store.db,
+      tx: store.tx, command: batchCommand(), identityAuthority: authority});
+    assert.equal(store.writes.length, 0);
+    assert.equal(store.reads.filter((path) =>
+      path === "eventSeatLedgers/event-1").length, 1);
+    assert.ok(store.reads.includes("organizerContacts/contact-1"));
+    assert.ok(store.reads.includes("organizerContacts/contact-2"));
+    const result = applyFirestoreSeatBatch(prepared);
+    assert.equal(result.occupied, 1);
+    assert.equal(result.replayed, false);
+    assert.deepEqual(store.writes.map((write) => write.kind),
+      ["set", "set", "set", "create", "create"]);
+    const firstWrite = store.timeline.findIndex((entry) =>
+      entry.startsWith("write:"));
+    assert.equal(store.timeline.slice(firstWrite).some((entry) =>
+      entry.startsWith("read:")), false);
+  });
+
+test("batch adapter rejects changed policy or unresolved identity",
+  async () => {
+    const changed = batchStore();
+    changed.docs.set("eventSeatLedgers/event-1", {...ledger(),
+      occupied: 1, policyHash: "f".repeat(64)});
+    await assert.rejects(prepareFirestoreSeatBatch({db: changed.db,
+      tx: changed.tx, command: batchCommand(), identityAuthority: authority}),
+    unavailable("policy reconciliation"));
+    assert.deepEqual(changed.writes, []);
+    const ambiguous = batchStore();
+    ambiguous.docs.set("organizerContacts/contact-2", {
+      organizerId: "org-1", identityState: "ambiguous",
+      linkedUid: "uid-2", revision: 1, deletedAt: null,
+      mergedIntoContactId: null});
+    await assert.rejects(prepareFirestoreSeatBatch({db: ambiguous.db,
+      tx: ambiguous.tx, command: batchCommand(), identityAuthority: authority}),
+    unavailable("unresolved"));
+    assert.deepEqual(ambiguous.writes, []);
   });
