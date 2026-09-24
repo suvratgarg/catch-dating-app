@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
@@ -72,6 +73,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final responseAccountId = ref.watch(uidProvider).asData?.value;
     final editor = ref.watch(
       hostFormEditorControllerProvider(widget.organizerId, widget.formId),
     );
@@ -263,7 +265,11 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   }),
                 ),
                 HostFormWorkspaceView.responses => HostFormResponsesPanel(
+                  key: ValueKey('form-responses-${widget.organizerId}-'
+                      '${widget.formId}-$responseAccountId'),
                   organizerId: widget.organizerId,
+                  accountId: responseAccountId,
+                  requireAccount: true,
                   formId: widget.formId,
                   formTitle: value.editor.definition.title,
                   showFormContext: false,

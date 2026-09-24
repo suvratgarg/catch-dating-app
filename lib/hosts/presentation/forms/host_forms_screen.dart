@@ -77,6 +77,29 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   String? _responseContactId;
   bool _importing = false;
   int _importRevision = 0;
+  bool _accountBound = false;
+  String? _boundAccountId;
+
+  void _bindAccount(String? accountId) {
+    if (!_accountBound) {
+      _accountBound = true;
+      _boundAccountId = accountId;
+      return;
+    }
+    if (_boundAccountId == accountId) return;
+    _boundAccountId = accountId;
+    _searchDebounce?.cancel();
+    _query = null;
+    _responseQuery = null;
+    _responseFormId = null;
+    _responseContactId = null;
+    _statuses = const {};
+    _purposes = const {};
+    _importRevision++;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _boundAccountId == accountId) _syncRoute();
+    });
+  }
 
   void _completeResponseImport() {
     setState(() {
@@ -160,6 +183,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
+    _bindAccount(uid);
     if (uid == null) {
       return HostAudienceStateScaffold(
         selected: _view,
@@ -309,8 +333,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
               children: [
                 HostFormResponsesPanel(
-                  key: ValueKey('responses-import-$_importRevision'),
+                  key: ValueKey('responses-$uid-import-$_importRevision'),
                   organizerId: selectedClub.id,
+                  accountId: uid,
+                  requireAccount: true,
                   queryCapability: responseVersionId == null ? null :
                       hostResponseQueryCapability(context.l10n,
                         versionId: responseVersionId),

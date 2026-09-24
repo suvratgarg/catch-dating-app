@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -183,6 +184,8 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
     this.onFormChanged,
     this.showFormContext = true,
     this.queryCapability,
+    this.accountId,
+    this.requireAccount = false,
   });
 
   final String organizerId;
@@ -195,6 +198,10 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
   final ValueChanged<String?>? onFormChanged;
   final bool showFormContext;
   final HostResponseQueryCapability? queryCapability;
+  /// Production routes bind this panel to the current manager. A new actor
+  /// must fetch legacy responses again before any cached rows can render.
+  final String? accountId;
+  final bool requireAccount;
 
   @override
   ConsumerState<HostFormResponsesPanel> createState() =>
@@ -206,6 +213,9 @@ class _HostFormResponsesPanelState
   HostResponseQueryController? _queryController;
   HostEventOfferController? _offerController;
   JournalHostResponseExportGateway? _exportGateway;
+  String? _queryAccountId;
+  String? _legacyLoadedAccountId;
+  bool _legacyAccountRefreshScheduled = false;
   String? _offerAccountId;
   HostOfferEventTarget? _returnedEventTarget;
   String? _returnedSelectionHash;
@@ -219,15 +229,24 @@ class _HostFormResponsesPanelState
   final Map<String, Set<String>> _answerFilters = {};
   List<HostFormResponseFilterOption> _filterOptions = const [];
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.queryCapability case final capability?) {
-      _queryController = HostResponseQueryController(
-        capability.gateway ??
-            HostResponseQueryRepository(ref.read(firebaseFunctionsProvider)),
-      );
-    }
+  void _bindQueryAccount(String? accountId) {
+    _queryController?.dispose();
+    _offerController?.dispose();
+    _queryAccountId = accountId;
+    _queryController = accountId == null || widget.queryCapability == null
+        ? null
+        : HostResponseQueryController(
+            widget.queryCapability!.gateway ?? HostResponseQueryRepository(
+              ref.read(firebaseFunctionsProvider),
+            ),
+          );
+    _offerController = null;
+    _exportGateway = null;
+    _offerAccountId = null;
+    _returnedEventTarget = null;
+    _returnedSelectionHash = null;
+    _returnedSelectionIds = null;
+    _inlineReturnError = null;
   }
 
   @override
@@ -247,32 +266,18 @@ class _HostFormResponsesPanelState
             (widget.queryCapability == null) ||
         oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId) {
-      _queryController?.dispose();
-      final capability = widget.queryCapability;
-      _queryController = capability == null
-          ? null
-          : HostResponseQueryController(
-              capability.gateway ??
-                  HostResponseQueryRepository(
-                    ref.read(firebaseFunctionsProvider),
-                  ),
-            );
-      _offerController?.dispose();
-      _offerController = null;
-      _exportGateway = null;
-      _offerAccountId = null;
-      _returnedEventTarget = null;
-      _returnedSelectionHash = null;
-      _returnedSelectionIds = null;
-      _inlineReturnError = null;
+      _bindQueryAccount(_queryAccountId);
     }
     if (oldWidget.formId != widget.formId ||
-        oldWidget.organizerId != widget.organizerId) {
+        oldWidget.organizerId != widget.organizerId ||
+        oldWidget.accountId != widget.accountId) {
       _answerFilters.clear();
       _filterOptions = const [];
       _versionId = null;
       _versionResolved = false;
       _versionScope = null;
+      _legacyLoadedAccountId = null;
+      _legacyAccountRefreshScheduled = false;
     }
   }
 
@@ -281,7 +286,11 @@ class _HostFormResponsesPanelState
     String accountId,
   ) async {
     final intent = queryController.selectionIntent;
-    if (intent == null || !privateEventSetupAvailable()) return;
+    if (intent == null ||
+        !privateEventSetupAvailable() ||
+        !_currentQueryAccount(queryController, accountId)) {
+      return;
+    }
     final organizerId = widget.organizerId;
     final formId = widget.formId;
     setState(() {
@@ -297,36 +306,38 @@ class _HostFormResponsesPanelState
         returnToResponsesOnSave: true,
       ),
     );
-    if (!mounted || eventId == null) return;
+    if (eventId == null || !_currentQueryAccount(queryController, accountId)) {
+      return;
+    }
     if (widget.organizerId != organizerId || widget.formId != formId ||
-        _queryController != queryController ||
-        ref.read(firebaseAuthProvider).currentUser?.uid != accountId ||
         !_sameSelection(queryController.selectionIntent, intent) ||
         !await queryController.revalidateSelection(
           ids: intent.ids, resultHash: intent.resultHash)) {
-      if (mounted) setState(() => _inlineReturnError =
-          context.l10n.hostEventOfferSelectionChanged);
+      if (_currentQueryAccount(queryController, accountId)) {
+        setState(() => _inlineReturnError =
+            context.l10n.hostEventOfferSelectionChanged);
+      }
       return;
     }
     try {
       final summary = await PrivateEventSetupRepository(
         ref.read(firebaseFunctionsProvider),
       ).get(organizerId: organizerId, eventId: eventId);
-      if (!mounted || widget.organizerId != organizerId ||
-          widget.formId != formId || _queryController != queryController ||
-          ref.read(firebaseAuthProvider).currentUser?.uid != accountId) return;
+      if (!_currentQueryAccount(queryController, accountId) ||
+          widget.organizerId != organizerId || widget.formId != formId) return;
       if (summary.organizerId != organizerId || summary.eventId != eventId ||
           summary.status != 'active' ||
           !_sameSelection(queryController.selectionIntent, intent) ||
           !await queryController.revalidateSelection(
             ids: intent.ids, resultHash: intent.resultHash)) {
-        setState(() => _inlineReturnError =
-            context.l10n.hostEventOfferSelectionChanged);
+        if (_currentQueryAccount(queryController, accountId)) {
+          setState(() => _inlineReturnError =
+              context.l10n.hostEventOfferSelectionChanged);
+        }
         return;
       }
-      if (!mounted || widget.organizerId != organizerId ||
-          widget.formId != formId || _queryController != queryController ||
-          ref.read(firebaseAuthProvider).currentUser?.uid != accountId ||
+      if (!_currentQueryAccount(queryController, accountId) ||
+          widget.organizerId != organizerId || widget.formId != formId ||
           !_sameSelection(queryController.selectionIntent, intent)) return;
       setState(() {
         _returnedEventTarget = HostOfferEventTarget(
@@ -343,10 +354,21 @@ class _HostFormResponsesPanelState
         _inlineReturnError = null;
       });
     } on Object catch (error) {
-      if (mounted) setState(() => _inlineReturnError = appErrorMessage(
-        error, l10n: context.l10n, context: AppErrorContext.event));
+      if (_currentQueryAccount(queryController, accountId)) {
+        setState(() => _inlineReturnError = appErrorMessage(
+          error, l10n: context.l10n, context: AppErrorContext.event));
+      }
     }
   }
+
+  bool _currentQueryAccount(
+    HostResponseQueryController queryController,
+    String accountId,
+  ) => mounted &&
+      _queryController == queryController &&
+      _queryAccountId == accountId &&
+      ref.read(uidProvider).asData?.value == accountId &&
+      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
 
   static bool _sameSelection(
     ({List<String> ids, String resultHash})? current,
@@ -354,9 +376,12 @@ class _HostFormResponsesPanelState
   ) => current != null && current.resultHash == expected.resultHash &&
       current.ids.join('\u0000') == expected.ids.join('\u0000');
 
-  Future<void> _openEventSettings(String eventId) async {
-    final accountId = ref.read(firebaseAuthProvider).currentUser?.uid;
-    if (accountId == null || accountId.isEmpty) return;
+  Future<void> _openEventSettings(String eventId, String accountId) async {
+    if (_queryAccountId != accountId ||
+        ref.read(uidProvider).asData?.value != accountId ||
+        ref.read(firebaseAuthProvider).currentUser?.uid != accountId) {
+      return;
+    }
     await Navigator.of(context).push<void>(MaterialPageRoute(
       builder: (routeContext) => HostEventOfferPreferencesScreen(
         key: ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),
@@ -370,11 +395,58 @@ class _HostFormResponsesPanelState
   @override
   Widget build(BuildContext context) {
     final capability = widget.queryCapability;
-    final queryController = _queryController;
-    if (capability != null &&
-        queryController != null &&
-        widget.formId != null) {
-      final accountId = ref.watch(firebaseAuthProvider).currentUser?.uid;
+    final routeAccountId = widget.accountId;
+    if (widget.requireAccount && routeAccountId == null) {
+      return const CatchStateViewport.sliverLoading();
+    }
+    if (routeAccountId != null) {
+      final uid = ref.watch(uidProvider).asData?.value;
+      final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
+      if (uid != routeAccountId || liveUid != routeAccountId) {
+        return const CatchStateViewport.sliverLoading();
+      }
+      if (capability == null && _legacyLoadedAccountId != routeAccountId) {
+        if (!_legacyAccountRefreshScheduled) {
+          _legacyAccountRefreshScheduled = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || widget.accountId != routeAccountId) return;
+            ref.invalidate(hostFormResponsesControllerProvider(
+              _responseRequest(widget.formId),
+            ));
+            setState(() {
+              _legacyLoadedAccountId = routeAccountId;
+              _legacyAccountRefreshScheduled = false;
+            });
+          });
+        }
+        return const CatchStateViewport.sliverLoading();
+      }
+    }
+    if (capability != null && widget.formId != null) {
+      final uidState = ref.watch(uidProvider);
+      final uid = uidState.asData?.value;
+      final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
+      final accountId = uid != null && uid == liveUid ? uid : null;
+      if (_queryAccountId != accountId ||
+          (accountId != null && _queryController == null)) {
+        _bindQueryAccount(accountId);
+      }
+      if (uidState.hasError) {
+        return CatchLocalizedSliverErrorState(uidState.error!,
+          context: AppErrorContext.auth,
+          onRetry: () => ref.invalidate(uidProvider));
+      }
+      if (accountId == null) {
+        return uidState.isLoading || uid != null
+            ? const CatchStateViewport.sliverLoading()
+            : CatchSliverErrorState(
+                title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+                message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+                retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+                onRetry: () => context.go(Routes.authScreen.path),
+              );
+      }
+      final queryController = _queryController!;
       final offerCopy = capability.offerWorkspace;
       if (offerCopy != null && _offerAccountId != accountId) {
         _offerController?.dispose();
@@ -463,7 +535,7 @@ class _HostFormResponsesPanelState
                     );
                   },
                   openEventSettings: capability.openEventSettings ??
-                      _openEventSettings,
+                      (eventId) => _openEventSettings(eventId, accountId),
                   copy: offerCopy,
                   now: DateTime.now,
                   initialEventTarget: returnedTarget,
