@@ -187,6 +187,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
         initialDraft: initialDraft,
         initialPrefill: initialPrefill,
         initialRosterImportPlan: initialRosterImportPlan,
+        promptForDraftsOnStart: promptForDrafts,
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,

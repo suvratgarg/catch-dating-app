@@ -10,6 +10,8 @@ import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_workspace.dart';
@@ -29,6 +31,10 @@ typedef CreatePrivateEvent =
       required PrivateEventBasics basics,
     });
 
+// Inheritance requires a manager-authorized defaults read with its reviewed
+// hash. An unversioned Club snapshot can only suggest an explicit set value.
+bool _trustedOrganizerDefaultsReadAvailable() => false;
+
 /// The first page of the single progressive event editor.
 ///
 /// No rich Event model is constructed here: the receipt identifies a private
@@ -40,6 +46,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
     this.initialDraft,
     this.initialPrefill,
     this.initialRosterImportPlan,
+    this.promptForDraftsOnStart = true,
     this.create,
     this.onSaved,
   });
@@ -48,6 +55,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final HostRosterImportPlan? initialRosterImportPlan;
+  final bool promptForDraftsOnStart;
   final CreatePrivateEvent? create;
   final ValueChanged<PrivateEventCreateReceipt>? onSaved;
 
@@ -76,13 +84,15 @@ class _PrivateEventCreateScreenState
   late String _requestId;
   String? _submittedSignature;
   String? _submittedPayloadJson;
-  late final String _localDraftId;
+  late String _localDraftId;
+  EventDraft? _activeDraft;
 
   @override
   void initState() {
     super.initState();
     _requestId = _newRequestId();
     _localDraftId = widget.initialDraft?.id ?? _newRequestId();
+    _activeDraft = widget.initialDraft;
     final startingValues = widget.initialDraft ?? widget.initialPrefill?.values;
     if (startingValues != null) {
       _requestId = startingValues.eventCreateRequestId ?? _requestId;
@@ -153,13 +163,17 @@ class _PrivateEventCreateScreenState
       }
     }
     if (startingValues == null) {
-      _cityInherited = widget.club.locationCityId.isNotEmpty &&
+      _cityInherited = _trustedOrganizerDefaultsReadAvailable() &&
+          widget.club.locationCityId.isNotEmpty &&
           widget.club.locationMarketId.isNotEmpty;
       _timezoneInherited =
-          widget.club.hostDefaults.timezone?.trim().isNotEmpty ?? false;
+          _trustedOrganizerDefaultsReadAvailable() &&
+          (widget.club.hostDefaults.timezone?.trim().isNotEmpty ?? false);
     } else {
-      _cityInherited = startingValues.eventCityMode == 'inherit';
-      _timezoneInherited = startingValues.eventTimezoneMode == 'inherit';
+      _cityInherited = _trustedOrganizerDefaultsReadAvailable() &&
+          startingValues.eventCityMode == 'inherit';
+      _timezoneInherited = _trustedOrganizerDefaultsReadAvailable() &&
+          startingValues.eventTimezoneMode == 'inherit';
       final reviewedHash = startingValues.eventReviewedDefaultsHash;
       _defaultsChanged = (_cityInherited || _timezoneInherited) &&
           reviewedHash != _organizerDefaultsHash;
@@ -167,6 +181,89 @@ class _PrivateEventCreateScreenState
     _nameController.addListener(_refresh);
     _timezoneController.addListener(_refresh);
     _cityAccordion.addListener(_refresh);
+    if (widget.promptForDraftsOnStart &&
+        widget.initialDraft == null &&
+        widget.initialPrefill == null &&
+        widget.initialRosterImportPlan == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkForDrafts());
+    }
+  }
+
+  Future<void> _checkForDrafts() async {
+    try {
+      final drafts = await ref
+          .read(createEventDraftControllerProvider.notifier)
+          .loadDrafts(clubId: widget.club.id);
+      if (!mounted || drafts.isEmpty) return;
+      final picked = await showHostEventEntrySheet(
+        context: context,
+        state: HostEventEntryState.resolve(
+          organizerId: widget.club.id,
+          drafts: drafts,
+        ),
+      );
+      if (!mounted || picked?.draft == null) return;
+      final draft = picked!.draft!;
+      if (draft.clubId != widget.club.id) return;
+      setState(() => _restorePickedDraft(draft));
+    } catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    }
+  }
+
+  void _restorePickedDraft(EventDraft draft) {
+    _activeDraft = draft;
+    _localDraftId = draft.id;
+    _requestId = draft.eventCreateRequestId ?? _newRequestId();
+    _submittedSignature = draft.eventCreatePayloadSignature;
+    _submittedPayloadJson = draft.eventCreatePayloadJson;
+    _receipt = draft.eventCreateReceiptEventId != null &&
+            draft.eventCreateReceiptRevision != null
+        ? PrivateEventCreateReceipt(
+            eventId: draft.eventCreateReceiptEventId!,
+            setupRevision: draft.eventCreateReceiptRevision!,
+            replayed: true,
+          )
+        : null;
+    _nameController.text = draft.name ?? '';
+    _city = null;
+    for (final option in defaultCityOptions) {
+      if (option.effectiveCityId == draft.eventCityId &&
+          option.effectiveMarketId == draft.eventMarketId) {
+        _city = option;
+        break;
+      }
+    }
+    _city ??= defaultCityOptions.where((option) =>
+        option.effectiveCityId == widget.club.locationCityId &&
+        option.effectiveMarketId == widget.club.locationMarketId).firstOrNull;
+    _timezoneController.text = draft.eventTimezone ??
+        widget.club.hostDefaults.timezone ??
+        _city?.timeZone ?? '';
+    final localDate = draft.eventLocalDate;
+    _date = localDate == null ? null : DateTime.tryParse(localDate);
+    if (_date == null && draft.selectedDateMillis != null) {
+      _date = DateTime.fromMillisecondsSinceEpoch(draft.selectedDateMillis!);
+    }
+    final localStart = draft.eventLocalStartTime?.split(':');
+    final hour = localStart?.length == 2
+        ? int.tryParse(localStart![0])
+        : draft.selectedStartHour;
+    final minute = localStart?.length == 2
+        ? int.tryParse(localStart![1])
+        : draft.selectedStartMinute;
+    _start = hour != null && minute != null &&
+            hour >= 0 && hour < 24 && minute >= 0 && minute < 60
+        ? TimeOfDay(hour: hour, minute: minute)
+        : null;
+    _cityInherited = _trustedOrganizerDefaultsReadAvailable() &&
+        draft.eventCityMode == 'inherit';
+    _timezoneInherited = _trustedOrganizerDefaultsReadAvailable() &&
+        draft.eventTimezoneMode == 'inherit';
+    _defaultsChanged = (_cityInherited || _timezoneInherited) &&
+        draft.eventReviewedDefaultsHash != _organizerDefaultsHash;
+    _showErrors = false;
+    _error = null;
   }
 
   @override
@@ -236,7 +333,7 @@ class _PrivateEventCreateScreenState
       return;
     }
     setState(() {
-      _cityInherited = true;
+      _cityInherited = _trustedOrganizerDefaultsReadAvailable();
       for (final option in defaultCityOptions) {
         if (option.effectiveCityId == widget.club.locationCityId &&
             option.effectiveMarketId == widget.club.locationMarketId) {
@@ -251,7 +348,7 @@ class _PrivateEventCreateScreenState
     final inherited = widget.club.hostDefaults.timezone;
     if (inherited == null || inherited.trim().isEmpty) return;
     setState(() {
-      _timezoneInherited = true;
+      _timezoneInherited = _trustedOrganizerDefaultsReadAvailable();
       _timezoneController.text = inherited;
     });
   }
@@ -270,7 +367,7 @@ class _PrivateEventCreateScreenState
       _date != null ||
       _start != null ||
       _submittedSignature != null ||
-      widget.initialDraft != null ||
+      _activeDraft != null ||
       widget.initialPrefill != null;
 
   Future<void> _pickDate() async {
@@ -341,7 +438,7 @@ class _PrivateEventCreateScreenState
       await _persistDraft();
       requestSent = true;
       final receipt = await (widget.create ??
-          ref.read(privateEventSetupRepositoryProvider).create)(
+          ref.read(createEventDraftControllerProvider.notifier).createPrivateEvent)(
         organizerId: widget.club.id,
         requestId: _requestId,
         basics: basics,
@@ -427,7 +524,7 @@ class _PrivateEventCreateScreenState
   }
 
   Future<void> _persistDraft({PrivateEventCreateReceipt? receipt}) async {
-    final old = widget.initialDraft;
+    final old = _activeDraft;
     final draft = (old ??
             EventDraft(
               id: _localDraftId,
@@ -461,6 +558,7 @@ class _PrivateEventCreateScreenState
     await ref
         .read(createEventDraftControllerProvider.notifier)
         .saveDraft(draft);
+    _activeDraft = draft;
     ref.invalidate(clubEventDraftsProvider(clubId: widget.club.id));
   }
 

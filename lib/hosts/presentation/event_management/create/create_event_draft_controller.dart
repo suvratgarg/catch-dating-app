@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -41,4 +43,14 @@ class CreateEventDraftController extends _$CreateEventDraftController {
         .read(eventDraftRepositoryProvider)
         .deleteDraft(clubId: clubId, userId: uid, draftId: draftId);
   }
+
+  Future<PrivateEventCreateReceipt> createPrivateEvent({
+    required String organizerId,
+    required String requestId,
+    required PrivateEventBasics basics,
+  }) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).create(
+    organizerId: organizerId,
+    requestId: requestId,
+    basics: basics,
+  );
 }

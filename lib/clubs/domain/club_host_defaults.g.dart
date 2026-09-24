@@ -37,6 +37,8 @@ _ClubHostDefaults _$ClubHostDefaultsFromJson(Map<String, dynamic> json) =>
             ),
           ) ??
           const <String, EventSuccessDefaults>{},
+      timezone: json['timezone'] as String?,
+      revision: (json['revision'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ClubHostDefaultsToJson(
@@ -51,6 +53,8 @@ Map<String, dynamic> _$ClubHostDefaultsToJson(
   'eventSuccessByActivityKind': instance.eventSuccessByActivityKind.map(
     (k, e) => MapEntry(k, e.toJson()),
   ),
+  'timezone': instance.timezone,
+  'revision': instance.revision,
 };
 
 const _$ActivityKindEnumMap = {

@@ -1,11 +1,9 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Matches the server's ordered JSON snapshot for inherited defaults.
 String organizerEventDefaultsHash({
@@ -246,7 +244,3 @@ class PrivateEventSetupRepository {
     );
   }
 }
-
-final privateEventSetupRepositoryProvider = Provider<PrivateEventSetupRepository>(
-  (ref) => PrivateEventSetupRepository(ref.watch(firebaseFunctionsProvider)),
-);

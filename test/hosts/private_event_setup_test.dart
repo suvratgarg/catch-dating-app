@@ -136,5 +136,14 @@ void main() {
       ),
       'c1e0ddad1aa2aeeac7cb177a11b86c0d0364ae8e0ad61687dc3020bd1a3b184d',
     );
+    expect(
+      organizerEventDefaultsHash(
+        cityId: 'in-mh-mumbai',
+        marketId: 'in-mh-mumbai',
+        timezone: 'Asia/Kolkata',
+        revision: 7,
+      ),
+      '6c9322e3d243ee843d3b9e800d097c0558ac2f4cda9a3ce5bc1c0ae0c627abbb',
+    );
   });
 }
