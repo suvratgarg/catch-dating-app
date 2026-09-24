@@ -135,10 +135,9 @@ Object? _freezeExportValue(Object? value) {
     if (value.keys.any((key) => key is! String)) {
       throw const FormatException('Response export query keys are invalid.');
     }
-    return Map<String, Object?>.unmodifiable({
-      for (final key in value.keys.cast<String>())
-        key: _freezeExportValue(value[key]),
-    });
+    return Map<String, Object?>.unmodifiable(value.map<String, Object?>(
+      (key, item) => MapEntry(key as String, _freezeExportValue(item)),
+    ));
   }
   if (value is List) {
     return List<Object?>.unmodifiable(value.map(_freezeExportValue));

@@ -511,7 +511,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   Future<void> _saveUpdate() async {
     final receipt = _receipt;
     if (receipt == null ||
-        (!_canEditSavedBasics && _pendingUpdate == null)) return;
+        (!_canEditSavedBasics && _pendingUpdate == null)) {
+      return;
+    }
     final existing = _pendingUpdate;
     if (_defaultsChanged && existing == null) {
       _mutateScreenState(() => _error = context.l10n.hostsPrivateEventDefaultsChanged);

@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 const _request = HostResponseQueryRequest(
   organizerId: 'org', formId: 'form', versionId: 'form_v2',
   predicate: HostResponseCondition(questionId: 'city',
@@ -62,7 +64,7 @@ void main() {
     addTearDown(controller.dispose);
     await controller.recover();
     final running = controller.start(HostFormExportFormat.csv);
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
     source.resultHash = 'changed-result';
     await query.apply(_request);
     gateway.deferred!.complete(_receipt(HostFormExportStatus.completed));
@@ -158,7 +160,7 @@ void main() {
       openDownload: (uri) async { opened.add(uri); return true; });
     addTearDown(second.dispose);
     final running = second.start(HostFormExportFormat.xlsx);
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
     activeUid = 'other-manager';
     late.deferred!.complete(_receipt(HostFormExportStatus.completed));
     await running;
@@ -251,9 +253,9 @@ void main() {
         openDownload: (uri) async { opened.add(uri); return true; },
       )),
     )));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Export CSV'));
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Export ready'));
     expect(gateway.calls.single.responseQuery['predicate'],
       _request.predicate!.toJson());
     expect(opened, hasLength(1));
@@ -277,14 +279,14 @@ void main() {
         ),
       )),
     ));
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Select'));
     await tester.ensureVisible(find.text('Select'));
     await tester.tap(find.text('Select'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(query.selectionIntent?.ids, ['response-1']);
     await tester.ensureVisible(find.text('Create event'));
     await tester.tap(find.text('Create event'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(created, isTrue);
   });
 }
@@ -349,10 +351,14 @@ class _Gateway implements HostResponseExportGateway {
   @override
   Future<HostFormExportReceipt> execute(HostResponseExportCommand command) async {
     calls.add(command);
-    if (deferred case final completion?) return completion.future;
+    if (deferred case final completion?) {
+      return completion.future;
+    }
     final status = statuses[(calls.length - 1).clamp(0, statuses.length - 1)];
     if (status == HostFormExportStatus.completed ||
-        status == HostFormExportStatus.failed) saved = null;
+        status == HostFormExportStatus.failed) {
+      saved = null;
+    }
     return _receipt(status, errorCode: errorCode);
   }
 }
@@ -365,7 +371,7 @@ HostResponseExportCommand _command({required String expectedResultHash}) =>
       responseQuery: _request.toJson(), expectedQueryHash: 'query-hash',
       expectedResultHash: expectedResultHash, createdAtMillis: 1000);
 
-final _workspaceCopy = HostResponseQueryWorkspaceCopy(
+const _workspaceCopy = HostResponseQueryWorkspaceCopy(
   filter: 'Filter', sort: 'Sort', newest: 'Newest', oldest: 'Oldest',
   refresh: 'Refresh', loadMore: 'Load more', loading: 'Loading',
   empty: 'Empty', stale: 'Stale', budgetExceeded: 'Limit reached',

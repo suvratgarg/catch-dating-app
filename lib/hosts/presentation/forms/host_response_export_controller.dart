@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:flutter/foundation.dart';
 
@@ -25,6 +24,9 @@ class HostResponseExportView {
 /// Uses only the applied query controller view. A draft filter, page cursor,
 /// account change or late receipt cannot silently change the exported set.
 class HostResponseExportController extends ChangeNotifier {
+  // Polling a server receipt is network scheduling, not UI animation.
+  // ignore: catch_no_raw_motion
+  static const _receiptPollingInterval = Duration(seconds: 2);
   HostResponseExportController({
     required this.accountId,
     required this.organizerId,
@@ -119,15 +121,19 @@ class HostResponseExportController extends ChangeNotifier {
           ? HostResponseExportStatus.pending : HostResponseExportStatus.stale,
           command: saved));
     } on Object catch (error) {
-      if (_current(generation)) _publish(HostResponseExportView(
-        HostResponseExportStatus.failure, error: error));
+      if (_current(generation)) {
+        _publish(HostResponseExportView(
+          HostResponseExportStatus.failure, error: error));
+      }
     }
   }
 
   Future<void> start(HostFormExportFormat format) async {
     if (_view.status == HostResponseExportStatus.recovering ||
         _view.status == HostResponseExportStatus.preparing ||
-        !_sameAccount) return;
+        !_sameAccount) {
+      return;
+    }
     final generation = ++_generation;
     final initial = queryController.view;
     final initialRequest = initial.request;
@@ -150,13 +156,17 @@ class HostResponseExportController extends ChangeNotifier {
           applied.queryHash != initialQueryHash ||
           applied.resultHash != initialResultHash ||
           (initial.status != HostResponseQueryStatus.ready &&
-              initial.status != HostResponseQueryStatus.empty)) return;
+              initial.status != HostResponseQueryStatus.empty)) {
+        return;
+      }
       if (request == null ||
           (applied.status != HostResponseQueryStatus.ready &&
             applied.status != HostResponseQueryStatus.empty) ||
           request.organizerId != organizerId || request.formId != formId ||
           request.cursor != null || applied.queryHash == null ||
-          applied.resultHash == null) return;
+          applied.resultHash == null) {
+        return;
+      }
       final command = HostResponseExportCommand(
         accountId: accountId, organizerId: organizerId, formId: formId,
         versionId: request.versionId,
@@ -169,16 +179,20 @@ class HostResponseExportController extends ChangeNotifier {
       );
       await _run(command, generation);
     } on Object catch (error) {
-      if (_current(generation)) _publish(HostResponseExportView(
-        HostResponseExportStatus.failure,
-        command: _view.command, error: error));
+      if (_current(generation)) {
+        _publish(HostResponseExportView(
+          HostResponseExportStatus.failure,
+          command: _view.command, error: error));
+      }
     }
   }
 
   Future<void> retryPending() async {
     final command = _view.command;
     if (command == null || !_sameAccount ||
-        _view.status == HostResponseExportStatus.preparing) return;
+        _view.status == HostResponseExportStatus.preparing) {
+      return;
+    }
     final generation = ++_generation;
     await _run(command, generation, resolveOnly: !_sameApplied(command));
   }
@@ -198,7 +212,9 @@ class HostResponseExportController extends ChangeNotifier {
       for (var attempt = 0; attempt < 12; attempt++) {
         final receipt = await gateway.execute(command);
         if (!_current(generation) || !_sameAccount ||
-            !resolveOnly && !_sameApplied(command)) return;
+            !resolveOnly && !_sameApplied(command)) {
+          return;
+        }
         if (receipt.status == HostFormExportStatus.pending ||
             receipt.status == HostFormExportStatus.running) {
           if (attempt == 11) {
@@ -207,9 +223,11 @@ class HostResponseExportController extends ChangeNotifier {
               command: command, receipt: receipt));
             return;
           }
-          await wait(const Duration(seconds: 2));
+          await wait(_receiptPollingInterval);
           if (!_current(generation) || !_sameAccount ||
-              !resolveOnly && !_sameApplied(command)) return;
+              !resolveOnly && !_sameApplied(command)) {
+            return;
+          }
           continue;
         }
         if (resolveOnly) {
@@ -232,7 +250,9 @@ class HostResponseExportController extends ChangeNotifier {
         if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
           throw const FormatException('Export download URL is invalid.');
         }
-        if (!_sameAccount || !_sameApplied(command)) return;
+        if (!_sameAccount || !_sameApplied(command)) {
+          return;
+        }
         final opened = await openDownload(uri);
         if (_current(generation) && _sameAccount && _sameApplied(command)) {
           _publish(HostResponseExportView(HostResponseExportStatus.ready,
@@ -253,7 +273,9 @@ class HostResponseExportController extends ChangeNotifier {
     final receipt = _view.receipt;
     final command = _view.command;
     if (receipt?.downloadUrl == null || command == null ||
-        !_sameApplied(command) || !_sameAccount) return;
+        !_sameApplied(command) || !_sameAccount) {
+      return;
+    }
     final uri = Uri.tryParse(receipt!.downloadUrl!);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return;
     final generation = _generation;

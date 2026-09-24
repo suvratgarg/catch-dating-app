@@ -252,14 +252,18 @@ class HostResponseQueryController extends ChangeNotifier {
     if (request == null || ids.isEmpty || ids.length > 25 ||
         view.status != HostResponseQueryStatus.ready ||
         view.resultHash != resultHash ||
-        !view.selectedIds.containsAll(ids)) return false;
+        !view.selectedIds.containsAll(ids)) {
+      return false;
+    }
     try {
       final page = await _gateway.query(request.withCursor(null));
       if (!_isCurrent(generation) || _view.resultHash != resultHash ||
           !_view.selectedIds.containsAll(ids) ||
           page.queryHash != view.queryHash ||
           page.resultHash != resultHash ||
-          !page.selectedIds.containsAll(ids)) return false;
+          !page.selectedIds.containsAll(ids)) {
+        return false;
+      }
       return true;
     } on Object {
       return false;

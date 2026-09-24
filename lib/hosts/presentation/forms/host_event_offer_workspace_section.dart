@@ -416,7 +416,7 @@ class _HostEventOfferWorkspaceSectionState
         if (_controller.loading)
           CatchSection.content(child: Text(copy.review.previewing,
             style: CatchTextStyles.supporting(context))),
-        if (_controller.error != null || _controller.selectionStale)
+        if (_controller.hasError || _controller.selectionStale)
           CatchSection.content(child: Text(
             _controller.selectionStale ? copy.selectionChanged : copy.loadFailed,
             style: CatchTextStyles.supporting(context))),

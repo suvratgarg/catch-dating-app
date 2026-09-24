@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actions.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
@@ -19,7 +20,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -73,7 +73,8 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final responseAccountId = ref.watch(uidProvider).asData?.value;
+    final actor = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final responseAccountId = actor.isSettledData ? actor.value : null;
     final editor = ref.watch(
       hostFormEditorControllerProvider(widget.organizerId, widget.formId),
     );

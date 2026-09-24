@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
-import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
@@ -13,12 +12,12 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_contr
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +60,7 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.text('Maya'), findsOneWidget);
 
-    responses.nextResponse = Completer<HostFormResponsesState>();
+    responses._nextResponse = Completer<HostFormResponsesState>();
     auth.uid = 'host-two';
     updateRoute(() => accountId = 'host-two');
     accounts.add('host-two');
@@ -69,12 +68,12 @@ void main() {
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
 
-    responses.nextResponse!.completeError(StateError('Fixture read failed'));
+    responses._nextResponse!.completeError(StateError('Fixture read failed'));
     await pumpFeatureUi(tester);
     expect(find.byType(CatchLocalizedSliverErrorState), findsOneWidget);
     expect(find.text('Maya'), findsNothing);
 
-    responses.nextResponse = Completer<HostFormResponsesState>();
+    responses._nextResponse = Completer<HostFormResponsesState>();
     tester.widget<CatchLocalizedSliverErrorState>(
       find.byType(CatchLocalizedSliverErrorState),
     ).onRetry!();
@@ -82,7 +81,7 @@ void main() {
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
 
-    responses.nextResponse!.complete(HostFormResponsesState(
+    responses._nextResponse!.complete(HostFormResponsesState(
       responses: [_SwitchingLegacyResponses.response('Rohan', 'response-two')],
       nextCursor: null,
     ));
@@ -374,7 +373,7 @@ void main() {
               required contactId}) async => _existingOffer(),
           prepareHandoff: ({required offer}) async {
             preparations++;
-            return HostOfferHandoff(kind: 'prepared',
+            return HostOfferHandoff(kind: 'prepared', blockers: const [],
               offerId: offer.offerId, contactId: offer.contactId,
               editableText: 'Hi Maya', copyText: 'Hi Maya',
               whatsappUrl: Uri.parse('https://wa.me/911234567890'));
@@ -512,11 +511,11 @@ class _SwitchingQuery implements HostResponseQueryGateway {
 }
 
 class _SwitchingLegacyResponses extends HostFormResponsesController {
-  Completer<HostFormResponsesState>? nextResponse;
+  Completer<HostFormResponsesState>? _nextResponse;
 
   @override
   Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
-      nextResponse?.future ?? Future.value(HostFormResponsesState(
+      _nextResponse?.future ?? Future.value(HostFormResponsesState(
         responses: [response('Maya', 'response-one')], nextCursor: null));
 
   static HostFormResponseSummary response(String name, String id) =>
@@ -528,7 +527,7 @@ class _SwitchingLegacyResponses extends HostFormResponsesController {
           'phoneE164': null, 'origin': 'respondentGranted'},
         'sourceLinkId': null, 'sourceLabel': null,
         'submittedAtMillis': 1790000000000, 'withdrawnAtMillis': null,
-        'highlights': <Object>[], 'conversionKinds': <Object>[],
+        'highlights': const <Object>[], 'conversionKinds': const <Object>[],
       });
 }
 

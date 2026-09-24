@@ -523,11 +523,10 @@ class _ExportStillPreparing implements Exception {
 /// receipt stays in the journal until the server reports a terminal state.
 class JournalHostResponseExportGateway implements HostResponseExportGateway {
   JournalHostResponseExportGateway({
-    required HostFormsRepository repository,
+    required this.repository,
     required Future<CommandJournalStorage> Function() storage,
     required String? Function() currentAccountId,
-  }) : _repository = repository,
-       _journal = LocalCommandJournal<HostResponseExportCommand>(
+  }) : _journal = LocalCommandJournal<HostResponseExportCommand>(
          storage: storage,
          namespace: 'host_response_export',
          currentAccountId: currentAccountId,
@@ -539,7 +538,7 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
          ),
        );
 
-  final HostFormsRepository _repository;
+  final HostFormsRepository repository;
   final LocalCommandJournal<HostResponseExportCommand> _journal;
 
   @override
@@ -570,7 +569,7 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
         if (entry.requestId != command.requestId) {
           throw StateError('Another response export is pending.');
         }
-        final receipt = await _repository.requestExport(
+        final receipt = await repository.requestExport(
           organizerId: entry.organizerId,
           formId: entry.formId,
           requestId: entry.requestId,

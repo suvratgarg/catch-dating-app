@@ -199,7 +199,9 @@ class _HostFormResponsesPanelState
         ref.read(firebaseFunctionsProvider),
       ).get(organizerId: organizerId, eventId: eventId);
       if (!_currentQueryAccount(queryController, accountId) ||
-          widget.organizerId != organizerId || widget.formId != formId) return;
+          widget.organizerId != organizerId || widget.formId != formId) {
+        return;
+      }
       if (summary.organizerId != organizerId || summary.eventId != eventId ||
           summary.status != 'active' ||
           !_sameSelection(queryController.selectionIntent, intent) ||
@@ -213,7 +215,9 @@ class _HostFormResponsesPanelState
       }
       if (!_currentQueryAccount(queryController, accountId) ||
           widget.organizerId != organizerId || widget.formId != formId ||
-          !_sameSelection(queryController.selectionIntent, intent)) return;
+          !_sameSelection(queryController.selectionIntent, intent)) {
+        return;
+      }
       setState(() {
         _returnedEventTarget = HostOfferEventTarget(
           eventId: summary.eventId,
@@ -275,7 +279,8 @@ class _HostFormResponsesPanelState
       return const CatchStateViewport.sliverLoading();
     }
     if (routeAccountId != null) {
-      final uid = ref.watch(uidProvider).asData?.value;
+      final actor = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+      final uid = actor.isSettledData ? actor.value : null;
       final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
       if (uid != routeAccountId || liveUid != routeAccountId) {
         _legacyLoadedAccountId = null;
@@ -298,9 +303,10 @@ class _HostFormResponsesPanelState
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             if (!_currentLegacyAccount(routeAccountId, generation)) return;
             try {
-              await ref.refresh(hostFormResponsesControllerProvider(
+              final refresh = ref.refresh(hostFormResponsesControllerProvider(
                 _responseRequest(widget.formId),
               ).future);
+              await refresh;
               if (!_currentLegacyAccount(routeAccountId, generation)) return;
               setState(() {
                 _legacyLoadedAccountId = routeAccountId;
@@ -319,21 +325,21 @@ class _HostFormResponsesPanelState
       }
     }
     if (capability != null && widget.formId != null) {
-      final uidState = ref.watch(uidProvider);
-      final uid = uidState.asData?.value;
+      final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+      final uid = uidState.isSettledData ? uidState.value : null;
       final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
       final accountId = uid != null && uid == liveUid ? uid : null;
       if (_queryAccountId != accountId ||
           (accountId != null && _queryController == null)) {
         _bindQueryAccount(accountId);
       }
-      if (uidState.hasError) {
+      if (uidState.error != null) {
         return CatchLocalizedSliverErrorState(uidState.error!,
           context: AppErrorContext.auth,
           onRetry: () => ref.invalidate(uidProvider));
       }
       if (accountId == null) {
-        return uidState.isLoading || uid != null
+        return !uidState.isSettledData || uid != null
             ? const CatchStateViewport.sliverLoading()
             : CatchSliverErrorState(
                 title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
@@ -385,12 +391,10 @@ class _HostFormResponsesPanelState
               )),
           exportAccountId: capability.exportAccountId ?? accountId,
           onCreateEventForSelection: privateEventSetupAvailable() &&
-                  offerCopy != null &&
-                  accountId != null
+                  offerCopy != null
               ? () => _openEventForSelection(queryController, accountId)
               : null,
-          offerWorkspace: offerCopy != null &&
-                  accountId != null && _offerController != null
+          offerWorkspace: offerCopy != null && _offerController != null
               ? Column(children: [
                   if (_inlineReturnError != null)
                     CatchBanner.error(message: _inlineReturnError!),

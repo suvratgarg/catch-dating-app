@@ -150,7 +150,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     }
     final intent = queryController.selectionIntent;
     if (intent?.resultHash == _resultHash &&
-        _sameIds(intent!.ids, _ids)) return;
+        _sameIds(intent!.ids, _ids)) {
+      return;
+    }
     _update(_reset);
   }
 
@@ -159,7 +161,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final receipt = view.receipt;
     if (view.status != HostOfferFlowStatus.committed ||
         receipt == null || receipt.requestId == _refreshedReceiptId ||
-        receipt.eventId != _event?.eventId) return;
+        receipt.eventId != _event?.eventId) {
+      return;
+    }
     _refreshedReceiptId = receipt.requestId;
     _refreshOffers();
   }
@@ -387,7 +391,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final previous = _configuration;
     final generation = _generation;
     if (accountId == null || event == null || previous == null ||
-        _loading || !_personalMode) return;
+        _loading || !_personalMode) {
+      return;
+    }
     _update(() { _loading = true; _error = null; });
     try {
       if (!await _revalidate(generation, accountId)) {
@@ -548,13 +554,17 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final contactId = item['contactId'];
     final offerId = item['offerId'];
     if (event == null || accountId == null || _loading ||
-        contactId is! String || offerId is! String) return;
+        contactId is! String || offerId is! String) {
+      return;
+    }
     _update(() { _loading = true; _error = null; });
     try {
       final offer = await getOffer(organizerId: organizerId,
         eventId: event.eventId, contactId: contactId);
       if (!_current(generation, accountId) ||
-          _event?.eventId != event.eventId) return;
+          _event?.eventId != event.eventId) {
+        return;
+      }
       if (offer.organizerId != organizerId ||
           offer.eventId != event.eventId ||
           offer.contactId != contactId || offer.offerId != offerId) {
@@ -581,7 +591,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         previous.offerId != updated.offerId ||
         previous.organizerId != updated.organizerId ||
         previous.eventId != updated.eventId ||
-        previous.contactId != updated.contactId) return;
+        previous.contactId != updated.contactId) {
+      return;
+    }
     _update(() {
       _selectedOffer = updated;
       _handoff = null;
@@ -605,7 +617,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         organizerId: selected.organizerId, eventId: selected.eventId,
         contactId: selected.contactId);
       if (!_current(generation, accountId) ||
-          !_sameSelectedOffer(selected)) return;
+          !_sameSelectedOffer(selected)) {
+        return;
+      }
       if (current.offerId != selected.offerId ||
           current.organizerId != selected.organizerId ||
           current.eventId != selected.eventId ||
@@ -614,7 +628,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
       }
       final handoff = await prepareHandoff(offer: current);
       if (!_current(generation, accountId) ||
-          !_sameSelectedOffer(selected)) return;
+          !_sameSelectedOffer(selected)) {
+        return;
+      }
       if (handoff.offerId != current.offerId ||
           handoff.kind == 'prepared' &&
               handoff.contactId != current.contactId) {
@@ -643,7 +659,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final accountId = this.accountId;
     final generation = _generation;
     if (handoff?.kind != 'prepared' || handoff?.copyText == null ||
-        accountId == null || _loading) return;
+        accountId == null || _loading) {
+      return;
+    }
     try {
       await copyMessage(handoff!.copyText!);
       if (_current(generation, accountId) && identical(_handoff, handoff)) {
@@ -659,7 +677,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final accountId = this.accountId;
     final generation = _generation;
     if (handoff?.kind != 'prepared' || handoff?.whatsappUrl == null ||
-        accountId == null || _loading) return;
+        accountId == null || _loading) {
+      return;
+    }
     final uri = handoff!.whatsappUrl!;
     if (uri.scheme != 'https' || uri.host != 'wa.me' ||
         uri.userInfo.isNotEmpty ||
@@ -681,7 +701,7 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
 
 
   bool get loading => _loading;
-  Object? get error => _error;
+  bool get hasError => _error != null;
   bool get selectionStale => _selectionStale;
   List<String> get ids => _ids;
   List<HostOfferEventTarget> get events => _events;
