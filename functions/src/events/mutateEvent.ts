@@ -73,6 +73,8 @@ import {
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
+import {requireScheduledEvent} from
+  "./configuredEvent";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {
@@ -130,6 +132,18 @@ interface EventMutationDeps {
   refundPayment?: (paymentId: string, amount: number) => Promise<void>;
   runtimePublicId?: () => string;
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
+}
+
+/** Rich legacy edits cannot promote or fill a progressive private event. */
+function assertLegacyMutationTarget(data: unknown): void {
+  if (!data || typeof data !== "object") return;
+  const event = data as Record<string, unknown>;
+  if (Object.prototype.hasOwnProperty.call(event, "setupRevision") ||
+      (Object.prototype.hasOwnProperty.call(event, "publicationState") &&
+        event.publicationState !== "published")) {
+    throw new HttpsError("failed-precondition",
+      "Use progressive event setup for this event.");
+  }
 }
 
 type ParsedEventConstraints = NonNullable<
@@ -448,14 +462,9 @@ export async function updateEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    assertLegacyMutationTarget(eventSnap.data());
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     if (event.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -508,11 +517,12 @@ export async function updateEventHandler(
       }),
     };
     const nextEvent = {...event, ...patch};
+    const nextEndTime = requiredEventEndTime(nextEvent);
     const changedFields = eventPlanChangeFields(event, nextEvent);
     const occurredAt = deps.nowTimestamp?.() ??
       admin.firestore.Timestamp.now();
     if (changedFields.length > 0 &&
-        occurredAt.toMillis() < nextEvent.endTime.toMillis()) {
+        occurredAt.toMillis() < nextEndTime.toMillis()) {
       const revision = (event.planChangeRevision ?? 0) + 1;
       if (revision > 2147483647) {
         throw new HttpsError(
@@ -530,11 +540,11 @@ export async function updateEventHandler(
         changedFields,
         eventTitle: nextEvent.name?.trim() || "Your event",
         startTime: nextEvent.startTime,
-        endTime: nextEvent.endTime,
-        meetingPoint: nextEvent.meetingLocation.name,
+        endTime: nextEndTime,
+        meetingPoint: effectiveMeetingLocation(nextEvent).name,
         itineraryStopCount: nextEvent.itinerary?.length ?? 0,
         occurredAt,
-        validUntil: nextEvent.endTime,
+        validUntil: nextEndTime,
         createdBy: hostUserId,
       };
       if (!validateEventPlanChangeDocument(source)) {
@@ -549,7 +559,7 @@ export async function updateEventHandler(
         clubId: organizerId,
         eventId: data.eventId,
         previousStartTimeMillis: event.startTime.toMillis(),
-        previousEndTimeMillis: event.endTime.toMillis(),
+        previousEndTimeMillis: requiredEventEndTime(event).toMillis(),
         startTimeMillis: fieldsStartTimeMillis(event, data.fields),
         endTimeMillis: fieldsEndTimeMillis(event, data.fields),
       });
@@ -636,14 +646,9 @@ export async function cancelEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    assertLegacyMutationTarget(eventSnap.data());
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
     const [organizerSnap, participantEdges] =
@@ -684,14 +689,14 @@ export async function cancelEventHandler(
       clubId: organizerId,
       eventId: data.eventId,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: requiredEventEndTime(event).toMillis(),
     });
     for (const edge of participantEdges) {
       releaseUserEventScheduleInTransaction(tx, db, {
         uid: edge.data.uid,
         eventId: data.eventId,
         startTimeMillis: event.startTime.toMillis(),
-        endTimeMillis: event.endTime.toMillis(),
+        endTimeMillis: requiredEventEndTime(event).toMillis(),
       });
     }
     cancelledEvent = {
@@ -795,14 +800,9 @@ export async function deleteEventHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
+    assertLegacyMutationTarget(eventSnap.data());
 
-    const event = requireDoc<EventDocument>(
-
-      eventSnap,
-
-      "EventDocument"
-
-    );
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
     const organizerId = requireOrganizerId(event);
     const organizerRef = db.collection("organizers").doc(organizerId);
     const [
@@ -851,7 +851,7 @@ export async function deleteEventHandler(
       clubId: organizerId,
       eventId: data.eventId,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: requiredEventEndTime(event).toMillis(),
     });
   });
 
@@ -938,6 +938,7 @@ function buildCreateEventDoc(
   }) : normalizedPolicy;
   return {
     name: data.name.trim(),
+    publicationState: "published",
     ...(data.sourceVenueId ? {sourceVenueId: data.sourceVenueId} : {}),
     eventOrigin: data.externalOrigin ? {
       mode: "externalCompanion",
@@ -1019,7 +1020,7 @@ function buildCreateEventSuccessPlanDoc(params: {
 
   const timestamp = params.serverTimestamp?.() ??
     admin.firestore.FieldValue.serverTimestamp();
-  const eventFormat = params.event.eventFormat;
+  const eventFormat = requireScheduledEvent(params.event).eventFormat;
   const primitives = eventSuccessPrimitivesFor(eventFormat);
   const interactionModel = effectiveInteractionModelFor(
     eventFormat.interactionModel,
@@ -1554,7 +1555,8 @@ function effectiveMeetingLocation(
  * @return {string} Location name.
  */
 function eventLocationName(event: EventDocument): string {
-  return event.meetingLocation?.name ?? event.meetingPoint;
+  return event.meetingLocation?.name ?? event.meetingPoint ??
+    "Location to be confirmed";
 }
 
 /**
@@ -1813,7 +1815,20 @@ function fieldsEndTimeMillis(
   event: EventDocument,
   fields: EventHostUpdateFields
 ): number {
-  return fields.endTimeMillis ?? event.endTime.toMillis();
+  return fields.endTimeMillis ?? requiredEventEndTime(event).toMillis();
+}
+
+/** Legacy cancellation needs scheduling data, not an activity format. */
+function requiredEventEndTime(
+  event: EventDocument
+): FirebaseFirestore.Timestamp {
+  const end = event.endTime;
+  if (!end || !Number.isFinite(end.toMillis()) ||
+      end.toMillis() <= event.startTime.toMillis()) {
+    throw new HttpsError("failed-precondition",
+      "Event end time is unavailable.");
+  }
+  return end;
 }
 
 /**
@@ -1907,13 +1922,13 @@ function assertValidMergedRunUpdate(
   const startTimeMillis = fields.startTimeMillis ??
     event.startTime.toMillis();
   const endTimeMillis = fields.endTimeMillis ??
-    event.endTime.toMillis();
+    requiredEventEndTime(event).toMillis();
   assertValidEventTimeRange(startTimeMillis, endTimeMillis);
   normalizeMeetingLocationForUpdate(event, fields);
-  if (fields.eventFormat != null &&
+  if (fields.eventFormat != null && event.eventFormat &&
       (fields.eventFormat.activityKind !== event.eventFormat.activityKind ||
        fields.eventFormat.interactionModel !==
-        event.eventFormat.interactionModel)) {
+          event.eventFormat.interactionModel)) {
     throw new HttpsError(
       "invalid-argument",
       "Event format updates may change route details but not activity kind."
@@ -2002,7 +2017,8 @@ function assertStandalonePublicRegistrationPolicy(
     capacityLimit: fields.capacityLimit ?? event.capacityLimit,
     priceInPaise: fields.priceInPaise ?? event.priceInPaise,
     constraints: fields.constraints ?
-      {...event.constraints, ...fields.constraints} : event.constraints,
+      normalizeConstraints({...event.constraints, ...fields.constraints}) :
+      event.constraints,
     eventPolicy: fields.eventPolicy ?? event.eventPolicy,
   };
   const policy = eventPolicyFromEvent(mergedEvent);
@@ -2210,7 +2226,10 @@ function newClubEventNotificationCopy(
   return {
     title: `${clubName} posted an event`,
     body:
-      `${formatDistance(event.distanceKm)} from ${eventLocationName(event)}.`,
+      typeof event.distanceKm === "number" ?
+        `${formatDistance(event.distanceKm)} from ` +
+        `${eventLocationName(event)}.` :
+        `An event at ${eventLocationName(event)}.`,
   };
 }
 

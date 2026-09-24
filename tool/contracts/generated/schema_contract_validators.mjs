@@ -3,6 +3,14 @@
 
 import {createRequire} from "node:module";
 import {
+  eventSetupReceiptDocumentSchema,
+  organizerEventSetupPreferencesSchema,
+  getOrganizerEventSetupDefaultsCallablePayloadSchema,
+  updateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  organizerEventSetupDefaultsCallableResponseSchema,
+  updateOrganizerEventSetupDefaultsCallableResponseSchema,
+  organizerEventSetupDefaultsDocumentSchema,
+  organizerEventSetupDefaultReceiptDocumentSchema,
   eventRehearsalMilestoneDocumentSchema,
   getEventRehearsalSummaryCallablePayloadSchema,
   eventRehearsalSummaryCallableResponseSchema,
@@ -515,6 +523,14 @@ import {
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
   setClubNotificationPreferenceCallablePayloadSchema,
+  eventSetupDefaultsSchema,
+  createPrivateEventSetupCallablePayloadSchema,
+  updatePrivateEventBasicsCallablePayloadSchema,
+  getPrivateEventSetupCallablePayloadSchema,
+  privateEventSetupMutationCallableResponseSchema,
+  privateEventSetupCallableResponseSchema,
+  queryOrganizerFormResponsesCallablePayloadSchema,
+  queryOrganizerFormResponsesCallableResponseSchema,
   createEventCallablePayloadSchema,
   updateEventCallablePayloadSchema,
   cancelEventCallablePayloadSchema,
@@ -854,6 +870,14 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventSetupReceiptDocument = ajv.compile(eventSetupReceiptDocumentSchema);
+export const validateOrganizerEventSetupPreferences = ajv.compile(organizerEventSetupPreferencesSchema);
+export const validateGetOrganizerEventSetupDefaultsCallablePayload = ajv.compile(getOrganizerEventSetupDefaultsCallablePayloadSchema);
+export const validateUpdateOrganizerEventSetupDefaultsCallablePayload = ajv.compile(updateOrganizerEventSetupDefaultsCallablePayloadSchema);
+export const validateOrganizerEventSetupDefaultsCallableResponse = ajv.compile(organizerEventSetupDefaultsCallableResponseSchema);
+export const validateUpdateOrganizerEventSetupDefaultsCallableResponse = ajv.compile(updateOrganizerEventSetupDefaultsCallableResponseSchema);
+export const validateOrganizerEventSetupDefaultsDocument = ajv.compile(organizerEventSetupDefaultsDocumentSchema);
+export const validateOrganizerEventSetupDefaultReceiptDocument = ajv.compile(organizerEventSetupDefaultReceiptDocumentSchema);
 export const validateEventRehearsalMilestoneDocument = ajv.compile(eventRehearsalMilestoneDocumentSchema);
 export const validateGetEventRehearsalSummaryCallablePayload = ajv.compile(getEventRehearsalSummaryCallablePayloadSchema);
 export const validateEventRehearsalSummaryCallableResponse = ajv.compile(eventRehearsalSummaryCallableResponseSchema);
@@ -1366,6 +1390,14 @@ export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallabl
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
 export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
 export const validateSetClubNotificationPreferenceCallablePayload = ajv.compile(setClubNotificationPreferenceCallablePayloadSchema);
+export const validateEventSetupDefaults = ajv.compile(eventSetupDefaultsSchema);
+export const validateCreatePrivateEventSetupCallablePayload = ajv.compile(createPrivateEventSetupCallablePayloadSchema);
+export const validateUpdatePrivateEventBasicsCallablePayload = ajv.compile(updatePrivateEventBasicsCallablePayloadSchema);
+export const validateGetPrivateEventSetupCallablePayload = ajv.compile(getPrivateEventSetupCallablePayloadSchema);
+export const validatePrivateEventSetupMutationCallableResponse = ajv.compile(privateEventSetupMutationCallableResponseSchema);
+export const validatePrivateEventSetupCallableResponse = ajv.compile(privateEventSetupCallableResponseSchema);
+export const validateQueryOrganizerFormResponsesCallablePayload = ajv.compile(queryOrganizerFormResponsesCallablePayloadSchema);
+export const validateQueryOrganizerFormResponsesCallableResponse = ajv.compile(queryOrganizerFormResponsesCallableResponseSchema);
 export const validateCreateEventCallablePayload = ajv.compile(createEventCallablePayloadSchema);
 export const validateUpdateEventCallablePayload = ajv.compile(updateEventCallablePayloadSchema);
 export const validateCancelEventCallablePayload = ajv.compile(cancelEventCallablePayloadSchema);

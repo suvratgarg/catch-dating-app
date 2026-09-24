@@ -13,6 +13,7 @@ import {
   onboardingDraftSeed,
   prepareImportRows,
   publicRegistrationStatus,
+  registerPublicEventHandler,
   setEventAttendeeAttendanceHandler,
 } from "./eventAttendees";
 
@@ -207,6 +208,26 @@ test("public registration fills open capacity then uses the waitlist", () => {
     existingStatus: "registered",
   }), "registered");
 });
+
+test("public OTP registration denies private basics before roster reads",
+  async () => {
+    const firestore = new FakeFirestore({
+      "events/private-1": {organizerId: "organizer-1", status: "active",
+        publicationState: "private", setupRevision: 1},
+    });
+    await assert.rejects(registerPublicEventHandler({
+      auth: {uid: "guest-1", token: {phone_number: "+919876543210"}},
+      data: {eventId: "private-1", displayName: "Example Guest"},
+      rawRequest: {},
+    } as CallableRequest<unknown>, {
+      firestore: () => firestore as never,
+      checkRateLimit: async () => undefined,
+      timestamp: () => admin.firestore.Timestamp.now(),
+    }), (error) => error instanceof HttpsError &&
+      error.code === "failed-precondition" &&
+      error.message.includes("not open for public registration"));
+    assert.equal(firestore.get("onboarding_drafts/guest-1"), undefined);
+  });
 
 test("prepareImportRows deduplicates event-scoped contact identity", () => {
   const result = prepareImportRows({
@@ -640,3 +661,49 @@ test("absolute attendance replays and preserves prior state", async () => {
     clientOperationId: "operation-check-in-1",
   }), /^ear_[a-f0-9]{48}$/u);
 });
+
+
+test("roster import retries current event and manager authority before writes",
+  async () => {
+    for (const change of ["cancel", "revoke", "move"] as const) {
+      const firestore = new FakeFirestore({
+        "events/event-1": {clubId: "organizer-1", organizerId: "organizer-1",
+          status: "active"},
+        "organizers/organizer-1": {hostUserId: "host-1",
+          ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+        "organizers/organizer-2": {hostUserId: "other",
+          ownerUserId: "other", hostUserIds: ["other"], hostProfiles: []},
+      });
+      const payload = {eventId: "event-1", importKey: `race-${change}`,
+        fileName: "roster.csv", format: "csv" as const, rows: [{
+          rowId: "guest-1", displayName: "Example Guest",
+          phone: "+919876543210", email: null, externalReference: null,
+          arrivalGroup: null, ticketType: null, status: "registered" as const,
+        }]};
+      const attendeePath = `eventAttendees/${eventAttendeeId("event-1",
+        "phone:+919876543210")}`;
+      let triggered = false;
+      firestore.afterRead = (path) => {
+        if (path !== attendeePath) return;
+        firestore.afterRead = null;
+        triggered = true;
+        if (change === "cancel") {
+          firestore.update("events/event-1", {status: "cancelled"});
+        } else if (change === "move") {
+          firestore.update("events/event-1", {organizerId: "organizer-2"});
+        } else {
+          firestore.update("organizers/organizer-1", {hostUserId: "other",
+            ownerUserId: "other", hostUserIds: ["other"]});
+        }
+      };
+      await assert.rejects(importEventAttendeesForHost({hostUid: "host-1",
+        payload}, {firestore: () => firestore as never,
+        checkRateLimit: async () => undefined,
+        timestamp: () => admin.firestore.Timestamp.fromMillis(1000)}),
+      (error) => error instanceof HttpsError &&
+        error.code === (change === "cancel" ? "failed-precondition" :
+          "permission-denied"));
+      assert.equal(triggered, true);
+      assert.equal(firestore.get(attendeePath), undefined);
+    }
+  });

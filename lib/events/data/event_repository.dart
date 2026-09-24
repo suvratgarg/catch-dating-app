@@ -78,14 +78,12 @@ class EventRepository with EventRepositoryActions {
         toJson: (link) => link.toJson(),
       );
 
-  DocumentReference<Event> _eventRef(String id) => _eventsRef.doc(id);
-
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Future<Event?> fetchEvent(String id) => withBackendErrorContext(
     () async {
-      final doc = await _eventRef(id).get();
-      return doc.exists ? doc.data() : null;
+      final doc = await _db.collection(_collectionPath).doc(id).get();
+      return _publishedRichEvent(doc);
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
@@ -95,8 +93,9 @@ class EventRepository with EventRepositoryActions {
   );
 
   Stream<Event?> watchEvent(String id) => withBackendErrorStream(
-    () =>
-        _eventRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    () => _db.collection(_collectionPath).doc(id).snapshots().map(
+      _publishedRichEvent,
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch event',
@@ -136,9 +135,10 @@ class EventRepository with EventRepositoryActions {
 
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
       withBackendErrorStream(
-        // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
+        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
         () => _eventsRef
             .where('organizerId', isEqualTo: clubId)
+            .where('publicationState', isEqualTo: 'published')
             .orderBy('startTime')
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
@@ -166,9 +166,10 @@ class EventRepository with EventRepositoryActions {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
     _eventsRef
         .where('organizerId', isEqualTo: organizerId)
+        .where('publicationState', isEqualTo: 'published')
         .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where('endTime', isGreaterThan: Timestamp.fromDate(sessionBoundary))
         .orderBy('endTime')
@@ -185,9 +186,10 @@ class EventRepository with EventRepositoryActions {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
     _eventsRef
         .where('organizerId', isEqualTo: organizerId)
+        .where('publicationState', isEqualTo: 'published')
         .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where(
           'endTime',
@@ -316,7 +318,7 @@ class EventRepository with EventRepositoryActions {
     List<String> clubIds,
   ) => withBackendErrorContext(
     () async {
-      // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
+      // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
       final uniqueClubIds = clubIds.toSet().toList()..sort();
       if (uniqueClubIds.isEmpty) return [];
       final nowDateTime = DateTime.now();
@@ -325,6 +327,7 @@ class EventRepository with EventRepositoryActions {
       for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
         final snap = await _eventsRef
             .where('organizerId', whereIn: chunk)
+            .where('publicationState', isEqualTo: 'published')
             .where('startTime', isGreaterThan: now)
             .orderBy('startTime')
             .limit(ReadLimitPolicy.directoryPage)
@@ -347,6 +350,23 @@ class EventRepository with EventRepositoryActions {
       resource: _collectionPath,
     ),
   );
+}
+
+/// Public rich-event reads cannot decode a private first-save event. The
+/// manager's private basics reader uses its own authorized projection.
+Event? _publishedRichEvent(
+  DocumentSnapshot<Map<String, dynamic>> snapshot,
+) {
+  final data = snapshot.data();
+  if (data == null || data['publicationState'] != 'published' ||
+      (data['organizerId'] is! String && data['clubId'] is! String) ||
+      data['startTime'] is! Timestamp || data['endTime'] is! Timestamp ||
+      data['meetingPoint'] is! String || data['distanceKm'] is! num ||
+      data['pace'] is! String || data['capacityLimit'] is! int ||
+      data['description'] is! String || data['priceInPaise'] is! int) {
+    return null;
+  }
+  return Event.fromJson({...data, 'id': snapshot.id});
 }
 
 @riverpod

@@ -17,6 +17,46 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventSetupReceiptDocument',
+    source: 'firestore/event_setup_receipts.schema.json',
+    schema: schemaEventSetupReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupPreferences',
+    source: 'embedded/organizer_event_setup_preferences.schema.json',
+    schema: schemaOrganizerEventSetupPreferencesSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetOrganizerEventSetupDefaultsCallablePayload',
+    source: 'callables/get_organizer_event_setup_defaults_payload.schema.json',
+    schema: schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdateOrganizerEventSetupDefaultsCallablePayload',
+    source: 'callables/update_organizer_event_setup_defaults_payload.schema.json',
+    schema: schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupDefaultsCallableResponse',
+    source: 'callable_responses/organizer_event_setup_defaults_response.schema.json',
+    schema: schemaOrganizerEventSetupDefaultsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdateOrganizerEventSetupDefaultsCallableResponse',
+    source: 'callable_responses/update_organizer_event_setup_defaults_response.schema.json',
+    schema: schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupDefaultsDocument',
+    source: 'firestore/organizer_event_setup_defaults.schema.json',
+    schema: schemaOrganizerEventSetupDefaultsDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupDefaultReceiptDocument',
+    source: 'firestore/organizer_event_setup_default_receipts.schema.json',
+    schema: schemaOrganizerEventSetupDefaultReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRehearsalMilestoneDocument',
     source: 'firestore/event_rehearsal_milestones.schema.json',
     schema: schemaEventRehearsalMilestoneDocumentSchema,
@@ -2577,6 +2617,46 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaSetClubNotificationPreferenceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventSetupDefaults',
+    source: 'embedded/event_setup_defaults.schema.json',
+    schema: schemaEventSetupDefaultsSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CreatePrivateEventSetupCallablePayload',
+    source: 'callables/create_private_event_setup_payload.schema.json',
+    schema: schemaCreatePrivateEventSetupCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdatePrivateEventBasicsCallablePayload',
+    source: 'callables/update_private_event_basics_payload.schema.json',
+    schema: schemaUpdatePrivateEventBasicsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetPrivateEventSetupCallablePayload',
+    source: 'callables/get_private_event_setup_payload.schema.json',
+    schema: schemaGetPrivateEventSetupCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PrivateEventSetupMutationCallableResponse',
+    source: 'callable_responses/private_event_setup_mutation_response.schema.json',
+    schema: schemaPrivateEventSetupMutationCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PrivateEventSetupCallableResponse',
+    source: 'callable_responses/private_event_setup_response.schema.json',
+    schema: schemaPrivateEventSetupCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'QueryOrganizerFormResponsesCallablePayload',
+    source: 'callables/query_organizer_form_responses_payload.schema.json',
+    schema: schemaQueryOrganizerFormResponsesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'QueryOrganizerFormResponsesCallableResponse',
+    source: 'callable_responses/query_organizer_form_responses_response.schema.json',
+    schema: schemaQueryOrganizerFormResponsesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CreateEventCallablePayload',
     source: 'callables/create_event_payload.schema.json',
     schema: schemaCreateEventCallablePayloadSchema,
@@ -4154,6 +4234,14 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventSetupReceiptDocument': schemaEventSetupReceiptDocumentSchema,
+  'OrganizerEventSetupPreferences': schemaOrganizerEventSetupPreferencesSchema,
+  'GetOrganizerEventSetupDefaultsCallablePayload': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'UpdateOrganizerEventSetupDefaultsCallablePayload': schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'OrganizerEventSetupDefaultsCallableResponse': schemaOrganizerEventSetupDefaultsCallableResponseSchema,
+  'UpdateOrganizerEventSetupDefaultsCallableResponse': schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema,
+  'OrganizerEventSetupDefaultsDocument': schemaOrganizerEventSetupDefaultsDocumentSchema,
+  'OrganizerEventSetupDefaultReceiptDocument': schemaOrganizerEventSetupDefaultReceiptDocumentSchema,
   'EventRehearsalMilestoneDocument': schemaEventRehearsalMilestoneDocumentSchema,
   'GetEventRehearsalSummaryCallablePayload': schemaGetEventRehearsalSummaryCallablePayloadSchema,
   'EventRehearsalSummaryCallableResponse': schemaEventRehearsalSummaryCallableResponseSchema,
@@ -4666,6 +4754,14 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'DeleteClubCallablePayload': schemaDeleteClubCallablePayloadSchema,
   'ClubMembershipCallablePayload': schemaClubMembershipCallablePayloadSchema,
   'SetClubNotificationPreferenceCallablePayload': schemaSetClubNotificationPreferenceCallablePayloadSchema,
+  'EventSetupDefaults': schemaEventSetupDefaultsSchema,
+  'CreatePrivateEventSetupCallablePayload': schemaCreatePrivateEventSetupCallablePayloadSchema,
+  'UpdatePrivateEventBasicsCallablePayload': schemaUpdatePrivateEventBasicsCallablePayloadSchema,
+  'GetPrivateEventSetupCallablePayload': schemaGetPrivateEventSetupCallablePayloadSchema,
+  'PrivateEventSetupMutationCallableResponse': schemaPrivateEventSetupMutationCallableResponseSchema,
+  'PrivateEventSetupCallableResponse': schemaPrivateEventSetupCallableResponseSchema,
+  'QueryOrganizerFormResponsesCallablePayload': schemaQueryOrganizerFormResponsesCallablePayloadSchema,
+  'QueryOrganizerFormResponsesCallableResponse': schemaQueryOrganizerFormResponsesCallableResponseSchema,
   'CreateEventCallablePayload': schemaCreateEventCallablePayloadSchema,
   'UpdateEventCallablePayload': schemaUpdateEventCallablePayloadSchema,
   'CancelEventCallablePayload': schemaCancelEventCallablePayloadSchema,
@@ -4984,6 +5080,14 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_setup_receipts.schema.json': schemaEventSetupReceiptDocumentSchema,
+  'embedded/organizer_event_setup_preferences.schema.json': schemaOrganizerEventSetupPreferencesSchema,
+  'callables/get_organizer_event_setup_defaults_payload.schema.json': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'callables/update_organizer_event_setup_defaults_payload.schema.json': schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'callable_responses/organizer_event_setup_defaults_response.schema.json': schemaOrganizerEventSetupDefaultsCallableResponseSchema,
+  'callable_responses/update_organizer_event_setup_defaults_response.schema.json': schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema,
+  'firestore/organizer_event_setup_defaults.schema.json': schemaOrganizerEventSetupDefaultsDocumentSchema,
+  'firestore/organizer_event_setup_default_receipts.schema.json': schemaOrganizerEventSetupDefaultReceiptDocumentSchema,
   'firestore/event_rehearsal_milestones.schema.json': schemaEventRehearsalMilestoneDocumentSchema,
   'callables/get_event_rehearsal_summary_payload.schema.json': schemaGetEventRehearsalSummaryCallablePayloadSchema,
   'callable_responses/event_rehearsal_summary_response.schema.json': schemaEventRehearsalSummaryCallableResponseSchema,
@@ -5496,6 +5600,14 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/delete_club_payload.schema.json': schemaDeleteClubCallablePayloadSchema,
   'callables/club_membership_payload.schema.json': schemaClubMembershipCallablePayloadSchema,
   'callables/set_club_notification_preference_payload.schema.json': schemaSetClubNotificationPreferenceCallablePayloadSchema,
+  'embedded/event_setup_defaults.schema.json': schemaEventSetupDefaultsSchema,
+  'callables/create_private_event_setup_payload.schema.json': schemaCreatePrivateEventSetupCallablePayloadSchema,
+  'callables/update_private_event_basics_payload.schema.json': schemaUpdatePrivateEventBasicsCallablePayloadSchema,
+  'callables/get_private_event_setup_payload.schema.json': schemaGetPrivateEventSetupCallablePayloadSchema,
+  'callable_responses/private_event_setup_mutation_response.schema.json': schemaPrivateEventSetupMutationCallableResponseSchema,
+  'callable_responses/private_event_setup_response.schema.json': schemaPrivateEventSetupCallableResponseSchema,
+  'callables/query_organizer_form_responses_payload.schema.json': schemaQueryOrganizerFormResponsesCallablePayloadSchema,
+  'callable_responses/query_organizer_form_responses_response.schema.json': schemaQueryOrganizerFormResponsesCallableResponseSchema,
   'callables/create_event_payload.schema.json': schemaCreateEventCallablePayloadSchema,
   'callables/update_event_payload.schema.json': schemaUpdateEventCallablePayloadSchema,
   'callables/cancel_event_payload.schema.json': schemaCancelEventCallablePayloadSchema,

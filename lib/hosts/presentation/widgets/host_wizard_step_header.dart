@@ -3,20 +3,21 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class CreateEventStepHeader extends StatelessWidget {
-  const CreateEventStepHeader({
+/// Shared Host wizard chrome for club and event creation.
+class HostWizardStepHeader extends StatelessWidget {
+  const HostWizardStepHeader({
     super.key,
     required this.title,
-    required this.clubName,
+    required this.subtitle,
     required this.currentStep,
     required this.totalSteps,
-    required this.onClose,
+    this.onClose,
     this.onStepOverview,
     this.isReviewing = false,
   });
 
   final String title;
-  final String clubName;
+  final String? subtitle;
   final int currentStep;
   final int totalSteps;
   final VoidCallback? onClose;
@@ -29,7 +30,7 @@ class CreateEventStepHeader extends StatelessWidget {
       stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
       compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(context.l10n),
       title: title,
-      subtitle: clubName,
+      subtitle: subtitle,
       step: isReviewing ? null : currentStep + 1,
       total: isReviewing ? null : totalSteps,
       onBack: onClose,

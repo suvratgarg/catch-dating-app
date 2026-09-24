@@ -20,57 +20,6 @@ class CursorPage<T, C> {
       CursorPage(items: List<T>.empty(), hasMore: false);
 }
 
-/// Provider-friendly page accumulation state.
-///
-/// Repositories own cursor acquisition. Notifiers own this immutable state and
-/// call [append] after each successful page, which de-duplicates records by
-/// stable identity and preserves server order.
-@immutable
-class CursorPageAccumulator<T, C> {
-  const CursorPageAccumulator({
-    this.items = const [],
-    this.nextCursor,
-    this.hasMore = true,
-    this.isLoadingMore = false,
-  });
-
-  final List<T> items;
-  final C? nextCursor;
-  final bool hasMore;
-  final bool isLoadingMore;
-
-  CursorPageAccumulator<T, C> copyWith({
-    List<T>? items,
-    C? nextCursor,
-    bool clearCursor = false,
-    bool? hasMore,
-    bool? isLoadingMore,
-  }) {
-    return CursorPageAccumulator(
-      items: items ?? this.items,
-      nextCursor: clearCursor ? null : nextCursor ?? this.nextCursor,
-      hasMore: hasMore ?? this.hasMore,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-    );
-  }
-
-  CursorPageAccumulator<T, C> append(
-    CursorPage<T, C> page, {
-    required Object Function(T item) idOf,
-  }) {
-    final seen = <Object>{};
-    final merged = <T>[];
-    for (final item in [...items, ...page.items]) {
-      if (seen.add(idOf(item))) merged.add(item);
-    }
-    return CursorPageAccumulator(
-      items: List.unmodifiable(merged),
-      nextCursor: page.nextCursor,
-      hasMore: page.hasMore,
-    );
-  }
-}
-
 /// Shared Firestore `startAfterDocument` window fetch.
 ///
 /// Fetching `limit + 1` makes [CursorPage.hasMore] truthful without an extra

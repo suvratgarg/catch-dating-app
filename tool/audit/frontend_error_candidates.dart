@@ -1257,7 +1257,6 @@ bool _isTestPath(String path) {
 bool _isCoreErrorInfraFile(String path) {
   return path == 'lib/core/app_error_context.dart' ||
       path == 'lib/core/backend_error_util.dart' ||
-      path == 'lib/core/backend_error_message.dart' ||
       path == 'lib/core/app_error_message.dart' ||
       path == 'lib/exceptions/error_logger.dart' ||
       path == 'lib/exceptions/console_crash_reporter.dart';

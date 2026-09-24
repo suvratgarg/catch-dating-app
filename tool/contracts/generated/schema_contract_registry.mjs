@@ -1,6 +1,1061 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const eventSetupReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_setup_receipts.schema.json",
+  "title": "EventSetupReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation",
+    "actorUid",
+    "organizerId",
+    "requestHash",
+    "eventId",
+    "appliedRevision",
+    "createdAt"
+  ],
+  "properties": {
+    "operation": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update"
+      ]
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "eventSetupReceipts",
+  "x-firestore-path": "eventSetupReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "private event setup operations"
+};
+
+export const organizerEventSetupPreferencesSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/organizer_event_setup_preferences.schema.json",
+  "title": "OrganizerEventSetupPreferences",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "usualDurationMinutes": {
+      "type": "integer",
+      "minimum": 15,
+      "maximum": 240
+    },
+    "preferredVenueId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "offerValidityMinutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 10080
+    },
+    "collectionPreference": {
+      "type": "string",
+      "enum": [
+        "manualInstructions",
+        "reusablePage",
+        "personalRequest",
+        "catchCheckout"
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "offerMessageTemplate": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "paymentInstructions": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reusablePaymentPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "reusableForEvents"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "reusableForEvents": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    }
+  }
+};
+
+export const getOrganizerEventSetupDefaultsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_event_setup_defaults_payload.schema.json",
+  "title": "GetOrganizerEventSetupDefaultsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    }
+  }
+};
+
+export const updateOrganizerEventSetupDefaultsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_event_setup_defaults_payload.schema.json",
+  "title": "UpdateOrganizerEventSetupDefaultsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "reviewedDefaultsHash",
+    "changes"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "reviewedDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "usualDurationMinutes": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 15,
+                  "maximum": 240
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "preferredVenueId": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "offerValidityMinutes": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 10080
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "collectionPreference": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "manualInstructions",
+                    "reusablePage",
+                    "personalRequest",
+                    "catchCheckout"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "currency": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "offerMessageTemplate": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "paymentInstructions": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "reusablePaymentPage": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "url",
+                    "reusableForEvents"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048
+                    },
+                    "reusableForEvents": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "timezone": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "minProperties": 1,
+      "maxProperties": 9
+    }
+  }
+};
+
+export const organizerEventSetupDefaultsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_event_setup_defaults_response.schema.json",
+  "title": "OrganizerEventSetupDefaultsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "city",
+    "timezone",
+    "organizerDefaultsRevision",
+    "basicsReviewedHash",
+    "preferencesRevision",
+    "preferences",
+    "preferencesHash",
+    "reviewedDefaultsHash"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cityId",
+            "marketId"
+          ],
+          "properties": {
+            "cityId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "marketId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timezone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "organizerDefaultsRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "basicsReviewedHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "preferencesRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "preferences": {
+      "title": "OrganizerEventSetupPreferences",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "usualDurationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 240
+        },
+        "preferredVenueId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "offerValidityMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 10080
+        },
+        "collectionPreference": {
+          "type": "string",
+          "enum": [
+            "manualInstructions",
+            "reusablePage",
+            "personalRequest",
+            "catchCheckout"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "offerMessageTemplate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "paymentInstructions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "reusablePaymentPage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "reusableForEvents"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "reusableForEvents": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      }
+    },
+    "preferencesHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewedDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const updateOrganizerEventSetupDefaultsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_organizer_event_setup_defaults_response.schema.json",
+  "title": "UpdateOrganizerEventSetupDefaultsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appliedRevision",
+    "current",
+    "replayed"
+  ],
+  "properties": {
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "current": {
+      "title": "OrganizerEventSetupDefaultsCallableResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "city",
+        "timezone",
+        "organizerDefaultsRevision",
+        "basicsReviewedHash",
+        "preferencesRevision",
+        "preferences",
+        "preferencesHash",
+        "reviewedDefaultsHash"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "cityId",
+                "marketId"
+              ],
+              "properties": {
+                "cityId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
+                "marketId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timezone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "organizerDefaultsRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "basicsReviewedHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "preferencesRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "preferences": {
+          "title": "OrganizerEventSetupPreferences",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "usualDurationMinutes": {
+              "type": "integer",
+              "minimum": 15,
+              "maximum": 240
+            },
+            "preferredVenueId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "offerValidityMinutes": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 10080
+            },
+            "collectionPreference": {
+              "type": "string",
+              "enum": [
+                "manualInstructions",
+                "reusablePage",
+                "personalRequest",
+                "catchCheckout"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "offerMessageTemplate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "paymentInstructions": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "reusablePaymentPage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "url",
+                "reusableForEvents"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048
+                },
+                "reusableForEvents": {
+                  "type": "boolean",
+                  "const": true
+                }
+              }
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        },
+        "preferencesHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reviewedDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const organizerEventSetupDefaultsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_setup_defaults.schema.json",
+  "title": "OrganizerEventSetupDefaultsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "revision",
+    "eventSetup",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "eventSetup": {
+      "title": "OrganizerEventSetupPreferences",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "usualDurationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 240
+        },
+        "preferredVenueId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "offerValidityMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 10080
+        },
+        "collectionPreference": {
+          "type": "string",
+          "enum": [
+            "manualInstructions",
+            "reusablePage",
+            "personalRequest",
+            "catchCheckout"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "offerMessageTemplate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "paymentInstructions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "reusablePaymentPage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "reusableForEvents"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "reusableForEvents": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    }
+  },
+  "x-firestore-collection": "organizerEventSetupDefaults",
+  "x-firestore-path": "organizerEventSetupDefaults/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "organizer event setup manager operations"
+};
+
+export const organizerEventSetupDefaultReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_setup_default_receipts.schema.json",
+  "title": "OrganizerEventSetupDefaultReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actorUid",
+    "organizerId",
+    "requestId",
+    "requestHash",
+    "appliedRevision",
+    "createdAt"
+  ],
+  "properties": {
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerEventSetupDefaultReceipts",
+  "x-firestore-path": "organizerEventSetupDefaultReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer event setup manager operations"
+};
+
 export const eventRehearsalMilestoneDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_rehearsal_milestones.schema.json",
@@ -120484,41 +121539,15 @@ export const eventDocumentSchema = {
   "required": [
     "clubId",
     "startTime",
-    "endTime",
-    "meetingPoint",
-    "meetingLocation",
-    "startingPointLat",
-    "startingPointLng",
-    "locationDetails",
-    "eventFormat",
-    "distanceKm",
-    "pace",
-    "capacityLimit",
-    "description",
-    "priceInPaise",
     "bookedCount",
     "checkedInCount",
     "waitlistedCount",
     "status",
     "cancelledAt",
     "cancellationReason",
-    "constraints",
     "genderCounts",
     "cohortCounts",
-    "waitlistedCohortCounts",
-    "discoveryMarketId",
-    "discoveryCityName",
-    "discoveryActivityKind",
-    "discoveryGeoCell",
-    "discoveryHasOpenSpots",
-    "discoveryAvailability",
-    "discoveryOpenCohorts",
-    "discoveryWaitlistCohorts",
-    "discoveryInviteRequired",
-    "discoveryMembershipRequired",
-    "discoveryManualApprovalRequired",
-    "discoveryMinAge",
-    "discoveryMaxAge"
+    "waitlistedCohortCounts"
   ],
   "properties": {
     "name": {
@@ -122249,8 +123278,348 @@ export const eventDocumentSchema = {
       "maximum": 2147483647,
       "x-catch-ownership": "callable-owned",
       "description": "Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero."
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "private",
+        "published"
+      ],
+      "description": "Explicit publication boundary. Legacy absent values require full rich event data; new progressive events must declare their state.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventCityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventMarketId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventLocalDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventLocalStartTime": {
+      "type": "string",
+      "pattern": "^[0-9]{2}:[0-9]{2}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventTimezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "setupDefaults": {
+      "title": "EventSetupDefaults",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "city",
+        "timezone",
+        "organizerDefaultsRevision",
+        "organizerDefaultsHash"
+      ],
+      "properties": {
+        "city": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "cityId",
+                "marketId"
+              ],
+              "properties": {
+                "cityId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "marketId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event"
+              ]
+            }
+          }
+        },
+        "timezone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event"
+              ]
+            }
+          }
+        },
+        "organizerDefaultsRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "organizerDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "definitions": {
+        "basicsInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "city",
+            "localDate",
+            "localStartTime",
+            "timezone"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "city": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "inherit",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "set",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "cityId",
+                        "marketId"
+                      ],
+                      "properties": {
+                        "cityId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "marketId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "localDate": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "localStartTime": {
+              "type": "string",
+              "pattern": "^[0-9]{2}:[0-9]{2}$"
+            },
+            "timezone": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "inherit",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "set",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    }
+                  }
+                }
+              ]
+            },
+            "reviewedDefaultsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "publicationState"
+        ],
+        "properties": {
+          "publicationState": {
+            "const": "private"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "organizerId",
+          "name",
+          "eventCityId",
+          "eventMarketId",
+          "eventLocalDate",
+          "eventLocalStartTime",
+          "eventTimezone",
+          "setupDefaults",
+          "setupRevision",
+          "publicRegistrationEnabled"
+        ],
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "clubId",
+          "startTime",
+          "endTime",
+          "meetingPoint",
+          "meetingLocation",
+          "startingPointLat",
+          "startingPointLng",
+          "locationDetails",
+          "eventFormat",
+          "distanceKm",
+          "pace",
+          "capacityLimit",
+          "description",
+          "priceInPaise",
+          "bookedCount",
+          "checkedInCount",
+          "waitlistedCount",
+          "status",
+          "cancelledAt",
+          "cancellationReason",
+          "constraints",
+          "genderCounts",
+          "cohortCounts",
+          "waitlistedCohortCounts",
+          "discoveryMarketId",
+          "discoveryCityName",
+          "discoveryActivityKind",
+          "discoveryGeoCell",
+          "discoveryHasOpenSpots",
+          "discoveryAvailability",
+          "discoveryOpenCohorts",
+          "discoveryWaitlistCohorts",
+          "discoveryInviteRequired",
+          "discoveryMembershipRequired",
+          "discoveryManualApprovalRequired",
+          "discoveryMinAge",
+          "discoveryMaxAge"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "setupRevision"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicationState",
+          "organizerId",
+          "name",
+          "eventCityId",
+          "eventMarketId",
+          "eventLocalDate",
+          "eventLocalStartTime",
+          "eventTimezone",
+          "setupDefaults"
+        ]
+      }
+    }
+  ]
 };
 
 export const eventPlanChangeDocumentSchema = {
@@ -170876,6 +172245,1200 @@ export const setClubNotificationPreferenceCallablePayloadSchema = {
     },
     "enabled": {
       "type": "boolean"
+    }
+  }
+};
+
+export const eventSetupDefaultsSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_setup_defaults.schema.json",
+  "title": "EventSetupDefaults",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "city",
+    "timezone",
+    "organizerDefaultsRevision",
+    "organizerDefaultsHash"
+  ],
+  "properties": {
+    "city": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cityId",
+            "marketId"
+          ],
+          "properties": {
+            "cityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "marketId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event"
+          ]
+        }
+      }
+    },
+    "timezone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "event"
+          ]
+        }
+      }
+    },
+    "organizerDefaultsRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "organizerDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "definitions": {
+    "basicsInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "city",
+        "localDate",
+        "localStartTime",
+        "timezone"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "city": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "cityId",
+                    "marketId"
+                  ],
+                  "properties": {
+                    "cityId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "marketId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "localDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "localStartTime": {
+          "type": "string",
+          "pattern": "^[0-9]{2}:[0-9]{2}$"
+        },
+        "timezone": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            }
+          ]
+        },
+        "reviewedDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+};
+
+export const createPrivateEventSetupCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_private_event_setup_payload.schema.json",
+  "title": "CreatePrivateEventSetupCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "basics"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "basics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "city",
+        "localDate",
+        "localStartTime",
+        "timezone"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "city": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "cityId",
+                    "marketId"
+                  ],
+                  "properties": {
+                    "cityId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "marketId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "localDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "localStartTime": {
+          "type": "string",
+          "pattern": "^[0-9]{2}:[0-9]{2}$"
+        },
+        "timezone": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            }
+          ]
+        },
+        "reviewedDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+};
+
+export const updatePrivateEventBasicsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_private_event_basics_payload.schema.json",
+  "title": "UpdatePrivateEventBasicsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "basics",
+    "eventId",
+    "expectedSetupRevision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "basics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "city",
+        "localDate",
+        "localStartTime",
+        "timezone"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "city": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "cityId",
+                    "marketId"
+                  ],
+                  "properties": {
+                    "cityId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "marketId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "localDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "localStartTime": {
+          "type": "string",
+          "pattern": "^[0-9]{2}:[0-9]{2}$"
+        },
+        "timezone": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            }
+          ]
+        },
+        "reviewedDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483646
+    }
+  }
+};
+
+export const getPrivateEventSetupCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_private_event_setup_payload.schema.json",
+  "title": "GetPrivateEventSetupCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const privateEventSetupMutationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/private_event_setup_mutation_response.schema.json",
+  "title": "PrivateEventSetupMutationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "setupRevision",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const privateEventSetupCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/private_event_setup_response.schema.json",
+  "title": "PrivateEventSetupCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "setupRevision",
+    "name",
+    "city",
+    "localDate",
+    "localStartTime",
+    "timezone",
+    "startTimeMillis",
+    "publicationState",
+    "status",
+    "setupDefaults",
+    "detailsConfigured"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "city": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cityId",
+        "marketId"
+      ],
+      "properties": {
+        "cityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "marketId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    "localDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "localStartTime": {
+      "type": "string",
+      "pattern": "^[0-9]{2}:[0-9]{2}$"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "startTimeMillis": {
+      "type": "integer"
+    },
+    "publicationState": {
+      "type": "string",
+      "const": "private"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled"
+      ]
+    },
+    "setupDefaults": {
+      "title": "EventSetupDefaults",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "city",
+        "timezone",
+        "organizerDefaultsRevision",
+        "organizerDefaultsHash"
+      ],
+      "properties": {
+        "city": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "cityId",
+                "marketId"
+              ],
+              "properties": {
+                "cityId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "marketId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event"
+              ]
+            }
+          }
+        },
+        "timezone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event"
+              ]
+            }
+          }
+        },
+        "organizerDefaultsRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "organizerDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "definitions": {
+        "basicsInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "city",
+            "localDate",
+            "localStartTime",
+            "timezone"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "city": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "inherit",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "set",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "cityId",
+                        "marketId"
+                      ],
+                      "properties": {
+                        "cityId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "marketId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "localDate": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "localStartTime": {
+              "type": "string",
+              "pattern": "^[0-9]{2}:[0-9]{2}$"
+            },
+            "timezone": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "inherit",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "set",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    }
+                  }
+                }
+              ]
+            },
+            "reviewedDefaultsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "detailsConfigured": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const queryOrganizerFormResponsesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/query_organizer_form_responses_payload.schema.json",
+  "title": "QueryOrganizerFormResponsesCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "statuses",
+    "predicate",
+    "sort",
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "formId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "versionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "submitted",
+          "withdrawn"
+        ]
+      }
+    },
+    "predicate": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "maxProperties": 5,
+      "additionalProperties": true,
+      "description": "Published-version-aware compiler validates ALL/ANY tree, operators, value types, sensitive exclusion, depth 3 and maximum 20 leaves before any response scan."
+    },
+    "sort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId",
+        "direction",
+        "nulls"
+      ],
+      "properties": {
+        "questionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        },
+        "nulls": {
+          "type": "string",
+          "enum": [
+            "first",
+            "last"
+          ]
+        }
+      }
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
+export const queryOrganizerFormResponsesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/query_organizer_form_responses_response.schema.json",
+  "title": "QueryOrganizerFormResponsesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "form",
+    "fieldCatalog",
+    "items",
+    "total",
+    "nextCursor",
+    "selectedIds",
+    "queryHash",
+    "resultHash"
+  ],
+  "properties": {
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "formId",
+        "title",
+        "versionId",
+        "version"
+      ],
+      "properties": {
+        "formId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "versionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,128}$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "fieldCatalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "label",
+          "kind",
+          "operators",
+          "sortable",
+          "options"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sortable": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseId",
+          "formId",
+          "formTitle",
+          "versionId",
+          "version",
+          "status",
+          "identityKind",
+          "identity",
+          "sourceLinkId",
+          "submittedAtMillis",
+          "withdrawnAtMillis"
+        ],
+        "properties": {
+          "responseId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "formId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "formTitle": {
+            "type": "string"
+          },
+          "versionId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,128}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "withdrawn"
+            ]
+          },
+          "identityKind": {
+            "type": "string",
+            "enum": [
+              "anonymous",
+              "emailVerified",
+              "phoneVerified",
+              "catchAccount"
+            ]
+          },
+          "identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "displayName",
+              "email",
+              "phoneE164",
+              "origin"
+            ],
+            "properties": {
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email",
+                "maxLength": 320
+              },
+              "phoneE164": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\+[1-9][0-9]{7,14}$"
+              },
+              "origin": {
+                "type": "string",
+                "enum": [
+                  "anonymous",
+                  "respondentGranted",
+                  "organizerAcquired"
+                ]
+              }
+            }
+          },
+          "sourceLinkId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "submittedAtMillis": {
+            "type": "integer"
+          },
+          "withdrawnAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "selectedIds": {
+      "type": "array",
+      "maxItems": 5000,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,128}$"
+      }
+    },
+    "queryHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "resultHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     }
   }
 };

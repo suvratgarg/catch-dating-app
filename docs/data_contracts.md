@@ -1753,6 +1753,25 @@ The contract layer owns:
 - migration metadata for path/storage renames;
 - valid and invalid fixtures.
 
+### Progressive Event Setup Contracts
+
+The progressive wizard uses `createPrivateEventSetup`,
+`updatePrivateEventBasics`, and `getPrivateEventSetup` payload contracts.
+Create/edit accept explicit city and timezone decisions, a stable request ID,
+and a reviewed defaults hash when inheriting organizer values. Edit also
+requires the current setup revision. Unknown authority fields are rejected.
+
+The manager read response is a whitelist projection with civil date/time,
+resolved city/timezone, revision and setup provenance. It does not parse a
+minimal event through the rich Event model, expose payment preferences, or
+invent venue, end time, capacity or price. Organizer management and deleted-user
+checks occur in the same transaction as the current event read. Published
+events use the published event editor instead.
+
+These contracts and services are not rollout authorization. Private persistence
+remains disabled until the canonical document schema, Firestore rules and
+public query migration have passed their integrated privacy checks.
+
 ### Functions Runtime Schema Modules
 
 The schema generator emits independent runtime modules under

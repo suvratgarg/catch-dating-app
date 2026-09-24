@@ -12,6 +12,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_c
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -182,8 +183,15 @@ void main() {
         settle: false,
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
-      expect(find.byType(HostFormsNoOrganizer), findsOneWidget);
+      expect(find.byType(HostAudienceNoOrganizerEmptyState), findsOneWidget);
       expect(find.byType(CatchSliverEmptyState), findsOneWidget);
+      final createButton = tester.widget<CatchButton>(
+        find.descendant(
+          of: find.byType(CatchSliverEmptyState),
+          matching: find.byType(CatchButton),
+        ),
+      );
+      expect(createButton.size, CatchButtonSize.sm);
     }
   });
 

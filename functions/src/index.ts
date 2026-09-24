@@ -681,3 +681,12 @@ export {
   refreshProgramFlightStatuses,
 } from "./transport/programFlightRefresh";
 export {flightAlertWebhook} from "./transport/flightAlerts";
+
+export {
+  createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
+} from "./events/progressiveSetup/callables";
+
+export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
+
+export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+  from "./organizers/eventSetupDefaults/callables";

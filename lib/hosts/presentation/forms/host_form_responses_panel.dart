@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -6,13 +7,17 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -34,6 +39,7 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
     this.onClearFormFilter,
     this.onFormChanged,
     this.showFormContext = true,
+    this.queryCapability,
   });
 
   final String organizerId;
@@ -45,6 +51,7 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
   final VoidCallback? onClearFormFilter;
   final ValueChanged<String?>? onFormChanged;
   final bool showFormContext;
+  final HostResponseQueryCapability? queryCapability;
 
   @override
   ConsumerState<HostFormResponsesPanel> createState() =>
@@ -53,6 +60,7 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
 
 class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
+  HostResponseQueryController? _queryController;
   HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
   String? _versionId;
@@ -62,8 +70,43 @@ class _HostFormResponsesPanelState
   List<HostFormResponseFilterOption> _filterOptions = const [];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.queryCapability case final capability?) {
+      _queryController = HostResponseQueryController(
+        capability.gateway ??
+            HostResponseQueryRepository(ref.read(firebaseFunctionsProvider)),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _queryController?.dispose();
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(covariant HostFormResponsesPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.queryCapability?.gateway != widget.queryCapability?.gateway ||
+        oldWidget.queryCapability?.versionId !=
+            widget.queryCapability?.versionId ||
+        (oldWidget.queryCapability == null) !=
+            (widget.queryCapability == null) ||
+        oldWidget.formId != widget.formId ||
+        oldWidget.organizerId != widget.organizerId) {
+      _queryController?.dispose();
+      final capability = widget.queryCapability;
+      _queryController = capability == null
+          ? null
+          : HostResponseQueryController(
+              capability.gateway ??
+                  HostResponseQueryRepository(
+                    ref.read(firebaseFunctionsProvider),
+                  ),
+            );
+    }
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId) {
       _answerFilters.clear();
@@ -76,11 +119,35 @@ class _HostFormResponsesPanelState
 
   @override
   Widget build(BuildContext context) {
+    final capability = widget.queryCapability;
+    final queryController = _queryController;
+    if (capability != null &&
+        queryController != null &&
+        widget.formId != null) {
+      return SliverToBoxAdapter(
+        child: HostResponseQueryWorkspaceSection(
+          controller: queryController,
+          request: HostResponseQueryRequest(
+            organizerId: widget.organizerId,
+            formId: widget.formId!,
+            versionId: capability.versionId,
+          ),
+          copy: capability.copy,
+          onReviewSelection: capability.onReviewSelection,
+          onOpenResponse: (responseId) => context.pushNamed(
+            Routes.hostFormResponseDetailScreen.name,
+            pathParameters: {'responseId': responseId},
+            queryParameters: {'organizerId': widget.organizerId},
+          ),
+        ),
+      );
+    }
     final request = _responseRequest(widget.formId);
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
     final loaded = catchAsyncStateFromAsyncValue(responses).value;
     if (loaded?.versionScope != null) _versionScope = loaded!.versionScope;
-    final resolvingVersion = widget.formId != null &&
+    final resolvingVersion =
+        widget.formId != null &&
         loaded?.versionScope?.activeVersionId != null &&
         !_versionResolved;
     if (resolvingVersion) {
@@ -114,8 +181,9 @@ class _HostFormResponsesPanelState
           _versionResolved &&
           _versionId != _versionScope!.activeVersionId)
         versionLabel!,
-      for (final entry in (_answerFilters.entries.toList()
-        ..sort((a, b) => a.key.compareTo(b.key))))
+      for (final entry
+          in (_answerFilters.entries.toList()
+            ..sort((a, b) => a.key.compareTo(b.key))))
         for (final option in _filterOptions.where(
           (item) => item.questionId == entry.key,
         ))
@@ -388,8 +456,7 @@ class _HostFormResponsesPanelState
 
   void _updateFilters(VoidCallback update) => setState(update);
 
-  int _versionNumber(String id) =>
-      int.tryParse(id.split('_v').last) ?? 0;
+  int _versionNumber(String id) => int.tryParse(id.split('_v').last) ?? 0;
 
   void _selectVersion(String? id) {
     if (_versionId == id && _versionResolved) return;
