@@ -1,13 +1,13 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {OrganizerFormResponseDocument,
+import type {OrganizerFormDocument, OrganizerFormResponseDocument,
   OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {requireDoc} from "../shared/validation";
 import {compileResponseQuery, materializeResponseQuery, pageResponseQuery,
-  resolveSelectedResponseIds} from "./query";
+  resolveSelectedResponseIds, responseQueryFieldCatalog} from "./query";
 import type {ResponseQueryRow, ResponseQuerySource} from "./query";
 
 interface Scope {
@@ -16,6 +16,33 @@ interface Scope {
   organizerId: string;
   formId: string;
   versionId: string;
+}
+
+/** Proposed callable-safe page shape; no answer or profile projection. */
+export interface ResponseQueryDisplayRow {
+  responseId: string;
+  formId: string;
+  formTitle: string;
+  versionId: string;
+  version: number;
+  status: OrganizerFormResponseDocument["status"];
+  identityKind: OrganizerFormResponseDocument["identityKind"];
+  identity: Pick<OrganizerFormResponseDocument["identity"],
+    "displayName" | "email" | "phoneE164" | "origin">;
+  sourceLinkId: string | null;
+  submittedAtMillis: number;
+  withdrawnAtMillis: number | null;
+}
+
+export interface ResponseQueryPage {
+  form: {formId: string; title: string; versionId: string; version: number};
+  fieldCatalog: ReturnType<typeof responseQueryFieldCatalog>;
+  items: ResponseQueryDisplayRow[];
+  total: number;
+  nextCursor: string | null;
+  selectedIds: string[];
+  queryHash: string;
+  resultHash: string;
 }
 
 const maxScanBytes = 8 * 1024 * 1024;
@@ -86,6 +113,9 @@ export function firestoreResponseQuerySource(scope: Scope):
           formId: response.formId, versionId: response.versionId,
           status: response.status,
           submittedAtMillis: response.submittedAt.toMillis(),
+          withdrawnAtMillis: response.withdrawnAt?.toMillis() ?? null,
+          identityKind: response.identityKind, identity: response.identity,
+          sourceLinkId: response.sourceLinkId,
           answers: response.answers});
         if (rows.length > maxRows) return rows;
       }
@@ -99,15 +129,23 @@ export function firestoreResponseQuerySource(scope: Scope):
 async function prepare(scope: Scope, input: unknown) {
   await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
     organizerId: scope.organizerId});
-  const versionSnap = await scope.db.collection("organizerFormVersions")
-    .doc(scope.versionId).get();
+  const [versionSnap, formSnap] = await Promise.all([
+    scope.db.collection("organizerFormVersions").doc(scope.versionId).get(),
+    scope.db.collection("organizerForms").doc(scope.formId).get(),
+  ]);
   if (!versionSnap.exists) {
     throw new HttpsError("not-found", "Published form version not found.");
   }
   const version = requireDoc<OrganizerFormVersionDocument>(versionSnap,
     "OrganizerFormVersionDocument");
+  if (!formSnap.exists) {
+    throw new HttpsError("not-found", "Form not found.");
+  }
+  const form = requireDoc<OrganizerFormDocument>(formSnap,
+    "OrganizerFormDocument");
   if (version.organizerId !== scope.organizerId ||
-      version.formId !== scope.formId) {
+      version.formId !== scope.formId ||
+      form.organizerId !== scope.organizerId) {
     throw new HttpsError("not-found", "Published form version not found.");
   }
   const query = compileResponseQuery(input, version.definition);
@@ -117,23 +155,44 @@ async function prepare(scope: Scope, input: unknown) {
     throw new HttpsError("permission-denied",
       "Response query scope does not match its authority.");
   }
-  return query;
+  return {query, form, version};
 }
 
-export async function runFirestoreResponseQuery(scope: Scope, input: unknown) {
-  const query = await prepare(scope, input);
+export async function runFirestoreResponseQuery(scope: Scope,
+  input: unknown): Promise<ResponseQueryPage> {
+  const {query, form, version} = await prepare(scope, input);
   const result = await materializeResponseQuery(query,
-    firestoreResponseQuerySource(scope));
-  return {...pageResponseQuery(query, result), selectedIds: result.selectedIds,
-    queryHash: query.hash, resultHash: result.resultHash};
+    firestoreResponseQuerySource(scope),
+    {formTitle: form.title, version: version.version});
+  const page = pageResponseQuery(query, result);
+  return {...page, items: page.items.map((row) => ({
+    responseId: row.id,
+    formId: row.formId,
+    formTitle: form.title,
+    versionId: row.versionId,
+    version: version.version,
+    status: row.status,
+    identityKind: row.identityKind,
+    identity: {displayName: row.identity.displayName,
+      email: row.identity.email, phoneE164: row.identity.phoneE164,
+      origin: row.identity.origin},
+    sourceLinkId: row.sourceLinkId,
+    submittedAtMillis: row.submittedAtMillis,
+    withdrawnAtMillis: row.withdrawnAtMillis,
+  })), form: {formId: scope.formId, title: form.title,
+    versionId: scope.versionId, version: version.version},
+  fieldCatalog: responseQueryFieldCatalog(version.definition),
+  selectedIds: result.selectedIds,
+  queryHash: query.hash, resultHash: result.resultHash};
 }
 
 /** Re-evaluates current results before acting on explicit selected IDs. */
 export async function resolveFirestoreResponseIds(scope: Scope,
   input: unknown, requestedIds: string[], expectedResultHash: string) {
-  const query = await prepare(scope, input);
+  const {query, form, version} = await prepare(scope, input);
   const result = await materializeResponseQuery(query,
-    firestoreResponseQuerySource(scope));
+    firestoreResponseQuerySource(scope),
+    {formTitle: form.title, version: version.version});
   return resolveSelectedResponseIds(query, result, requestedIds,
     expectedResultHash);
 }

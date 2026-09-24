@@ -10,7 +10,10 @@ import {firestoreResponseQuerySource, resolveFirestoreResponseIds,
 const timestamp = admin.firestore.Timestamp.fromMillis(1000);
 const definition = {sections: [{questions: [
   {questionId: "city", kind: "singleChoice", options: [
-    {value: "Delhi"}, {value: "Mumbai"}]},
+    {value: "Delhi", label: "Delhi"},
+    {value: "Mumbai", label: "Mumbai"}], label: "City"},
+  {questionId: "secret", kind: "shortText", options: [],
+    privacyClass: "sensitive", label: "Secret"},
 ]}]};
 const input = {organizerId: "org-1", formId: "form-1",
   versionId: "version-1", statuses: ["submitted"],
@@ -22,18 +25,29 @@ function fixture() {
   const store = new AudienceTestStore({
     "organizers/org-1": {ownerUserId: "host-1", hostUserIds: ["host-1"],
       hostProfiles: []},
+    "organizerForms/form-1": {organizerId: "org-1", title: "Event signup"},
     "organizerFormVersions/version-1": {organizerId: "org-1",
-      formId: "form-1", definition},
+      formId: "form-1", version: 1, definition},
     "organizerFormResponses/one": {organizerId: "org-1", formId: "form-1",
       versionId: "version-1", status: "submitted", submittedAt: timestamp,
-      answers: {city: "Delhi"}},
+      withdrawnAt: null, identityKind: "phoneVerified",
+      identity: {displayName: "Asha", email: "asha@example.test",
+        phoneE164: "+919999999999", searchName: "asha",
+        origin: "respondentGranted"}, sourceLinkId: null,
+      answers: {city: "Delhi", secret: "private one"}},
     "organizerFormResponses/two": {organizerId: "org-1", formId: "form-1",
       versionId: "version-1", status: "submitted",
       submittedAt: admin.firestore.Timestamp.fromMillis(1001),
-      answers: {city: "Delhi"}},
+      withdrawnAt: null, identityKind: "anonymous",
+      identity: {displayName: "Guest", email: null, phoneE164: null,
+        searchName: "guest", origin: "organizerAcquired"},
+      sourceLinkId: null, answers: {city: "Delhi"}},
     "organizerFormResponses/other-version": {organizerId: "org-1",
       formId: "form-1", versionId: "version-2", status: "submitted",
       submittedAt: admin.firestore.Timestamp.fromMillis(1002),
+      withdrawnAt: null, identityKind: "anonymous",
+      identity: {displayName: null, email: null, phoneE164: null,
+        searchName: null, origin: "anonymous"}, sourceLinkId: null,
       answers: {city: "Delhi"}},
   });
   const scope = {db: store.asFirestore(), actorUid: "host-1",
@@ -46,12 +60,23 @@ test("Firestore adapter authorizes and uses one exact query for IDs/pages",
     const {scope} = fixture();
     const first = await runFirestoreResponseQuery(scope, input);
     assert.deepEqual(first.selectedIds, ["one", "two"]);
-    assert.deepEqual(first.items.map((row) => row.id), ["one"]);
+    assert.deepEqual(first.items.map((row) => row.responseId), ["one"]);
+    assert.equal(first.items[0].formTitle, "Event signup");
+    assert.equal(first.form.version, 1);
+    assert.deepEqual(first.items[0].identity,
+      {displayName: "Asha", email: "asha@example.test",
+        phoneE164: "+919999999999", origin: "respondentGranted"});
+    assert.ok(!JSON.stringify(first).includes("private one"));
+    assert.ok(!JSON.stringify(first).includes("searchName"));
+    assert.deepEqual(first.fieldCatalog.map((field) => field.questionId),
+      ["city"]);
     assert.equal(first.total, 2);
     assert.ok(first.nextCursor);
     const second = await runFirestoreResponseQuery(scope,
       {...input, cursor: first.nextCursor});
-    assert.deepEqual(second.items.map((row) => row.id), ["two"]);
+    assert.deepEqual(second.items.map((row) => row.responseId), ["two"]);
+    assert.equal(second.items[0].identityKind, "anonymous");
+    assert.equal(second.items[0].identity.origin, "organizerAcquired");
     assert.equal(second.nextCursor, null);
     assert.deepEqual(await resolveFirestoreResponseIds(scope, input,
       ["two"], first.resultHash), ["two"]);
@@ -63,6 +88,66 @@ test("Firestore adapter authorizes and uses one exact query for IDs/pages",
       actorUid: "outsider"}, input), {code: "permission-denied"});
     await assert.rejects(runFirestoreResponseQuery(scope,
       {...input, versionId: "version-2"}), {code: "permission-denied"});
+  });
+
+test("withdrawn page keeps audit identity but redacts answer content",
+  async () => {
+    const {store, scope} = fixture();
+    store.docs["organizerFormResponses/one"] = {
+      ...store.docs["organizerFormResponses/one"], status: "withdrawn",
+      withdrawnAt: admin.firestore.Timestamp.fromMillis(2000)};
+    const history = await runFirestoreResponseQuery(scope,
+      {...input, statuses: ["withdrawn"], predicate: null});
+    assert.deepEqual(history.items.map((item) => item.responseId), ["one"]);
+    assert.equal(history.items[0].identity.displayName, "Asha");
+    assert.equal(history.items[0].status, "withdrawn");
+    assert.equal(history.items[0].withdrawnAtMillis, 2000);
+    assert.ok(!JSON.stringify(history).includes("private one"));
+    assert.ok(!JSON.stringify(history.items).includes("Delhi"));
+    const filtered = await runFirestoreResponseQuery(scope,
+      {...input, statuses: ["withdrawn"]});
+    assert.deepEqual(filtered.items, []);
+  });
+
+test("display identity and form title changes invalidate continuation",
+  async () => {
+    const {store, scope} = fixture();
+    const first = await runFirestoreResponseQuery(scope, input);
+    assert.ok(first.nextCursor);
+    store.docs["organizerForms/form-1"] = {
+      ...store.docs["organizerForms/form-1"], title: "Renamed signup"};
+    await assert.rejects(runFirestoreResponseQuery(scope,
+      {...input, cursor: first.nextCursor}),
+    {code: "invalid-argument", message: /Refresh/u});
+    store.docs["organizerForms/form-1"] = {
+      ...store.docs["organizerForms/form-1"], title: "Event signup"};
+    const response = store.docs["organizerFormResponses/one"];
+    store.docs["organizerFormResponses/one"] = {...response,
+      identity: {...response.identity as object, displayName: "Renamed Asha"}};
+    await assert.rejects(runFirestoreResponseQuery(scope,
+      {...input, cursor: first.nextCursor}),
+    {code: "invalid-argument", message: /Refresh/u});
+  });
+
+test("field catalog follows only the authorized published version",
+  async () => {
+    const {store, scope} = fixture();
+    store.docs["organizerFormVersions/version-2"] = {
+      organizerId: "org-1", formId: "form-1", version: 2,
+      definition: {sections: [{questions: [{questionId: "campus",
+        label: "Campus", kind: "shortText", options: [],
+        privacyClass: "organizerCustom"}]}]},
+    };
+    const result = await runFirestoreResponseQuery(
+      {...scope, versionId: "version-2"}, {...input,
+        versionId: "version-2", predicate: null});
+    assert.equal(result.form.version, 2);
+    assert.deepEqual(result.fieldCatalog.map((field) => field.questionId),
+      ["campus"]);
+    await assert.rejects(runFirestoreResponseQuery({...scope,
+      actorUid: "outsider", versionId: "version-2"}, {...input,
+      versionId: "version-2", predicate: null}),
+    {code: "permission-denied"});
   });
 
 test("Firestore adapter spends scan budget on all form versions", async () => {
