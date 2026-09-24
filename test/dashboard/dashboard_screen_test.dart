@@ -691,6 +691,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
+            builder: catchNoticeOverlayBuilder,
             home: const ActivityScreen(),
           ),
         ),
@@ -728,6 +729,7 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
+            builder: catchNoticeOverlayBuilder,
             home: const ActivityScreen(),
           ),
         ),

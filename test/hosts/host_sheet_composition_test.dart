@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
@@ -234,15 +236,19 @@ void main() {
   }
 }
 
-Widget _app(bool dark, double scale, Widget child) => MaterialApp(
-  theme: dark ? CatchTheme.dark : CatchTheme.light,
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
-  builder: (context, child) => MediaQuery(
-    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
-    child: child!,
-  ),
-  home: Scaffold(
-    body: Align(alignment: Alignment.bottomCenter, child: child),
+Widget _app(bool dark, double scale, Widget child) => ProviderScope(
+  child: MaterialApp(
+    theme: dark ? CatchTheme.dark : CatchTheme.light,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    builder: (context, appChild) => MediaQuery(
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(scale)),
+      child: CatchNoticeOverlay(child: appChild!),
+    ),
+    home: Scaffold(
+      body: Align(alignment: Alignment.bottomCenter, child: child),
+    ),
   ),
 );
