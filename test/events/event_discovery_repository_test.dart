@@ -84,7 +84,8 @@ void main() {
           eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.yoga),
           bookedCount: 20,
         );
-        await _seedDiscoverableEvent(firestore, matchingEvent);
+        // A legacy public event has no publication marker until backfill.
+        await _seedDiscoverableEvent(firestore, matchingEvent, legacy: true);
         await _seedDiscoverableEvent(firestore, farEvent);
         await _seedDiscoverableEvent(
           firestore,
@@ -306,12 +307,13 @@ Future<void> _seedDiscoverableEvent(
     'nonBinaryOrOther',
   ],
   List<String> waitlistCohorts = const [],
+  bool legacy = false,
 }) {
   final latitude = event.effectiveStartingPointLat;
   final longitude = event.effectiveStartingPointLng;
   return firestore.collection('events').doc(event.id).set({
     ...event.toJson(),
-    'publicationState': 'published',
+    if (!legacy) 'publicationState': 'published',
     'discoveryCityName': cityName,
     'discoveryMarketId': marketId,
     'discoveryActivityKind': event.activityKind.name,

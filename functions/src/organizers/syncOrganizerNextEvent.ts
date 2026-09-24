@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 
 interface SyncOrganizerNextEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -30,15 +31,14 @@ export async function refreshOrganizerNextEvent(
   await db.runTransaction(async (tx) => {
     const organizerSnap = await tx.get(organizerRef);
     if (!organizerSnap.exists) return;
-    // The legacy publication backfill is a release prerequisite. The same
-    // indexed predicate is used by public collection readers.
+    // Compatibility stage: legacy public events may lack publicationState.
+    // Private event creation remains disabled until public-reader cutover.
     /* firestore-index: events (
-      organizerId:ASCENDING, publicationState:ASCENDING, status:ASCENDING,
+      organizerId:ASCENDING, status:ASCENDING,
       startTime:ASCENDING, __name__:ASCENDING
     ) */
     const query = db.collection("events")
       .where("organizerId", "==", organizerId)
-      .where("publicationState", "==", "published")
       .where("status", "==", "active")
       .where("startTime", ">=", now)
       .orderBy("startTime", "asc")
@@ -48,7 +48,7 @@ export async function refreshOrganizerNextEvent(
     const nextEvent = page.docs[0]?.data() as EventDocument | undefined;
     // Query results are current event documents in this transaction snapshot.
     // A contradictory row must not project a public label.
-    const visible = nextEvent?.publicationState === "published" &&
+    const visible = nextEvent && isEventPubliclyAccessible(nextEvent) &&
       nextEvent.organizerId === organizerId &&
       nextEvent.status === "active" ? nextEvent : undefined;
     tx.set(organizerRef, {

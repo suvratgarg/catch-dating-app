@@ -1794,11 +1794,28 @@ duration and the venue/format snapshot. Clear the venue through Details before
 changing city. A dependent event plan or guest/offer/payment history still blocks
 basics edits. These UI affordances never replace the transaction's final checks.
 
-Event rules now distinguish direct reads from lists. Public list queries must
-constrain publicationState to published; a missing-field legacy fallback must
-never authorize a collection scan. Individual legacy document reads remain
-compatible only when neither publicationState nor setupRevision exists.
-Private event reads require a current organizer manager or active viewRoster
+The compatibility stage retains legacy public event list queries because
+installed clients do not constrain `publicationState`, and the legacy
+publication backfill is not yet complete. The current `/events` list rule is
+therefore permissive. **No private event document may be stored in `/events`
+while this rule is deployed.** The production private-create callable has a
+server-owned, immutable false migration gate, and the Host private-create route
+is disabled. The latest full migration dry run, live writer inventory, and
+these source gates must remain release checks; client-side filtering is not a
+privacy boundary. A privileged out-of-band Admin write of a private document
+would be readable by old list clients and is prohibited in this stage.
+
+The later privacy cutover must backfill or reconcile every legacy event, deploy
+and verify the published-query indexes, release compatible clients, and retire
+old list readers before changing `/events` list rules to require
+`publicationState == published` (with a separate manager read path). The
+role-scoped Remote Config build minimum is helpful but is not a sufficient
+barrier by itself: old clients may start offline or use bundled nonblocking
+defaults when the fetch fails. Only after the restrictive rules are live and
+tested may the production private-create gate and Host route be enabled.
+Individual legacy document reads remain compatible only when neither
+`publicationState` nor `setupRevision` exists.
+Direct private event reads require a current organizer manager or active viewRoster
 staff grant; deleted users, foreign tenants and expired/revoked staff grants
 are denied. Consumer bookmarks cannot target private events.
 

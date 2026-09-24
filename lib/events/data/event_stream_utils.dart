@@ -158,7 +158,6 @@ Stream<List<Event>> watchEventsByIdStream({
           final chunk = chunks[i];
           final sub = eventsRef.firestore.collection(eventsRef.path)
               .where(FieldPath.documentId, whereIn: chunk)
-              .where('publicationState', isEqualTo: 'published')
               .limit(ReadLimitPolicy.multiIdChunk)
               .snapshots()
               .listen((eventSnap) {
@@ -229,10 +228,9 @@ Stream<List<Event>> watchEventsForClubIdsStream({
       final eventsByChunk = <int, List<Event>>{};
       for (var index = 0; index < chunks.length; index += 1) {
         final chunk = chunks[index];
-        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING)
+        // firestore-index: events (organizerId:ASCENDING)
         final sub = eventsRef.firestore.collection(eventsRef.path)
             .where('organizerId', whereIn: chunk)
-            .where('publicationState', isEqualTo: 'published')
             .limit(ReadLimitPolicy.boundedWorkingSet)
             .snapshots()
             .listen((snapshot) {
@@ -268,7 +266,12 @@ Event? publishedRichEvent(
   DocumentSnapshot<Map<String, dynamic>> snapshot,
 ) {
   final data = snapshot.data();
-  if (data == null || data['publicationState'] != 'published' ||
+  final explicitState = data?['publicationState'];
+  final legacyPublic = data != null &&
+      !data.containsKey('publicationState') &&
+      !data.containsKey('setupRevision');
+  if (data == null ||
+      (explicitState != 'published' && !legacyPublic) ||
       (data['organizerId'] is! String && data['clubId'] is! String) ||
       data['startTime'] is! Timestamp || data['endTime'] is! Timestamp ||
       data['meetingPoint'] is! String || data['distanceKm'] is! num ||
