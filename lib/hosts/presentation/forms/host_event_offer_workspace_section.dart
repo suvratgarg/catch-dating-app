@@ -98,6 +98,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     required this.now,
     this.initiallyReviewSelection = false,
     this.initialEventId,
+    this.initialEventTarget,
   });
 
   final String organizerId;
@@ -124,6 +125,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   final DateTime Function() now;
   final bool initiallyReviewSelection;
   final String? initialEventId;
+  final HostOfferEventTarget? initialEventTarget;
 
   @override
   State<HostEventOfferWorkspaceSection> createState() =>
@@ -151,6 +153,7 @@ class _HostEventOfferWorkspaceSectionState
         openEventSettings: widget.openEventSettings,
         now: widget.now,
         initialEventId: widget.initialEventId,
+        initialEventTarget: widget.initialEventTarget,
       );
 
   void _changed() {
@@ -180,7 +183,9 @@ class _HostEventOfferWorkspaceSectionState
         oldWidget.accountId != widget.accountId ||
         oldWidget.queryController != widget.queryController ||
         oldWidget.offerController != widget.offerController ||
-        oldWidget.initialEventId != widget.initialEventId) {
+        oldWidget.initialEventId != widget.initialEventId ||
+        oldWidget.initialEventTarget?.eventId != widget.initialEventTarget?.eventId ||
+        oldWidget.initialEventTarget?.setupRevision != widget.initialEventTarget?.setupRevision) {
       _controller.removeListener(_changed);
       _controller.dispose();
       _initializeController();

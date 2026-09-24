@@ -27,6 +27,7 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     required this.openEventSettings,
     required this.now,
     this.initialEventId,
+    this.initialEventTarget,
   }) {
     queryController.addListener(_onQueryChanged);
     offerController.addListener(_onOfferChanged);
@@ -51,6 +52,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   Future<void> Function(String eventId) openEventSettings;
   DateTime Function() now;
   final String? initialEventId;
+  /// A newly saved event read back through the manager-only setup projection.
+  /// The configuration read in [_choose] still checks current event authority.
+  final HostOfferEventTarget? initialEventTarget;
   bool _disposed = false;
 
   /// Parent rebuilds can supply fresh closures without changing the reviewed
@@ -185,6 +189,11 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
       _ids = List.unmodifiable(intent.ids);
       _resultHash = intent.resultHash;
     });
+    if (initialEventTarget case final target?) {
+      _update(() => _events = List.unmodifiable([target]));
+      await _choose(target);
+      return;
+    }
     await _loadEvents();
   }
 
@@ -411,7 +420,28 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     if (event == null || accountId == null) return;
     try {
       await openEventSettings(event.eventId);
-      if (_current(generation, accountId)) await _choose(event);
+      if (!_current(generation, accountId)) return;
+      final current = await targets.configuration(
+        organizerId: organizerId, eventId: event.eventId);
+      if (!_current(generation, accountId)) return;
+      if (current.organizerId != organizerId ||
+          current.eventId != event.eventId) {
+        throw StateError('Event settings changed identity.');
+      }
+      final refreshed = HostOfferEventTarget(
+        eventId: event.eventId,
+        name: event.name,
+        startTime: current.startsAt,
+        timezone: event.timezone,
+        publicationState: event.publicationState,
+        setupRevision: event.setupRevision == null
+            ? null : current.eventSourceRevision,
+      );
+      _update(() => _events = List.unmodifiable([
+        for (final item in _events)
+          item.eventId == refreshed.eventId ? refreshed : item,
+      ]));
+      await _choose(refreshed);
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
     }

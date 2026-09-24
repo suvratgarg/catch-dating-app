@@ -9,12 +9,69 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_revie
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
 
 void main() {
+  test('response query mount preserves external search and contact scope', () {
+    bool allowed({String? search, String? contact}) =>
+        canMountHostResponseQuery(enabled: true, formId: 'form',
+          searchQuery: search, contactId: contact);
+    expect(allowed(), isTrue);
+    expect(allowed(search: 'Maya'), isFalse);
+    expect(allowed(contact: 'contact-one'), isFalse);
+    expect(canMountHostResponseQuery(enabled: true, formId: null,
+      searchQuery: null, contactId: null), isFalse);
+  });
+
+  test('newly saved manager target bypasses first-page discovery but still '
+      'revalidates responses and current event configuration', () async {
+    final source = _Query();
+    final query = HostResponseQueryController(source);
+    final offers = HostEventOfferController(_Offers());
+    final targets = _Targets();
+    addTearDown(query.dispose);
+    addTearDown(offers.dispose);
+    await query.apply(const HostResponseQueryRequest(
+      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    query.toggleSelection('response-one');
+    final workspace = HostEventOfferWorkspaceController(
+      organizerId: 'org', accountId: 'manager',
+      queryController: query, offerController: offers,
+      listOffers: ({required organizerId, required eventId,
+          afterOfferId}) async => const {'items': <Object>[], 'nextCursor': null},
+      getOffer: ({required organizerId, required eventId,
+          required contactId}) async => _existingOffer(),
+      prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+        kind: 'blocked', offerId: 'offer-one', blockers: ['fixture']),
+      copyMessage: (_) async {}, openHandoff: (_) async => false,
+      targets: targets,
+      getResponseDetail: (_) async => _detail('contact-one'),
+      openResponseForConversion: (_) async {},
+      openEventSettings: (_) async => targets.revision = 2,
+      now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+      initialEventTarget: HostOfferEventTarget(
+        eventId: 'event-one', name: 'Freshly saved', startTime: _start,
+        timezone: 'Asia/Kolkata', publicationState: 'private',
+        setupRevision: 1),
+    );
+    addTearDown(workspace.dispose);
+    await workspace.start();
+    expect(targets.listCalls, 0);
+    expect(targets.configurationCalls, 1);
+    expect(workspace.event?.name, 'Freshly saved');
+    await workspace.openSettings();
+    expect(workspace.event?.setupRevision, 2);
+    expect(targets.configurationCalls, 3);
+    source.hash = 'changed';
+    await workspace.choose(workspace.event!);
+    expect(workspace.selectionStale, isTrue);
+    expect(targets.configurationCalls, 3);
+  });
+
   test('workspace controller invalidates selected offer context when the '
       'underlying query selection changes', () async {
     final query = HostResponseQueryController(_Query());
@@ -334,25 +391,34 @@ class _Query implements HostResponseQueryGateway {
 }
 
 class _Targets implements HostOfferEventTargetsGateway {
+  int listCalls = 0;
+  int configurationCalls = 0;
+  int revision = 1;
   @override
   Future<HostOfferEventTargetPage> list({required String organizerId,
-      String? cursor}) async => HostOfferEventTargetPage([
+      String? cursor}) async {
+    listCalls++;
+    return HostOfferEventTargetPage([
         HostOfferEventTarget(
           eventId: 'event-one', name: 'Sunday run',
           startTime: _start, timezone: 'Asia/Kolkata',
           publicationState: 'private', setupRevision: 1),
       ], null);
+  }
 
   @override
   Future<HostOfferEventConfiguration> configuration({
     required String organizerId, required String eventId,
-  }) async => HostOfferEventConfiguration(
+  }) async {
+    configurationCalls++;
+    return HostOfferEventConfiguration(
     organizerId: organizerId, eventId: eventId,
-    eventSourceRevision: 1, startsAt: _start,
+    eventSourceRevision: revision, startsAt: _start,
     serverNow: DateTime.fromMillisecondsSinceEpoch(1799990000000),
     paymentTerms: const {'preferredCollection': 'manualInstructions'},
     suggestedExpiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
   );
+  }
 }
 
 final _start = DateTime.fromMillisecondsSinceEpoch(1800000000000);

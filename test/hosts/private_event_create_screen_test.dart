@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -21,6 +22,57 @@ import '../test_pump_helpers.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  testWidgets('inline return waits for a matching manager read after receipt',
+      (tester) async {
+    final date = DateUtils.dateOnly(DateTime.now().add(const Duration(days: 2)));
+    final localDate = '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final read = Completer<PrivateEventBasicSummary>();
+    final saved = <String>[];
+    await tester.pumpWidget(ProviderScope(
+      overrides: [uidProvider.overrideWithValue(
+        const AsyncData<String?>('host-1'))],
+      child: MaterialApp(
+        theme: CatchTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PrivateEventCreateScreen(
+          club: buildClub(), promptForDraftsOnStart: false,
+          returnToResponsesOnSave: true,
+          initialDraft: EventDraft(
+            id: 'inline-draft', clubId: 'club-1', savedAt: DateTime.now(),
+            name: 'Saturday mixer', eventCityId: 'in-mh-mumbai',
+            eventMarketId: 'in-mh-mumbai', eventLocalDate: localDate,
+            eventLocalStartTime: '19:00', eventTimezone: 'Asia/Kolkata',
+            eventCityMode: 'set', eventTimezoneMode: 'set',
+          ),
+          create: ({required organizerId, required requestId,
+              required basics}) async => const PrivateEventCreateReceipt(
+                eventId: 'event-inline', setupRevision: 1, replayed: false),
+          readSaved: ({required organizerId, required eventId}) => read.future,
+          onSaved: (receipt) => saved.add(receipt.eventId),
+        ),
+      ),
+    ));
+    await pumpFeatureUi(tester);
+    expect(find.text('Save & return to responses'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('private-event-save')));
+    await tester.pump();
+    expect(saved, isEmpty);
+    read.complete(PrivateEventBasicSummary(
+      eventId: 'event-inline', organizerId: 'club-1', setupRevision: 1,
+      name: 'Saturday mixer', city: const EventSetupCity(
+        cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+      localDate: localDate, localStartTime: '19:00',
+      timezone: 'Asia/Kolkata', startTimeMillis: date.millisecondsSinceEpoch,
+      status: 'active', setupDefaults: const {}, detailsConfigured: false,
+      eventPreferences: null, canEditBasics: true, canChangeCity: true,
+    ));
+    await pumpFeatureUi(tester);
+    expect(saved, ['event-inline']);
+  });
 
   test('restores canonical and legacy local draft times', () {
     final canonical = EventDraft(

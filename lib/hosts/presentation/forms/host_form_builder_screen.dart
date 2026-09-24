@@ -18,6 +18,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -266,6 +267,11 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   formId: widget.formId,
                   formTitle: value.editor.definition.title,
                   showFormContext: false,
+                  queryCapability: privateEventSetupAvailable() &&
+                          value.editor.form.activeVersionId != null
+                      ? hostResponseQueryCapability(context.l10n,
+                          versionId: value.editor.form.activeVersionId!)
+                      : null,
                 ),
                 HostFormWorkspaceView.payments => HostFormPaymentsSectionList(
                   organizerId: widget.organizerId,

@@ -25,13 +25,14 @@ export 'package:catch_dating_app/hosts/presentation/event_management/host_create
 
 class HostCreateEventRouteArguments {
   const HostCreateEventRouteArguments({
-    required this.initialClub,
+    this.initialClub,
     this.initialDraft,
     this.initialPrefill,
     this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
+    this.returnToResponsesOnSave = false,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create route cannot restore a draft and apply a repeat prefill.',
@@ -42,13 +43,14 @@ class HostCreateEventRouteArguments {
          'A saved event cannot also restore a draft or repeat prefill.',
        );
 
-  final Club initialClub;
+  final Club? initialClub;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
   final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
+  final bool returnToResponsesOnSave;
 }
 
 class HostCreateEventRouteScreen extends ConsumerWidget {
@@ -62,6 +64,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
+    this.returnToResponsesOnSave = false,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create route cannot restore a draft and apply a repeat prefill.',
@@ -80,6 +83,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
+  final bool returnToResponsesOnSave;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -137,6 +141,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       externalBookingMode:
           initialDraft?.externalBookingMode ?? externalBookingMode,
       promptForDrafts: promptForDrafts,
+      returnToResponsesOnSave: returnToResponsesOnSave,
     );
   }
 }
@@ -152,6 +157,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
+    this.returnToResponsesOnSave = false,
   });
 
   final String clubId;
@@ -162,6 +168,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
+  final bool returnToResponsesOnSave;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -208,6 +215,14 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
             ManagerEventSetupDefaultsRepository(
               ref.read(firebaseFunctionsProvider),
             ).get(organizerId),
+        returnToResponsesOnSave: returnToResponsesOnSave,
+        onSaved: returnToResponsesOnSave
+            ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  Navigator.of(context).pop(receipt.eventId);
+                }
+              })
+            : null,
       ),
       HostCreateEventRouteStatus.ready when initialSavedEventId != null =>
         CatchScaffold.stepFlow(

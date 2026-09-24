@@ -13,12 +13,14 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -218,6 +220,24 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       query: _query,
     );
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
+    String? responseVersionId;
+    if (canMountHostResponseQuery(
+      enabled: privateEventSetupAvailable(),
+      formId: _responseFormId,
+      searchQuery: _responseQuery,
+      contactId: _responseContactId,
+    )) {
+      responseVersionId = directory.asData?.value.forms
+          .where((form) => form.formId == _responseFormId)
+          .firstOrNull?.activeVersionId;
+      responseVersionId ??= ref.watch(hostFormResponsesControllerProvider(
+        HostFormResponseListRequest(
+          organizerId: selectedClub.id,
+          formId: _responseFormId,
+          includeApplications: true,
+        ),
+      )).asData?.value.versionScope?.activeVersionId;
+    }
     final activeSearchIsForms = _view == HostAudienceView.forms;
     final searchPlaceholder = activeSearchIsForms
         ? context.l10n.hostFormsSearch
@@ -291,6 +311,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                 HostFormResponsesPanel(
                   key: ValueKey('responses-import-$_importRevision'),
                   organizerId: selectedClub.id,
+                  queryCapability: responseVersionId == null ? null :
+                      hostResponseQueryCapability(context.l10n,
+                        versionId: responseVersionId),
                   query: _responseQuery,
                   contactId: _responseContactId,
                   onClearContactFilter: () {
