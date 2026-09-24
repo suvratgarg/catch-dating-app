@@ -215,14 +215,23 @@ export function usePublicFormController(publicFormId: string) {
 
   useEffect(() => {
     let cancelled = false;
+    authGenerationRef.current++;
+    startPromiseRef.current = null;
+    userRef.current = null;
     formRef.current = null;
     draftRef.current = null;
     answersRef.current = {};
+    consentRef.current = false;
+    messagingRef.current = uncheckedMessaging;
     recoveringPaymentRef.current = false;
     setRecoveringPayment(false);
     setForm(null);
     setDraft(null);
     setAnswers({});
+    setConsentAccepted(false);
+    setMessagingChoices(uncheckedMessaging);
+    setErrors({});
+    setSectionIndex(0);
     setUploads({});
     setReceipt(null);
     receiptRef.current = null;
@@ -266,7 +275,26 @@ export function usePublicFormController(publicFormId: string) {
         }
         userRef.current = user;
         setVerifiedPhone(user?.phoneNumber ?? null);
-        if (!user && loaded?.definition.identityPolicy !== "anonymous" && loaded) {
+        if (!user && loaded) {
+          const savedReceipt = storedReceipt(publicFormId, null);
+          if (!loaded.definition.payment &&
+              savedReceipt?.formId === loaded.formId &&
+              savedReceipt.status === "submitted") {
+            setReceipt(savedReceipt);
+            receiptRef.current = savedReceipt;
+            setConsentActivationResponseId(isPendingConsentResponse(
+              publicFormId, savedReceipt) ? savedReceipt.responseId : null);
+            setStage("complete");
+            return;
+          }
+          if (loaded.availabilityStatus !== "active") {
+            setStage("unavailable");
+            return;
+          }
+          if (loaded.definition.identityPolicy === "anonymous") {
+            void startDraft(loaded);
+            return;
+          }
           setVerificationStep("phone");
           setStage(loaded.definition.identityPolicy === "phoneVerified" &&
             !recoveringPaymentRef.current ? "form" : "identity");
@@ -281,28 +309,10 @@ export function usePublicFormController(publicFormId: string) {
         if (cancelled) return;
         formRef.current = loaded;
         setForm(loaded);
+        setStage(loaded.availabilityStatus !== "active" ? "unavailable" :
+          loaded.definition.identityPolicy === "emailVerified" ?
+            "identity" : "form");
         subscribeAuth();
-        const savedReceipt = storedReceipt(publicFormId, userRef.current?.uid ?? null);
-        if (!userRef.current && !loaded.definition.payment &&
-            savedReceipt?.formId === loaded.formId &&
-            savedReceipt.status === "submitted") {
-          setReceipt(savedReceipt);
-          receiptRef.current = savedReceipt;
-          setConsentActivationResponseId(isPendingConsentResponse(
-            publicFormId, savedReceipt) ? savedReceipt.responseId : null);
-          setStage("complete");
-          return;
-        }
-        if (loaded.availabilityStatus !== "active" && !userRef.current) {
-          setStage("unavailable");
-          return;
-        }
-        if (loaded.definition.identityPolicy === "anonymous" || userRef.current) {
-          await startDraft(loaded);
-        } else {
-          setStage(loaded.definition.identityPolicy === "phoneVerified" ?
-            "form" : "identity");
-        }
       })
       .catch((error) => {
         if (cancelled) return;

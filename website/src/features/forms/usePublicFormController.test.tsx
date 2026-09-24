@@ -323,6 +323,60 @@ describe("form consent and authenticated draft ownership", () => {
     expect(result.current.messagingChoices.organizerWhatsapp).toBe(false);
     expect(result.current.messagingChoices.catchWhatsapp).toBe(false);
   });
+
+  it("waits for fresh auth before beginning a draft after the form route changes", async () => {
+    const nextForm = {...form, publicFormId: "public-form-2",
+      formId: "form-2", versionId: "version-2"};
+    const listeners: Array<(user: {uid: string} | null) => void> = [];
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      listeners.push(listener);
+      if (listeners.length === 1) listener({uid: "person-1"});
+      return vi.fn();
+    });
+    getPublicOrganizerForm.mockImplementation(({publicFormId}) =>
+      Promise.resolve(publicFormId === "public-form-2" ? nextForm : form));
+    beginOrganizerFormResponse.mockImplementation(({publicFormId}) =>
+      Promise.resolve({...draft, form: publicFormId === "public-form-2" ?
+        nextForm : form}));
+    const {rerender} = renderHook(({id}) => usePublicFormController(id), {
+      initialProps: {id: "public-form-1"}, wrapper: wrapper(),
+    });
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1));
+    rerender({id: "public-form-2"});
+    await waitFor(() => expect(watchPublicFormAuthState).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+    act(() => listeners[1](null));
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+    act(() => listeners[1]({uid: "person-2"}));
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenLastCalledWith(
+      expect.objectContaining({publicFormId: "public-form-2"}));
+  });
+
+  it("does not reuse the previous viewer for an anonymous form route", async () => {
+    const nextForm = {...form, publicFormId: "public-form-2",
+      formId: "form-2", versionId: "version-2", definition: {
+        ...form.definition, identityPolicy: "anonymous"}};
+    const listeners: Array<(user: {uid: string} | null) => void> = [];
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      listeners.push(listener);
+      if (listeners.length === 1) listener({uid: "person-1"});
+      return vi.fn();
+    });
+    getPublicOrganizerForm.mockImplementation(({publicFormId}) =>
+      Promise.resolve(publicFormId === "public-form-2" ? nextForm : form));
+    const {rerender} = renderHook(({id}) => usePublicFormController(id), {
+      initialProps: {id: "public-form-1"}, wrapper: wrapper(),
+    });
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1));
+    rerender({id: "public-form-2"});
+    await waitFor(() => expect(watchPublicFormAuthState).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+    act(() => listeners[1](null));
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenLastCalledWith(
+      expect.objectContaining({publicFormId: "public-form-2"}));
+  });
 });
 
 describe("early non-blocking phone verification", () => {
