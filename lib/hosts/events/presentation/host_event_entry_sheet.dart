@@ -158,6 +158,7 @@ class _HostEventEntryRow extends StatelessWidget {
         key: ValueKey<String>('host-event-entry-${intent.name}'),
         title: _title(context),
         body: _body(context),
+        bodyMaxLines: intent == HostEventEntryIntent.createEvent ? 3 : 2,
         icon: _icon,
         emphasis: CatchFieldEmphasis.title,
         onTap: onTap,
