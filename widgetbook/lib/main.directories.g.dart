@@ -245,6 +245,8 @@ import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
     as _widgetbook_workspace_hosts_host_response_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_roster_import_use_cases;
+import 'package:widgetbook_workspace/hosts/host_rsvp_review_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_rsvp_review_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
@@ -10399,6 +10401,99 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Campaign and sender states',
                     builder: _widgetbook_workspace_hosts_operations_audiences
                         .hostCustomerMessagingStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'RSVP review',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventOfferReviewSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Event offer review',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .eventOfferReviewPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostManualPaymentReviewSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manual payment review',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .manualPaymentReviewPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseConditionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Response condition',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .responseConditionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseConditionValueSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Response condition value',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .responseConditionValuePreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseGroupSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Response group',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .responseGroupPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseQueryEditorSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Response query editor',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .responseQueryEditorPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseQueryWorkspaceSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Response query workspace',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .responseQueryWorkspacePreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostResponseValueFieldSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Response value field',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rsvp_review_use_cases
+                            .responseValueFieldPreview,
                   ),
                 ],
               ),
