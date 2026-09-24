@@ -659,6 +659,8 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.promptForDrafts,
                     _ => true,
                   },
+                  returnToResponsesOnSave: extra is HostCreateEventRouteArguments
+                      ? extra.returnToResponsesOnSave : false,
                 );
               },
             ),

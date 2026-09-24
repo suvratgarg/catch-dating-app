@@ -58,6 +58,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
     this.readSaved,
     this.readOrganizerDefaults,
     this.onSaved,
+    this.returnToResponsesOnSave = false,
   }) : assert(
          initialSavedEventId == null ||
              (initialDraft == null && initialPrefill == null),
@@ -75,6 +76,7 @@ class PrivateEventCreateScreen extends ConsumerStatefulWidget {
   final ReadPrivateEventBasics? readSaved;
   final ReadPrivateEventOrganizerDefaults? readOrganizerDefaults;
   final ValueChanged<PrivateEventCreateReceipt>? onSaved;
+  final bool returnToResponsesOnSave;
 
   @override
   ConsumerState<PrivateEventCreateScreen> createState() =>
@@ -487,7 +489,10 @@ class _PrivateEventCreateScreenState
         .toList();
 
     return PopScope(
-      canPop: _allowPop,
+      canPop: _allowPop ||
+          (widget.returnToResponsesOnSave && _receipt != null &&
+              _savedBasics != null && _pendingUpdate == null &&
+              !_loadingSavedEvent && _readError == null),
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _PrivateEventCreateBody(this)._close();
       },
@@ -744,7 +749,9 @@ class _PrivateEventCreateScreenState
                           ? context.l10n.hostsEventEditSaveChanges
                           : context.l10n.hostsPrivateEventRetrySave)
                       : (_submittedSignature == null
-                          ? context.l10n.hostsPrivateEventSaveContinue
+                          ? (widget.returnToResponsesOnSave
+                              ? context.l10n.hostsPrivateEventSaveReturnResponses
+                              : context.l10n.hostsPrivateEventSaveContinue)
                           : context.l10n.hostsPrivateEventRetrySave),
                   onPressed: _saving ||
                           (receipt != null &&

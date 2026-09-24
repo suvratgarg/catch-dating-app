@@ -18,6 +18,52 @@ import '../test_pump_helpers.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets('settings controller rebinds for organizer, event, and actor',
+      (tester) async {
+    final accounts = StreamController<String?>();
+    addTearDown(accounts.close);
+    var organizerId = 'club-1';
+    var eventId = 'event-1';
+    late StateSetter updateRoute;
+    final bindings = <String>[];
+    await tester.pumpWidget(ProviderScope(
+      overrides: [uidProvider.overrideWith((ref) => accounts.stream)],
+      child: MaterialApp(
+        theme: CatchTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatefulBuilder(builder: (context, setState) {
+          updateRoute = setState;
+          return HostEventOfferPreferencesScreen(
+            organizerId: organizerId, eventId: eventId, onBack: () {},
+            controllerForUser: (uid) {
+              bindings.add('$uid/$organizerId/$eventId');
+              return EventOfferPreferencesController(
+                userId: uid, organizerId: organizerId, eventId: eventId,
+                readConfiguration: ({required organizerId,
+                    required eventId}) async =>
+                    throw StateError('Fixture read unavailable'),
+                readDefaults: (_) async =>
+                    throw StateError('Fixture read unavailable'),
+                write: (_) async => throw StateError('No save'),
+              );
+            },
+          );
+        }),
+      ),
+    ));
+    accounts.add('host-1');
+    await pumpFeatureUi(tester);
+    expect(bindings, ['host-1/club-1/event-1']);
+    updateRoute(() { organizerId = 'club-2'; eventId = 'event-2'; });
+    await pumpFeatureUi(tester);
+    expect(bindings.last, 'host-1/club-2/event-2');
+    accounts.add('host-2');
+    await pumpFeatureUi(tester);
+    expect(bindings.last, 'host-2/club-2/event-2');
+    expect(bindings.length, 3);
+  });
+
   testWidgets('waits for async manager identity before starting settings read',
       (tester) async {
     final accounts = StreamController<String?>();

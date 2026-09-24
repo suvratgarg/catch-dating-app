@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
@@ -18,6 +19,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -71,6 +73,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final responseAccountId = ref.watch(uidProvider).asData?.value;
     final editor = ref.watch(
       hostFormEditorControllerProvider(widget.organizerId, widget.formId),
     );
@@ -262,10 +265,19 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   }),
                 ),
                 HostFormWorkspaceView.responses => HostFormResponsesPanel(
+                  key: ValueKey('form-responses-${widget.organizerId}-'
+                      '${widget.formId}-$responseAccountId'),
                   organizerId: widget.organizerId,
+                  accountId: responseAccountId,
+                  requireAccount: true,
                   formId: widget.formId,
                   formTitle: value.editor.definition.title,
                   showFormContext: false,
+                  queryCapability: privateEventSetupAvailable() &&
+                          value.editor.form.activeVersionId != null
+                      ? hostResponseQueryCapability(context.l10n,
+                          versionId: value.editor.form.activeVersionId!)
+                      : null,
                 ),
                 HostFormWorkspaceView.payments => HostFormPaymentsSectionList(
                   organizerId: widget.organizerId,

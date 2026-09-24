@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
@@ -9,12 +14,194 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_revie
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('legacy response cache is hidden until the new manager read '
+      'resolves', (tester) async {
+    final accounts = StreamController<String?>();
+    addTearDown(accounts.close);
+    final auth = _SwitchingAuth('host-one');
+    final responses = _SwitchingLegacyResponses();
+    var accountId = 'host-one';
+    late StateSetter updateRoute;
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => accounts.stream),
+        firebaseAuthProvider.overrideWithValue(auth),
+        hostFormResponsesControllerProvider.overrideWith2((_) => responses),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatefulBuilder(builder: (context, setState) {
+          updateRoute = setState;
+          return Scaffold(body: CustomScrollView(slivers: [
+            HostFormResponsesPanel(
+              organizerId: 'org', accountId: accountId,
+              requireAccount: true,
+            ),
+          ]));
+        }),
+      ),
+    ));
+    accounts.add('host-one');
+    await pumpFeatureUi(tester);
+    expect(find.text('Maya'), findsOneWidget);
+
+    responses.nextResponse = Completer<HostFormResponsesState>();
+    auth.uid = 'host-two';
+    updateRoute(() => accountId = 'host-two');
+    accounts.add('host-two');
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Maya'), findsNothing);
+
+    responses.nextResponse!.completeError(StateError('Fixture read failed'));
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchLocalizedSliverErrorState), findsOneWidget);
+    expect(find.text('Maya'), findsNothing);
+
+    responses.nextResponse = Completer<HostFormResponsesState>();
+    tester.widget<CatchLocalizedSliverErrorState>(
+      find.byType(CatchLocalizedSliverErrorState),
+    ).onRetry!();
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Maya'), findsNothing);
+
+    responses.nextResponse!.complete(HostFormResponsesState(
+      responses: [_SwitchingLegacyResponses.response('Rohan', 'response-two')],
+      nextCursor: null,
+    ));
+    await pumpFeatureUi(tester);
+    expect(find.text('Rohan'), findsOneWidget);
+    expect(find.text('Maya'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('account switch clears prior response rows and selection before '
+      'the next manager query resolves', (tester) async {
+    final accounts = StreamController<String?>();
+    addTearDown(accounts.close);
+    final auth = _SwitchingAuth('host-one');
+    final query = _SwitchingQuery();
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => accounts.stream),
+        firebaseAuthProvider.overrideWithValue(auth),
+        firebaseFunctionsProvider.overrideWithValue(_UnusedFunctions()),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: CustomScrollView(slivers: [
+          HostFormResponsesPanel(
+            organizerId: 'org', formId: 'form',
+            queryCapability: HostResponseQueryCapability(
+              versionId: 'form_v1',
+              copy: hostResponseQueryCapability(
+                AppLocalizationsEn(), versionId: 'form_v1').copy,
+              gateway: query,
+              onReviewSelection: (_, _) {},
+            ),
+          ),
+        ])),
+      ),
+    ));
+    accounts.add('host-one');
+    await pumpFeatureUi(tester);
+    expect(find.text('Maya'), findsOneWidget);
+    await tester.tap(find.text('Select'));
+    await pumpFeatureUi(tester);
+    expect(find.textContaining('Selected'), findsOneWidget);
+
+    query.nextResponse = Completer<HostResponseQueryPage>();
+    auth.uid = 'host-two';
+    accounts.add('host-two');
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Maya'), findsNothing);
+    expect(find.textContaining('Selected'), findsNothing);
+    expect(query.calls, 2);
+
+    query.nextResponse!.complete(_SwitchingQuery.page('Rohan', 'response-two'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Rohan'), findsOneWidget);
+    expect(find.text('Maya'), findsNothing);
+    expect(find.textContaining('Selected'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  test('response query mount preserves external search and contact scope', () {
+    bool allowed({String? search, String? contact}) =>
+        canMountHostResponseQuery(enabled: true, formId: 'form',
+          searchQuery: search, contactId: contact);
+    expect(allowed(), isTrue);
+    expect(allowed(search: 'Maya'), isFalse);
+    expect(allowed(contact: 'contact-one'), isFalse);
+    expect(canMountHostResponseQuery(enabled: true, formId: null,
+      searchQuery: null, contactId: null), isFalse);
+  });
+
+  test('newly saved manager target bypasses first-page discovery but still '
+      'revalidates responses and current event configuration', () async {
+    final source = _Query();
+    final query = HostResponseQueryController(source);
+    final offers = HostEventOfferController(_Offers());
+    final targets = _Targets();
+    addTearDown(query.dispose);
+    addTearDown(offers.dispose);
+    await query.apply(const HostResponseQueryRequest(
+      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    query.toggleSelection('response-one');
+    final workspace = HostEventOfferWorkspaceController(
+      organizerId: 'org', accountId: 'manager',
+      queryController: query, offerController: offers,
+      listOffers: ({required organizerId, required eventId,
+          afterOfferId}) async => const {'items': <Object>[], 'nextCursor': null},
+      getOffer: ({required organizerId, required eventId,
+          required contactId}) async => _existingOffer(),
+      prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+        kind: 'blocked', offerId: 'offer-one', blockers: ['fixture']),
+      copyMessage: (_) async {}, openHandoff: (_) async => false,
+      targets: targets,
+      getResponseDetail: (_) async => _detail('contact-one'),
+      openResponseForConversion: (_) async {},
+      openEventSettings: (_) async => targets.revision = 2,
+      now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+      initialEventTarget: HostOfferEventTarget(
+        eventId: 'event-one', name: 'Freshly saved', startTime: _start,
+        timezone: 'Asia/Kolkata', publicationState: 'private',
+        setupRevision: 1),
+    );
+    addTearDown(workspace.dispose);
+    await workspace.start();
+    expect(targets.listCalls, 0);
+    expect(targets.configurationCalls, 1);
+    expect(workspace.event?.name, 'Freshly saved');
+    await workspace.openSettings();
+    expect(workspace.event?.setupRevision, 2);
+    expect(targets.configurationCalls, 3);
+    source.hash = 'changed';
+    await workspace.choose(workspace.event!);
+    expect(workspace.selectionStale, isTrue);
+    expect(targets.configurationCalls, 3);
+  });
+
   test('workspace controller invalidates selected offer context when the '
       'underlying query selection changes', () async {
     final query = HostResponseQueryController(_Query());
@@ -279,6 +466,72 @@ void main() {
   });
 }
 
+class _SwitchingAuth extends Fake implements FirebaseAuth {
+  _SwitchingAuth(this.uid);
+  String? uid;
+
+  @override
+  User? get currentUser => uid == null ? null : _SwitchingUser(uid!);
+}
+
+class _SwitchingUser extends Fake implements User {
+  _SwitchingUser(this.uid);
+  @override
+  final String uid;
+}
+
+class _UnusedFunctions extends Fake implements FirebaseFunctions {}
+
+class _SwitchingQuery implements HostResponseQueryGateway {
+  int calls = 0;
+  Completer<HostResponseQueryPage>? nextResponse;
+
+  @override
+  Future<HostResponseQueryPage> query(HostResponseQueryRequest request) {
+    calls++;
+    return nextResponse?.future ?? Future.value(page('Maya', 'response-one'));
+  }
+
+  static HostResponseQueryPage page(String name, String responseId) =>
+      HostResponseQueryPage(
+        form: const HostResponseQueryForm(
+          formId: 'form', title: 'Form', versionId: 'form_v1', version: 1),
+        items: [HostResponseQueryRow.fromMap({
+          'responseId': responseId, 'formId': 'form',
+          'formTitle': 'Form', 'versionId': 'form_v1', 'version': 1,
+          'status': 'submitted', 'identityKind': 'phoneVerified',
+          'identity': {'displayName': name, 'email': null,
+            'phoneE164': null, 'origin': 'respondentGranted'},
+          'sourceLinkId': null, 'submittedAtMillis': 1790000000000,
+          'withdrawnAtMillis': null,
+        })],
+        nextCursor: null, total: 1, selectedIds: {responseId},
+        queryHash: 'query', resultHash: 'result-$responseId',
+        fieldCatalog: const [],
+      );
+}
+
+class _SwitchingLegacyResponses extends HostFormResponsesController {
+  Completer<HostFormResponsesState>? nextResponse;
+
+  @override
+  Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
+      nextResponse?.future ?? Future.value(HostFormResponsesState(
+        responses: [response('Maya', 'response-one')], nextCursor: null));
+
+  static HostFormResponseSummary response(String name, String id) =>
+      HostFormResponseSummary.fromMap({
+        'responseId': id, 'formId': 'form', 'formTitle': 'Form',
+        'versionId': 'form_v1', 'version': 1, 'status': 'submitted',
+        'identityKind': 'phoneVerified',
+        'identity': {'displayName': name, 'email': null,
+          'phoneE164': null, 'origin': 'respondentGranted'},
+        'sourceLinkId': null, 'sourceLabel': null,
+        'submittedAtMillis': 1790000000000, 'withdrawnAtMillis': null,
+        'highlights': <Object>[], 'conversionKinds': <Object>[],
+      });
+}
+
 class _PendingMutation implements HostOfferMutationOutbox {
   bool unresolved = true;
   int reads = 0;
@@ -334,25 +587,34 @@ class _Query implements HostResponseQueryGateway {
 }
 
 class _Targets implements HostOfferEventTargetsGateway {
+  int listCalls = 0;
+  int configurationCalls = 0;
+  int revision = 1;
   @override
   Future<HostOfferEventTargetPage> list({required String organizerId,
-      String? cursor}) async => HostOfferEventTargetPage([
+      String? cursor}) async {
+    listCalls++;
+    return HostOfferEventTargetPage([
         HostOfferEventTarget(
           eventId: 'event-one', name: 'Sunday run',
           startTime: _start, timezone: 'Asia/Kolkata',
           publicationState: 'private', setupRevision: 1),
       ], null);
+  }
 
   @override
   Future<HostOfferEventConfiguration> configuration({
     required String organizerId, required String eventId,
-  }) async => HostOfferEventConfiguration(
+  }) async {
+    configurationCalls++;
+    return HostOfferEventConfiguration(
     organizerId: organizerId, eventId: eventId,
-    eventSourceRevision: 1, startsAt: _start,
+    eventSourceRevision: revision, startsAt: _start,
     serverNow: DateTime.fromMillisecondsSinceEpoch(1799990000000),
     paymentTerms: const {'preferredCollection': 'manualInstructions'},
     suggestedExpiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
   );
+  }
 }
 
 final _start = DateTime.fromMillisecondsSinceEpoch(1800000000000);

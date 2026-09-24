@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -11,8 +12,10 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
@@ -23,8 +26,13 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_det
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -33,6 +41,135 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'host_form_responses_filter_sheet.dart';
+
+/// The versioned query workspace cannot represent the legacy route's search
+/// or one-contact scope. Keep those routes on their existing inbox until the
+/// exact scope can be carried into a manager query.
+bool canMountHostResponseQuery({
+  required bool enabled,
+  required String? formId,
+  required String? searchQuery,
+  required String? contactId,
+}) => enabled && formId != null && searchQuery == null && contactId == null;
+
+/// Localized opt-in manager workspace for one authoritative published version.
+/// Route owners supply the version; this factory never guesses it from a form ID.
+HostResponseQueryCapability hostResponseQueryCapability(
+  AppLocalizations l10n, {
+  required String versionId,
+}) => HostResponseQueryCapability(
+  versionId: versionId,
+  copy: HostResponseQueryWorkspaceCopy(
+    filter: l10n.hostCustomersFilters,
+    sort: l10n.hostCustomersSort,
+    newest: l10n.hostApplicationsSortNewest,
+    oldest: l10n.hostApplicationsSortOldest,
+    refresh: l10n.hostAudienceRefresh,
+    loadMore: l10n.hostFormResponsesLoadMore,
+    loading: l10n.hostResponseQueryLoading,
+    empty: l10n.hostResponseQueryEmpty,
+    stale: l10n.hostResponseQueryStale,
+    budgetExceeded: l10n.hostResponseQueryBudgetExceeded,
+    permissionLost: l10n.hostResponseQueryPermissionLost,
+    failed: l10n.hostResponseQueryFailed,
+    selected: l10n.hostResponseQuerySelected,
+    clearSelection: l10n.hostResponseQueryClearSelection,
+    reviewSelection: l10n.hostResponseQueryReviewSelection,
+    withdrawn: l10n.hostFormResponsesWithdrawn,
+    select: l10n.hostResponseQuerySelect,
+    deselect: l10n.hostResponseQueryDeselect,
+    editor: HostResponseQueryEditorCopy(
+      title: l10n.hostResponseQueryEditorTitle,
+      matchAll: l10n.hostResponseQueryMatchAll,
+      matchAny: l10n.hostResponseQueryMatchAny,
+      field: l10n.hostResponseQueryField,
+      condition: l10n.hostFormRuleOperator,
+      value: l10n.hostResponseQueryValue,
+      minimum: l10n.hostResponseQueryMinimum,
+      maximum: l10n.hostResponseQueryMaximum,
+      yes: l10n.hostFormRuleTrue,
+      no: l10n.hostFormRuleFalse,
+      addCondition: l10n.hostResponseQueryAddCondition,
+      addGroup: l10n.hostResponseQueryAddGroup,
+      remove: l10n.hostResponseQueryRemove,
+      apply: l10n.hostResponseQueryApply,
+      reset: l10n.hostFiltersResetAll,
+      invalidCondition: l10n.hostResponseQueryInvalidCondition,
+      operatorLabels: {
+        HostResponseOperator.present: l10n.hostResponseQueryOperatorPresent,
+        HostResponseOperator.missing: l10n.hostResponseQueryOperatorMissing,
+        HostResponseOperator.choiceAny: l10n.hostResponseQueryOperatorChoiceAny,
+        HostResponseOperator.choiceAll: l10n.hostResponseQueryOperatorChoiceAll,
+        HostResponseOperator.choiceNone: l10n.hostResponseQueryOperatorChoiceNone,
+        HostResponseOperator.textEquals: l10n.hostResponseQueryOperatorTextEquals,
+        HostResponseOperator.textContains: l10n.hostResponseQueryOperatorTextContains,
+        HostResponseOperator.textStartsWith: l10n.hostResponseQueryOperatorTextStartsWith,
+        HostResponseOperator.numberEq: l10n.hostResponseQueryOperatorNumberEq,
+        HostResponseOperator.numberGt: l10n.hostResponseQueryOperatorNumberGt,
+        HostResponseOperator.numberGte: l10n.hostResponseQueryOperatorNumberGte,
+        HostResponseOperator.numberLt: l10n.hostResponseQueryOperatorNumberLt,
+        HostResponseOperator.numberLte: l10n.hostResponseQueryOperatorNumberLte,
+        HostResponseOperator.numberBetween: l10n.hostResponseQueryOperatorNumberBetween,
+        HostResponseOperator.dateOn: l10n.hostResponseQueryOperatorDateOn,
+        HostResponseOperator.dateBefore: l10n.hostResponseQueryOperatorDateBefore,
+        HostResponseOperator.dateAfter: l10n.hostResponseQueryOperatorDateAfter,
+        HostResponseOperator.dateBetween: l10n.hostResponseQueryOperatorDateBetween,
+        HostResponseOperator.booleanIs: l10n.hostResponseQueryOperatorBooleanIs,
+      },
+    ),
+  ),
+  offerWorkspace: HostEventOfferWorkspaceCopy(
+    create: l10n.hostEventOfferCreate,
+    selectEvent: l10n.hostEventOfferSelectEvent,
+    emptyEvents: l10n.hostEventOfferSelectEventEmpty,
+    untitledEvent: l10n.hostEventOfferUntitledEvent,
+    loadMoreEvents: l10n.hostEventOfferLoadMoreEvents,
+    needsContact: l10n.hostEventOfferNeedsContact,
+    convertContact: l10n.hostEventOfferConvertContact,
+    selectionChanged: l10n.hostEventOfferSelectionChanged,
+    loadFailed: l10n.hostEventOfferLoadFailed,
+    issued: l10n.hostEventOfferIssued,
+    refresh: l10n.hostEventOfferRefresh,
+    existing: l10n.hostEventOfferExisting,
+    noOffers: l10n.hostEventOfferNoOffers,
+    configurePayment: l10n.hostEventOfferConfigurePayment,
+    openSettings: l10n.hostEventOfferOpenSettings,
+    statusDraft: l10n.hostEventOfferStatusDraft,
+    statusOffered: l10n.hostEventOfferStatusOffered,
+    statusWithdrawn: l10n.hostEventOfferStatusWithdrawn,
+    statusExpired: l10n.hostEventOfferStatusExpired,
+    personalPaymentLink: l10n.hostEventOfferPersonalPaymentLink,
+    openExisting: l10n.hostEventOfferOpenExisting,
+    handoffPrepare: l10n.hostEventOfferHandoffPrepare,
+    handoffBlocked: l10n.hostEventOfferHandoffBlocked,
+    handoffDisclosure: l10n.hostEventOfferHandoffDisclosure,
+    openWhatsapp: l10n.hostEventOfferOpenWhatsapp,
+    copyMessage: l10n.hostEventOfferCopyMessage,
+    messageCopied: l10n.hostEventOfferMessageCopied,
+    handoffOpenFailed: l10n.hostEventOfferHandoffOpenFailed,
+    review: HostEventOfferReviewCopy(
+      title: l10n.hostEventOfferReviewTitle,
+      preview: l10n.hostEventOfferPreview,
+      previewing: l10n.hostEventOfferPreviewing,
+      review: l10n.hostEventOfferReview,
+      expires: l10n.hostEventOfferExpires,
+      commit: l10n.hostEventOfferCommit,
+      committing: l10n.hostEventOfferCommitting,
+      committed: l10n.hostEventOfferCommitted,
+      failed: l10n.hostEventOfferFailed,
+      noReservation: l10n.hostEventOfferNoReservation,
+      paymentReference: l10n.hostEventOfferPaymentReference,
+      recordReference: l10n.hostEventOfferRecordReference,
+      evidenceSubmitted: l10n.hostEventOfferEvidenceSubmitted,
+      bankReceiptChecked: l10n.hostEventOfferBankReceiptChecked,
+      reviewNote: l10n.hostEventOfferReviewNote,
+      attestReceived: l10n.hostEventOfferAttestReceived,
+      rejectReference: l10n.hostEventOfferRejectReference,
+      hostAttested: l10n.hostEventOfferHostAttested,
+      rejected: l10n.hostEventOfferRejected,
+    ),
+  ),
+);
 
 class HostFormResponsesPanel extends ConsumerStatefulWidget {
   const HostFormResponsesPanel({
@@ -47,6 +184,8 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
     this.onFormChanged,
     this.showFormContext = true,
     this.queryCapability,
+    this.accountId,
+    this.requireAccount = false,
   });
 
   final String organizerId;
@@ -59,6 +198,10 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
   final ValueChanged<String?>? onFormChanged;
   final bool showFormContext;
   final HostResponseQueryCapability? queryCapability;
+  /// Production routes bind this panel to the current manager. A new actor
+  /// must fetch legacy responses again before any cached rows can render.
+  final String? accountId;
+  final bool requireAccount;
 
   @override
   ConsumerState<HostFormResponsesPanel> createState() =>
@@ -69,7 +212,17 @@ class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
   HostResponseQueryController? _queryController;
   HostEventOfferController? _offerController;
+  JournalHostResponseExportGateway? _exportGateway;
+  String? _queryAccountId;
+  String? _legacyLoadedAccountId;
+  bool _legacyAccountRefreshScheduled = false;
+  Object? _legacyRefreshError;
+  int _legacyRefreshGeneration = 0;
   String? _offerAccountId;
+  HostOfferEventTarget? _returnedEventTarget;
+  String? _returnedSelectionHash;
+  List<String>? _returnedSelectionIds;
+  String? _inlineReturnError;
   HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
   String? _versionId;
@@ -78,15 +231,24 @@ class _HostFormResponsesPanelState
   final Map<String, Set<String>> _answerFilters = {};
   List<HostFormResponseFilterOption> _filterOptions = const [];
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.queryCapability case final capability?) {
-      _queryController = HostResponseQueryController(
-        capability.gateway ??
-            HostResponseQueryRepository(ref.read(firebaseFunctionsProvider)),
-      );
-    }
+  void _bindQueryAccount(String? accountId) {
+    _queryController?.dispose();
+    _offerController?.dispose();
+    _queryAccountId = accountId;
+    _queryController = accountId == null || widget.queryCapability == null
+        ? null
+        : HostResponseQueryController(
+            widget.queryCapability!.gateway ?? HostResponseQueryRepository(
+              ref.read(firebaseFunctionsProvider),
+            ),
+          );
+    _offerController = null;
+    _exportGateway = null;
+    _offerAccountId = null;
+    _returnedEventTarget = null;
+    _returnedSelectionHash = null;
+    _returnedSelectionIds = null;
+    _inlineReturnError = null;
   }
 
   @override
@@ -106,38 +268,210 @@ class _HostFormResponsesPanelState
             (widget.queryCapability == null) ||
         oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId) {
-      _queryController?.dispose();
-      final capability = widget.queryCapability;
-      _queryController = capability == null
-          ? null
-          : HostResponseQueryController(
-              capability.gateway ??
-                  HostResponseQueryRepository(
-                    ref.read(firebaseFunctionsProvider),
-                  ),
-            );
-      _offerController?.dispose();
-      _offerController = null;
-      _offerAccountId = null;
+      _bindQueryAccount(_queryAccountId);
     }
     if (oldWidget.formId != widget.formId ||
-        oldWidget.organizerId != widget.organizerId) {
+        oldWidget.organizerId != widget.organizerId ||
+        oldWidget.accountId != widget.accountId) {
       _answerFilters.clear();
       _filterOptions = const [];
       _versionId = null;
       _versionResolved = false;
       _versionScope = null;
+      _legacyLoadedAccountId = null;
+      _legacyAccountRefreshScheduled = false;
+      _legacyRefreshError = null;
+      _legacyRefreshGeneration++;
     }
+  }
+
+  Future<void> _openEventForSelection(
+    HostResponseQueryController queryController,
+    String accountId,
+  ) async {
+    final intent = queryController.selectionIntent;
+    if (intent == null ||
+        !privateEventSetupAvailable() ||
+        !_currentQueryAccount(queryController, accountId)) {
+      return;
+    }
+    final organizerId = widget.organizerId;
+    final formId = widget.formId;
+    setState(() {
+      _inlineReturnError = null;
+      _returnedEventTarget = null;
+      _returnedSelectionHash = null;
+      _returnedSelectionIds = null;
+    });
+    final eventId = await context.pushNamed<String>(
+      Routes.hostCreateEventScreen.name,
+      pathParameters: {'clubId': organizerId},
+      extra: const HostCreateEventRouteArguments(
+        returnToResponsesOnSave: true,
+      ),
+    );
+    if (eventId == null || !_currentQueryAccount(queryController, accountId)) {
+      return;
+    }
+    if (widget.organizerId != organizerId || widget.formId != formId ||
+        !_sameSelection(queryController.selectionIntent, intent) ||
+        !await queryController.revalidateSelection(
+          ids: intent.ids, resultHash: intent.resultHash)) {
+      if (_currentQueryAccount(queryController, accountId)) {
+        setState(() => _inlineReturnError =
+            context.l10n.hostEventOfferSelectionChanged);
+      }
+      return;
+    }
+    try {
+      final summary = await PrivateEventSetupRepository(
+        ref.read(firebaseFunctionsProvider),
+      ).get(organizerId: organizerId, eventId: eventId);
+      if (!_currentQueryAccount(queryController, accountId) ||
+          widget.organizerId != organizerId || widget.formId != formId) return;
+      if (summary.organizerId != organizerId || summary.eventId != eventId ||
+          summary.status != 'active' ||
+          !_sameSelection(queryController.selectionIntent, intent) ||
+          !await queryController.revalidateSelection(
+            ids: intent.ids, resultHash: intent.resultHash)) {
+        if (_currentQueryAccount(queryController, accountId)) {
+          setState(() => _inlineReturnError =
+              context.l10n.hostEventOfferSelectionChanged);
+        }
+        return;
+      }
+      if (!_currentQueryAccount(queryController, accountId) ||
+          widget.organizerId != organizerId || widget.formId != formId ||
+          !_sameSelection(queryController.selectionIntent, intent)) return;
+      setState(() {
+        _returnedEventTarget = HostOfferEventTarget(
+          eventId: summary.eventId,
+          name: summary.name,
+          startTime: DateTime.fromMillisecondsSinceEpoch(
+            summary.startTimeMillis),
+          timezone: summary.timezone,
+          publicationState: 'private',
+          setupRevision: summary.setupRevision,
+        );
+        _returnedSelectionHash = intent.resultHash;
+        _returnedSelectionIds = List.unmodifiable(intent.ids);
+        _inlineReturnError = null;
+      });
+    } on Object catch (error) {
+      if (_currentQueryAccount(queryController, accountId)) {
+        setState(() => _inlineReturnError = appErrorMessage(
+          error, l10n: context.l10n, context: AppErrorContext.event));
+      }
+    }
+  }
+
+  bool _currentQueryAccount(
+    HostResponseQueryController queryController,
+    String accountId,
+  ) => mounted &&
+      _queryController == queryController &&
+      _queryAccountId == accountId &&
+      ref.read(uidProvider).asData?.value == accountId &&
+      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
+
+  static bool _sameSelection(
+    ({List<String> ids, String resultHash})? current,
+    ({List<String> ids, String resultHash}) expected,
+  ) => current != null && current.resultHash == expected.resultHash &&
+      current.ids.join('\u0000') == expected.ids.join('\u0000');
+
+  Future<void> _openEventSettings(String eventId, String accountId) async {
+    if (_queryAccountId != accountId ||
+        ref.read(uidProvider).asData?.value != accountId ||
+        ref.read(firebaseAuthProvider).currentUser?.uid != accountId) {
+      return;
+    }
+    await Navigator.of(context).push<void>(MaterialPageRoute(
+      builder: (routeContext) => HostEventOfferPreferencesScreen(
+        key: ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),
+        organizerId: widget.organizerId,
+        eventId: eventId,
+        onBack: () => Navigator.of(routeContext).pop(),
+      ),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     final capability = widget.queryCapability;
-    final queryController = _queryController;
-    if (capability != null &&
-        queryController != null &&
-        widget.formId != null) {
-      final accountId = ref.watch(firebaseAuthProvider).currentUser?.uid;
+    final routeAccountId = widget.accountId;
+    if (widget.requireAccount && routeAccountId == null) {
+      return const CatchStateViewport.sliverLoading();
+    }
+    if (routeAccountId != null) {
+      final uid = ref.watch(uidProvider).asData?.value;
+      final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
+      if (uid != routeAccountId || liveUid != routeAccountId) {
+        _legacyLoadedAccountId = null;
+        _legacyAccountRefreshScheduled = false;
+        _legacyRefreshError = null;
+        _legacyRefreshGeneration++;
+        return const CatchStateViewport.sliverLoading();
+      }
+      if (capability == null && _legacyLoadedAccountId != routeAccountId) {
+        if (_legacyRefreshError case final error?) {
+          return CatchLocalizedSliverErrorState(
+            error,
+            context: AppErrorContext.forms,
+            onRetry: () => setState(() => _legacyRefreshError = null),
+          );
+        }
+        if (!_legacyAccountRefreshScheduled) {
+          _legacyAccountRefreshScheduled = true;
+          final generation = ++_legacyRefreshGeneration;
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (!_currentLegacyAccount(routeAccountId, generation)) return;
+            try {
+              await ref.refresh(hostFormResponsesControllerProvider(
+                _responseRequest(widget.formId),
+              ).future);
+              if (!_currentLegacyAccount(routeAccountId, generation)) return;
+              setState(() {
+                _legacyLoadedAccountId = routeAccountId;
+                _legacyAccountRefreshScheduled = false;
+              });
+            } on Object catch (error) {
+              if (!_currentLegacyAccount(routeAccountId, generation)) return;
+              setState(() {
+                _legacyRefreshError = error;
+                _legacyAccountRefreshScheduled = false;
+              });
+            }
+          });
+        }
+        return const CatchStateViewport.sliverLoading();
+      }
+    }
+    if (capability != null && widget.formId != null) {
+      final uidState = ref.watch(uidProvider);
+      final uid = uidState.asData?.value;
+      final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
+      final accountId = uid != null && uid == liveUid ? uid : null;
+      if (_queryAccountId != accountId ||
+          (accountId != null && _queryController == null)) {
+        _bindQueryAccount(accountId);
+      }
+      if (uidState.hasError) {
+        return CatchLocalizedSliverErrorState(uidState.error!,
+          context: AppErrorContext.auth,
+          onRetry: () => ref.invalidate(uidProvider));
+      }
+      if (accountId == null) {
+        return uidState.isLoading || uid != null
+            ? const CatchStateViewport.sliverLoading()
+            : CatchSliverErrorState(
+                title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
+                message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
+                retryLabel: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+                onRetry: () => context.go(Routes.authScreen.path),
+              );
+      }
+      final queryController = _queryController!;
       final offerCopy = capability.offerWorkspace;
       if (offerCopy != null && _offerAccountId != accountId) {
         _offerController?.dispose();
@@ -147,7 +481,19 @@ class _HostFormResponsesPanelState
           currentAccountId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
         );
         _offerAccountId = accountId;
+        _returnedEventTarget = null;
+        _returnedSelectionHash = null;
+        _returnedSelectionIds = null;
       }
+      final currentSelection = queryController.selectionIntent;
+      final returnedTarget = _returnedSelectionHash != null &&
+              _returnedSelectionIds != null &&
+              _sameSelection(currentSelection, (
+                ids: _returnedSelectionIds!,
+                resultHash: _returnedSelectionHash!,
+              ))
+          ? _returnedEventTarget
+          : null;
       final functions = ref.read(firebaseFunctionsProvider);
       return SliverToBoxAdapter(
         child: HostResponseQueryWorkspaceSection(
@@ -159,10 +505,25 @@ class _HostFormResponsesPanelState
           ),
           copy: capability.copy,
           onReviewSelection: capability.onReviewSelection,
+          exportGateway: capability.exportGateway ??
+              (_exportGateway ??= JournalHostResponseExportGateway(
+                repository: HostFormsRepository(functions),
+                storage: ref.read(commandJournalStorageProvider),
+                currentAccountId: () =>
+                    ref.read(firebaseAuthProvider).currentUser?.uid,
+              )),
+          exportAccountId: capability.exportAccountId ?? accountId,
+          onCreateEventForSelection: privateEventSetupAvailable() &&
+                  offerCopy != null &&
+                  accountId != null
+              ? () => _openEventForSelection(queryController, accountId)
+              : null,
           offerWorkspace: offerCopy != null &&
-                  capability.openEventSettings != null &&
                   accountId != null && _offerController != null
-              ? HostEventOfferWorkspaceSection(
+              ? Column(children: [
+                  if (_inlineReturnError != null)
+                    CatchBanner.error(message: _inlineReturnError!),
+                  HostEventOfferWorkspaceSection(
                   key: ValueKey('offer-workspace-$accountId-${widget.formId}'),
                   organizerId: widget.organizerId,
                   accountId: accountId,
@@ -198,10 +559,13 @@ class _HostFormResponsesPanelState
                       queryParameters: {'organizerId': widget.organizerId},
                     );
                   },
-                  openEventSettings: capability.openEventSettings!,
+                  openEventSettings: capability.openEventSettings ??
+                      (eventId) => _openEventSettings(eventId, accountId),
                   copy: offerCopy,
                   now: DateTime.now,
-                )
+                  initialEventTarget: returnedTarget,
+                  initiallyReviewSelection: returnedTarget != null,
+                )])
               : null,
           onOpenResponse: (responseId) => context.pushNamed(
             Routes.hostFormResponseDetailScreen.name,
@@ -496,6 +860,13 @@ class _HostFormResponsesPanelState
       ],
     );
   }
+
+  bool _currentLegacyAccount(String accountId, int generation) =>
+      mounted &&
+      widget.accountId == accountId &&
+      _legacyRefreshGeneration == generation &&
+      ref.read(uidProvider).asData?.value == accountId &&
+      ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
 
   String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
       widget.formId == null

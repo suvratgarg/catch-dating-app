@@ -44,6 +44,8 @@ class _HostEventOfferPreferencesScreenState
     extends ConsumerState<HostEventOfferPreferencesScreen> {
   EventOfferPreferencesController? _controller;
   String? _controllerUid;
+  String? _controllerOrganizerId;
+  String? _controllerEventId;
   Object? _error;
 
   @override
@@ -52,14 +54,35 @@ class _HostEventOfferPreferencesScreenState
     _controller = widget.initialController;
   }
 
+  @override
+  void didUpdateWidget(covariant HostEventOfferPreferencesScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.organizerId == widget.organizerId &&
+        oldWidget.eventId == widget.eventId &&
+        identical(oldWidget.initialController, widget.initialController)) {
+      return;
+    }
+    if (oldWidget.initialController == null) _controller?.dispose();
+    _controller = widget.initialController;
+    _controllerUid = null;
+    _controllerOrganizerId = null;
+    _controllerEventId = null;
+    _error = null;
+  }
+
   void _bindSignedInManager(String uid) {
-    if (_controllerUid == uid && _controller != null) {
+    if (_controllerUid == uid &&
+        _controllerOrganizerId == widget.organizerId &&
+        _controllerEventId == widget.eventId &&
+        _controller != null) {
       _error = null;
       return;
     }
     _controller?.dispose();
     _controller = null;
     _controllerUid = uid;
+    _controllerOrganizerId = widget.organizerId;
+    _controllerEventId = widget.eventId;
     _error = null;
     try {
       late final EventOfferPreferencesController controller;
@@ -135,6 +158,8 @@ class _HostEventOfferPreferencesScreenState
           _controller?.dispose();
           _controller = null;
           _controllerUid = null;
+          _controllerOrganizerId = null;
+          _controllerEventId = null;
           _error = null;
           ref.invalidate(uidProvider);
           setState(() {});
