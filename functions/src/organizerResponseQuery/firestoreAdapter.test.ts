@@ -6,6 +6,7 @@ import {AudienceTestStore} from
 import {firestoreResponseQuerySource, resolveFirestoreResponseIds,
   runFirestoreResponseQuery} from
   "./firestoreAdapter";
+import type {ResponseScanMetrics} from "./firestoreAdapter";
 
 const timestamp = admin.firestore.Timestamp.fromMillis(1000);
 const definition = {sections: [{questions: [
@@ -262,7 +263,102 @@ test("byte ceiling stops after first oversized Firestore page", async () => {
       return tx.get(ref);
     },
   }));
-  await assert.rejects(runFirestoreResponseQuery(scope, input),
-    {code: "resource-exhausted", message: /8 MiB/u});
+  const reports: ResponseScanMetrics[] = [];
+  await assert.rejects(firestoreResponseQuerySource(scope, undefined, {
+    report: (value) => reports.push(value),
+  }).readAll(5_000), {code: "resource-exhausted", message: /8 MiB/u});
   assert.equal(responseQueries, 1);
+  assert.equal(reports[0].fetchedRows, 25);
+  assert.equal(reports[0].outcome, "byteLimit");
+  assert.ok(reports[0].fetchedBytes > 8 * 1024 * 1024);
 });
+
+
+test("scan metrics measure fetched rows across versions without private data",
+  async () => {
+    const {store, scope} = fixture();
+    const reports: ResponseScanMetrics[] = [];
+    const original = store.runTransaction.bind(store);
+    let clock = 0;
+    store.runTransaction = async (body) => original(async (tx) => body({
+      ...tx, get: async (ref) => {
+        if (ref.path === "organizerFormResponses") clock += 7;
+        return tx.get(ref);
+      },
+    }));
+    const result = await firestoreResponseQuerySource(scope, undefined, {
+      now: () => clock, report: (value) => reports.push(value),
+    }).readAll(5_000);
+    assert.equal(result.rows.length, 2);
+    assert.equal(reports.length, 1);
+    assert.deepEqual(Object.keys(reports[0]).sort(), ["elapsedMillis",
+      "fetchedBytes", "fetchedRows", "outcome", "queryPages"]);
+    assert.deepEqual({...reports[0], fetchedBytes: 0}, {fetchedRows: 3,
+      fetchedBytes: 0, queryPages: 1, elapsedMillis: 7, outcome: "complete"});
+    assert.ok(reports[0].fetchedBytes > 0);
+    assert.ok(!JSON.stringify(reports).includes("Asha"));
+    assert.ok(!JSON.stringify(reports).includes("private one"));
+  });
+
+test("maximum scan counts all pages and the overflow sentinel", async () => {
+  const {store, scope} = fixture();
+  const row = store.docs["organizerFormResponses/one"];
+  for (const key of Object.keys(store.docs)) {
+    if (key.startsWith("organizerFormResponses/")) delete store.docs[key];
+  }
+  for (let index = 0; index < 5_001; index++) {
+    store.docs[`organizerFormResponses/row-${index}`] = {...row,
+      submittedAt: admin.firestore.Timestamp.fromMillis(index)};
+  }
+  const reports: ResponseScanMetrics[] = [];
+  const source = firestoreResponseQuerySource(scope, undefined, {
+    report: (value) => reports.push(value),
+  });
+  const overflow = await source.readAll(5_000);
+  assert.equal(overflow.rows.length, 5_001);
+  assert.equal(reports[0].fetchedRows, 5_001);
+  assert.equal(reports[0].queryPages, 201);
+  assert.equal(reports[0].outcome, "rowLimit");
+  delete store.docs["organizerFormResponses/row-5000"];
+  const exact = await source.readAll(5_000);
+  assert.equal(exact.rows.length, 5_000);
+  assert.equal(reports[1].queryPages, 201,
+    "an empty final query establishes exhaustion at the exact limit");
+  assert.equal(reports[1].outcome, "complete");
+});
+
+test("slow page reports consumed work and never starts a second query",
+  async () => {
+    const {store, scope} = fixture();
+    const reports: ResponseScanMetrics[] = [];
+    const original = store.runTransaction.bind(store);
+    let clock = 0;
+    store.runTransaction = async (body) => original(async (tx) => body({
+      ...tx, get: async (ref) => {
+        const value = await tx.get(ref);
+        if (ref.path === "organizerFormResponses") clock = 25_001;
+        return value;
+      },
+    }));
+    await assert.rejects(firestoreResponseQuerySource(scope, undefined, {
+      now: () => clock, report: (value) => reports.push(value),
+    }).readAll(5_000), {code: "resource-exhausted"});
+    assert.equal(reports[0].queryPages, 1);
+    assert.equal(reports[0].fetchedRows, 3);
+    assert.equal(reports[0].outcome, "timeLimit");
+    assert.equal(reports[0].elapsedMillis, 25_001);
+  });
+
+test("telemetry failure cannot mask authorization or change results",
+  async () => {
+    const {scope} = fixture();
+    const report = () => {
+      throw new Error("telemetry unavailable");
+    };
+    const result = await firestoreResponseQuerySource(scope, undefined,
+      {report}).readAll(5_000);
+    assert.equal(result.rows.length, 2);
+    await assert.rejects(firestoreResponseQuerySource({...scope,
+      actorUid: "outsider"}, undefined, {report}).readAll(5_000),
+    {code: "permission-denied"});
+  });

@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
+import {info} from "firebase-functions/logger";
 import type {OrganizerFormDocument, OrganizerFormResponseDocument,
   OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -49,102 +50,146 @@ export interface ResponseQueryPage {
 const maxScanBytes = 8 * 1024 * 1024;
 const maxScanMillis = 25_000;
 
+export interface ResponseScanMetrics {
+  fetchedRows: number;
+  fetchedBytes: number;
+  queryPages: number;
+  elapsedMillis: number;
+  outcome: "complete" | "rowLimit" | "byteLimit" | "timeLimit" | "failed";
+}
+
+interface ScanInstrumentation {
+  now?: () => number;
+  report?: (metrics: ResponseScanMetrics) => void;
+}
+
 /**
  * Reads one Firestore snapshot. The existing organizer/form index keeps the
  * scan bounded; version is checked against the immutable published version
  * and every row, so a large multi-version form fails rather than truncates.
  */
 export function firestoreResponseQuerySource(scope: Scope,
-  capture?: Map<string, OrganizerFormResponseDocument>):
-  ResponseQuerySource {
-  return {readAll: (maxRows) => scope.db.runTransaction(async (tx) => {
-    await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
-      organizerId: scope.organizerId, transaction: tx});
-    if ((await tx.get(scope.db.collection("deletedUsers")
-      .doc(scope.actorUid))).exists) {
-      throw new HttpsError("permission-denied",
-        "Deleted accounts cannot query form responses.");
-    }
-    const [versionSnap, formSnap] = await Promise.all([
-      tx.get(scope.db.collection("organizerFormVersions")
-        .doc(scope.versionId)),
-      tx.get(scope.db.collection("organizerForms").doc(scope.formId)),
-    ]);
-    if (!versionSnap.exists) {
-      throw new HttpsError("not-found", "Published form version not found.");
-    }
-    if (!formSnap.exists) {
-      throw new HttpsError("not-found", "Form not found.");
-    }
-    const version = requireDoc<OrganizerFormVersionDocument>(versionSnap,
-      "OrganizerFormVersionDocument");
-    const form = requireDoc<OrganizerFormDocument>(formSnap,
-      "OrganizerFormDocument");
-    if (version.organizerId !== scope.organizerId ||
-        version.formId !== scope.formId ||
-        form.organizerId !== scope.organizerId) {
-      throw new HttpsError("not-found", "Published form version not found.");
-    }
-    const metadata = {formTitle: form.title, version: version.version,
-      definition: version.definition};
-    capture?.clear();
-    const rows: ResponseQueryRow[] = [];
-    let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
-    let bytes = 0;
-    const started = Date.now();
-    const pageSize = 25;
-    while (rows.length <= maxRows) {
-      if (Date.now() - started > maxScanMillis) {
-        throw new HttpsError("resource-exhausted",
-          "Response query exceeded its 25-second scan limit.");
-      }
-      const limit = Math.min(pageSize, maxRows - rows.length + 1);
-      let query: FirebaseFirestore.Query = scope.db
-        .collection("organizerFormResponses")
-        .where("organizerId", "==", scope.organizerId)
-        .where("formId", "==", scope.formId)
-        .orderBy("submittedAt", "asc")
-        .orderBy(admin.firestore.FieldPath.documentId(), "asc")
-        .limit(limit);
-      if (last) query = query.startAfter(last);
-      const page = await tx.get(query);
-      if (Date.now() - started > maxScanMillis) {
-        throw new HttpsError("resource-exhausted",
-          "Response query exceeded its 25-second scan limit.");
-      }
-      if (page.empty) break;
-      for (const doc of page.docs) {
-        last = doc;
-        bytes += Buffer.byteLength(JSON.stringify(doc.data()), "utf8");
-        if (bytes > maxScanBytes) {
-          throw new HttpsError("resource-exhausted",
-            "Response query exceeds the 8 MiB interactive scan limit.");
-        }
-        const response = requireDoc<OrganizerFormResponseDocument>(doc,
-          "OrganizerFormResponseDocument");
-        if (response.organizerId !== scope.organizerId ||
-            response.formId !== scope.formId) {
+  capture?: Map<string, OrganizerFormResponseDocument>,
+  instrumentation: ScanInstrumentation = {}): ResponseQuerySource {
+  return {readAll: async (maxRows) => {
+    const now = instrumentation.now ?? Date.now;
+    const started = now();
+    const metrics: ResponseScanMetrics = {fetchedRows: 0, fetchedBytes: 0,
+      queryPages: 0, elapsedMillis: 0, outcome: "failed"};
+    try {
+      const snapshot = await scope.db.runTransaction(async (tx) => {
+        await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
+          organizerId: scope.organizerId, transaction: tx});
+        if ((await tx.get(scope.db.collection("deletedUsers")
+          .doc(scope.actorUid))).exists) {
           throw new HttpsError("permission-denied",
-            "Response query read outside its form scope.");
+            "Deleted accounts cannot query form responses.");
         }
-        capture?.set(doc.id, response);
-        // Every scanned form row spends budget, even another version.
-        rows.push({id: doc.id, organizerId: response.organizerId,
-          formId: response.formId, versionId: response.versionId,
-          status: response.status,
-          submittedAtMillis: response.submittedAt.toMillis(),
-          withdrawnAtMillis: response.withdrawnAt?.toMillis() ?? null,
-          identityKind: response.identityKind, identity: response.identity,
-          sourceLinkId: response.sourceLinkId,
-          answers: response.answers, consentVersion: response.consentVersion,
-          completionMillis: response.completionMillis});
-        if (rows.length > maxRows) return {...metadata, rows};
+        const [versionSnap, formSnap] = await Promise.all([
+          tx.get(scope.db.collection("organizerFormVersions")
+            .doc(scope.versionId)),
+          tx.get(scope.db.collection("organizerForms").doc(scope.formId)),
+        ]);
+        if (!versionSnap.exists) {
+          throw new HttpsError("not-found",
+            "Published form version not found.");
+        }
+        if (!formSnap.exists) {
+          throw new HttpsError("not-found", "Form not found.");
+        }
+        const version = requireDoc<OrganizerFormVersionDocument>(versionSnap,
+          "OrganizerFormVersionDocument");
+        const form = requireDoc<OrganizerFormDocument>(formSnap,
+          "OrganizerFormDocument");
+        if (version.organizerId !== scope.organizerId ||
+            version.formId !== scope.formId ||
+            form.organizerId !== scope.organizerId) {
+          throw new HttpsError("not-found",
+            "Published form version not found.");
+        }
+        const metadata = {formTitle: form.title, version: version.version,
+          definition: version.definition};
+        capture?.clear();
+        const rows: ResponseQueryRow[] = [];
+        let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+        const pageSize = 25;
+        while (rows.length <= maxRows) {
+          if (now() - started > maxScanMillis) {
+            metrics.outcome = "timeLimit";
+            throw new HttpsError("resource-exhausted",
+              "Response query exceeded its 25-second scan limit.");
+          }
+          const limit = Math.min(pageSize, maxRows - rows.length + 1);
+          let query: FirebaseFirestore.Query = scope.db
+            .collection("organizerFormResponses")
+            .where("organizerId", "==", scope.organizerId)
+            .where("formId", "==", scope.formId)
+            .orderBy("submittedAt", "asc")
+            .orderBy(admin.firestore.FieldPath.documentId(), "asc")
+            .limit(limit);
+          if (last) query = query.startAfter(last);
+          const page = await tx.get(query);
+          metrics.queryPages += 1;
+          metrics.fetchedRows += page.size;
+          metrics.fetchedBytes += page.docs.reduce((sum, doc) => sum +
+            Buffer.byteLength(JSON.stringify(doc.data()), "utf8"), 0);
+          if (now() - started > maxScanMillis) {
+            metrics.outcome = "timeLimit";
+            throw new HttpsError("resource-exhausted",
+              "Response query exceeded its 25-second scan limit.");
+          }
+          if (metrics.fetchedBytes > maxScanBytes) {
+            metrics.outcome = "byteLimit";
+            throw new HttpsError("resource-exhausted",
+              "Response query exceeds the 8 MiB interactive scan limit.");
+          }
+          if (page.empty) break;
+          for (const doc of page.docs) {
+            last = doc;
+            const response = requireDoc<OrganizerFormResponseDocument>(doc,
+              "OrganizerFormResponseDocument");
+            if (response.organizerId !== scope.organizerId ||
+                response.formId !== scope.formId) {
+              throw new HttpsError("permission-denied",
+                "Response query read outside its form scope.");
+            }
+            capture?.set(doc.id, response);
+            // Every scanned form row spends budget, even another version.
+            rows.push({id: doc.id, organizerId: response.organizerId,
+              formId: response.formId, versionId: response.versionId,
+              status: response.status,
+              submittedAtMillis: response.submittedAt.toMillis(),
+              withdrawnAtMillis: response.withdrawnAt?.toMillis() ?? null,
+              identityKind: response.identityKind, identity: response.identity,
+              sourceLinkId: response.sourceLinkId,
+              answers: response.answers,
+              consentVersion: response.consentVersion,
+              completionMillis: response.completionMillis});
+            if (rows.length > maxRows) {
+              metrics.outcome = "rowLimit";
+              return {...metadata, rows};
+            }
+          }
+          if (page.size < limit) break;
+        }
+        return {...metadata, rows: rows.filter((row) =>
+          row.versionId === scope.versionId)};
+      }, {readOnly: true});
+      if (metrics.outcome !== "rowLimit") metrics.outcome = "complete";
+      return snapshot;
+    } finally {
+      metrics.elapsedMillis = Math.max(0, now() - started);
+      // Only aggregate numbers and a closed outcome: never query, IDs, answers
+      // or error text. This measures a scan, not billed reads or full latency.
+      const report = instrumentation.report ?? ((value: ResponseScanMetrics) =>
+        info("organizer_response_scan", value));
+      try {
+        report(metrics);
+      } catch {
+        // Observability must not change query results or mask source failures.
       }
-      if (page.size < limit) break;
     }
-    return {...metadata, rows: rows.filter((row) =>
-      row.versionId === scope.versionId)};
-  }, {readOnly: true})};
+  }};
 }
 
 /** Prepares the manager-authorized, version-bound query. */

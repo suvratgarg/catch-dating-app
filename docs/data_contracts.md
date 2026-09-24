@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.149.0
-updated: 2026-09-23
+version: 1.150.0
+updated: 2026-09-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -2562,6 +2562,19 @@ query settings and both hashes; a reused request ID cannot change its filters.
 The result hash includes exported consent/completion metadata. Failed receipts
 return the stable `response-query-stale` code when the reviewed set changes;
 clients must refresh and use a new request ID, not replay a different query.
+
+The shared response reader emits one `organizer_response_scan` diagnostic per
+scan: fetched document count, serialized bytes, query page count, elapsed
+milliseconds and a closed completion/limit/failure outcome. It contains no
+organizer, form, actor, query, identity, answer or error-text data. All form
+versions consume scan budget; the telemetry counts fetched rows even when a
+byte/time ceiling rejects the result. At the 5,000-row ceiling, batches of 25
+need 201 response queries including the exhaustion/sentinel query. This is
+not a billed-read count: authority/version reads, empty-query minimums,
+rate-limit transactions and provider billing rules are separate. Each UI page
+and export worker currently rescans; this diagnostic does not prove deployed
+latency. Production percentiles and representative response sizes must be
+measured before changing batching or the actor/organizer rate ceilings.
 
 ### Organizer-connected form payments
 
