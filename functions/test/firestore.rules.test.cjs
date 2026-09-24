@@ -3150,7 +3150,7 @@ describe("firestore.rules", () => {
       await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
     });
 
-    it("publication queries cannot include private or unlabelled setup records", async () => {
+    it("direct reads deny private or unlabelled setup records", async () => {
       const anonymous = testEnv.unauthenticatedContext().firestore();
       await seed(["events", "published"], event({publicationState: "published"}));
       await seed(["events", "legacy"], event());
@@ -3163,8 +3163,17 @@ describe("firestore.rules", () => {
       for (const id of ["private", "unlabelled", "malformed"]) {
         await assertFails(getDoc(doc(anonymous, "events", id)));
       }
-      await assertFails(getDocs(collection(anonymous, "events")));
-      await assertFails(getDocs(query(collection(anonymous, "events"), where("organizerId", "==", "club-1"))));
+    });
+
+    it("keeps legacy public list queries working while private writes are disabled", async () => {
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await seed(["events", "published"], event({publicationState: "published"}));
+      await seed(["events", "legacy"], event());
+      const all = await assertSucceeds(getDocs(collection(anonymous, "events")));
+      assert.deepEqual(all.docs.map((row) => row.id).sort(), ["legacy", "published"]);
+      const owned = await assertSucceeds(getDocs(query(collection(anonymous, "events"),
+        where("organizerId", "==", "club-1"))));
+      assert.equal(owned.size, 2);
       const published = await assertSucceeds(getDocs(query(collection(anonymous, "events"), where("publicationState", "==", "published"))));
       assert.equal(published.size, 1);
       assert.equal(published.docs[0].id, "published");

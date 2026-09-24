@@ -135,10 +135,9 @@ class EventRepository with EventRepositoryActions {
 
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
       withBackendErrorStream(
-        // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
+        // firestore-index: events (organizerId:ASCENDING,startTime:ASCENDING)
         () => _eventsRef
             .where('organizerId', isEqualTo: clubId)
-            .where('publicationState', isEqualTo: 'published')
             .orderBy('startTime')
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
@@ -166,10 +165,9 @@ class EventRepository with EventRepositoryActions {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
     _eventsRef
         .where('organizerId', isEqualTo: organizerId)
-        .where('publicationState', isEqualTo: 'published')
         .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where('endTime', isGreaterThan: Timestamp.fromDate(sessionBoundary))
         .orderBy('endTime')
@@ -186,10 +184,9 @@ class EventRepository with EventRepositoryActions {
     DocumentSnapshot<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    // firestore-index: events (organizerId:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
     _eventsRef
         .where('organizerId', isEqualTo: organizerId)
-        .where('publicationState', isEqualTo: 'published')
         .where('status', isEqualTo: EventLifecycleStatus.active.name)
         .where(
           'endTime',
@@ -318,7 +315,7 @@ class EventRepository with EventRepositoryActions {
     List<String> clubIds,
   ) => withBackendErrorContext(
     () async {
-      // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
+      // firestore-index: events (organizerId:ASCENDING,startTime:ASCENDING)
       final uniqueClubIds = clubIds.toSet().toList()..sort();
       if (uniqueClubIds.isEmpty) return [];
       final nowDateTime = DateTime.now();
@@ -327,7 +324,6 @@ class EventRepository with EventRepositoryActions {
       for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
         final snap = await _eventsRef
             .where('organizerId', whereIn: chunk)
-            .where('publicationState', isEqualTo: 'published')
             .where('startTime', isGreaterThan: now)
             .orderBy('startTime')
             .limit(ReadLimitPolicy.directoryPage)

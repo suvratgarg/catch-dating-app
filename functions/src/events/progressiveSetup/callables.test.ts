@@ -22,6 +22,13 @@ const create = {organizerId: "org1", requestId: "request-1", basics: {
   timezone: {mode: "set", value: "Asia/Kolkata"},
 }};
 
+test("deployed private-create callable is closed before Firebase access",
+  async () => {
+    await assert.rejects(createPrivateEventSetupHandler(
+      request(create, "host1")),
+    (e) => e instanceof HttpsError && e.code === "failed-precondition");
+  });
+
 test("callable auth and payload validation precede rate or database access",
   async () => {
     const deps: SetupCallableDependencies = {

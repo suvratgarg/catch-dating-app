@@ -61,6 +61,17 @@ const defaultDeps: SetupCallableDependencies = {
   }),
 };
 
+// This compatibility release still permits legacy public event lists. Never
+// create or mutate a private event through a production callable until the
+// published-only rules and clients are deployed together. Injectable service
+// dependencies remain available only to isolated tests.
+function assertProductionPrivateSetupClosed(deps: SetupCallableDependencies) {
+  if (deps === defaultDeps) {
+    throw new HttpsError("failed-precondition",
+      "Private event setup is not yet available.");
+  }
+}
+
 /** Authenticated entry point; transaction owns final manager authority. */
 export async function createPrivateEventSetupHandler(
   request: CallableRequest<unknown>, deps = defaultDeps
@@ -68,6 +79,7 @@ export async function createPrivateEventSetupHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateCreatePrivateEventSetupCallablePayload);
+  assertProductionPrivateSetupClosed(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "createPrivateEventSetup");
   return createSetup({actorUid, command, deps: deps.service(db)});
@@ -80,6 +92,7 @@ export async function updatePrivateEventBasicsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventBasicsCallablePayload);
+  assertProductionPrivateSetupClosed(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventBasics");
   return updateBasics({actorUid, command, deps: deps.service(db)});
@@ -111,6 +124,7 @@ export async function updatePrivateEventPreferencesHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventPreferencesCallablePayload);
+  assertProductionPrivateSetupClosed(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventPreferences");
   return updatePreferences({actorUid, command, deps: deps.service(db)});
@@ -145,6 +159,7 @@ export async function updatePrivateEventDetailsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventDetailsCallablePayload);
+  assertProductionPrivateSetupClosed(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventDetails");
   const result = await updateDetails({actorUid, command,

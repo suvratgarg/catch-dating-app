@@ -1873,10 +1873,12 @@ service cloud.firestore {
     match /events/{eventId} {
       allow get: if isPublicEventData(resource.data)
         || canReadPrivateEvent(eventId, resource.data);
-      // Key-absence legacy fallback is not a safe list predicate: callers
-      // must constrain publication explicitly rather than filter afterwards.
-      allow list: if resource.data.publicationState == 'published'
-        || canReadPrivateEvent(eventId, resource.data);
+      // Compatibility stage only: installed clients still issue unrestricted
+      // event lists. Private event persistence and its Host route stay disabled
+      // until the publication backfill and client cutover are complete. This
+      // rule MUST become publication-constrained before any private event is
+      // stored in this collection.
+      allow list: if true;
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.

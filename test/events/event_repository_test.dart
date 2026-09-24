@@ -210,33 +210,30 @@ void main() {
       );
     });
 
-    test('public organizer streams exclude private rich events', () async {
+    test('public organizer streams include legacy events before backfill', () async {
       final published = buildEvent(id: 'public', clubId: 'club-2');
-      final private = buildEvent(id: 'private', clubId: 'club-2');
+      final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
       await _seedEvent(firestore, published);
-      await _seedEvent(firestore, private);
-      await firestore.collection('events').doc(private.id).update({
-        'publicationState': 'private',
-      });
+      await firestore.collection('events').doc(legacy.id).set(legacy.toJson());
 
       await expectLater(
         repository.watchEventsForClub(clubId: 'club-2'),
-        emits([published]),
+        emits(containsAll([published, legacy])),
       );
       await expectLater(
         repository.watchEventsForClubs(clubIds: const ['club-2']),
-        emits([published]),
+        emits(containsAll([published, legacy])),
       );
       expect(
         await repository.fetchUpcomingEventsForClubs(const ['club-2']),
-        [published],
+        containsAll([published, legacy]),
       );
     });
 
-    test('private rows do not consume public organizer page slots', () async {
+    test('legacy rows retain organizer page position before backfill', () async {
       final boundary = DateTime(2026, 8, 18, 12);
-      final private = buildEvent(
-        id: 'private-first', clubId: 'club-2',
+      final legacy = buildEvent(
+        id: 'legacy-first', clubId: 'club-2',
         startTime: boundary.add(const Duration(hours: 1)),
         endTime: boundary.add(const Duration(hours: 2)),
       );
@@ -245,17 +242,14 @@ void main() {
         startTime: boundary.add(const Duration(hours: 3)),
         endTime: boundary.add(const Duration(hours: 4)),
       );
-      await _seedEvent(firestore, private);
+      await firestore.collection('events').doc(legacy.id).set(legacy.toJson());
       await _seedEvent(firestore, published);
-      await firestore.collection('events').doc(private.id).update({
-        'publicationState': 'private',
-      });
 
       final page = await repository.fetchActiveEventsPage(
         organizerId: 'club-2', sessionBoundary: boundary, limit: 1,
       );
-      expect(page.items, [published]);
-      expect(page.hasMore, isFalse);
+      expect(page.items, [legacy]);
+      expect(page.hasMore, isTrue);
     });
 
     test(

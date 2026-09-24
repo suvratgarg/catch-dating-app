@@ -95,7 +95,7 @@ void main() {
         await firestore
             .collection('events')
             .doc(earlier.id)
-            .set({...earlier.toJson(), 'publicationState': 'published'});
+            .set(earlier.toJson()); // Legacy public event before backfill.
         await firestore.collection('events').doc('private-basics').set({
           'organizerId': 'club-1',
           'publicationState': 'private',
