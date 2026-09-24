@@ -409,6 +409,20 @@ export async function prepareContactUnmergeSeats(params: {
   if (!same(currentIds, expectedIds)) {
     stale("Contact origins changed since merge.");
   }
+  const contactValues = new Map<string, {kind: AliasKind; value: string}>(
+    [sourceContactId, survivorContactId].map((value) => [
+      seatIdentityValueHash("contact", value), {kind: "contact", value},
+    ]));
+  const contactAliases = await aliasesForHashes(db, tx,
+    [...contactValues.keys()]);
+  const currentContactEvents = unique(contactAliases.flatMap((doc) => {
+    const alias = requireAlias(doc, organizerId, contactValues);
+    return alias ? [alias.eventId] : [];
+  }));
+  if (!same(currentContactEvents,
+    unique(evidence.seatEventGuards.map((guard) => guard.eventId)))) {
+    stale("Contact seat event membership changed since merge.");
+  }
   const hashes = movedOriginIds.map((id) =>
     seatIdentityValueHash("contactOrigin", id));
   const found = await aliasesForHashes(db, tx, hashes);

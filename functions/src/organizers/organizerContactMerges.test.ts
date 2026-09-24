@@ -377,3 +377,40 @@ test("manager authority change during merge transaction aborts all writes",
       deps));
     assert.equal(store.writes.length, 0);
   });
+
+test("unmerge refuses a moved fact whose organizer changed", async () => {
+  const {store, request, deps, command} = mergeFixture();
+  store.put("organizerContactEventEdges/edge1", {organizerId,
+    contactId: sourceId, originContactId: sourceId,
+    eventId: mergeEventId});
+  const first = await mergeOrganizerContactsHandler(request(command), deps);
+  store.get("organizerContactEventEdges/edge1")!.organizerId = "foreign";
+  const writes = store.writes.length;
+  await assert.rejects(unmergeOrganizerContactsHandler(request({organizerId,
+    mergeReceiptId: first.receiptId,
+    idempotencyKey: "unmerge-foreign-fact-1"}), deps));
+  assert.equal(store.writes.length, writes);
+});
+
+test("unmerge detects a new contact seat after an alias-free merge",
+  async () => {
+    const {store, request, deps, command} = mergeFixture();
+    for (const key of [...store.rows.keys()]) {
+      if (key.startsWith("eventSeatIdentityAliases/")) {
+        store.rows.delete(key);
+      }
+    }
+    const first = await mergeOrganizerContactsHandler(request(command), deps);
+    const newEventId = "laterEvent";
+    store.put(`eventSeatIdentityAliases/${seatIdentityAliasId(
+      newEventId, "contact", survivorId)}`, {eventId: newEventId,
+      organizerId, kind: "contact",
+      valueHash: seatIdentityValueHash("contact", survivorId),
+      canonicalKey: "laterPerson", identityRevision: 1,
+      migrationRevision: 1, state: "ready"});
+    const writes = store.writes.length;
+    await assert.rejects(unmergeOrganizerContactsHandler(request({
+      organizerId, mergeReceiptId: first.receiptId,
+      idempotencyKey: "unmerge-later-event-1"}), deps));
+    assert.equal(store.writes.length, writes);
+  });

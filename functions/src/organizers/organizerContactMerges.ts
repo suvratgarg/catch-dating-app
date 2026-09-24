@@ -364,7 +364,8 @@ function assertReversibleMove(
     kind === "origin" ? data.currentContactId : data.contactId;
   const origin = kind === "claim" ? data.originVerifiedContactId :
     data.originContactId;
-  if (current !== receipt.survivorContactId ||
+  if (data.organizerId !== receipt.organizerId ||
+      current !== receipt.survivorContactId ||
       origin !== receipt.sourceContactId) {
     throw new HttpsError(
       "failed-precondition",

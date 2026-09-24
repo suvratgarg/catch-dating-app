@@ -309,3 +309,24 @@ test("inconsistent operational alias on target key blocks merge", async () => {
   await assert.rejects(store.run((tx) => prepare(store, tx)));
   assert.equal(store.writes.length, 0);
 });
+
+test("new contact alias in an unrecorded event blocks unmerge", async () => {
+  const store = new Store();
+  store.put(`organizerContactOrigins/${originId}`, {...origin});
+  const prepared = await store.run((tx) => prepare(store, tx));
+  assert.deepEqual(prepared.evidence.seatEventGuards, []);
+  store.get(`organizerContactOrigins/${originId}`)!
+    .currentContactId = survivor;
+  store.put(`eventSeatIdentityAliases/${aliasId("contact", survivor)}`, {
+    eventId, organizerId: org, kind: "contact",
+    valueHash: seatIdentityValueHash("contact", survivor),
+    canonicalKey: "person1", identityRevision: 1,
+    migrationRevision: 1, state: "ready",
+  });
+  await assert.rejects(store.run((tx) =>
+    prepareContactUnmergeSeats({db: store.db(), tx,
+      organizerId: org, sourceContactId: source,
+      survivorContactId: survivor, movedOriginIds: [originId],
+      evidence: prepared.evidence})));
+  assert.equal(store.writes.length, 0);
+});
