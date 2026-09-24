@@ -91,7 +91,7 @@ class FakeStore {
   }
   ready() {
     this.rows.set(`eventSeatLedgers/${eventId}`, {
-      eventId, state: "ready", migrationRevision: 1,
+      eventId, state: "ready", migrationRevision: 1, revision: 3,
     });
   }
   proof(uid = "uid1") {
@@ -385,7 +385,7 @@ test("verified form origin reuses imported guest seat without reserving again",
     store.rows.set(`eventSeatReservations/${createHash("sha256")
       .update([eventId, "guest_existing"].join("\u001f"))
       .digest("hex")}`, {eventId, canonicalKey: "guest_existing",
-      identityRevision: 1, active: true});
+      identityRevision: 1, revision: 1, active: true});
     const tx = store.writeTx();
     const prepared = await prepareCrmOriginSeatIdentity({db: store.db(),
       tx: tx.tx, eventId, organizerId,
@@ -394,9 +394,11 @@ test("verified form origin reuses imported guest seat without reserving again",
         currentAuthPhoneNumber: phone, now: Timestamp.now()}});
     assert.equal(prepared.seatAlreadyOccupied, true);
     assert.equal(prepared.sourceAttendeeId, "guest1");
+    assert.equal(prepared.resultingLedgerRevision, 2);
     assert.equal(prepared.identity.key, "guest_existing");
     prepared.apply();
     tx.commit();
+    assert.equal(store.rows.get(`eventSeatLedgers/${eventId}`)?.revision, 2);
     assert.equal(store.rows.get("eventAttendees/guest1")?.linkedUid,
       "uid1");
     assert.equal(store.rows.get(`eventSeatReservations/${createHash("sha256")
@@ -453,7 +455,8 @@ function guestSeatStore(options: {externalReference?: string} = {}) {
     store.alias("external", options.externalReference.toLowerCase(), key);
   }
   store.rows.set(`eventSeatReservations/${hash(eventId, key)}`, {
-    eventId, canonicalKey: key, active: true, identityRevision: 1});
+    eventId, canonicalKey: key, active: true, identityRevision: 1,
+    revision: 1});
   const link = async (uid = "uid1", tokenPhone = phone) => {
     const prepared = store.writeTx();
     const result = await linkVerifiedUidToGuestSeat({db: store.db(),
