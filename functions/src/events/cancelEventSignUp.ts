@@ -43,8 +43,8 @@ import {
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
-import {prepareCatchUidSeatIdentity,
-  prepareVerifiedUidGuestSeatLink} from "./seatIdentityAuthority";
+import {FirestoreSeatIdentityAuthority,
+  prepareCatchUidSeatIdentity} from "./seatIdentityAuthority";
 import {applyFirestoreSeatBatch, FirestoreSeatBatchPreparation,
   FirestoreSeatTransaction, prepareFirestoreSeatBatch} from
   "./seatAuthority/firestoreAdapter";
@@ -155,10 +155,9 @@ export async function cancelEventSignUpHandler(
     .limit(1)
     .get();
   const paymentDoc = paymentQuery.empty ? null : paymentQuery.docs[0];
-  const promotionPushes: PromotionPush[] = [];
-  const refundPlan: {value: RefundPlan | null} = {value: null};
-
-  await db.runTransaction(async (tx) => {
+  const committed = await db.runTransaction(async (tx) => {
+    const promotionPushes: PromotionPush[] = [];
+    let refundPlan: RefundPlan | null = null;
     const [
       eventSnap,
       userSnap,
@@ -201,7 +200,7 @@ export async function cancelEventSignUpHandler(
 
     // Idempotent — already not signed up.
     if (participation?.status !== "signedUp") {
-      return;
+      return {cancelled: false, promotionPushes, refundPlan};
     }
     const scheduledEvent = requireEventTimeRange(event);
 
@@ -220,7 +219,7 @@ export async function cancelEventSignUpHandler(
         startTimeMillis: event.startTime.toMillis(),
         nowMillis: deps.nowMillis(),
       });
-      refundPlan.value = cancellationQuote.refundAmountInPaise > 0 ? {
+      refundPlan = cancellationQuote.refundAmountInPaise > 0 ? {
         paymentId: payment.paymentId,
         amountInPaise: cancellationQuote.refundAmountInPaise,
         paymentRef: paymentDoc.ref,
@@ -237,23 +236,37 @@ export async function cancelEventSignUpHandler(
       const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
         eventId, organizerId: event.organizerId ?? event.clubId, uid: userId,
         currentAuthPhoneNumber: currentAuthPhone});
-      if (preparedIdentity.identity.key.startsWith("guest_")) {
-        if (!currentAuthPhone) {
-          throw new HttpsError("failed-precondition",
-            "Current guest seat identity is unavailable.");
-        }
-        const guests = await tx.get(db.collection("eventAttendees")
-          .where("eventId", "==", eventId)
-          .where("linkedUid", "==", userId).limit(2));
-        if (guests.docs.length !== 1) {
+      const guests = await tx.get(db.collection("eventAttendees")
+        .where("eventId", "==", eventId)
+        .where("linkedUid", "==", userId).limit(2));
+      const independentGuests = guests.docs.filter((guest) => {
+        const row = guest.data();
+        return ["hostImport", "hostManual", "providerSync"]
+          .includes(row.source) &&
+          ["registered", "checkedIn"].includes(row.status);
+      });
+      if (guests.docs.length > 1 || independentGuests.length > 1) {
+        throw new HttpsError("failed-precondition",
+          "Linked guest seat needs reconciliation.");
+      }
+      if (independentGuests.length === 1) {
+        const guestIdentity = await new FirestoreSeatIdentityAuthority()
+          .resolve({db, tx, eventId,
+            organizerId: event.organizerId ?? event.clubId,
+            subject: {kind: "importAttendee",
+              attendeeId: independentGuests[0].id}});
+        if (!guestIdentity || guestIdentity.key !==
+            preparedIdentity.identity.key ||
+            guestIdentity.revision !== preparedIdentity.identity.revision) {
           throw new HttpsError("failed-precondition",
             "Linked guest seat needs reconciliation.");
         }
-        await prepareVerifiedUidGuestSeatLink({db, tx, eventId,
-          organizerId: event.organizerId ?? event.clubId,
-          attendeeId: guests.docs[0].id, uid: userId,
-          authTokenPhoneNumber: currentAuthPhone,
-          now: admin.firestore.Timestamp.fromMillis(deps.nowMillis())});
+        const reservation = await seatTransaction!.reservation(eventId,
+          guestIdentity.key);
+        if (!reservation?.active) {
+          throw new HttpsError("failed-precondition",
+            "Linked guest reservation is unavailable.");
+        }
         retainedGuestSeat = true;
       }
     }
@@ -525,9 +538,10 @@ export async function cancelEventSignUpHandler(
         });
       }
     }
+    return {cancelled: true, promotionPushes, refundPlan};
   });
 
-  for (const promotionPush of promotionPushes) {
+  for (const promotionPush of committed.promotionPushes) {
     try {
       await deps.sendNotification(promotionPush);
     } catch (notificationError) {
@@ -546,24 +560,24 @@ export async function cancelEventSignUpHandler(
   }
 
   // Issue a refund outside the transaction when the selected policy allows it.
-  if (refundPlan.value) {
+  if (committed.refundPlan) {
     try {
       await deps.refundPayment(
-        refundPlan.value.paymentId,
-        refundPlan.value.amountInPaise
+        committed.refundPlan.paymentId,
+        committed.refundPlan.amountInPaise
       );
-      await refundPlan.value.paymentRef.update({status: "refunded"});
+      await committed.refundPlan.paymentRef.update({status: "refunded"});
     } catch (refundError) {
       // Log and continue — cancellation itself succeeded; refund can be
       // retried manually via the Razorpay dashboard.
       logger.error(
         "Refund failed for payment",
-        refundPlan.value.paymentId,
+        committed.refundPlan.paymentId,
         refundError
       );
     }
   }
-  return {cancelled: true};
+  return {cancelled: committed.cancelled};
 }
 
 export const cancelEventSignUp = onCall(

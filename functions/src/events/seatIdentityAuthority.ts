@@ -304,6 +304,236 @@ export async function prepareCatchUidSeatIdentity(params: {
 }
 
 /**
+ * Enrolls the current CRM survivor and one reviewed form-response origin.
+ * The admission caller must separately recheck the response, conversion
+ * receipt, offer and payment in this tx. CRM phone is not UID verification:
+ * its alias is quarantined to prevent later duplicate import seats.
+ */
+export async function prepareCrmOriginSeatIdentity(params: {
+  db: FirebaseFirestore.Firestore;
+  tx: FirebaseFirestore.Transaction;
+  eventId: string;
+  organizerId: string;
+  originId: string;
+  responseId: string;
+  verifiedRespondent?: {uid: string; currentAuthPhoneNumber: string;
+    now: FirebaseFirestore.Timestamp};
+}): Promise<{identity: CanonicalSeatIdentity; seatAlreadyOccupied: boolean;
+  apply: () => void}> {
+  const {db, tx, eventId, organizerId, originId, responseId} = params;
+  if (![eventId, organizerId, originId, responseId].every(validId)) {
+    throw new SeatIdentityAuthorityError("invalid", "Invalid CRM seat scope.");
+  }
+  const read = async (collection: string, id: string) =>
+    (await tx.get(db.collection(collection).doc(id))).data();
+  const [ledger, origin] = await Promise.all([
+    read("eventSeatLedgers", eventId),
+    read("organizerContactOrigins", originId),
+  ]);
+  if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
+      !Number.isSafeInteger(ledger.migrationRevision) ||
+      ledger.migrationRevision < 1 || !origin ||
+      origin.organizerId !== organizerId || origin.eventId !== null ||
+      origin.sourceKind !== "hostForm" ||
+      origin.sourceEntityKind !== "hostFormResponse" ||
+      origin.sourceEntityId !== responseId ||
+      origin.responseId !== responseId ||
+      !validId(origin.currentContactId) ||
+      !validId(origin.originContactId)) {
+    fail("Current CRM origin or migration is unavailable.");
+  }
+  const contactId = origin.currentContactId as string;
+  const contact = await read("organizerContacts", contactId);
+  if (!contact || contact.organizerId !== organizerId ||
+      contact.deletedAt !== null || contact.hiddenAt != null ||
+      contact.mergedIntoContactId !== null ||
+      !["unlinked", "verified"].includes(contact.identityState) ||
+      !Array.isArray(contact.ambiguousCandidateContactIds) ||
+      contact.ambiguousCandidateContactIds.length > 0) {
+    fail("Current CRM survivor is unavailable.");
+  }
+  const rawPhone = contact.phoneE164;
+  const phone = rawPhone === null ? null : currentPhone(rawPhone);
+  const originRef = db.collection("eventSeatIdentityAliases")
+    .doc(seatIdentityAliasId(eventId, "contactOrigin", originId));
+  const contactRef = db.collection("eventSeatIdentityAliases")
+    .doc(seatIdentityAliasId(eventId, "contact", contactId));
+  const phoneRef = phone === null ? null :
+    db.collection("eventSeatIdentityAliases")
+      .doc(seatIdentityAliasId(eventId, "phone", phone));
+  const [originSnap, contactSnap, phoneSnap] = await Promise.all([
+    tx.get(originRef), tx.get(contactRef),
+    phoneRef ? tx.get(phoneRef) : Promise.resolve(null),
+  ]);
+  const originAlias = originSnap.data();
+  const contactAlias = contactSnap.data();
+  const phoneAlias = phoneSnap?.data();
+  const validAlias = (value: FirebaseFirestore.DocumentData | undefined,
+    kind: AliasKind, source: string) => value &&
+      value.eventId === eventId && value.organizerId === organizerId &&
+      value.kind === kind && value.state === "ready" &&
+      value.valueHash === seatIdentityValueHash(kind, source) &&
+      value.migrationRevision === ledger.migrationRevision &&
+      validId(value.canonicalKey) &&
+      Number.isSafeInteger(value.identityRevision) &&
+      value.identityRevision >= 1;
+  if (originAlias && !validAlias(originAlias, "contactOrigin", originId) ||
+      contactAlias && !validAlias(contactAlias, "contact", contactId) ||
+      originAlias && !contactAlias ||
+      originAlias && contactAlias &&
+        (originAlias.canonicalKey !== contactAlias.canonicalKey ||
+          originAlias.identityRevision !== contactAlias.identityRevision)) {
+    fail("CRM origin aliases are stale, moved or ambiguous.");
+  }
+  if (params.verifiedRespondent) {
+    const verified = params.verifiedRespondent;
+    if (!validId(verified.uid) || !phone ||
+        currentPhone(verified.currentAuthPhoneNumber) !== phone ||
+        contact.linkedUid !== null && contact.linkedUid !== verified.uid) {
+      fail("Verified form response and CRM survivor disagree.");
+    }
+    const response = await read("organizerFormResponses", responseId);
+    if (!response || response.organizerId !== organizerId ||
+        response.status !== "submitted" ||
+        response.withdrawnAt !== null ||
+        response.identityKind !== "phoneVerified" ||
+        response.respondentUid !== verified.uid ||
+        response.identity?.phoneE164 !== phone) {
+      fail("Current verified form response is unavailable.");
+    }
+    const uidAlias = await read("eventSeatIdentityAliases",
+      seatIdentityAliasId(eventId, "uid", verified.uid));
+    let preparedUid: {identity: CanonicalSeatIdentity; apply: () => void};
+    let guestLink: Awaited<ReturnType<
+      typeof prepareVerifiedUidGuestSeatLink>> | null = null;
+    if (phoneAlias?.state === "ready" && (!uidAlias ||
+        String(phoneAlias.canonicalKey).startsWith("guest_"))) {
+      const guests = await tx.get(db.collection("eventAttendees")
+        .where("eventId", "==", eventId)
+        .where("phoneE164", "==", phone).limit(2));
+      if (guests.docs.length !== 1) {
+        fail("Verified phone has ambiguous imported guest sources.");
+      }
+      guestLink = await prepareVerifiedUidGuestSeatLink({db, tx,
+        eventId, organizerId, attendeeId: guests.docs[0].id,
+        uid: verified.uid, authTokenPhoneNumber: phone,
+        now: verified.now});
+      preparedUid = {identity: {key: guestLink.canonicalKey,
+        revision: 1}, apply: guestLink.apply};
+    } else {
+      preparedUid = await prepareCatchUidSeatIdentity({db, tx,
+        eventId, organizerId, uid: verified.uid,
+        currentAuthPhoneNumber: phone});
+    }
+    if (contactAlias && (contactAlias.canonicalKey !==
+        preparedUid.identity.key ||
+        contactAlias.identityRevision !== preparedUid.identity.revision)) {
+      fail("CRM contact and verified UID seats disagree.");
+    }
+    if (originAlias && (originAlias.canonicalKey !==
+        preparedUid.identity.key ||
+        originAlias.identityRevision !== preparedUid.identity.revision)) {
+      fail("CRM origin and verified UID seats disagree.");
+    }
+    const reservation = await read("eventSeatReservations",
+      hash([eventId, preparedUid.identity.key]));
+    if (reservation && (reservation.eventId !== eventId ||
+        reservation.canonicalKey !== preparedUid.identity.key ||
+        reservation.identityRevision !== preparedUid.identity.revision)) {
+      fail("Verified seat reservation is malformed.");
+    }
+    const aliasBase = {eventId, organizerId,
+      canonicalKey: preparedUid.identity.key,
+      identityRevision: preparedUid.identity.revision,
+      migrationRevision: ledger.migrationRevision, state: "ready"};
+    let applied = false;
+    return {identity: preparedUid.identity,
+      seatAlreadyOccupied: reservation?.active === true,
+      apply: () => {
+        if (applied) throw new Error("CRM seat enrollment already staged.");
+        applied = true;
+        preparedUid.apply();
+        if (!contactAlias) {
+          tx.create(contactRef, {...aliasBase,
+            kind: "contact",
+            valueHash: seatIdentityValueHash("contact", contactId)});
+        }
+        if (!originAlias) {
+          tx.create(originRef, {...aliasBase,
+            kind: "contactOrigin",
+            valueHash: seatIdentityValueHash("contactOrigin", originId)});
+        }
+      }};
+  }
+  if (contact.linkedUid !== null) {
+    if (!originAlias) {
+      fail("A linked CRM UID needs prior canonical reconciliation.");
+    }
+    const identity = await new FirestoreSeatIdentityAuthority().resolve({
+      db, tx, eventId, organizerId,
+      subject: {kind: "crmOrigin", originId, responseId},
+    });
+    if (!identity) fail("Current CRM seat identity is unavailable.");
+    const reservation = await read("eventSeatReservations",
+      hash([eventId, identity.key]));
+    if (reservation && (reservation.eventId !== eventId ||
+        reservation.canonicalKey !== identity.key ||
+        reservation.identityRevision !== identity.revision)) {
+      fail("Linked CRM seat reservation is malformed.");
+    }
+    return {identity, seatAlreadyOccupied: reservation?.active === true,
+      apply: () => undefined};
+  }
+  // A previously imported/verified phone cannot silently become the CRM
+  // survivor's seat. The Host must reconcile that source explicitly.
+  if (phoneAlias && (phoneAlias.state !== "ambiguous" ||
+      !contactAlias || phoneAlias.canonicalKey !==
+        contactAlias.canonicalKey)) {
+    fail("CRM phone conflicts with an existing seat identity.");
+  }
+  const identity = contactAlias ?
+    {key: contactAlias.canonicalKey as string,
+      revision: contactAlias.identityRevision as number} :
+    {key: "contact_" + hash([eventId, contactId]).slice(0, 48),
+      revision: 1};
+  const reservation = await read("eventSeatReservations",
+    hash([eventId, identity.key]));
+  if (reservation && (reservation.eventId !== eventId ||
+      reservation.canonicalKey !== identity.key ||
+      reservation.identityRevision !== identity.revision)) {
+    fail("CRM seat reservation is malformed.");
+  }
+  if (originAlias) {
+    return {identity,
+      seatAlreadyOccupied: reservation?.active === true,
+      apply: () => undefined};
+  }
+  const aliasBase = {eventId, organizerId,
+    canonicalKey: identity.key, identityRevision: identity.revision,
+    migrationRevision: ledger.migrationRevision};
+  let applied = false;
+  return {identity, seatAlreadyOccupied: reservation?.active === true,
+    apply: () => {
+      if (applied) throw new Error("CRM seat enrollment already staged.");
+      applied = true;
+      if (!contactAlias) {
+        tx.create(contactRef, {...aliasBase,
+          kind: "contact",
+          valueHash: seatIdentityValueHash("contact", contactId),
+          state: "ready"});
+      }
+      tx.create(originRef, {...aliasBase, kind: "contactOrigin",
+        valueHash: seatIdentityValueHash("contactOrigin", originId),
+        state: "ready"});
+      if (phoneRef && !phoneAlias) {
+        tx.create(phoneRef, {...aliasBase,
+          kind: "phone", valueHash: seatIdentityValueHash("phone", phone!),
+          state: "ambiguous"});
+      }
+    }};
+}
+
+/**
  * Attaches a verified UID to an existing guest reservation, without taking a
  * second seat. The caller must pass the current callable Auth token phone and
  * use this exact transaction for its public-registration attendee write.

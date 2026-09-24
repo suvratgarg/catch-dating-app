@@ -4,7 +4,7 @@ import {createHash} from "crypto";
 import {Timestamp} from "firebase-admin/firestore";
 import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
   seatVerifiedPhoneProofId, SeatIdentityAuthorityError,
-  linkVerifiedUidToGuestSeat} from
+  linkVerifiedUidToGuestSeat, prepareCrmOriginSeatIdentity} from
   "./seatIdentityAuthority";
 import {eventAttendeeId} from "./eventAttendees";
 
@@ -25,7 +25,15 @@ class FakeStore {
   reads: string[] = [];
   writes: string[] = [];
   collection(name: string) {
-    return {doc: (id: string) => ({path: `${name}/${id}`})};
+    const query = (filters: Array<[string, unknown]>) => ({
+      collection: name, filters,
+      where: (field: string, _op: string, value: unknown) =>
+        query([...filters, [field, value]]),
+      limit: (count: number) => ({collection: name, filters, count}),
+    });
+    return {doc: (id: string) => ({path: `${name}/${id}`}),
+      where: (field: string, _op: string, value: unknown) =>
+        query([[field, value]])};
   }
   tx() {
     return {get: async (ref: {path: string}) => {
@@ -36,8 +44,19 @@ class FakeStore {
   writeTx() {
     const pending: Array<() => void> = [];
     const tx = {
-      get: async (ref: {path: string}) => {
+      get: async (ref: {path?: string; collection?: string;
+        filters?: Array<[string, unknown]>; count?: number}) => {
         assert.equal(pending.length, 0, "all reads precede writes");
+        if (ref.collection && ref.filters) {
+          const docs = [...this.rows].filter(([path, row]) =>
+            path.startsWith(`${ref.collection}/`) &&
+            !path.slice(ref.collection!.length + 1).includes("/") &&
+            ref.filters!.every(([field, value]) => row[field] === value))
+            .slice(0, ref.count)
+            .map(([path]) => ({id: path.split("/").at(-1)}));
+          return {docs};
+        }
+        assert.ok(ref.path);
         this.reads.push(ref.path);
         const value = this.rows.get(ref.path);
         return {exists: value !== undefined, data: () => value};
@@ -152,6 +171,174 @@ test("CRM origin follows current survivor only after alias reconciliation",
     store.rows.get("organizerContacts/newContact")!
       .mergedIntoContactId = "thirdContact";
     await assert.rejects(store.resolve(subject), unavailable);
+  });
+
+function crmSource(store: FakeStore, originId = "origin1",
+  contactId = "contact1") {
+  store.rows.set(`organizerContactOrigins/${originId}`, {
+    organizerId, eventId: null, sourceKind: "hostForm",
+    sourceEntityKind: "hostFormResponse", sourceEntityId: "response1",
+    responseId: "response1", originContactId: contactId,
+    currentContactId: contactId,
+  });
+  store.rows.set(`organizerContacts/${contactId}`, {
+    organizerId, deletedAt: null, hiddenAt: null,
+    mergedIntoContactId: null, identityState: "unlinked",
+    ambiguousCandidateContactIds: [], linkedUid: null,
+    phoneE164: phone,
+  });
+}
+
+test("new CRM origin enrolls one contact seat and quarantines unverified phone",
+  async () => {
+    const store = new FakeStore();
+    store.ready();
+    crmSource(store);
+    const first = store.writeTx();
+    const prepared = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: first.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"});
+    assert.equal(store.writes.length, 0);
+    prepared.apply();
+    first.commit();
+    const contactAliasId = seatIdentityAliasId(eventId,
+      "contact", "contact1");
+    const phoneAliasId = seatIdentityAliasId(eventId, "phone", phone);
+    assert.equal(store.rows.get(`eventSeatIdentityAliases/${contactAliasId}`)
+      ?.canonicalKey, prepared.identity.key);
+    assert.equal(store.rows.get(`eventSeatIdentityAliases/${phoneAliasId}`)
+      ?.state, "ambiguous");
+    const second = store.writeTx();
+    const replay = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: second.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"});
+    replay.apply();
+    second.commit();
+    assert.deepEqual(replay.identity, prepared.identity);
+    assert.equal(store.writes.length, 3);
+  });
+
+test("anonymous form contact enrolls without a phone or UID claim",
+  async () => {
+    const store = new FakeStore();
+    store.ready();
+    crmSource(store);
+    store.rows.get("organizerContacts/contact1")!.phoneE164 = null;
+    const tx = store.writeTx();
+    const prepared = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: tx.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"});
+    assert.equal(prepared.seatAlreadyOccupied, false);
+    prepared.apply();
+    tx.commit();
+    assert.equal(store.writes.length, 2);
+    assert.equal([...store.rows.values()].some((row) =>
+      row?.kind === "phone" || row?.kind === "uid"), false);
+  });
+
+test("same contact origin converges while moved origin and guest phone deny",
+  async () => {
+    const store = new FakeStore();
+    store.ready();
+    crmSource(store);
+    store.alias("contact", "contact1", "contact_existing");
+    const tx = store.writeTx();
+    const prepared = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: tx.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"});
+    assert.equal(prepared.identity.key, "contact_existing");
+    prepared.apply();
+    tx.commit();
+    store.rows.set("organizerContacts/contact2", {
+      organizerId, deletedAt: null, hiddenAt: null,
+      mergedIntoContactId: null, identityState: "unlinked",
+      ambiguousCandidateContactIds: [], linkedUid: null,
+      phoneE164: phone,
+    });
+    store.rows.set("organizerContactOrigins/origin1", {
+      ...store.rows.get("organizerContactOrigins/origin1"),
+      currentContactId: "contact2",
+    });
+    await assert.rejects(() => prepareCrmOriginSeatIdentity({
+      db: store.db(), tx: store.writeTx().tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"}), unavailable);
+
+    const other = new FakeStore();
+    other.ready();
+    crmSource(other);
+    other.alias("phone", phone, "guest_existing");
+    await assert.rejects(() => prepareCrmOriginSeatIdentity({
+      db: other.db(), tx: other.writeTx().tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"}), unavailable);
+    assert.equal(other.writes.length, 0);
+  });
+
+test("verified form origin enrolls current UID without quarantining phone",
+  async () => {
+    const store = new FakeStore();
+    store.ready();
+    crmSource(store);
+    store.rows.set("organizerFormResponses/response1", {
+      organizerId, status: "submitted", withdrawnAt: null,
+      identityKind: "phoneVerified", respondentUid: "uid1",
+      identity: {phoneE164: phone},
+    });
+    const tx = store.writeTx();
+    const prepared = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: tx.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1",
+      verifiedRespondent: {uid: "uid1",
+        currentAuthPhoneNumber: phone, now: Timestamp.now()}});
+    assert.equal(prepared.seatAlreadyOccupied, false);
+    prepared.apply();
+    tx.commit();
+    assert.equal(store.rows.get(`eventSeatIdentityAliases/${
+      seatIdentityAliasId(eventId, "phone", phone)}`)?.state, "ready");
+    assert.equal(store.rows.get(`eventSeatIdentityAliases/${
+      seatIdentityAliasId(eventId, "contactOrigin", "origin1")}`)
+      ?.canonicalKey, prepared.identity.key);
+    assert.equal(store.rows.get(`eventSeatVerifiedPhones/${
+      seatVerifiedPhoneProofId(eventId, "uid1")}`)?.phoneE164, phone);
+  });
+
+test("verified form origin reuses imported guest seat without reserving again",
+  async () => {
+    const store = new FakeStore();
+    store.ready();
+    store.rows.set(`eventSeatLedgers/${eventId}`, {eventId,
+      state: "ready", migrationRevision: 1, revision: 1});
+    store.rows.set(`events/${eventId}`, {clubId: organizerId,
+      status: "active"});
+    crmSource(store);
+    store.rows.set("organizerFormResponses/response1", {
+      organizerId, status: "submitted", withdrawnAt: null,
+      identityKind: "phoneVerified", respondentUid: "uid1",
+      identity: {phoneE164: phone},
+    });
+    store.rows.set("eventAttendees/guest1", {eventId, organizerId,
+      source: "hostImport", status: "registered", phoneE164: phone,
+      linkedUid: null, externalReference: null});
+    store.alias("phone", phone, "guest_existing");
+    store.alias("attendee", "guest1", "guest_existing");
+    store.rows.set(`eventSeatReservations/${createHash("sha256")
+      .update([eventId, "guest_existing"].join("\u001f"))
+      .digest("hex")}`, {eventId, canonicalKey: "guest_existing",
+      identityRevision: 1, active: true});
+    const tx = store.writeTx();
+    const prepared = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: tx.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1",
+      verifiedRespondent: {uid: "uid1",
+        currentAuthPhoneNumber: phone, now: Timestamp.now()}});
+    assert.equal(prepared.seatAlreadyOccupied, true);
+    assert.equal(prepared.identity.key, "guest_existing");
+    prepared.apply();
+    tx.commit();
+    assert.equal(store.rows.get("eventAttendees/guest1")?.linkedUid,
+      "uid1");
+    assert.equal(store.rows.get(`eventSeatReservations/${createHash("sha256")
+      .update([eventId, "guest_existing"].join("\u001f"))
+      .digest("hex")}`)?.active, true);
   });
 
 test("foreign or stale records reject within current transaction", async () => {

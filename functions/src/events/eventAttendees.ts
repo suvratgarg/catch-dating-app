@@ -58,6 +58,13 @@ import {eventPolicyFromEvent} from "./eventPolicy";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {resolveInviteAttributionToken} from "./inviteLinks";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {FirestoreSeatIdentityAuthority} from
+  "./seatIdentityAuthority";
+import {applyBatchImportSeats, prepareFirestoreBatchSeatImport} from
+  "./seatAuthority/batchSeatImport";
+import {deriveEventSeatPolicy, FirestoreSeatTransaction} from
+  "./seatAuthority/firestoreAdapter";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type ImportError = EventAttendeeImportDocument["errors"][number];
@@ -173,6 +180,8 @@ export async function importEventAttendeesForHost(
         "Only an organizer manager can import attendees."
       );
     }
+    const seatMode = await readSeatMigrationWriterFence({db, tx,
+      eventId: payload.eventId});
     const existingImportSnap = await tx.get(importRef);
     if (existingImportSnap.exists) {
       const existing = requireDoc<EventAttendeeImportDocument>(
@@ -202,6 +211,70 @@ export async function importEventAttendeesForHost(
     }
 
     const now = deps.timestamp();
+    let seatImport: Awaited<ReturnType<
+      typeof prepareFirestoreBatchSeatImport>> | null = null;
+    if (seatMode === "ready") {
+      const organizerId = event.organizerId ?? event.clubId;
+      const seatTx = new FirestoreSeatTransaction(db, tx);
+      const ledger = await seatTx.ledger(payload.eventId);
+      const policy = deriveEventSeatPolicy(event);
+      if (!ledger || ledger.state !== "ready" ||
+          ledger.capacity !== policy.capacity ||
+          ledger.policyHash !== policy.policyHash ||
+          ledger.policyVersion !== policy.policyVersion) {
+        throw new HttpsError("failed-precondition",
+          "Event seat policy needs reconciliation.");
+      }
+      const unlinkedRows = [] as Array<{
+        attendeeId: string; rowId: string;
+        status: "registered" | "checkedIn" | "invited" | "waitlisted";
+        phoneE164: string | null; externalReference: string | null;
+        linkedUid: null;
+      }>;
+      const authority = new FirestoreSeatIdentityAuthority();
+      for (const row of prepared) {
+        const existing = existingById.get(row.attendeeId);
+        const status = existing?.status === "checkedIn" ?
+          "checkedIn" : row.status;
+        if (existing?.linkedUid) {
+          // Reimport of a linked attendee may preserve an active seat. Any
+          // active/inactive transition needs an explicit reserve/release.
+          if (!["registered", "checkedIn"].includes(existing.status) ||
+              !["registered", "checkedIn"].includes(status)) {
+            throw new HttpsError("failed-precondition",
+              "Linked attendee seat transition needs review.");
+          }
+          const identity = await authority.resolve({db, tx,
+            eventId: payload.eventId, organizerId,
+            subject: {kind: "importAttendee", attendeeId: row.attendeeId}});
+          const reservation = identity ? await seatTx.reservation(
+            payload.eventId, identity.key) : null;
+          if (!reservation?.active ||
+              reservation.identityRevision !== identity?.revision) {
+            throw new HttpsError("failed-precondition",
+              "Linked attendee reservation is unavailable.");
+          }
+        } else {
+          unlinkedRows.push({attendeeId: row.attendeeId, rowId: row.rowId,
+            status, phoneE164: row.phoneE164 ??
+              existing?.phoneE164 ?? null,
+            externalReference: row.externalReference ??
+              existing?.externalReference ?? null,
+            linkedUid: null});
+        }
+      }
+      if (unlinkedRows.length > 0) {
+        seatImport = await prepareFirestoreBatchSeatImport({db, tx,
+          eventId: payload.eventId, organizerId, importId,
+          rows: unlinkedRows, nowMillis: now.toMillis()});
+      }
+      if (seatImport) {
+        applyBatchImportSeats(seatImport.writer,
+          seatImport.plan);
+      }
+      tx.update(eventRef, {bookedCount: ledger.occupied +
+        (seatImport?.plan.newSeats ?? 0)});
+    }
     const source = payload.format === "manual" ? "hostManual" : "hostImport";
     for (let index = 0; index < prepared.length; index += 1) {
       const row = prepared[index];
