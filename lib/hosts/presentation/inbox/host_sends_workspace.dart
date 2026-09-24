@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
@@ -239,7 +239,7 @@ class _HostSendsWorkspaceSliverState
     final suffix = result.isPartial
         ? context.l10n.hostsHostInboxScreenVisiblecopySomePushAttemptsFailed
         : '';
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       context.l10n.hostsHostInboxScreenVisiblecopyBroadcastSentToRecipientcount(
         recipientCount: result.recipientCount,
@@ -264,7 +264,7 @@ class _HostSendsWorkspaceSliverState
       }
     } on Object catch (error) {
       if (mounted && _sameScope(generation)) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -308,7 +308,7 @@ class _HostSendsWorkspaceSliverState
       });
     } on Object catch (error) {
       if (mounted && _sameScope(generation)) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -337,7 +337,7 @@ class _HostSendsWorkspaceSliverState
       }
     } on Object catch (error) {
       if (mounted && _sameScope(generation)) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,

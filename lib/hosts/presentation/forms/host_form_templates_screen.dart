@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
@@ -142,7 +142,7 @@ class _HostFormTemplatesScreenState
       );
     } on Object catch (error) {
       if (!mounted) return;
-      showCatchErrorSnackBar(context, error);
+      showCatchNoticeError(context, error);
       setState(() => _creatingTemplateId = null);
     }
   }

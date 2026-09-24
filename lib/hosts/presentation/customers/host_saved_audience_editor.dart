@@ -429,7 +429,7 @@ class _HostSavedAudienceEditorFormState
           ]
         : _rules.map((rule) => rule.toPredicate()).toList();
     if (predicates.any((predicate) => predicate == null)) {
-      showCatchErrorSnackBar(
+      showCatchNoticeError(
         context,
         StateError(context.l10n.hostSavedAudienceCompleteRules),
         errorContext: AppErrorContext.customers,
@@ -480,7 +480,7 @@ class _HostSavedAudienceEditorFormState
       if (mounted && savedSuccessfully) {
         setState(() => _previewError = error);
       } else if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customers,
@@ -509,7 +509,7 @@ class _HostSavedAudienceEditorFormState
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customers,
@@ -542,7 +542,7 @@ class _HostSavedAudienceEditorFormState
       if (mounted) context.pop(audience);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customers,

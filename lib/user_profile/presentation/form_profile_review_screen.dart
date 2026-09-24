@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
@@ -70,7 +70,7 @@ class FormProfileReviewScreen extends ConsumerWidget {
                         .save(uid, request);
                     if (context.mounted &&
                         ref.read(uidProvider).asData?.value == uid) {
-                      showCatchSnackBar(context, context.l10n.formProfileSaved);
+                      showCatchNotice(context, context.l10n.formProfileSaved);
                     }
                   });
                 },

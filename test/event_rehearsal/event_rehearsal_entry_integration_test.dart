@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
@@ -90,9 +92,10 @@ void main() {
       expect(controller._actorCount, 31);
       expect(controller._setup?.title, 'Only this practice copy');
       expect(find.text('Custom settings · Edit or reset'), findsOneWidget);
-      ScaffoldMessenger.of(
+      ProviderScope.containerOf(
         tester.element(find.byType(HostEventRehearsalStartScreen)),
-      ).removeCurrentSnackBar();
+        listen: false,
+      ).read(catchNoticeControllerProvider.notifier).clear();
       await pumpFeatureUi(tester);
       expect(
         tester
@@ -168,6 +171,8 @@ Widget _app(GoRouter router, _Controller controller) => ProviderScope(
   child: MaterialApp.router(
     theme: AppTheme.light,
     routerConfig: router,
+    builder: (context, child) =>
+        CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
   ),

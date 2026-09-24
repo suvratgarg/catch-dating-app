@@ -18,7 +18,7 @@ extension _CreateClubActions on _CreateClubScreenState {
         _lastSavedDraftSignature = _currentDraftContentSignature;
       });
 
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsCreateClubScreenVisiblecopyRestoredYourClubDraft,
       );
@@ -275,7 +275,7 @@ extension _CreateClubActions on _CreateClubScreenState {
     _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (mounted && showSuccess) {
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         _restoredDraft
             ? context.l10n.hostsCreateClubScreenVisiblecopyDraftUpdated

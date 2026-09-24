@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
@@ -220,10 +220,14 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
           .read(clipboardControllerProvider)
           .copyText(AppDeepLinks.hostOperatorEvent(widget.eventId).toString());
       if (mounted) {
-        showCatchSnackBar(context, context.l10n.hostsEventStaffLinkCopied);
+        showCatchNotice(
+          context,
+          context.l10n.hostsEventStaffLinkCopied,
+          tone: CatchNoticeTone.success,
+        );
       }
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 }

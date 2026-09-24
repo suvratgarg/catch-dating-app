@@ -247,7 +247,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (mounted && showSuccess) {
-      showCatchSnackBar(context, draftAction.saveSuccessMessage);
+      showCatchNotice(context, draftAction.saveSuccessMessage);
     }
     return true;
   }

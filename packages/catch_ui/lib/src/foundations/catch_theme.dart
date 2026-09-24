@@ -114,17 +114,6 @@ abstract final class CatchTheme {
         iconTheme: IconThemeData(color: tokens.ink),
       ),
 
-      snackBarTheme: SnackBarThemeData(
-        backgroundColor: tokens.ink,
-        contentTextStyle: CatchFonts.sans(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          height: 1.35,
-          color: tokens.bg,
-        ),
-        actionTextColor: tokens.primarySoft,
-      ),
-
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: tokens.primary,

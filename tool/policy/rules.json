@@ -1695,7 +1695,7 @@
         "lib/core/widgets/**",
         "test/**/*.dart"
       ],
-      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState (including inline/compact modes), CatchErrorScaffold, or CatchSliverErrorState with appErrorDescriptor/appErrorMessage mapped copy. Every full-screen or sliver error must expose onRetry or a truthful secondary action such as CatchErrorBackButton; inline errors may inherit recovery from their surrounding section. Keep CatchFrameworkErrorState for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
+      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState (including inline/compact modes), CatchErrorScaffold, or CatchSliverErrorState with appErrorDescriptor/appErrorMessage mapped copy. Every full-screen or sliver error must expose onRetry or a truthful secondary action such as CatchErrorBackButton; inline errors may inherit recovery from their surrounding section. Keep CatchFrameworkErrorState for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchNoticeError for transient action failures.",
       "sunset_when": [
         "A canonical app error primitive covers full-screen, sliver, and inline contexts",
         "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
@@ -2049,7 +2049,7 @@
       "applies_to": [
         "lib/**/presentation/**"
       ],
-      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError \u2014 via an inline ErrorBanner.fromError, a screen-level MutationErrorSnackbarListener, or try/catch + showCatchErrorSnackBar around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
+      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError \u2014 via an inline ErrorBanner.fromError, a screen-level listenToCatchMutationErrors, or try/catch + showCatchNoticeError around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
       "sunset_when": [
         "A scanner flags isPending watches with no matching hasError handling",
         "Mutation failure paths have controller/widget tests for three passes"

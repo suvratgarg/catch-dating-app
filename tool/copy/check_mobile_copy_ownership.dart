@@ -95,7 +95,7 @@ const _copyConstructors = <String>{
   'SnackBar',
   'Text',
   'TextSpan',
-  'showCatchSnackBar',
+  'showCatchNotice',
   'showConfirmDangerDialog',
 };
 
@@ -728,7 +728,7 @@ Widget buildForm(BuildContext context) => Column(children: [
   ),
   Builder(
     builder: (_) {
-      showCatchSnackBar(context, 'Account unblocked.');
+      showCatchNotice(context, 'Account unblocked.');
       return const SizedBox.shrink();
     },
   ),

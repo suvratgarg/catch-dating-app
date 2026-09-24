@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
@@ -89,7 +89,7 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
       });
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -121,7 +121,7 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
       );
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -316,7 +316,7 @@ class _HostManualSendTaskSheetState
       if (mounted) setState(() => _task = updated);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customer,
@@ -337,7 +337,7 @@ class _HostManualSendTaskSheetState
       if (mounted) Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customer,

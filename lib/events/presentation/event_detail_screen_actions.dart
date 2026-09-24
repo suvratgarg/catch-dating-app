@@ -35,7 +35,7 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
                   isSaved: isSaved,
                 );
             if (!context.mounted) return nowSaved;
-            showCatchSnackBar(
+            showCatchNotice(
               context,
               nowSaved
                   ? context.l10n.eventsEventDetailScreenVisiblecopyEventSaved
@@ -203,7 +203,7 @@ Future<void> _addEventToCalendar(
   try {
     final opened = await calendar.addToCalendar(event);
     if (!context.mounted || opened) return;
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       context.l10n.eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar,
     );
@@ -230,7 +230,7 @@ Future<void> _addEventToCalendar(
         ).read(errorLoggerProvider),
       );
 
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar,
       );
