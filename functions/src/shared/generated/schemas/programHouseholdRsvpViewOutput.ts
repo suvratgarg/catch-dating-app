@@ -1,0 +1,157 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const programHouseholdRsvpViewCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_household_rsvp_view_response.schema.json",
+  "title": "ProgramHouseholdRsvpViewCallableResponse",
+  "description": "The household's RSVP page model: program display facts, consent state, and each member's invited functions with current responses. Contains no data outside the token's household.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramHouseholdRsvpView"
+  ],
+  "required": [
+    "programId",
+    "programTitle",
+    "timezone",
+    "householdId",
+    "householdLabel",
+    "messagingConsentGranted",
+    "members"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdLabel": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "messagingConsentGranted": {
+      "type": "boolean",
+      "description": "Current consent state so the page can pre-tick."
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "functions"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "functions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "functionId",
+                "name",
+                "startsAtMillis",
+                "endsAtMillis",
+                "rsvpStatus",
+                "partySize",
+                "responseNote"
+              ],
+              "properties": {
+                "functionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "startsAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "endsAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "venueName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "dressCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "instructions": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "rsvpStatus": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "attending",
+                    "declined",
+                    "maybe"
+                  ]
+                },
+                "partySize": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 20
+                },
+                "responseNote": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} as const;

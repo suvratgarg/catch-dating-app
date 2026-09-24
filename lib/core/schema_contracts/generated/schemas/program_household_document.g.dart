@@ -147,5 +147,63 @@ const schemaProgramHouseholdDocumentSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 9007199254740991,
     },
+    'messagingConsent': <String, Object?>{
+      'type': <Object?>[
+        'object',
+        'null',
+      ],
+      'additionalProperties': false,
+      'required': <Object?>[
+        'granted',
+        'grantedAt',
+        'source',
+      ],
+      'properties': <String, Object?>{
+        'granted': <String, Object?>{
+          'type': 'boolean',
+        },
+        'grantedAt': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'source': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'enum': <Object?>[
+            'householdRsvpLink',
+            'staff',
+            'import',
+            null,
+          ],
+          'description': 'Channel that recorded the consent decision.',
+        },
+      },
+      'description': 'Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent.',
+    },
   },
 };

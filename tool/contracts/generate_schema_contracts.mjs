@@ -1879,6 +1879,29 @@ const schemaSpecs = [
       "recordProgramFunctionRsvpCallablePayload.ts",
   },
   {
+    name: "IssueProgramHouseholdRsvpLinkCallablePayload",
+    source:
+      "callables/issue_program_household_rsvp_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "issueProgramHouseholdRsvpLinkCallablePayload.ts",
+  },
+  {
+    name: "GetProgramHouseholdRsvpViewCallablePayload",
+    source:
+      "callables/get_program_household_rsvp_view_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getProgramHouseholdRsvpViewCallablePayload.ts",
+  },
+  {
+    name: "SubmitProgramHouseholdRsvpCallablePayload",
+    source: "callables/submit_program_household_rsvp_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitProgramHouseholdRsvpCallablePayload.ts",
+  },
+  {
     name: "ListProgramStaffCallablePayload",
     source: "callables/list_program_staff_payload.schema.json",
     typeOutput:
@@ -2022,6 +2045,33 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "recordProgramFunctionRsvpCallableResponse.ts",
+  },
+  {
+    name: "ProgramHouseholdRsvpLinkCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_household_rsvp_link_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programHouseholdRsvpLinkCallableResponse.ts",
+  },
+  {
+    name: "ProgramHouseholdRsvpViewCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_household_rsvp_view_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programHouseholdRsvpViewCallableResponse.ts",
+  },
+  {
+    name: "SubmitProgramHouseholdRsvpCallableResponse",
+    source:
+      "callable_responses/" +
+      "submit_program_household_rsvp_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitProgramHouseholdRsvpCallableResponse.ts",
   },
   {
     name: "OrganizerProgramListCallableResponse",

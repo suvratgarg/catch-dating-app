@@ -66452,6 +66452,14 @@ abstract final class CatchContractConstraints {
     pattern: '^[^/]+\$',
   );
 
+  static const getProgramHouseholdRsvpViewCallablePayloadToken = CatchContractFieldConstraints(
+    path: 'getProgramHouseholdRsvpViewCallablePayload.token',
+    maxLength: 1024,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getPublicOrganizerFormCallablePayloadPublicFormId = CatchContractFieldConstraints(
     path: 'getPublicOrganizerFormCallablePayload.publicFormId',
     required: true,
@@ -68833,6 +68841,29 @@ abstract final class CatchContractConstraints {
 
   static const inviteProgramStaffCallablePayloadProgramId = CatchContractFieldConstraints(
     path: 'inviteProgramStaffCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const issueProgramHouseholdRsvpLinkCallablePayloadExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'issueProgramHouseholdRsvpLinkCallablePayload.expiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const issueProgramHouseholdRsvpLinkCallablePayloadHouseholdId = CatchContractFieldConstraints(
+    path: 'issueProgramHouseholdRsvpLinkCallablePayload.householdId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const issueProgramHouseholdRsvpLinkCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'issueProgramHouseholdRsvpLinkCallablePayload.programId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -97141,6 +97172,32 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programHouseholdDocumentMessagingConsentGranted = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.messagingConsent.granted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programHouseholdDocumentMessagingConsentGrantedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.messagingConsent.grantedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programHouseholdDocumentMessagingConsentGrantedAtSeconds = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.messagingConsent.grantedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programHouseholdDocumentMessagingConsentSource = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.messagingConsent.source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['householdRsvpLink', 'staff', 'import'],
+  );
+
   static const programHouseholdDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'programHouseholdDocument.organizerId',
     maxLength: 180,
@@ -97203,6 +97260,177 @@ abstract final class CatchContractConstraints {
     path: 'programHouseholdDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const programHouseholdRsvpLinkCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpLinkCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programHouseholdRsvpLinkCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpLinkCallableResponse.entityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpLinkCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpLinkCallableResponse.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programHouseholdRsvpLinkCallableResponseToken = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpLinkCallableResponse.token',
+    maxLength: 1024,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseHouseholdId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.householdId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseHouseholdLabel = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.householdLabel',
+    maxLength: 140,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembers = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.displayName',
+    maxLength: 140,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctions = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsDressCode = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.dressCode',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsEndsAtMillis = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.endsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsFunctionId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsInstructions = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.instructions',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsName = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.name',
+    maxLength: 140,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsPartySize = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsResponseNote = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.responseNote',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsRsvpStatus = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.rsvpStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsStartsAtMillis = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.startsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsVenueName = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.functions.items.venueName',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMembersItemsGuestId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.members.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseMessagingConsentGranted = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.messagingConsentGranted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseProgramTitle = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.programTitle',
+    maxLength: 140,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programHouseholdRsvpViewCallableResponseTimezone = CatchContractFieldConstraints(
+    path: 'programHouseholdRsvpViewCallableResponse.timezone',
+    maxLength: 64,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const programIdCallablePayloadProgramId = CatchContractFieldConstraints(
@@ -105618,6 +105846,100 @@ abstract final class CatchContractConstraints {
   static const submitParticipantOrganizerApplicationCallableResponseReviewStatus = CatchContractFieldConstraints(
     path: 'submitParticipantOrganizerApplicationCallableResponse.reviewStatus',
     required: true,
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadMessagingConsent = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.messagingConsent',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadResponses = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.responses',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2000,
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadResponsesItemsFunctionId = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.responses.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadResponsesItemsGuestId = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.responses.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadResponsesItemsPartySize = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.responses.items.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadResponsesItemsResponseNote = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.responses.items.responseNote',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadResponsesItemsRsvpStatus = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.responses.items.rsvpStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
+  static const submitProgramHouseholdRsvpCallablePayloadToken = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallablePayload.token',
+    maxLength: 1024,
+    minLength: 16,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitProgramHouseholdRsvpCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const submitProgramHouseholdRsvpCallableResponseAppliedCount = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallableResponse.appliedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitProgramHouseholdRsvpCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallableResponse.entityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitProgramHouseholdRsvpCallableResponseMessagingConsentGranted = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallableResponse.messagingConsentGranted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const submitProgramHouseholdRsvpCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'submitProgramHouseholdRsvpCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const swipeDocumentComment = CatchContractFieldConstraints(
@@ -124762,6 +125084,7 @@ abstract final class CatchContractConstraints {
     'getProgramHotelInboundCallablePayload.limit': getProgramHotelInboundCallablePayloadLimit,
     'getProgramHotelInboundCallablePayload.programId': getProgramHotelInboundCallablePayloadProgramId,
     'getProgramHotelInboundCallablePayload.tripCursor': getProgramHotelInboundCallablePayloadTripCursor,
+    'getProgramHouseholdRsvpViewCallablePayload.token': getProgramHouseholdRsvpViewCallablePayloadToken,
     'getPublicOrganizerFormCallablePayload.publicFormId': getPublicOrganizerFormCallablePayloadPublicFormId,
     'getPublicOrganizerFormCallablePayload.sourceToken': getPublicOrganizerFormCallablePayloadSourceToken,
     'grantEventStaffCallablePayload.eventId': grantEventStaffCallablePayloadEventId,
@@ -125094,6 +125417,9 @@ abstract final class CatchContractConstraints {
     'inviteProgramStaffCallablePayload.expiresAtMillis': inviteProgramStaffCallablePayloadExpiresAtMillis,
     'inviteProgramStaffCallablePayload.phoneNumber': inviteProgramStaffCallablePayloadPhoneNumber,
     'inviteProgramStaffCallablePayload.programId': inviteProgramStaffCallablePayloadProgramId,
+    'issueProgramHouseholdRsvpLinkCallablePayload.expiresAtMillis': issueProgramHouseholdRsvpLinkCallablePayloadExpiresAtMillis,
+    'issueProgramHouseholdRsvpLinkCallablePayload.householdId': issueProgramHouseholdRsvpLinkCallablePayloadHouseholdId,
+    'issueProgramHouseholdRsvpLinkCallablePayload.programId': issueProgramHouseholdRsvpLinkCallablePayloadProgramId,
     'joinWaitlistHTTPRequest.analytics.consent.analytics': joinWaitlistHTTPRequestAnalyticsConsentAnalytics,
     'joinWaitlistHTTPRequest.analytics.consent.choice': joinWaitlistHTTPRequestAnalyticsConsentChoice,
     'joinWaitlistHTTPRequest.analytics.consent.marketing': joinWaitlistHTTPRequestAnalyticsConsentMarketing,
@@ -129011,6 +129337,10 @@ abstract final class CatchContractConstraints {
     'programHouseholdDocument.label': programHouseholdDocumentLabel,
     'programHouseholdDocument.memberGuestIds': programHouseholdDocumentMemberGuestIds,
     'programHouseholdDocument.memberGuestIds.items': programHouseholdDocumentMemberGuestIdsItems,
+    'programHouseholdDocument.messagingConsent.granted': programHouseholdDocumentMessagingConsentGranted,
+    'programHouseholdDocument.messagingConsent.grantedAt._nanoseconds': programHouseholdDocumentMessagingConsentGrantedAtNanoseconds,
+    'programHouseholdDocument.messagingConsent.grantedAt._seconds': programHouseholdDocumentMessagingConsentGrantedAtSeconds,
+    'programHouseholdDocument.messagingConsent.source': programHouseholdDocumentMessagingConsentSource,
     'programHouseholdDocument.organizerId': programHouseholdDocumentOrganizerId,
     'programHouseholdDocument.primaryContactName': programHouseholdDocumentPrimaryContactName,
     'programHouseholdDocument.primaryEmail': programHouseholdDocumentPrimaryEmail,
@@ -129020,6 +129350,30 @@ abstract final class CatchContractConstraints {
     'programHouseholdDocument.side': programHouseholdDocumentSide,
     'programHouseholdDocument.updatedAt._nanoseconds': programHouseholdDocumentUpdatedAtNanoseconds,
     'programHouseholdDocument.updatedAt._seconds': programHouseholdDocumentUpdatedAtSeconds,
+    'programHouseholdRsvpLinkCallableResponse.alreadyApplied': programHouseholdRsvpLinkCallableResponseAlreadyApplied,
+    'programHouseholdRsvpLinkCallableResponse.entityId': programHouseholdRsvpLinkCallableResponseEntityId,
+    'programHouseholdRsvpLinkCallableResponse.expiresAtMillis': programHouseholdRsvpLinkCallableResponseExpiresAtMillis,
+    'programHouseholdRsvpLinkCallableResponse.token': programHouseholdRsvpLinkCallableResponseToken,
+    'programHouseholdRsvpViewCallableResponse.householdId': programHouseholdRsvpViewCallableResponseHouseholdId,
+    'programHouseholdRsvpViewCallableResponse.householdLabel': programHouseholdRsvpViewCallableResponseHouseholdLabel,
+    'programHouseholdRsvpViewCallableResponse.members': programHouseholdRsvpViewCallableResponseMembers,
+    'programHouseholdRsvpViewCallableResponse.members.items.displayName': programHouseholdRsvpViewCallableResponseMembersItemsDisplayName,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions': programHouseholdRsvpViewCallableResponseMembersItemsFunctions,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.dressCode': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsDressCode,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.endsAtMillis': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsEndsAtMillis,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.functionId': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsFunctionId,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.instructions': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsInstructions,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.name': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsName,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.partySize': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsPartySize,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.responseNote': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsResponseNote,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.rsvpStatus': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsRsvpStatus,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.startsAtMillis': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsStartsAtMillis,
+    'programHouseholdRsvpViewCallableResponse.members.items.functions.items.venueName': programHouseholdRsvpViewCallableResponseMembersItemsFunctionsItemsVenueName,
+    'programHouseholdRsvpViewCallableResponse.members.items.guestId': programHouseholdRsvpViewCallableResponseMembersItemsGuestId,
+    'programHouseholdRsvpViewCallableResponse.messagingConsentGranted': programHouseholdRsvpViewCallableResponseMessagingConsentGranted,
+    'programHouseholdRsvpViewCallableResponse.programId': programHouseholdRsvpViewCallableResponseProgramId,
+    'programHouseholdRsvpViewCallableResponse.programTitle': programHouseholdRsvpViewCallableResponseProgramTitle,
+    'programHouseholdRsvpViewCallableResponse.timezone': programHouseholdRsvpViewCallableResponseTimezone,
     'programIdCallablePayload.programId': programIdCallablePayloadProgramId,
     'programInviteClaimCallableResponse.alreadyApplied': programInviteClaimCallableResponseAlreadyApplied,
     'programInviteClaimCallableResponse.programId': programInviteClaimCallableResponseProgramId,
@@ -130151,6 +130505,19 @@ abstract final class CatchContractConstraints {
     'submitParticipantOrganizerApplicationCallableResponse.replayed': submitParticipantOrganizerApplicationCallableResponseReplayed,
     'submitParticipantOrganizerApplicationCallableResponse.responseId': submitParticipantOrganizerApplicationCallableResponseResponseId,
     'submitParticipantOrganizerApplicationCallableResponse.reviewStatus': submitParticipantOrganizerApplicationCallableResponseReviewStatus,
+    'submitProgramHouseholdRsvpCallablePayload.messagingConsent': submitProgramHouseholdRsvpCallablePayloadMessagingConsent,
+    'submitProgramHouseholdRsvpCallablePayload.responses': submitProgramHouseholdRsvpCallablePayloadResponses,
+    'submitProgramHouseholdRsvpCallablePayload.responses.items.functionId': submitProgramHouseholdRsvpCallablePayloadResponsesItemsFunctionId,
+    'submitProgramHouseholdRsvpCallablePayload.responses.items.guestId': submitProgramHouseholdRsvpCallablePayloadResponsesItemsGuestId,
+    'submitProgramHouseholdRsvpCallablePayload.responses.items.partySize': submitProgramHouseholdRsvpCallablePayloadResponsesItemsPartySize,
+    'submitProgramHouseholdRsvpCallablePayload.responses.items.responseNote': submitProgramHouseholdRsvpCallablePayloadResponsesItemsResponseNote,
+    'submitProgramHouseholdRsvpCallablePayload.responses.items.rsvpStatus': submitProgramHouseholdRsvpCallablePayloadResponsesItemsRsvpStatus,
+    'submitProgramHouseholdRsvpCallablePayload.token': submitProgramHouseholdRsvpCallablePayloadToken,
+    'submitProgramHouseholdRsvpCallableResponse.alreadyApplied': submitProgramHouseholdRsvpCallableResponseAlreadyApplied,
+    'submitProgramHouseholdRsvpCallableResponse.appliedCount': submitProgramHouseholdRsvpCallableResponseAppliedCount,
+    'submitProgramHouseholdRsvpCallableResponse.entityId': submitProgramHouseholdRsvpCallableResponseEntityId,
+    'submitProgramHouseholdRsvpCallableResponse.messagingConsentGranted': submitProgramHouseholdRsvpCallableResponseMessagingConsentGranted,
+    'submitProgramHouseholdRsvpCallableResponse.revision': submitProgramHouseholdRsvpCallableResponseRevision,
     'swipeDocument.comment': swipeDocumentComment,
     'swipeDocument.createdAt._nanoseconds': swipeDocumentCreatedAtNanoseconds,
     'swipeDocument.createdAt._seconds': swipeDocumentCreatedAtSeconds,

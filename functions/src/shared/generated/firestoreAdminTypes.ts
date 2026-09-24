@@ -9155,6 +9155,17 @@ export interface ProgramHouseholdDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent.
+   */
+  messagingConsent?: {
+    granted: boolean;
+    grantedAt: FirebaseFirestore.Timestamp | null;
+    /**
+     * Channel that recorded the consent decision.
+     */
+    source: "householdRsvpLink" | "staff" | "import" | null;
+  } | null;
 }
 
 /**

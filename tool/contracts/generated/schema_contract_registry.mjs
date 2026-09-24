@@ -126830,6 +126830,64 @@ export const programHouseholdDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "messagingConsent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "granted",
+        "grantedAt",
+        "source"
+      ],
+      "properties": {
+        "granted": {
+          "type": "boolean"
+        },
+        "grantedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "householdRsvpLink",
+            "staff",
+            "import",
+            null
+          ],
+          "description": "Channel that recorded the consent decision."
+        }
+      },
+      "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent."
     }
   }
 };
@@ -130091,6 +130149,130 @@ export const recordProgramFunctionRsvpCallablePayloadSchema = {
   }
 };
 
+export const issueProgramHouseholdRsvpLinkCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/issue_program_household_rsvp_link_payload.schema.json",
+  "title": "IssueProgramHouseholdRsvpLinkCallablePayload",
+  "description": "Mint a signed RSVP link token for one household. The token carries only ids and an exclusive expiry; default expiry is the program end.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "householdId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive token expiry in epoch milliseconds; defaults to the program's endsAt."
+    }
+  }
+};
+
+export const getProgramHouseholdRsvpViewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_household_rsvp_view_payload.schema.json",
+  "title": "GetProgramHouseholdRsvpViewCallablePayload",
+  "description": "Token-authenticated read of one household's RSVP surface. The signed token is the credential; no session is required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    }
+  }
+};
+
+export const submitProgramHouseholdRsvpCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_program_household_rsvp_payload.schema.json",
+  "title": "SubmitProgramHouseholdRsvpCallablePayload",
+  "description": "Token-authenticated household RSVP submit. Responses are limited to guests in the token's household and apply atomically. messagingConsent records the explicit checkbox state; it is never implied by submitting.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token",
+    "responses",
+    "messagingConsent"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    },
+    "responses": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "functionId",
+          "rsvpStatus"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "responseNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "messagingConsent": {
+      "type": "boolean",
+      "description": "The explicit household messaging-consent checkbox; recorded exactly as ticked."
+    }
+  }
+};
+
 export const listProgramStaffCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_program_staff_payload.schema.json",
@@ -131549,6 +131731,243 @@ export const recordProgramFunctionRsvpCallableResponseSchema = {
     "alreadyApplied": {
       "type": "boolean",
       "description": "True when an exact replay returned the original result."
+    }
+  }
+};
+
+export const programHouseholdRsvpLinkCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_household_rsvp_link_response.schema.json",
+  "title": "ProgramHouseholdRsvpLinkCallableResponse",
+  "description": "A freshly minted household RSVP token with its exclusive expiry. The client composes the share URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "issueProgramHouseholdRsvpLink"
+  ],
+  "required": [
+    "entityId",
+    "token",
+    "expiresAtMillis",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The household document id."
+    },
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const programHouseholdRsvpViewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_household_rsvp_view_response.schema.json",
+  "title": "ProgramHouseholdRsvpViewCallableResponse",
+  "description": "The household's RSVP page model: program display facts, consent state, and each member's invited functions with current responses. Contains no data outside the token's household.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramHouseholdRsvpView"
+  ],
+  "required": [
+    "programId",
+    "programTitle",
+    "timezone",
+    "householdId",
+    "householdLabel",
+    "messagingConsentGranted",
+    "members"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdLabel": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "messagingConsentGranted": {
+      "type": "boolean",
+      "description": "Current consent state so the page can pre-tick."
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "functions"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "functions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "functionId",
+                "name",
+                "startsAtMillis",
+                "endsAtMillis",
+                "rsvpStatus",
+                "partySize",
+                "responseNote"
+              ],
+              "properties": {
+                "functionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "startsAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "endsAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "venueName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "dressCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "instructions": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "rsvpStatus": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "attending",
+                    "declined",
+                    "maybe"
+                  ]
+                },
+                "partySize": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 20
+                },
+                "responseNote": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const submitProgramHouseholdRsvpCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_program_household_rsvp_response.schema.json",
+  "title": "SubmitProgramHouseholdRsvpCallableResponse",
+  "description": "Acknowledgement for a household RSVP submit: the household id, its committed revision, and how many function responses landed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "submitProgramHouseholdRsvp"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "appliedCount",
+    "messagingConsentGranted",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The household document id."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "appliedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "messagingConsentGranted": {
+      "type": "boolean",
+      "description": "The consent state now recorded on the household."
+    },
+    "alreadyApplied": {
+      "type": "boolean"
     }
   }
 };

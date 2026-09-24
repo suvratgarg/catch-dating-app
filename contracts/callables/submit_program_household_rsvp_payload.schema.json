@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_program_household_rsvp_payload.schema.json",
+  "title": "SubmitProgramHouseholdRsvpCallablePayload",
+  "description": "Token-authenticated household RSVP submit. Responses are limited to guests in the token's household and apply atomically. messagingConsent records the explicit checkbox state; it is never implied by submitting.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token",
+    "responses",
+    "messagingConsent"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    },
+    "responses": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "functionId",
+          "rsvpStatus"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "rsvpStatus": {
+            "$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "responseNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "messagingConsent": {
+      "type": "boolean",
+      "description": "The explicit household messaging-consent checkbox; recorded exactly as ticked."
+    }
+  }
+}

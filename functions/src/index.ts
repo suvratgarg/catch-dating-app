@@ -657,6 +657,11 @@ export {
   recordProgramFunctionRsvp,
 } from "./programRsvp/programRsvpCallables";
 export {
+  issueProgramHouseholdRsvpLink,
+  getProgramHouseholdRsvpView,
+  submitProgramHouseholdRsvp,
+} from "./programRsvp/householdRsvp";
+export {
   upsertProgramFunction,
   upsertProgramPickupPoint,
   upsertProgramHotel,

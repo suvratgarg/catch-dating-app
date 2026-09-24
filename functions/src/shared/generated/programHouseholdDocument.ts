@@ -43,4 +43,18 @@ export interface ProgramHouseholdDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent.
+   */
+  messagingConsent?: {
+    granted: boolean;
+    grantedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    } | null;
+    /**
+     * Channel that recorded the consent decision.
+     */
+    source: "householdRsvpLink" | "staff" | "import" | null;
+  } | null;
 }

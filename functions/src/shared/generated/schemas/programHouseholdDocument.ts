@@ -144,6 +144,64 @@ export const programHouseholdDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "messagingConsent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "granted",
+        "grantedAt",
+        "source"
+      ],
+      "properties": {
+        "granted": {
+          "type": "boolean"
+        },
+        "grantedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "householdRsvpLink",
+            "staff",
+            "import",
+            null
+          ],
+          "description": "Channel that recorded the consent decision."
+        }
+      },
+      "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent."
     }
   }
 } as const;
