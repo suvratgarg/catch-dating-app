@@ -2,6 +2,8 @@ import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_screen.dart';
@@ -155,6 +157,58 @@ Widget privateEventPreferencesScreenPreview(BuildContext context) {
         label: 'manager read; payment activation separate',
         child: WidgetbookHostDeviceFrame(
           child: PrivateEventPreferencesScreen(
+            controller: controller,
+            onBack: () => Navigator.of(context).maybePop(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Saved private event details',
+  type: PrivateEventDetailsScreen,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget privateEventDetailsScreenPreview(BuildContext context) {
+  final hash = List.filled(64, 'a').join();
+  final controller = PrivateEventDetailsController(
+    userId: 'preview-host', organizerId: 'preview-club',
+    eventId: 'preview-private-event',
+    readEvent: ({required organizerId, required eventId}) async =>
+        throw StateError('Preview does not read events'),
+    readDefaults: (_) async =>
+        throw StateError('Preview does not read defaults'),
+    write: (_) async => throw StateError('Preview does not submit details'),
+  );
+  controller.event = const PrivateEventBasicSummary(
+    eventId: 'preview-private-event', organizerId: 'preview-club',
+    setupRevision: 1, name: 'Saturday mixer',
+    city: EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+    localDate: '2026-10-03', localStartTime: '19:00',
+    timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
+    status: 'active', setupDefaults: {}, detailsConfigured: false,
+    eventPreferences: null,
+  );
+  controller.defaults = ManagerEventSetupDefaults(
+    organizerId: 'preview-club', cityId: 'in-mh-mumbai',
+    marketId: 'in-mh-mumbai', timezone: 'Asia/Kolkata',
+    organizerDefaultsRevision: 1, basicsReviewedHash: hash,
+    preferencesRevision: 1,
+    preferences: const ManagerEventSetupPreferences(
+      usualDurationMinutes: 90,
+    ),
+    preferencesHash: hash, reviewedDefaultsHash: hash,
+  );
+  return WidgetbookPageCatalogFrame(
+    title: 'PrivateEventDetailsScreen',
+    contractId: 'screen.host.event.private.details',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'saved event with optional detail suggestions',
+        child: WidgetbookHostDeviceFrame(
+          child: PrivateEventDetailsScreen(
             controller: controller,
             onBack: () => Navigator.of(context).maybePop(),
           ),

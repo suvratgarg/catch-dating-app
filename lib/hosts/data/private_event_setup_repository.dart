@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
@@ -274,6 +275,59 @@ class PrivateEventBasicsUpdateRequest {
   };
 }
 
+/// Actual optional event fields, as opposed to organizer recommendations.
+class PrivateEventDetailsSnapshot {
+  const PrivateEventDetailsSnapshot({
+    this.endTimeMillis,
+    this.venueName,
+    this.sourceVenueId,
+    this.eventFormat,
+  });
+
+  final int? endTimeMillis;
+  final String? venueName;
+  final String? sourceVenueId;
+  final EventFormatSnapshot? eventFormat;
+
+  factory PrivateEventDetailsSnapshot.fromResponse(Object? response) {
+    if (response is! Map) throw const FormatException('Invalid event details');
+    final data = Map<String, Object?>.from(response);
+    if (data.length != 4 ||
+        data.keys.toSet().difference({
+          'endTimeMillis', 'venueName', 'sourceVenueId', 'eventFormat',
+        }).isNotEmpty ||
+        (data['endTimeMillis'] != null && data['endTimeMillis'] is! int) ||
+        (data['venueName'] != null &&
+            (data['venueName'] is! String ||
+                (data['venueName'] as String).trim().isEmpty)) ||
+        (data['sourceVenueId'] != null &&
+            data['sourceVenueId'] is! String)) {
+      throw const FormatException('Invalid event details');
+    }
+    final rawFormat = data['eventFormat'];
+    EventFormatSnapshot? format;
+    if (rawFormat != null) {
+      if (rawFormat is! Map) throw const FormatException('Invalid event format');
+      final formatData = Map<String, Object?>.from(rawFormat);
+      if (formatData['version'] != 1 ||
+          !ActivityKind.values.any((v) => v.name == formatData['activityKind']) ||
+          !EventInteractionModel.values.any(
+              (v) => v.name == formatData['interactionModel'])) {
+        throw const FormatException('Invalid event format');
+      }
+      format = EventFormatSnapshot.fromJson(
+        Map<String, dynamic>.from(formatData),
+      );
+    }
+    return PrivateEventDetailsSnapshot(
+      endTimeMillis: data['endTimeMillis'] as int?,
+      venueName: data['venueName'] as String?,
+      sourceVenueId: data['sourceVenueId'] as String?,
+      eventFormat: format,
+    );
+  }
+}
+
 /// Manager-only projection of an already-saved basic event. It intentionally
 /// has no rich Event defaults; a partial private setup cannot be decoded as a
 /// public event.
@@ -292,6 +346,7 @@ class PrivateEventBasicSummary {
     required this.setupDefaults,
     required this.detailsConfigured,
     required this.eventPreferences,
+    this.eventDetails = const PrivateEventDetailsSnapshot(),
   });
 
   final String eventId;
@@ -307,6 +362,7 @@ class PrivateEventBasicSummary {
   final Map<String, Object?> setupDefaults;
   final bool detailsConfigured;
   final PrivateEventPreferencesSnapshot? eventPreferences;
+  final PrivateEventDetailsSnapshot eventDetails;
 
   bool get canEditBasics => status == 'active';
 
@@ -333,6 +389,7 @@ class PrivateEventBasicSummary {
     final status = data['status'];
     final setupDefaults = data['setupDefaults'];
     final detailsConfigured = data['detailsConfigured'];
+    final rawEventDetails = data['eventDetails'];
     if (eventId is! String ||
         eventId.trim().isEmpty ||
         organizerId is! String ||
@@ -376,6 +433,7 @@ class PrivateEventBasicSummary {
       status: status as String,
       setupDefaults: Map<String, Object?>.from(setupDefaults),
       detailsConfigured: detailsConfigured,
+      eventDetails: PrivateEventDetailsSnapshot.fromResponse(rawEventDetails),
       eventPreferences: data['eventPreferences'] == null
           ? null
           : PrivateEventPreferencesSnapshot.fromResponse(

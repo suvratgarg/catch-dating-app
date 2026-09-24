@@ -22,6 +22,71 @@ typedef ReadPrivateEventOrganizerDefaults =
     Future<ManagerEventSetupDefaults> Function(String organizerId);
 
 extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
+  void _openDetails() {
+    final receipt = _receipt;
+    if (receipt == null || _detailsController != null) return;
+    try {
+      final uid = ref.read(uidProvider).asData?.value;
+      if (uid == null || uid.isEmpty) {
+        throw const SignInRequiredException('edit private event details');
+      }
+      final functions = ref.read(firebaseFunctionsProvider);
+      final eventRepository = PrivateEventSetupRepository(functions);
+      final defaultsRepository = ManagerEventSetupDefaultsRepository(functions);
+      final detailsRepository = PrivateEventDetailsRepository(functions);
+      final controller = PrivateEventDetailsController(
+        userId: uid,
+        organizerId: widget.club.id,
+        eventId: receipt.eventId,
+        readEvent: eventRepository.get,
+        readDefaults: defaultsRepository.get,
+        write: detailsRepository.update,
+      );
+      controller.addListener(_refresh);
+      _mutateScreenState(() {
+        _detailsController = controller;
+        _editingDetails = true;
+      });
+      unawaited(controller.load());
+    } catch (error, stackTrace) {
+      app_ops.logAppError(error, stackTrace: stackTrace,
+        context: const app_ops.AppErrorContext(
+          operation: app_ops.AppOperation.ui,
+          action: 'open private event details',
+          resource: 'private_event_details',
+        ),
+        logError: ref.read(errorLoggerProvider));
+      if (!mounted) return;
+      ref.read(catchNoticeControllerProvider.notifier).show(CatchNoticeData(
+        id: 'private-event-details-open-error',
+        title: context.l10n.hostsEventPreferenceError,
+        message: appErrorMessage(error, l10n: context.l10n,
+          context: AppErrorContext.event),
+        tone: CatchNoticeTone.danger,
+      ));
+    }
+  }
+
+  void _closeDetails() {
+    final controller = _detailsController;
+    if (controller == null) return;
+    final latestRevision = controller.event?.setupRevision;
+    controller.removeListener(_refresh);
+    controller.dispose();
+    _mutateScreenState(() {
+      if (latestRevision != null && _receipt != null &&
+          latestRevision > _receipt!.setupRevision) {
+        _receipt = PrivateEventCreateReceipt(
+          eventId: _receipt!.eventId,
+          setupRevision: latestRevision,
+          replayed: true,
+        );
+      }
+      _detailsController = null;
+      _editingDetails = false;
+    });
+  }
+
   void _openPreferences() {
     final receipt = _receipt;
     if (receipt == null || _preferencesController != null) return;

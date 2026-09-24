@@ -180,6 +180,10 @@ void main() {
       'startTimeMillis': 1790449200000,
       'setupDefaults': <String, Object?>{},
       'detailsConfigured': false,
+      'eventDetails': <String, Object?>{
+        'endTimeMillis': null, 'venueName': null,
+        'sourceVenueId': null, 'eventFormat': null,
+      },
       'eventPreferences': null,
     };
     final summary = PrivateEventBasicSummary.fromResponse(response);
@@ -188,6 +192,15 @@ void main() {
     expect(summary.city.cityId, 'in-mh-mumbai');
     expect(summary.canEditBasics, isTrue);
     expect(summary.eventPreferences, isNull);
+    expect(summary.eventDetails.endTimeMillis, isNull);
+    expect(summary.eventDetails.venueName, isNull);
+    expect(
+      () => PrivateEventBasicSummary.fromResponse({
+        ...response,
+        'eventDetails': {'endTimeMillis': 1},
+      }),
+      throwsFormatException,
+    );
     expect(
       () => PrivateEventBasicSummary.fromResponse({
         ...response,

@@ -345,6 +345,10 @@ void main() {
       'startTimeMillis': date.millisecondsSinceEpoch,
       'setupDefaults': <String, Object?>{},
       'detailsConfigured': false,
+      'eventDetails': <String, Object?>{
+        'endTimeMillis': null, 'venueName': null,
+        'sourceVenueId': null, 'eventFormat': null,
+      },
     });
     final attempted = <PrivateEventBasicsUpdateRequest>[];
     var createCalls = 0;

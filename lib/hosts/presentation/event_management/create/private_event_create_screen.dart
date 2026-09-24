@@ -4,15 +4,19 @@ import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_error_context.dart' as app_ops;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
@@ -21,6 +25,8 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_stat
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
@@ -95,6 +101,8 @@ class _PrivateEventCreateScreenState
   bool _editingSavedBasics = false;
   bool _editingPreferences = false;
   PrivateEventPreferencesController? _preferencesController;
+  bool _editingDetails = false;
+  PrivateEventDetailsController? _detailsController;
   bool _loadingSavedEvent = false;
   bool _canEditSavedBasics = true;
   String? _readError;
@@ -220,6 +228,8 @@ class _PrivateEventCreateScreenState
   void dispose() {
     _preferencesController?.removeListener(_refresh);
     _preferencesController?.dispose();
+    _detailsController?.removeListener(_refresh);
+    _detailsController?.dispose();
     _nameController.removeListener(_refresh);
     _timezoneController.removeListener(_refresh);
     _cityAccordion.removeListener(_refresh);
@@ -430,6 +440,12 @@ class _PrivateEventCreateScreenState
         onBack: _PrivateEventCreateBody(this)._closePreferences,
       );
     }
+    if (_editingDetails && _detailsController != null) {
+      return PrivateEventDetailsScreen(
+        controller: _detailsController!,
+        onBack: _PrivateEventCreateBody(this)._closeDetails,
+      );
+    }
     if (receipt != null && !_editingSavedBasics) {
       return PrivateEventSetupScreen(
         club: widget.club,
@@ -444,6 +460,9 @@ class _PrivateEventCreateScreenState
             : null,
         onEditPayments: _canEditSavedBasics
             ? () => _PrivateEventCreateBody(this)._openPreferences()
+            : null,
+        onEditDetails: _canEditSavedBasics
+            ? () => _PrivateEventCreateBody(this)._openDetails()
             : null,
         onClose: _PrivateEventCreateBody(this)._close,
       );
