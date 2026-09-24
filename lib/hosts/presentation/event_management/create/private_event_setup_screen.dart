@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 /// A missing callback leaves an unavailable capability inert. The create
 /// receipt alone never implies that registration, payment or publication is
 /// enabled.
-class PrivateEventSetupWorkspace extends StatelessWidget {
-  const PrivateEventSetupWorkspace({
+class PrivateEventSetupScreen extends StatelessWidget {
+  const PrivateEventSetupScreen({
     super.key,
     required this.club,
     required this.receipt,

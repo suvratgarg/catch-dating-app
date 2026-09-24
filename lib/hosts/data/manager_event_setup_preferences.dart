@@ -9,12 +9,49 @@ enum EventCollectionPreference {
 }
 
 class ReusableOrganizerPaymentPage {
-  const ReusableOrganizerPaymentPage(this.url);
+  const ReusableOrganizerPaymentPage(
+    this.url, {
+    required this.reusableForEvents,
+  });
 
   final String url;
+  /// Explicit Host attestation; a pasted personal request is never reusable.
+  final bool reusableForEvents;
+}
 
-  /// A personal request or invoice must never enter organizer preferences.
-  bool get reusableForEvents => true;
+/// Accept only canonical, public HTTPS URLs before asking the Host to attest
+/// that the page can be reused across guests and events.
+bool isCanonicalPublicPaymentPageUrl(String value) {
+  if (value.isEmpty || value.length > 2048 || value.trim() != value) {
+    return false;
+  }
+  final uri = Uri.tryParse(value);
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty ||
+      uri.hasFragment ||
+      uri.hasPort ||
+      uri.toString() != value) {
+    return false;
+  }
+  final host = uri.host.toLowerCase();
+  if (host == 'localhost' ||
+      host.endsWith('.localhost') ||
+      host.endsWith('.local') ||
+      host.contains(':') ||
+      RegExp(r'^[0-9.]+$').hasMatch(host)) {
+    return false;
+  }
+  final labels = host.split('.');
+  if (labels.length < 2 ||
+      labels.any((label) =>
+          label.isEmpty ||
+          label.length > 63 ||
+          !RegExp(r'^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$').hasMatch(label))) {
+    return false;
+  }
+  return RegExp(r'^[a-z]{2,}$').hasMatch(labels.last);
 }
 
 const _unchangedPreference = Object();

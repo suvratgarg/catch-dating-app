@@ -14,7 +14,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_workspace.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -564,7 +564,7 @@ class _PrivateEventCreateScreenState
     final t = CatchTokens.of(context);
     final receipt = _receipt;
     if (receipt != null) {
-      return PrivateEventSetupWorkspace(
+      return PrivateEventSetupScreen(
         club: widget.club,
         receipt: receipt,
         name: _nameController.text.trim(),
