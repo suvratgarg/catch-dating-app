@@ -137,22 +137,6 @@ export async function importEventAttendeesForHost(
   await deps.checkRateLimit(db, hostUid, "importEventAttendees");
 
   const eventRef = db.collection("events").doc(payload.eventId);
-  const eventSnap = await eventRef.get();
-  if (!eventSnap.exists) {
-    throw new HttpsError("not-found", "Event not found.");
-  }
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  if (event.status === "cancelled") {
-    throw new HttpsError("failed-precondition", "This event is cancelled.");
-  }
-  const organizerSnap = await eventOrganizerRef(db, event).get();
-  const organizer = requireEventOrganizer(organizerSnap, event);
-  if (!isEventOrganizerManager(organizer, event, hostUid)) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only an organizer manager can import attendees."
-    );
-  }
 
   const canonicalPayload = canonicalImportPayload(payload);
   const payloadHash = sha256(JSON.stringify(canonicalPayload));
@@ -172,6 +156,22 @@ export async function importEventAttendeesForHost(
     db.collection("eventAttendees").doc(row.attendeeId)
   );
   return db.runTransaction(async (tx) => {
+    const eventSnap = await tx.get(eventRef);
+    if (!eventSnap.exists) {
+      throw new HttpsError("not-found", "Event not found.");
+    }
+    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    if (event.status === "cancelled") {
+      throw new HttpsError("failed-precondition", "This event is cancelled.");
+    }
+    const organizerSnap = await tx.get(eventOrganizerRef(db, event));
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, hostUid)) {
+      throw new HttpsError(
+        "permission-denied",
+        "Only an organizer manager can import attendees."
+      );
+    }
     const existingImportSnap = await tx.get(importRef);
     if (existingImportSnap.exists) {
       const existing = requireDoc<EventAttendeeImportDocument>(
