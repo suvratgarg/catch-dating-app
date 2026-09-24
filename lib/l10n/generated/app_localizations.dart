@@ -35496,6 +35496,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load private events.'**
   String get hostsPrivateEventInventoryError;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is this form for?'**
+  String get hostFormTargetTitle;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable organizer form'**
+  String get hostFormTargetReusable;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'For an event'**
+  String get hostFormTargetEvent;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostFormTargetSelectEvent;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible upcoming events are available.'**
+  String get hostFormTargetNoUpcomingEvents;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'This linked event is no longer available. Choose another event or make the form reusable.'**
+  String get hostFormTargetUnavailable;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes to a published form take effect when you publish the draft updates.'**
+  String get hostFormTargetPublishedNotice;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your events. Try again.'**
+  String get hostFormTargetLoadFailed;
 }
 
 class _AppLocalizationsDelegate

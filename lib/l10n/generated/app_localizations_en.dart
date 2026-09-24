@@ -22081,4 +22081,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventInventoryError =>
       'Could not load private events.';
+
+  @override
+  String get hostFormTargetTitle => 'Who is this form for?';
+
+  @override
+  String get hostFormTargetReusable => 'Reusable organizer form';
+
+  @override
+  String get hostFormTargetEvent => 'For an event';
+
+  @override
+  String get hostFormTargetSelectEvent => 'Choose an event';
+
+  @override
+  String get hostFormTargetNoUpcomingEvents =>
+      'No eligible upcoming events are available.';
+
+  @override
+  String get hostFormTargetUnavailable =>
+      'This linked event is no longer available. Choose another event or make the form reusable.';
+
+  @override
+  String get hostFormTargetPublishedNotice =>
+      'Changes to a published form take effect when you publish the draft updates.';
+
+  @override
+  String get hostFormTargetLoadFailed =>
+      'Could not load your events. Try again.';
 }
