@@ -44,15 +44,18 @@ export function validateFormCapabilities(definition: Definition,
     }
     profileFields.add(question.canonicalFieldId);
   }
+  const catchQuestions = new Set(questions.filter((question) =>
+    formAnswerDestination(question) === "catchProfile")
+    .map((question) => question.questionId));
   const reusableCatchQuestions = new Set(questions.filter((question) =>
-    formAnswerDestination(question) === "catchProfile" &&
+    catchQuestions.has(question.questionId) &&
     question.prefillPolicy === "participantReviewRequired")
     .map((question) => question.questionId));
   for (const rule of definition.logicRules) {
     if (rule.conditions.some((condition) =>
-      reusableCatchQuestions.has(condition.questionId)) ||
+      catchQuestions.has(condition.questionId)) ||
       (rule.targetQuestionId !== null &&
-        reusableCatchQuestions.has(rule.targetQuestionId))) {
+        catchQuestions.has(rule.targetQuestionId))) {
       add("catchFieldCustomLogic", "logicRules",
         "Catch fields use built-in behavior and cannot be used " +
         "in custom logic.");
@@ -137,16 +140,17 @@ export function validateFormCapabilities(definition: Definition,
             "Use the answer type supported by this Catch profile field.");
         }
       }
-      if (reusableCatchQuestions.has(question.questionId)) {
-        if (sectionIndex !== 0) {
-          add("catchFieldFirstPage", path,
-            "Place reusable Catch fields on the first page.");
-        }
+      if (catchQuestions.has(question.questionId)) {
         if (question.validation.patternPreset !== null ||
             question.validation.customError !== null) {
           add("catchFieldCustomValidation", `${path}.validation`,
             "Catch fields use their built-in validation.");
         }
+      }
+      if (reusableCatchQuestions.has(question.questionId) &&
+          sectionIndex !== 0) {
+        add("catchFieldFirstPage", path,
+          "Place reusable Catch fields on the first page.");
       }
       if (destination !== "organizerOnly" &&
           (question.kind === "acknowledgement" ||

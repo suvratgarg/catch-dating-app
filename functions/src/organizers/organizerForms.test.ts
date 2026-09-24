@@ -177,6 +177,9 @@ test("reusable Catch fields stay on page one with built-in behavior", () => {
   }], action: "finish", targetQuestionId: null, targetSectionId: null}];
   assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
     issue.code === "catchFieldCustomLogic"));
+  field.prefillPolicy = "never";
+  assert.ok(validateOrganizerFormDefinition(value).some((issue) =>
+    issue.code === "catchFieldCustomLogic"));
 });
 
 test("profile photo cannot promote arbitrary uploads or image collections",
