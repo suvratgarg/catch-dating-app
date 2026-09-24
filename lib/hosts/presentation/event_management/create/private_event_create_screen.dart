@@ -615,6 +615,8 @@ class _PrivateEventCreateScreenState
                                 copy: fieldCopy,
                                 key: const ValueKey('private-event-city'),
                                 title: context.l10n.hostsPrivateEventCity,
+                                contractExemption:
+                                    'Private event city is validated by the event setup command.',
                                 body: _cityInherited
                                     ? '${city?.label ?? widget.club.location} · ${context.l10n.hostsPrivateEventFromOrganizer}'
                                     : city?.label ??

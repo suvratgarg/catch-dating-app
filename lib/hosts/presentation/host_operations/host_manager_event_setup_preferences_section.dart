@@ -52,6 +52,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
             CatchField<int>.choices(
               copy: copy,
               title: l10n.hostsEventDefaultsUsualDuration,
+              contractExemption:
+                  'Manager-only event setup suggestion; the shared saver is gated.',
               body: preferences.usualDurationMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.usualDurationMinutes!),
@@ -107,6 +109,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
             CatchField<int>.choices(
               copy: copy,
               title: l10n.hostsEventDefaultsOfferValidity,
+              contractExemption:
+                  'Manager-only offer validity suggestion; the shared saver is gated.',
               body: preferences.offerValidityMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.offerValidityMinutes!),
@@ -168,6 +172,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
             CatchField<EventCollectionPreference>.choices(
               copy: copy,
               title: l10n.hostsEventDefaultsCollectionPreference,
+              contractExemption:
+                  'Manager-only collection suggestion; the shared saver is gated.',
               body: preferences.collectionPreference == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : collectionLabel(preferences.collectionPreference!),

@@ -16,8 +16,9 @@ T _$identity<T>(T value) => value;
 mixin _$ClubHostDefaults {
 
  ActivityKind get primaryActivityKind; List<ActivityKind> get supportedActivityKinds; EventPolicyDefaults get eventPolicy; EventSuccessDefaults get eventSuccess; Map<String, EventSuccessDefaults> get eventSuccessByActivityKind;/// Suggested IANA timezone for future events; never rewrites saved events.
- String? get timezone;/// Server-managed revision used when an event inherits defaults.
- int? get revision;
+/// Read only until the versioned updateOrganizer contract accepts it.
+@JsonKey(includeToJson: false) String? get timezone;/// Server-managed revision used when an event inherits defaults.
+@JsonKey(includeToJson: false) int? get revision;
 /// Create a copy of ClubHostDefaults
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -50,7 +51,7 @@ abstract mixin class $ClubHostDefaultsCopyWith<$Res>  {
   factory $ClubHostDefaultsCopyWith(ClubHostDefaults value, $Res Function(ClubHostDefaults) _then) = _$ClubHostDefaultsCopyWithImpl;
 @useResult
 $Res call({
- ActivityKind primaryActivityKind, List<ActivityKind> supportedActivityKinds, EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess, Map<String, EventSuccessDefaults> eventSuccessByActivityKind, String? timezone, int? revision
+ ActivityKind primaryActivityKind, List<ActivityKind> supportedActivityKinds, EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess, Map<String, EventSuccessDefaults> eventSuccessByActivityKind,@JsonKey(includeToJson: false) String? timezone,@JsonKey(includeToJson: false) int? revision
 });
 
 
@@ -179,7 +180,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind,  String? timezone,  int? revision)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind, @JsonKey(includeToJson: false)  String? timezone, @JsonKey(includeToJson: false)  int? revision)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClubHostDefaults() when $default != null:
 return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eventPolicy,_that.eventSuccess,_that.eventSuccessByActivityKind,_that.timezone,_that.revision);case _:
@@ -200,7 +201,7 @@ return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eve
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind,  String? timezone,  int? revision)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind, @JsonKey(includeToJson: false)  String? timezone, @JsonKey(includeToJson: false)  int? revision)  $default,) {final _that = this;
 switch (_that) {
 case _ClubHostDefaults():
 return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eventPolicy,_that.eventSuccess,_that.eventSuccessByActivityKind,_that.timezone,_that.revision);case _:
@@ -220,7 +221,7 @@ return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eve
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind,  String? timezone,  int? revision)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind, @JsonKey(includeToJson: false)  String? timezone, @JsonKey(includeToJson: false)  int? revision)?  $default,) {final _that = this;
 switch (_that) {
 case _ClubHostDefaults() when $default != null:
 return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eventPolicy,_that.eventSuccess,_that.eventSuccessByActivityKind,_that.timezone,_that.revision);case _:
@@ -235,7 +236,7 @@ return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eve
 @JsonSerializable()
 
 class _ClubHostDefaults extends ClubHostDefaults {
-  const _ClubHostDefaults({this.primaryActivityKind = ActivityKind.socialRun, final  List<ActivityKind> supportedActivityKinds = const <ActivityKind>[], this.eventPolicy = const EventPolicyDefaults(), this.eventSuccess = const EventSuccessDefaults(), final  Map<String, EventSuccessDefaults> eventSuccessByActivityKind = const <String, EventSuccessDefaults>{}, this.timezone, this.revision}): _supportedActivityKinds = supportedActivityKinds,_eventSuccessByActivityKind = eventSuccessByActivityKind,super._();
+  const _ClubHostDefaults({this.primaryActivityKind = ActivityKind.socialRun, final  List<ActivityKind> supportedActivityKinds = const <ActivityKind>[], this.eventPolicy = const EventPolicyDefaults(), this.eventSuccess = const EventSuccessDefaults(), final  Map<String, EventSuccessDefaults> eventSuccessByActivityKind = const <String, EventSuccessDefaults>{}, @JsonKey(includeToJson: false) this.timezone, @JsonKey(includeToJson: false) this.revision}): _supportedActivityKinds = supportedActivityKinds,_eventSuccessByActivityKind = eventSuccessByActivityKind,super._();
   factory _ClubHostDefaults.fromJson(Map<String, dynamic> json) => _$ClubHostDefaultsFromJson(json);
 
 @override@JsonKey() final  ActivityKind primaryActivityKind;
@@ -256,9 +257,10 @@ class _ClubHostDefaults extends ClubHostDefaults {
 }
 
 /// Suggested IANA timezone for future events; never rewrites saved events.
-@override final  String? timezone;
+/// Read only until the versioned updateOrganizer contract accepts it.
+@override@JsonKey(includeToJson: false) final  String? timezone;
 /// Server-managed revision used when an event inherits defaults.
-@override final  int? revision;
+@override@JsonKey(includeToJson: false) final  int? revision;
 
 /// Create a copy of ClubHostDefaults
 /// with the given fields replaced by the non-null parameter values.
@@ -293,7 +295,7 @@ abstract mixin class _$ClubHostDefaultsCopyWith<$Res> implements $ClubHostDefaul
   factory _$ClubHostDefaultsCopyWith(_ClubHostDefaults value, $Res Function(_ClubHostDefaults) _then) = __$ClubHostDefaultsCopyWithImpl;
 @override @useResult
 $Res call({
- ActivityKind primaryActivityKind, List<ActivityKind> supportedActivityKinds, EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess, Map<String, EventSuccessDefaults> eventSuccessByActivityKind, String? timezone, int? revision
+ ActivityKind primaryActivityKind, List<ActivityKind> supportedActivityKinds, EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess, Map<String, EventSuccessDefaults> eventSuccessByActivityKind,@JsonKey(includeToJson: false) String? timezone,@JsonKey(includeToJson: false) int? revision
 });
 
 
