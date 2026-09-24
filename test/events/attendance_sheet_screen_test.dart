@@ -213,6 +213,8 @@ void main() {
     expect(revenueCsv, contains('Asha,runner-1,attended,checked_in'));
     expect(revenueCsv, contains('Meera,runner-3,cancelled,cancelled'));
     expect(find.text('Revenue CSV ready.'), findsOneWidget);
+    await tester.tap(find.byTooltip('Dismiss'));
+    await _settleAttendanceSheet(tester);
 
     await tester.tap(find.byTooltip('Export report'));
     await _settleAttendanceSheet(tester);
