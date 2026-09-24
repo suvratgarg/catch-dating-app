@@ -180,12 +180,14 @@ void main() {
       'startTimeMillis': 1790449200000,
       'setupDefaults': <String, Object?>{},
       'detailsConfigured': false,
+      'eventPreferences': null,
     };
     final summary = PrivateEventBasicSummary.fromResponse(response);
     expect(summary.eventId, 'event-1');
     expect(summary.setupRevision, 3);
     expect(summary.city.cityId, 'in-mh-mumbai');
     expect(summary.canEditBasics, isTrue);
+    expect(summary.eventPreferences, isNull);
     expect(
       () => PrivateEventBasicSummary.fromResponse({
         ...response,

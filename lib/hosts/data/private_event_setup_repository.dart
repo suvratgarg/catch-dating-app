@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 
@@ -290,6 +291,7 @@ class PrivateEventBasicSummary {
     required this.status,
     required this.setupDefaults,
     required this.detailsConfigured,
+    required this.eventPreferences,
   });
 
   final String eventId;
@@ -304,6 +306,7 @@ class PrivateEventBasicSummary {
   final String status;
   final Map<String, Object?> setupDefaults;
   final bool detailsConfigured;
+  final PrivateEventPreferencesSnapshot? eventPreferences;
 
   bool get canEditBasics => status == 'active';
 
@@ -373,6 +376,11 @@ class PrivateEventBasicSummary {
       status: status as String,
       setupDefaults: Map<String, Object?>.from(setupDefaults),
       detailsConfigured: detailsConfigured,
+      eventPreferences: data['eventPreferences'] == null
+          ? null
+          : PrivateEventPreferencesSnapshot.fromResponse(
+              data['eventPreferences'],
+            ),
     );
   }
 }
