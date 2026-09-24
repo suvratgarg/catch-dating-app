@@ -3328,6 +3328,90 @@
         "updatePrivateEventPreferences",
         "getPrivateEventSetup"
       ]
+    },
+    {
+      "id": "organizerEventOffers",
+      "path": "organizerEventOffers/{documentId}",
+      "rulesMatch": "/organizerEventOffers/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "organizerEventOfferActionReceipts",
+      "path": "organizerEventOfferActionReceipts/{documentId}",
+      "rulesMatch": "/organizerEventOfferActionReceipts/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferActionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "organizerEventOfferBatchReceipts",
+      "path": "organizerEventOfferBatchReceipts/{documentId}",
+      "rulesMatch": "/organizerEventOfferBatchReceipts/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferBatchReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "organizerEventOfferAudits",
+      "path": "organizerEventOfferAudits/{documentId}",
+      "rulesMatch": "/organizerEventOfferAudits/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferAuditDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
     }
   ]
 }

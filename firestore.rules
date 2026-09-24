@@ -1048,6 +1048,18 @@ service cloud.firestore {
     // type audits, relationship projections, and compatibility shadows stay
     // atomic during the released-client migration window.
     // Private configuration is exposed only through current-manager callables.
+    match /organizerEventOffers/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferActionReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferBatchReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferAudits/{documentId} {
+      allow read, write: if false;
+    }
     match /eventSetupPreferences/{eventId} {
       allow read, write: if false;
     }

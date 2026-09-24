@@ -1143,6 +1143,29 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps event offers and evidence server-only", async () => {
+      for (const collectionName of ["organizerEventOffers",
+        "organizerEventOfferActionReceipts", "organizerEventOfferBatchReceipts",
+        "organizerEventOfferAudits"]) {
+        await seed([collectionName, "offer-1"], {
+          organizerId: "organizer-1", eventId: "event-1", revision: 1,
+          manualPayment: {status: "none"},
+        });
+        for (const uid of ["owner-1", "owner-2"]) {
+          const db = authedDb(uid);
+          const ref = doc(db, collectionName, "offer-1");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {revision: 2}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            organizerId: "organizer-1", revision: 1,
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "organizer-1"))));
+        }
+      }
+    });
+
     it("keeps private event setup receipts server-only", async () => {
       await seed(["eventSetupReceipts", "receipt-1"], {
         organizerId: "organizer-1", actorUid: "owner-1", eventId: "event-1",

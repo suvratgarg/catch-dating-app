@@ -2963,6 +2963,101 @@ const schemaSpecs = [
       "functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts",
   },
   {
+    name: "EventOfferAuthorityRow",
+    source: "embedded/event_offer_authority_row.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferAuthorityRow.ts",
+  },
+  {
+    name: "EventOfferRow",
+    source: "embedded/event_offer_row.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferRow.ts",
+  },
+  {
+    name: "EventOfferPaymentSnapshot",
+    source: "embedded/event_offer_payment_snapshot.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferPaymentSnapshot.ts",
+  },
+  {
+    name: "EventOfferManualPayment",
+    source: "embedded/event_offer_manual_payment.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferManualPayment.ts",
+  },
+  {
+    name: "OrganizerEventOfferDocument",
+    source: "firestore/organizer_event_offers.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferDocument.ts",
+  },
+  {
+    name: "EventOfferAction",
+    source: "embedded/event_offer_action.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferAction.ts",
+  },
+  {
+    name: "OrganizerEventOfferActionReceiptDocument",
+    source: "firestore/organizer_event_offer_action_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferActionReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerEventOfferBatchReceiptDocument",
+    source: "firestore/organizer_event_offer_batch_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferBatchReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerEventOfferAuditDocument",
+    source: "firestore/organizer_event_offer_audits.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferAuditDocument.ts",
+  },
+  {
+    name: "PreviewEventOffersCallablePayload",
+    source: "callables/preview_event_offers_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/previewEventOffersCallablePayload.ts",
+  },
+  {
+    name: "CommitEventOffersCallablePayload",
+    source: "callables/commit_event_offers_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/commitEventOffersCallablePayload.ts",
+  },
+  {
+    name: "MutateEventOfferCallablePayload",
+    source: "callables/mutate_event_offer_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/mutateEventOfferCallablePayload.ts",
+  },
+  {
+    name: "GetEventOfferCallablePayload",
+    source: "callables/get_event_offer_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventOfferCallablePayload.ts",
+  },
+  {
+    name: "ListEventOffersCallablePayload",
+    source: "callables/list_event_offers_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventOffersCallablePayload.ts",
+  },
+  {
+    name: "EventOfferPreviewCallableResponse",
+    source: "callable_responses/event_offer_preview_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferPreviewCallableResponse.ts",
+  },
+  {
+    name: "EventOfferCommitCallableResponse",
+    source: "callable_responses/event_offer_commit_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferCommitCallableResponse.ts",
+  },
+  {
+    name: "EventOfferDetailCallableResponse",
+    source: "callable_responses/event_offer_detail_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferDetailCallableResponse.ts",
+  },
+  {
+    name: "EventOfferMutationCallableResponse",
+    source: "callable_responses/event_offer_mutation_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferMutationCallableResponse.ts",
+  },
+  {
+    name: "EventOfferListCallableResponse",
+    source: "callable_responses/event_offer_list_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferListCallableResponse.ts",
+  },
+  {
     name: "EventSetupDefaults",
     source: "embedded/event_setup_defaults.schema.json",
     typeOutput: "functions/src/shared/generated/eventSetupDefaults.ts",

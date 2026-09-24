@@ -9,6 +9,8 @@ import type {EventOrigin} from "./eventOrigin";
 import type {EventRuntimeAccess} from "./eventRuntimeAccess";
 import type {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
 import type {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+import type {EventOfferPaymentSnapshot} from "./eventOfferPaymentSnapshot";
+import type {EventOfferManualPayment} from "./eventOfferManualPayment";
 import type {EventSetupDefaults} from "./eventSetupDefaults";
 
 /**
@@ -12893,4 +12895,72 @@ export interface OrganizerPolicyGapReviewDecisionDocument {
   reviewedAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   operationalState: "blocked_until_policy_encoded" | "not_approved";
+}
+
+export interface OrganizerEventOfferDocument {
+  organizerId: string;
+  eventId: string;
+  contactId: string;
+  applicationId: string;
+  sourceKind: "application" | "formResponse";
+  offerId: string;
+  status: "draft" | "offered" | "withdrawn" | "expired";
+  generation: number;
+  revision: number;
+  expiresAtMillis: number;
+  organizerPaymentLink: string | null;
+  paymentSnapshot: EventOfferPaymentSnapshot;
+  offeredAtMillis: number | null;
+  manualPayment: EventOfferManualPayment;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+export interface OrganizerEventOfferActionReceiptDocument {
+  offerId: string;
+  requestId: string;
+  requestHash: string;
+  resultingGeneration: number;
+  resultingRevision: number;
+}
+
+export interface OrganizerEventOfferBatchReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  requestId: string;
+  requestHash: string;
+  /**
+   * @minItems 1
+   * @maxItems 25
+   */
+  results: {
+    offerId: string;
+    revision: number;
+    generation: number;
+  }[];
+}
+
+export interface OrganizerEventOfferAuditDocument {
+  offerId: string;
+  requestId: string;
+  actorUid: string;
+  kind:
+    | "createDraft"
+    | "reissueDraft"
+    | "offer"
+    | "withdraw"
+    | "expire"
+    | "recordEvidence"
+    | "reconcileEvidence";
+  beforeRevision: number;
+  afterRevision: number;
+  generation: number;
+  atMillis: number;
+  paymentStatus:
+    | "none"
+    | "evidenceSubmitted"
+    | "hostAttestedReceived"
+    | "rejected";
+  bankReceiptChecked: boolean;
+  reviewNote: string | null;
 }
