@@ -342,7 +342,7 @@
       "dartModel": "lib/events/domain/event.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "host creates and edits events through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
-      "read": "public",
+      "read": "published and legacy public events; private events require current organizer manager or active viewRoster staff grant; public lists constrain publicationState",
       "write": "all event writes are callable-owned; direct client writes are denied",
       "exportedFunctions": [
         "createEvent",
@@ -487,6 +487,10 @@
       "migrationNotes": [
         "cancelEvent handles events with history.",
         "deleteEvent hard-deletes only unused hosted events with no participations, payments, or reviews."
+      ],
+      "rulesTestNames": [
+        "protects private event reads by manager and active staff authority",
+        "publication queries cannot include private or unlabelled setup records"
       ]
     },
     {

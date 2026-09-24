@@ -1836,13 +1836,40 @@ service cloud.firestore {
         && request.resource.data.eventId is string
         && request.resource.data.savedAt is timestamp
         && exists(/databases/$(database)/documents/events/$(request.resource.data.eventId))
+        && isPublicEventData(get(/databases/$(database)/documents/events/$(
+          request.resource.data.eventId
+        )).data)
         && savedEventId == savedEventDocId(request.auth.uid, request.resource.data.eventId);
       allow delete: if isAuthed() && resource.data.uid == request.auth.uid;
       allow update: if false;
     }
 
+    // Legacy documents predate progressive setup. A record carrying any new
+    // setup marker must explicitly be published before public reads work.
+    function isPublicEventData(data) {
+      return data.get('publicationState', '') == 'published'
+        || !data.keys().hasAny(['publicationState', 'setupRevision']);
+    }
+
+    function canReadPrivateEvent(eventId, data) {
+      return isAuthed()
+        && !isDeletedUser(request.auth.uid)
+        && data.get('publicationState', '') == 'private'
+        && data.get('organizerId', '') is string
+        && data.get('organizerId', '') == data.get('clubId', '')
+        && (
+          isClubHostForEvent(eventId)
+          || hasActiveEventOperatorGrant(eventId, 'viewRoster')
+        );
+    }
+
     match /events/{eventId} {
-      allow read: if true;
+      allow get: if isPublicEventData(resource.data)
+        || canReadPrivateEvent(eventId, resource.data);
+      // Key-absence legacy fallback is not a safe list predicate: callers
+      // must constrain publication explicitly rather than filter afterwards.
+      allow list: if resource.data.publicationState == 'published'
+        || canReadPrivateEvent(eventId, resource.data);
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.

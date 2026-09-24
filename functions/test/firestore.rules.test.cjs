@@ -1,3 +1,4 @@
+const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const {after, before, beforeEach, describe, it} = require("node:test");
@@ -3109,6 +3110,54 @@ describe("firestore.rules", () => {
   });
 
   describe("events", () => {
+    it("protects private event reads by manager and active staff authority", async () => {
+      await seed(["organizers", "club-1"], club());
+      await seed(["events", "event-1"], event({publicationState: "private", setupRevision: 1}));
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await assertFails(getDoc(doc(anonymous, "events", "event-1")));
+      await assertFails(getDoc(doc(authedDb("foreign-host"), "events", "event-1")));
+      await assertSucceeds(getDoc(doc(authedDb("host-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant());
+      await assertSucceeds(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({status: "revoked"}));
+      await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({expiresAt: Timestamp.fromMillis(1)}));
+      await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["deletedUsers", "host-1"], {});
+      await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
+    });
+
+    it("publication queries cannot include private or unlabelled setup records", async () => {
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await seed(["events", "published"], event({publicationState: "published"}));
+      await seed(["events", "legacy"], event());
+      await seed(["events", "private"], event({publicationState: "private", setupRevision: 1}));
+      await seed(["events", "unlabelled"], event({setupRevision: 1}));
+      await seed(["events", "malformed"], event({publicationState: null}));
+      for (const id of ["published", "legacy"]) {
+        await assertSucceeds(getDoc(doc(anonymous, "events", id)));
+      }
+      for (const id of ["private", "unlabelled", "malformed"]) {
+        await assertFails(getDoc(doc(anonymous, "events", id)));
+      }
+      await assertFails(getDocs(collection(anonymous, "events")));
+      await assertFails(getDocs(query(collection(anonymous, "events"), where("organizerId", "==", "club-1"))));
+      const published = await assertSucceeds(getDocs(query(collection(anonymous, "events"), where("publicationState", "==", "published"))));
+      assert.equal(published.size, 1);
+      assert.equal(published.docs[0].id, "published");
+    });
+
+    it("private event cannot be bookmarked by guessing its ID", async () => {
+      await seed(["events", "public"], event({publicationState: "published"}));
+      await assertSucceeds(setDoc(doc(authedDb("guest-1"), "savedEvents", "guest-1_public"), {
+        uid: "guest-1", eventId: "public", savedAt: Timestamp.now(),
+      }));
+      await seed(["events", "private"], event({publicationState: "private", setupRevision: 1}));
+      await assertFails(setDoc(doc(authedDb("guest-1"), "savedEvents", "guest-1_private"), {
+        uid: "guest-1", eventId: "private", savedAt: Timestamp.now(),
+      }));
+    });
+
     it("denies direct event creates because creation is callable-owned", async () => {
       await seed(["organizers", "club-1"], club());
 

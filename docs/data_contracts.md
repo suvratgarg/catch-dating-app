@@ -1788,9 +1788,17 @@ authority. It cannot expose private payment settings. Basic date/city edits
 check roster, import, participation, waitlist, offer and payment commitments
 inside the same transaction before changing the canonical event.
 
+Event rules now distinguish direct reads from lists. Public list queries must
+constrain publicationState to published; a missing-field legacy fallback must
+never authorize a collection scan. Individual legacy document reads remain
+compatible only when neither publicationState nor setupRevision exists.
+Private event reads require a current organizer manager or active viewRoster
+staff grant; deleted users, foreign tenants and expired/revoked staff grants
+are denied. Consumer bookmarks cannot target private events.
+
 These contracts and services are not rollout authorization. Private persistence
-remains disabled until the canonical document schema, Firestore rules and
-public query migration have passed their integrated privacy checks.
+remains disabled until the explicit legacy publication backfill, all public
+readers/search projections and integrated privacy checks are complete.
 
 The offer picker uses `listOfferEventTargets` for both private and already
 published owned events, including valid rich legacy events. The bounded index
