@@ -16,11 +16,9 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_workspace.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -454,33 +452,9 @@ class _PrivateEventCreateScreenState
         _submittedSignature = null;
         _submittedPayloadJson = null;
       }
-      final cause = error is AppException ? error.cause : error;
-      if (requestSent &&
-          cause is FirebaseFunctionsException &&
-          const {
-            'invalid-argument',
-            'failed-precondition',
-            'permission-denied',
-            'unauthenticated',
-            'out-of-range',
-            'aborted',
-          }.contains(cause.code)) {
-        // These are definitive pre-commit rejections from the setup command.
-        // The user may correct the fields with a fresh request identity.
-        final previousRequestId = _requestId;
-        _submittedSignature = null;
-        _submittedPayloadJson = null;
-        _requestId = _newRequestId();
-        try {
-          await _persistDraft();
-        } catch (_) {
-          // Retain the original request identity in this session if local
-          // storage failed; a retry still uses the same operation.
-          _requestId = previousRequestId;
-          _submittedSignature = signature;
-          _submittedPayloadJson = signature;
-        }
-      }
+      // Even an authorization or validation response cannot prove this
+      // request never committed: an earlier response may have been lost.
+      // Keep the exact request and body until an authoritative receipt arrives.
       setState(
         () => _error = appErrorMessage(
           error,

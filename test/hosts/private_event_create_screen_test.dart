@@ -3,6 +3,7 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -154,13 +155,21 @@ void main() {
     // Reopening the draft after an uncertain response retains the exact
     // request even if the organizer's defaults and form values change.
     await tester.pumpWidget(const SizedBox.shrink());
+    var replayAttempts = 0;
     await tester.pumpWidget(app(saved.copyWith(name: 'Edited after failure'), ({
       required organizerId,
       required requestId,
       required basics,
     }) async {
+      replayAttempts += 1;
       expect(requestId, firstRequestId);
       expect(basics.toJson(), firstPayload);
+      if (replayAttempts == 1) {
+        throw FirebaseFunctionsException(
+          code: 'permission-denied',
+          message: 'Manager access changed',
+        );
+      }
       return const PrivateEventCreateReceipt(
         eventId: 'event-1',
         setupRevision: 1,
@@ -170,11 +179,20 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('private-event-save')));
     await pumpFeatureUi(tester);
+    final stillPending = EventDraft.listFromJson(
+      prefs.getString('event_drafts_club-1_host-1')!,
+    ).single;
+    expect(stillPending.eventCreateRequestId, firstRequestId);
+    expect(jsonDecode(stillPending.eventCreatePayloadJson!), firstPayload);
+    expect(stillPending.eventCreateReceiptEventId, isNull);
+    await tester.tap(find.byKey(const ValueKey('private-event-save')));
+    await pumpFeatureUi(tester);
     final completed = EventDraft.listFromJson(
       prefs.getString('event_drafts_club-1_host-1')!,
     ).single;
     expect(completed.eventCreateReceiptEventId, 'event-1');
     expect(completed.eventCreateReceiptRevision, 1);
+    expect(replayAttempts, 2);
     expect(find.text('Private'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
