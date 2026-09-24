@@ -32,7 +32,6 @@ void showCatchNotice(
           actionLabel: actionLabel,
           onAction: onAction,
           dedupeKey: stableDedupeKey,
-          priority: -1,
         ),
       );
 }
@@ -63,7 +62,6 @@ void showCatchNoticeError(
           actionLabel: onRetry == null ? null : descriptor.retryLabel,
           onAction: onRetry,
           dedupeKey: errorDedupeKey,
-          priority: -1,
         ),
       );
 }
