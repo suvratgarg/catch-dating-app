@@ -289,8 +289,7 @@ Future<void> pumpConsumerMatchChat(
           'runner-2',
         ).overrideWith((ref) => Stream.value(otherProfile)),
       ],
-      child: MaterialApp(
-        builder: catchNoticeOverlayBuilder,
+      child: CatchNoticeTestApp(
         theme: AppTheme.light,
         home: ChatScreen(
           matchId: 'match-1',
@@ -1089,9 +1088,8 @@ void main() {
               FakeConversationRepository(),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            home: Consumer(
+          child: CatchNoticeTestApp(
+                home: Consumer(
               builder: (context, ref, child) {
                 state = ref.watch(
                   chatRouteStateProvider(
@@ -1157,9 +1155,8 @@ void main() {
               'guest-1',
             ).overrideWith((ref) => Stream.value(profile)),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            home: Consumer(
+          child: CatchNoticeTestApp(
+                home: Consumer(
               builder: (context, ref, child) {
                 state = ref.watch(
                   chatRouteStateProvider(
@@ -1211,9 +1208,8 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
         ),
@@ -1249,9 +1245,8 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
         ),
@@ -1288,9 +1283,8 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(
               matchId: 'match-1',
               initialDraftText: 'Holding this draft for review.',
@@ -1345,9 +1339,8 @@ void main() {
               'event-1',
             ).overrideWith((ref) => Stream.value(null)),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(matchId: 'match-1'),
           ),
         ),
@@ -1379,9 +1372,8 @@ void main() {
               'event-1',
             ).overrideWith((ref) => Stream.value(null)),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1581,9 +1573,8 @@ void main() {
               'event-1',
             ).overrideWith((ref) => Stream.value(null)),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1633,9 +1624,8 @@ void main() {
               );
             }),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1675,9 +1665,8 @@ void main() {
               conversationRepository,
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1751,9 +1740,8 @@ void main() {
                 ),
               ),
             ],
-            child: MaterialApp(
-              builder: catchNoticeOverlayBuilder,
-              theme: AppTheme.light,
+            child: CatchNoticeTestApp(
+                    theme: AppTheme.light,
               home: const ChatScreen(matchId: 'host-inquiry-1'),
             ),
           ),
@@ -1814,9 +1802,8 @@ void main() {
               'event-1',
             ).overrideWith((ref) => Stream.value(null)),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: ChatScreen(
               matchId: 'match-1',
               otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -1882,9 +1869,8 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
         ),
@@ -1946,9 +1932,8 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
         ),
@@ -2014,9 +1999,8 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            builder: catchNoticeOverlayBuilder,
-            theme: AppTheme.light,
+          child: CatchNoticeTestApp(
+                theme: AppTheme.light,
             home: const ChatScreen(matchId: 'host-inquiry-1'),
           ),
         ),
