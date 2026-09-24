@@ -474,7 +474,7 @@ Unmerged branches (all rebased onto current `main` 2026-09-24):
 | `codex/program-schedule-domain-20260922` | `functions/src/programSchedule`: timeline ordering, overlap/gap detection, tz day grouping, live-function + late-arrival classification, itineraries, headcounts, `.ics` serializer. 26 tests | Verified on new main; consumed by W1/W3/W4 |
 | `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables, admin finance panel, `programLimits` usage/capability evaluator (13 tests) | Verified on new main; merge-ready |
 | `codex/program-rsvp-domain-20260924` | `functions/src/programRsvp` (W3 core): effective invite-set resolution, RSVP rollups (attending>maybe>pending>declined), conversion write plans into `programFunctionGuests`, HMAC household link tokens, `resolveProgramSelection` campaign recipients. 42 tests | New; wired by W3 callables/web page + campaign dispatcher |
-| `codex/host-work-domain-20260924` | `functions/src/hostWork` (W2 core): duty→destination map for the widened duty union + `eventLead`, shell-mode resolution (task/tabs/programWorkspace), assignment projection with expiry, event-role→duty mapping. 18 tests | New; wired by `HostWorkAssignment` DTO + shell |
+| `codex/host-work-domain-20260924` | `functions/src/hostWork` (W2): duty→destination map for the widened duty union + `eventLead`, shell-mode resolution, event-role→duty mapping; **`listMyHostAssignments` callable** + shared `host_work`/payload/response contracts — unified projection over `programStaffGrants`+`eventStaffGrants`, manager/staff/none shell entry, `includeExpired` history. 25 tests | Callable verified (full `check_data_contract.sh` green); remaining: `HostWorkShell` UI + `/host/operator/:eventId` redirect |
 | `codex/wedding-preset-domain-20260924` | `functions/src/programs/weddingPreset` (W1): five-function wedding preset (Mehndi/Haldi/Sangeet/Ceremony/Reception) with dress codes + instructions, capability list, deterministic day-offset materialization. 7 tests | New; consumed by create-program flow |
 | `codex/door-journal-domain-20260924` | `functions/src/doorJournal` (W2): durable check-in journal — deterministic idempotent journal ids, transition rules (checkIn/undo/noShow/walkIn/partySizeAdjust), order-insensitive projection to per-function counts, dedupe. 21 tests | New; wired by door ops + dispatch journal writes |
 
@@ -484,48 +484,33 @@ wider `programStaffDuty` values + `functionIds` scope (staff invites mirror
 the same enum — widen both), `programHouseholds.side`, campaign
 `recipientSource`.
 
-W0 progress: schema edits, fixtures and manifest registration are committed
-on `codex/w0-program-contract-corrections` (schemas verified with ajv: all
-compile, fixtures accept/reject correctly). Deferred while the RSVP
-integration claim holds the toolchain: the `firestore.rules` block,
-generated outputs regen, `docs/data_contracts.md` rows, and the
-`programSelection` recipient resolver inside the campaign dispatcher
-(`organizerCampaigns.ts` is claimed). Finish via `worktree_guard.mjs scope`
-on the W0 worktree, then run `./tool/check_data_contract.sh`.
+W0 status: **complete** on `codex/w0-program-contract-corrections`
+(rebased post-#424). Schemas, fixtures, manifest, the `firestore.rules`
+`programFunctionGuests` deny block, generated outputs regen, and
+`docs/data_contracts.md` rows all committed; `check_data_contract.sh`
+green. No composite index was needed (equality-only queries). Open follow-
+up: `recipientSource.kind: programSelection` is document-schema only — the
+campaign upsert payload cannot set it yet and `organizerCampaigns.ts` does
+not materialize program recipients. The `resolveProgramSelection` resolver
+lives on `codex/program-rsvp-domain-20260924`; dispatcher wiring is the W4
+slice.
 
-Exact rules block to insert between `programGuests` and `programHouseholds`
-matches (same deny-by-default pattern as every program collection):
+Current blockers (claims measured after #424 merged):
 
-```
-    match /programFunctionGuests/{functionGuestId} {
-      allow read, write: if false;
-    }
-```
-
-No composite index is needed: planned queries are equality-only
-(`programId`, `functionId`, `guestId`) and no program collection carries an
-indexes entry.
-
-Current blockers (claims measured 2026-09-24):
-
-- `codex/rsvp-reviewed-integration-20260923` is pushed and open as **PR
-  #424** ("Complete RSVP profile, consent, review, room and matching
-  integration", 180 commits ahead). Its worktree still claims 589 paths:
-  `firestore.rules`, `firestore.indexes.json`,
-  `tool/contracts/generate_schema_contracts.mjs`, the generated schema
-  registries, `functions/src/index.ts`, `lib/routing/go_router.dart`,
-  `design/screens/catch.screens.json`, and the campaign/RSVP organizers
-  files. All contract changes and route/screen registration wait on its
-  merge or claim release.
-- Former secondary blockers released: `unified-response-backend` and
-  `audience-directory-consistency` no longer hold claims (their work
-  merged as #405/#402); `nontext-field-lifecycle-20260923` holds 14
-  unrelated `packages/catch_ui`/profile paths.
-- Free for use now: `lib/programs`, `functions/src/programs`,
-  `functions/src/transport`, `functions/src/moments`,
-  `functions/src/programSchedule`, `functions/src/programRsvp`,
-  `functions/src/hostWork`, `functions/src/doorJournal`, `widgetbook`
-  program use-cases, and all program-scoped contract JSONs.
+- The shared surface is free — PR #424's claim was released. Contracts,
+  generated registries, `index.ts`, routing, and screen JSON are
+  claimable again.
+- `codex/route-shells-20260924` holds `lib/routing`, `lib/hosts`,
+  `lib/programs`, `design/screens`, `test` — the W1/W2 client lane (work
+  shell + `/host/operator` redirect) waits on it or coordinates inside it.
+- `nontext-field-lifecycle-20260923` holds 14 unrelated
+  `packages/catch_ui`/profile paths.
+- Free for use now: `functions/src/programs`, `functions/src/transport`,
+  `functions/src/moments`, `functions/src/programSchedule`,
+  `functions/src/programRsvp`, `functions/src/hostWork`,
+  `functions/src/doorJournal`, `functions/src/organizers` (campaign
+  dispatcher), `firestore.rules`, `contracts/**`, generated dirs,
+  `widgetbook` program use-cases.
 - WhatsApp template bodies are provider-side (Meta) artifacts; the moment
   template keys (`program_function_starting`, `program_get_ready`,
   `program_transport_ready`, `program_rsvp_deadline_reminder`) each need an
