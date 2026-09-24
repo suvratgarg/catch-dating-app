@@ -35,6 +35,10 @@ function row(id: string, answers: ResponseQueryRow["answers"],
       searchName: "guest", origin: "respondentGranted"}, answers};
 }
 
+function source(rows: ResponseQueryRow[], formTitle = "Form") {
+  return {readAll: async () => ({rows, formTitle, version: 1, definition})};
+}
+
 test("ALL/ANY typed filters share exact page and selected IDs", async () => {
   const predicate = {all: [
     {questionId: "city", op: "choiceAny", values: ["Delhi"]},
@@ -48,13 +52,13 @@ test("ALL/ANY typed filters share exact page and selected IDs", async () => {
   const reordered = compileResponseQuery({...input, predicate: {all: [
     predicate.all[1], predicate.all[0]]}}, definition);
   assert.equal(query.hash, reordered.hash);
-  const source = {readAll: async () => [
+  const rows = [
     row("c", {city: "Delhi", age: 25}),
     row("b", {city: "Delhi", age: 25}),
     row("a", {city: "Delhi", age: 50, note: "art show"}),
     row("z", {city: "Mumbai", age: 22}),
-  ]};
-  const result = await materializeResponseQuery(query, source);
+  ];
+  const result = await materializeResponseQuery(query, source(rows));
   assert.deepEqual(result.selectedIds, ["b", "c", "a"]);
   const first = pageResponseQuery(query, result);
   assert.deepEqual(first.items.map((item) => item.id), ["b", "c"]);
@@ -76,14 +80,14 @@ test("ALL/ANY typed filters share exact page and selected IDs", async () => {
   cursor: first.nextCursor}, definition);
   assert.throws(() => pageResponseQuery(changed, result),
     {code: "invalid-argument"});
-  const stale = await materializeResponseQuery(query, {readAll: async () =>
-    [...await source.readAll(), row("new", {city: "Delhi", age: 21})]});
+  const stale = await materializeResponseQuery(query, source([
+    ...rows, row("new", {city: "Delhi", age: 21})]));
   assert.throws(() => pageResponseQuery(next, stale),
     {code: "invalid-argument", message: /Refresh/u});
-  const changedDisplay = await materializeResponseQuery(query, source,
-    {formTitle: "Renamed", version: 1});
-  const oldDisplay = await materializeResponseQuery(query, source,
-    {formTitle: "Before", version: 1});
+  const changedDisplay = await materializeResponseQuery(query,
+    source(rows, "Renamed"));
+  const oldDisplay = await materializeResponseQuery(query,
+    source(rows, "Before"));
   assert.notEqual(changedDisplay.resultHash, oldDisplay.resultHash);
 });
 
@@ -97,7 +101,7 @@ test("typed operators, missingness and withdrawn privacy", async () => {
   const select = async (predicate: unknown, statuses = ["submitted"]) => {
     const query = compileResponseQuery({...base, statuses, predicate},
       definition);
-    return (await materializeResponseQuery(query, {readAll: async () => rows}))
+    return (await materializeResponseQuery(query, source(rows)))
       .selectedIds;
   };
   assert.deepEqual(await select({questionId: "interests", op: "choiceAll",
@@ -116,13 +120,12 @@ test("typed operators, missingness and withdrawn privacy", async () => {
     values: ["Delhi"]}, ["withdrawn"]), []);
   const historyQuery = compileResponseQuery({...base,
     statuses: ["withdrawn"]}, definition);
-  const history = await materializeResponseQuery(historyQuery,
-    {readAll: async () => rows});
+  const history = await materializeResponseQuery(historyQuery, source(rows));
   assert.deepEqual(history.selectedIds, ["withdrawn"]);
   assert.deepEqual(history.rows[0].answers, {});
   assert.ok(!JSON.stringify(history).includes("never expose me"));
   assert.ok(!JSON.stringify(await materializeResponseQuery(
-    compileResponseQuery(base, definition), {readAll: async () => rows}))
+    compileResponseQuery(base, definition), source(rows)))
     .includes("submitted secret"));
   assert.ok(!responseQueryFieldCatalog(definition).some((field) =>
     field.questionId === "secret"));
@@ -135,8 +138,7 @@ test("answer sort is stable across nulls, zero and both directions",
     for (const direction of ["asc", "desc"]) {
       const query = compileResponseQuery({...base,
         sort: {questionId: "age", direction, nulls: "first"}}, definition);
-      const result = await materializeResponseQuery(query,
-        {readAll: async () => rows});
+      const result = await materializeResponseQuery(query, source(rows));
       const expected = direction === "asc" ?
         ["null", "zero", "same-a", "same-b"] :
         ["null", "same-a", "same-b", "zero"];
@@ -171,12 +173,13 @@ test("invalid fields, types and scan budget fail closed", async () => {
     sort: {...base.sort, questionId: "secret"}}, definition),
   {code: "invalid-argument"});
   await assert.rejects(materializeResponseQuery(query, {readAll: async (
-    maxRows) => Array.from({length: maxRows + 1}, (_, index) =>
-    row(String(index), {}))}), {code: "resource-exhausted"});
-  await assert.rejects(materializeResponseQuery(query, {readAll: async () =>
-    [{...row("foreign", {}), organizerId: "org-2"}]}),
+    maxRows) => ({rows: Array.from({length: maxRows + 1}, (_, index) =>
+    row(String(index), {})), formTitle: "Form", version: 1, definition})}),
+  {code: "resource-exhausted"});
+  await assert.rejects(materializeResponseQuery(query, source(
+    [{...row("foreign", {}), organizerId: "org-2"}])),
   {code: "permission-denied"});
-  await assert.rejects(materializeResponseQuery(query, {readAll: async () =>
-    [row("large", {note: "x".repeat(8 * 1024 * 1024)})]}),
+  await assert.rejects(materializeResponseQuery(query, source(
+    [row("large", {note: "x".repeat(8 * 1024 * 1024)})])),
   {code: "resource-exhausted", message: /8 MiB/u});
 });

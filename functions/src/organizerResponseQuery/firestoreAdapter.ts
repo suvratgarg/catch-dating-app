@@ -7,7 +7,7 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {requireDoc} from "../shared/validation";
 import {compileResponseQuery, materializeResponseQuery, pageResponseQuery,
-  resolveSelectedResponseIds, responseQueryFieldCatalog} from "./query";
+  resolveSelectedResponseIds} from "./query";
 import type {ResponseQueryRow, ResponseQuerySource} from "./query";
 
 interface Scope {
@@ -36,7 +36,8 @@ export interface ResponseQueryDisplayRow {
 
 export interface ResponseQueryPage {
   form: {formId: string; title: string; versionId: string; version: number};
-  fieldCatalog: ReturnType<typeof responseQueryFieldCatalog>;
+  fieldCatalog: Awaited<ReturnType<typeof materializeResponseQuery>>[
+    "fieldCatalog"];
   items: ResponseQueryDisplayRow[];
   total: number;
   nextCursor: string | null;
@@ -58,17 +59,28 @@ export function firestoreResponseQuerySource(scope: Scope):
   return {readAll: (maxRows) => scope.db.runTransaction(async (tx) => {
     await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
       organizerId: scope.organizerId, transaction: tx});
-    const versionSnap = await tx.get(scope.db
-      .collection("organizerFormVersions").doc(scope.versionId));
+    const [versionSnap, formSnap] = await Promise.all([
+      tx.get(scope.db.collection("organizerFormVersions")
+        .doc(scope.versionId)),
+      tx.get(scope.db.collection("organizerForms").doc(scope.formId)),
+    ]);
     if (!versionSnap.exists) {
       throw new HttpsError("not-found", "Published form version not found.");
     }
+    if (!formSnap.exists) {
+      throw new HttpsError("not-found", "Form not found.");
+    }
     const version = requireDoc<OrganizerFormVersionDocument>(versionSnap,
       "OrganizerFormVersionDocument");
+    const form = requireDoc<OrganizerFormDocument>(formSnap,
+      "OrganizerFormDocument");
     if (version.organizerId !== scope.organizerId ||
-        version.formId !== scope.formId) {
+        version.formId !== scope.formId ||
+        form.organizerId !== scope.organizerId) {
       throw new HttpsError("not-found", "Published form version not found.");
     }
+    const metadata = {formTitle: form.title, version: version.version,
+      definition: version.definition};
     const rows: ResponseQueryRow[] = [];
     let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
     let bytes = 0;
@@ -117,11 +129,12 @@ export function firestoreResponseQuerySource(scope: Scope):
           identityKind: response.identityKind, identity: response.identity,
           sourceLinkId: response.sourceLinkId,
           answers: response.answers});
-        if (rows.length > maxRows) return rows;
+        if (rows.length > maxRows) return {...metadata, rows};
       }
       if (page.size < limit) break;
     }
-    return rows.filter((row) => row.versionId === scope.versionId);
+    return {...metadata, rows: rows.filter((row) =>
+      row.versionId === scope.versionId)};
   }, {readOnly: true})};
 }
 
@@ -129,23 +142,15 @@ export function firestoreResponseQuerySource(scope: Scope):
 async function prepare(scope: Scope, input: unknown) {
   await requireOrganizerManager({db: scope.db, actorUid: scope.actorUid,
     organizerId: scope.organizerId});
-  const [versionSnap, formSnap] = await Promise.all([
-    scope.db.collection("organizerFormVersions").doc(scope.versionId).get(),
-    scope.db.collection("organizerForms").doc(scope.formId).get(),
-  ]);
+  const versionSnap = await scope.db.collection("organizerFormVersions")
+    .doc(scope.versionId).get();
   if (!versionSnap.exists) {
     throw new HttpsError("not-found", "Published form version not found.");
   }
   const version = requireDoc<OrganizerFormVersionDocument>(versionSnap,
     "OrganizerFormVersionDocument");
-  if (!formSnap.exists) {
-    throw new HttpsError("not-found", "Form not found.");
-  }
-  const form = requireDoc<OrganizerFormDocument>(formSnap,
-    "OrganizerFormDocument");
   if (version.organizerId !== scope.organizerId ||
-      version.formId !== scope.formId ||
-      form.organizerId !== scope.organizerId) {
+      version.formId !== scope.formId) {
     throw new HttpsError("not-found", "Published form version not found.");
   }
   const query = compileResponseQuery(input, version.definition);
@@ -155,22 +160,21 @@ async function prepare(scope: Scope, input: unknown) {
     throw new HttpsError("permission-denied",
       "Response query scope does not match its authority.");
   }
-  return {query, form, version};
+  return query;
 }
 
 export async function runFirestoreResponseQuery(scope: Scope,
   input: unknown): Promise<ResponseQueryPage> {
-  const {query, form, version} = await prepare(scope, input);
+  const query = await prepare(scope, input);
   const result = await materializeResponseQuery(query,
-    firestoreResponseQuerySource(scope),
-    {formTitle: form.title, version: version.version});
+    firestoreResponseQuerySource(scope));
   const page = pageResponseQuery(query, result);
   return {...page, items: page.items.map((row) => ({
     responseId: row.id,
     formId: row.formId,
-    formTitle: form.title,
+    formTitle: result.formTitle,
     versionId: row.versionId,
-    version: version.version,
+    version: result.version,
     status: row.status,
     identityKind: row.identityKind,
     identity: {displayName: row.identity.displayName,
@@ -179,9 +183,9 @@ export async function runFirestoreResponseQuery(scope: Scope,
     sourceLinkId: row.sourceLinkId,
     submittedAtMillis: row.submittedAtMillis,
     withdrawnAtMillis: row.withdrawnAtMillis,
-  })), form: {formId: scope.formId, title: form.title,
-    versionId: scope.versionId, version: version.version},
-  fieldCatalog: responseQueryFieldCatalog(version.definition),
+  })), form: {formId: scope.formId, title: result.formTitle,
+    versionId: scope.versionId, version: result.version},
+  fieldCatalog: result.fieldCatalog,
   selectedIds: result.selectedIds,
   queryHash: query.hash, resultHash: result.resultHash};
 }
@@ -189,10 +193,9 @@ export async function runFirestoreResponseQuery(scope: Scope,
 /** Re-evaluates current results before acting on explicit selected IDs. */
 export async function resolveFirestoreResponseIds(scope: Scope,
   input: unknown, requestedIds: string[], expectedResultHash: string) {
-  const {query, form, version} = await prepare(scope, input);
+  const query = await prepare(scope, input);
   const result = await materializeResponseQuery(query,
-    firestoreResponseQuerySource(scope),
-    {formTitle: form.title, version: version.version});
+    firestoreResponseQuerySource(scope));
   return resolveSelectedResponseIds(query, result, requestedIds,
     expectedResultHash);
 }
