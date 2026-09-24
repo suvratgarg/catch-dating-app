@@ -6,6 +6,8 @@ import {planEventSeatMigration, SeatMigrationAttendee,
   SeatMigrationFormReceipt, SeatMigrationParticipation,
   SeatMigrationVerifiedPhone} from "./seatMigration";
 import {seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
+import {normalizeRosterPhone} from "./eventAttendees";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 
 /** Conservative single-transaction bootstrap limit, not event capacity. */
 export const SEAT_BOOTSTRAP_SOURCE_LIMIT = 40;
@@ -14,6 +16,9 @@ const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
 
 export interface SeatMigrationStoreDependencies {
   db: FirebaseFirestore.Firestore;
+  /** Firebase Admin Auth, never a client or users/{uid} phone assertion. */
+  auth: {getUser: (uid: string) => Promise<{uid: string;
+    phoneNumber?: string | null}>};
   /** Trusted deployment dependency; absent means no bootstrap. */
   allWritersIntegrated?: () => boolean;
 }
@@ -62,7 +67,7 @@ function formReceipt(raw: FirebaseFirestore.DocumentData,
 
 /**
  * Server-only initial bootstrap. A caller still owns rollout, source-writer
- * migration, index installation and an authenticated Auth-proof producer.
+ * migration and index installation. Auth is re-read before readiness.
  */
 export async function bootstrapEventSeatLedger(params: {
   command: SeatMigrationBootstrapCommand;
@@ -82,7 +87,7 @@ export async function bootstrapEventSeatLedger(params: {
     unavailable("Seat writers are not integrated.");
   }
   const {db} = deps;
-  return db.runTransaction(async (tx) => {
+  const staged = await db.runTransaction(async (tx) => {
     const eventRef = db.collection("events").doc(command.eventId);
     const ledgerRef = db.collection("eventSeatLedgers")
       .doc(command.eventId);
@@ -99,14 +104,12 @@ export async function bootstrapEventSeatLedger(params: {
     if (ledgerSnap.exists) {
       unavailable("Existing seat ledger needs reconciliation, not bootstrap.");
     }
-    const [participationDocs, attendeeDocs, proofDocs, originDocs,
+    const [participationDocs, attendeeDocs, originDocs,
       receiptDocs] = await Promise.all([
       completeQuery(tx, db.collection("eventParticipations")
         .where("eventId", "==", command.eventId), "Participations"),
       completeQuery(tx, db.collection("eventAttendees")
         .where("eventId", "==", command.eventId), "Attendees"),
-      completeQuery(tx, db.collection("eventSeatVerifiedAuthEvidence")
-        .where("eventId", "==", command.eventId), "Auth proofs"),
       completeQuery(tx, db.collection("organizerContactOrigins")
         .where("organizerId", "==", command.organizerId), "CRM origins"),
       completeQuery(tx, db.collection("organizerFormConversionReceipts")
@@ -118,18 +121,14 @@ export async function bootstrapEventSeatLedger(params: {
       SeatMigrationParticipation);
     const attendees = attendeeDocs.map((doc) =>
       ({...doc.data(), id: doc.id} as SeatMigrationAttendee));
-    const verifiedPhones: SeatMigrationVerifiedPhone[] = proofDocs.map(
-      (doc) => {
-        const raw = doc.data();
-        if (raw.eventId !== command.eventId ||
-            raw.organizerId !== command.organizerId ||
-            raw.state !== "current" || raw.source !== "firebaseAuth" ||
-            doc.id !== seatVerifiedPhoneProofId(command.eventId, raw.uid)) {
-          unavailable("Verified Auth source is unavailable.");
-        }
-        return {uid: raw.uid, phoneE164: raw.phoneE164,
-          verifiedByAuth: true};
-      });
+    const uids = [...new Set([...participations.map((row) => row.uid),
+      ...attendees.map((row) => row.linkedUid)
+        .filter((uid): uid is string => uid !== null)])].sort();
+    if (uids.length > SEAT_BOOTSTRAP_SOURCE_LIMIT ||
+        uids.some((uid) => !ID.test(uid))) {
+      unavailable("Auth identity source exceeds bootstrap limit.");
+    }
+    const verifiedPhones = await currentAuthSnapshot(deps.auth, uids);
     const origins = originDocs.map((doc) =>
       ({...doc.data(), id: doc.id} as SeatMigrationContactOrigin));
     const receipts = receiptDocs.map((doc) =>
@@ -179,7 +178,8 @@ export async function bootstrapEventSeatLedger(params: {
     if (deps.allWritersIntegrated?.() !== true) {
       unavailable("Seat writers are not integrated.");
     }
-    tx.create(ledgerRef, plan.ledger);
+    // No resolver can use these records until Auth is revalidated below.
+    tx.create(ledgerRef, {...plan.ledger, state: "unreconciled"});
     for (const reservation of plan.reservations) {
       tx.create(db.collection("eventSeatReservations").doc(reservation.id),
         reservation.value);
@@ -194,6 +194,56 @@ export async function bootstrapEventSeatLedger(params: {
       proof);
     }
     return {eventId: command.eventId, occupied: plan.ledger.occupied,
-      migrationRevision: command.migrationRevision};
+      migrationRevision: command.migrationRevision,
+      verifiedPhones, policyHash: plan.ledger.policyHash};
+  });
+  const current = await currentAuthSnapshot(deps.auth,
+    staged.verifiedPhones.map((proof) => proof.uid));
+  if (JSON.stringify(current) !== JSON.stringify(staged.verifiedPhones)) {
+    unavailable("Auth identity changed during bootstrap; reconcile first.");
+  }
+  await db.runTransaction(async (tx) => {
+    const eventSnap = await tx.get(db.collection("events")
+      .doc(command.eventId));
+    const ledgerRef = db.collection("eventSeatLedgers").doc(command.eventId);
+    const ledgerSnap = await tx.get(ledgerRef);
+    const event = eventSnap.data();
+    const ledger = ledgerSnap.data();
+    if (!event || !validateEventDocument(event) ||
+        event.clubId !== command.organizerId ||
+        event.organizerId !== undefined &&
+          event.organizerId !== command.organizerId ||
+        !ledger || ledger.state !== "unreconciled" ||
+        ledger.eventId !== command.eventId ||
+        ledger.migrationRevision !== command.migrationRevision ||
+        ledger.occupied !== staged.occupied ||
+        ledger.policyHash !== staged.policyHash ||
+        deriveEventSeatPolicy(event).policyHash !== staged.policyHash ||
+        deps.allWritersIntegrated?.() !== true) {
+      unavailable("Seat source changed before activation.");
+    }
+    tx.update(ledgerRef, {state: "ready"});
+  });
+  return {eventId: staged.eventId, occupied: staged.occupied,
+    migrationRevision: staged.migrationRevision};
+}
+
+async function currentAuthSnapshot(
+  auth: SeatMigrationStoreDependencies["auth"], uids: string[]
+): Promise<SeatMigrationVerifiedPhone[]> {
+  const records = await Promise.all(uids.map((uid) => auth.getUser(uid)));
+  return records.map((record, index) => {
+    if (record.uid !== uids[index]) {
+      unavailable("Auth UID source changed.");
+    }
+    const phone = record.phoneNumber ?? null;
+    if (phone !== null) {
+      const normalized = normalizeRosterPhone(phone);
+      if (normalized.issue || normalized.value !== phone) {
+        unavailable("Auth verified phone is malformed.");
+      }
+    }
+    return {uid: record.uid, phoneE164: phone,
+      verifiedByAuth: true};
   });
 }

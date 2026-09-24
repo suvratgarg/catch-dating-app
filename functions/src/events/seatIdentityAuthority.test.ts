@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {createHash} from "crypto";
+import {Timestamp} from "firebase-admin/firestore";
 import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
-  seatVerifiedPhoneProofId, SeatIdentityAuthorityError} from
+  seatVerifiedPhoneProofId, SeatIdentityAuthorityError,
+  linkVerifiedUidToGuestSeat} from
   "./seatIdentityAuthority";
+import {eventAttendeeId} from "./eventAttendees";
 
 type Row = Record<string, unknown>;
 type Subject = Parameters<FirestoreSeatIdentityAuthority["resolve"]>[0][
@@ -20,6 +23,7 @@ function hash(kind: string, value: string) {
 class FakeStore {
   rows = new Map<string, Row>();
   reads: string[] = [];
+  writes: string[] = [];
   collection(name: string) {
     return {doc: (id: string) => ({path: `${name}/${id}`})};
   }
@@ -28,6 +32,28 @@ class FakeStore {
       this.reads.push(ref.path);
       return {data: () => this.rows.get(ref.path)};
     }} as unknown as FirebaseFirestore.Transaction;
+  }
+  writeTx() {
+    const pending: Array<() => void> = [];
+    const tx = {
+      get: async (ref: {path: string}) => {
+        assert.equal(pending.length, 0, "all reads precede writes");
+        this.reads.push(ref.path);
+        const value = this.rows.get(ref.path);
+        return {exists: value !== undefined, data: () => value};
+      },
+      create: (ref: {path: string}, value: Row) => pending.push(() => {
+        assert.equal(this.rows.has(ref.path), false);
+        this.rows.set(ref.path, value);
+        this.writes.push(ref.path);
+      }),
+      update: (ref: {path: string}, value: Row) => pending.push(() => {
+        assert.equal(this.rows.has(ref.path), true);
+        this.rows.set(ref.path, {...this.rows.get(ref.path), ...value});
+        this.writes.push(ref.path);
+      }),
+    } as unknown as FirebaseFirestore.Transaction;
+    return {tx, commit: () => pending.forEach((write) => write())};
   }
   db() {
     return this as unknown as FirebaseFirestore.Firestore;
@@ -156,3 +182,62 @@ test("missing or unreconciled migration fails closed", async () => {
   await assert.rejects(store.resolve({kind: "verifiedUid", uid: "uid1"}),
     unavailable);
 });
+
+function guestSeatStore() {
+  const store = new FakeStore();
+  const attendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+  const key = "guestSeat";
+  store.rows.set(`events/${eventId}`, {clubId: organizerId,
+    organizerId, status: "active"});
+  store.rows.set(`eventSeatLedgers/${eventId}`, {eventId, state: "ready",
+    migrationRevision: 1, revision: 3});
+  store.rows.set(`eventAttendees/${attendeeId}`, {eventId, organizerId,
+    source: "hostImport", status: "registered", linkedUid: null,
+    phoneE164: phone});
+  store.alias("attendee", attendeeId, key);
+  store.alias("phone", phone, key);
+  store.rows.set(`eventSeatReservations/${hash(eventId, key)}`, {
+    eventId, canonicalKey: key, active: true, identityRevision: 1});
+  const link = async (uid = "uid1", tokenPhone = phone) => {
+    const prepared = store.writeTx();
+    const result = await linkVerifiedUidToGuestSeat({db: store.db(),
+      tx: prepared.tx, eventId, organizerId, attendeeId, uid,
+      authTokenPhoneNumber: tokenPhone, now: Timestamp.fromMillis(1000)});
+    prepared.commit();
+    return result;
+  };
+  return {store, attendeeId, key, link};
+}
+
+test("verified phone links an imported guest without reserving another seat",
+  async () => {
+    const h = guestSeatStore();
+    assert.deepEqual(await h.link(), {canonicalKey: h.key,
+      ledgerRevision: 4, replayed: false});
+    assert.equal(h.store.rows.get(`eventAttendees/${h.attendeeId}`)
+      ?.linkedUid, "uid1");
+    assert.equal(h.store.rows.get(`eventSeatLedgers/${eventId}`)?.revision, 4);
+    assert.equal(h.store.writes.filter((path) => path.startsWith(
+      "eventSeatReservations/")).length, 0);
+    assert.deepEqual(await h.link(), {canonicalKey: h.key,
+      ledgerRevision: 4, replayed: true});
+    assert.deepEqual(await h.store.resolve({kind: "verifiedUid",
+      uid: "uid1"}), {key: h.key, revision: 1});
+  });
+
+test("different token phone, duplicate UID seat or missing alias denies",
+  async () => {
+    const wrongPhone = guestSeatStore();
+    await assert.rejects(wrongPhone.link("uid1", "+919999999998"),
+      unavailable);
+    assert.deepEqual(wrongPhone.store.writes, []);
+    const existingSeat = guestSeatStore();
+    existingSeat.store.alias("uid", "uid1", "anotherSeat");
+    await assert.rejects(existingSeat.link(), unavailable);
+    assert.deepEqual(existingSeat.store.writes, []);
+    const missingAlias = guestSeatStore();
+    missingAlias.store.rows.delete(`eventSeatIdentityAliases/${
+      seatIdentityAliasId(eventId, "phone", phone)}`);
+    await assert.rejects(missingAlias.link(), unavailable);
+    assert.deepEqual(missingAlias.store.writes, []);
+  });

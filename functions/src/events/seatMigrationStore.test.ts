@@ -62,6 +62,13 @@ class Store {
           this.writes.push({kind: "create", path: ref.path});
         });
       },
+      update: (ref: Ref, value: Row) => {
+        pending.push(() => {
+          assert.equal(this.rows.has(ref.path), true);
+          this.rows.set(ref.path, {...this.rows.get(ref.path), ...value});
+          this.writes.push({kind: "update", path: ref.path});
+        });
+      },
     };
     const result = await fn(tx);
     pending.forEach((write) => write());
@@ -98,11 +105,15 @@ function setup() {
   store.rows.set("events/event1", event());
   store.rows.set("eventAttendees/att1", attendee());
   let integrated = true;
+  let currentPhone: string | null = null;
   const command = {eventId: "event1", organizerId: "org1",
     migrationRevision: 1, asOfMillis: 1000};
-  const deps = {db: store.db(), allWritersIntegrated: () => integrated};
+  const deps = {db: store.db(), allWritersIntegrated: () => integrated,
+    auth: {getUser: async (uid: string) => ({uid,
+      phoneNumber: currentPhone})}};
   return {store, command, deps,
     setIntegrated: (value: boolean) => integrated = value,
+    setAuthPhone: (value: string | null) => currentPhone = value,
     bootstrap: () => bootstrapEventSeatLedger({command, deps})};
 }
 
@@ -116,7 +127,8 @@ test("complete transaction installs exact ledger, reservation and aliases",
       migrationRevision: 1});
     assert.deepEqual(h.store.writes.map((row) => row.path.split("/")[0]),
       ["eventSeatLedgers", "eventSeatReservations",
-        "eventSeatIdentityAliases", "eventSeatIdentityAliases"]);
+        "eventSeatIdentityAliases", "eventSeatIdentityAliases",
+        "eventSeatLedgers"]);
     assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state, "ready");
     assert.ok(h.store.reads.includes("events/event1"));
     assert.ok(h.store.reads.includes("eventAttendees:query"));
@@ -141,9 +153,6 @@ test("current Auth source becomes a transaction proof", async () => {
   h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
     organizerId: "org1", uid: "user1", status: "signedUp"});
   const proofId = seatVerifiedPhoneProofId("event1", "user1");
-  h.store.rows.set(`eventSeatVerifiedAuthEvidence/${proofId}`, {
-    eventId: "event1", organizerId: "org1", uid: "user1",
-    phoneE164: null, source: "firebaseAuth", state: "current"});
   const result = await h.bootstrap();
   assert.equal(result.occupied, 2);
   assert.deepEqual(h.store.rows.get(`eventSeatVerifiedPhones/${proofId}`),
@@ -153,17 +162,46 @@ test("current Auth source becomes a transaction proof", async () => {
     row.path === `eventSeatVerifiedPhones/${proofId}`));
 });
 
-test("unattested Auth source cannot create a proof", async () => {
+test("invalid Admin Auth phone cannot create a proof", async () => {
   const h = setup();
   h.store.rows.set("events/event1", {...event(), bookedCount: 1});
   h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
     organizerId: "org1", uid: "user1", status: "signedUp"});
-  const proofId = seatVerifiedPhoneProofId("event1", "user1");
-  h.store.rows.set(`eventSeatVerifiedAuthEvidence/${proofId}`, {
-    eventId: "event1", organizerId: "org1", uid: "user1",
-    phoneE164: null, source: "hostClaim", state: "current"});
+  h.setAuthPhone("invalid");
   await assert.rejects(h.bootstrap(), denied);
   assert.deepEqual(h.store.writes, []);
+});
+
+test("Auth change during bootstrap leaves ledger unusable", async () => {
+  const h = setup();
+  h.store.rows.set("events/event1", {...event(), bookedCount: 1});
+  h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
+    organizerId: "org1", uid: "user1", status: "signedUp"});
+  let calls = 0;
+  h.deps.auth.getUser = async (uid) => ({uid,
+    phoneNumber: ++calls === 1 ? "+919999999999" : "+919999999998"});
+  await assert.rejects(h.bootstrap(), denied);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+  assert.ok(h.store.writes.every((row) => row.kind === "create"));
+});
+
+test("policy change before readiness leaves ledger unusable", async () => {
+  const h = setup();
+  h.store.rows.set("events/event1", {...event(), bookedCount: 1});
+  h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
+    organizerId: "org1", uid: "user1", status: "signedUp"});
+  let calls = 0;
+  h.deps.auth.getUser = async (uid) => {
+    if (++calls === 2) {
+      h.store.rows.set("events/event1", {...event(), bookedCount: 1,
+        capacityLimit: 3});
+    }
+    return {uid, phoneNumber: null};
+  };
+  await assert.rejects(h.bootstrap(), denied);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
 });
 
 test("concurrent bootstraps cannot both create the same ledger", async () => {
@@ -185,7 +223,7 @@ test("truncated source query and mixed identity deny without writes",
     assert.deepEqual(tooLarge.store.writes, []);
     const mixed = setup();
     mixed.store.rows.set("eventAttendees/att1", {...attendee(),
-      linkedUid: "uid1"});
+      linkedUid: "uid1", phoneE164: "+919999999999"});
     await assert.rejects(mixed.bootstrap(), denied);
     assert.deepEqual(mixed.store.writes, []);
   });

@@ -1,5 +1,5 @@
 import {createHash} from "crypto";
-import {normalizeRosterPhone} from "./eventAttendees";
+import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
 
 /** Structural adapter compatibility until the seat core is integrated. */
 export class SeatIdentityAuthorityError extends Error {
@@ -227,4 +227,127 @@ export class FirestoreSeatIdentityAuthority {
     }
     return canonical;
   }
+}
+
+/**
+ * Attaches a verified UID to an existing guest reservation, without taking a
+ * second seat. The caller must pass the current callable Auth token phone and
+ * use this exact transaction for its public-registration attendee write.
+ * Distinct existing UID seats remain a manual reconciliation conflict.
+ */
+export async function linkVerifiedUidToGuestSeat(params: {
+  db: FirebaseFirestore.Firestore;
+  tx: FirebaseFirestore.Transaction;
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  uid: string;
+  authTokenPhoneNumber: string;
+  now: FirebaseFirestore.Timestamp;
+}): Promise<{canonicalKey: string; ledgerRevision: number;
+  replayed: boolean}> {
+  const {db, tx, eventId, organizerId, attendeeId, uid, now} = params;
+  if (![eventId, organizerId, attendeeId, uid].every(validId)) {
+    throw new SeatIdentityAuthorityError("invalid", "Invalid seat link.");
+  }
+  const normalized = normalizeRosterPhone(params.authTokenPhoneNumber);
+  if (normalized.issue || !normalized.value ||
+      normalized.value !== params.authTokenPhoneNumber ||
+      attendeeId !== eventAttendeeId(eventId,
+        `phone:${normalized.value}`)) {
+    fail("A current verified phone attendee is required.");
+  }
+  const eventRef = db.collection("events").doc(eventId);
+  const ledgerRef = db.collection("eventSeatLedgers").doc(eventId);
+  const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
+  const attendeeAliasRef = db.collection("eventSeatIdentityAliases")
+    .doc(seatIdentityAliasId(eventId, "attendee", attendeeId));
+  const phoneAliasRef = db.collection("eventSeatIdentityAliases")
+    .doc(seatIdentityAliasId(eventId, "phone", normalized.value));
+  const uidAliasRef = db.collection("eventSeatIdentityAliases")
+    .doc(seatIdentityAliasId(eventId, "uid", uid));
+  const proofRef = db.collection("eventSeatVerifiedPhones")
+    .doc(seatVerifiedPhoneProofId(eventId, uid));
+  const [eventSnap, ledgerSnap, attendeeSnap, attendeeAliasSnap,
+    phoneAliasSnap, uidAliasSnap, proofSnap] = await Promise.all([
+    tx.get(eventRef), tx.get(ledgerRef), tx.get(attendeeRef),
+    tx.get(attendeeAliasRef), tx.get(phoneAliasRef), tx.get(uidAliasRef),
+    tx.get(proofRef),
+  ]);
+  const event = eventSnap.data();
+  const ledger = ledgerSnap.data();
+  const attendee = attendeeSnap.data();
+  const attendeeAlias = attendeeAliasSnap.data();
+  const phoneAlias = phoneAliasSnap.data();
+  const uidAlias = uidAliasSnap.data();
+  const proof = proofSnap.data();
+  if (!event || event.clubId !== organizerId ||
+      event.organizerId !== undefined && event.organizerId !== organizerId ||
+      event.status !== "active" || !ledger || ledger.eventId !== eventId ||
+      ledger.state !== "ready" ||
+      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
+      ledger.revision >= Number.MAX_SAFE_INTEGER ||
+      !Number.isSafeInteger(ledger.migrationRevision) ||
+      ledger.migrationRevision < 1 ||
+      !attendee || attendee.eventId !== eventId ||
+      attendee.organizerId !== organizerId ||
+      !["hostImport", "hostManual", "providerSync"]
+        .includes(attendee.source) ||
+      !["registered", "checkedIn"].includes(attendee.status) ||
+      attendee.phoneE164 !== normalized.value ||
+      attendee.linkedUid !== null && attendee.linkedUid !== uid) {
+    fail("Current guest seat source is unavailable.");
+  }
+  const matching = (alias: FirebaseFirestore.DocumentData | undefined,
+    kind: AliasKind, value: string) => alias &&
+      alias.eventId === eventId && alias.organizerId === organizerId &&
+      alias.kind === kind &&
+      alias.valueHash === seatIdentityValueHash(kind, value) &&
+      alias.state === "ready" &&
+      alias.migrationRevision === ledger.migrationRevision &&
+      validId(alias.canonicalKey) &&
+      Number.isSafeInteger(alias.identityRevision) &&
+      alias.identityRevision >= 1;
+  if (!matching(attendeeAlias, "attendee", attendeeId) ||
+      !matching(phoneAlias, "phone", normalized.value) ||
+      attendeeAlias!.canonicalKey !== phoneAlias!.canonicalKey ||
+      attendeeAlias!.identityRevision !== phoneAlias!.identityRevision) {
+    fail("Guest aliases are not reconciled.");
+  }
+  const key = attendeeAlias!.canonicalKey as string;
+  const reservationId = hash([eventId, key]);
+  const reservationSnap = await tx.get(db.collection("eventSeatReservations")
+    .doc(reservationId));
+  const reservation = reservationSnap.data();
+  if (!reservation || reservation.eventId !== eventId ||
+      reservation.canonicalKey !== key || reservation.active !== true ||
+      reservation.identityRevision !== attendeeAlias!.identityRevision) {
+    fail("Guest reservation is unavailable.");
+  }
+  if (uidAlias || proof || attendee.linkedUid === uid) {
+    if (attendee.linkedUid !== uid ||
+        !matching(uidAlias, "uid", uid) ||
+        uidAlias!.canonicalKey !== key ||
+        uidAlias!.identityRevision !== attendeeAlias!.identityRevision ||
+        !proof || proof.eventId !== eventId ||
+        proof.organizerId !== organizerId || proof.uid !== uid ||
+        proof.phoneE164 !== normalized.value ||
+        proof.migrationRevision !== ledger.migrationRevision ||
+        proof.state !== "current") {
+      fail("Verified UID already has another seat or stale evidence.");
+    }
+    return {canonicalKey: key, ledgerRevision: ledger.revision,
+      replayed: true};
+  }
+  tx.create(uidAliasRef, {eventId, organizerId, kind: "uid",
+    valueHash: seatIdentityValueHash("uid", uid), canonicalKey: key,
+    identityRevision: attendeeAlias!.identityRevision,
+    migrationRevision: ledger.migrationRevision, state: "ready"});
+  tx.create(proofRef, {eventId, organizerId, uid,
+    phoneE164: normalized.value,
+    migrationRevision: ledger.migrationRevision, state: "current"});
+  tx.update(attendeeRef, {linkedUid: uid, linkedAt: now, updatedAt: now});
+  tx.update(ledgerRef, {revision: ledger.revision + 1});
+  return {canonicalKey: key, ledgerRevision: ledger.revision + 1,
+    replayed: false};
 }
