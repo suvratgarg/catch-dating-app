@@ -3,6 +3,11 @@
 
 import {createRequire} from "node:module";
 import {
+  eventPreferenceIntentsSchema,
+  resolvedEventPreferencesSchema,
+  eventPaymentTermsSchema,
+  eventSetupPreferencesDocumentSchema,
+  updatePrivateEventPreferencesCallablePayloadSchema,
   eventSetupReceiptDocumentSchema,
   organizerEventSetupPreferencesSchema,
   getOrganizerEventSetupDefaultsCallablePayloadSchema,
@@ -870,6 +875,11 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventPreferenceIntents = ajv.compile(eventPreferenceIntentsSchema);
+export const validateResolvedEventPreferences = ajv.compile(resolvedEventPreferencesSchema);
+export const validateEventPaymentTerms = ajv.compile(eventPaymentTermsSchema);
+export const validateEventSetupPreferencesDocument = ajv.compile(eventSetupPreferencesDocumentSchema);
+export const validateUpdatePrivateEventPreferencesCallablePayload = ajv.compile(updatePrivateEventPreferencesCallablePayloadSchema);
 export const validateEventSetupReceiptDocument = ajv.compile(eventSetupReceiptDocumentSchema);
 export const validateOrganizerEventSetupPreferences = ajv.compile(organizerEventSetupPreferencesSchema);
 export const validateGetOrganizerEventSetupDefaultsCallablePayload = ajv.compile(getOrganizerEventSetupDefaultsCallablePayloadSchema);

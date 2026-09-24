@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_setup_preferences.schema.json",
+  "title": "EventSetupPreferencesDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "revision",
+    "preferences",
+    "paymentTerms",
+    "updatedByUid",
+    "updatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "preferences": {
+      "$ref": "../embedded/resolved_event_preferences.schema.json"
+    },
+    "paymentTerms": {
+      "$ref": "../embedded/event_payment_terms.schema.json"
+    },
+    "updatedByUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
+import type {EventPaymentTerms} from "./eventPaymentTerms";
 import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
 import type {EventOrigin} from "./eventOrigin";
 import type {EventRuntimeAccess} from "./eventRuntimeAccess";
@@ -539,8 +541,18 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventSetupPreferencesDocument {
+  organizerId: string;
+  eventId: string;
+  revision: number;
+  preferences: ResolvedEventPreferences;
+  paymentTerms: EventPaymentTerms;
+  updatedByUid: string;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
 export interface EventSetupReceiptDocument {
-  operation: "create" | "update";
+  operation: "create" | "update" | "preferences";
   actorUid: string;
   organizerId: string;
   requestHash: string;

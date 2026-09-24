@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `functions/src/shared/generated/eventPreferenceIntents.ts` |
+| ResolvedEventPreferences | `embedded/resolved_event_preferences.schema.json` | `functions/src/shared/generated/resolvedEventPreferences.ts` |
+| EventPaymentTerms | `embedded/event_payment_terms.schema.json` | `functions/src/shared/generated/eventPaymentTerms.ts` |
+| EventSetupPreferencesDocument | `firestore/event_setup_preferences.schema.json` | `functions/src/shared/generated/eventSetupPreferencesDocument.ts` |
+| UpdatePrivateEventPreferencesCallablePayload | `callables/update_private_event_preferences_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventPreferencesCallablePayload.ts` |
 | EventSetupReceiptDocument | `firestore/event_setup_receipts.schema.json` | `functions/src/shared/generated/eventSetupReceiptDocument.ts` |
 | OrganizerEventSetupPreferences | `embedded/organizer_event_setup_preferences.schema.json` | `functions/src/shared/generated/organizerEventSetupPreferences.ts` |
 | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `functions/src/shared/generated/getOrganizerEventSetupDefaultsCallablePayload.ts` |
@@ -860,6 +865,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventPreferenceIntentsSchema` | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_preference_intents.g.dart` |
+| `schemaResolvedEventPreferencesSchema` | ResolvedEventPreferences | `embedded/resolved_event_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/resolved_event_preferences.g.dart` |
+| `schemaEventPaymentTermsSchema` | EventPaymentTerms | `embedded/event_payment_terms.schema.json` | `lib/core/schema_contracts/generated/schemas/event_payment_terms.g.dart` |
+| `schemaEventSetupPreferencesDocumentSchema` | EventSetupPreferencesDocument | `firestore/event_setup_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/event_setup_preferences_document.g.dart` |
+| `schemaUpdatePrivateEventPreferencesCallablePayloadSchema` | UpdatePrivateEventPreferencesCallablePayload | `callables/update_private_event_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_preferences_callable_payload.g.dart` |
 | `schemaEventSetupReceiptDocumentSchema` | EventSetupReceiptDocument | `firestore/event_setup_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_setup_receipt_document.g.dart` |
 | `schemaOrganizerEventSetupPreferencesSchema` | OrganizerEventSetupPreferences | `embedded/organizer_event_setup_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_setup_preferences.g.dart` |
 | `schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema` | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_event_setup_defaults_callable_payload.g.dart` |
@@ -1708,6 +1718,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| UpdatePrivateEventPreferencesCallableRequest | UpdatePrivateEventPreferencesCallablePayload | `callables/update_private_event_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_preferences_callable_request.g.dart` |
 | GetOrganizerEventSetupDefaultsCallableRequest | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_event_setup_defaults_callable_request.g.dart` |
 | UpdateOrganizerEventSetupDefaultsCallableRequest | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_organizer_event_setup_defaults_callable_request.g.dart` |
 | GetEventRehearsalSummaryCallableRequest | GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rehearsal_summary_callable_request.g.dart` |

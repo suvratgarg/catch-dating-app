@@ -5,6 +5,7 @@ import {validateGetPrivateEventSetupCallablePayload} from
   "../../shared/generated/validators/getPrivateEventSetupInput";
 import {validatePrivateEventSetupCallableResponse} from
   "../../shared/generated/validators/privateEventSetupOutput";
+import {projectEventPreferences} from "./preferences";
 import {authorizeSetupManager} from "./service";
 
 /** Reads a manager projection without decoding a fully configured event. */
@@ -20,10 +21,11 @@ export async function getPrivateEventSetup(params: {
     throw new HttpsError("invalid-argument", "Invalid event setup request.");
   }
   return db.runTransaction(async (tx) => {
-    const [organizer, deleted, eventSnap] = await Promise.all([
+    const [organizer, deleted, eventSnap, preferencesSnap] = await Promise.all([
       tx.get(db.collection("organizers").doc(command.organizerId)),
       tx.get(db.collection("deletedUsers").doc(actorUid)),
       tx.get(db.collection("events").doc(command.eventId)),
+      tx.get(db.collection("eventSetupPreferences").doc(command.eventId)),
     ]);
     authorizeSetupManager(organizer, deleted, actorUid);
     const event = eventSnap.data();
@@ -39,6 +41,8 @@ export async function getPrivateEventSetup(params: {
       eventId: command.eventId,
       organizerId: command.organizerId,
       setupRevision: event.setupRevision,
+      eventPreferences: projectEventPreferences(preferencesSnap.data(),
+        command.organizerId, command.eventId),
       name: event.name,
       city: {cityId: event.eventCityId, marketId: event.eventMarketId},
       localDate: event.eventLocalDate,

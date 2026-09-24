@@ -310,6 +310,7 @@ export 'callables/update_organizer_event_setup_defaults_callable_request.g.dart'
 export 'callables/update_organizer_form_draft_callable_request.g.dart';
 export 'callables/update_organizer_program_callable_request.g.dart';
 export 'callables/update_private_event_basics_callable_request.g.dart';
+export 'callables/update_private_event_preferences_callable_request.g.dart';
 export 'callables/update_user_profile_patch.g.dart';
 export 'callables/upsert_event_success_layout_callable_request.g.dart';
 export 'callables/upsert_organizer_campaign_callable_request.g.dart';

@@ -6,6 +6,7 @@ import {
   getPrivateEventSetupHandler,
   SetupCallableDependencies,
   updatePrivateEventBasicsHandler,
+  updatePrivateEventPreferencesHandler,
 } from "./callables";
 
 const request = (data: unknown, uid?: string) => ({
@@ -33,7 +34,8 @@ test("callable auth and payload validation precede rate or database access",
       },
     };
     for (const handler of [createPrivateEventSetupHandler,
-      updatePrivateEventBasicsHandler, getPrivateEventSetupHandler]) {
+      updatePrivateEventBasicsHandler,
+      updatePrivateEventPreferencesHandler, getPrivateEventSetupHandler]) {
       await assert.rejects(handler(request({}), deps),
         (e) => e instanceof HttpsError && e.code === "unauthenticated");
       await assert.rejects(handler(request({}, "host1"), deps),
