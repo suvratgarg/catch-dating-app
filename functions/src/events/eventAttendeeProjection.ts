@@ -74,7 +74,9 @@ export async function projectEventParticipationToAttendee(
     const existingSnap = await tx.get(attendeeRef);
     const existing = existingSnap.data() as EventAttendeeDocument | undefined;
     if (mode === "ready") {
-      if (source.organizerId !== organizerId) return;
+      if (source.clubId !== organizerId ||
+          source.organizerId !== undefined &&
+            source.organizerId !== organizerId) return;
       const identity = await new FirestoreSeatIdentityAuthority().resolve({
         db, tx, eventId: source.eventId, organizerId,
         subject: {kind: "verifiedUid", uid: source.uid},
@@ -97,8 +99,9 @@ export async function projectEventParticipationToAttendee(
       if (!active && !existing && source.status !== "waitlisted") return;
     }
     const now = deps.timestamp();
+    const sourceStatus = currentSnap.exists ? source.status : "deleted";
     const status = projectedParticipationStatus(
-      participationStatus(source.status), existing?.status);
+      participationStatus(sourceStatus), existing?.status);
     const displayName = profile?.name?.trim() || existing?.displayName ||
       source.uid;
     const document: EventAttendeeDocument = {

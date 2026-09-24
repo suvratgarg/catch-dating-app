@@ -910,7 +910,7 @@ test("ready Host attendance reserves and releases one canonical guest seat",
     }), deps);
     firestore.update("eventAttendees/attendee-1", {linkedUid: "user-1"});
     firestore.set("eventParticipations/event-1_user-1", {
-      eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
+      eventId: "event-1", clubId: "organizer-1", uid: "user-1",
       status: "signedUp",
     });
     firestore.set(`eventSeatIdentityAliases/${seatIdentityAliasId(
@@ -923,6 +923,43 @@ test("ready Host attendance reserves and releases one canonical guest seat",
       eventId: "event-1", attendeeId, desiredCheckedIn: false,
       expectedRevision: 3, clientOperationId: "catch-retained-undo-0001",
     }), deps);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(firestore.get("eventAttendees/attendee-1")?.status,
+      "registered");
+    const noOp = (clientOperationId: string) =>
+      setEventAttendeeAttendanceHandler(attendanceRequest({
+        eventId: "event-1", attendeeId, desiredCheckedIn: false,
+        expectedRevision: 4, clientOperationId,
+      }), deps);
+    const noOpReceipt = (clientOperationId: string) =>
+      firestore.get(`eventAttendeeAttendanceReceipts/${attendanceReceiptId({
+        eventId: "event-1", actorUid: "host-1", clientOperationId,
+      })}`);
+    const reservationPath = `eventSeatReservations/${createHash("sha256")
+      .update("event-1\u001fguest_1").digest("hex")}`;
+    firestore.update("eventParticipations/event-1_user-1", {
+      organizerId: "organizer-2",
+    });
+    await assert.rejects(noOp("foreign-participation-noop-0001"),
+      (error) => error instanceof HttpsError &&
+        error.code === "failed-precondition");
+    assert.equal(noOpReceipt("foreign-participation-noop-0001"), undefined);
+    firestore.update("eventParticipations/event-1_user-1", {
+      organizerId: "organizer-1",
+    });
+    firestore.update("eventSeatLedgers/event-1", {policyHash: "f".repeat(64)});
+    await assert.rejects(noOp("bad-policy-noop-0001"),
+      (error) => error instanceof HttpsError &&
+        error.code === "failed-precondition");
+    assert.equal(noOpReceipt("bad-policy-noop-0001"), undefined);
+    firestore.update("eventSeatLedgers/event-1", {
+      policyHash: policy.policyHash,
+    });
+    firestore.update(reservationPath, {identityRevision: 2});
+    await assert.rejects(noOp("bad-reservation-noop-0001"),
+      (error) => error instanceof HttpsError &&
+        error.code === "failed-precondition");
+    assert.equal(noOpReceipt("bad-reservation-noop-0001"), undefined);
     assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
     assert.equal(firestore.get("eventAttendees/attendee-1")?.status,
       "registered");

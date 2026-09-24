@@ -97,6 +97,7 @@ async function prepareAttendanceSeatChange(params: {
   tx: FirebaseFirestore.Transaction;
   eventId: string;
   organizerId: string;
+  event: EventDocument;
   attendeeId: string;
   previous: EventAttendeeDocument["status"];
   next: EventAttendeeDocument["status"];
@@ -121,9 +122,17 @@ async function prepareAttendanceSeatChange(params: {
   const participation = params.linkedUid ?
     (await tx.get(db.collection("eventParticipations")
       .doc(eventParticipationId(eventId, params.linkedUid)))).data() : null;
-  const independentCatchActive = participation?.eventId === eventId &&
-    participation.organizerId === organizerId &&
-    participation.uid === params.linkedUid &&
+  if (participation && (participation.eventId !== eventId ||
+      participation.uid !== params.linkedUid ||
+      (participation.organizerId ?? participation.clubId) !== organizerId ||
+      participation.clubId !== undefined &&
+        participation.clubId !== organizerId ||
+      participation.organizerId !== undefined &&
+        participation.organizerId !== organizerId)) {
+    throw new HttpsError("failed-precondition",
+      "Linked Catch participation owner disagrees with this event.");
+  }
+  const independentCatchActive = participation != null &&
     (participation.status === "signedUp" ||
       participation.status === "attended");
   const nextStatus = independentCatchActive &&
@@ -132,7 +141,36 @@ async function prepareAttendanceSeatChange(params: {
   const [ledger, reservation] = await Promise.all([
     seats.ledger(eventId), seats.reservation(eventId, identity.key),
   ]);
-  if (!ledger || ledger.state !== "ready" ||
+  const policy = deriveEventSeatPolicy(params.event);
+  if (policy.organizerId !== organizerId || !ledger ||
+      ledger.state !== "ready" ||
+      ledger.eventId !== eventId ||
+      ledger.capacity !== policy.capacity ||
+      ledger.policyHash !== policy.policyHash ||
+      ledger.policyVersion !== policy.policyVersion ||
+      !Number.isSafeInteger(ledger.occupied) || ledger.occupied < 0 ||
+      ledger.occupied > ledger.capacity ||
+      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
+      ledger.revision === Number.MAX_SAFE_INTEGER ||
+      !Number.isSafeInteger(ledger.capacityRevision) ||
+      ledger.capacityRevision < 1 ||
+      !Number.isSafeInteger(ledger.migrationRevision) ||
+      ledger.migrationRevision < 1 ||
+      reservation && (reservation.eventId !== eventId ||
+        reservation.canonicalKey !== identity.key ||
+        reservation.identityRevision !== identity.revision ||
+        !Number.isSafeInteger(reservation.revision) ||
+        reservation.revision < 1 ||
+        reservation.revision === Number.MAX_SAFE_INTEGER ||
+        !Number.isSafeInteger(reservation.identityRevision) ||
+        reservation.identityRevision < 0 ||
+        typeof reservation.active !== "boolean" ||
+        !Number.isSafeInteger(reservation.reservedAtMillis) ||
+        reservation.reservedAtMillis < 0 ||
+        !(reservation.releasedAtMillis === null ||
+          Number.isSafeInteger(reservation.releasedAtMillis) &&
+          reservation.releasedAtMillis >= 0) ||
+        (reservation.releasedAtMillis === null) !== reservation.active) ||
       (reservation?.active === true) !==
         (occupiesSeat(params.previous) || independentCatchActive)) {
     throw new HttpsError("failed-precondition",
@@ -506,6 +544,7 @@ export async function markEventAttendeeAttendanceHandler(
     const seatChange = seatMode === "ready" ?
       await prepareAttendanceSeatChange({db, tx, eventId: payload.eventId,
         organizerId: event.organizerId ?? event.clubId,
+        event,
         attendeeId: payload.attendeeId, previous: attendee.status,
         next: nextStatus, source: attendee.source,
         linkedUid: attendee.linkedUid,
@@ -646,6 +685,7 @@ export async function setEventAttendeeAttendanceHandler(
     const seatChange = seatMode === "ready" ?
       await prepareAttendanceSeatChange({db, tx, eventId: payload.eventId,
         organizerId: event.organizerId ?? event.clubId,
+        event,
         attendeeId: payload.attendeeId, previous: attendee.status,
         next: changed ? nextStatus : attendee.status,
         source: attendee.source,

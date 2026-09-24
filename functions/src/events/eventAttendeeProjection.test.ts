@@ -172,6 +172,8 @@ test(
     const h = projectionHarness({
       authPhone: "+919876543210",
       docs: {
+        "eventParticipations/event-1_user-1": participation() as unknown as
+          FakeData,
         "users/user-1": {
           phoneNumber: "+918888888888",
           email: "private@example.test",
@@ -209,6 +211,8 @@ test(
     const h = projectionHarness({
       authPhone: "+919876543210",
       docs: {
+        "eventParticipations/event-1_user-1": participation() as unknown as
+          FakeData,
         "publicProfiles/user-1": {name: "Asha"},
         [`eventAttendees/${attendeeId}`]: {
           eventId: "event-1",
@@ -240,6 +244,20 @@ test(
     assert.equal(attendee?.linkedUid, "user-1");
   }
 );
+
+test("deleted legacy participation cannot resurrect its roster row",
+  async () => {
+    const attendeeId = eventAttendeeId("event-1", "uid:user-1");
+    const h = projectionHarness({docs: {
+      [`eventAttendees/${attendeeId}`]: {eventId: "event-1",
+        organizerId: "organizer-1", source: "catchBooking",
+        linkedUid: "user-1", status: "registered"},
+    }});
+    await projectEventParticipationToAttendee(participation(), undefined,
+      h.deps);
+    assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.status,
+      "cancelled");
+  });
 
 test("ready projection follows current reserved source without changing seats",
   async () => {

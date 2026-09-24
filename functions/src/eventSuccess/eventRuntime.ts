@@ -363,10 +363,13 @@ export async function claimEventRuntimeAccessHandler(
         .collection("eventParticipations")
         .doc(eventParticipationId(resolved.eventId, uid))) : null;
       const current = currentParticipation?.data();
+      const organizerId = currentEvent.organizerId ?? currentEvent.clubId;
       if (!current || current.eventId !== resolved.eventId ||
           current.uid !== uid ||
-          current.organizerId !== (currentEvent.organizerId ??
-            currentEvent.clubId) ||
+          (current.organizerId ?? current.clubId) !== organizerId ||
+          current.clubId !== undefined && current.clubId !== organizerId ||
+          current.organizerId !== undefined &&
+            current.organizerId !== organizerId ||
           current.status !== "signedUp" &&
           current.status !== "attended") {
         throw new HttpsError(
@@ -378,6 +381,7 @@ export async function claimEventRuntimeAccessHandler(
 
     let applyIdentity: () => void = () => undefined;
     let applySeat: () => void = () => undefined;
+    let nextBookedCount: number | null = null;
     let createAttendeeAlias: (() => void) | null = null;
     let seatAlreadyActive = false;
     if (seatMode === "ready") {
@@ -440,13 +444,17 @@ export async function claimEventRuntimeAccessHandler(
         applySeat = () => {
           applyFirestoreSeat(prepared);
         };
+        nextBookedCount = prepared.plan.ledger!.occupied;
       } else if (!attendee && reservation?.active) {
         const participation = await tx.get(db.collection("eventParticipations")
           .doc(eventParticipationId(resolved.eventId, uid)));
         const current = participation.data();
         if (!current || current.eventId !== resolved.eventId ||
             current.uid !== uid ||
-            current.organizerId !== organizerId ||
+            (current.organizerId ?? current.clubId) !== organizerId ||
+            current.clubId !== undefined && current.clubId !== organizerId ||
+            current.organizerId !== undefined &&
+              current.organizerId !== organizerId ||
             current.status !== "signedUp" &&
             current.status !== "attended") {
           throw new HttpsError("failed-precondition",
@@ -457,6 +465,9 @@ export async function claimEventRuntimeAccessHandler(
     applyIdentity();
     createAttendeeAlias?.();
     applySeat();
+    if (nextBookedCount !== null) {
+      tx.update(eventRef, {bookedCount: nextBookedCount, updatedAt: now});
+    }
     if (!attendee) {
       attendee = runtimeAttendeeDocument({
         event: currentEvent,
@@ -911,6 +922,7 @@ export async function approveEventRuntimeClaimHandler(
       participant.completedFieldIds
     );
     let applySeat: () => void = () => undefined;
+    let nextBookedCount: number | null = null;
     if (seatMode === "ready") {
       const organizerId = event.organizerId ?? event.clubId;
       const identities = new FirestoreSeatIdentityAuthority();
@@ -954,9 +966,13 @@ export async function approveEventRuntimeClaimHandler(
         applySeat = () => {
           applyFirestoreSeat(prepared);
         };
+        nextBookedCount = prepared.plan.ledger!.occupied;
       }
     }
     applySeat();
+    if (nextBookedCount !== null) {
+      tx.update(eventRef, {bookedCount: nextBookedCount, updatedAt: now});
+    }
     tx.update(attendeeRef, {
       linkedUid: payload.uid,
       linkedAt: attendee.linkedAt ?? now,
