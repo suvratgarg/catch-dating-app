@@ -40,7 +40,6 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_guests_section.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
@@ -48,6 +47,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/whe
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -412,11 +412,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       child: CatchScaffold.stepFlow(
         backgroundColor: t.bg,
         body: CreateEventAdaptiveWorkspace(
-          header: CreateEventStepHeader(
+          header: HostWizardStepHeader(
             title: _isReviewing
                 ? context.l10n.hostsCreateEventReviewTitle
                 : wizardState.title,
-            clubName: wizardState.club.name,
+            subtitle: wizardState.club.name,
             currentStep: wizardState.currentStep,
             totalSteps: wizardState.totalSteps,
             isReviewing: _isReviewing,

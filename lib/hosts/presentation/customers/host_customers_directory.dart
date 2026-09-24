@@ -54,38 +54,6 @@ class HostCustomerDirectoryControls extends StatelessWidget {
   }
 }
 
-class HostCustomersNoOrganizer extends StatelessWidget {
-  const HostCustomersNoOrganizer({
-    super.key,
-    this.selected = HostAudienceView.people,
-    this.onChanged,
-  });
-
-  final HostAudienceView selected;
-  final ValueChanged<HostAudienceView>? onChanged;
-
-  @override
-  Widget build(BuildContext context) => HostAudienceStateScaffold(
-    selected: selected,
-    scrollKey: const PageStorageKey<String>('host-customers-no-organizer'),
-    onChanged: onChanged,
-    slivers: [
-      CatchSliverEmptyState(
-        icon: CatchIcons.groupsOutlined,
-        title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-        message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-        actions: [
-          CatchButton(
-            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-            onPressed: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
 class HostCustomerFilterSummary extends StatelessWidget {
   const HostCustomerFilterSummary({
     super.key,

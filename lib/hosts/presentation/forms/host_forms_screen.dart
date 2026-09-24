@@ -20,6 +20,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -198,7 +199,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     }
     final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
-      return HostFormsNoOrganizer(selected: _view);
+      return HostAudienceNoOrganizerEmptyState(selected: _view);
     }
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final selectedClub = resolveSelectedHostOrganizer(
@@ -709,41 +710,6 @@ class _HostFormsLibraryPage extends ConsumerWidget
               ],
             );
           },
-        ),
-      ],
-    );
-  }
-}
-
-class HostFormsNoOrganizer extends StatelessWidget {
-  const HostFormsNoOrganizer({
-    super.key,
-    this.selected = HostAudienceView.forms,
-    this.onChanged,
-  });
-
-  final HostAudienceView selected;
-  final ValueChanged<HostAudienceView>? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostAudienceStateScaffold(
-      selected: selected,
-      scrollKey: const PageStorageKey<String>('host-forms-no-organizer'),
-      onChanged: onChanged,
-      slivers: [
-        CatchSliverEmptyState(
-          icon: CatchIcons.descriptionOutlined,
-          title: context.l10n.hostFormsNoOrganizerTitle,
-          message: context.l10n.hostFormsNoOrganizerBody,
-          actions: [
-            CatchButton(
-              label: context.l10n.hostFormsCreateOrganizer,
-              size: CatchButtonSize.sm,
-              onPressed: () =>
-                  context.pushNamed(Routes.hostCreateClubScreen.name),
-            ),
-          ],
         ),
       ],
     );

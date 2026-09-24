@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -13,7 +13,7 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Header states',
-  type: CreateEventStepHeader,
+  type: HostWizardStepHeader,
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventStepHeaderCatalogStates(BuildContext context) {
@@ -24,9 +24,9 @@ Widget createEventStepHeaderCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'step 1',
         child: WidgetbookHostDeviceFrame(
-          child: CreateEventStepHeader(
+          child: HostWizardStepHeader(
             title: 'Event basics',
-            clubName: widgetbookClub.name,
+            subtitle: widgetbookClub.name,
             currentStep: 0,
             totalSteps: 5,
             onClose: () {},

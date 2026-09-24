@@ -16,13 +16,13 @@ final rules = <CandidateRule>[
     id: 'legacy_firestore_message',
     status: CandidateStatus.mustMigrate,
     pattern: RegExp(r'\bfirestoreErrorMessage\b'),
-    recommendation: 'Replace with appErrorMessage or backendErrorMessage.',
+    recommendation: 'Replace with appErrorMessage.',
   ),
   CandidateRule(
     id: 'legacy_auth_message',
     status: CandidateStatus.mustMigrate,
     pattern: RegExp(r'\b(authErrorMessage|generalErrorMessage)\b'),
-    recommendation: 'Replace with appErrorMessage or backendErrorMessage.',
+    recommendation: 'Replace with appErrorMessage.',
   ),
   CandidateRule(
     id: 'legacy_run_booking_message',
@@ -84,7 +84,7 @@ final rules = <CandidateRule>[
     id: 'backend_error_api',
     status: CandidateStatus.migrated,
     pattern: RegExp(
-      r'\b(withBackendErrorContext|withBackendErrorStream|normalizeBackendError|backendErrorMessage|appErrorMessage)\b',
+      r'\b(withBackendErrorContext|withBackendErrorStream|normalizeBackendError|appErrorMessage)\b',
     ),
     recommendation: 'Already using the unified backend error API.',
   ),
@@ -423,7 +423,6 @@ CandidateDisposition _dispositionFor({
 
 bool _isCoreMapperFile(String path) {
   return path == 'lib/core/backend_error_util.dart' ||
-      path == 'lib/core/backend_error_message.dart' ||
       path == 'lib/core/app_error_message.dart';
 }
 
