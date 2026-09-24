@@ -108,7 +108,9 @@ class _HostFormTargetSectionState
       setState(() => _showEventChoices = false);
     } else if (kind == HostFormTargetKind.event) {
       setState(() => _showEventChoices = true);
-      if (!targets.loaded && !targets.loading) targets.refresh();
+      if (!targets.loaded && !targets.loading) {
+        targets.refresh();
+      }
     }
   }
 
@@ -155,6 +157,10 @@ class _HostFormTargetSectionState
       children: [
         CatchSection.fieldRows(
           title: context.l10n.hostFormTargetTitle,
+          footer: widget.hasPublishedVersion
+              ? Text(context.l10n.hostFormTargetPublishedNotice,
+                  style: CatchTextStyles.supporting(context))
+              : null,
           children: [
             if (definition.defaultTargetKind == HostFormTargetKind.campaign)
               CatchField.read(
@@ -197,13 +203,12 @@ class _HostFormTargetSectionState
                 ),
             ],
             if (definition.defaultTargetKind != HostFormTargetKind.campaign)
-              CatchField.navigate(
+              CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-form-target-choose-event'),
-                content: CatchRecordLayout(
-                  title: context.l10n.hostFormTargetSelectEvent,
-                  icon: CatchIcons.eventAvailableOutlined,
-                ),
-                onActivate: () => _chooseKind(HostFormTargetKind.event),
+                title: context.l10n.hostFormTargetSelectEvent,
+                icon: CatchIcons.eventAvailableOutlined,
+                onTap: () => _chooseKind(HostFormTargetKind.event),
               ),
             if (_showEventChoices && targets != null) ...[
               if (targets.loading && targets.events.isEmpty)
@@ -218,12 +223,11 @@ class _HostFormTargetSectionState
                   title: context.l10n.hostFormTargetSelectEvent,
                   body: context.l10n.hostFormTargetLoadFailed,
                 ),
-                CatchField.navigate(
-                  content: CatchRecordLayout(
-                    title: context.l10n.sharedActionTryAgain,
-                    icon: CatchIcons.refreshRounded,
-                  ),
-                  onActivate: () => targets.canLoadMore
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.sharedActionTryAgain,
+                  icon: CatchIcons.refreshRounded,
+                  onTap: () => targets.canLoadMore
                       ? targets.loadMore() : targets.refresh(),
                 ),
               ],
@@ -235,31 +239,24 @@ class _HostFormTargetSectionState
                   body: context.l10n.hostFormTargetNoUpcomingEvents,
                 ),
               for (final event in targets.events)
-                CatchField.navigate(
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey('host-form-target-event-${event.eventId}'),
-                  content: CatchRecordLayout(
-                    title: event.name?.trim().isNotEmpty == true
-                        ? event.name! : context.l10n.hostEventOfferUntitledEvent,
-                    icon: CatchIcons.eventAvailableOutlined,
-                    metadata: AppTimeFormatters.dateTime(
-                      event.startTime.toLocal()),
-                  ),
-                  onActivate: () => _chooseEvent(event),
+                  title: event.name?.trim().isNotEmpty == true
+                      ? event.name! : context.l10n.hostEventOfferUntitledEvent,
+                  body: AppTimeFormatters.dateTime(event.startTime.toLocal()),
+                  icon: CatchIcons.eventAvailableOutlined,
+                  onTap: () => _chooseEvent(event),
                 ),
               if (targets.canLoadMore && !targets.hasLoadFailure)
-                CatchField.navigate(
-                  content: CatchRecordLayout(
-                    title: context.l10n.hostEventOfferLoadMoreEvents,
-                    icon: CatchIcons.addRounded,
-                  ),
-                  onActivate: targets.loadMore,
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostEventOfferLoadMoreEvents,
+                  icon: CatchIcons.addRounded,
+                  onTap: targets.loadMore,
                 ),
             ],
           ],
-          footer: widget.hasPublishedVersion
-              ? Text(context.l10n.hostFormTargetPublishedNotice,
-                  style: CatchTextStyles.supporting(context))
-              : null,
         ),
         gapH24,
       ],

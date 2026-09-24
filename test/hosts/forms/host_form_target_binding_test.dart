@@ -83,7 +83,7 @@ void main() {
     notifier.updateTarget(kind: HostFormTargetKind.event,
       eventId: 'event-one', accountId: 'host-one');
     final save = notifier.saveNow();
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
     expect(repository.saves, 1);
 
     auth.uid = 'host-two';
@@ -108,7 +108,7 @@ void main() {
     final auth = _Auth('host-one');
     final editor = _Editor();
     final firstPage = Completer<HostOfferEventTargetPage>();
-    editor.firstPage = firstPage;
+    editor._firstPage = firstPage;
     final provider = hostFormEditorControllerProvider('org', 'form');
     await tester.pumpWidget(ProviderScope(
       overrides: [
@@ -160,7 +160,7 @@ void main() {
     await tester.ensureVisible(current);
     await tester.tap(current);
     await pumpFeatureUi(tester);
-    expect(editor.writes, ['host-two/new-event']);
+    expect(editor._writes, ['host-two/new-event']);
     expect(editor.state.requireValue.editor.definition.defaultTargetId,
       'new-event');
     expect(find.textContaining('Changes to a published form'),
@@ -282,7 +282,7 @@ void main() {
 HostOfferEventTarget _event(String id) => HostOfferEventTarget(
   eventId: id,
   name: 'Event $id',
-  startTime: DateTime(2026, 12, 1),
+  startTime: DateTime(2026, 12),
   timezone: 'Asia/Kolkata',
   publicationState: 'private',
   setupRevision: 1,
@@ -310,8 +310,8 @@ class _PaymentSetup extends HostFormPaymentController {
 }
 
 class _Editor extends HostFormEditorController {
-  Completer<HostOfferEventTargetPage>? firstPage;
-  final writes = <String>[];
+  Completer<HostOfferEventTargetPage>? _firstPage;
+  final _writes = <String>[];
 
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
@@ -323,8 +323,8 @@ class _Editor extends HostFormEditorController {
 
   @override
   Future<HostOfferEventTargetPage> listTargetEvents({String? cursor}) {
-    if (firstPage case final pending?) {
-      firstPage = null;
+    if (_firstPage case final pending?) {
+      _firstPage = null;
       return pending.future;
     }
     return Future.value(HostOfferEventTargetPage(
@@ -334,7 +334,7 @@ class _Editor extends HostFormEditorController {
   @override
   void updateTarget({required HostFormTargetKind kind,
       required String accountId, String? eventId}) {
-    writes.add('$accountId/$eventId');
+    _writes.add('$accountId/$eventId');
     final current = state.requireValue;
     state = AsyncData(current.copyWith(editor: current.editor.copyWith(
       definition: current.editor.definition.withTarget(

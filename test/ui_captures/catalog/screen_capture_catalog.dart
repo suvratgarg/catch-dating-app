@@ -8897,6 +8897,13 @@ class _CaptureAuthRepository implements AuthRepository {
   Future<void> signOut() async {}
 }
 
+class _CaptureFirebaseAuth extends Fake implements FirebaseAuth {
+  _CaptureFirebaseAuth({required this.currentUser});
+
+  @override
+  final User? currentUser;
+}
+
 class _CaptureAuthUser extends Fake implements User {
   _CaptureAuthUser({required this.uid, required this.phoneNumber});
 
@@ -16010,6 +16017,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
+      firebaseAuthProvider.overrideWithValue(
+        _CaptureFirebaseAuth(
+          currentUser: _CaptureAuthUser(
+            uid: HostOperationsFixtures.hostUid,
+            phoneNumber: '+919876543210',
+          ),
+        ),
+      ),
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       uidProvider.overrideWithValue(
         const AsyncData<String?>(HostOperationsFixtures.hostUid),
@@ -16041,6 +16056,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
+      firebaseAuthProvider.overrideWithValue(
+        _CaptureFirebaseAuth(
+          currentUser: _CaptureAuthUser(
+            uid: HostOperationsFixtures.hostUid,
+            phoneNumber: '+919876543210',
+          ),
+        ),
+      ),
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       uidProvider.overrideWithValue(
         const AsyncData<String?>(HostOperationsFixtures.hostUid),

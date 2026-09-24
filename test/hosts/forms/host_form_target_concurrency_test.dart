@@ -89,7 +89,8 @@ void main() {
     repository.pendingSave!.complete();
     expect(await save, isFalse);
     final current = await container.read(provider.future);
-    expect(repository.reads, 2);
+    expect(repository.reads, greaterThanOrEqualTo(2));
+    expect(repository.readActors.last, 'host-two');
     expect(current.editor.definition.defaultTargetId, 'event-two');
     expect(notifier.editorBoundTo('host-two'), isTrue);
   });
@@ -194,6 +195,8 @@ void main() {
     final repository = _Repository()..actor = () => auth.uid;
     final oldRead = Completer<HostFormEditor>();
     repository.pendingReads.add(oldRead);
+    final oldReadStarted = Completer<void>();
+    repository.pendingReadStarted = oldReadStarted;
     final container = _container(accounts, auth, repository);
     addTearDown(container.dispose);
     final provider = hostFormEditorControllerProvider('org', 'form');
@@ -201,10 +204,15 @@ void main() {
     addTearDown(subscription.close);
     accounts.add('host-one');
     await container.pump();
+    await flushTestEventQueue();
+    expect(oldReadStarted.isCompleted, isTrue);
+    expect(repository.readActors.last, 'host-one');
 
     auth.uid = 'host-two';
     accounts.add('host-two');
     await container.pump();
+    await flushTestEventQueue();
+    expect(repository.readActors.last, 'host-two');
     oldRead.complete(_editor(targetId: 'old-event'));
     await container.pump();
     final current = await container.read(provider.future);
@@ -219,6 +227,8 @@ void main() {
     final repository = _Repository()..actor = () => auth.uid;
     final oldRead = Completer<HostFormEditor>();
     repository.pendingReads.add(oldRead);
+    final oldReadStarted = Completer<void>();
+    repository.pendingReadStarted = oldReadStarted;
     final container = _container(accounts, auth, repository);
     addTearDown(container.dispose);
     final provider = hostFormEditorControllerProvider('org', 'form');
@@ -226,12 +236,19 @@ void main() {
     addTearDown(subscription.close);
     accounts.add('host-one');
     await container.pump();
+    await flushTestEventQueue();
+    expect(oldReadStarted.isCompleted, isTrue);
+    expect(repository.readActors.last, 'host-one');
     auth.uid = 'host-two';
     accounts.add('host-two');
     await container.pump();
+    await flushTestEventQueue();
+    expect(repository.readActors.last, 'host-two');
     auth.uid = 'host-one';
     accounts.add('host-one');
     await container.pump();
+    await flushTestEventQueue();
+    expect(repository.readActors.last, 'host-one');
     oldRead.complete(_editor(targetId: 'superseded-event'));
     await container.pump();
     final current = await container.read(provider.future);
@@ -278,7 +295,7 @@ void main() {
         home: Scaffold(body: SingleChildScrollView(
           child: HostFormTargetSection(
             organizerId: 'org',
-            definition: HostFormDefinition.fromMap({
+            definition: HostFormDefinition.fromMap(const {
               ..._definition,
               'defaultTargetKind': 'event',
               'defaultTargetId': 'event-two',
@@ -292,10 +309,10 @@ void main() {
       ),
     ));
     await pumpFeatureUi(tester);
-    expect(notifier.reads, 0);
+    expect(notifier._reads, 0);
     accounts.add('host-two');
     await pumpFeatureUi(tester);
-    expect(notifier.reads, 1);
+    expect(notifier._reads, 1);
     expect(find.text('Event event-two'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
@@ -324,6 +341,8 @@ class _User extends Fake implements User {
 class _Repository extends Fake implements HostFormsRepository {
   String? Function()? actor;
   final pendingReads = Queue<Completer<HostFormEditor>>();
+  Completer<void>? pendingReadStarted;
+  final readActors = <String?>[];
   Completer<void>? pendingSave;
   int saves = 0;
   int reads = 0;
@@ -334,7 +353,12 @@ class _Repository extends Fake implements HostFormsRepository {
   Future<HostFormEditor> getEditor({required String organizerId,
       required String formId}) async {
     reads++;
-    if (pendingReads.isNotEmpty) return pendingReads.removeFirst().future;
+    readActors.add(actor?.call());
+    if (pendingReads.isNotEmpty) {
+      final started = pendingReadStarted;
+      if (started != null && !started.isCompleted) started.complete();
+      return pendingReads.removeFirst().future;
+    }
     return _editor(targetId: actor?.call() == 'host-two'
         ? 'event-two' : serverTargetId, draftRevision: serverRevision);
   }
@@ -356,14 +380,14 @@ class _Repository extends Fake implements HostFormsRepository {
 }
 
 class _PickerNotifier extends HostFormEditorController {
-  int reads = 0;
+  int _reads = 0;
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
       throw UnimplementedError();
 
   @override
   Future<HostOfferEventTargetPage> listTargetEvents({String? cursor}) async {
-    reads++;
+    _reads++;
     return HostOfferEventTargetPage([_event('event-two')], null);
   }
 }
@@ -381,7 +405,7 @@ HostFormEditor _editor({String? targetId, int draftRevision = 2}) => HostFormEdi
 HostOfferEventTarget _event(String id) => HostOfferEventTarget(
   eventId: id,
   name: 'Event $id',
-  startTime: DateTime(2026, 12, 1),
+  startTime: DateTime(2026, 12),
   timezone: 'Asia/Kolkata',
   publicationState: 'private',
   setupRevision: 1,

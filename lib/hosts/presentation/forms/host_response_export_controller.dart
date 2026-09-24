@@ -24,9 +24,6 @@ class HostResponseExportView {
 /// Uses only the applied query controller view. A draft filter, page cursor,
 /// account change or late receipt cannot silently change the exported set.
 class HostResponseExportController extends ChangeNotifier {
-  // Polling a server receipt is network scheduling, not UI animation.
-  // ignore: catch_no_raw_motion
-  static const _receiptPollingInterval = Duration(seconds: 2);
   HostResponseExportController({
     required this.accountId,
     required this.organizerId,
@@ -223,7 +220,7 @@ class HostResponseExportController extends ChangeNotifier {
               command: command, receipt: receipt));
             return;
           }
-          await wait(_receiptPollingInterval);
+          await wait(hostFormExportReceiptPollingInterval);
           if (!_current(generation) || !_sameAccount ||
               !resolveOnly && !_sameApplied(command)) {
             return;

@@ -227,7 +227,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       request: request,
     );
     final scopedDirectory = catchAsyncStateFromAsyncValue(
-      ref.watch(_scopedFormsDirectoryProvider(directoryScope)),
+      ref.watch(hostFormsAccountDirectoryProvider(directoryScope)),
     );
     if (scopedDirectory.error case final error?) {
       return HostAudienceStateScaffold(
@@ -238,7 +238,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             error,
             context: AppErrorContext.forms,
             onRetry: () => ref.invalidate(
-              _scopedFormsDirectoryProvider(directoryScope),
+              hostFormsAccountDirectoryProvider(directoryScope),
             ),
           ),
         ],

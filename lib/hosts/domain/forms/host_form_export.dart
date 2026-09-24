@@ -2,6 +2,9 @@ import 'package:catch_dating_app/hosts/domain/forms/form_operation_fields.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:meta/meta.dart';
 
+/// Polling cadence for a durable server export receipt, not a UI animation.
+const hostFormExportReceiptPollingInterval = Duration(seconds: 2);
+
 enum HostFormExportFormat { csv, xlsx }
 
 enum HostFormExportStatus { pending, running, completed, failed, expired }

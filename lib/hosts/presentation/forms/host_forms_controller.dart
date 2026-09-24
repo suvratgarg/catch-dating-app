@@ -59,6 +59,27 @@ class HostFormsDirectoryState {
   );
 }
 
+typedef HostFormAccountDirectoryScope = ({
+  String uid,
+  int accountGeneration,
+  HostFormListRequest request,
+});
+
+/// The actor is part of this generated family's identity. It forces a fresh
+/// manager read before a newly signed-in account can see directory rows.
+@riverpod
+Future<HostFormsDirectoryState> hostFormsAccountDirectory(
+  Ref ref,
+  HostFormAccountDirectoryScope scope,
+) {
+  final fresh = ref.refresh(
+    hostFormsDirectoryControllerProvider(scope.request).future,
+  );
+  // Keep the source family alive until its fresh read settles.
+  ref.listen(hostFormsDirectoryControllerProvider(scope.request), (_, _) {});
+  return fresh;
+}
+
 @riverpod
 class HostFormsDirectoryController extends _$HostFormsDirectoryController {
   @override
@@ -142,7 +163,7 @@ class HostFormEditorState {
 
 @riverpod
 class HostFormEditorController extends _$HostFormEditorController
-    with HostFormEditorTargetMixin {
+    with _HostFormEditorTargetMixin {
   @override
   int _generation = 0;
   int _idCounter = 0;

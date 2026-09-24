@@ -1,6 +1,6 @@
 part of 'host_forms_controller.dart';
 
-mixin HostFormEditorTargetMixin on _$HostFormEditorController {
+mixin _HostFormEditorTargetMixin on _$HostFormEditorController {
   Timer? _saveTimer;
   bool _saveRunning = false;
   String? _targetMutationAccountId;
@@ -241,15 +241,14 @@ class HostFormTargetController extends ChangeNotifier {
   HostFormTargetController({
     required this.organizerId,
     required this.accountId,
-    required HostFormTargetPageLoader loadPage,
-    required String? Function() currentAccountId,
-  }) : _loadPage = loadPage,
-       _currentAccountId = currentAccountId;
+    required this.loadPage,
+    required this.currentAccountId,
+  });
 
   final String organizerId;
   final String accountId;
-  final HostFormTargetPageLoader _loadPage;
-  final String? Function() _currentAccountId;
+  final HostFormTargetPageLoader loadPage;
+  final String? Function() currentAccountId;
 
   List<HostOfferEventTarget> _events = const [];
   String? _nextCursor;
@@ -266,7 +265,7 @@ class HostFormTargetController extends ChangeNotifier {
   bool get loading => _loading;
   bool get canLoadMore => _nextCursor != null && !_loading;
   bool get isCurrentAccount =>
-      !_disposed && _currentAccountId() == accountId;
+      !_disposed && currentAccountId() == accountId;
 
   HostOfferEventTarget? event(String eventId) {
     for (final value in _events) {
@@ -300,7 +299,7 @@ class HostFormTargetController extends ChangeNotifier {
     }
     notifyListeners();
     try {
-      final page = await _loadPage(
+      final page = await loadPage(
         organizerId: organizerId,
         cursor: cursor,
       );

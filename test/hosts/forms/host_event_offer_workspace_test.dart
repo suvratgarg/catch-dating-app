@@ -57,7 +57,8 @@ void main() {
       ),
     ));
     accounts.add('host-one');
-    await pumpFeatureUi(tester);
+    await flushTestEventQueue();
+    await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
 
     responses._nextResponse = Completer<HostFormResponsesState>();
@@ -122,7 +123,8 @@ void main() {
       ),
     ));
     accounts.add('host-one');
-    await pumpFeatureUi(tester);
+    await flushTestEventQueue();
+    await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
     await tester.tap(find.text('Select'));
     await pumpFeatureUi(tester);
@@ -396,7 +398,7 @@ void main() {
     expect(find.byKey(const ValueKey('offer-existing-unrelated-offer')),
       findsNothing);
     await tester.tap(find.byKey(const ValueKey('offer-existing-offer-one')));
-    await pumpFeatureUi(tester);
+    await pumpUntilFound(tester, find.text('Payment reference'));
     expect(find.text('Payment reference'), findsOneWidget);
     await tester.tap(find.text('Prepare personal handoff'));
     await pumpFeatureUi(tester);
