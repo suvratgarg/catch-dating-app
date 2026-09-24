@@ -67,6 +67,17 @@ export interface SeatResult {
   replayed: boolean;
 }
 
+const planBrand = Symbol("prepared-seat-plan");
+const appliedPlans = new WeakSet<PreparedSeatPlan>();
+export interface PreparedSeatPlan {
+  readonly [planBrand]: true;
+  readonly transaction: SeatTransaction;
+  readonly result: Readonly<SeatResult>;
+  readonly ledger: Readonly<SeatLedger> | null;
+  readonly reservation: Readonly<SeatReservation> | null;
+  readonly receipt: Readonly<SeatReceipt> | null;
+}
+
 export class SeatAuthorityError extends Error {
   constructor(readonly code: "invalid" | "conflict" | "unavailable",
     message: string) {
@@ -89,16 +100,16 @@ function hash(value: unknown): string {
 }
 
 /**
- * Composable read-plan/write helper. Caller owns actor, event, admission and
- * payment authorization in the same transaction before invoking this helper.
+ * Read-only preparation. Caller owns actor, event, admission and payment
+ * authorization in the same transaction before applying the returned plan.
  * Identity resolution may read more documents but must not write. The adapter
  * must map each ledger/reservation/receipt key to a deterministic document.
  */
-export async function applySeatCommand<Subject>(params: {
+export async function prepareSeatCommand<Subject>(params: {
   tx: SeatTransaction;
   command: SeatCommand<Subject>;
   resolveIdentity: (subject: Subject) => Promise<CanonicalSeatIdentity>;
-}): Promise<SeatResult> {
+}): Promise<PreparedSeatPlan> {
   const {tx, command} = params;
   if (!validId(command.eventId) || !validId(command.requestId) ||
       !["reserve", "release"].includes(command.operation) ||
@@ -122,6 +133,7 @@ export async function applySeatCommand<Subject>(params: {
       ledger.state !== "ready" || !Number.isSafeInteger(ledger.capacity) ||
       ledger.capacity < 1 || !nonnegative(ledger.occupied) ||
       ledger.occupied > ledger.capacity || !nonnegative(ledger.revision) ||
+      ledger.revision === Number.MAX_SAFE_INTEGER ||
       !nonnegative(ledger.capacityRevision) ||
       ledger.capacityRevision === 0 ||
       !nonnegative(ledger.migrationRevision) ||
@@ -131,9 +143,19 @@ export async function applySeatCommand<Subject>(params: {
   if (reservation && (reservation.eventId !== command.eventId ||
       reservation.canonicalKey !== identity.key ||
       !nonnegative(reservation.revision) ||
+      reservation.revision < 1 ||
+      reservation.revision === Number.MAX_SAFE_INTEGER ||
       !nonnegative(reservation.identityRevision) ||
+      !nonnegative(reservation.reservedAtMillis) ||
+      !(reservation.releasedAtMillis === null ||
+        nonnegative(reservation.releasedAtMillis)) ||
+      reservation.active && reservation.releasedAtMillis !== null ||
+      !reservation.active && reservation.releasedAtMillis === null ||
       typeof reservation.active !== "boolean")) {
     fail("unavailable", "Seat reservation is malformed.");
+  }
+  if (reservation?.active && ledger.occupied === 0) {
+    fail("unavailable", "Active seat conflicts with zero occupancy.");
   }
   const requestHash = hash([command.eventId, command.operation,
     command.requestId, identity.key, identity.revision,
@@ -141,6 +163,12 @@ export async function applySeatCommand<Subject>(params: {
     command.expectedMigrationRevision,
     command.expectedReservationRevision]);
   if (prior) {
+    if (!Number.isSafeInteger(prior.appliedLedgerRevision) ||
+        prior.appliedLedgerRevision < 1 ||
+        !Number.isSafeInteger(prior.appliedReservationRevision) ||
+        prior.appliedReservationRevision < 1) {
+      fail("unavailable", "Seat receipt is malformed.");
+    }
     if (prior.eventId !== command.eventId ||
         prior.requestId !== command.requestId ||
         prior.requestHash !== requestHash ||
@@ -149,8 +177,9 @@ export async function applySeatCommand<Subject>(params: {
       fail("conflict", "Seat request ID was reused for different work.");
     }
     // A released reserve replays historically; it never reactivates.
-    return {receipt: prior, active: reservation?.active === true,
-      replayed: true};
+    return freezePlan(tx, {receipt: prior,
+      active: reservation?.active === true, replayed: true},
+    null, null, null);
   }
   if (ledger.revision !== command.expectedLedgerRevision ||
       ledger.capacityRevision !== command.expectedCapacityRevision ||
@@ -188,8 +217,43 @@ export async function applySeatCommand<Subject>(params: {
     operation: command.operation, canonicalKey: identity.key,
     appliedLedgerRevision: nextLedger.revision,
     appliedReservationRevision: nextReservation.revision};
-  tx.putLedger(nextLedger);
-  tx.putReservation(nextReservation);
-  tx.createReceipt(receipt);
-  return {receipt, active, replayed: false};
+  return freezePlan(tx, {receipt, active, replayed: false}, nextLedger,
+    nextReservation, receipt);
+}
+
+function freezePlan(transaction: SeatTransaction, result: SeatResult,
+  ledger: SeatLedger | null,
+  reservation: SeatReservation | null,
+  receipt: SeatReceipt | null): PreparedSeatPlan {
+  const frozenReceipt = Object.freeze({...result.receipt});
+  return Object.freeze({[planBrand]: true as const, transaction,
+    result: Object.freeze({...result, receipt: frozenReceipt}),
+    ledger: ledger ? Object.freeze({...ledger}) : null,
+    reservation: reservation ? Object.freeze({...reservation}) : null,
+    receipt: receipt ? frozenReceipt : null});
+}
+
+/** Apply only after all other reads and business checks in the same tx. */
+export function applySeatPlan(tx: SeatTransaction,
+  plan: PreparedSeatPlan): SeatResult {
+  if (plan[planBrand] !== true || !Object.isFrozen(plan) ||
+      plan.transaction !== tx || appliedPlans.has(plan)) {
+    fail("invalid", "Seat plan was not prepared in this transaction.");
+  }
+  appliedPlans.add(plan);
+  if (plan.ledger && plan.reservation && plan.receipt) {
+    tx.putLedger(plan.ledger as SeatLedger);
+    tx.putReservation(plan.reservation as SeatReservation);
+    tx.createReceipt(plan.receipt as SeatReceipt);
+  }
+  return plan.result as SeatResult;
+}
+
+/** Convenience for callers that finished every authority read already. */
+export async function applySeatCommand<Subject>(params: {
+  tx: SeatTransaction;
+  command: SeatCommand<Subject>;
+  resolveIdentity: (subject: Subject) => Promise<CanonicalSeatIdentity>;
+}): Promise<SeatResult> {
+  return applySeatPlan(params.tx, await prepareSeatCommand(params));
 }

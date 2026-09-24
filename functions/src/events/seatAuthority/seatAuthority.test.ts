@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  applySeatCommand, CanonicalSeatIdentity, SeatAuthorityError, SeatCommand,
+  applySeatCommand, applySeatPlan, prepareSeatCommand,
+  CanonicalSeatIdentity, SeatAuthorityError, SeatCommand,
   SeatLedger, SeatReceipt, SeatReservation, SeatTransaction,
 } from "./seatAuthority";
 
@@ -162,3 +163,90 @@ test("release needs an active seat; rebook needs new revisions", async () => {
   assert.equal(next.active, true);
   assert.equal(store.ledgerValue.occupied, 1);
 });
+
+
+test("an active reservation with zero occupied never writes a negative count",
+  async () => {
+    const store = new Store();
+    store.reservations.set("person-a", {eventId: "event-1",
+      canonicalKey: "person-a", identityRevision: 1, active: true,
+      revision: 1, reservedAtMillis: 10, releasedAtMillis: null});
+    await assert.rejects(store.run(command("person-a", "release-broken", {
+      operation: "release", expectedReservationRevision: 1,
+    })), isError("unavailable", "zero occupancy"));
+    assert.equal(store.ledgerValue.occupied, 0);
+    assert.equal(store.receipts.size, 0);
+  });
+
+test("malformed reservation and receipt fail before replay or writes",
+  async () => {
+    for (const patch of [
+      {revision: 0}, {revision: Number.MAX_SAFE_INTEGER},
+      {reservedAtMillis: -1}, {releasedAtMillis: 10},
+    ]) {
+      const store = new Store();
+      store.ledgerValue.occupied = 1;
+      store.reservations.set("person-a", {eventId: "event-1",
+        canonicalKey: "person-a", identityRevision: 1, active: true,
+        revision: 1, reservedAtMillis: 10, releasedAtMillis: null,
+        ...patch});
+      await assert.rejects(store.run(command("person-a", "bad-state")),
+        isError("unavailable", "malformed"));
+      assert.equal(store.receipts.size, 0);
+    }
+    const store = new Store();
+    const request = command("person-a", "good-reserve");
+    await store.run(request);
+    const receipt = store.receipts.get("good-reserve")!;
+    store.receipts.set("good-reserve", {...receipt,
+      appliedLedgerRevision: 0});
+    await assert.rejects(store.run(request),
+      isError("unavailable", "receipt is malformed"));
+    store.receipts.set("good-reserve", {...receipt,
+      appliedReservationRevision: Number.MAX_SAFE_INTEGER + 1});
+    await assert.rejects(store.run(request),
+      isError("unavailable", "receipt is malformed"));
+    assert.equal(store.ledgerValue.occupied, 1);
+  });
+
+test("overflowing ledger revision fails without staging writes", async () => {
+  const store = new Store();
+  store.ledgerValue.revision = Number.MAX_SAFE_INTEGER;
+  await assert.rejects(store.run(command("person-a", "overflow", {
+    expectedLedgerRevision: Number.MAX_SAFE_INTEGER,
+  })), isError("unavailable", "not reconciled"));
+  assert.equal(store.receipts.size, 0);
+});
+
+test("preparation reads only and a frozen plan applies to its own tx",
+  async () => {
+    const ledger = initialLedger();
+    const writes: string[] = [];
+    const tx: SeatTransaction = {
+      ledger: async () => ledger,
+      reservation: async () => null,
+      receipt: async () => null,
+      putLedger: () => {
+        writes.push("ledger");
+      },
+      putReservation: () => {
+        writes.push("reservation");
+      },
+      createReceipt: () => {
+        writes.push("receipt");
+      },
+    };
+    const plan = await prepareSeatCommand({tx,
+      command: command("person-a", "prepared-once"),
+      resolveIdentity: identity});
+    assert.deepEqual(writes, []);
+    assert.equal(Object.isFrozen(plan), true);
+    assert.equal(Object.isFrozen(plan.result.receipt), true);
+    assert.throws(() => applySeatPlan({...tx}, plan),
+      isError("invalid", "not prepared"));
+    assert.deepEqual(writes, []);
+    assert.equal(applySeatPlan(tx, plan).active, true);
+    assert.deepEqual(writes, ["ledger", "reservation", "receipt"]);
+    assert.throws(() => applySeatPlan(tx, plan),
+      isError("invalid", "not prepared"));
+  });

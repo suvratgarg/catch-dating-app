@@ -1,10 +1,13 @@
 # Event seat authority core
 
 This module is unregistered server-only logic. It is not a migration, callable,
-Firestore schema, or deployed seat policy. The calling operation must run it
-inside the **same Firestore transaction** as its organizer/event/admission or
-payment checks and confirmed booking/attendee/receipt writes. The adapter must
-map each event ledger, canonical identity reservation, and request receipt to a
+Firestore schema, or deployed seat policy. The calling operation must prepare
+the seat plan inside the **same Firestore transaction** as its organizer, event,
+admission and payment reads, then apply
+the frozen plan only after all other authority reads and before its confirmed
+booking, attendee and receipt writes. A plan can apply only to its preparing
+transaction. The adapter must map each event ledger, canonical identity
+reservation and request receipt to a
 deterministic, client-denied document; optimistic transaction retries serialize
 the ledger revision and capacity check. Its `createReceipt` must be create-only.
 
