@@ -7,6 +7,7 @@ import type {EventOrigin} from "./eventOrigin";
 import type {EventRuntimeAccess} from "./eventRuntimeAccess";
 import type {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
 import type {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+import type {EventSetupDefaults} from "./eventSetupDefaults";
 
 /**
  * Schema-derived Admin SDK Firestore document types.
@@ -8278,11 +8279,11 @@ export interface EventDocument {
   eventOrigin?: EventOrigin;
   runtimeAccess?: EventRuntimeAccess;
   startTime: FirebaseFirestore.Timestamp;
-  endTime: FirebaseFirestore.Timestamp;
-  meetingPoint: string;
-  meetingLocation: EventMeetingLocation;
-  startingPointLat: number;
-  startingPointLng: number;
+  endTime?: FirebaseFirestore.Timestamp;
+  meetingPoint?: string;
+  meetingLocation?: EventMeetingLocation;
+  startingPointLat?: number;
+  startingPointLng?: number;
   locationDetails?: string | null;
   /**
    * @maxItems 40
@@ -8306,12 +8307,12 @@ export interface EventDocument {
   }[];
   photoUrl?: string | null;
   eventPhotos?: UploadedPhoto[];
-  distanceKm: number;
-  eventFormat: EventFormatSnapshot;
-  pace: "easy" | "moderate" | "fast" | "competitive";
-  capacityLimit: number;
-  description: string;
-  priceInPaise: number;
+  distanceKm?: number;
+  eventFormat?: EventFormatSnapshot;
+  pace?: "easy" | "moderate" | "fast" | "competitive";
+  capacityLimit?: number;
+  description?: string;
+  priceInPaise?: number;
   currency?: string;
   bookedCount?: number;
   checkedInCount?: number;
@@ -8323,7 +8324,7 @@ export interface EventDocument {
    * When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.
    */
   publicRegistrationEnabled?: boolean;
-  constraints: EventConstraints;
+  constraints?: EventConstraints;
   eventPolicy?: EventPolicyBundleDocument | null;
   genderCounts: {
     [k: string]: number;
@@ -8340,9 +8341,9 @@ export interface EventDocument {
     [k: string]: number;
   };
   crossPathsDiscoveryEnabled?: boolean;
-  discoveryMarketId: string;
-  discoveryCityName: string;
-  discoveryActivityKind:
+  discoveryMarketId?: string;
+  discoveryCityName?: string;
+  discoveryActivityKind?:
     | "socialRun"
     | "running"
     | "walking"
@@ -8359,13 +8360,13 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell: string;
-  discoveryHasOpenSpots: boolean;
-  discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  discoveryGeoCell?: string;
+  discoveryHasOpenSpots?: boolean;
+  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**
    * @maxItems 4
    */
-  discoveryOpenCohorts: (
+  discoveryOpenCohorts?: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
@@ -8374,17 +8375,17 @@ export interface EventDocument {
   /**
    * @maxItems 4
    */
-  discoveryWaitlistCohorts: (
+  discoveryWaitlistCohorts?: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
     | "nonBinaryOrOther"
   )[];
-  discoveryInviteRequired: boolean;
-  discoveryMembershipRequired: boolean;
-  discoveryManualApprovalRequired: boolean;
-  discoveryMinAge: number;
-  discoveryMaxAge: number;
+  discoveryInviteRequired?: boolean;
+  discoveryMembershipRequired?: boolean;
+  discoveryManualApprovalRequired?: boolean;
+  discoveryMinAge?: number;
+  discoveryMaxAge?: number;
   /**
    * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
    */
@@ -8402,6 +8403,17 @@ export interface EventDocument {
    * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.
    */
   planChangeRevision?: number;
+  /**
+   * Explicit publication boundary. Legacy absent values require full rich event data; new progressive events must declare their state.
+   */
+  publicationState?: "private" | "published";
+  setupRevision?: number;
+  eventCityId?: string;
+  eventMarketId?: string;
+  eventLocalDate?: string;
+  eventLocalStartTime?: string;
+  eventTimezone?: string;
+  setupDefaults?: EventSetupDefaults;
 }
 
 /**

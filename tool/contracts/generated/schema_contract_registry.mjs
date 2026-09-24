@@ -121539,41 +121539,15 @@ export const eventDocumentSchema = {
   "required": [
     "clubId",
     "startTime",
-    "endTime",
-    "meetingPoint",
-    "meetingLocation",
-    "startingPointLat",
-    "startingPointLng",
-    "locationDetails",
-    "eventFormat",
-    "distanceKm",
-    "pace",
-    "capacityLimit",
-    "description",
-    "priceInPaise",
     "bookedCount",
     "checkedInCount",
     "waitlistedCount",
     "status",
     "cancelledAt",
     "cancellationReason",
-    "constraints",
     "genderCounts",
     "cohortCounts",
-    "waitlistedCohortCounts",
-    "discoveryMarketId",
-    "discoveryCityName",
-    "discoveryActivityKind",
-    "discoveryGeoCell",
-    "discoveryHasOpenSpots",
-    "discoveryAvailability",
-    "discoveryOpenCohorts",
-    "discoveryWaitlistCohorts",
-    "discoveryInviteRequired",
-    "discoveryMembershipRequired",
-    "discoveryManualApprovalRequired",
-    "discoveryMinAge",
-    "discoveryMaxAge"
+    "waitlistedCohortCounts"
   ],
   "properties": {
     "name": {
@@ -123304,8 +123278,348 @@ export const eventDocumentSchema = {
       "maximum": 2147483647,
       "x-catch-ownership": "callable-owned",
       "description": "Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero."
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "private",
+        "published"
+      ],
+      "description": "Explicit publication boundary. Legacy absent values require full rich event data; new progressive events must declare their state.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventCityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventMarketId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventLocalDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventLocalStartTime": {
+      "type": "string",
+      "pattern": "^[0-9]{2}:[0-9]{2}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventTimezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "setupDefaults": {
+      "title": "EventSetupDefaults",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "city",
+        "timezone",
+        "organizerDefaultsRevision",
+        "organizerDefaultsHash"
+      ],
+      "properties": {
+        "city": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "cityId",
+                "marketId"
+              ],
+              "properties": {
+                "cityId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "marketId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event"
+              ]
+            }
+          }
+        },
+        "timezone": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "organizer",
+                "event"
+              ]
+            }
+          }
+        },
+        "organizerDefaultsRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "organizerDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "definitions": {
+        "basicsInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "city",
+            "localDate",
+            "localStartTime",
+            "timezone"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "city": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "inherit",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "set",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "cityId",
+                        "marketId"
+                      ],
+                      "properties": {
+                        "cityId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "marketId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "localDate": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "localStartTime": {
+              "type": "string",
+              "pattern": "^[0-9]{2}:[0-9]{2}$"
+            },
+            "timezone": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "inherit",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "const": "set",
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    }
+                  }
+                }
+              ]
+            },
+            "reviewedDefaultsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "publicationState"
+        ],
+        "properties": {
+          "publicationState": {
+            "const": "private"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "organizerId",
+          "name",
+          "eventCityId",
+          "eventMarketId",
+          "eventLocalDate",
+          "eventLocalStartTime",
+          "eventTimezone",
+          "setupDefaults",
+          "setupRevision",
+          "publicRegistrationEnabled"
+        ],
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "clubId",
+          "startTime",
+          "endTime",
+          "meetingPoint",
+          "meetingLocation",
+          "startingPointLat",
+          "startingPointLng",
+          "locationDetails",
+          "eventFormat",
+          "distanceKm",
+          "pace",
+          "capacityLimit",
+          "description",
+          "priceInPaise",
+          "bookedCount",
+          "checkedInCount",
+          "waitlistedCount",
+          "status",
+          "cancelledAt",
+          "cancellationReason",
+          "constraints",
+          "genderCounts",
+          "cohortCounts",
+          "waitlistedCohortCounts",
+          "discoveryMarketId",
+          "discoveryCityName",
+          "discoveryActivityKind",
+          "discoveryGeoCell",
+          "discoveryHasOpenSpots",
+          "discoveryAvailability",
+          "discoveryOpenCohorts",
+          "discoveryWaitlistCohorts",
+          "discoveryInviteRequired",
+          "discoveryMembershipRequired",
+          "discoveryManualApprovalRequired",
+          "discoveryMinAge",
+          "discoveryMaxAge"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "setupRevision"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicationState",
+          "organizerId",
+          "name",
+          "eventCityId",
+          "eventMarketId",
+          "eventLocalDate",
+          "eventLocalStartTime",
+          "eventTimezone",
+          "setupDefaults"
+        ]
+      }
+    }
+  ]
 };
 
 export const eventPlanChangeDocumentSchema = {

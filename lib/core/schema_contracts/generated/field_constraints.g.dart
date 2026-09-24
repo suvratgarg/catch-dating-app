@@ -30927,7 +30927,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentCapacityLimit = CatchContractFieldConstraints(
     path: 'eventDocument.capacityLimit',
-    required: true,
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 1000,
@@ -31034,20 +31033,17 @@ abstract final class CatchContractConstraints {
   static const eventDocumentDescription = CatchContractFieldConstraints(
     path: 'eventDocument.description',
     maxLength: 2000,
-    required: true,
     valueTypes: <String>['string'],
   );
 
   static const eventDocumentDiscoveryActivityKind = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryActivityKind',
-    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
   );
 
   static const eventDocumentDiscoveryAvailability = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryAvailability',
-    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['open', 'waitlist', 'gated', 'full', 'cancelled'],
   );
@@ -31063,26 +31059,22 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentDiscoveryGeoCell = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryGeoCell',
-    required: true,
     valueTypes: <String>['string'],
     pattern: '^-?\\d+:-?\\d+\$',
   );
 
   static const eventDocumentDiscoveryHasOpenSpots = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryHasOpenSpots',
-    required: true,
     valueTypes: <String>['boolean'],
   );
 
   static const eventDocumentDiscoveryInviteRequired = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryInviteRequired',
-    required: true,
     valueTypes: <String>['boolean'],
   );
 
   static const eventDocumentDiscoveryManualApprovalRequired = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryManualApprovalRequired',
-    required: true,
     valueTypes: <String>['boolean'],
   );
 
@@ -31097,7 +31089,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentDiscoveryMaxAge = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryMaxAge',
-    required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 120,
@@ -31105,13 +31096,11 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentDiscoveryMembershipRequired = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryMembershipRequired',
-    required: true,
     valueTypes: <String>['boolean'],
   );
 
   static const eventDocumentDiscoveryMinAge = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryMinAge',
-    required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 120,
@@ -31119,7 +31108,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentDiscoveryOpenCohorts = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryOpenCohorts',
-    required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
     itemEnumValues: <String>['menInterestedInWomen', 'womenInterestedInMen', 'queerOrOpen', 'nonBinaryOrOther'],
@@ -31136,7 +31124,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentDiscoveryWaitlistCohorts = CatchContractFieldConstraints(
     path: 'eventDocument.discoveryWaitlistCohorts',
-    required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
     itemEnumValues: <String>['menInterestedInWomen', 'womenInterestedInMen', 'queerOrOpen', 'nonBinaryOrOther'],
@@ -31153,7 +31140,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentDistanceKm = CatchContractFieldConstraints(
     path: 'eventDocument.distanceKm',
-    required: true,
     valueTypes: <String>['number'],
     minimum: 0,
     maximum: 100,
@@ -31171,6 +31157,14 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.endTime._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventDocumentEventCityId = CatchContractFieldConstraints(
+    path: 'eventDocument.eventCityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
@@ -31427,6 +31421,26 @@ abstract final class CatchContractConstraints {
     path: 'eventDocument.eventFormat.version',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventDocumentEventLocalDate = CatchContractFieldConstraints(
+    path: 'eventDocument.eventLocalDate',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}\$',
+  );
+
+  static const eventDocumentEventLocalStartTime = CatchContractFieldConstraints(
+    path: 'eventDocument.eventLocalStartTime',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{2}:[0-9]{2}\$',
+  );
+
+  static const eventDocumentEventMarketId = CatchContractFieldConstraints(
+    path: 'eventDocument.eventMarketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventDocumentEventOriginAdapterVersion = CatchContractFieldConstraints(
@@ -31838,6 +31852,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventDocumentEventTimezone = CatchContractFieldConstraints(
+    path: 'eventDocument.eventTimezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventDocumentGenderCounts = CatchContractFieldConstraints(
     path: 'eventDocument.genderCounts',
     required: true,
@@ -32021,7 +32043,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentPace = CatchContractFieldConstraints(
     path: 'eventDocument.pace',
-    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['easy', 'moderate', 'fast', 'competitive'],
   );
@@ -32042,10 +32063,15 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentPriceInPaise = CatchContractFieldConstraints(
     path: 'eventDocument.priceInPaise',
-    required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100000000,
+  );
+
+  static const eventDocumentPublicationState = CatchContractFieldConstraints(
+    path: 'eventDocument.publicationState',
+    valueTypes: <String>['string'],
+    enumValues: <String>['private', 'published'],
   );
 
   static const eventDocumentPublicRegistrationEnabled = CatchContractFieldConstraints(
@@ -32096,6 +32122,64 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventDocumentSetupDefaultsCitySource = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.city.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event'],
+  );
+
+  static const eventDocumentSetupDefaultsCityValueCityId = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.city.value.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentSetupDefaultsCityValueMarketId = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.city.value.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentSetupDefaultsOrganizerDefaultsHash = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.organizerDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventDocumentSetupDefaultsOrganizerDefaultsRevision = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.organizerDefaultsRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventDocumentSetupDefaultsTimezoneSource = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.timezone.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event'],
+  );
+
+  static const eventDocumentSetupDefaultsTimezoneValue = CatchContractFieldConstraints(
+    path: 'eventDocument.setupDefaults.timezone.value',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentSetupRevision = CatchContractFieldConstraints(
+    path: 'eventDocument.setupRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
   static const eventDocumentSourceVenueId = CatchContractFieldConstraints(
     path: 'eventDocument.sourceVenueId',
     valueTypes: <String>['string'],
@@ -32104,7 +32188,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentStartingPointLat = CatchContractFieldConstraints(
     path: 'eventDocument.startingPointLat',
-    required: true,
     valueTypes: <String>['number'],
     minimum: -90,
     maximum: 90,
@@ -32112,7 +32195,6 @@ abstract final class CatchContractConstraints {
 
   static const eventDocumentStartingPointLng = CatchContractFieldConstraints(
     path: 'eventDocument.startingPointLng',
-    required: true,
     valueTypes: <String>['number'],
     minimum: -180,
     maximum: 180,
@@ -120858,6 +120940,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.distanceKm': eventDocumentDistanceKm,
     'eventDocument.endTime._nanoseconds': eventDocumentEndTimeNanoseconds,
     'eventDocument.endTime._seconds': eventDocumentEndTimeSeconds,
+    'eventDocument.eventCityId': eventDocumentEventCityId,
     'eventDocument.eventFormat.activityDetails.routePlan.groupStrategy': eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy,
     'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -120893,6 +120976,9 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventFormat.eventSuccessPrimitives.unitOutcome': eventDocumentEventFormatEventSuccessPrimitivesUnitOutcome,
     'eventDocument.eventFormat.interactionModel': eventDocumentEventFormatInteractionModel,
     'eventDocument.eventFormat.version': eventDocumentEventFormatVersion,
+    'eventDocument.eventLocalDate': eventDocumentEventLocalDate,
+    'eventDocument.eventLocalStartTime': eventDocumentEventLocalStartTime,
+    'eventDocument.eventMarketId': eventDocumentEventMarketId,
     'eventDocument.eventOrigin.adapterVersion': eventDocumentEventOriginAdapterVersion,
     'eventDocument.eventOrigin.bookingAuthority': eventDocumentEventOriginBookingAuthority,
     'eventDocument.eventOrigin.connectedAt._nanoseconds': eventDocumentEventOriginConnectedAtNanoseconds,
@@ -120950,6 +121036,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventPolicy.pricing.demandPricingRules.items.stepAdjustmentInPaise': eventDocumentEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
     'eventDocument.eventPolicy.settlement.hostPayoutTiming': eventDocumentEventPolicySettlementHostPayoutTiming,
     'eventDocument.eventPolicy.version': eventDocumentEventPolicyVersion,
+    'eventDocument.eventTimezone': eventDocumentEventTimezone,
     'eventDocument.genderCounts': eventDocumentGenderCounts,
     'eventDocument.itinerary': eventDocumentItinerary,
     'eventDocument.itinerary.items.description': eventDocumentItineraryItemsDescription,
@@ -120979,6 +121066,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.photoUrl': eventDocumentPhotoUrl,
     'eventDocument.planChangeRevision': eventDocumentPlanChangeRevision,
     'eventDocument.priceInPaise': eventDocumentPriceInPaise,
+    'eventDocument.publicationState': eventDocumentPublicationState,
     'eventDocument.publicRegistrationEnabled': eventDocumentPublicRegistrationEnabled,
     'eventDocument.runtimeAccess.enabled': eventDocumentRuntimeAccessEnabled,
     'eventDocument.runtimeAccess.publicRuntimeId': eventDocumentRuntimeAccessPublicRuntimeId,
@@ -120986,6 +121074,14 @@ abstract final class CatchContractConstraints {
     'eventDocument.runtimeAccess.walkInPolicy': eventDocumentRuntimeAccessWalkInPolicy,
     'eventDocument.scenario': eventDocumentScenario,
     'eventDocument.seedPrefix': eventDocumentSeedPrefix,
+    'eventDocument.setupDefaults.city.source': eventDocumentSetupDefaultsCitySource,
+    'eventDocument.setupDefaults.city.value.cityId': eventDocumentSetupDefaultsCityValueCityId,
+    'eventDocument.setupDefaults.city.value.marketId': eventDocumentSetupDefaultsCityValueMarketId,
+    'eventDocument.setupDefaults.organizerDefaultsHash': eventDocumentSetupDefaultsOrganizerDefaultsHash,
+    'eventDocument.setupDefaults.organizerDefaultsRevision': eventDocumentSetupDefaultsOrganizerDefaultsRevision,
+    'eventDocument.setupDefaults.timezone.source': eventDocumentSetupDefaultsTimezoneSource,
+    'eventDocument.setupDefaults.timezone.value': eventDocumentSetupDefaultsTimezoneValue,
+    'eventDocument.setupRevision': eventDocumentSetupRevision,
     'eventDocument.sourceVenueId': eventDocumentSourceVenueId,
     'eventDocument.startingPointLat': eventDocumentStartingPointLat,
     'eventDocument.startingPointLng': eventDocumentStartingPointLng,
