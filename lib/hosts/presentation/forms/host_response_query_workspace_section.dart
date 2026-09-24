@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -65,6 +66,8 @@ class HostResponseQueryCapability {
     required this.copy,
     this.gateway,
     this.onReviewSelection,
+    this.offerWorkspace,
+    this.openEventSettings,
   });
 
   final String versionId;
@@ -73,6 +76,8 @@ class HostResponseQueryCapability {
   final HostResponseQueryGateway? gateway;
   final HostResponseQueryWorkspaceCopy copy;
   final void Function(List<String> ids, String resultHash)? onReviewSelection;
+  final HostEventOfferWorkspaceCopy? offerWorkspace;
+  final Future<void> Function(String eventId)? openEventSettings;
 }
 
 /// Manager query workspace for one published form version. Its bulk callback
@@ -86,6 +91,7 @@ class HostResponseQueryWorkspaceSection extends StatefulWidget {
     required this.copy,
     required this.onOpenResponse,
     this.onReviewSelection,
+    this.offerWorkspace,
   });
 
   final HostResponseQueryController controller;
@@ -93,6 +99,7 @@ class HostResponseQueryWorkspaceSection extends StatefulWidget {
   final HostResponseQueryWorkspaceCopy copy;
   final ValueChanged<String> onOpenResponse;
   final void Function(List<String> ids, String resultHash)? onReviewSelection;
+  final Widget? offerWorkspace;
 
   @override
   State<HostResponseQueryWorkspaceSection> createState() =>
@@ -336,6 +343,9 @@ class _HostResponseQueryWorkspaceSectionState
                   ),
               ],
             ),
+          if (view.status == HostResponseQueryStatus.ready &&
+              widget.offerWorkspace != null)
+            widget.offerWorkspace!,
         ],
       );
     },

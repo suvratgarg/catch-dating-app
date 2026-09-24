@@ -1,6 +1,9 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/clipboard.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -8,6 +11,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
@@ -16,6 +21,8 @@ import 'package:catch_dating_app/hosts/presentation/applications/host_applicatio
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -61,6 +68,8 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
 class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
   HostResponseQueryController? _queryController;
+  HostEventOfferController? _offerController;
+  String? _offerAccountId;
   HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
   String? _versionId;
@@ -83,6 +92,7 @@ class _HostFormResponsesPanelState
   @override
   void dispose() {
     _queryController?.dispose();
+    _offerController?.dispose();
     super.dispose();
   }
 
@@ -106,6 +116,9 @@ class _HostFormResponsesPanelState
                     ref.read(firebaseFunctionsProvider),
                   ),
             );
+      _offerController?.dispose();
+      _offerController = null;
+      _offerAccountId = null;
     }
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId) {
@@ -124,6 +137,18 @@ class _HostFormResponsesPanelState
     if (capability != null &&
         queryController != null &&
         widget.formId != null) {
+      final accountId = ref.watch(firebaseAuthProvider).currentUser?.uid;
+      final offerCopy = capability.offerWorkspace;
+      if (offerCopy != null && _offerAccountId != accountId) {
+        _offerController?.dispose();
+        _offerController = HostEventOfferController.forCallables(
+          functions: ref.read(firebaseFunctionsProvider),
+          storage: ref.read(commandJournalStorageProvider),
+          currentAccountId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+        );
+        _offerAccountId = accountId;
+      }
+      final functions = ref.read(firebaseFunctionsProvider);
       return SliverToBoxAdapter(
         child: HostResponseQueryWorkspaceSection(
           controller: queryController,
@@ -134,6 +159,50 @@ class _HostFormResponsesPanelState
           ),
           copy: capability.copy,
           onReviewSelection: capability.onReviewSelection,
+          offerWorkspace: offerCopy != null &&
+                  capability.openEventSettings != null &&
+                  accountId != null && _offerController != null
+              ? HostEventOfferWorkspaceSection(
+                  key: ValueKey('offer-workspace-$accountId-${widget.formId}'),
+                  organizerId: widget.organizerId,
+                  accountId: accountId,
+                  queryController: queryController,
+                  offerController: _offerController!,
+                  listOffers: ({required organizerId, required eventId,
+                      afterOfferId}) => CallableHostEventOfferGateway(functions)
+                      .listOffers(organizerId: organizerId, eventId: eventId,
+                        afterOfferId: afterOfferId),
+                  getOffer: ({required organizerId, required eventId,
+                      required contactId}) =>
+                      CallableHostEventOfferGateway(functions).getOffer(
+                        organizerId: organizerId, eventId: eventId,
+                        contactId: contactId),
+                  prepareHandoff: ({required offer}) =>
+                      CallableHostEventOfferGateway(functions).prepareHandoff(
+                        offer: offer),
+                  copyMessage: (text) => ref.read(clipboardControllerProvider)
+                      .copyText(text),
+                  openHandoff: (uri) => ref.read(externalLinkControllerProvider)
+                      .openExternal(uri),
+                  targets: CallableHostOfferEventTargetsGateway(functions),
+                  getResponseDetail: (responseId) => ref.read(
+                    hostFormResponseDetailProvider(
+                      organizerId: widget.organizerId,
+                      responseId: responseId,
+                    ).future,
+                  ),
+                  openResponseForConversion: (responseId) async {
+                    await context.pushNamed(
+                      Routes.hostFormResponseDetailScreen.name,
+                      pathParameters: {'responseId': responseId},
+                      queryParameters: {'organizerId': widget.organizerId},
+                    );
+                  },
+                  openEventSettings: capability.openEventSettings!,
+                  copy: offerCopy,
+                  now: DateTime.now,
+                )
+              : null,
           onOpenResponse: (responseId) => context.pushNamed(
             Routes.hostFormResponseDetailScreen.name,
             pathParameters: {'responseId': responseId},
