@@ -1113,3 +1113,24 @@ test("a participation changed after query is reread before any release",
       true);
     assert.equal(h.updateWrites.length, 0);
   });
+
+test("retained Host seats reject corrupt ledger or reservation before unlink",
+  async () => {
+    for (const field of ["zeroOccupied", "wrongEvent", "badRevision"]) {
+      const seed = readySeatSeed({host: true});
+      if (field === "zeroOccupied") {
+        seed["eventSeatLedgers/event1"].occupied = 0;
+      } else if (field === "wrongEvent") {
+        seed[seatReservationPath("canonical_runner1")].eventId = "foreign";
+      } else {
+        seed[seatReservationPath("canonical_runner1")].revision = 0;
+      }
+      const h = createAccountDeletionHarness({seed,
+        now: {kind: "serverTimestamp"}});
+      await assert.rejects(deleteAccountEventParticipations({
+        db: h.deps.firestore(), uid: "runner1",
+        now: h.deps.serverTimestamp(), nowMillis: 1000}));
+      assert.deepEqual(h.updateWrites, []);
+      assert.deepEqual(h.setWrites, []);
+    }
+  });

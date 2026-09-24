@@ -8,7 +8,8 @@ import {readSeatMigrationWriterFence} from
 import {FirestoreSeatIdentityAuthority, seatIdentityAliasId,
   seatVerifiedPhoneProofId} from
   "../events/seatIdentityAuthority";
-import {applyFirestoreSeat, deriveEventSeatPolicy, FirestoreSeatTransaction,
+import {applyFirestoreSeat, assertCurrentReadySeatSnapshot,
+  deriveEventSeatPolicy, FirestoreSeatTransaction,
   prepareFirestoreSeat} from "../events/seatAuthority/firestoreAdapter";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
@@ -210,6 +211,8 @@ export async function deleteAccountEventParticipations(params: {
       }
       retainHostSeat = independent.length === 1;
       const reservation = await ledgerTx.reservation(eventId, identity.key);
+      assertCurrentReadySeatSnapshot({event, eventId,
+        organizerId: event.clubId, identity, ledger, reservation});
       if (active || retainHostSeat) {
         if (!reservation?.active ||
             reservation.identityRevision !== identity.revision) {
