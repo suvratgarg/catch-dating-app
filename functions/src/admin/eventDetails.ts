@@ -27,6 +27,8 @@ import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {eventDiscoveryProjection} from "../events/eventDiscoveryProjection";
+import {isConfiguredEvent,
+  type ConfiguredEventDocument} from "../events/configuredEvent";
 import {
   buildEventAdminSearchProjection,
   eventAdminSearchQueryTokens,
@@ -63,6 +65,25 @@ const defaultDeps: EventDetailsDeps = {
 };
 
 type EventDetailsPatch = AdminUpdateEventDetailsCallablePayload["fields"];
+type AdminRichEventDocument = ConfiguredEventDocument &
+  Required<Pick<EventDocument, "description" | "distanceKm" | "pace">>;
+
+function isAdminRichEvent(
+  event: EventDocument
+): event is AdminRichEventDocument {
+  return isConfiguredEvent(event) &&
+    typeof event.description === "string" &&
+    Number.isFinite(event.distanceKm) &&
+    typeof event.pace === "string";
+}
+
+function requireAdminRichEvent(event: EventDocument): AdminRichEventDocument {
+  if (!isAdminRichEvent(event)) {
+    throw new HttpsError("failed-precondition",
+      "Complete event setup before using admin event details.");
+  }
+  return event;
+}
 
 export interface AdminEventDetailsSnapshot {
   eventId: string;
@@ -194,7 +215,8 @@ export async function adminListEventDetailsHandler(
   const events = snapshot.docs.map((doc) => ({
     eventId: doc.id,
     event: requireDoc<EventDocument>(doc, "EventDocument"),
-  }));
+  })).filter((row): row is {eventId: string;
+    event: AdminRichEventDocument} => isAdminRichEvent(row.event));
   const clubNames = await loadClubNames(
     db,
     events.map((row) => row.event.organizerId ?? row.event.clubId)
@@ -237,7 +259,8 @@ export async function adminGetEventDetailsHandler(
   if (!eventSnap.exists) {
     throw new HttpsError("not-found", "Event not found.");
   }
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+  const event = requireAdminRichEvent(
+    requireDoc<EventDocument>(eventSnap, "EventDocument"));
   const club = await loadClub(db, event.organizerId ?? event.clubId);
   return {
     event: publicEventDetails(data.eventId, event, club?.name ?? null),
@@ -292,7 +315,8 @@ export async function adminUpdateEventDetailsHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const before = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    const before = requireAdminRichEvent(
+      requireDoc<EventDocument>(eventSnap, "EventDocument"));
     if (before.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -365,7 +389,7 @@ export async function adminUpdateEventDetailsHandler(
  */
 function publicEventListRow(
   eventId: string,
-  event: EventDocument,
+  event: AdminRichEventDocument,
   organizerName: string | null
 ): AdminEventListRow {
   return {
@@ -402,7 +426,7 @@ function publicEventListRow(
  */
 function publicEventDetails(
   eventId: string,
-  event: EventDocument,
+  event: AdminRichEventDocument,
   organizerName: string | null
 ): AdminEventDetailsSnapshot {
   return {

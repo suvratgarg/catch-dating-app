@@ -155,7 +155,10 @@ class FakeFirestore {
 
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
-    if (data !== undefined) return {...data};
+    if (data !== undefined) {
+      return path.startsWith("events/") ?
+        {...configuredEventFields(), ...data} : {...data};
+    }
     const draftPath = path.replace(
       "eventSuccessAssignments/",
       "eventSuccessAssignmentDrafts/"
@@ -298,6 +301,21 @@ test(
     ));
   }
 );
+
+test("incomplete setup cannot generate a rotation draft", async () => {
+  const {deps} = harness({"events/event-1": {
+    publicationState: "private",
+    setupRevision: 1,
+    endTime: undefined,
+  }});
+  await assert.rejects(generateEventSuccessRotationsHandler(
+    callableRequest("host-1"), deps
+  ), (error) => {
+    isHttpsError(error, "failed-precondition",
+      "This event needs a valid schedule and format.");
+    return true;
+  });
+});
 
 test("pickleball defaults to profile-free coverage schedules", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
@@ -1317,6 +1335,23 @@ function rotationEvent(
     },
     startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
     endTime: fakeTimestamp(endTime),
+  };
+}
+
+function configuredEventFields(): FakeData {
+  return {
+    clubId: "club-1",
+    startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+    endTime: fakeTimestamp("2026-05-21T09:00:00.000Z"),
+    meetingPoint: "Court entrance",
+    meetingLocation: {name: "Court", latitude: 19, longitude: 72},
+    eventFormat: {
+      version: 1,
+      activityKind: "pickleball",
+      interactionModel: "pairedRotations",
+    },
+    capacityLimit: 20,
+    priceInPaise: 0,
   };
 }
 
