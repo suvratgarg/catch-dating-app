@@ -112,7 +112,9 @@ function project(doc: FirebaseFirestore.QueryDocumentSnapshot,
     setupRevision: setupRevision as number,
     status: "active",
     detailsConfigured: event.endTime !== undefined ||
+      event.meetingPoint !== undefined ||
       event.meetingLocation !== undefined ||
+      event.eventFormat !== undefined ||
       event.eventSuccessPlanId !== undefined,
   };
 }
