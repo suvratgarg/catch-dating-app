@@ -13,7 +13,7 @@ export type AdmissionPreset =
 
 /**
  * Manager-authorized resolution projection, not an organizer document schema.
- * Public hostDefaults may supply safe fields, but payment instructions, reusable
+ * Public hostDefaults may supply safe fields. Payment instructions, reusable
  * links and message templates require manager-only storage and reads. The
  * adapter must combine authorized inputs under a revision fence; never persist
  * this whole projection into the publicly readable organizer document.
