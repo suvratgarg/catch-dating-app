@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -216,7 +219,8 @@ void main() {
           storage: () async => storage,
           currentAccountId: () => 'manager-one',
           write: write,
-          refresh: (_) async => offer,
+          refresh: ({required organizerId, required eventId,
+              required contactId}) async => offer,
         );
     await expectLater(makeOutbox().mutate(accountId: 'manager-one',
       offer: offer, action: action), throwsStateError);
@@ -229,6 +233,118 @@ void main() {
     expect((sent[1]['action']! as Map)['requestId'], 'reference_001');
   });
 
+  test('manual mutation recovery discovers original command after restart',
+      () async {
+    final storage = MemoryCommandJournalStorage();
+    final offer = _offer(HostManualPaymentStatus.none);
+    final sent = <Map<String, Object?>>[];
+    var fail = true;
+    JournalHostOfferMutationOutbox makeOutbox() =>
+        JournalHostOfferMutationOutbox(
+          storage: () async => storage,
+          currentAccountId: () => 'manager-one',
+          write: (payload) async {
+            sent.add(payload);
+            if (fail) throw StateError('lost acknowledgement');
+          },
+          refresh: ({required organizerId, required eventId,
+              required contactId}) async => offer,
+        );
+    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
+      offer: offer, action: {
+        'kind': 'recordEvidence', 'requestId': 'reference_003',
+        'expectedRevision': 2, 'expectedGeneration': 1,
+        'evidenceReference': 'BANK-12345',
+      }), throwsStateError);
+    final restarted = makeOutbox();
+    final pending = await restarted.pendingMutation(
+      accountId: 'manager-one', organizerId: 'org', eventId: 'event-one');
+    expect(pending?.requestId, 'reference_003');
+    expect(pending?.contactId, offer.contactId);
+    fail = false;
+    final replayed = await restarted.replayMutation(
+      accountId: 'manager-one', organizerId: 'org', eventId: 'event-one');
+    expect(replayed.offerId, offer.offerId);
+    expect(sent, hasLength(2));
+    expect(sent.last, sent.first);
+    expect(await restarted.pendingMutation(accountId: 'manager-one',
+      organizerId: 'org', eventId: 'event-one'), isNull);
+  });
+
+  test('malformed batch receipt leaves saved operation for exact replay',
+      () async {
+    final storage = MemoryCommandJournalStorage();
+    final gateway = _Gateway()..malformedCommit = true;
+    final outbox = JournalHostOfferCommitOutbox(
+      storage: () async => storage,
+      currentAccountId: () => 'manager-one', gateway: gateway);
+    final draft = HostOfferBatchDraft(organizerId: 'org',
+      eventId: 'event-one', rows: [_row(eventId: 'event-one')]);
+    final preview = await gateway.preview(draft);
+    await expectLater(outbox.submit(accountId: 'manager-one',
+      draft: draft, preview: preview, requestId: 'request_003'),
+      throwsFormatException);
+    expect((await outbox.pending(accountId: 'manager-one',
+      organizerId: 'org', eventId: 'event-one'))?.requestId,
+      'request_003');
+    gateway.malformedCommit = false;
+    final receipt = await outbox.submit(accountId: 'manager-one',
+      draft: draft, preview: preview, requestId: 'request_003');
+    expect(receipt?.requestId, 'request_003');
+    expect(gateway.commitCalls, ['request_003', 'request_003']);
+  });
+
+  test('manual write acknowledgement binds scope, action and result', () {
+    final id = 'applicationoffer_${sha256.convert(utf8.encode(
+      ['org', 'event-one', 'contact-kabir'].join('\u001f')))
+        .toString().substring(0, 40)}';
+    final payload = <String, Object?>{
+      'row': {
+        'organizerId': 'org', 'eventId': 'event-one',
+        'contactId': 'contact-kabir', 'applicationId': 'response-kabir',
+        'sourceKind': 'formResponse',
+      },
+      'action': {
+        'kind': 'recordEvidence', 'requestId': 'reference_004',
+        'expectedRevision': 2, 'expectedGeneration': 1,
+        'evidenceReference': 'BANK-12345',
+      },
+    };
+    final hash = sha256.convert(utf8.encode(jsonEncode([
+      id, 'recordEvidence', 'reference_004', 2, 1, 'BANK-12345',
+    ]))).toString();
+    final result = <String, Object?>{
+      'offer': {
+        'offerId': id, 'organizerId': 'org', 'eventId': 'event-one',
+        'contactId': 'contact-kabir', 'applicationId': 'response-kabir',
+        'sourceKind': 'formResponse', 'generation': 1, 'revision': 3,
+      },
+      'receipt': {
+        'offerId': id, 'requestId': 'reference_004',
+        'requestHash': hash, 'resultingGeneration': 1,
+        'resultingRevision': 3,
+      },
+      'replayed': false,
+    };
+    expect(() => validateOfferMutationAcknowledgement(payload, result),
+      returnsNormally);
+    expect(() => validateOfferMutationAcknowledgement(payload, {
+      ...result, 'offer': {
+        ...(result['offer']! as Map), 'contactId': 'foreign',
+      },
+    }), throwsFormatException);
+    expect(() => validateOfferMutationAcknowledgement(payload, {
+      ...result, 'receipt': {
+        ...(result['receipt']! as Map), 'requestHash': List.filled(64, '0').join(),
+      },
+    }), throwsFormatException);
+    expect(() => validateOfferMutationAcknowledgement(payload, {
+      ...result, 'receipt': {
+        ...(result['receipt']! as Map), 'resultingGeneration': 2,
+      },
+    }), throwsFormatException);
+  });
+
   test('failed detail refresh never reissues acknowledged mutation',
       () async {
     final storage = MemoryCommandJournalStorage();
@@ -239,7 +355,9 @@ void main() {
           storage: () async => storage,
           currentAccountId: () => 'manager-one',
           write: (_) async { writes++; },
-          refresh: (_) async => throw StateError('detail unavailable'),
+          refresh: ({required organizerId, required eventId,
+              required contactId}) async =>
+              throw StateError('detail unavailable'),
         );
     final action = <String, Object?>{
       'kind': 'recordEvidence', 'requestId': 'reference_002',
@@ -299,6 +417,7 @@ class _Gateway implements HostEventOfferGateway {
   final List<HostManualPaymentStatus> reviewCalls = [];
   int admissionCalls = 0;
   bool failFirstCommit = false;
+  bool malformedCommit = false;
 
   @override
   Future<HostOfferPreview> preview(HostOfferBatchDraft draft) async {
@@ -327,9 +446,10 @@ class _Gateway implements HostEventOfferGateway {
       throw StateError('uncertain network result');
     }
     return HostOfferCommitReceipt(
-      organizerId: draft.organizerId,
+      organizerId: malformedCommit ? 'foreign' : draft.organizerId,
       eventId: draft.eventId,
       requestId: requestId,
+      requestHash: List.filled(64, 'a').join(),
       results: const [
         HostOfferPreviewRow(
           offerId: 'offer-kabir',
@@ -367,6 +487,16 @@ class _Gateway implements HostEventOfferGateway {
 class _FakeMutationOutbox implements HostOfferMutationOutbox {
   const _FakeMutationOutbox(this.gateway);
   final _Gateway gateway;
+
+  @override
+  Future<HostOfferPendingMutation?> pendingMutation({
+    required String accountId, required String organizerId,
+    required String eventId}) async => null;
+
+  @override
+  Future<HostEventOffer> replayMutation({required String accountId,
+    required String organizerId, required String eventId}) =>
+    throw UnimplementedError();
 
   @override
   Future<HostEventOffer> mutate({required String accountId,

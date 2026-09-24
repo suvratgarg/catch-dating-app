@@ -494,11 +494,36 @@ abstract interface class HostOfferCommitOutbox {
 }
 
 abstract interface class HostOfferMutationOutbox {
+  Future<HostOfferPendingMutation?> pendingMutation({
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  });
+  Future<HostEventOffer> replayMutation({
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  });
   Future<HostEventOffer> mutate({
     required String accountId,
     required HostEventOffer offer,
     required Map<String, Object?> action,
   });
+}
+
+@immutable
+class HostOfferPendingMutation {
+  const HostOfferPendingMutation({
+    required this.requestId,
+    required this.contactId,
+    required this.kind,
+    required this.decision,
+  });
+
+  final String requestId;
+  final String contactId;
+  final String kind;
+  final String? decision;
 }
 
 Map<String, Object?> _offerMap(Object? value, String label) {

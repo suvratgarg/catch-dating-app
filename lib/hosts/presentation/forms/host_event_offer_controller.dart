@@ -230,6 +230,32 @@ class HostEventOfferController extends ChangeNotifier {
     });
   }
 
+  Future<HostOfferPendingMutation?> recoverPendingMutation({
+    required String organizerId,
+    required String eventId,
+  }) {
+    final outbox = _mutationOutbox;
+    final accountId = _accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      throw StateError('Durable offer storage is required.');
+    }
+    return outbox.pendingMutation(accountId: accountId,
+      organizerId: organizerId, eventId: eventId);
+  }
+
+  Future<HostEventOffer> retryPendingMutation({
+    required String organizerId,
+    required String eventId,
+  }) {
+    final outbox = _mutationOutbox;
+    final accountId = _accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      throw StateError('Durable offer storage is required.');
+    }
+    return outbox.replayMutation(accountId: accountId,
+      organizerId: organizerId, eventId: eventId);
+  }
+
   Future<HostEventOffer> reviewReference({
     required HostEventOffer offer,
     required HostManualPaymentStatus decision,
