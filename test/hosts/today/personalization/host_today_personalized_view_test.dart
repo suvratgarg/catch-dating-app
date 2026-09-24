@@ -177,7 +177,7 @@ void main() {
       await tester.ensureVisible(continueButton);
       await tester.tap(continueButton);
       await pumpFeatureUi(tester);
-      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.byType(CatchNotice), findsOneWidget);
       expect(router.state.uri.path, '/host/today/focus');
       expect(preferences.values, isEmpty);
       expect(tester.widget<CatchChoiceTile>(choice).selected, isTrue);
