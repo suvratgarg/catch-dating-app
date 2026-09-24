@@ -644,6 +644,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialDraft,
                     _ => null,
                   },
+                  initialSavedEventId: switch (extra) {
+                    final HostCreateEventRouteArguments arguments =>
+                      arguments.initialSavedEventId,
+                    _ => null,
+                  },
                   externalBookingMode: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.externalBookingMode,

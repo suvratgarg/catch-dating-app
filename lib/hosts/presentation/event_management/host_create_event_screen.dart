@@ -30,17 +30,24 @@ class HostCreateEventRouteArguments {
     required this.initialClub,
     this.initialDraft,
     this.initialPrefill,
+    this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create route cannot restore a draft and apply a repeat prefill.',
+       ),
+       assert(
+         initialSavedEventId == null ||
+             (initialDraft == null && initialPrefill == null),
+         'A saved event cannot also restore a draft or repeat prefill.',
        );
 
   final Club initialClub;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
@@ -53,18 +60,25 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     this.initialClub,
     this.initialDraft,
     this.initialPrefill,
+    this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
   }) : assert(
          initialDraft == null || initialPrefill == null,
          'A create route cannot restore a draft and apply a repeat prefill.',
+       ),
+       assert(
+         initialSavedEventId == null ||
+             (initialDraft == null && initialPrefill == null),
+         'A saved event cannot also restore a draft or repeat prefill.',
        );
 
   final String clubId;
   final Club? initialClub;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
@@ -120,6 +134,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       state: routeState,
       initialDraft: initialDraft,
       initialPrefill: initialPrefill,
+      initialSavedEventId: initialSavedEventId,
       initialRosterImportPlan: initialRosterImportPlan,
       externalBookingMode:
           initialDraft?.externalBookingMode ?? externalBookingMode,
@@ -135,6 +150,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     required this.state,
     this.initialDraft,
     this.initialPrefill,
+    this.initialSavedEventId,
     this.externalBookingMode = false,
     this.initialRosterImportPlan,
     this.promptForDrafts = true,
@@ -144,6 +160,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
   final HostCreateEventRouteState state;
   final EventDraft? initialDraft;
   final CreateEventPrefill? initialPrefill;
+  final String? initialSavedEventId;
   final bool externalBookingMode;
   final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
@@ -186,9 +203,18 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
         club: state.club!,
         initialDraft: initialDraft,
         initialPrefill: initialPrefill,
+        initialSavedEventId: initialSavedEventId,
         initialRosterImportPlan: initialRosterImportPlan,
         promptForDraftsOnStart: promptForDrafts,
       ),
+      HostCreateEventRouteStatus.ready when initialSavedEventId != null =>
+        CatchScaffold.stepFlow(
+          body: CatchErrorState(
+            title: context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+            message: context.l10n.hostsPrivateEventSetupUnavailable,
+            actions: const [CatchErrorBackButton()],
+          ),
+        ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,
         initialDraft: initialDraft,

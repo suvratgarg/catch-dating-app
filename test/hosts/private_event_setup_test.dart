@@ -150,6 +150,10 @@ void main() {
       'basics': basics.toJson(),
     });
     expect(
+      PrivateEventBasicsUpdateRequest.fromJson(request.toJson()).toJson(),
+      request.toJson(),
+    );
+    expect(
       const PrivateEventBasicsUpdateRequest(
         organizerId: 'club-1',
         eventId: 'event-1',

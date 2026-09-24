@@ -231,6 +231,32 @@ class PrivateEventBasicsUpdateRequest {
   final int expectedSetupRevision;
   final PrivateEventBasics basics;
 
+  factory PrivateEventBasicsUpdateRequest.fromJson(Map<String, dynamic> json) {
+    final organizerId = json['organizerId'];
+    final eventId = json['eventId'];
+    final requestId = json['requestId'];
+    final expectedSetupRevision = json['expectedSetupRevision'];
+    final rawBasics = json['basics'];
+    if (organizerId is! String ||
+        eventId is! String ||
+        requestId is! String ||
+        expectedSetupRevision is! int ||
+        rawBasics is! Map) {
+      throw const FormatException('Invalid saved basics update');
+    }
+    final request = PrivateEventBasicsUpdateRequest(
+      organizerId: organizerId,
+      eventId: eventId,
+      requestId: requestId,
+      expectedSetupRevision: expectedSetupRevision,
+      basics: PrivateEventBasics.fromJson(Map<String, dynamic>.from(rawBasics)),
+    );
+    if (!request.isValid) {
+      throw const FormatException('Invalid saved basics update');
+    }
+    return request;
+  }
+
   bool get isValid =>
       organizerId.trim().isNotEmpty &&
       eventId.trim().isNotEmpty &&

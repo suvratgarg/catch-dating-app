@@ -24,6 +24,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
     required this.onClose,
     this.onReturnToResponses,
     this.onLinkForm,
+    this.onEditBasics,
     this.onEditDetails,
     this.onImportGuests,
     this.onSetupRegistration,
@@ -42,6 +43,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback? onReturnToResponses;
   final VoidCallback? onLinkForm;
+  final VoidCallback? onEditBasics;
   final VoidCallback? onEditDetails;
   final VoidCallback? onImportGuests;
   final VoidCallback? onSetupRegistration;
@@ -127,6 +129,15 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                   : context.l10n.hostsPrivateEventLinkFormBody,
                               icon: CatchIcons.descriptionOutlined,
                               onTap: onLinkForm,
+                            ),
+                            CatchField.action(
+                              copy: copy,
+                              title: context.l10n.hostsPrivateEventEditBasics,
+                              body: onEditBasics == null
+                                  ? context.l10n.hostsPrivateEventEditBasicsUnavailable
+                                  : context.l10n.hostsPrivateEventEditBasicsBody,
+                              icon: CatchIcons.editNoteRounded,
+                              onTap: onEditBasics,
                             ),
                             CatchField.action(
                               copy: copy,

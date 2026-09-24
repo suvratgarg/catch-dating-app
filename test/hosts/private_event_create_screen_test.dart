@@ -245,6 +245,115 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('manager read reopens a saved event and replays a lost edit', (
+    tester,
+  ) async {
+    final date = DateUtils.dateOnly(DateTime.now().add(const Duration(days: 3)));
+    final localDate =
+        '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final read = PrivateEventBasicSummary.fromResponse({
+      'eventId': 'event-1',
+      'organizerId': 'club-1',
+      'setupRevision': 2,
+      'publicationState': 'private',
+      'status': 'active',
+      'name': 'Saturday mixer',
+      'city': {'cityId': 'in-mh-mumbai', 'marketId': 'in-mh-mumbai'},
+      'localDate': localDate,
+      'localStartTime': '19:00',
+      'timezone': 'Asia/Kolkata',
+      'startTimeMillis': date.millisecondsSinceEpoch,
+      'setupDefaults': <String, Object?>{},
+      'detailsConfigured': false,
+    });
+    final attempted = <PrivateEventBasicsUpdateRequest>[];
+    var createCalls = 0;
+    var updateCalls = 0;
+    Widget app() => ProviderScope(
+      overrides: [
+        // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
+        uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+      ],
+      child: MaterialApp(
+        theme: CatchTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PrivateEventCreateScreen(
+          club: buildClub(),
+          initialSavedEventId: 'event-1',
+          readSaved: ({required organizerId, required eventId}) async {
+            expect(organizerId, 'club-1');
+            expect(eventId, 'event-1');
+            return read;
+          },
+          create: ({required organizerId, required requestId, required basics}) async {
+            createCalls++;
+            throw StateError('saved event must not call create');
+          },
+          update: (request) async {
+            attempted.add(request);
+            updateCalls++;
+            if (updateCalls == 1) throw StateError('response lost');
+            if (updateCalls == 2) {
+              throw FirebaseFunctionsException(
+                code: 'permission-denied',
+                message: 'Manager access temporarily changed',
+              );
+            }
+            return const PrivateEventCreateReceipt(
+              eventId: 'event-1',
+              setupRevision: 3,
+              replayed: true,
+            );
+          },
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(app());
+    await pumpFeatureUi(tester);
+    expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
+    await tester.tap(find.text('Edit event basics'));
+    await pumpFeatureUi(tester);
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('private-event-name')),
+        matching: find.byType(EditableText),
+      ),
+      'Sunday mixer',
+    );
+    await tester.tap(find.byKey(const ValueKey('private-event-save')));
+    await pumpFeatureUi(tester);
+    expect(updateCalls, 1);
+    expect(attempted.single.eventId, 'event-1');
+    expect(attempted.single.expectedSetupRevision, 2);
+    expect(attempted.single.basics.name, 'Sunday mixer');
+    final firstBody = attempted.single.toJson();
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(app());
+    await pumpFeatureUi(tester);
+    expect(find.text('Retry the same save'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('private-event-save')));
+    await pumpFeatureUi(tester);
+    expect(updateCalls, 2);
+    expect(attempted.last.toJson(), firstBody);
+    ScaffoldMessenger.of(
+      tester.element(find.byType(PrivateEventCreateScreen)),
+    ).removeCurrentSnackBar();
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(const ValueKey('private-event-save')));
+    await pumpFeatureUi(tester);
+    expect(updateCalls, 3);
+    expect(attempted.last.toJson(), firstBody);
+    expect(createCalls, 0);
+    expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
+    expect(find.text('Sunday mixer'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('saved setup action remains reachable at 360px and 2x text', (
     tester,
   ) async {
