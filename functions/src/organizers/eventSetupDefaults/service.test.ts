@@ -81,7 +81,7 @@ test("manager reads coherent public and private defaults", async () => {
   assert.equal(before.timezone, "Asia/Kolkata");
   assert.equal(before.organizerDefaultsRevision, 2);
   assert.equal(before.preferencesRevision, 0);
-  assert.deepEqual(before.preferences, {});
+  assert.deepEqual(before.preferences, {timezone: "Asia/Kolkata"});
   const result = await update(h.deps);
   assert.equal(result.appliedRevision, 1);
   assert.equal(result.current.preferences.offerValidityMinutes, 30);
@@ -143,7 +143,7 @@ test("clear, validation and changed public defaults are fenced", async () => {
   const cleared = await update(h.deps, {requestId: "request_004",
     expectedRevision: 1,
     changes: {offerValidityMinutes: {mode: "clear"}}});
-  assert.deepEqual(cleared.current.preferences, {});
+  assert.deepEqual(cleared.current.preferences, {timezone: "Asia/Kolkata"});
   const writes = h.writes;
   await assert.rejects(update(h.deps, {requestId: "request_005",
     expectedRevision: 2,
@@ -200,4 +200,29 @@ test("real payment-page validation rejects unsafe storage without writes",
     assert.equal(saved.current.preferences.reusablePaymentPage?.url,
       "https://payments.example/offer");
     assert.equal(h.rows.get("organizers/org1")?.reusablePaymentPage, undefined);
+  });
+
+
+test("private timezone overrides and clear never revives legacy timezone",
+  async () => {
+    const h = harness();
+    const publicBefore = structuredClone(h.rows.get("organizers/org1"));
+    const initial = await read(h.deps);
+    await assert.rejects(update(h.deps, {changes: {
+      timezone: {mode: "set", value: "Not/A_Timezone"},
+    }}), {code: "invalid-argument"});
+    assert.equal(h.writes, 0);
+    const saved = await update(h.deps, {changes: {
+      timezone: {mode: "set", value: "Asia/Dubai"},
+    }});
+    assert.equal(saved.current.timezone, "Asia/Dubai");
+    assert.equal(saved.current.organizerDefaultsRevision, 1);
+    assert.notEqual(saved.current.basicsReviewedHash,
+      initial.basicsReviewedHash);
+    const cleared = await update(h.deps, {requestId: "request-clear-tz",
+      expectedRevision: 1, changes: {timezone: {mode: "clear"}}});
+    assert.equal(cleared.current.timezone, null);
+    assert.equal(cleared.current.preferences.timezone, undefined);
+    assert.equal((await read(h.deps)).timezone, null);
+    assert.deepEqual(h.rows.get("organizers/org1"), publicBefore);
   });

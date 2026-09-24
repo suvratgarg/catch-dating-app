@@ -18,4 +18,5 @@ export interface OrganizerEventSetupPreferences {
     url: string;
     reusableForEvents: true;
   };
+  timezone?: string;
 }

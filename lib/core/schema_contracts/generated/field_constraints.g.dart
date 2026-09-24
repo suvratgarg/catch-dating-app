@@ -84103,6 +84103,14 @@ abstract final class CatchContractConstraints {
     format: 'uri',
   );
 
+  static const organizerEventSetupDefaultsCallableResponsePreferencesTimezone = CatchContractFieldConstraints(
+    path: 'organizerEventSetupDefaultsCallableResponse.preferences.timezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerEventSetupDefaultsCallableResponsePreferencesUsualDurationMinutes = CatchContractFieldConstraints(
     path: 'organizerEventSetupDefaultsCallableResponse.preferences.usualDurationMinutes',
     valueTypes: <String>['integer'],
@@ -84192,6 +84200,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const organizerEventSetupDefaultsDocumentEventSetupTimezone = CatchContractFieldConstraints(
+    path: 'organizerEventSetupDefaultsDocument.eventSetup.timezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerEventSetupDefaultsDocumentEventSetupUsualDurationMinutes = CatchContractFieldConstraints(
@@ -84290,6 +84306,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const organizerEventSetupPreferencesTimezone = CatchContractFieldConstraints(
+    path: 'organizerEventSetupPreferences.timezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerEventSetupPreferencesUsualDurationMinutes = CatchContractFieldConstraints(
@@ -110650,6 +110674,20 @@ abstract final class CatchContractConstraints {
     format: 'uri',
   );
 
+  static const updateOrganizerEventSetupDefaultsCallablePayloadChangesTimezoneMode = CatchContractFieldConstraints(
+    path: 'updateOrganizerEventSetupDefaultsCallablePayload.changes.timezone.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerEventSetupDefaultsCallablePayloadChangesTimezoneValue = CatchContractFieldConstraints(
+    path: 'updateOrganizerEventSetupDefaultsCallablePayload.changes.timezone.value',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updateOrganizerEventSetupDefaultsCallablePayloadChangesUsualDurationMinutesMode = CatchContractFieldConstraints(
     path: 'updateOrganizerEventSetupDefaultsCallablePayload.changes.usualDurationMinutes.mode',
     required: true,
@@ -110789,6 +110827,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesTimezone = CatchContractFieldConstraints(
+    path: 'updateOrganizerEventSetupDefaultsCallableResponse.current.preferences.timezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesUsualDurationMinutes = CatchContractFieldConstraints(
@@ -127988,6 +128034,7 @@ abstract final class CatchContractConstraints {
     'organizerEventSetupDefaultsCallableResponse.preferences.preferredVenueId': organizerEventSetupDefaultsCallableResponsePreferencesPreferredVenueId,
     'organizerEventSetupDefaultsCallableResponse.preferences.reusablePaymentPage.reusableForEvents': organizerEventSetupDefaultsCallableResponsePreferencesReusablePaymentPageReusableForEvents,
     'organizerEventSetupDefaultsCallableResponse.preferences.reusablePaymentPage.url': organizerEventSetupDefaultsCallableResponsePreferencesReusablePaymentPageUrl,
+    'organizerEventSetupDefaultsCallableResponse.preferences.timezone': organizerEventSetupDefaultsCallableResponsePreferencesTimezone,
     'organizerEventSetupDefaultsCallableResponse.preferences.usualDurationMinutes': organizerEventSetupDefaultsCallableResponsePreferencesUsualDurationMinutes,
     'organizerEventSetupDefaultsCallableResponse.preferencesHash': organizerEventSetupDefaultsCallableResponsePreferencesHash,
     'organizerEventSetupDefaultsCallableResponse.preferencesRevision': organizerEventSetupDefaultsCallableResponsePreferencesRevision,
@@ -128001,6 +128048,7 @@ abstract final class CatchContractConstraints {
     'organizerEventSetupDefaultsDocument.eventSetup.preferredVenueId': organizerEventSetupDefaultsDocumentEventSetupPreferredVenueId,
     'organizerEventSetupDefaultsDocument.eventSetup.reusablePaymentPage.reusableForEvents': organizerEventSetupDefaultsDocumentEventSetupReusablePaymentPageReusableForEvents,
     'organizerEventSetupDefaultsDocument.eventSetup.reusablePaymentPage.url': organizerEventSetupDefaultsDocumentEventSetupReusablePaymentPageUrl,
+    'organizerEventSetupDefaultsDocument.eventSetup.timezone': organizerEventSetupDefaultsDocumentEventSetupTimezone,
     'organizerEventSetupDefaultsDocument.eventSetup.usualDurationMinutes': organizerEventSetupDefaultsDocumentEventSetupUsualDurationMinutes,
     'organizerEventSetupDefaultsDocument.organizerId': organizerEventSetupDefaultsDocumentOrganizerId,
     'organizerEventSetupDefaultsDocument.revision': organizerEventSetupDefaultsDocumentRevision,
@@ -128015,6 +128063,7 @@ abstract final class CatchContractConstraints {
     'organizerEventSetupPreferences.preferredVenueId': organizerEventSetupPreferencesPreferredVenueId,
     'organizerEventSetupPreferences.reusablePaymentPage.reusableForEvents': organizerEventSetupPreferencesReusablePaymentPageReusableForEvents,
     'organizerEventSetupPreferences.reusablePaymentPage.url': organizerEventSetupPreferencesReusablePaymentPageUrl,
+    'organizerEventSetupPreferences.timezone': organizerEventSetupPreferencesTimezone,
     'organizerEventSetupPreferences.usualDurationMinutes': organizerEventSetupPreferencesUsualDurationMinutes,
     'organizerEventSuccessLayoutDocument.createdAt._nanoseconds': organizerEventSuccessLayoutDocumentCreatedAtNanoseconds,
     'organizerEventSuccessLayoutDocument.createdAt._seconds': organizerEventSuccessLayoutDocumentCreatedAtSeconds,
@@ -131634,6 +131683,8 @@ abstract final class CatchContractConstraints {
     'updateOrganizerEventSetupDefaultsCallablePayload.changes.reusablePaymentPage.mode': updateOrganizerEventSetupDefaultsCallablePayloadChangesReusablePaymentPageMode,
     'updateOrganizerEventSetupDefaultsCallablePayload.changes.reusablePaymentPage.value.reusableForEvents': updateOrganizerEventSetupDefaultsCallablePayloadChangesReusablePaymentPageValueReusableForEvents,
     'updateOrganizerEventSetupDefaultsCallablePayload.changes.reusablePaymentPage.value.url': updateOrganizerEventSetupDefaultsCallablePayloadChangesReusablePaymentPageValueUrl,
+    'updateOrganizerEventSetupDefaultsCallablePayload.changes.timezone.mode': updateOrganizerEventSetupDefaultsCallablePayloadChangesTimezoneMode,
+    'updateOrganizerEventSetupDefaultsCallablePayload.changes.timezone.value': updateOrganizerEventSetupDefaultsCallablePayloadChangesTimezoneValue,
     'updateOrganizerEventSetupDefaultsCallablePayload.changes.usualDurationMinutes.mode': updateOrganizerEventSetupDefaultsCallablePayloadChangesUsualDurationMinutesMode,
     'updateOrganizerEventSetupDefaultsCallablePayload.changes.usualDurationMinutes.value': updateOrganizerEventSetupDefaultsCallablePayloadChangesUsualDurationMinutesValue,
     'updateOrganizerEventSetupDefaultsCallablePayload.expectedRevision': updateOrganizerEventSetupDefaultsCallablePayloadExpectedRevision,
@@ -131654,6 +131705,7 @@ abstract final class CatchContractConstraints {
     'updateOrganizerEventSetupDefaultsCallableResponse.current.preferences.preferredVenueId': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesPreferredVenueId,
     'updateOrganizerEventSetupDefaultsCallableResponse.current.preferences.reusablePaymentPage.reusableForEvents': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesReusablePaymentPageReusableForEvents,
     'updateOrganizerEventSetupDefaultsCallableResponse.current.preferences.reusablePaymentPage.url': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesReusablePaymentPageUrl,
+    'updateOrganizerEventSetupDefaultsCallableResponse.current.preferences.timezone': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesTimezone,
     'updateOrganizerEventSetupDefaultsCallableResponse.current.preferences.usualDurationMinutes': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesUsualDurationMinutes,
     'updateOrganizerEventSetupDefaultsCallableResponse.current.preferencesHash': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesHash,
     'updateOrganizerEventSetupDefaultsCallableResponse.current.preferencesRevision': updateOrganizerEventSetupDefaultsCallableResponseCurrentPreferencesRevision,

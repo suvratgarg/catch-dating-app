@@ -65,6 +65,11 @@ export const organizerEventSetupPreferencesSchema: Record<string, unknown> = {
           "const": true
         }
       }
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
     }
   }
 } as const;

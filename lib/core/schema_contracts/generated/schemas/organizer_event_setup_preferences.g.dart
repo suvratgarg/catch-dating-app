@@ -68,5 +68,10 @@ const schemaOrganizerEventSetupPreferencesSchema = <String, Object?>{
         },
       },
     },
+    'timezone': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 100,
+    },
   },
 };

@@ -5,6 +5,7 @@ import type {EventPolicyDefaults, OrganizerDocument} from
 import {isOrganizerManager} from "../../shared/organizerHosts";
 
 export interface EventSetupPreferences {
+  timezone?: string;
   usualDurationMinutes?: number;
   preferredVenueId?: string;
   offerValidityMinutes?: number;
@@ -62,7 +63,7 @@ export interface EventSetupDefaultsDependencies {
 const fields = new Set<PreferenceField>([
   "usualDurationMinutes", "preferredVenueId", "offerValidityMinutes",
   "collectionPreference", "currency", "offerMessageTemplate",
-  "paymentInstructions", "reusablePaymentPage",
+  "paymentInstructions", "reusablePaymentPage", "timezone",
 ]);
 
 /** Current-manager read of one public organizer and its private suggestions. */
@@ -80,8 +81,8 @@ export async function getManagerEventSetupDefaults(params: {
       tx.get(refs.organizer), tx.get(refs.deleted), tx.get(refs.defaults),
     ]);
     const organizer = authorize(organizerSnap, deletedSnap, params.actorUid);
-    return project(params.organizerId, organizer, defaultsSnap.data(),
-      params.deps);
+    return projectManagerEventSetupDefaults(params.organizerId, organizer,
+      defaultsSnap.data(), params.deps);
   });
 }
 
@@ -118,8 +119,8 @@ export async function updateManagerEventSetupDefaults(params: {
         tx.get(receiptRef),
       ]);
     const organizer = authorize(organizerSnap, deletedSnap, actorUid);
-    const current = project(command.organizerId, organizer,
-      defaultsSnap.data(), deps);
+    const current = projectManagerEventSetupDefaults(
+      command.organizerId, organizer, defaultsSnap.data(), deps);
     if (receiptSnap.exists) {
       const receipt = receiptSnap.data();
       if (receipt?.actorUid !== actorUid ||
@@ -149,10 +150,11 @@ export async function updateManagerEventSetupDefaults(params: {
       }
     }
     const revision = current.preferencesRevision + 1;
-    const next = project(command.organizerId, organizer, {
-      organizerId: command.organizerId, revision,
-      eventSetup: nextPreferences,
-    }, deps);
+    const next = projectManagerEventSetupDefaults(
+      command.organizerId, organizer, {
+        organizerId: command.organizerId, revision,
+        eventSetup: nextPreferences,
+      }, deps);
     tx.set(refs.defaults, {
       organizerId: command.organizerId,
       revision,
@@ -193,7 +195,8 @@ function authorize(organizerSnap: FirebaseFirestore.DocumentSnapshot,
   return organizer;
 }
 
-function project(organizerId: string, organizer: OrganizerDocument,
+export function projectManagerEventSetupDefaults(
+  organizerId: string, organizer: OrganizerDocument,
   raw: FirebaseFirestore.DocumentData | undefined,
   deps: EventSetupDefaultsDependencies): ManagerEventSetupDefaults {
   if (raw && (raw.organizerId !== organizerId ||
@@ -203,21 +206,30 @@ function project(organizerId: string, organizer: OrganizerDocument,
     throw new HttpsError("failed-precondition",
       "Organizer event defaults need review.");
   }
+  const hostDefaults = organizer.hostDefaults as
+    Record<string, unknown> | undefined;
+  // Adopt legacy values once; clearing private timezone never re-inherits.
+  const legacyTimezone = typeof hostDefaults?.timezone === "string" ?
+    hostDefaults.timezone : undefined;
   const preferences = raw ?
-    {...raw.eventSetup} as EventSetupPreferences : {};
+    {...raw.eventSetup} as EventSetupPreferences :
+    (legacyTimezone === undefined ? {} : {timezone: legacyTimezone});
   if (Object.keys(preferences).some((field) =>
     !fields.has(field as PreferenceField))) {
     throw new HttpsError("failed-precondition",
       "Organizer event defaults need review.");
   }
   const revision = raw ? raw.revision as number : 0;
-  const hostDefaults = organizer.hostDefaults as
-    Record<string, unknown> | undefined;
-  const timezone = typeof hostDefaults?.timezone === "string" ?
-    hostDefaults.timezone : null;
+  const timezone = preferences.timezone ?? null;
+  if (Object.hasOwn(preferences, "timezone") &&
+      (typeof preferences.timezone !== "string" ||
+      preferences.timezone.length < 1 || preferences.timezone.length > 100)) {
+    throw new HttpsError("invalid-argument", "Invalid organizer timezone.");
+  }
   const publicRevision = Number.isSafeInteger(hostDefaults?.revision) &&
     (hostDefaults?.revision as number) >= 0 ?
     hostDefaults?.revision as number : null;
+  const basicsRevision = raw ? revision : publicRevision;
   const city = organizer.locationCityId && organizer.locationMarketId ? {
     cityId: organizer.locationCityId,
     marketId: organizer.locationMarketId,
@@ -236,10 +248,10 @@ function project(organizerId: string, organizer: OrganizerDocument,
     throw new HttpsError("internal", "Invalid defaults fingerprint.");
   }
   const basicsReviewedHash = createHash("sha256")
-    .update(JSON.stringify({city, timezone, revision: publicRevision}))
+    .update(JSON.stringify({city, timezone, revision: basicsRevision}))
     .digest("hex");
   return {organizerId, city, timezone,
-    organizerDefaultsRevision: publicRevision, basicsReviewedHash,
+    organizerDefaultsRevision: basicsRevision, basicsReviewedHash,
     preferencesRevision: revision, preferences,
     preferencesHash,
     reviewedDefaultsHash: digest([basicsReviewedHash, preferencesHash])};

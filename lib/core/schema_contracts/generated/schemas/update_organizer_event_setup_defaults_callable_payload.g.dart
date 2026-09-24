@@ -344,9 +344,45 @@ const schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema = <String, Ob
             },
           ],
         },
+        'timezone': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'value',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'const': 'set',
+                  'type': 'string',
+                },
+                'value': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 100,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'const': 'clear',
+                  'type': 'string',
+                },
+              },
+            },
+          ],
+        },
       },
       'minProperties': 1,
-      'maxProperties': 8,
+      'maxProperties': 9,
     },
   },
 };

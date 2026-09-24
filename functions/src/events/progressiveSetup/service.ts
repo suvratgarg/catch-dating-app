@@ -13,6 +13,10 @@ import {
   PrivateEventBasicsInput,
 } from "./basics";
 import {OrganizerSetupDefaults} from "./defaults";
+import {projectManagerEventSetupDefaults} from
+  "../../organizers/eventSetupDefaults/service";
+import {eventSetupDefaultsDependencies} from
+  "../../organizers/eventSetupDefaults/dependencies";
 
 export interface CreatePrivateEventSetupCommand {
   organizerId: string;
@@ -65,11 +69,15 @@ export async function createPrivateEventSetup(params: {
   const eventRef = db.collection("events").doc();
   const organizerRef = db.collection("organizers").doc(command.organizerId);
   const deletedRef = db.collection("deletedUsers").doc(actorUid);
+  const defaultsRef = db.collection("organizerEventSetupDefaults")
+    .doc(command.organizerId);
   const requestHash = hashRequest("create", command);
   return db.runTransaction(async (tx) => {
-    const [receiptSnap, organizerSnap, deletedSnap] = await Promise.all([
-      tx.get(receiptRef), tx.get(organizerRef), tx.get(deletedRef),
-    ]);
+    const [receiptSnap, organizerSnap, deletedSnap, defaultsSnap] =
+      await Promise.all([
+        tx.get(receiptRef), tx.get(organizerRef), tx.get(deletedRef),
+        tx.get(defaultsRef),
+      ]);
     const organizer = authorizeSetupManager(
       organizerSnap, deletedSnap, actorUid
     );
@@ -89,7 +97,8 @@ export async function createPrivateEventSetup(params: {
     }
     const basics = normalizePrivateEventBasics({
       basics: command.basics,
-      defaults: organizerDefaults(organizer),
+      defaults: organizerDefaults(command.organizerId, organizer,
+        defaultsSnap.data(), db),
     });
     const event = {
       clubId: command.organizerId,
@@ -157,12 +166,14 @@ export async function updatePrivateEventBasics(params: {
   const eventRef = db.collection("events").doc(command.eventId);
   const organizerRef = db.collection("organizers").doc(command.organizerId);
   const deletedRef = db.collection("deletedUsers").doc(actorUid);
+  const defaultsRef = db.collection("organizerEventSetupDefaults")
+    .doc(command.organizerId);
   const requestHash = hashRequest("update", command);
   return db.runTransaction(async (tx) => {
-    const [receiptSnap, organizerSnap, deletedSnap, eventSnap] =
+    const [receiptSnap, organizerSnap, deletedSnap, eventSnap, defaultsSnap] =
       await Promise.all([
         tx.get(receiptRef), tx.get(organizerRef), tx.get(deletedRef),
-        tx.get(eventRef),
+        tx.get(eventRef), tx.get(defaultsRef),
       ]);
     const organizer = authorizeSetupManager(
       organizerSnap, deletedSnap, actorUid
@@ -198,7 +209,8 @@ export async function updatePrivateEventBasics(params: {
       event});
     const basics = normalizePrivateEventBasics({
       basics: command.basics,
-      defaults: organizerDefaults(organizer),
+      defaults: organizerDefaults(command.organizerId, organizer,
+        defaultsSnap.data(), db),
     });
     tx.update(eventRef, {
       name: basics.name,
@@ -325,17 +337,15 @@ export function authorizeSetupManager(
   return organizer;
 }
 
-function organizerDefaults(organizer: OrganizerDocument):
-  OrganizerSetupDefaults {
-  const raw = organizer.hostDefaults as Record<string, unknown> | undefined;
-  const timezone = raw?.timezone;
-  const revision = raw?.revision;
+function organizerDefaults(organizerId: string, organizer: OrganizerDocument,
+  privateDefaults: FirebaseFirestore.DocumentData | undefined,
+  db: FirebaseFirestore.Firestore): OrganizerSetupDefaults {
+  const projected = projectManagerEventSetupDefaults(organizerId, organizer,
+    privateDefaults, eventSetupDefaultsDependencies(db));
   return {
-    ...(organizer.locationCityId && organizer.locationMarketId ? {
-      city: {cityId: organizer.locationCityId,
-        marketId: organizer.locationMarketId},
-    } : {}),
-    ...(typeof timezone === "string" ? {timezone} : {}),
-    ...(typeof revision === "number" ? {revision} : {}),
+    ...(projected.city === null ? {} : {city: projected.city}),
+    ...(projected.timezone === null ? {} : {timezone: projected.timezone}),
+    ...(projected.organizerDefaultsRevision === null ? {} :
+      {revision: projected.organizerDefaultsRevision}),
   };
 }

@@ -137,6 +137,11 @@ export const organizerEventSetupPreferencesSchema = {
           "const": true
         }
       }
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
     }
   }
 };
@@ -497,10 +502,46 @@ export const updateOrganizerEventSetupDefaultsCallablePayloadSchema = {
               }
             }
           ]
+        },
+        "timezone": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
         }
       },
       "minProperties": 1,
-      "maxProperties": 8
+      "maxProperties": 9
     }
   }
 };
@@ -638,6 +679,11 @@ export const organizerEventSetupDefaultsCallableResponseSchema = {
               "const": true
             }
           }
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
         }
       }
     },
@@ -800,6 +846,11 @@ export const updateOrganizerEventSetupDefaultsCallableResponseSchema = {
                   "const": true
                 }
               }
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
             }
           }
         },
@@ -903,6 +954,11 @@ export const organizerEventSetupDefaultsDocumentSchema = {
               "const": true
             }
           }
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
         }
       }
     },

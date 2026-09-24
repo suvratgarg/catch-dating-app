@@ -79,5 +79,13 @@ export interface UpdateOrganizerEventSetupDefaultsCallablePayload {
       | {
           mode: "clear";
         };
+    timezone?:
+      | {
+          mode: "set";
+          value: string;
+        }
+      | {
+          mode: "clear";
+        };
   };
 }

@@ -138,6 +138,11 @@ const schemaOrganizerEventSetupDefaultsCallableResponseSchema = <String, Object?
             },
           },
         },
+        'timezone': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 100,
+        },
       },
     },
     'preferencesHash': <String, Object?>{

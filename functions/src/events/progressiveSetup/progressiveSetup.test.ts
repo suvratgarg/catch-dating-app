@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {getPrivateEventSetup} from "./readModel";
+import {getManagerEventSetupDefaults} from
+  "../../organizers/eventSetupDefaults/service";
+import {eventSetupDefaultsDependencies} from
+  "../../organizers/eventSetupDefaults/dependencies";
 import {HttpsError} from "firebase-functions/v2/https";
 import {localStartMillis, normalizePrivateEventBasics} from "./basics";
 import {resolveField, resolveProgressiveSetupDefaults} from "./defaults";
@@ -256,3 +260,30 @@ test("setup payload rejects client authority and unknown fields", async () => {
   (error) => code(error) === "invalid-argument");
   assert.equal(h.store.read("events/1"), undefined);
 });
+
+
+test("creation uses reviewed private defaults and preserves the event snapshot",
+  async () => {
+    const h = setup();
+    const defaultsPath = "organizerEventSetupDefaults/org1";
+    h.store.seed(defaultsPath, {organizerId: "org1", revision: 1,
+      eventSetup: {timezone: "Asia/Kolkata"}});
+    const reviewed = await getManagerEventSetupDefaults({actorUid: "host1",
+      organizerId: "org1", deps: eventSetupDefaultsDependencies(h.deps.db)});
+    const command = {organizerId: "org1", requestId: "request-private-tz",
+      basics: {...basics, city: {mode: "inherit" as const},
+        timezone: {mode: "inherit" as const},
+        reviewedDefaultsHash: reviewed.basicsReviewedHash}};
+    const created = await createPrivateEventSetup({actorUid: "host1",
+      command, deps: h.deps});
+    const eventPath = `events/${created.eventId}`;
+    assert.equal(h.store.read(eventPath)?.eventTimezone, "Asia/Kolkata");
+    h.store.seed(defaultsPath, {organizerId: "org1", revision: 2,
+      eventSetup: {timezone: "Asia/Dubai"}});
+    await assert.rejects(createPrivateEventSetup({actorUid: "host1",
+      command: {...command, requestId: "request-stale-tz"}, deps: h.deps}),
+    (error) => code(error) === "aborted");
+    assert.equal(h.store.read(eventPath)?.eventTimezone, "Asia/Kolkata");
+    assert.deepEqual(await createPrivateEventSetup({actorUid: "host1",
+      command, deps: h.deps}), {...created, replayed: true});
+  });

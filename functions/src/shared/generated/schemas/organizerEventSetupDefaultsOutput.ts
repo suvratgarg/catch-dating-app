@@ -135,6 +135,11 @@ export const organizerEventSetupDefaultsCallableResponseSchema: Record<string, u
               "const": true
             }
           }
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
         }
       }
     },

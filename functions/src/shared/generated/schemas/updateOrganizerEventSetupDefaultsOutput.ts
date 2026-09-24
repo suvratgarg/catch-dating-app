@@ -150,6 +150,11 @@ export const updateOrganizerEventSetupDefaultsCallableResponseSchema: Record<str
                   "const": true
                 }
               }
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
             }
           }
         },
