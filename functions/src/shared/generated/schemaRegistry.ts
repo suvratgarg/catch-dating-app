@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {organizerFormAdmissionDocumentSchema} from "./schemas/organizerFormAdmissionDocument";
 export {commitOrganizerFormAdmissionCallablePayloadSchema} from "./schemas/commitOrganizerFormAdmissionInput";
 export {commitOrganizerFormAdmissionCallableResponseSchema} from "./schemas/commitOrganizerFormAdmissionOutput";
 export {organizerFormAdmissionReceiptDocumentSchema} from "./schemas/organizerFormAdmissionReceiptDocument";

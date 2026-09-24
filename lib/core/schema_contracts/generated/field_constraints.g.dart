@@ -88170,6 +88170,85 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerFormAdmissionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerFormAdmissionDocumentCanonicalSeatKey = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.canonicalSeatKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerFormAdmissionDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerFormAdmissionDocumentOfferGeneration = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.offerGeneration',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionDocumentOfferId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.offerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerFormAdmissionDocumentOfferRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.offerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerFormAdmissionDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerFormAdmissionDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
   static const organizerFormAdmissionReceiptDocumentActorUid = CatchContractFieldConstraints(
     path: 'organizerFormAdmissionReceiptDocument.actorUid',
     maxLength: 180,
@@ -134101,6 +134180,15 @@ abstract final class CatchContractConstraints {
     'organizerFollowDocument.uid': organizerFollowDocumentUid,
     'organizerFollowDocument.unfollowedAt._nanoseconds': organizerFollowDocumentUnfollowedAtNanoseconds,
     'organizerFollowDocument.unfollowedAt._seconds': organizerFollowDocumentUnfollowedAtSeconds,
+    'organizerFormAdmissionDocument.attendeeId': organizerFormAdmissionDocumentAttendeeId,
+    'organizerFormAdmissionDocument.canonicalSeatKey': organizerFormAdmissionDocumentCanonicalSeatKey,
+    'organizerFormAdmissionDocument.eventId': organizerFormAdmissionDocumentEventId,
+    'organizerFormAdmissionDocument.offerGeneration': organizerFormAdmissionDocumentOfferGeneration,
+    'organizerFormAdmissionDocument.offerId': organizerFormAdmissionDocumentOfferId,
+    'organizerFormAdmissionDocument.offerRevision': organizerFormAdmissionDocumentOfferRevision,
+    'organizerFormAdmissionDocument.organizerId': organizerFormAdmissionDocumentOrganizerId,
+    'organizerFormAdmissionDocument.receiptId': organizerFormAdmissionDocumentReceiptId,
+    'organizerFormAdmissionDocument.responseId': organizerFormAdmissionDocumentResponseId,
     'organizerFormAdmissionReceiptDocument.actorUid': organizerFormAdmissionReceiptDocumentActorUid,
     'organizerFormAdmissionReceiptDocument.admittedAtMillis': organizerFormAdmissionReceiptDocumentAdmittedAtMillis,
     'organizerFormAdmissionReceiptDocument.attendeeId': organizerFormAdmissionReceiptDocumentAttendeeId,

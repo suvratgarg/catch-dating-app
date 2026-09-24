@@ -4,6 +4,8 @@ import {validateCommitOrganizerFormAdmissionCallablePayload as input} from
   "../shared/generated/validators/commitOrganizerFormAdmissionInput";
 import {validateCommitOrganizerFormAdmissionCallableResponse as output} from
   "../shared/generated/validators/commitOrganizerFormAdmissionOutput";
+import {validateOrganizerFormAdmissionDocument as ownership} from
+  "../shared/generated/validators/organizerFormAdmissionDocument";
 
 const command = {
   organizerId: "organizer-one", eventId: "event-one",
@@ -57,4 +59,20 @@ test("admission result excludes private payment data", () => {
   const missing = {...result} as Record<string, unknown>;
   delete missing.attendeeId;
   assert.equal(output(missing), false);
+});
+
+test("source ownership binds admission independently of request IDs", () => {
+  const source = {organizerId: "organizer-one", eventId: "event-one",
+    responseId: "response-one", receiptId: "receipt-one",
+    attendeeId: "attendee-one", canonicalSeatKey: "seat-one",
+    offerId: "offer-one", offerRevision: 2, offerGeneration: 1};
+  assert.equal(ownership(source), true);
+  for (const field of Object.keys(source)) {
+    const missing = {...source} as Record<string, unknown>;
+    delete missing[field];
+    assert.equal(ownership(missing), false, field);
+  }
+  assert.equal(ownership({...source, requestId: "new-request"}), false);
+  assert.equal(ownership({...source, offerGeneration: 0}), false);
+  assert.equal(ownership({...source, eventId: "foreign/path"}), false);
 });

@@ -591,6 +591,7 @@ export 'organizer_event_success_layout_document.g.dart';
 export 'organizer_event_venue_document.g.dart';
 export 'organizer_follow_callable_payload.g.dart';
 export 'organizer_follow_document.g.dart';
+export 'organizer_form_admission_document.g.dart';
 export 'organizer_form_admission_receipt_document.g.dart';
 export 'organizer_form_aggregate_document.g.dart';
 export 'organizer_form_aggregate_event_document.g.dart';

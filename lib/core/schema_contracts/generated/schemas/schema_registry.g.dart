@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'OrganizerFormAdmissionDocument',
+    source: 'firestore/organizer_form_admissions.schema.json',
+    schema: schemaOrganizerFormAdmissionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'CommitOrganizerFormAdmissionCallablePayload',
     source: 'callables/commit_organizer_form_admission_payload.schema.json',
     schema: schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
@@ -4429,6 +4434,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'OrganizerFormAdmissionDocument': schemaOrganizerFormAdmissionDocumentSchema,
   'CommitOrganizerFormAdmissionCallablePayload': schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
   'CommitOrganizerFormAdmissionCallableResponse': schemaCommitOrganizerFormAdmissionCallableResponseSchema,
   'OrganizerFormAdmissionReceiptDocument': schemaOrganizerFormAdmissionReceiptDocumentSchema,
@@ -5314,6 +5320,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/organizer_form_admissions.schema.json': schemaOrganizerFormAdmissionDocumentSchema,
   'callables/commit_organizer_form_admission_payload.schema.json': schemaCommitOrganizerFormAdmissionCallablePayloadSchema,
   'callable_responses/commit_organizer_form_admission_response.schema.json': schemaCommitOrganizerFormAdmissionCallableResponseSchema,
   'firestore/organizer_form_admission_receipts.schema.json': schemaOrganizerFormAdmissionReceiptDocumentSchema,

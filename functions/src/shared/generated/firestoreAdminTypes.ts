@@ -544,6 +544,21 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+/**
+ * Server-owned immutable organizer/event/response admission ownership. Created atomically with the seat and request receipt; new request IDs cannot admit this source again.
+ */
+export interface OrganizerFormAdmissionDocument {
+  organizerId: string;
+  eventId: string;
+  responseId: string;
+  receiptId: string;
+  attendeeId: string;
+  canonicalSeatKey: string;
+  offerId: string;
+  offerRevision: number;
+  offerGeneration: number;
+}
+
 export interface OrganizerFormAdmissionReceiptDocument {
   organizerId: string;
   eventId: string;

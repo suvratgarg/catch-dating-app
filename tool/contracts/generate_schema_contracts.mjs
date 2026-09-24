@@ -15,6 +15,7 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "OrganizerFormAdmissionDocument", "source": "firestore/organizer_form_admissions.schema.json", "typeOutput": "functions/src/shared/generated/organizerFormAdmissionDocument.ts"},
   {"name": "CommitOrganizerFormAdmissionCallablePayload", "source": "callables/commit_organizer_form_admission_payload.schema.json", "typeOutput": "functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts"},
   {"name": "CommitOrganizerFormAdmissionCallableResponse", "source": "callable_responses/commit_organizer_form_admission_response.schema.json", "typeOutput": "functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts"},
   {"name": "OrganizerFormAdmissionReceiptDocument", "source": "firestore/organizer_form_admission_receipts.schema.json", "typeOutput": "functions/src/shared/generated/organizerFormAdmissionReceiptDocument.ts"},

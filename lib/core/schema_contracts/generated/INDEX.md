@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `functions/src/shared/generated/organizerFormAdmissionDocument.ts` |
 | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts` |
 | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts` |
 | OrganizerFormAdmissionReceiptDocument | `firestore/organizer_form_admission_receipts.schema.json` | `functions/src/shared/generated/organizerFormAdmissionReceiptDocument.ts` |
@@ -899,6 +900,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaOrganizerFormAdmissionDocumentSchema` | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_document.g.dart` |
 | `schemaCommitOrganizerFormAdmissionCallablePayloadSchema` | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_payload.g.dart` |
 | `schemaCommitOrganizerFormAdmissionCallableResponseSchema` | CommitOrganizerFormAdmissionCallableResponse | `callable_responses/commit_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_organizer_form_admission_callable_response.g.dart` |
 | `schemaOrganizerFormAdmissionReceiptDocumentSchema` | OrganizerFormAdmissionReceiptDocument | `firestore/organizer_form_admission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_receipt_document.g.dart` |
