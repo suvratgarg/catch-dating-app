@@ -140,6 +140,12 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     super.dispose();
   }
 
+  HostAudienceStateScaffold _loadingFormsRoute() => HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
+
   @override
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);

@@ -1421,6 +1421,19 @@
         }
       ],
       "reason": "New message is a pushed person directory with a full-width Section/Field collection and explicit communication route selection."
+    },
+    "HostEventOfferPreferencesScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
+          "symbol": "_HostEventOfferPreferencesScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The response offer workspace opens manager event payment settings as an imperative step-flow page, with the shared private preferences editor using the same layout family."
     }
   },
   "screens": [

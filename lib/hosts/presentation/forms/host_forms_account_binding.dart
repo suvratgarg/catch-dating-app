@@ -22,10 +22,4 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
       if (mounted && _boundAccountId == accountId) _syncRoute();
     });
   }
-
-  HostAudienceStateScaffold _loadingFormsRoute() => HostAudienceStateScaffold(
-        selected: _view,
-        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [CatchStateViewport.sliverLoading()],
-      );
 }
