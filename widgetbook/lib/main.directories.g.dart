@@ -297,6 +297,8 @@ import 'package:widgetbook_workspace/hosts/operations/team_management.dart'
     as _widgetbook_workspace_hosts_operations_team_management;
 import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
+import 'package:widgetbook_workspace/hosts/unified_event_setup_use_cases.dart'
+    as _widgetbook_workspace_hosts_unified_event_setup_use_cases;
 import 'package:widgetbook_workspace/matches/catalog/celebration.dart'
     as _widgetbook_workspace_matches_catalog_celebration;
 import 'package:widgetbook_workspace/matches/catalog/consumer_inbox.dart'
@@ -10380,6 +10382,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostManagerEventSetupPreferencesSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Manager-only future event preferences',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .hostManagerEventSetupPreferencesSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostTodayScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10401,6 +10414,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .hostCustomerMessagingStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PrivateEventCreateScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Required private basics',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventCreateScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PrivateEventSetupScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Saved private event setup',
+                builder:
+                    _widgetbook_workspace_hosts_unified_event_setup_use_cases
+                        .privateEventSetupScreenPreview,
               ),
             ],
           ),
