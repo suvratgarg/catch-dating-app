@@ -4,6 +4,7 @@ part of 'host_response_query_editor_section.dart';
 /// draft mutation, so replacing any branch creates one new immutable root.
 class HostResponseGroupSection extends StatelessWidget {
   const HostResponseGroupSection({
+    super.key,
     required this.root,
     required this.group,
     required this.path,
@@ -110,6 +111,7 @@ class HostResponseGroupSection extends StatelessWidget {
 
 class HostResponseConditionSection extends StatelessWidget {
   const HostResponseConditionSection({
+    super.key,
     required this.path,
     required this.condition,
     required this.fields,
@@ -225,6 +227,7 @@ class HostResponseConditionSection extends StatelessWidget {
 
 class HostResponseConditionValueSection extends StatelessWidget {
   const HostResponseConditionValueSection({
+    super.key,
     required this.path,
     required this.field,
     required this.condition,
@@ -325,6 +328,7 @@ class HostResponseConditionValueSection extends StatelessWidget {
 
 class HostResponseValueFieldSection extends StatelessWidget {
   const HostResponseValueFieldSection({
+    super.key,
     required this.path,
     required this.field,
     required this.condition,
