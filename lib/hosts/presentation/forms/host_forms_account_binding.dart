@@ -35,8 +35,9 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
     HostFormListRequest request,
   ) async {
     if (!_directoryRequestCurrent(request)) return;
+    final actionContext = context;
     if (action == _HostFormRowAction.analytics) {
-      await context.pushNamed(
+      await actionContext.pushNamed(
         Routes.hostFormAnalyticsScreen.name,
         pathParameters: {'formId': form.formId},
         queryParameters: {'organizerId': form.organizerId},
@@ -44,7 +45,7 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
       return;
     }
     if (action == _HostFormRowAction.automations) {
-      await context.pushNamed(
+      await actionContext.pushNamed(
         Routes.hostFormAutomationsScreen.name,
         pathParameters: {'formId': form.formId},
         queryParameters: {'organizerId': form.organizerId},
@@ -62,8 +63,8 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
               .duplicate(source: form, requestId: _requestId('duplicate'));
           if (!_directoryRequestCurrent(request)) return;
           ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          if (!context.mounted) return;
-          await context.pushNamed(
+          if (!actionContext.mounted) return;
+          await actionContext.pushNamed(
             Routes.hostFormBuilderScreen.name,
             pathParameters: {'formId': duplicate.form.formId},
             queryParameters: {'organizerId': form.organizerId},
@@ -79,11 +80,11 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
           };
           if (lifecycleAction == HostFormLifecycleAction.archive) {
             final confirmed = await showCatchConfirmDialog(
-              copy: catchDialogCopy(context.l10n),
-              context: context,
-              title: context.l10n.hostFormsArchiveConfirmTitle,
-              message: context.l10n.hostFormsArchiveConfirmBody,
-              confirmLabel: context.l10n.hostFormsArchive,
+              copy: catchDialogCopy(actionContext.l10n),
+              context: actionContext,
+              title: actionContext.l10n.hostFormsArchiveConfirmTitle,
+              message: actionContext.l10n.hostFormsArchiveConfirmBody,
+              confirmLabel: actionContext.l10n.hostFormsArchive,
               danger: true,
             );
             if (confirmed != true || !_directoryRequestCurrent(request)) {
@@ -98,11 +99,11 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
           return;
         case _HostFormRowAction.delete:
           final confirmed = await showCatchConfirmDialog(
-            copy: catchDialogCopy(context.l10n),
-            context: context,
-            title: context.l10n.hostFormsDeleteConfirmTitle,
-            message: context.l10n.hostFormsDeleteConfirmBody,
-            confirmLabel: context.l10n.hostFormsDeleteDraft,
+            copy: catchDialogCopy(actionContext.l10n),
+            context: actionContext,
+            title: actionContext.l10n.hostFormsDeleteConfirmTitle,
+            message: actionContext.l10n.hostFormsDeleteConfirmBody,
+            confirmLabel: actionContext.l10n.hostFormsDeleteDraft,
             danger: true,
           );
           if (confirmed != true || !_directoryRequestCurrent(request)) return;
@@ -113,8 +114,8 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
       }
     } on Object catch (error) {
       if (!_directoryRequestCurrent(request)) return;
-      if (!context.mounted) return;
-      showCatchErrorSnackBar(context, error);
+      if (!actionContext.mounted) return;
+      showCatchErrorSnackBar(actionContext, error);
     }
   }
 
