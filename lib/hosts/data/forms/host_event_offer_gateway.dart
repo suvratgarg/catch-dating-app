@@ -154,6 +154,7 @@ void validateOfferMutationAcknowledgement(
   final action = (payload['action']! as Map).cast<String, Object?>();
   final offer = (value['offer']! as Map).cast<String, Object?>();
   final receipt = (value['receipt']! as Map).cast<String, Object?>();
+  final replayed = value['replayed'] as bool;
   final kind = action['kind'];
   final expectedRevision = action['expectedRevision'];
   final expectedGeneration = action['expectedGeneration'];
@@ -168,8 +169,8 @@ void validateOfferMutationAcknowledgement(
       offer['organizerId'] != row['organizerId'] ||
       offer['eventId'] != row['eventId'] ||
       offer['contactId'] != row['contactId'] ||
-      offer['applicationId'] != row['applicationId'] ||
-      offer['sourceKind'] != row['sourceKind'] ||
+      !replayed && offer['applicationId'] != row['applicationId'] ||
+      !replayed && offer['sourceKind'] != row['sourceKind'] ||
       offer['offerId'] != expectedOfferId ||
       offer['offerId'] != receipt['offerId'] ||
       receipt['requestId'] != requestId ||
@@ -178,7 +179,9 @@ void validateOfferMutationAcknowledgement(
       offer['generation'] is! int ||
       (offer['generation'] as int) < expectedGeneration ||
       offer['revision'] is! int ||
-      (offer['revision'] as int) < expectedRevision + 1) {
+      (offer['revision'] as int) < expectedRevision + 1 ||
+      !replayed && offer['generation'] != expectedGeneration ||
+      !replayed && offer['revision'] != expectedRevision + 1) {
     throw const FormatException('Event offer receipt is invalid.');
   }
   final terms = kind == 'recordEvidence'
@@ -288,17 +291,26 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
         preview: entry.preview, requestId: entry.requestId);
       final expected = entry.preview.rows.map((row) => row.offerId).toSet();
       final actual = result.results.map((row) => row.offerId).toSet();
+      final shape = [entry.draft.organizerId, entry.draft.eventId,
+        entry.draft.mode, [
+          for (final row in entry.draft.rows)
+            [row.sourceKind.name, row.sourceId, row.contactId,
+              row.expiresAt.millisecondsSinceEpoch,
+              row.organizerPaymentLink?.toString()],
+        ]];
+      final expectedHash = sha256.convert(utf8.encode(
+        jsonEncode([shape, entry.preview.planDigest]))).toString();
+      final finalRevision = entry.draft.mode == 'offer' ? 2 : 1;
       if (result.organizerId != entry.draft.organizerId ||
           result.eventId != entry.draft.eventId ||
           result.requestId != entry.requestId ||
-          result.requestHash == null ||
-          !RegExp(r'^[a-f0-9]{64}$').hasMatch(result.requestHash!) ||
+          result.requestHash != expectedHash ||
           result.results.length != entry.draft.rows.length ||
           expected.length != entry.draft.rows.length ||
           actual.length != result.results.length ||
           !actual.containsAll(expected) ||
-          result.results.any((row) => row.revision < 1 ||
-              row.generation < 1)) {
+          result.results.any((row) => row.revision != finalRevision ||
+              row.generation != 1)) {
         throw const FormatException('Offer commit receipt is invalid.');
       }
       receipt = result;

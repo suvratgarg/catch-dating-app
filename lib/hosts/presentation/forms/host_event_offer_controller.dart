@@ -237,7 +237,7 @@ class HostEventOfferController extends ChangeNotifier {
     final outbox = _mutationOutbox;
     final accountId = _accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
-      throw StateError('Durable offer storage is required.');
+      return Future.value(null);
     }
     return outbox.pendingMutation(accountId: accountId,
       organizerId: organizerId, eventId: eventId);

@@ -225,6 +225,33 @@ class HostResponseQueryController extends ChangeNotifier {
     );
   }
 
+  /// Rechecks the same materialized result after an async event choice or
+  /// response-detail return. This does not authorize an offer: the server's
+  /// preview and commit independently resolve current source/CRM authority.
+  Future<bool> revalidateSelection({
+    required List<String> ids,
+    required String resultHash,
+  }) async {
+    final view = _view;
+    final request = view.request;
+    final generation = _generation;
+    if (request == null || ids.isEmpty || ids.length > 25 ||
+        view.status != HostResponseQueryStatus.ready ||
+        view.resultHash != resultHash ||
+        !view.selectedIds.containsAll(ids)) return false;
+    try {
+      final page = await _gateway.query(request.withCursor(null));
+      if (!_isCurrent(generation) || _view.resultHash != resultHash ||
+          !_view.selectedIds.containsAll(ids) ||
+          page.queryHash != view.queryHash ||
+          page.resultHash != resultHash ||
+          !page.selectedIds.containsAll(ids)) return false;
+      return true;
+    } on Object {
+      return false;
+    }
+  }
+
   HostResponseQueryView _fromPage(
     HostResponseQueryRequest request,
     HostResponseQueryPage page,

@@ -288,10 +288,19 @@ void main() {
       organizerId: 'org', eventId: 'event-one'))?.requestId,
       'request_003');
     gateway.malformedCommit = false;
+    gateway.wrongHash = true;
+    await expectLater(outbox.submit(accountId: 'manager-one',
+      draft: draft, preview: preview, requestId: 'request_003'),
+      throwsFormatException);
+    expect((await outbox.pending(accountId: 'manager-one',
+      organizerId: 'org', eventId: 'event-one'))?.requestId,
+      'request_003');
+    gateway.wrongHash = false;
     final receipt = await outbox.submit(accountId: 'manager-one',
       draft: draft, preview: preview, requestId: 'request_003');
     expect(receipt?.requestId, 'request_003');
-    expect(gateway.commitCalls, ['request_003', 'request_003']);
+    expect(gateway.commitCalls,
+      ['request_003', 'request_003', 'request_003']);
   });
 
   test('manual write acknowledgement binds scope, action and result', () {
@@ -341,6 +350,18 @@ void main() {
     expect(() => validateOfferMutationAcknowledgement(payload, {
       ...result, 'receipt': {
         ...(result['receipt']! as Map), 'resultingGeneration': 2,
+      },
+    }), throwsFormatException);
+    expect(() => validateOfferMutationAcknowledgement(payload, {
+      ...result, 'replayed': true, 'offer': {
+        ...(result['offer']! as Map),
+        'applicationId': 'later-response',
+        'sourceKind': 'application', 'generation': 2, 'revision': 5,
+      },
+    }), returnsNormally);
+    expect(() => validateOfferMutationAcknowledgement(payload, {
+      ...result, 'offer': {
+        ...(result['offer']! as Map), 'applicationId': 'later-response',
       },
     }), throwsFormatException);
   });
@@ -418,6 +439,7 @@ class _Gateway implements HostEventOfferGateway {
   int admissionCalls = 0;
   bool failFirstCommit = false;
   bool malformedCommit = false;
+  bool wrongHash = false;
 
   @override
   Future<HostOfferPreview> preview(HostOfferBatchDraft draft) async {
@@ -449,7 +471,15 @@ class _Gateway implements HostEventOfferGateway {
       organizerId: malformedCommit ? 'foreign' : draft.organizerId,
       eventId: draft.eventId,
       requestId: requestId,
-      requestHash: List.filled(64, 'a').join(),
+      requestHash: wrongHash ? List.filled(64, 'a').join() :
+        sha256.convert(utf8.encode(jsonEncode([
+          [draft.organizerId, draft.eventId, draft.mode, [
+            for (final row in draft.rows)
+              [row.sourceKind.name, row.sourceId, row.contactId,
+                row.expiresAt.millisecondsSinceEpoch,
+                row.organizerPaymentLink?.toString()],
+          ]], preview.planDigest,
+        ]))).toString(),
       results: const [
         HostOfferPreviewRow(
           offerId: 'offer-kabir',
