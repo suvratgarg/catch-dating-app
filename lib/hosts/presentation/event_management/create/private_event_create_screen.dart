@@ -24,9 +24,9 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';

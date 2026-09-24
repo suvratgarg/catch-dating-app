@@ -83,7 +83,7 @@ class EventRepository with EventRepositoryActions {
   Future<Event?> fetchEvent(String id) => withBackendErrorContext(
     () async {
       final doc = await _db.collection(_collectionPath).doc(id).get();
-      return _publishedRichEvent(doc);
+      return publishedRichEvent(doc);
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
@@ -94,7 +94,7 @@ class EventRepository with EventRepositoryActions {
 
   Stream<Event?> watchEvent(String id) => withBackendErrorStream(
     () => _db.collection(_collectionPath).doc(id).snapshots().map(
-      _publishedRichEvent,
+      publishedRichEvent,
     ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
@@ -350,23 +350,6 @@ class EventRepository with EventRepositoryActions {
       resource: _collectionPath,
     ),
   );
-}
-
-/// Public rich-event reads cannot decode a private first-save event. The
-/// manager's private basics reader uses its own authorized projection.
-Event? _publishedRichEvent(
-  DocumentSnapshot<Map<String, dynamic>> snapshot,
-) {
-  final data = snapshot.data();
-  if (data == null || data['publicationState'] != 'published' ||
-      (data['organizerId'] is! String && data['clubId'] is! String) ||
-      data['startTime'] is! Timestamp || data['endTime'] is! Timestamp ||
-      data['meetingPoint'] is! String || data['distanceKm'] is! num ||
-      data['pace'] is! String || data['capacityLimit'] is! int ||
-      data['description'] is! String || data['priceInPaise'] is! int) {
-    return null;
-  }
-  return Event.fromJson({...data, 'id': snapshot.id});
 }
 
 @riverpod

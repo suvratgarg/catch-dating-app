@@ -144,7 +144,7 @@ void main() {
         'organizerId': 'club-1',
         'publicationState': 'private',
         'status': 'active',
-        'startTime': Timestamp.fromDate(DateTime(2026, 10, 1)),
+        'startTime': Timestamp.fromDate(DateTime(2026, 10)),
       });
       await firestore.collection('events').doc('incomplete-public').set({
         'organizerId': 'club-1',

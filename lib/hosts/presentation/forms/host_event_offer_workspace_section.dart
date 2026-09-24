@@ -4,8 +4,8 @@ import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gatew
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

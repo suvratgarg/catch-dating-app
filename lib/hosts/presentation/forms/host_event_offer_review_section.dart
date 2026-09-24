@@ -315,9 +315,9 @@ class _HostManualPaymentReviewSectionState
           if (_pendingMutation!.contactId == widget.offer.contactId)
             CatchSection.content(child: CatchButton(
               key: const ValueKey('offer-retry-saved-mutation'),
-              label: _pendingMutation!.kind == 'recordEvidence'
+              label: _pendingMutation!.kind == HostOfferMutationKind.recordEvidence.name
                   ? copy.recordReference
-                  : _pendingMutation!.decision == 'rejected'
+                  : _pendingMutation!.decision == HostManualPaymentStatus.rejected.name
                       ? copy.rejectReference : copy.attestReceived,
               onPressed: _busy ? null : _retrySavedMutation,
             )),

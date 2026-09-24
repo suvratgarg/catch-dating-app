@@ -44,10 +44,11 @@ class HostOfferFlowView {
 /// Holds one reviewed batch from preview through idempotent commit. A changed
 /// source, CRM contact, event or terms requires a fresh preview.
 class HostEventOfferController extends ChangeNotifier {
-  HostEventOfferController(this._gateway, {HostOfferCommitOutbox? outbox,
-    HostOfferMutationOutbox? mutationOutbox, String? accountId}) :
-      _outbox = outbox, _mutationOutbox = mutationOutbox,
-      _accountId = accountId;
+  HostEventOfferController(this._gateway, {
+    this.outbox,
+    this.mutationOutbox,
+    this.accountId,
+  });
 
   /// Callers still gate this feature until the server integration is live.
   factory HostEventOfferController.forCallables({
@@ -67,9 +68,9 @@ class HostEventOfferController extends ChangeNotifier {
   }
 
   final HostEventOfferGateway _gateway;
-  final HostOfferCommitOutbox? _outbox;
-  final HostOfferMutationOutbox? _mutationOutbox;
-  final String? _accountId;
+  final HostOfferCommitOutbox? outbox;
+  final HostOfferMutationOutbox? mutationOutbox;
+  final String? accountId;
   int _generation = 0;
   bool _disposed = false;
   HostOfferFlowView _view = const HostOfferFlowView(
@@ -82,8 +83,8 @@ class HostEventOfferController extends ChangeNotifier {
     required String organizerId,
     required String eventId,
   }) async {
-    final outbox = _outbox;
-    final accountId = _accountId;
+    final outbox = this.outbox;
+    final accountId = this.accountId;
     if (outbox == null || accountId == null) return;
     final generation = ++_generation;
     final pending = await outbox.pending(accountId: accountId,
@@ -101,8 +102,8 @@ class HostEventOfferController extends ChangeNotifier {
     required DateTime eventStartsAt,
   }) async {
     final generation = ++_generation;
-    final outbox = _outbox;
-    final accountId = _accountId;
+    final outbox = this.outbox;
+    final accountId = this.accountId;
     if (outbox != null && accountId != null &&
         await outbox.pending(accountId: accountId,
           organizerId: draft.organizerId, eventId: draft.eventId) != null) {
@@ -140,8 +141,8 @@ class HostEventOfferController extends ChangeNotifier {
   }
 
   Future<void> commit(String requestId) async {
-    final outbox = _outbox;
-    final accountId = _accountId;
+    final outbox = this.outbox;
+    final accountId = this.accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required before committing.');
     }
@@ -217,8 +218,8 @@ class HostEventOfferController extends ChangeNotifier {
         RegExp(r'^[a-z]+://', caseSensitive: false).hasMatch(normalized)) {
       throw ArgumentError('Enter a new payment reference, not a URL.');
     }
-    final outbox = _mutationOutbox;
-    final accountId = _accountId;
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required.');
     }
@@ -234,10 +235,10 @@ class HostEventOfferController extends ChangeNotifier {
     required String organizerId,
     required String eventId,
   }) {
-    final outbox = _mutationOutbox;
-    final accountId = _accountId;
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
-      return Future.value(null);
+      return Future<HostOfferPendingMutation?>.value();
     }
     return outbox.pendingMutation(accountId: accountId,
       organizerId: organizerId, eventId: eventId);
@@ -247,8 +248,8 @@ class HostEventOfferController extends ChangeNotifier {
     required String organizerId,
     required String eventId,
   }) {
-    final outbox = _mutationOutbox;
-    final accountId = _accountId;
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required.');
     }
@@ -274,8 +275,8 @@ class HostEventOfferController extends ChangeNotifier {
             !bankReceiptChecked) {
       throw ArgumentError('Check bank evidence and record a review reason.');
     }
-    final outbox = _mutationOutbox;
-    final accountId = _accountId;
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
     if (outbox == null || accountId == null || accountId.isEmpty) {
       throw StateError('Durable offer storage is required.');
     }

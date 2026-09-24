@@ -654,11 +654,9 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialRosterImportPlan,
                     _ => null,
                   },
-                  promptForDrafts: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.promptForDrafts,
-                    _ => true,
-                  },
+                  promptForDrafts: extra is HostCreateEventRouteArguments
+                      ? extra.promptForDrafts
+                      : true,
                   returnToResponsesOnSave: extra is HostCreateEventRouteArguments
                       ? extra.returnToResponsesOnSave : false,
                 );

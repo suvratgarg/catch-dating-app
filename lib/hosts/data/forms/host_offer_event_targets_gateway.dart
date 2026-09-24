@@ -153,7 +153,7 @@ class CallableHostOfferEventTargetsGateway
       (await functions.httpsCallable('listOfferEventTargets').call<Object?>({
         'organizerId': organizerId,
         'limit': 50,
-        if (cursor != null) 'cursor': cursor,
+        'cursor': ?cursor,
       })).data,
     ),
     context: const BackendErrorContext(

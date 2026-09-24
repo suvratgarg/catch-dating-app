@@ -1,7 +1,12 @@
+import 'dart:convert';
+
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,7 +17,15 @@ void main() {
     tester,
   ) async {
     final gateway = _OfferGateway();
-    final controller = HostEventOfferController(gateway);
+    final storage = MemoryCommandJournalStorage();
+    final outbox = JournalHostOfferCommitOutbox(
+      storage: () async => storage,
+      currentAccountId: () => 'host-one',
+      gateway: gateway,
+    );
+    final controller = HostEventOfferController(
+      gateway, outbox: outbox, accountId: 'host-one',
+    );
     addTearDown(controller.dispose);
     final draft = HostOfferBatchDraft(
       organizerId: 'organizer',
@@ -62,6 +75,8 @@ void main() {
     await pumpFeatureUi(tester);
     expect(gateway.commitCalls, 1);
     expect(find.text('Offer committed'), findsOneWidget);
+    expect(await outbox.pending(accountId: 'host-one',
+      organizerId: draft.organizerId, eventId: draft.eventId), isNull);
   });
 }
 
@@ -117,6 +132,14 @@ class _OfferGateway implements HostEventOfferGateway {
       organizerId: draft.organizerId,
       eventId: draft.eventId,
       requestId: requestId,
+      requestHash: sha256.convert(utf8.encode(jsonEncode([
+        [draft.organizerId, draft.eventId, draft.mode, [
+          for (final row in draft.rows)
+            [row.sourceKind.name, row.sourceId, row.contactId,
+              row.expiresAt.millisecondsSinceEpoch,
+              row.organizerPaymentLink?.toString()],
+        ]], preview.planDigest,
+      ]))).toString(),
       results: const [
         HostOfferPreviewRow(
           offerId: 'offer-one',

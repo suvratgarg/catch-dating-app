@@ -31,7 +31,7 @@ void main() {
     final functions = _Functions((_) => throw FirebaseFunctionsException(
       code: 'aborted',
       message: 'opaque server message',
-      details: {'reason': 'response-query-stale', 'action': 'refresh'},
+      details: const {'reason': 'response-query-stale', 'action': 'refresh'},
     ));
     final gateway = HostResponseQueryRepository(functions);
     await expectLater(
@@ -50,7 +50,7 @@ void main() {
     final functions = _Functions((_) => throw FirebaseFunctionsException(
       code: 'aborted',
       message: 'another operation failed',
-      details: {'reason': 'different'},
+      details: const {'reason': 'different'},
     ));
     await expectLater(
       HostResponseQueryRepository(functions).query(request),

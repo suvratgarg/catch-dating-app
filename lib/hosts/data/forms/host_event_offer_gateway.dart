@@ -78,7 +78,7 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
     required String reference,
     required String requestId,
   }) => _mutate(offer, {
-        'kind': 'recordEvidence',
+        'kind': HostOfferMutationKind.recordEvidence.name,
         'requestId': requestId,
         'expectedRevision': offer.revision,
         'expectedGeneration': offer.generation,
@@ -93,7 +93,7 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
     required bool bankReceiptChecked,
     required String requestId,
   }) => _mutate(offer, {
-        'kind': 'reconcileEvidence',
+        'kind': HostOfferMutationKind.reconcileEvidence.name,
         'requestId': requestId,
         'expectedRevision': offer.revision,
         'expectedGeneration': offer.generation,
@@ -120,7 +120,7 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
   }) => _call('listEventOffers', {
         'organizerId': organizerId,
         'eventId': eventId,
-        if (afterOfferId != null) 'afterOfferId': afterOfferId,
+        'afterOfferId': ?afterOfferId,
         'limit': limit,
       }, 'list event offers', (value) {
         if (value is! Map || value['items'] is! List) {
@@ -159,10 +159,13 @@ void validateOfferMutationAcknowledgement(
   final expectedRevision = action['expectedRevision'];
   final expectedGeneration = action['expectedGeneration'];
   final requestId = action['requestId'];
-  final expectedOfferId = 'applicationoffer_${sha256.convert(utf8.encode([
+  final offerIdentityHash = sha256.convert(utf8.encode([
     row['organizerId'], row['eventId'], row['contactId'],
-  ].join('\u001f'))).toString().substring(0, 40)}';
-  if ((kind != 'recordEvidence' && kind != 'reconcileEvidence') ||
+  ].join('\u001f'))).toString().substring(0, 40);
+  // copy:allow-inline(Server offer document identity, never rendered as product copy.)
+  final expectedOfferId = 'applicationoffer_$offerIdentityHash';
+  if ((kind != HostOfferMutationKind.recordEvidence.name &&
+          kind != HostOfferMutationKind.reconcileEvidence.name) ||
       expectedRevision is! int || expectedRevision < 1 ||
       expectedGeneration is! int || expectedGeneration < 1 ||
       requestId is! String || requestId.isEmpty ||
@@ -184,7 +187,7 @@ void validateOfferMutationAcknowledgement(
       !replayed && offer['revision'] != expectedRevision + 1) {
     throw const FormatException('Event offer receipt is invalid.');
   }
-  final terms = kind == 'recordEvidence'
+  final terms = kind == HostOfferMutationKind.recordEvidence.name
       ? [receipt['offerId'], kind, requestId, expectedRevision,
           expectedGeneration, (action['evidenceReference'] as String?)?.trim()]
       : [receipt['offerId'], kind, requestId, expectedRevision,
@@ -232,9 +235,8 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
   JournalHostOfferCommitOutbox({
     required Future<CommandJournalStorage> Function() storage,
     required String? Function() currentAccountId,
-    required HostEventOfferGateway gateway,
-  }) : _gateway = gateway,
-       _journal = LocalCommandJournal<_OfferCommitCommand>(
+    required this.gateway,
+  }) : _journal = LocalCommandJournal<_OfferCommitCommand>(
          storage: storage,
          namespace: 'host_event_offer_commit',
          currentAccountId: currentAccountId,
@@ -246,7 +248,7 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
          ),
        );
 
-  final HostEventOfferGateway _gateway;
+  final HostEventOfferGateway gateway;
   final LocalCommandJournal<_OfferCommitCommand> _journal;
 
   @override
@@ -287,7 +289,7 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
     }
     HostOfferCommitReceipt? receipt;
     await _journal.flush(accountId, scope, (entry) async {
-      final result = await _gateway.commit(draft: entry.draft,
+      final result = await gateway.commit(draft: entry.draft,
         preview: entry.preview, requestId: entry.requestId);
       final expected = entry.preview.rows.map((row) => row.offerId).toSet();
       final actual = result.results.map((row) => row.offerId).toSet();
@@ -353,11 +355,9 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
   JournalHostOfferMutationOutbox({
     required Future<CommandJournalStorage> Function() storage,
     required String? Function() currentAccountId,
-    required Future<void> Function(Map<String, Object?>) write,
-    required Future<HostEventOffer> Function({required String organizerId,
-      required String eventId, required String contactId}) refresh,
-  }) : _write = write, _refresh = refresh,
-       _journal = LocalCommandJournal<_OfferMutationCommand>(
+    required this.write,
+    required this.refresh,
+  }) : _journal = LocalCommandJournal<_OfferMutationCommand>(
          storage: storage,
          namespace: 'host_event_offer_mutation',
          currentAccountId: currentAccountId,
@@ -381,9 +381,9 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
         eventId: eventId, contactId: contactId),
   );
 
-  final Future<void> Function(Map<String, Object?>) _write;
+  final Future<void> Function(Map<String, Object?>) write;
   final Future<HostEventOffer> Function({required String organizerId,
-    required String eventId, required String contactId}) _refresh;
+    required String eventId, required String contactId}) refresh;
   final LocalCommandJournal<_OfferMutationCommand> _journal;
 
   @override
@@ -426,14 +426,14 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
       throw StateError('Saved payment review scope changed.');
     }
     await _flushMutation(accountId, scope);
-    return _refresh(organizerId: organizerId,
+    return refresh(organizerId: organizerId,
       eventId: eventId, contactId: entry.contactId);
   }
 
   Future<void> _flushMutation(String accountId, String scope) async {
     var acknowledged = false;
     await _journal.flush(accountId, scope, (entry) async {
-      await _write(entry.payload);
+      await write(entry.payload);
       acknowledged = true;
     });
     if (!acknowledged) {
@@ -477,7 +477,7 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
       ));
     }
     await _flushMutation(accountId, scope);
-    return _refresh(organizerId: offer.organizerId,
+    return refresh(organizerId: offer.organizerId,
       eventId: offer.eventId, contactId: offer.contactId);
   }
 }

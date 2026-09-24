@@ -145,7 +145,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   }
 
   void _onQueryChanged() {
-    if (_ids.isEmpty) return;
+    if (_ids.isEmpty) {
+      return;
+    }
     final intent = queryController.selectionIntent;
     if (intent?.resultHash == _resultHash &&
         _sameIds(intent!.ids, _ids)) return;
@@ -167,10 +169,14 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
       a.toSet().containsAll(b);
 
   Future<bool> _revalidate(int generation, String accountId) async {
-    if (!_current(generation, accountId) || _resultHash == null) return false;
+    if (!_current(generation, accountId) || _resultHash == null) {
+      return false;
+    }
     final valid = await queryController.revalidateSelection(
       ids: _ids, resultHash: _resultHash!);
-    if (!_current(generation, accountId)) return false;
+    if (!_current(generation, accountId)) {
+      return false;
+    }
     if (!valid) {
       _update(() {
         _selectionStale = true;
@@ -183,7 +189,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   Future<void> _start() async {
     final accountId = this.accountId;
     final intent = queryController.selectionIntent;
-    if (accountId == null || intent == null || intent.ids.length > 25) return;
+    if (accountId == null || intent == null || intent.ids.length > 25) {
+      return;
+    }
     _update(() {
       _reset();
       _ids = List.unmodifiable(intent.ids);
@@ -198,16 +206,22 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   }
 
   Future<void> _loadEvents() async {
-    if (_loading) return;
+    if (_loading) {
+      return;
+    }
     final generation = _generation;
     final accountId = this.accountId;
-    if (accountId == null) return;
+    if (accountId == null) {
+      return;
+    }
     final cursor = _nextEventCursor;
     _update(() { _loading = true; _error = null; });
     try {
       final page = await targets.list(
         organizerId: organizerId, cursor: cursor);
-      if (!_current(generation, accountId)) return;
+      if (!_current(generation, accountId)) {
+        return;
+      }
       if (cursor != null && cursor == page.nextCursor) {
         throw const FormatException('Offer target page repeated.');
       }
@@ -258,16 +272,24 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   Future<void> _choose(HostOfferEventTarget event) async {
     final generation = _generation;
     final accountId = this.accountId;
-    if (accountId == null || _loading) return;
+    if (accountId == null || _loading) {
+      return;
+    }
     if (_event?.eventId != event.eventId) _personalLinks.clear();
     _update(() { _loading = true; _error = null; });
     try {
-      if (!await _revalidate(generation, accountId)) return;
+      if (!await _revalidate(generation, accountId)) {
+        return;
+      }
       final configuration = await targets.configuration(
         organizerId: organizerId, eventId: event.eventId);
       final details = await _resolveDetails();
-      if (!await _revalidate(generation, accountId)) return;
-      if (!_current(generation, accountId)) return;
+      if (!await _revalidate(generation, accountId)) {
+        return;
+      }
+      if (!_current(generation, accountId)) {
+        return;
+      }
       if (configuration.organizerId != organizerId ||
           configuration.eventId != event.eventId ||
           !configuration.startsAt.isAtSameMomentAs(event.startTime) ||
@@ -292,7 +314,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
           _current(generation, accountId)) {
         await offerController.recoverPending(
           organizerId: organizerId, eventId: event.eventId);
-        if (!_current(generation, accountId)) return;
+        if (!_current(generation, accountId)) {
+          return;
+        }
         final pending = offerController.view;
         if (pending.pendingRequestId != null && pending.draft != null) {
           // Replay the exact saved command. Never rotate its request identity
@@ -319,7 +343,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   void _prepareDraft(List<HostFormResponseDetail> details,
       HostOfferEventConfiguration configuration) {
     final expiry = configuration.suggestedExpiresAt;
-    if (expiry == null) return;
+    if (expiry == null) {
+      return;
+    }
     if (_personalMode) {
       for (final detail in details) {
         final link = Uri.tryParse(_personalLinks[detail.contactId!] ?? '');
@@ -364,11 +390,15 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         _loading || !_personalMode) return;
     _update(() { _loading = true; _error = null; });
     try {
-      if (!await _revalidate(generation, accountId)) return;
+      if (!await _revalidate(generation, accountId)) {
+        return;
+      }
       final details = await _resolveDetails();
       final current = await targets.configuration(
         organizerId: organizerId, eventId: event.eventId);
-      if (!_current(generation, accountId)) return;
+      if (!_current(generation, accountId)) {
+        return;
+      }
       if (current.eventSourceRevision != previous.eventSourceRevision ||
           current.suggestedExpiresAt != previous.suggestedExpiresAt ||
           current.paymentTerms?['preferredCollection'] !=
@@ -402,10 +432,14 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   Future<void> _returnForConversion(String responseId) async {
     final generation = _generation;
     final accountId = this.accountId;
-    if (accountId == null) return;
+    if (accountId == null) {
+      return;
+    }
     try {
       await openResponseForConversion(responseId);
-      if (!_current(generation, accountId)) return;
+      if (!_current(generation, accountId)) {
+        return;
+      }
       final event = _event;
       if (event != null) await _choose(event);
     } on Object catch (error) {
@@ -417,13 +451,19 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final event = _event;
     final accountId = this.accountId;
     final generation = _generation;
-    if (event == null || accountId == null) return;
+    if (event == null || accountId == null) {
+      return;
+    }
     try {
       await openEventSettings(event.eventId);
-      if (!_current(generation, accountId)) return;
+      if (!_current(generation, accountId)) {
+        return;
+      }
       final current = await targets.configuration(
         organizerId: organizerId, eventId: event.eventId);
-      if (!_current(generation, accountId)) return;
+      if (!_current(generation, accountId)) {
+        return;
+      }
       if (current.organizerId != organizerId ||
           current.eventId != event.eventId) {
         throw StateError('Event settings changed identity.');
@@ -453,7 +493,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final event = _event;
     final accountId = this.accountId;
     final generation = _generation;
-    if (event == null || accountId == null) return;
+    if (event == null || accountId == null) {
+      return;
+    }
     try {
       final response = await listOffers(
         organizerId: organizerId, eventId: event.eventId,
@@ -467,7 +509,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
         throw const FormatException('Offer list is invalid.');
       }
       final parsed = rawItems.map((item) {
-          if (item is! Map) throw const FormatException('Offer row is invalid.');
+          if (item is! Map) {
+            throw const FormatException('Offer row is invalid.');
+          }
           return item.cast<String, Object?>();
         }).toList();
       if (parsed.any((item) => item['eventId'] != event.eventId ||
@@ -552,7 +596,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
     final selected = _selectedOffer;
     final accountId = this.accountId;
     final generation = _generation;
-    if (selected == null || accountId == null || _loading) return;
+    if (selected == null || accountId == null || _loading) {
+      return;
+    }
     _update(() { _loading = true; _error = null; _handoff = null; });
     try {
       final current = await getOffer(
@@ -674,7 +720,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
       _personalLinks[contactId] = value.trim();
 
   void _update(VoidCallback change) {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     change();
     notifyListeners();
   }

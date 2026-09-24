@@ -555,7 +555,7 @@ class PrivateEventSetupRepository {
             .call<Object?>({
               'organizerId': organizerId,
               'limit': limit,
-              if (cursor != null) 'cursor': cursor,
+              'cursor': ?cursor,
             });
         return PrivateEventSetupInventoryPage.fromResponse(response.data);
       },

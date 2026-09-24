@@ -559,7 +559,7 @@ void main() {
               startTimeMillis: date.millisecondsSinceEpoch,
               status: 'active', setupDefaults: const {},
               detailsConfigured: false, eventPreferences: null,
-              canEditBasics: true, canChangeCity: false,
+              canEditBasics: true,
             );
           },
         ),

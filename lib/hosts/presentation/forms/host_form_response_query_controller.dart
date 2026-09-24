@@ -94,7 +94,9 @@ class HostResponseQueryController extends ChangeNotifier {
     );
     try {
       final page = await _gateway.query(request.withCursor(null));
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       _requireValidPage(page, request, firstPage: true);
       _selection = HostResponseSelection(
         queryHash: page.queryHash,
@@ -102,7 +104,9 @@ class HostResponseQueryController extends ChangeNotifier {
       );
       _publish(_fromPage(request.withCursor(null), page));
     } on Object catch (error) {
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       final failure = _normalizeError(error);
       _publish(
         HostResponseQueryView(
@@ -118,13 +122,17 @@ class HostResponseQueryController extends ChangeNotifier {
   Future<void> loadMore() async {
     final current = _view;
     final request = current.request;
-    if (request == null || !current.canLoadMore) return;
+    if (request == null || !current.canLoadMore) {
+      return;
+    }
     final cursor = current.nextCursor!;
     final generation = _generation;
     _publish(_copy(current, loadingMore: true));
     try {
       final page = await _gateway.query(request.withCursor(cursor));
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       _requireValidPage(page, request, firstPage: false);
       if (page.queryHash != current.queryHash ||
           page.resultHash != current.resultHash ||
@@ -167,7 +175,9 @@ class HostResponseQueryController extends ChangeNotifier {
         ),
       );
     } on Object catch (error) {
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       final failure = _normalizeError(error);
       _selection = null;
       _publish(
@@ -206,7 +216,9 @@ class HostResponseQueryController extends ChangeNotifier {
 
   void clearSelection() {
     final current = _view;
-    if (current.selectedIds.isEmpty) return;
+    if (current.selectedIds.isEmpty) {
+      return;
+    }
     _selection = HostResponseSelection(
       queryHash: current.queryHash!,
       resultHash: current.resultHash!,
@@ -218,7 +230,9 @@ class HostResponseQueryController extends ChangeNotifier {
   /// manager authority, source state, identity and this exact result itself.
   ({List<String> ids, String resultHash})? get selectionIntent {
     final current = _view;
-    if (!current.canActOnSelection || current.resultHash == null) return null;
+    if (!current.canActOnSelection || current.resultHash == null) {
+      return null;
+    }
     return (
       ids: current.selectedIds.toList()..sort(),
       resultHash: current.resultHash!,
@@ -332,7 +346,9 @@ class HostResponseQueryController extends ChangeNotifier {
   );
 
   void _publish(HostResponseQueryView value) {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     _view = value;
     notifyListeners();
   }

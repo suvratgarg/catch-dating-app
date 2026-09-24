@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+enum HostOfferMutationKind { recordEvidence, reconcileEvidence }
+
 enum HostOfferSourceKind { application, formResponse }
 
 enum HostOfferStatus { draft, offered, withdrawn, expired }

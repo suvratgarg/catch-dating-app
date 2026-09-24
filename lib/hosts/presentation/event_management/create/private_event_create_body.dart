@@ -24,7 +24,9 @@ typedef ReadPrivateEventOrganizerDefaults =
 extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   void _openDetails() {
     final receipt = _receipt;
-    if (receipt == null || _detailsController != null) return;
+    if (receipt == null || _detailsController != null) {
+      return;
+    }
     try {
       final uid = ref.read(uidProvider).asData?.value;
       if (uid == null || uid.isEmpty) {
@@ -56,7 +58,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           resource: 'private_event_details',
         ),
         logError: ref.read(errorLoggerProvider));
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ref.read(catchNoticeControllerProvider.notifier).show(CatchNoticeData(
         id: 'private-event-details-open-error',
         title: context.l10n.hostsEventPreferenceError,
@@ -69,7 +73,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   void _closeDetails() {
     final controller = _detailsController;
-    if (controller == null) return;
+    if (controller == null) {
+      return;
+    }
     final latestRevision = controller.event?.setupRevision;
     controller.removeListener(_refresh);
     controller.dispose();
@@ -89,7 +95,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   void _openPreferences() {
     final receipt = _receipt;
-    if (receipt == null || _preferencesController != null) return;
+    if (receipt == null || _preferencesController != null) {
+      return;
+    }
     try {
       final uid = ref.read(uidProvider).asData?.value;
       if (uid == null || uid.isEmpty) {
@@ -120,7 +128,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   void _closePreferences() {
     final controller = _preferencesController;
-    if (controller == null) return;
+    if (controller == null) {
+      return;
+    }
     final latestRevision = controller.event?.setupRevision;
     controller.removeListener(_refresh);
     controller.dispose();
@@ -140,14 +150,18 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   Future<void> _loadOrganizerDefaults() async {
     final read = widget.readOrganizerDefaults;
-    if (read == null) return;
+    if (read == null) {
+      return;
+    }
     _mutateScreenState(() {
       _loadingManagerDefaults = true;
       _managerDefaultsError = null;
     });
     try {
       final defaults = await read(widget.club.id);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (defaults.organizerId != widget.club.id) {
         throw const FormatException('Organizer defaults identity changed');
       }
@@ -155,7 +169,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _mutateScreenState(() {
         _managerDefaults = defaults;
         _loadingManagerDefaults = false;
-        if (_submittedPayloadJson != null || _receipt != null) return;
+        if (_submittedPayloadJson != null || _receipt != null) {
+          return;
+        }
         if (startingValues == null) {
           _cityInherited = defaults.cityId != null && defaults.marketId != null;
           _timezoneInherited = defaults.timezone != null;
@@ -182,7 +198,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         }
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() {
         _loadingManagerDefaults = false;
         _managerDefaultsError = appErrorMessage(
@@ -198,7 +216,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       final drafts = await ref
           .read(createEventDraftControllerProvider.notifier)
           .loadDrafts(clubId: widget.club.id);
-      if (!mounted || drafts.isEmpty) return;
+      if (!mounted || drafts.isEmpty) {
+        return;
+      }
       final picked = await showHostEventEntrySheet(
         context: context,
         state: HostEventEntryState.resolve(
@@ -206,9 +226,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           drafts: drafts,
         ),
       );
-      if (!mounted || picked?.draft == null) return;
+      if (!mounted || picked?.draft == null) {
+        return;
+      }
       final draft = picked!.draft!;
-      if (draft.clubId != widget.club.id) return;
+      if (draft.clubId != widget.club.id) {
+        return;
+      }
       _mutateScreenState(() => _restorePickedDraft(draft));
     } catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
@@ -286,7 +310,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         organizerId: widget.club.id,
         eventId: eventId,
       );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (summary.eventId != eventId || summary.organizerId != widget.club.id) {
         throw const FormatException('Private event read changed identity');
       }
@@ -298,7 +324,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         timezone: EventSetupValue.set(summary.timezone),
       );
       final drafts = await controller.loadDrafts(clubId: widget.club.id);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _activeDraft = drafts.where((draft) =>
           draft.eventCreateReceiptEventId == eventId).firstOrNull;
       _localDraftId = _activeDraft?.id ?? 'private-event-$eventId';
@@ -319,7 +347,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       });
       await _loadPendingUpdate();
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() {
         _savedBasics = null;
         _canEditSavedBasics = false;
@@ -337,7 +367,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   Future<void> _loadPendingUpdate() async {
     final receipt = _receipt;
-    if (receipt == null) return;
+    if (receipt == null) {
+      return;
+    }
     try {
       final pending = await ref
           .read(createEventDraftControllerProvider.notifier)
@@ -345,7 +377,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
             organizerId: widget.club.id,
             eventId: receipt.eventId,
           );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() {
         _pendingUpdate = pending;
         _editingSavedBasics = pending != null;
@@ -357,7 +391,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         _loadingSavedEvent = false;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() {
         _savedBasics = null;
         _canEditSavedBasics = false;
@@ -374,7 +410,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   }
 
   Future<void> _save() async {
-    if (_saving) return;
+    if (_saving) {
+      return;
+    }
     if (_receipt != null) {
       await _saveUpdate();
       return;
@@ -427,9 +465,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         requestId: _requestId,
         basics: basics,
       );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       await _persistDraft(receipt: receipt);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() {
         _receipt = receipt;
         _loadingSavedEvent = true;
@@ -438,10 +480,14 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       // may now be older than the canonical event. Read the manager projection
       // before enabling any further edit or presenting its setup actions.
       await _loadSavedEvent(savedEventId: receipt.eventId);
-      if (!mounted || _readError != null) return;
+      if (!mounted || _readError != null) {
+        return;
+      }
       widget.onSaved?.call(_receipt!);
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (!requestSent) {
         _submittedSignature = null;
         _submittedPayloadJson = null;
@@ -516,24 +562,34 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       final updated = await (widget.update ?? ref
               .read(createEventDraftControllerProvider.notifier)
               .updatePrivateEventBasics)(request);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (updated.eventId != request.eventId) {
         throw const FormatException('Basics update changed event identity');
       }
       await _persistDraft(receipt: updated);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       await _loadSavedEvent(savedEventId: receipt.eventId);
-      if (!mounted || _readError != null) return;
+      if (!mounted || _readError != null) {
+        return;
+      }
       await ref
           .read(createEventDraftControllerProvider.notifier)
           .clearPendingBasicsUpdate(request);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() {
         _pendingUpdate = null;
         _editingSavedBasics = false;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _mutateScreenState(() => _error = appErrorMessage(
         error,
         l10n: context.l10n,
@@ -546,7 +602,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   }
 
   Future<void> _close() async {
-    if (_saving) return;
+    if (_saving) {
+      return;
+    }
     if (_pendingUpdate != null ||
         (_receipt == null && _submittedPayloadJson != null)) {
       final leave = await showCatchAdaptiveDialog<bool>(
@@ -568,7 +626,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         ],
         barrierDismissible: false,
       );
-      if (!mounted || leave != true) return;
+      if (!mounted || leave != true) {
+        return;
+      }
       _mutateScreenState(() => _allowPop = true);
       Navigator.of(context).pop();
       return;
@@ -589,7 +649,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       return;
     }
     final decision = await showHostDraftExitDialog(context);
-    if (!mounted || decision == null) return;
+    if (!mounted || decision == null) {
+      return;
+    }
     switch (decision) {
       case HostDraftExitDecision.keepEditing:
         return;

@@ -43,7 +43,7 @@ void main() {
       localDate: '2026-10-03', localStartTime: '19:00',
       timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
       status: 'active', setupDefaults: {}, detailsConfigured: false,
-      eventPreferences: null,
+      eventPreferences: null, canEditBasics: true,
     );
     controller.defaults = ManagerEventSetupDefaults(
       organizerId: 'club-1', cityId: 'in-mh-mumbai',
@@ -66,12 +66,12 @@ void main() {
         ),
       ),
     ));
-    await tester.pumpForAnimations();
+    await pumpFeatureUi(tester);
     expect(tester.takeException(), isNull);
     final action = find.text('Use suggested duration');
     await tester.ensureVisible(action);
     await tester.tap(action);
-    await tester.pumpForAnimations();
+    await pumpFeatureUi(tester);
     expect(sent?.details.toJson(), {
       'durationMinutes': {'mode': 'inherit'},
     });

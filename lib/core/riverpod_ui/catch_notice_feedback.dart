@@ -3,8 +3,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 int _feedbackSequence = 0;
 
@@ -50,6 +50,7 @@ void showCatchNoticeError(
     l10n: context.l10n,
     context: errorContext,
   );
+  final errorDedupeKey = dedupeKey ?? 'feedback.error.${descriptor.message}';
   ProviderScope.containerOf(context, listen: false)
       .read(catchNoticeControllerProvider.notifier)
       .show(
@@ -61,7 +62,7 @@ void showCatchNoticeError(
           tone: CatchNoticeTone.danger,
           actionLabel: onRetry == null ? null : descriptor.retryLabel,
           onAction: onRetry,
-          dedupeKey: dedupeKey ?? 'feedback.error.${descriptor.message}',
+          dedupeKey: errorDedupeKey,
           priority: -1,
         ),
       );

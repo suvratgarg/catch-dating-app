@@ -98,7 +98,8 @@ Stream<List<Event>> watchEventsByIdStream({
   required BackendErrorContext context,
   bool descending = false,
 }) {
-  var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
+  var eventSubs =
+      <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
   var generation = 0;
   var closed = false;
 
@@ -155,7 +156,7 @@ Stream<List<Event>> watchEventsByIdStream({
 
         for (var i = 0; i < chunks.length; i += 1) {
           final chunk = chunks[i];
-          final sub = eventsRef
+          final sub = eventsRef.firestore.collection(eventsRef.path)
               .where(FieldPath.documentId, whereIn: chunk)
               .where('publicationState', isEqualTo: 'published')
               .limit(ReadLimitPolicy.multiIdChunk)
@@ -163,7 +164,8 @@ Stream<List<Event>> watchEventsByIdStream({
               .listen((eventSnap) {
                 if (closed || localGeneration != generation) return;
                 eventsByChunk[i] = eventSnap.docs
-                    .map((doc) => doc.data())
+                    .map(publishedRichEvent)
+                    .whereType<Event>()
                     .toList();
                 emitSortedEvents(
                   eventIds: eventIds,
@@ -200,7 +202,8 @@ Stream<List<Event>> watchEventsForClubIdsStream({
   final uniqueClubIds = clubIds.toSet().toList()..sort();
   if (uniqueClubIds.isEmpty) return Stream.value(const []);
 
-  var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
+  var eventSubs =
+      <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
   var closed = false;
   late final StreamController<List<Event>> controller;
 
@@ -227,7 +230,7 @@ Stream<List<Event>> watchEventsForClubIdsStream({
       for (var index = 0; index < chunks.length; index += 1) {
         final chunk = chunks[index];
         // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING)
-        final sub = eventsRef
+        final sub = eventsRef.firestore.collection(eventsRef.path)
             .where('organizerId', whereIn: chunk)
             .where('publicationState', isEqualTo: 'published')
             .limit(ReadLimitPolicy.boundedWorkingSet)
@@ -235,7 +238,8 @@ Stream<List<Event>> watchEventsForClubIdsStream({
             .listen((snapshot) {
               if (closed) return;
               eventsByChunk[index] = snapshot.docs
-                  .map((doc) => doc.data())
+                  .map(publishedRichEvent)
+                  .whereType<Event>()
                   .toList(growable: false);
               emitEvents(
                 eventsByChunk: eventsByChunk,
@@ -256,4 +260,21 @@ Stream<List<Event>> watchEventsForClubIdsStream({
   );
 
   return withBackendErrorStream(() => controller.stream, context: context);
+}
+
+/// Public rich-event reads cannot decode a private first-save event. The
+/// manager's private basics reader uses its own authorized projection.
+Event? publishedRichEvent(
+  DocumentSnapshot<Map<String, dynamic>> snapshot,
+) {
+  final data = snapshot.data();
+  if (data == null || data['publicationState'] != 'published' ||
+      (data['organizerId'] is! String && data['clubId'] is! String) ||
+      data['startTime'] is! Timestamp || data['endTime'] is! Timestamp ||
+      data['meetingPoint'] is! String || data['distanceKm'] is! num ||
+      data['pace'] is! String || data['capacityLimit'] is! int ||
+      data['description'] is! String || data['priceInPaise'] is! int) {
+    return null;
+  }
+  return Event.fromJson({...data, 'id': snapshot.id});
 }
