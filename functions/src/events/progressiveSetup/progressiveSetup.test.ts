@@ -181,3 +181,25 @@ test("private basics update fences revision and commitments", async () => {
     command: {...command, requestId: "request-333"}, deps: h.deps}),
   (error) => code(error) === "aborted");
 });
+
+
+test("replays preserve the original revision after later edits", async () => {
+  const h = setup();
+  const create = {organizerId: "org1", requestId: "request-create", basics};
+  const created = await createPrivateEventSetup({actorUid: "host1",
+    command: create, deps: h.deps});
+  const edit = {organizerId: "org1", eventId: created.eventId,
+    requestId: "request-edit1", expectedSetupRevision: 1,
+    basics: {...basics, name: "First edit"}};
+  const edited = await updatePrivateEventBasics({actorUid: "host1",
+    command: edit, deps: h.deps});
+  await updatePrivateEventBasics({actorUid: "host1", command: {...edit,
+    requestId: "request-edit2", expectedSetupRevision: 2,
+    basics: {...basics, name: "Second edit"}}, deps: h.deps});
+  assert.deepEqual(await createPrivateEventSetup({actorUid: "host1",
+    command: create, deps: h.deps}), {...created, replayed: true});
+  assert.deepEqual(await updatePrivateEventBasics({actorUid: "host1",
+    command: edit, deps: h.deps}), {...edited, replayed: true});
+  assert.equal(h.store.read(`events/${created.eventId}`)?.setupRevision, 3);
+  assert.equal(h.store.read(`events/${created.eventId}`)?.name, "Second edit");
+});

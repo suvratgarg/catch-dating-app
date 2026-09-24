@@ -76,7 +76,7 @@ export async function createPrivateEventSetup(params: {
         throw new HttpsError("failed-precondition", "Event is unavailable.");
       }
       return {eventId: priorEventId,
-        setupRevision: requireRevision(current), replayed: true};
+        setupRevision: receipt.appliedRevision as number, replayed: true};
     }
     const basics = normalizePrivateEventBasics({
       basics: command.basics,
@@ -158,11 +158,12 @@ export async function updatePrivateEventBasics(params: {
       throw new HttpsError("not-found", "Event not found.");
     }
     if (receiptSnap.exists) {
-      assertReceipt(receiptSnap.data() as Record<string, unknown>,
+      const receipt = receiptSnap.data() as Record<string, unknown>;
+      assertReceipt(receipt,
         "update", actorUid, command.organizerId, requestHash,
         command.eventId);
       return {eventId: command.eventId,
-        setupRevision: requireRevision(event), replayed: true};
+        setupRevision: receipt.appliedRevision as number, replayed: true};
     }
     if (event.publicationState !== "private" ||
         event.status !== "active") {
@@ -267,6 +268,9 @@ function assertReceipt(receipt: Record<string, unknown>,
       receipt.organizerId !== organizerId ||
       receipt.requestHash !== requestHash ||
       typeof receipt.eventId !== "string" ||
+      !/^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(receipt.eventId) ||
+      !Number.isSafeInteger(receipt.appliedRevision) ||
+      (receipt.appliedRevision as number) < 1 ||
       (eventId && receipt.eventId !== eventId)) {
     throw new HttpsError("already-exists",
       "Request ID was already used for another event change.");

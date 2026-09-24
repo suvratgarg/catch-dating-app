@@ -13,6 +13,7 @@ import {
   onboardingDraftSeed,
   prepareImportRows,
   publicRegistrationStatus,
+  registerPublicEventHandler,
   setEventAttendeeAttendanceHandler,
 } from "./eventAttendees";
 
@@ -207,6 +208,26 @@ test("public registration fills open capacity then uses the waitlist", () => {
     existingStatus: "registered",
   }), "registered");
 });
+
+test("public OTP registration denies private basics before roster reads",
+  async () => {
+    const firestore = new FakeFirestore({
+      "events/private-1": {organizerId: "organizer-1", status: "active",
+        publicationState: "private", setupRevision: 1},
+    });
+    await assert.rejects(registerPublicEventHandler({
+      auth: {uid: "guest-1", token: {phone_number: "+919876543210"}},
+      data: {eventId: "private-1", displayName: "Example Guest"},
+      rawRequest: {},
+    } as CallableRequest<unknown>, {
+      firestore: () => firestore as never,
+      checkRateLimit: async () => undefined,
+      timestamp: () => admin.firestore.Timestamp.now(),
+    }), (error) => error instanceof HttpsError &&
+      error.code === "failed-precondition" &&
+      error.message.includes("not open for public registration"));
+    assert.equal(firestore.get("onboarding_drafts/guest-1"), undefined);
+  });
 
 test("prepareImportRows deduplicates event-scoped contact identity", () => {
   const result = prepareImportRows({

@@ -67,6 +67,7 @@ class FakeTransaction {
 }
 
 class FakeFirestore {
+  beforeTransaction: (() => void) | undefined;
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
   collection(path: string) {
     return new FakeCollectionRef(this, path);
@@ -83,6 +84,7 @@ class FakeFirestore {
     this.docs[path] = {...data};
   }
   async runTransaction<T>(callback: (tx: FakeTransaction) => Promise<T>) {
+    this.beforeTransaction?.();
     const tx = new FakeTransaction(this);
     const result = await callback(tx);
     tx.commit();
@@ -257,6 +259,15 @@ test("invite landing verifies its token and bounds projection", async () => {
       "catch&utm_medium=organizer_invite&catch_ref=invite-1",
     sourceLabel: "Luma",
   });
+  assert.equal(firestore.paths("eventInviteTouches/").length, 1);
+
+  firestore.beforeTransaction = () => firestore.set("events/event-1", {
+    publicationState: "private", setupRevision: 2,
+  }, {merge: true});
+  await assert.rejects(resolveEventInviteLandingHandler(
+    request(token, "another-session"), deps),
+  (error: unknown) => error instanceof HttpsError &&
+    error.code === "not-found");
   assert.equal(firestore.paths("eventInviteTouches/").length, 1);
 
   await assert.rejects(

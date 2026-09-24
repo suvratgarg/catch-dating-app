@@ -1,13 +1,13 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {defineSecret} from "firebase-functions/params";
 import * as admin from "firebase-admin";
-import * as logger from "firebase-functions/logger";
 import type {
   ClubDocument,
   EventDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventOrganizerRef} from "../shared/eventOrganizers";
+import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 import {
   algoliaAppId,
   organizersIndexName,
@@ -191,6 +191,7 @@ export function buildEventSearchRecord(
   event: EventDocument,
   club: OrganizerDocument
 ): AlgoliaEventSearchRecord | null {
+  if (!isEventPubliclyAccessible(event)) return null;
   const startTimeEpoch = timestampEpochSeconds(event.startTime);
   const discoveryMarketId = normalizeSearchMarketId(
     event.discoveryMarketId ?? club.locationMarketId ?? club.location
@@ -233,7 +234,6 @@ export function buildEventSearchRecord(
   };
 }
 
-/**
 /** Syncs a canonical organizer and its events into Algolia. */
 export async function syncAlgoliaOrganizerIndexHandler(
   organizerId: string,
@@ -266,26 +266,9 @@ export async function syncAlgoliaEventIndexHandler(
   event: EventDocument | undefined,
   deps: AlgoliaExploreIndexDeps = defaultDeps
 ): Promise<void> {
-  if (!event) {
-    await deleteAlgoliaObject(eventsIndexName(), eventId, deps);
-    return;
-  }
-
-  const db = deps.firestore();
-  const organizerSnap = await eventOrganizerRef(db, event).get();
-  const organizer = organizerSnap.exists ?
-    organizerSnap.data() as OrganizerDocument :
-    undefined;
-  if (!organizer) {
-    logger.warn("Deleting Algolia event record for missing organizer", {
-      eventId,
-      organizerId: event.organizerId,
-    });
-    await deleteAlgoliaObject(eventsIndexName(), eventId, deps);
-    return;
-  }
-
-  await syncEventWithOrganizer(eventId, event, organizer, deps);
+  // Trigger delivery order is not source order; always resolve current state.
+  void event;
+  await syncEventFromCurrentState(eventId, deps);
 }
 
 async function syncEventsForOrganizer(
@@ -297,38 +280,40 @@ async function syncEventsForOrganizer(
     .collection("events")
     .where("organizerId", "==", organizerId)
     .get();
-  await Promise.all(eventsSnap.docs.map((doc) => {
-    if (!organizer) {
-      return deleteAlgoliaObject(eventsIndexName(), doc.id, deps);
-    }
-    return syncEventWithOrganizer(
-      doc.id,
-      doc.data() as EventDocument,
-      organizer,
-      deps
-    );
-  }));
+  void organizer;
+  await Promise.all(eventsSnap.docs.map((doc) =>
+    syncEventFromCurrentState(doc.id, deps)));
 }
 
-/**
- * Upserts or deletes one event record using already-loaded club data.
- * @param {string} eventId Event id.
- * @param {EventDocument} event Event document data.
- * @param {OrganizerDocument} organizer Parent organizer document data.
- * @param {AlgoliaExploreIndexDeps} deps Injectable dependencies.
- * @return {Promise<void>}
+async function currentEventRecord(eventId: string,
+  deps: AlgoliaExploreIndexDeps): Promise<AlgoliaEventSearchRecord | null> {
+  const db = deps.firestore();
+  const eventSnap = await db.collection("events").doc(eventId).get();
+  if (!eventSnap.exists) return null;
+  const event = eventSnap.data() as EventDocument;
+  if (!isEventPubliclyAccessible(event)) return null;
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  return organizerSnap.exists ? buildEventSearchRecord(eventId, event,
+    organizerSnap.data() as OrganizerDocument) : null;
+}
+
+/** Current source and a post-write fence repair publication changes.
+ * Search remains an asynchronous projection, never an access-control authority.
  */
-async function syncEventWithOrganizer(
-  eventId: string,
-  event: EventDocument,
-  organizer: OrganizerDocument,
-  deps: AlgoliaExploreIndexDeps
-): Promise<void> {
-  const record = buildEventSearchRecord(eventId, event, organizer);
-  if (record) {
-    await upsertAlgoliaObject(eventsIndexName(), record, deps);
-  } else {
+async function syncEventFromCurrentState(eventId: string,
+  deps: AlgoliaExploreIndexDeps): Promise<void> {
+  const record = await currentEventRecord(eventId, deps);
+  if (!record) {
     await deleteAlgoliaObject(eventsIndexName(), eventId, deps);
+    return;
+  }
+  await upsertAlgoliaObject(eventsIndexName(), record, deps);
+  const after = await currentEventRecord(eventId, deps);
+  if (JSON.stringify(after) !== JSON.stringify(record)) {
+    await deleteAlgoliaObject(eventsIndexName(), eventId, deps);
+    if (after) {
+      throw new Error("Event search source changed; retry current state.");
+    }
   }
 }
 
@@ -455,6 +440,7 @@ function finiteNumberOrZero(value: number): number {
 export const syncAlgoliaOrganizerIndex = onDocumentWritten(
   {
     document: "organizers/{organizerId}",
+    retry: true,
     secrets: [algoliaWriteApiKey],
   },
   async (event) => {
@@ -470,6 +456,7 @@ export const syncAlgoliaOrganizerIndex = onDocumentWritten(
 export const syncAlgoliaEventIndex = onDocumentWritten(
   {
     document: "events/{eventId}",
+    retry: true,
     secrets: [algoliaWriteApiKey],
   },
   async (event) => {

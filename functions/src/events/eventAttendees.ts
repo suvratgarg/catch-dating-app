@@ -54,6 +54,7 @@ import {
 } from
   "../shared/organizerCommunicationPreferences";
 import {eventPolicyFromEvent} from "./eventPolicy";
+import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {resolveInviteAttributionToken} from "./inviteLinks";
 
@@ -554,6 +555,10 @@ export async function registerPublicEventHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+    if (!isEventPubliclyAccessible(event)) {
+      throw new HttpsError("failed-precondition",
+        "This event is not open for public registration.");
+    }
     const organizerId = event.organizerId ?? event.clubId;
     const communicationPreferenceRef = db
       .collection("organizerCommunicationPreferences")
