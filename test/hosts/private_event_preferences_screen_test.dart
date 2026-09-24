@@ -35,14 +35,14 @@ void main() {
         throw StateError('Response lost');
       },
     );
-    controller.event = PrivateEventBasicSummary(
+    controller.event = const PrivateEventBasicSummary(
       eventId: 'event-1', organizerId: 'club-1', setupRevision: 2,
       name: 'Saturday mixer',
-      city: const EventSetupCity(cityId: 'in-mh-mumbai',
+      city: EventSetupCity(cityId: 'in-mh-mumbai',
         marketId: 'in-mh-mumbai'),
       localDate: '2026-10-03', localStartTime: '19:00',
       timezone: 'Asia/Kolkata', startTimeMillis: 1791043800000,
-      status: 'active', setupDefaults: const {}, detailsConfigured: false,
+      status: 'active', setupDefaults: {}, detailsConfigured: false,
       eventPreferences: null,
     );
     controller.defaults = ManagerEventSetupDefaults(

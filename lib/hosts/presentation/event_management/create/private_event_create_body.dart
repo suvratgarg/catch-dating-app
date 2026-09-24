@@ -28,7 +28,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     try {
       final uid = ref.read(uidProvider).asData?.value;
       if (uid == null || uid.isEmpty) {
-        throw SignInRequiredException('edit private event settings');
+        throw const SignInRequiredException('edit private event settings');
       }
       final functions = ref.read(firebaseFunctionsProvider);
       final eventRepository = PrivateEventSetupRepository(functions);
@@ -43,7 +43,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         write: preferencesRepository.update,
       );
       controller.addListener(_refresh);
-      setState(() {
+      _mutateScreenState(() {
         _preferencesController = controller;
         _editingPreferences = true;
       });
@@ -59,7 +59,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     final latestRevision = controller.event?.setupRevision;
     controller.removeListener(_refresh);
     controller.dispose();
-    setState(() {
+    _mutateScreenState(() {
       if (latestRevision != null && _receipt != null &&
           latestRevision > _receipt!.setupRevision) {
         _receipt = PrivateEventCreateReceipt(
@@ -76,7 +76,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
   Future<void> _loadOrganizerDefaults() async {
     final read = widget.readOrganizerDefaults;
     if (read == null) return;
-    setState(() {
+    _mutateScreenState(() {
       _loadingManagerDefaults = true;
       _managerDefaultsError = null;
     });
@@ -87,7 +87,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         throw const FormatException('Organizer defaults identity changed');
       }
       final startingValues = widget.initialDraft ?? widget.initialPrefill?.values;
-      setState(() {
+      _mutateScreenState(() {
         _managerDefaults = defaults;
         _loadingManagerDefaults = false;
         if (_submittedPayloadJson != null || _receipt != null) return;
@@ -118,7 +118,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() {
+      _mutateScreenState(() {
         _loadingManagerDefaults = false;
         _managerDefaultsError = appErrorMessage(
           error, l10n: context.l10n, context: AppErrorContext.event,
@@ -144,7 +144,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted || picked?.draft == null) return;
       final draft = picked!.draft!;
       if (draft.clubId != widget.club.id) return;
-      setState(() => _restorePickedDraft(draft));
+      _mutateScreenState(() => _restorePickedDraft(draft));
     } catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
     }
@@ -236,7 +236,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _requestId = _activeDraft?.eventCreateRequestId ?? _requestId;
       _submittedSignature = _activeDraft?.eventCreatePayloadSignature;
       _submittedPayloadJson = _activeDraft?.eventCreatePayloadJson;
-      setState(() {
+      _mutateScreenState(() {
         _applyExplicitBasics(basics);
         _receipt = PrivateEventCreateReceipt(
           eventId: summary.eventId,
@@ -249,7 +249,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       await _loadPendingUpdate();
     } catch (error) {
       if (!mounted) return;
-      setState(() {
+      _mutateScreenState(() {
         _readError = appErrorMessage(
           error,
           l10n: context.l10n,
@@ -271,7 +271,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
             eventId: receipt.eventId,
           );
       if (!mounted) return;
-      setState(() {
+      _mutateScreenState(() {
         _pendingUpdate = pending;
         _editingSavedBasics = pending != null;
         if (pending != null &&
@@ -283,7 +283,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() {
+      _mutateScreenState(() {
         _readError = appErrorMessage(
           error,
           l10n: context.l10n,
@@ -302,7 +302,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     }
     final pendingPayload = _submittedPayloadJson;
     if (_defaultsChanged && pendingPayload == null) {
-      setState(() {
+      _mutateScreenState(() {
         _error = context.l10n.hostsPrivateEventDefaultsChanged;
       });
       return;
@@ -314,23 +314,23 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           Map<String, dynamic>.from(jsonDecode(pendingPayload) as Map),
         );
       } catch (_) {
-        setState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
+        _mutateScreenState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
         return;
       }
     } else {
       basics = _basics;
     }
     if (basics == null || !basics.isValid) {
-      setState(() => _showErrors = true);
+      _mutateScreenState(() => _showErrors = true);
       return;
     }
     final signature = jsonEncode(basics.toJson());
     if (_submittedSignature != null && _submittedSignature != signature) {
-      setState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
+      _mutateScreenState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
       return;
     }
     FocusScope.of(context).unfocus();
-    setState(() {
+    _mutateScreenState(() {
       _saving = true;
       _error = null;
     });
@@ -351,7 +351,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted) return;
       await _persistDraft(receipt: receipt);
       if (!mounted) return;
-      setState(() {
+      _mutateScreenState(() {
         _receipt = receipt;
         _savedBasics = _currentExplicitBasics;
       });
@@ -365,7 +365,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       // Even an authorization or validation response cannot prove this
       // request never committed: an earlier response may have been lost.
       // Keep the exact request and body until an authoritative receipt arrives.
-      setState(
+      _mutateScreenState(
         () => _error = appErrorMessage(
           error,
           l10n: context.l10n,
@@ -374,7 +374,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       );
       showCatchErrorSnackBar(context, error);
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) _mutateScreenState(() => _saving = false);
     }
   }
 
@@ -383,17 +383,17 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     if (receipt == null || !_canEditSavedBasics) return;
     final existing = _pendingUpdate;
     if (_defaultsChanged && existing == null) {
-      setState(() => _error = context.l10n.hostsPrivateEventDefaultsChanged);
+      _mutateScreenState(() => _error = context.l10n.hostsPrivateEventDefaultsChanged);
       return;
     }
     final basics = existing?.basics ?? _basics;
     if (basics == null || !basics.isValid) {
-      setState(() => _showErrors = true);
+      _mutateScreenState(() => _showErrors = true);
       return;
     }
     if (existing == null &&
         jsonEncode(basics.toJson()) == jsonEncode(_savedBasics?.toJson())) {
-      setState(() => _editingSavedBasics = false);
+      _mutateScreenState(() => _editingSavedBasics = false);
       return;
     }
     final request = existing ?? PrivateEventBasicsUpdateRequest(
@@ -404,7 +404,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       basics: basics,
     );
     FocusScope.of(context).unfocus();
-    setState(() {
+    _mutateScreenState(() {
       _saving = true;
       _error = null;
     });
@@ -431,7 +431,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           .read(createEventDraftControllerProvider.notifier)
           .clearPendingBasicsUpdate(request);
       if (!mounted) return;
-      setState(() {
+      _mutateScreenState(() {
         _receipt = updated;
         _savedBasics = _currentExplicitBasics;
         _pendingUpdate = null;
@@ -439,14 +439,14 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = appErrorMessage(
+      _mutateScreenState(() => _error = appErrorMessage(
         error,
         l10n: context.l10n,
         context: AppErrorContext.event,
       ));
       showCatchErrorSnackBar(context, error);
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) _mutateScreenState(() => _saving = false);
     }
   }
 
@@ -474,13 +474,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         barrierDismissible: false,
       );
       if (!mounted || leave != true) return;
-      setState(() => _allowPop = true);
+      _mutateScreenState(() => _allowPop = true);
       Navigator.of(context).pop();
       return;
     }
     if (_editingSavedBasics) {
       final saved = _savedBasics;
-      setState(() {
+      _mutateScreenState(() {
         if (saved != null) _applyExplicitBasics(saved);
         _editingSavedBasics = false;
         _error = null;
@@ -489,7 +489,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       return;
     }
     if (_receipt != null || !_hasChanges) {
-      setState(() => _allowPop = true);
+      _mutateScreenState(() => _allowPop = true);
       Navigator.of(context).pop();
       return;
     }
@@ -499,14 +499,14 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       case HostDraftExitDecision.keepEditing:
         return;
       case HostDraftExitDecision.discardAndExit:
-        setState(() => _allowPop = true);
+        _mutateScreenState(() => _allowPop = true);
         Navigator.of(context).pop();
         return;
       case HostDraftExitDecision.saveDraftAndExit:
         try {
           await _persistDraft();
           if (mounted) {
-            setState(() => _allowPop = true);
+            _mutateScreenState(() => _allowPop = true);
             Navigator.of(context).pop();
           }
         } catch (error) {

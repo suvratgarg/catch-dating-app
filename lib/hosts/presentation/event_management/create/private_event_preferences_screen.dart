@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
@@ -99,8 +100,8 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
     ];
 
     if (controller.loading && event == null) {
-      return CatchScaffold.stepFlow(
-        body: const Center(child: CircularProgressIndicator()),
+      return const CatchScaffold.stepFlow(
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -194,10 +195,10 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                 mode: CatchChipMode.single,
                                 autoClose: true,
                                 onChanged: editable ? (selection) {
-                                  if (selection.isNotEmpty) saveField(
-                                    'collectionPreference',
-                                    {'mode': 'set', 'value': selection.single.name},
-                                  );
+                                  if (selection.isNotEmpty) {
+                                    saveField('collectionPreference',
+                                      {'mode': 'set', 'value': selection.single.name});
+                                  }
                                 } : null,
                               ),
                             ),
@@ -218,10 +219,10 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                 mode: CatchChipMode.single,
                                 autoClose: true,
                                 onChanged: editable ? (selection) {
-                                  if (selection.isNotEmpty) saveField(
-                                    'admissionPreset',
-                                    {'mode': 'set', 'value': selection.single},
-                                  );
+                                  if (selection.isNotEmpty) {
+                                    saveField('admissionPreset',
+                                      {'mode': 'set', 'value': selection.single});
+                                  }
                                 } : null,
                               ),
                             ),
@@ -247,8 +248,10 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                     final mode = selection.single;
                                     if (mode == EventSetupValueMode.set) {
                                       final value = resolved[field.key];
-                                      if (value != null) saveField(field.key,
-                                        {'mode': 'set', 'value': value});
+                                      if (value != null) {
+                                        saveField(field.key,
+                                          {'mode': 'set', 'value': value});
+                                      }
                                       return;
                                     }
                                     saveField(field.key, {'mode': mode.name});
@@ -304,7 +307,8 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                       intent = privateEventPreferenceSetIntentForInput(
                                         field.key, value,
                                       );
-                                    } catch (_) {
+                                    } catch (error) {
+                                      showCatchErrorSnackBar(context, error);
                                       return;
                                     }
                                     if (field.key == 'reusablePaymentPage') {
@@ -332,8 +336,8 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                         field.key: intent,
                                       });
                                       unawaited(controller.save(next));
-                                    } catch (_) {
-                                      // Keep the current value. The field remains editable.
+                                    } catch (error) {
+                                      showCatchErrorSnackBar(context, error);
                                     }
                                   } : null,
                                 ),

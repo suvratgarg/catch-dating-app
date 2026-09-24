@@ -18,19 +18,17 @@ class HostManagerEventSetupDefaultsController extends ChangeNotifier {
   HostManagerEventSetupDefaultsController({
     required this.organizerId,
     required this.userId,
-    required ReadManagerEventSetupDefaults read,
-    required WriteManagerEventSetupDefaults write,
-    ManagerEventSetupDefaultsJournal journal =
+    required this.read,
+    required this.write,
+    this.journal =
         const ManagerEventSetupDefaultsJournal(),
-  }) : _read = read,
-       _write = write,
-       _journal = journal;
+  });
 
   final String organizerId;
   final String userId;
-  final ReadManagerEventSetupDefaults _read;
-  final WriteManagerEventSetupDefaults _write;
-  final ManagerEventSetupDefaultsJournal _journal;
+  final ReadManagerEventSetupDefaults read;
+  final WriteManagerEventSetupDefaults write;
+  final ManagerEventSetupDefaultsJournal journal;
 
   ManagerEventSetupDefaults? current;
   ManagerEventSetupDefaultsUpdateRequest? pending;
@@ -47,10 +45,10 @@ class HostManagerEventSetupDefaultsController extends ChangeNotifier {
     notifyListeners();
     try {
       // Restore the frozen command before allowing any fresh edit.
-      pending = await _journal.load(
+      pending = await journal.load(
         userId: userId, organizerId: organizerId,
       );
-      current = await _read(organizerId);
+      current = await read(organizerId);
       if (current!.organizerId != organizerId) {
         throw const FormatException('Manager defaults identity changed');
       }
@@ -90,7 +88,7 @@ class HostManagerEventSetupDefaultsController extends ChangeNotifier {
     try {
       // Persist before invoking the callable, including the exact revision
       // and hash. A lost response can then be replayed after app restart.
-      await _journal.save(userId: userId, request: request);
+      await journal.save(userId: userId, request: request);
       pending = request;
       notifyListeners();
       await _sendPending(request);
@@ -124,12 +122,12 @@ class HostManagerEventSetupDefaultsController extends ChangeNotifier {
   Future<void> _sendPending(
     ManagerEventSetupDefaultsUpdateRequest request,
   ) async {
-    final receipt = await _write(request);
+    final receipt = await write(request);
     if (receipt.current.organizerId != organizerId ||
         receipt.appliedRevision <= request.expectedRevision) {
       throw const FormatException('Invalid manager defaults receipt');
     }
-    await _journal.clear(userId: userId, request: request);
+    await journal.clear(userId: userId, request: request);
     current = receipt.current;
     pending = null;
     error = null;

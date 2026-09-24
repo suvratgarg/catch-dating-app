@@ -20,22 +20,19 @@ class PrivateEventPreferencesController extends ChangeNotifier {
     required this.userId,
     required this.organizerId,
     required this.eventId,
-    required ReadPrivateEventForPreferences readEvent,
-    required ReadDefaultsForPrivateEvent readDefaults,
-    required WritePrivateEventPreferences write,
-    PrivateEventPreferencesJournal journal = const PrivateEventPreferencesJournal(),
-  }) : _readEvent = readEvent,
-       _readDefaults = readDefaults,
-       _write = write,
-       _journal = journal;
+    required this.readEvent,
+    required this.readDefaults,
+    required this.write,
+    this.journal = const PrivateEventPreferencesJournal(),
+  });
 
   final String userId;
   final String organizerId;
   final String eventId;
-  final ReadPrivateEventForPreferences _readEvent;
-  final ReadDefaultsForPrivateEvent _readDefaults;
-  final WritePrivateEventPreferences _write;
-  final PrivateEventPreferencesJournal _journal;
+  final ReadPrivateEventForPreferences readEvent;
+  final ReadDefaultsForPrivateEvent readDefaults;
+  final WritePrivateEventPreferences write;
+  final PrivateEventPreferencesJournal journal;
 
   PrivateEventBasicSummary? event;
   ManagerEventSetupDefaults? defaults;
@@ -64,12 +61,12 @@ class PrivateEventPreferencesController extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      pending = await _journal.load(
+      pending = await journal.load(
         userId: userId, organizerId: organizerId, eventId: eventId,
       );
       final results = await Future.wait<Object>([
-        _readEvent(organizerId: organizerId, eventId: eventId),
-        _readDefaults(organizerId),
+        readEvent(organizerId: organizerId, eventId: eventId),
+        readDefaults(organizerId),
       ]);
       final nextEvent = results[0] as PrivateEventBasicSummary;
       final nextDefaults = results[1] as ManagerEventSetupDefaults;
@@ -108,7 +105,7 @@ class PrivateEventPreferencesController extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      await _journal.save(userId: userId, request: request);
+      await journal.save(userId: userId, request: request);
       pending = request;
       notifyListeners();
       await _sendPending(request);
@@ -140,17 +137,17 @@ class PrivateEventPreferencesController extends ChangeNotifier {
   }
 
   Future<void> _sendPending(PrivateEventPreferencesUpdateRequest request) async {
-    final receipt = await _write(request);
+    final receipt = await write(request);
     if (receipt.eventId != eventId ||
         receipt.setupRevision <= request.expectedSetupRevision) {
       throw const FormatException('Invalid event preferences receipt');
     }
-    await _journal.clear(userId: userId, request: request);
+    await journal.clear(userId: userId, request: request);
     pending = null;
     // The command is settled, but its new revision must be read before a
     // second command can be built. A failed reread must not reuse stale state.
     event = null;
-    event = await _readEvent(organizerId: organizerId, eventId: eventId);
+    event = await readEvent(organizerId: organizerId, eventId: eventId);
     if (event!.eventId != eventId || event!.organizerId != organizerId) {
       throw const FormatException('Private event reread changed identity');
     }
