@@ -685,7 +685,7 @@ export {flightAlertWebhook} from "./transport/flightAlerts";
 export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
   updatePrivateEventPreferences, listPrivateEventSetups,
-  updatePrivateEventDetails,
+  updatePrivateEventDetails, listOfferEventTargets,
 } from "./events/progressiveSetup/callables";
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";

@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ListOfferEventTargetsCallablePayload',
+    source: 'callables/list_offer_event_targets_payload.schema.json',
+    schema: schemaListOfferEventTargetsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OfferEventTargetListCallableResponse',
+    source: 'callable_responses/offer_event_target_list_response.schema.json',
+    schema: schemaOfferEventTargetListCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'GetEventOfferConfigurationCallablePayload',
     source: 'callables/get_event_offer_configuration_payload.schema.json',
     schema: schemaGetEventOfferConfigurationCallablePayloadSchema,
@@ -4389,6 +4399,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ListOfferEventTargetsCallablePayload': schemaListOfferEventTargetsCallablePayloadSchema,
+  'OfferEventTargetListCallableResponse': schemaOfferEventTargetListCallableResponseSchema,
   'GetEventOfferConfigurationCallablePayload': schemaGetEventOfferConfigurationCallablePayloadSchema,
   'EventOfferConfigurationCallableResponse': schemaEventOfferConfigurationCallableResponseSchema,
   'UpdatePrivateEventDetailsCallablePayload': schemaUpdatePrivateEventDetailsCallablePayloadSchema,
@@ -5266,6 +5278,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/list_offer_event_targets_payload.schema.json': schemaListOfferEventTargetsCallablePayloadSchema,
+  'callable_responses/offer_event_target_list_response.schema.json': schemaOfferEventTargetListCallableResponseSchema,
   'callables/get_event_offer_configuration_payload.schema.json': schemaGetEventOfferConfigurationCallablePayloadSchema,
   'callable_responses/event_offer_configuration_response.schema.json': schemaEventOfferConfigurationCallableResponseSchema,
   'callables/update_private_event_details_payload.schema.json': schemaUpdatePrivateEventDetailsCallablePayloadSchema,

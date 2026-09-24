@@ -34,6 +34,13 @@ import {validateUpdatePrivateEventDetailsCallablePayload} from
 import {validatePrivateEventSetupMutationCallableResponse} from
   "../../shared/generated/validators/privateEventSetupMutationOutput";
 
+import {listOfferEventTargets as listOfferTargets} from
+  "./listOfferEventTargets";
+import {validateListOfferEventTargetsCallablePayload} from
+  "../../shared/generated/validators/listOfferEventTargetsInput";
+import {validateOfferEventTargetListCallableResponse} from
+  "../../shared/generated/validators/offerEventTargetListOutput";
+
 export interface SetupCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -149,3 +156,21 @@ export async function updatePrivateEventDetailsHandler(
 }
 export const updatePrivateEventDetails = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventDetailsHandler(request));
+
+/** Lists owned upcoming event choices; selecting never authorizes admission. */
+export async function listOfferEventTargetsHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateListOfferEventTargetsCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "listOfferEventTargets");
+  const result = await listOfferTargets({actorUid, command, db});
+  if (!validateOfferEventTargetListCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event target list response.");
+  }
+  return result;
+}
+export const listOfferEventTargets = onCall(appCheckCallableOptions,
+  (request) => listOfferEventTargetsHandler(request));

@@ -1788,6 +1788,15 @@ These contracts and services are not rollout authorization. Private persistence
 remains disabled until the canonical document schema, Firestore rules and
 public query migration have passed their integrated privacy checks.
 
+The offer picker uses `listOfferEventTargets` for both private and already
+published owned events, including valid rich legacy events. The bounded index
+uses canonical `clubId`, status, start time and document ID; contradictory
+organizer ownership fails. This list exposes no payment settings.
+`getEventOfferConfiguration` separately reads manager-only current terms for
+the selected event and suggests expiry from the server clock and event policy.
+Missing configuration remains null, never an invented free price or expiry.
+Offer preview and commit recheck these facts rather than trusting a picker row.
+
 ### Functions Runtime Schema Modules
 
 The schema generator emits independent runtime modules under

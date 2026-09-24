@@ -72600,6 +72600,30 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const listOfferEventTargetsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOfferEventTargetsCallablePayload.cursor',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const listOfferEventTargetsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOfferEventTargetsCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listOfferEventTargetsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOfferEventTargetsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listOrganizerApplicationsCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'listOrganizerApplicationsCallablePayload.contactId',
     maxLength: 180,
@@ -78269,6 +78293,64 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const offerEventTargetListCallableResponseEvents = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const offerEventTargetListCallableResponseEventsItemsEventId = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const offerEventTargetListCallableResponseEventsItemsName = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events.items.name',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const offerEventTargetListCallableResponseEventsItemsPublicationState = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events.items.publicationState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['private', 'published'],
+  );
+
+  static const offerEventTargetListCallableResponseEventsItemsSetupRevision = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events.items.setupRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const offerEventTargetListCallableResponseEventsItemsStartTimeMillis = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events.items.startTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const offerEventTargetListCallableResponseEventsItemsTimezone = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.events.items.timezone',
+    maxLength: 100,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const offerEventTargetListCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'offerEventTargetListCallableResponse.nextCursor',
+    maxLength: 1024,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
   );
 
   static const onboardingDraftDocumentCountryCode = CatchContractFieldConstraints(
@@ -130752,6 +130834,9 @@ abstract final class CatchContractConstraints {
     'listEventWhatsappPreferencesCallableResponse.previousSenderIds': listEventWhatsappPreferencesCallableResponsePreviousSenderIds,
     'listEventWhatsappPreferencesCallableResponse.previousSenderIds.items': listEventWhatsappPreferencesCallableResponsePreviousSenderIdsItems,
     'listEventWhatsappPreferencesCallableResponse.serverTime': listEventWhatsappPreferencesCallableResponseServerTime,
+    'listOfferEventTargetsCallablePayload.cursor': listOfferEventTargetsCallablePayloadCursor,
+    'listOfferEventTargetsCallablePayload.limit': listOfferEventTargetsCallablePayloadLimit,
+    'listOfferEventTargetsCallablePayload.organizerId': listOfferEventTargetsCallablePayloadOrganizerId,
     'listOrganizerApplicationsCallablePayload.contactId': listOrganizerApplicationsCallablePayloadContactId,
     'listOrganizerApplicationsCallablePayload.cursor': listOrganizerApplicationsCallablePayloadCursor,
     'listOrganizerApplicationsCallablePayload.formId': listOrganizerApplicationsCallablePayloadFormId,
@@ -131526,6 +131611,14 @@ abstract final class CatchContractConstraints {
     'mutateOrganizerContactNoteCallablePayload.expectedRevision': mutateOrganizerContactNoteCallablePayloadExpectedRevision,
     'mutateOrganizerContactNoteCallablePayload.noteId': mutateOrganizerContactNoteCallablePayloadNoteId,
     'mutateOrganizerContactNoteCallablePayload.organizerId': mutateOrganizerContactNoteCallablePayloadOrganizerId,
+    'offerEventTargetListCallableResponse.events': offerEventTargetListCallableResponseEvents,
+    'offerEventTargetListCallableResponse.events.items.eventId': offerEventTargetListCallableResponseEventsItemsEventId,
+    'offerEventTargetListCallableResponse.events.items.name': offerEventTargetListCallableResponseEventsItemsName,
+    'offerEventTargetListCallableResponse.events.items.publicationState': offerEventTargetListCallableResponseEventsItemsPublicationState,
+    'offerEventTargetListCallableResponse.events.items.setupRevision': offerEventTargetListCallableResponseEventsItemsSetupRevision,
+    'offerEventTargetListCallableResponse.events.items.startTimeMillis': offerEventTargetListCallableResponseEventsItemsStartTimeMillis,
+    'offerEventTargetListCallableResponse.events.items.timezone': offerEventTargetListCallableResponseEventsItemsTimezone,
+    'offerEventTargetListCallableResponse.nextCursor': offerEventTargetListCallableResponseNextCursor,
     'onboardingDraftDocument.countryCode': onboardingDraftDocumentCountryCode,
     'onboardingDraftDocument.dateOfBirth._nanoseconds': onboardingDraftDocumentDateOfBirthNanoseconds,
     'onboardingDraftDocument.dateOfBirth._seconds': onboardingDraftDocumentDateOfBirthSeconds,

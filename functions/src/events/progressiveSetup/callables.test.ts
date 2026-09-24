@@ -4,7 +4,7 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   createPrivateEventSetupHandler,
   getPrivateEventSetupHandler,
-  listPrivateEventSetupsHandler,
+  listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
   updatePrivateEventDetailsHandler,
   SetupCallableDependencies,
   updatePrivateEventBasicsHandler,
@@ -38,7 +38,8 @@ test("callable auth and payload validation precede rate or database access",
     for (const handler of [createPrivateEventSetupHandler,
       updatePrivateEventBasicsHandler,
       updatePrivateEventPreferencesHandler, getPrivateEventSetupHandler,
-      listPrivateEventSetupsHandler, updatePrivateEventDetailsHandler]) {
+      listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
+      updatePrivateEventDetailsHandler]) {
       await assert.rejects(handler(request({}), deps),
         (e) => e instanceof HttpsError && e.code === "unauthenticated");
       await assert.rejects(handler(request({}, "host1"), deps),

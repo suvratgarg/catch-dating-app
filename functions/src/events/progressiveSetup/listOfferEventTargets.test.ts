@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {listOfferEventTargets} from "./listOfferEventTargets";
+import {validateOfferEventTargetListCallableResponse} from
+  "../../shared/generated/validators/offerEventTargetListOutput";
 
 type Row = Record<string, unknown>;
 const NOW = Date.parse("2026-10-01T00:00:00Z");
@@ -106,7 +109,8 @@ function privateEvent(start: number): Row {
 
 function richEvent(start: number): Row {
   const source = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/event_doc.json", "utf8")) as Row;
+    resolve(__dirname, "../../../../contracts/fixtures/valid/event_doc.json"),
+    "utf8")) as Row;
   return {...source, clubId: "org1",
     startTime: Timestamp.fromMillis(start),
     endTime: Timestamp.fromMillis(start + 3_600_000)};
@@ -146,6 +150,7 @@ test("one owner list includes private, published and rich legacy events",
     store.rows.set("events/cancelled", {...privateEvent(NOW + 5_000),
       status: "cancelled"});
     const result = await list(store, {organizerId: "org1"});
+    assert.equal(validateOfferEventTargetListCallableResponse(result), true);
     assert.deepEqual(result.events.map((row) => row.eventId),
       ["a", "b", "c"]);
     assert.deepEqual(result.events.map((row) => row.publicationState),

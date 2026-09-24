@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {listOfferEventTargetsCallablePayloadSchema} from "./schemas/listOfferEventTargetsInput";
+export {offerEventTargetListCallableResponseSchema} from "./schemas/offerEventTargetListOutput";
 export {getEventOfferConfigurationCallablePayloadSchema} from "./schemas/getEventOfferConfigurationInput";
 export {eventOfferConfigurationCallableResponseSchema} from "./schemas/eventOfferConfigurationOutput";
 export {updatePrivateEventDetailsCallablePayloadSchema} from "./schemas/updatePrivateEventDetailsInput";
