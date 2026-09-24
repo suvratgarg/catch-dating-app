@@ -295,11 +295,10 @@ void main() {
         home: Scaffold(body: SingleChildScrollView(
           child: HostFormTargetSection(
             organizerId: 'org',
-            definition: HostFormDefinition.fromMap(const {
-              ..._definition,
-              'defaultTargetKind': 'event',
-              'defaultTargetId': 'event-two',
-            }),
+            definition: HostFormDefinition.fromMap(_definition).withTarget(
+              kind: HostFormTargetKind.event,
+              eventId: 'event-two',
+            ),
             notifier: notifier,
             accountId: 'host-two',
             enableEventTargetSettings: true,

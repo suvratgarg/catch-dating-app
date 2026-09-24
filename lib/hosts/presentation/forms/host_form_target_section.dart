@@ -119,7 +119,9 @@ class _HostFormTargetSectionState
     final targets = _targets;
     if (targets == null ||
         !targets.isCurrentAccount ||
-        targets.event(event.eventId) != event) return;
+        targets.event(event.eventId) != event) {
+      return;
+    }
     notifier.updateTarget(
       kind: HostFormTargetKind.event,
       eventId: event.eventId,
