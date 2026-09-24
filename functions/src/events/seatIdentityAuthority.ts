@@ -64,6 +64,12 @@ function hash(parts: string[]): string {
   return createHash("sha256").update(parts.join("\u001f")).digest("hex");
 }
 
+/** Hash persisted alias values exactly as the transaction resolver expects. */
+export function seatIdentityValueHash(kind: AliasKind,
+  value: string): string {
+  return hash([kind, value]);
+}
+
 export function seatIdentityAliasId(eventId: string, kind: AliasKind,
   value: string): string {
   if (!validId(eventId) || !value || value.length > 512) {
@@ -204,7 +210,7 @@ export class FirestoreSeatIdentityAuthority {
       const alias = await read("eventSeatIdentityAliases", aliasId);
       if (!alias || alias.eventId !== eventId ||
           alias.organizerId !== organizerId || alias.kind !== kind ||
-          alias.valueHash !== hash([kind, value]) ||
+          alias.valueHash !== seatIdentityValueHash(kind, value) ||
           alias.state !== "ready" ||
           alias.migrationRevision !== revision ||
           !validId(alias.canonicalKey) ||
