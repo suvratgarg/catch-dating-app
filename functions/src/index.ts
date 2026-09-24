@@ -660,6 +660,7 @@ export {
   issueProgramHouseholdRsvpLink,
   getProgramHouseholdRsvpView,
   submitProgramHouseholdRsvp,
+  programHouseholdItineraryIcs,
 } from "./programRsvp/householdRsvp";
 export {
   upsertProgramFunction,

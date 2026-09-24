@@ -8,6 +8,7 @@ import {FakeFirestore, type FakeData} from
 import {
   getProgramHouseholdRsvpViewHandler,
   issueProgramHouseholdRsvpLinkHandler,
+  programHouseholdItineraryIcsHandler,
   submitProgramHouseholdRsvpHandler,
 } from "./householdRsvp";
 import {mintHouseholdToken} from "./rsvpLinkTokens";
@@ -235,4 +236,85 @@ test("bad, expired and foreign tokens never open a view", async () => {
     request({token: token("hh-2")}, "anonymous"), deps(db));
   assert.equal(view.members.length, 1);
   assert.equal(view.members[0].guestId, "g-3");
+});
+
+const icsRequest = (query: Record<string, unknown>, ip: string,
+  method = "GET") => ({
+  method,
+  query,
+  ip,
+  get: (name: string) => name === "x-forwarded-for" ? ip : undefined,
+});
+
+const icsResponse = () => {
+  const state = {status: 0, headers: {} as Record<string, string>, body: ""};
+  const res = {
+    status: (code: number) => {
+      state.status = code;
+      return res;
+    },
+    set: (headers: Record<string, string>) => {
+      Object.assign(state.headers, headers);
+      return res;
+    },
+    send: (body: string) => {
+      state.body = body;
+      return state;
+    },
+  };
+  return {res, state};
+};
+
+test("ics feed serves only the household's invited live functions",
+  async () => {
+    const db = new FakeFirestore(seed());
+    const {res, state} = icsResponse();
+    await programHouseholdItineraryIcsHandler(
+      icsRequest({token: token()}, "10.0.0.1"),
+      res, deps(db));
+    assert.equal(state.status, 200);
+    assert.equal(
+      state.headers["Content-Type"], "text/calendar; charset=utf-8");
+    assert.equal(state.headers["Cache-Control"], "private, no-store");
+    const feed = state.body;
+    assert.match(feed, /BEGIN:VCALENDAR/);
+    assert.match(feed, /X-WR-CALNAME:Wedding/);
+    // g-2's selectedGuests invite makes mehndi part of the household feed.
+    assert.match(feed, /SUMMARY:fn-sangeet/);
+    assert.match(feed, /SUMMARY:fn-mehndi/);
+    // Cancelled functions never enter the itinerary.
+    assert.doesNotMatch(feed, /fn-cancelled/);
+    // A foreign household's feed excludes the selectedGuests function.
+    const other = icsResponse();
+    await programHouseholdItineraryIcsHandler(
+      icsRequest({token: token("hh-2")}, "10.0.0.2"),
+      other.res, deps(db));
+    assert.equal(other.state.status, 200);
+    assert.match(other.state.body, /SUMMARY:fn-sangeet/);
+    assert.doesNotMatch(other.state.body, /fn-mehndi/);
+  });
+
+test("ics endpoint rejects missing, bad and expired tokens", async () => {
+  const db = new FakeFirestore(seed());
+  const missing = icsResponse();
+  await programHouseholdItineraryIcsHandler(
+    icsRequest({}, "10.0.0.3"), missing.res, deps(db));
+  assert.equal(missing.state.status, 400);
+  const bad = icsResponse();
+  await programHouseholdItineraryIcsHandler(
+    icsRequest({token: `${token()}x`}, "10.0.0.4"), bad.res, deps(db));
+  assert.equal(bad.state.status, 401);
+  const expired = mintHouseholdToken({
+    programId: "program-1", householdId: "hh-1",
+    expiresAtMillis: now.toMillis() - 1,
+  }, SECRET);
+  const expiredRes = icsResponse();
+  await programHouseholdItineraryIcsHandler(
+    icsRequest({token: expired}, "10.0.0.5"), expiredRes.res, deps(db));
+  assert.equal(expiredRes.state.status, 401);
+  const wrongMethod = icsResponse();
+  await programHouseholdItineraryIcsHandler(
+    icsRequest({token: token()}, "10.0.0.6", "POST"),
+    wrongMethod.res, deps(db));
+  assert.equal(wrongMethod.state.status, 405);
 });

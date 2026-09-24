@@ -1,12 +1,12 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, HttpsError, onCall} from
+import {CallableRequest, HttpsError, onCall, onRequest} from
   "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
 import {requireAuth} from "../shared/auth";
 import {
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkIpRateLimit, checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   dutyAssignments,
@@ -58,6 +58,7 @@ import {
   verifyHouseholdToken,
 } from "./rsvpLinkTokens";
 import {functionCountPatch} from "./rsvpRollup";
+import {buildIcsFeed} from "../programSchedule/icsFeed";
 
 export const householdRsvpSecret =
   defineSecret("PROGRAM_HOUSEHOLD_RSVP_SECRET");
@@ -477,4 +478,142 @@ export const submitProgramHouseholdRsvp = onCall(
   appCheckCallableOptionsWithSecrets([householdRsvpSecret],
     rsvpCallableLimits),
   (request) => submitProgramHouseholdRsvpHandler(request)
+);
+
+export type HouseholdBundle = Awaited<ReturnType<typeof loadHouseholdBundle>>;
+
+function invitedFunctionIds(bundle: HouseholdBundle): Set<string> {
+  const invited = new Set<string>();
+  for (const guestId of bundle.household.memberGuestIds) {
+    const guest = bundle.guests.get(guestId);
+    if (!guest) continue;
+    const memberRows = bundle.rowsByGuest.get(guestId) ?? [];
+    for (const [functionId, fn] of bundle.functions) {
+      if (fn.status === "cancelled") continue;
+      if (resolveEffectiveInviteSet(
+        functionLike(fn, functionId),
+        [guestLike(guest, guestId)],
+        memberRows).has(guestId)) {
+        invited.add(functionId);
+      }
+    }
+  }
+  return invited;
+}
+
+export function householdIcsFeed(
+  bundle: HouseholdBundle,
+  generatedAtMillis: number,
+): string {
+  const invited = invitedFunctionIds(bundle);
+  return buildIcsFeed({
+    programTitle: bundle.program.title,
+    generatedAtMillis,
+    functions: [...bundle.functions.entries()]
+      .filter(([functionId, fn]) =>
+        invited.has(functionId) && fn.status !== "cancelled")
+      .map(([functionId, fn]) => ({
+        functionId,
+        name: fn.name,
+        startsAt: staffTimestampMillis(fn.startsAt),
+        endsAt: staffTimestampMillis(fn.endsAt),
+        status: fn.status,
+        revision: fn.revision,
+        venueName: fn.venueName ?? null,
+        venueNotes: [
+          fn.venueLocation?.name,
+          fn.venueLocation?.address,
+          fn.venueLocation?.notes,
+        ]
+          .filter((value): value is string =>
+            typeof value === "string" && value !== "")
+          .join(", ") || null,
+      })),
+  });
+}
+
+interface IcsRequestLike {
+  method: string;
+  query: Record<string, unknown>;
+  get: (name: string) => string | undefined;
+  ip?: string;
+}
+
+interface IcsResponseLike {
+  status: (code: number) => IcsResponseLike;
+  set: (headers: Record<string, string>) => IcsResponseLike;
+  send: (body: string) => unknown;
+}
+
+function sendIcsError(
+  response: IcsResponseLike,
+  code: number,
+  message: string,
+): void {
+  response
+    .status(code)
+    .set({"Content-Type": "application/json; charset=utf-8"})
+    .send(JSON.stringify({error: message}));
+}
+
+export async function programHouseholdItineraryIcsHandler(
+  request: IcsRequestLike,
+  response: IcsResponseLike,
+  deps: HouseholdRsvpDeps = defaultDeps,
+): Promise<void> {
+  if (request.method !== "GET") {
+    sendIcsError(response, 405, "Method not allowed.");
+    return;
+  }
+  const clientIp = request.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.ip ?? "unknown";
+  if (!checkIpRateLimit(clientIp)) {
+    sendIcsError(response, 429, "Too many requests. Please try again later.");
+    return;
+  }
+  const tokenParam = request.query["token"];
+  const token = typeof tokenParam === "string" ? tokenParam : null;
+  if (!token) {
+    sendIcsError(response, 400, "An RSVP link token is required.");
+    return;
+  }
+  let identity: {programId: string; householdId: string};
+  try {
+    identity = verifyTokenOrThrow(token, deps);
+  } catch {
+    sendIcsError(response, 401, "This RSVP link is invalid or has expired.");
+    return;
+  }
+  const db = deps.firestore();
+  let bundle: HouseholdBundle;
+  try {
+    bundle = await loadHouseholdBundle(
+      db, identity.programId, identity.householdId);
+  } catch {
+    sendIcsError(response, 404, "This RSVP link is no longer valid.");
+    return;
+  }
+  const feed = householdIcsFeed(bundle, deps.now().toMillis());
+  response
+    .status(200)
+    .set({
+      "Content-Type": "text/calendar; charset=utf-8",
+      "Cache-Control": "private, no-store",
+      "Content-Disposition":
+        "inline; filename=\"itinerary.ics\"",
+    })
+    .send(feed);
+}
+
+export const programHouseholdItineraryIcs = onRequest(
+  {
+    region: "asia-south1",
+    timeoutSeconds: 60,
+    maxInstances: 20,
+    secrets: [householdRsvpSecret],
+  },
+  (request, response) =>
+    programHouseholdItineraryIcsHandler(
+      request as unknown as IcsRequestLike,
+      response as unknown as IcsResponseLike)
 );
