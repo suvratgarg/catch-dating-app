@@ -194,8 +194,14 @@ class _PrivateEventCreateScreenState
             );
       _savedBasics = _currentExplicitBasics;
       _loadingSavedEvent = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) =>
-          _PrivateEventCreateBody(this)._loadPendingUpdate());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final savedId = _receipt?.eventId;
+        if (mounted && savedId != null) {
+          unawaited(_PrivateEventCreateBody(this)._loadSavedEvent(
+            savedEventId: savedId,
+          ));
+        }
+      });
     }
     if (widget.promptForDraftsOnStart &&
         widget.initialSavedEventId == null &&

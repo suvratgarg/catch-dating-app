@@ -147,6 +147,9 @@ class PrivateEventPreferencesController extends ChangeNotifier {
     }
     await _journal.clear(userId: userId, request: request);
     pending = null;
+    // The command is settled, but its new revision must be read before a
+    // second command can be built. A failed reread must not reuse stale state.
+    event = null;
     event = await _readEvent(organizerId: organizerId, eventId: eventId);
     if (event!.eventId != eventId || event!.organizerId != organizerId) {
       throw const FormatException('Private event reread changed identity');

@@ -195,14 +195,19 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     _editingSavedBasics = false;
     if (_receipt != null) {
       _loadingSavedEvent = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadPendingUpdate());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final savedId = _receipt?.eventId;
+        if (mounted && savedId != null) {
+          unawaited(_loadSavedEvent(savedEventId: savedId));
+        }
+      });
     }
     _showErrors = false;
     _error = null;
   }
 
-  Future<void> _loadSavedEvent() async {
-    final eventId = widget.initialSavedEventId!;
+  Future<void> _loadSavedEvent({String? savedEventId}) async {
+    final eventId = savedEventId ?? widget.initialSavedEventId!;
     try {
       final controller = ref.read(createEventDraftControllerProvider.notifier);
       final summary = await (widget.readSaved ?? controller.getPrivateEventSetup)(

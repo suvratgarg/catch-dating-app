@@ -222,6 +222,20 @@ void main() {
           club: buildClub(),
           initialDraft: draft,
           create: create,
+          readSaved: ({required organizerId, required eventId}) async =>
+              PrivateEventBasicSummary(
+                eventId: eventId, organizerId: organizerId,
+                setupRevision: draft.eventCreateReceiptRevision ?? 1,
+                name: 'Saturday mixer',
+                city: const EventSetupCity(
+                  cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai',
+                ),
+                localDate: localDate, localStartTime: '19:00',
+                timezone: 'Asia/Kolkata',
+                startTimeMillis: date.millisecondsSinceEpoch,
+                status: 'active', setupDefaults: const {},
+                detailsConfigured: false, eventPreferences: null,
+              ),
         ),
       ),
     );

@@ -51,6 +51,22 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
       'set' => l10n.hostsEventPreferenceOverride,
       _ => l10n.hostsEventPreferenceClear,
     };
+    String collectionLabel(EventCollectionPreference value) => switch (value) {
+      EventCollectionPreference.manualInstructions =>
+        l10n.hostsEventDefaultsManualInstructions,
+      EventCollectionPreference.reusablePage =>
+        l10n.hostsEventDefaultsReusablePage,
+      EventCollectionPreference.personalRequest =>
+        l10n.hostsEventDefaultsPersonalRequest,
+      EventCollectionPreference.catchCheckout =>
+        l10n.hostsEventDefaultsCatchCheckout,
+    };
+    String admissionLabel(String value) => switch (value) {
+      'openCapacity' => l10n.hostsEventPreferenceAdmissionOpen,
+      'inviteOnly' => l10n.hostsEventPreferenceAdmissionInvite,
+      'balancedSingles' => l10n.hostsEventPreferenceAdmissionBalanced,
+      _ => l10n.hostsEventPreferenceAdmissionFixed,
+    };
 
     final fields = <({String key, String title, String hint, int maxLength})>[
       (key: 'usualDurationMinutes', title: l10n.hostsEventDefaultsUsualDuration,
@@ -155,22 +171,15 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                               copy: copy,
                               title: l10n.hostsEventDefaultsCollectionPreference,
                               contractExemption: 'Private event collection preference only.',
-                              body: resolved['collectionPreference']?.toString() ??
-                                  l10n.hostsEventDefaultsChooseEachEvent,
+                              body: resolved['collectionPreference'] is String
+                                  ? collectionLabel(EventCollectionPreference.values.byName(
+                                      resolved['collectionPreference'] as String))
+                                  : l10n.hostsEventDefaultsChooseEachEvent,
                               helperText: l10n.hostsEventDefaultsCollectionSuggestionHint,
                               icon: CatchIcons.paymentsOutlined,
                               child: CatchChoiceInput<EventCollectionPreference>(
                                 values: EventCollectionPreference.values,
-                                itemLabelBuilder: (value) => switch (value) {
-                                  EventCollectionPreference.manualInstructions =>
-                                    l10n.hostsEventDefaultsManualInstructions,
-                                  EventCollectionPreference.reusablePage =>
-                                    l10n.hostsEventDefaultsReusablePage,
-                                  EventCollectionPreference.personalRequest =>
-                                    l10n.hostsEventDefaultsPersonalRequest,
-                                  EventCollectionPreference.catchCheckout =>
-                                    l10n.hostsEventDefaultsCatchCheckout,
-                                },
+                                itemLabelBuilder: collectionLabel,
                                 selected: resolved['collectionPreference'] is String
                                     ? {EventCollectionPreference.values.byName(
                                         resolved['collectionPreference'] as String)}
@@ -189,17 +198,13 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                               copy: copy,
                               title: l10n.hostsEventPreferenceAdmission,
                               contractExemption: 'Private event admission suggestion only.',
-                              body: resolved['admissionPreset']?.toString() ??
-                                  l10n.hostsEventDefaultsChooseEachEvent,
+                              body: resolved['admissionPreset'] is String
+                                  ? admissionLabel(resolved['admissionPreset'] as String)
+                                  : l10n.hostsEventDefaultsChooseEachEvent,
                               child: CatchChoiceInput<String>(
                                 values: const ['openCapacity', 'inviteOnly',
                                   'balancedSingles', 'fixedCohortCaps'],
-                                itemLabelBuilder: (value) => switch (value) {
-                                  'openCapacity' => l10n.hostsEventPreferenceAdmissionOpen,
-                                  'inviteOnly' => l10n.hostsEventPreferenceAdmissionInvite,
-                                  'balancedSingles' => l10n.hostsEventPreferenceAdmissionBalanced,
-                                  _ => l10n.hostsEventPreferenceAdmissionFixed,
-                                },
+                                itemLabelBuilder: admissionLabel,
                                 selected: resolved['admissionPreset'] is String
                                     ? {resolved['admissionPreset'] as String}
                                     : const <String>{},
