@@ -2544,6 +2544,24 @@ feedback, and survey definitions. The existing application collections below
 remain the application-review projection and import compatibility boundary;
 they are not the generic response store.
 
+Fixed-event form targets are validated in the same transaction as creation,
+draft updates, duplication and publication. Binding accepts a schema-valid,
+active upcoming event owned by the organizer, including a privately saved
+basics-only event. The mutation also rechecks current manager and deleted-account
+authority. Missing, foreign, cancelled, malformed or past targets reject the
+write; changing the draft to organizer-wide intake clears the event binding.
+Resuming a paused form validates the immutable published version's target,
+not an unpublished draft edit. Public resolution closes a fixed-event form when
+its current event is missing,
+foreign, cancelled or has started. Begin/save and the final response write
+recheck the event inside their transaction; already submitted responses retain
+idempotent receipt replay. Paid checkout rechecks before reserving a payment.
+A captured payment whose event became unavailable enters the existing
+`refundPending` reconciliation path without creating a response; this does not
+claim a completed refund or activate a provider.
+Binding creates no admission, booking, event publication or payment capability; offer/admission writes still need their own
+current target and source authority.
+
 `requestOrganizerFormExport` accepts optional `responseQuery`,
 `expectedQueryHash` and `expectedResultHash` together. Typed exports use the
 same published-version-aware predicate, ordering and one-snapshot reader as

@@ -123,3 +123,70 @@ test("locked checkout cannot be edited or submitted through the free endpoint",
     await assert.rejects(saveOrganizerFormResponseDraftHandler(request, deps),
       /no longer editable/u);
   });
+
+test("event cancellation prevents new checkout and routes capture to refund",
+  async () => {
+    const h = harness();
+    h.version.definition.defaultTargetKind = "event";
+    h.version.definition.defaultTargetId = "event";
+    const event = {organizerId: "org", name: "Private event",
+      publicationState: "private",
+      setupRevision: 1, publicRegistrationEnabled: false,
+      eventCityId: "city1", eventMarketId: "market1",
+      eventLocalDate: "2026-10-02", eventLocalStartTime: "18:00",
+      eventTimezone: "Asia/Kolkata", setupDefaults: {
+        city: {value: {cityId: "city1", marketId: "market1"}, source: "event"},
+        timezone: {value: "Asia/Kolkata", source: "event"},
+        organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64),
+      },
+      clubId: "org", startTime: Timestamp.fromMillis(1_000_000),
+      bookedCount: 0, checkedInCount: 0, waitlistedCount: 0, status: "active",
+      cancelledAt: null, cancellationReason: null, genderCounts: {},
+      cohortCounts: {}, waitlistedCohortCounts: {}};
+    h.store.records.set("events/event", {...event, status: "cancelled"});
+    await assert.rejects(h.reserve(), {code: "failed-precondition"});
+    assert.equal([...h.store.records.keys()].some((key) =>
+      key.startsWith("organizerFormPayments/")), false);
+    h.store.records.set("events/event", event);
+    const {paymentId} = await h.reserve();
+    h.store.records.set("events/event", {...event, status: "cancelled"});
+    h.capture(paymentId);
+    assert.equal(await h.finalize(paymentId), "refundPending");
+    assert.equal(await h.finalize(paymentId), "refundPending");
+    assert.equal(h.store.records.get(`organizerFormPayments/${paymentId}`)
+      ?.lastErrorCode, "formEventUnavailable");
+    assert.equal(h.store.records.get("organizerForms/form")
+      ?.submittedResponseCount, 0);
+    assert.equal([...h.store.records.keys()].some((key) =>
+      key.startsWith("organizerFormResponses/")), false);
+  });
+
+test("completed paid response replay stays submitted after event cancellation",
+  async () => {
+    const h = harness();
+    h.version.definition.defaultTargetKind = "event";
+    h.version.definition.defaultTargetId = "event";
+    h.store.records.set("events/event", {organizerId: "org",
+      name: "Private event", publicationState: "private",
+      setupRevision: 1, publicRegistrationEnabled: false,
+      eventCityId: "city1", eventMarketId: "market1",
+      eventLocalDate: "2026-10-02", eventLocalStartTime: "18:00",
+      eventTimezone: "Asia/Kolkata", setupDefaults: {
+        city: {value: {cityId: "city1", marketId: "market1"}, source: "event"},
+        timezone: {value: "Asia/Kolkata", source: "event"},
+        organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64),
+      },
+      clubId: "org",
+      startTime: Timestamp.fromMillis(1_000_000), bookedCount: 0,
+      checkedInCount: 0, waitlistedCount: 0, status: "active",
+      cancelledAt: null,
+      cancellationReason: null, genderCounts: {}, cohortCounts: {},
+      waitlistedCohortCounts: {}});
+    const {paymentId} = await h.reserve();
+    h.capture(paymentId);
+    assert.equal(await h.finalize(paymentId), "submitted");
+    h.store.records.delete("events/event");
+    const before = JSON.stringify([...h.store.records]);
+    assert.equal(await h.finalize(paymentId), "submitted");
+    assert.equal(JSON.stringify([...h.store.records]), before);
+  });

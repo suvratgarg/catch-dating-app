@@ -1,3 +1,5 @@
+import {organizerFormEventTargetAvailable, requireOrganizerFormEventTarget} from
+  "./organizerFormTarget";
 import {formMessagingOffer, formMessagingChoices,
   prepareFormCommunicationIntent, normalizeFormMessagingDecision,
   prepareFormMessagingGrants} from
@@ -221,6 +223,11 @@ export async function beginOrganizerFormResponseHandler(
   const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
   const result = await db.runTransaction(async (tx) => {
     const snapshot = await tx.get(draftRef);
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: resolved.form.organizerId,
+      kind: resolved.version.definition.defaultTargetKind,
+      targetId: resolved.version.definition.defaultTargetId,
+      nowMillis: deps.timestamp().toMillis()});
     if (snapshot.exists) {
       const existing = requireDoc<OrganizerFormResponseDraftDocument>(
         snapshot,
@@ -339,6 +346,11 @@ export async function saveOrganizerFormResponseDraftHandler(
       );
     }
     const version = await getVersion(tx, db, current.versionId);
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: current.organizerId,
+      kind: version.definition.defaultTargetKind,
+      targetId: version.definition.defaultTargetId,
+      nowMillis: deps.timestamp().toMillis()});
     validateAnswerShape(version.definition, data.answers, false);
     const now = deps.timestamp();
     const messagingDecision = normalizeFormMessagingDecision({
@@ -721,6 +733,10 @@ export async function persistOrganizerFormSubmission(params: {
   const responseId = deterministicId("formresponse", draftId);
   const responseRef = db.collection("organizerFormResponses").doc(responseId);
   const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
+  await requireOrganizerFormEventTarget({db, tx,
+    organizerId: draft.organizerId,
+    kind: version.definition.defaultTargetKind,
+    targetId: version.definition.defaultTargetId, nowMillis: now.toMillis()});
   const writeMessagingGrants = await prepareFormMessagingGrants({
     tx, db, draft, definition: version.definition, responseId, now,
   });
@@ -1015,7 +1031,18 @@ async function resolvePublicForm(
       version.organizerId !== form.organizerId) {
     throw new HttpsError("not-found", "Form not found.");
   }
-  const availability = availabilityFor(form, version, deps.timestamp());
+  const now = deps.timestamp();
+  let availability = availabilityFor(form, version, now);
+  if (availability.status === "active" &&
+      !await organizerFormEventTargetAvailable({db,
+        organizerId: form.organizerId,
+        kind: version.definition.defaultTargetKind,
+        targetId: version.definition.defaultTargetId,
+        nowMillis: now.toMillis()})) {
+    availability = {status: "closed", message:
+      version.definition.availability.closedMessage ??
+        "This form is not accepting responses right now."};
+  }
   return {
     formId: formSnap.id,
     versionId: versionSnap.id,
