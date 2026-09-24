@@ -1048,6 +1048,13 @@ service cloud.firestore {
     // type audits, relationship projections, and compatibility shadows stay
     // atomic during the released-client migration window.
     // Private configuration is exposed only through current-manager callables.
+    // Immutable admission/payment evidence has no direct client access.
+    match /organizerFormAdmissions/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerFormAdmissionReceipts/{documentId} {
+      allow read, write: if false;
+    }
     match /organizerEventOffers/{documentId} {
       allow read, write: if false;
     }
