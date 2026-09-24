@@ -113,7 +113,7 @@ void main() {
     expect(submitted?.localDate, localDate);
     expect(submitted?.localStartTime, '19:00');
     expect(find.text('Private'), findsOneWidget);
-    expect(find.text('Continue setup when you need it'), findsOneWidget);
+    expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -216,6 +216,10 @@ void main() {
     expect(stillPending.eventCreateRequestId, firstRequestId);
     expect(jsonDecode(stillPending.eventCreatePayloadJson!), firstPayload);
     expect(stillPending.eventCreateReceiptEventId, isNull);
+    ScaffoldMessenger.of(
+      tester.element(find.byType(PrivateEventCreateScreen)),
+    ).removeCurrentSnackBar();
+    await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('private-event-save')));
     await pumpFeatureUi(tester);
     final completed = EventDraft.listFromJson(

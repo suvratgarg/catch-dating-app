@@ -101,7 +101,10 @@ void main() {
           find.text('Saved breakfast'),
           failure ? findsOneWidget : findsNothing,
         );
-        expect(find.text('Create event'), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('host-event-entry-createEvent')),
+          findsOneWidget,
+        );
         expect(find.text('Sell tickets with Catch'), findsNothing);
         expect(find.text('Use guest list'), findsNothing);
         expect(find.byType(HostEventEntrySheet), findsOneWidget);

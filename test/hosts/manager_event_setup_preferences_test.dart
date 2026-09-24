@@ -32,10 +32,22 @@ void main() {
     expect(cleared.paymentInstructions, isNull);
     expect(cleared.reusablePaymentPage, isNull);
     expect(original.reusablePaymentPage!.reusableForEvents, isTrue);
-    final publicOrganizerJson = const ClubHostDefaults().toJson();
+    final publicOrganizerJson = const ClubHostDefaults(
+      timezone: 'Asia/Kolkata',
+      revision: 7,
+    ).toJson();
     expect(publicOrganizerJson.keys, isNot(contains('eventSetup')));
     expect(publicOrganizerJson.keys, isNot(contains('paymentInstructions')));
     expect(publicOrganizerJson.keys, isNot(contains('reusablePaymentPage')));
+    expect(publicOrganizerJson.keys, isNot(contains('timezone')));
+    expect(publicOrganizerJson.keys, isNot(contains('revision')));
+    final serverRead = ClubHostDefaults.fromJson({
+      ...publicOrganizerJson,
+      'timezone': 'Asia/Kolkata',
+      'revision': 7,
+    });
+    expect(serverRead.timezone, 'Asia/Kolkata');
+    expect(serverRead.revision, 7);
   });
 
   test('reusable payment pages require canonical public HTTPS URLs', () {
@@ -73,8 +85,8 @@ void main() {
         ),
       ),
     ));
-    await tester.ensureVisible(find.text('Reusable organizer payment page'));
     final field = find.byKey(const ValueKey('manager-reusable-page-null'));
+    await tester.ensureVisible(field);
     final input = find.descendant(
       of: field,
       matching: find.byKey(const ValueKey('catch-field-text-entry')),
