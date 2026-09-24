@@ -10350,7 +10350,7 @@
             "symbol": "HostClubEditTab"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+            "file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
             "symbol": "HostClubEventDefaultsScreen"
           },
           {
@@ -11613,7 +11613,7 @@
               "HostEventDefaultsEditor"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+              "file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
               "symbol": "HostClubEventDefaultsScreen"
             },
             "currentOwner": "HostClubEventDefaultsScreen",
