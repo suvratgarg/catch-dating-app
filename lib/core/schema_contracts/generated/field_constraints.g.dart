@@ -34605,6 +34605,175 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventOfferConfigurationCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferConfigurationCallableResponseEventSourceRevision = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.eventSourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const eventOfferConfigurationCallableResponseNowMillis = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.nowMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventOfferConfigurationCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsCurrency = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.expectedAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesCurrency = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.expectedAmountMinor',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.offerMessageTemplate',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.offerValidityMinutes',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesPaymentInstructions = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.paymentInstructions',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesPreferredCollection = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.preferredCollection',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesReusablePaymentPage = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.reusablePaymentPage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.offerMessageTemplate',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.offerValidityMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsPaymentInstructions = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.paymentInstructions',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsPreferredCollection = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.preferredCollection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsReusablePaymentPageReusableForEvents = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.reusablePaymentPage.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsReusablePaymentPageUrl = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.reusablePaymentPage.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsRevision = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsSourceDefaultsHash = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.sourceDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventOfferConfigurationCallableResponsePaymentTermsSourceDefaultsRevision = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.paymentTerms.sourceDefaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const eventOfferConfigurationCallableResponseStartsAtMillis = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.startsAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const eventOfferConfigurationCallableResponseSuggestedExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventOfferConfigurationCallableResponse.suggestedExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
   static const eventOfferDetailCallableResponseEffectiveStatus = CatchContractFieldConstraints(
     path: 'eventOfferDetailCallableResponse.effectiveStatus',
     required: true,
@@ -63945,6 +64114,22 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const getEventOfferConfigurationCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventOfferConfigurationCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventOfferConfigurationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventOfferConfigurationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventRcsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -125453,6 +125638,30 @@ abstract final class CatchContractConstraints {
     'eventOfferCommitCallableResponse.results.items.generation': eventOfferCommitCallableResponseResultsItemsGeneration,
     'eventOfferCommitCallableResponse.results.items.offerId': eventOfferCommitCallableResponseResultsItemsOfferId,
     'eventOfferCommitCallableResponse.results.items.revision': eventOfferCommitCallableResponseResultsItemsRevision,
+    'eventOfferConfigurationCallableResponse.eventId': eventOfferConfigurationCallableResponseEventId,
+    'eventOfferConfigurationCallableResponse.eventSourceRevision': eventOfferConfigurationCallableResponseEventSourceRevision,
+    'eventOfferConfigurationCallableResponse.nowMillis': eventOfferConfigurationCallableResponseNowMillis,
+    'eventOfferConfigurationCallableResponse.organizerId': eventOfferConfigurationCallableResponseOrganizerId,
+    'eventOfferConfigurationCallableResponse.paymentTerms.currency': eventOfferConfigurationCallableResponsePaymentTermsCurrency,
+    'eventOfferConfigurationCallableResponse.paymentTerms.expectedAmountMinor': eventOfferConfigurationCallableResponsePaymentTermsExpectedAmountMinor,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.currency': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesCurrency,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.expectedAmountMinor': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesExpectedAmountMinor,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.offerMessageTemplate': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesOfferMessageTemplate,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.offerValidityMinutes': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesOfferValidityMinutes,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.paymentInstructions': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesPaymentInstructions,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.preferredCollection': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesPreferredCollection,
+    'eventOfferConfigurationCallableResponse.paymentTerms.fieldSources.reusablePaymentPage': eventOfferConfigurationCallableResponsePaymentTermsFieldSourcesReusablePaymentPage,
+    'eventOfferConfigurationCallableResponse.paymentTerms.offerMessageTemplate': eventOfferConfigurationCallableResponsePaymentTermsOfferMessageTemplate,
+    'eventOfferConfigurationCallableResponse.paymentTerms.offerValidityMinutes': eventOfferConfigurationCallableResponsePaymentTermsOfferValidityMinutes,
+    'eventOfferConfigurationCallableResponse.paymentTerms.paymentInstructions': eventOfferConfigurationCallableResponsePaymentTermsPaymentInstructions,
+    'eventOfferConfigurationCallableResponse.paymentTerms.preferredCollection': eventOfferConfigurationCallableResponsePaymentTermsPreferredCollection,
+    'eventOfferConfigurationCallableResponse.paymentTerms.reusablePaymentPage.reusableForEvents': eventOfferConfigurationCallableResponsePaymentTermsReusablePaymentPageReusableForEvents,
+    'eventOfferConfigurationCallableResponse.paymentTerms.reusablePaymentPage.url': eventOfferConfigurationCallableResponsePaymentTermsReusablePaymentPageUrl,
+    'eventOfferConfigurationCallableResponse.paymentTerms.revision': eventOfferConfigurationCallableResponsePaymentTermsRevision,
+    'eventOfferConfigurationCallableResponse.paymentTerms.sourceDefaultsHash': eventOfferConfigurationCallableResponsePaymentTermsSourceDefaultsHash,
+    'eventOfferConfigurationCallableResponse.paymentTerms.sourceDefaultsRevision': eventOfferConfigurationCallableResponsePaymentTermsSourceDefaultsRevision,
+    'eventOfferConfigurationCallableResponse.startsAtMillis': eventOfferConfigurationCallableResponseStartsAtMillis,
+    'eventOfferConfigurationCallableResponse.suggestedExpiresAtMillis': eventOfferConfigurationCallableResponseSuggestedExpiresAtMillis,
     'eventOfferDetailCallableResponse.effectiveStatus': eventOfferDetailCallableResponseEffectiveStatus,
     'eventOfferDetailCallableResponse.offer.applicationId': eventOfferDetailCallableResponseOfferApplicationId,
     'eventOfferDetailCallableResponse.offer.contactId': eventOfferDetailCallableResponseOfferContactId,
@@ -129377,6 +129586,8 @@ abstract final class CatchContractConstraints {
     'getEventOfferCallablePayload.contactId': getEventOfferCallablePayloadContactId,
     'getEventOfferCallablePayload.eventId': getEventOfferCallablePayloadEventId,
     'getEventOfferCallablePayload.organizerId': getEventOfferCallablePayloadOrganizerId,
+    'getEventOfferConfigurationCallablePayload.eventId': getEventOfferConfigurationCallablePayloadEventId,
+    'getEventOfferConfigurationCallablePayload.organizerId': getEventOfferConfigurationCallablePayloadOrganizerId,
     'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,
     'getEventRcsPreferenceCallablePayload.eventId': getEventRcsPreferenceCallablePayloadEventId,
     'getEventRcsPreferenceCallablePayload.senderId': getEventRcsPreferenceCallablePayloadSenderId,

@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  getEventOfferConfigurationCallablePayloadSchema,
+  eventOfferConfigurationCallableResponseSchema,
   updatePrivateEventDetailsCallablePayloadSchema,
   prepareEventOfferHandoffCallablePayloadSchema,
   eventOfferHandoffCallableResponseSchema,
@@ -899,6 +901,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateGetEventOfferConfigurationCallablePayload = ajv.compile(getEventOfferConfigurationCallablePayloadSchema);
+export const validateEventOfferConfigurationCallableResponse = ajv.compile(eventOfferConfigurationCallableResponseSchema);
 export const validateUpdatePrivateEventDetailsCallablePayload = ajv.compile(updatePrivateEventDetailsCallablePayloadSchema);
 export const validatePrepareEventOfferHandoffCallablePayload = ajv.compile(prepareEventOfferHandoffCallablePayloadSchema);
 export const validateEventOfferHandoffCallableResponse = ajv.compile(eventOfferHandoffCallableResponseSchema);

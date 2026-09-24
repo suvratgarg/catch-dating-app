@@ -135,6 +135,7 @@ export 'callables/get_event_chat_profile_callable_request.g.dart';
 export 'callables/get_event_chat_profile_sharing_callable_request.g.dart';
 export 'callables/get_event_invite_link_token_callable_request.g.dart';
 export 'callables/get_event_offer_callable_request.g.dart';
+export 'callables/get_event_offer_configuration_callable_request.g.dart';
 export 'callables/get_event_rcs_preference_callable_request.g.dart';
 export 'callables/get_event_rcs_withdrawal_callable_request.g.dart';
 export 'callables/get_event_rehearsal_bootstrap_callable_request.g.dart';

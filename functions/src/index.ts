@@ -696,4 +696,5 @@ export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
 export {
   previewEventOffers, commitEventOffers, mutateEventOffer,
   getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  getEventOfferConfiguration,
 } from "./organizerEventOffers/callables";

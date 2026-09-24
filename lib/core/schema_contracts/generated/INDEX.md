@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `functions/src/shared/generated/getEventOfferConfigurationCallablePayload.ts` |
+| EventOfferConfigurationCallableResponse | `callable_responses/event_offer_configuration_response.schema.json` | `functions/src/shared/generated/eventOfferConfigurationCallableResponse.ts` |
 | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventDetailsCallablePayload.ts` |
 | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `functions/src/shared/generated/prepareEventOfferHandoffCallablePayload.ts` |
 | EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `functions/src/shared/generated/eventOfferHandoffCallableResponse.ts` |
@@ -889,6 +891,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaGetEventOfferConfigurationCallablePayloadSchema` | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_offer_configuration_callable_payload.g.dart` |
+| `schemaEventOfferConfigurationCallableResponseSchema` | EventOfferConfigurationCallableResponse | `callable_responses/event_offer_configuration_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_configuration_callable_response.g.dart` |
 | `schemaUpdatePrivateEventDetailsCallablePayloadSchema` | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_details_callable_payload.g.dart` |
 | `schemaPrepareEventOfferHandoffCallablePayloadSchema` | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_handoff_callable_payload.g.dart` |
 | `schemaEventOfferHandoffCallableResponseSchema` | EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_handoff_callable_response.g.dart` |
@@ -1766,6 +1770,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventOfferConfigurationCallableRequest | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_offer_configuration_callable_request.g.dart` |
 | UpdatePrivateEventDetailsCallableRequest | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_details_callable_request.g.dart` |
 | PrepareEventOfferHandoffCallableRequest | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_handoff_callable_request.g.dart` |
 | ListPrivateEventSetupsCallableRequest | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_private_event_setups_callable_request.g.dart` |

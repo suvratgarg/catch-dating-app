@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'GetEventOfferConfigurationCallablePayload',
+    source: 'callables/get_event_offer_configuration_payload.schema.json',
+    schema: schemaGetEventOfferConfigurationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventOfferConfigurationCallableResponse',
+    source: 'callable_responses/event_offer_configuration_response.schema.json',
+    schema: schemaEventOfferConfigurationCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'UpdatePrivateEventDetailsCallablePayload',
     source: 'callables/update_private_event_details_payload.schema.json',
     schema: schemaUpdatePrivateEventDetailsCallablePayloadSchema,
@@ -4379,6 +4389,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'GetEventOfferConfigurationCallablePayload': schemaGetEventOfferConfigurationCallablePayloadSchema,
+  'EventOfferConfigurationCallableResponse': schemaEventOfferConfigurationCallableResponseSchema,
   'UpdatePrivateEventDetailsCallablePayload': schemaUpdatePrivateEventDetailsCallablePayloadSchema,
   'PrepareEventOfferHandoffCallablePayload': schemaPrepareEventOfferHandoffCallablePayloadSchema,
   'EventOfferHandoffCallableResponse': schemaEventOfferHandoffCallableResponseSchema,
@@ -5254,6 +5266,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/get_event_offer_configuration_payload.schema.json': schemaGetEventOfferConfigurationCallablePayloadSchema,
+  'callable_responses/event_offer_configuration_response.schema.json': schemaEventOfferConfigurationCallableResponseSchema,
   'callables/update_private_event_details_payload.schema.json': schemaUpdatePrivateEventDetailsCallablePayloadSchema,
   'callables/prepare_event_offer_handoff_payload.schema.json': schemaPrepareEventOfferHandoffCallablePayloadSchema,
   'callable_responses/event_offer_handoff_response.schema.json': schemaEventOfferHandoffCallableResponseSchema,

@@ -5,6 +5,7 @@ import {
   commitEventOffersHandler, getEventOfferHandler, listEventOffersHandler,
   mutateEventOfferHandler, OfferCallableDependencies,
   previewEventOffersHandler, prepareEventOfferHandoffHandler,
+  getEventOfferConfigurationHandler,
 } from "./callables";
 import {applyEventOfferAction, EventOffer} from "./eventOfferDomain";
 import type {OfferTransaction} from "./eventOfferService";
@@ -56,6 +57,7 @@ function fixture() {
       },
       event: async () => ({organizerId: "org1", eventId: "event1",
         startsAtMillis: now + 100000, cancelled: false, sourceRevision: 1}),
+      eventPaymentTerms: async () => null,
       offer: async () => saved,
       listOffers: async () => [saved],
     } as unknown as OfferTransaction)}),
@@ -73,7 +75,7 @@ test("all offer endpoints require auth and exact input before database access",
     };
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
       mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
-      prepareEventOfferHandoffHandler]) {
+      prepareEventOfferHandoffHandler, getEventOfferConfigurationHandler]) {
       await assert.rejects(handler(request({}, ""), h.deps),
         code("unauthenticated"));
       await assert.rejects(handler(request({actorAuthorized: true}), h.deps),
@@ -144,4 +146,14 @@ test("handoff rejects stale review before loading recipient data", async () => {
   await assert.rejects(prepareEventOfferHandoffHandler(request({...scope,
     expectedOfferRevision: 1, expectedGeneration: 1}), h.deps),
   code("permission-denied"));
+});
+
+test("configuration reports missing private terms", async () => {
+  const h = fixture();
+  const result = await getEventOfferConfigurationHandler(request({
+    organizerId: "org1", eventId: "event1"}), h.deps);
+  assert.equal(result.paymentTerms, null);
+  assert.equal(result.suggestedExpiresAtMillis, null);
+  assert.equal(result.nowMillis, now);
+  assert.deepEqual(h.actions, ["getEventOfferConfiguration"]);
 });

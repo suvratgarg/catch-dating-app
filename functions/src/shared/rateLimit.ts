@@ -72,6 +72,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   createRazorpayHostPaymentAccount: {maxRequests: 5, windowMs: 60 * 1000},
   refreshRazorpayHostPaymentAccount: {maxRequests: 20, windowMs: 60 * 1000},
   createPrivateEventSetup: {maxRequests: 10, windowMs: 60 * 1000},
+  getEventOfferConfiguration: {maxRequests: 60, windowMs: 60 * 1000},
   prepareEventOfferHandoff: {maxRequests: 30, windowMs: 60 * 1000},
   previewEventOffers: {maxRequests: 20, windowMs: 60 * 1000},
   commitEventOffers: {maxRequests: 10, windowMs: 60 * 1000},
