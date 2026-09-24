@@ -5,6 +5,10 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {bootstrapEventSeatLedger, SEAT_BOOTSTRAP_SOURCE_LIMIT} from
   "./seatMigrationStore";
 import {seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
+import {formConversionReceiptId} from
+  "../organizers/organizerFormAdmissionIdentity";
+import {organizerContactOriginId} from
+  "../shared/organizerContactOrigins";
 
 type Row = Record<string, unknown>;
 
@@ -31,10 +35,16 @@ class Store {
   rows = new Map<string, Row>();
   writes: Array<{kind: string; path: string}> = [];
   reads: string[] = [];
+  transactionCount = 0;
+  failTransactionNumber: number | null = null;
   collection(name: string) {
     return new Query(name);
   }
   async runTransaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> {
+    this.transactionCount++;
+    if (this.transactionCount === this.failTransactionNumber) {
+      throw new Error("interrupted after staging");
+    }
     const pending: Array<() => void> = [];
     const tx = {
       get: async (source: Ref | Query) => {
@@ -67,6 +77,18 @@ class Store {
           assert.equal(this.rows.has(ref.path), true);
           this.rows.set(ref.path, {...this.rows.get(ref.path), ...value});
           this.writes.push({kind: "update", path: ref.path});
+        });
+      },
+      set: (ref: Ref, value: Row) => {
+        pending.push(() => {
+          this.rows.set(ref.path, value);
+          this.writes.push({kind: "set", path: ref.path});
+        });
+      },
+      delete: (ref: Ref) => {
+        pending.push(() => {
+          this.rows.delete(ref.path);
+          this.writes.push({kind: "delete", path: ref.path});
         });
       },
     };
@@ -202,6 +224,137 @@ test("policy change before readiness leaves ledger unusable", async () => {
   await assert.rejects(h.bootstrap(), denied);
   assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
     "unreconciled");
+});
+
+test("interrupted stage resumes only after a fresh source review", async () => {
+  const h = setup();
+  h.store.failTransactionNumber = 2;
+  await assert.rejects(h.bootstrap(), /interrupted/);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+    "unreconciled");
+  h.store.failTransactionNumber = null;
+  const result = await h.bootstrap();
+  assert.equal(result.occupied, 1);
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state, "ready");
+  assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.revision, 2);
+  assert.equal(h.store.writes.filter((write) =>
+    write.path.startsWith("eventSeatReservations/")).length, 1);
+});
+
+test("Auth drift is reconciled from current Auth, not staged phone proof",
+  async () => {
+    const h = setup();
+    h.store.rows.set("events/event1", {...event(), bookedCount: 1});
+    h.store.rows.set("eventParticipations/edge1", {eventId: "event1",
+      organizerId: "org1", uid: "user1", status: "signedUp"});
+    let calls = 0;
+    h.deps.auth.getUser = async (uid) => ({uid,
+      phoneNumber: ++calls === 1 ? "+919999999999" : "+919999999998"});
+    await assert.rejects(h.bootstrap(), denied);
+    const oldProof = h.store.rows.get(`eventSeatVerifiedPhones/${
+      seatVerifiedPhoneProofId("event1", "user1")}`);
+    assert.equal(oldProof?.phoneE164, "+919999999999");
+    const result = await h.bootstrap();
+    assert.equal(result.occupied, 2);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "ready");
+    assert.equal(h.store.rows.get(`eventSeatVerifiedPhones/${
+      seatVerifiedPhoneProofId("event1", "user1")}`)?.phoneE164,
+    "+919999999998");
+    assert.ok(h.store.writes.some((write) =>
+      write.kind === "delete" &&
+      write.path.startsWith("eventSeatIdentityAliases/")));
+  });
+
+test("event policy drift can be reconciled before any seat is ready",
+  async () => {
+    const h = setup();
+    h.store.failTransactionNumber = 2;
+    await assert.rejects(h.bootstrap(), /interrupted/);
+    h.store.rows.set("events/event1", {...event(), capacityLimit: 3});
+    h.store.failTransactionNumber = null;
+    await h.bootstrap();
+    const ledger = h.store.rows.get("eventSeatLedgers/event1");
+    assert.equal(ledger?.capacity, 3);
+    assert.equal(ledger?.capacityRevision, 2);
+    assert.equal(ledger?.state, "ready");
+  });
+
+test("foreign staged evidence denies recovery without replacing it",
+  async () => {
+    const h = setup();
+    h.store.failTransactionNumber = 2;
+    await assert.rejects(h.bootstrap(), /interrupted/);
+    const alias = [...h.store.rows.keys()].find((key) =>
+      key.startsWith("eventSeatIdentityAliases/"))!;
+    h.store.rows.get(alias)!.organizerId = "other";
+    const writes = h.store.writes.length;
+    h.store.failTransactionNumber = null;
+    await assert.rejects(h.bootstrap(), denied);
+    assert.equal(h.store.writes.length, writes);
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "unreconciled");
+  });
+
+test("unrelated organizer CRM history does not consume event limit",
+  async () => {
+    const h = setup();
+    for (let index = 0; index < 100; index++) {
+      h.store.rows.set(`organizerContactOrigins/foreign${index}`,
+        {organizerId: "org1", eventId: "anotherEvent"});
+      h.store.rows.set(`organizerFormConversionReceipts/foreign${index}`,
+        {organizerId: "org1", kind: "eventAttendeeProposal"});
+    }
+    await h.bootstrap();
+    assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
+      "ready");
+    assert.equal(h.store.reads.includes(
+      "organizerFormConversionReceipts:query"), false);
+  });
+
+test("form-linked attendee reads exact receipt and null-event CRM origin",
+  async () => {
+    const h = setup();
+    h.store.rows.set("eventAttendees/att1", {...attendee(),
+      source: "hostManual", externalReference: "response1",
+      sourceRowId: "response1"});
+    const receiptId = formConversionReceiptId("response1",
+      "eventAttendeeProposal", "event1");
+    h.store.rows.set(`organizerFormConversionReceipts/${receiptId}`, {
+      organizerId: "org1", kind: "eventAttendeeProposal",
+      formId: "form1", responseId: "response1", status: "completed",
+      fields: [{destinationField: "eventId", value: "event1"}],
+    });
+    const originId = organizerContactOriginId({organizerId: "org1",
+      sourceKind: "hostForm", sourceEntityKind: "hostFormResponse",
+      sourceEntityId: "response1"});
+    h.store.rows.set(`organizerContactOrigins/${originId}`, {
+      organizerId: "org1", eventId: null, sourceKind: "hostForm",
+      sourceEntityKind: "hostFormResponse", sourceEntityId: "response1",
+      responseId: "response1", formId: "form1",
+      currentContactId: "contact1", originContactId: "contact1",
+    });
+    h.store.rows.set("organizerContacts/contact1", {organizerId: "org1",
+      linkedUid: null, identityState: "unlinked", deletedAt: null,
+      hiddenAt: null, mergedIntoContactId: null,
+      ambiguousCandidateContactIds: []});
+    await h.bootstrap();
+    assert.ok(h.store.reads.includes(
+      `organizerFormConversionReceipts/${receiptId}`));
+    assert.ok(h.store.reads.includes(
+      `organizerContactOrigins/${originId}`));
+    assert.equal(h.store.reads.includes(
+      "organizerFormConversionReceipts:query"), false);
+  });
+
+test("true event-specific origin oversize denies before staging", async () => {
+  const h = setup();
+  for (let index = 0; index <= SEAT_BOOTSTRAP_SOURCE_LIMIT; index++) {
+    h.store.rows.set(`organizerContactOrigins/eventOrigin${index}`,
+      {organizerId: "org1", eventId: "event1"});
+  }
+  await assert.rejects(h.bootstrap(), denied);
+  assert.deepEqual(h.store.writes, []);
 });
 
 test("concurrent bootstraps cannot both create the same ledger", async () => {

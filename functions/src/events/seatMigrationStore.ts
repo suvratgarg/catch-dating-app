@@ -3,11 +3,15 @@ import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
 import {planEventSeatMigration, SeatMigrationAttendee,
   SeatMigrationContact, SeatMigrationContactOrigin,
-  SeatMigrationFormReceipt, SeatMigrationParticipation,
+  SeatMigrationFormReceipt, SeatMigrationParticipation, SeatMigrationPlan,
   SeatMigrationVerifiedPhone} from "./seatMigration";
 import {seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 import {normalizeRosterPhone} from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {formConversionReceiptId} from
+  "../organizers/organizerFormAdmissionIdentity";
+import {organizerContactOriginId} from
+  "../shared/organizerContactOrigins";
 
 /** Conservative single-transaction bootstrap limit, not event capacity. */
 export const SEAT_BOOTSTRAP_SOURCE_LIMIT = 40;
@@ -44,6 +48,30 @@ async function completeQuery(tx: FirebaseFirestore.Transaction,
   return snapshot.docs;
 }
 
+async function stagedQuery(tx: FirebaseFirestore.Transaction,
+  query: FirebaseFirestore.Query, name: string):
+  Promise<FirebaseFirestore.QueryDocumentSnapshot[]> {
+  const snap = await tx.get(query.limit(SEAT_BOOTSTRAP_WRITE_LIMIT + 1));
+  if (snap.size > SEAT_BOOTSTRAP_WRITE_LIMIT) {
+    unavailable(`${name} exceeds reconciliation read limit.`);
+  }
+  return snap.docs;
+}
+
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value && typeof value === "object") {
+    const row = value as Record<string, unknown>;
+    return Object.fromEntries(Object.keys(row).sort()
+      .map((key) => [key, canonical(row[key])]));
+  }
+  return value;
+}
+
+function sameDocument(left: unknown, right: unknown): boolean {
+  return JSON.stringify(canonical(left)) === JSON.stringify(canonical(right));
+}
+
 /** Extracts an exact event target from an existing conversion receipt. */
 function formReceipt(raw: FirebaseFirestore.DocumentData,
   organizerId: string): SeatMigrationFormReceipt | null {
@@ -63,6 +91,90 @@ function formReceipt(raw: FirebaseFirestore.DocumentData,
   }
   return {organizerId, eventId: targets[0].value,
     formId: raw.formId, responseId: raw.responseId, status: raw.status};
+}
+
+type ReadyPlan = Extract<SeatMigrationPlan, {state: "ready"}>;
+
+/** Reconcile only this exact event's staged, still-unavailable snapshot. */
+async function stageReconciledPlan(params: {
+  db: FirebaseFirestore.Firestore;
+  tx: FirebaseFirestore.Transaction;
+  ledgerRef: FirebaseFirestore.DocumentReference;
+  eventId: string;
+  organizerId: string;
+  priorLedger: FirebaseFirestore.DocumentData | undefined;
+  plan: ReadyPlan;
+}): Promise<{revision: number; capacityRevision: number}> {
+  const {db, tx, ledgerRef, eventId, organizerId, priorLedger,
+    plan} = params;
+  const collections = ["eventSeatReservations",
+    "eventSeatIdentityAliases", "eventSeatVerifiedPhones"] as const;
+  const planned = [new Map(plan.reservations.map((entry) =>
+    [entry.id, entry.value])),
+  new Map(plan.aliases.map((entry) => [entry.id, entry.value])),
+  new Map(plan.verifiedPhoneProofs.map((value) =>
+    [seatVerifiedPhoneProofId(eventId, value.uid), value]))] as Array<
+    Map<string, FirebaseFirestore.DocumentData>>;
+  const staged = priorLedger ? await Promise.all(collections.map((name) =>
+    stagedQuery(tx, db.collection(name).where("eventId", "==", eventId),
+      name))) : [[], [], []] as FirebaseFirestore.QueryDocumentSnapshot[][];
+  if (priorLedger) {
+    if (staged.reduce((count, docs) => count + docs.length, 0) + 1 >
+        SEAT_BOOTSTRAP_WRITE_LIMIT) {
+      unavailable("Staged seat evidence exceeds reconciliation limit.");
+    }
+    const reservations = staged[0];
+    if (reservations.length !== priorLedger.occupied ||
+        reservations.some((doc) => {
+          const row = doc.data();
+          return row.eventId !== eventId || row.active !== true ||
+            row.identityRevision !== 1 ||
+            !ID.test(String(row.canonicalKey));
+        })) {
+      unavailable("Staged seat reservations need manual reconciliation.");
+    }
+    for (let index = 1; index < staged.length; index++) {
+      for (const doc of staged[index]) {
+        const row = doc.data();
+        if (row.eventId !== eventId || row.organizerId !== organizerId ||
+            row.migrationRevision !== priorLedger.migrationRevision ||
+            index === 1 && (row.state !== "ready" ||
+              row.identityRevision !== 1) ||
+            index === 2 && row.state !== "current") {
+          unavailable("Staged identity evidence needs reconciliation.");
+        }
+      }
+    }
+  }
+  const operations: Array<() => void> = [];
+  for (let index = 0; index < collections.length; index++) {
+    const collection = db.collection(collections[index]);
+    const old = new Map(staged[index].map((doc) => [doc.id, doc.data()]));
+    const next = planned[index];
+    for (const [id] of old) {
+      if (!next.has(id)) operations.push(() => tx.delete(collection.doc(id)));
+    }
+    for (const [id, value] of next) {
+      if (!old.has(id)) {
+        operations.push(() => tx.create(collection.doc(id), value));
+      } else if (!sameDocument(old.get(id), value)) {
+        operations.push(() => tx.set(collection.doc(id), value));
+      }
+    }
+  }
+  const revision = priorLedger ? priorLedger.revision + 1 : 1;
+  const capacityRevision = priorLedger ?
+    priorLedger.capacityRevision +
+      (priorLedger.policyHash === plan.ledger.policyHash ? 0 : 1) : 1;
+  if (operations.length + 1 > SEAT_BOOTSTRAP_WRITE_LIMIT) {
+    unavailable("Seat reconciliation exceeds one-transaction write budget.");
+  }
+  const ledger = {...plan.ledger, revision, capacityRevision,
+    state: "unreconciled"};
+  if (priorLedger) tx.set(ledgerRef, ledger);
+  else tx.create(ledgerRef, ledger);
+  for (const operation of operations) operation();
+  return {revision, capacityRevision};
 }
 
 /**
@@ -101,21 +213,26 @@ export async function bootstrapEventSeatLedger(params: {
           event.organizerId !== command.organizerId) {
       unavailable("Canonical event source is unavailable.");
     }
-    if (ledgerSnap.exists) {
-      unavailable("Existing seat ledger needs reconciliation, not bootstrap.");
+    const priorLedger = ledgerSnap.data();
+    if (ledgerSnap.exists && (!priorLedger ||
+        priorLedger.state !== "unreconciled" ||
+        priorLedger.eventId !== command.eventId ||
+        priorLedger.migrationRevision !== command.migrationRevision ||
+        !Number.isSafeInteger(priorLedger.revision) ||
+        priorLedger.revision < 1 ||
+        priorLedger.revision >= Number.MAX_SAFE_INTEGER ||
+        !Number.isSafeInteger(priorLedger.capacityRevision) ||
+        priorLedger.capacityRevision < 1 ||
+        priorLedger.capacityRevision >= Number.MAX_SAFE_INTEGER)) {
+      unavailable("Existing seat ledger needs explicit reconciliation.");
     }
-    const [participationDocs, attendeeDocs, originDocs,
-      receiptDocs] = await Promise.all([
+    const [participationDocs, attendeeDocs, originDocs] = await Promise.all([
       completeQuery(tx, db.collection("eventParticipations")
         .where("eventId", "==", command.eventId), "Participations"),
       completeQuery(tx, db.collection("eventAttendees")
         .where("eventId", "==", command.eventId), "Attendees"),
       completeQuery(tx, db.collection("organizerContactOrigins")
-        .where("organizerId", "==", command.organizerId), "CRM origins"),
-      completeQuery(tx, db.collection("organizerFormConversionReceipts")
-        .where("organizerId", "==", command.organizerId)
-        .where("kind", "==", "eventAttendeeProposal"),
-      "Form admission receipts"),
+        .where("eventId", "==", command.eventId), "Event CRM origins"),
     ]);
     const participations = participationDocs.map((doc) => doc.data() as
       SeatMigrationParticipation);
@@ -129,18 +246,47 @@ export async function bootstrapEventSeatLedger(params: {
       unavailable("Auth identity source exceeds bootstrap limit.");
     }
     const verifiedPhones = await currentAuthSnapshot(deps.auth, uids);
+    const responseIds = [...new Set(attendees
+      .filter((row) => row.source === "hostManual" &&
+        typeof row.externalReference === "string" &&
+        row.sourceRowId === row.externalReference.slice(0, 120))
+      .map((row) => row.externalReference!))];
+    const receiptSnaps = await Promise.all(responseIds.map((responseId) =>
+      tx.get(db.collection("organizerFormConversionReceipts")
+        .doc(formConversionReceiptId(responseId, "eventAttendeeProposal",
+          command.eventId)))));
+    const receipts: SeatMigrationFormReceipt[] = [];
+    const formOriginIds: string[] = [];
+    receiptSnaps.forEach((snap, index) => {
+      if (!snap.exists) return;
+      const receipt = formReceipt(snap.data()!, command.organizerId);
+      if (!receipt || receipt.eventId !== command.eventId ||
+          receipt.responseId !== responseIds[index]) {
+        unavailable("Form admission receipt target conflicts with attendee.");
+      }
+      receipts.push(receipt);
+      formOriginIds.push(organizerContactOriginId({
+        organizerId: command.organizerId, sourceKind: "hostForm",
+        sourceEntityKind: "hostFormResponse",
+        sourceEntityId: receipt.responseId}));
+    });
+    const formOriginSnaps = await Promise.all(formOriginIds.map((id) =>
+      tx.get(db.collection("organizerContactOrigins").doc(id))));
     const origins = originDocs.map((doc) =>
       ({...doc.data(), id: doc.id} as SeatMigrationContactOrigin));
-    const receipts = receiptDocs.map((doc) =>
-      formReceipt(doc.data(), command.organizerId))
-      .filter((row): row is SeatMigrationFormReceipt => row !== null);
-    const relevantOrigins = origins.filter((origin) =>
-      origin.eventId === command.eventId ||
-      origin.eventId === null &&
-        origin.sourceEntityKind === "hostFormResponse" &&
-        receipts.some((receipt) =>
-          receipt.eventId === command.eventId &&
-          receipt.responseId === origin.responseId));
+    const knownOrigins = new Set(origins.map((origin) => origin.id));
+    formOriginSnaps.forEach((snap, index) => {
+      if (!snap.exists) return;
+      const id = formOriginIds[index];
+      if (!knownOrigins.has(id)) {
+        origins.push({...snap.data(), id} as SeatMigrationContactOrigin);
+        knownOrigins.add(id);
+      }
+    });
+    const relevantOrigins = origins;
+    if (relevantOrigins.length > SEAT_BOOTSTRAP_SOURCE_LIMIT) {
+      unavailable("Event CRM origins exceed bootstrap limit.");
+    }
     const contactIds = [...new Set(relevantOrigins.map((origin) =>
       origin.currentContactId))];
     if (contactIds.some((id) => !ID.test(id))) {
@@ -170,32 +316,17 @@ export async function bootstrapEventSeatLedger(params: {
     if (plan.state !== "ready") {
       unavailable(`Seat reconciliation blocked: ${plan.blockers.join(", ")}`);
     }
-    const writes = 1 + plan.reservations.length + plan.aliases.length +
-      plan.verifiedPhoneProofs.length;
-    if (writes > SEAT_BOOTSTRAP_WRITE_LIMIT) {
-      unavailable("Seat migration exceeds one-transaction write budget.");
-    }
     if (deps.allWritersIntegrated?.() !== true) {
       unavailable("Seat writers are not integrated.");
     }
-    // No resolver can use these records until Auth is revalidated below.
-    tx.create(ledgerRef, {...plan.ledger, state: "unreconciled"});
-    for (const reservation of plan.reservations) {
-      tx.create(db.collection("eventSeatReservations").doc(reservation.id),
-        reservation.value);
-    }
-    for (const alias of plan.aliases) {
-      tx.create(db.collection("eventSeatIdentityAliases").doc(alias.id),
-        alias.value);
-    }
-    for (const proof of plan.verifiedPhoneProofs) {
-      tx.create(db.collection("eventSeatVerifiedPhones")
-        .doc(seatVerifiedPhoneProofId(command.eventId, proof.uid)),
-      proof);
-    }
+    const staged = await stageReconciledPlan({db, tx, ledgerRef,
+      eventId: command.eventId, organizerId: command.organizerId,
+      priorLedger, plan});
     return {eventId: command.eventId, occupied: plan.ledger.occupied,
       migrationRevision: command.migrationRevision,
-      verifiedPhones, policyHash: plan.ledger.policyHash};
+      verifiedPhones, policyHash: plan.ledger.policyHash,
+      revision: staged.revision,
+      capacityRevision: staged.capacityRevision};
   });
   const current = await currentAuthSnapshot(deps.auth,
     staged.verifiedPhones.map((proof) => proof.uid));
@@ -217,6 +348,8 @@ export async function bootstrapEventSeatLedger(params: {
         ledger.eventId !== command.eventId ||
         ledger.migrationRevision !== command.migrationRevision ||
         ledger.occupied !== staged.occupied ||
+        ledger.revision !== staged.revision ||
+        ledger.capacityRevision !== staged.capacityRevision ||
         ledger.policyHash !== staged.policyHash ||
         deriveEventSeatPolicy(event).policyHash !== staged.policyHash ||
         deps.allWritersIntegrated?.() !== true) {
