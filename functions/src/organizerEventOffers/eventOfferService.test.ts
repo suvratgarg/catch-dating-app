@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import type {EventPaymentTerms} from
+  "../events/eventSetupPreferences/types";
 import test from "node:test";
 import {
   EventOffer, eventOfferId, OfferActionReceipt, OfferDomainError,
@@ -26,6 +28,7 @@ type State = {
   contacts: Map<string, OfferContact>;
   origins: Map<string, OfferOrigin>;
   events: Map<string, OfferEvent>;
+  paymentTerms: Map<string, EventPaymentTerms>;
   offers: Map<string, EventOffer>;
   receipts: Map<string, OfferActionReceipt>;
   batches: Map<string, OfferBatchReceipt>;
@@ -37,6 +40,7 @@ function copy(state: State): State {
     applications: new Map(state.applications),
     sources: new Map(state.sources), contacts: new Map(state.contacts),
     origins: new Map(state.origins), events: new Map(state.events),
+    paymentTerms: new Map(state.paymentTerms),
     offers: new Map(state.offers), receipts: new Map(state.receipts),
     batches: new Map(state.batches), audit: [...state.audit]};
 }
@@ -64,7 +68,14 @@ class AtomicStore implements OfferRepository {
         originContactId: row.contactId}]]),
       events: new Map([[row.eventId, {organizerId: row.organizerId,
         eventId: row.eventId, startsAtMillis: now + 3_600_000,
-        cancelled: false, updatedAtMillis: now}]]), offers: new Map(),
+        cancelled: false, sourceRevision: now}]]),
+      paymentTerms: new Map([[row.eventId, {revision: 1,
+        preferredCollection: null, reusablePaymentPage: null,
+        paymentInstructions: null, expectedAmountMinor: 0,
+        currency: "INR", offerValidityMinutes: 30,
+        offerMessageTemplate: null, sourceDefaultsRevision: 1,
+        sourceDefaultsHash: "a".repeat(64), fieldSources: {}}]]),
+      offers: new Map(),
       receipts: new Map(),
       batches: new Map(), audit: []};
   }
@@ -97,6 +108,7 @@ class AtomicStore implements OfferRepository {
       contact: async (id) => next.contacts.get(id) ?? null,
       origin: async (id) => next.origins.get(id) ?? null,
       event: async (id) => next.events.get(id) ?? null,
+      eventPaymentTerms: async (id) => next.paymentTerms.get(id) ?? null,
       offer: async (id) => next.offers.get(id) ?? null,
       actionReceipt: async (id, requestId) =>
         next.receipts.get(`${id}|${requestId}`) ?? null,
@@ -164,6 +176,45 @@ test("bulk preview and commit create only chosen event offers", async () => {
   assert.equal(store.state.audit[1].kind, "offer");
   assert.equal("attendeeId" in receipt, false);
 });
+
+test("review digest and draft issuance fence changed event payment terms",
+  async () => {
+    const store = new AtomicStore();
+    const preview = await previewEventOffers({repository: store,
+      actor, input});
+    const oldTerms = store.state.paymentTerms.get(row.eventId)!;
+    store.state.paymentTerms.set(row.eventId, {...oldTerms, revision: 2,
+      preferredCollection: "manualInstructions",
+      paymentInstructions: "Pay by bank transfer", expectedAmountMinor: 1500});
+    await assert.rejects(() => commitEventOffers({repository: store,
+      actor, input: {...input, requestId: "stale-terms-batch",
+        planDigest: preview.planDigest}}),
+    (error) => assertCode(error, "conflict"));
+    assert.equal(store.state.offers.size, 0);
+
+    const draft = await mutateEventOffer({repository: store, actor, row,
+      action: {kind: "createDraft", requestId: "terms-draft-create",
+        expectedRevision: 0, terms: {expiresAtMillis: row.expiresAtMillis,
+          organizerPaymentLink: null}}});
+    assert.equal(draft.offer.paymentSnapshot.expectedAmountMinor, 1500);
+    store.state.paymentTerms.set(row.eventId, {...oldTerms, revision: 3,
+      preferredCollection: "manualInstructions",
+      paymentInstructions: "Pay by bank transfer", expectedAmountMinor: 2000});
+    await assert.rejects(() => mutateEventOffer({repository: store,
+      actor, row, action: {kind: "offer", requestId: "terms-draft-offer",
+        expectedRevision: draft.offer.revision,
+        expectedGeneration: draft.offer.generation}}),
+    (error) => assertCode(error, "conflict"));
+    const refreshed = await mutateEventOffer({repository: store, actor,
+      row, action: {kind: "reissueDraft",
+        requestId: "terms-draft-refresh",
+        expectedRevision: draft.offer.revision,
+        expectedGeneration: draft.offer.generation,
+        terms: {expiresAtMillis: row.expiresAtMillis,
+          organizerPaymentLink: null}}});
+    assert.equal(refreshed.offer.paymentSnapshot.eventPaymentRevision, 3);
+    assert.equal(refreshed.offer.paymentSnapshot.expectedAmountMinor, 2000);
+  });
 
 test("stored offer parser rejects missing lifecycle evidence", async () => {
   const store = new AtomicStore();
@@ -576,4 +627,42 @@ test("closure and payment review survive CRM merge and source revocation",
     assert.equal(reviewed.offer.status, "withdrawn");
     assert.equal(reviewed.offer.manualPayment.status, "rejected");
     assert.equal(store.state.audit.length, 5);
+  });
+
+test("late manual attestation uses historical terms, not current terms",
+  async () => {
+    const store = new AtomicStore();
+    const prior = store.state.paymentTerms.get(row.eventId)!;
+    store.state.paymentTerms.set(row.eventId, {...prior,
+      preferredCollection: "manualInstructions",
+      paymentInstructions: "Pay by bank transfer", expectedAmountMinor: 1200});
+    const preview = await previewEventOffers({repository: store,
+      actor, input});
+    await commitEventOffers({repository: store, actor,
+      input: {...input, requestId: "historical-offer-batch",
+        planDigest: preview.planDigest}});
+    const offer = [...store.state.offers.values()][0];
+    store.state.paymentTerms.set(row.eventId, {...prior,
+      revision: 2, expectedAmountMinor: 5000});
+    store.clockMillis = row.expiresAtMillis + 1;
+    const evidence = await mutateEventOffer({repository: store, actor,
+      row, action: {kind: "recordEvidence",
+        requestId: "historical-evidence", expectedRevision: offer.revision,
+        expectedGeneration: offer.generation,
+        evidenceReference: "bank-credit-1200"}});
+    const reviewed = await mutateEventOffer({repository: store, actor,
+      row, action: {kind: "reconcileEvidence",
+        requestId: "historical-review",
+        expectedRevision: evidence.offer.revision,
+        expectedGeneration: evidence.offer.generation,
+        decision: "hostAttestedReceived", reviewNote: "Statement checked",
+        bankReceiptChecked: true}});
+    assert.equal(reviewed.offer.paymentSnapshot.expectedAmountMinor, 1200);
+    assert.equal(reviewed.offer.manualPayment.attestedAmountMinor, 1200);
+    assert.equal(reviewed.offer.manualPayment.attestedCurrency, "INR");
+    assert.equal(reviewed.offer.manualPayment.attestedEventPaymentRevision, 1);
+    assert.equal(reviewed.offer.manualPayment.attestedEventPaymentHash,
+      offer.paymentSnapshot.eventPaymentHash);
+    assert.equal("admitted" in reviewed.offer, false);
+    assert.equal("providerReceipt" in reviewed.offer.manualPayment, false);
   });

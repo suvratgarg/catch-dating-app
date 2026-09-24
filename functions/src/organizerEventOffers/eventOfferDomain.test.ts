@@ -6,6 +6,7 @@ import {
 } from "./eventOfferDomain";
 
 const now = 1_800_000_000_000;
+const paymentHash = "a".repeat(64);
 const context: CurrentOfferContext = {
   organizerId: "organizer-1", eventId: "saturday-1",
   contactId: "contact-1", applicationId: "application-1",
@@ -14,6 +15,13 @@ const context: CurrentOfferContext = {
   actorAuthorized: true, applicationApproved: true,
   sourceCurrent: true, contactCurrent: true, eventCurrent: true,
   eventStartsAtMillis: now + 3_600_000,
+  currentPaymentHash: paymentHash, currentPaymentRevision: 1,
+  paymentSnapshot: {eventPaymentRevision: 1,
+    eventPaymentHash: paymentHash, expectedAmountMinor: 1000,
+    currency: "INR", paymentInstructions: null, messageTemplate: null,
+    reusablePaymentPageUrl: null, collectionMode: "personalRequest",
+    personalPaymentLink: "https://pay.example.com/organizer/saturday",
+    expiresAtMillis: now + 600_000},
 };
 const terms = {expiresAtMillis: now + 600_000,
   organizerPaymentLink: "https://pay.example.com/organizer/saturday"};
@@ -27,7 +35,11 @@ function create(overrides: Partial<CurrentOfferContext> = {}) {
 
 function act(current: EventOffer, action: OfferAction, at = now + 1,
   selected = context) {
-  return applyEventOfferAction({current, context: selected,
+  const adjusted = action.kind === "reissueDraft" ? {...selected,
+    paymentSnapshot: {...selected.paymentSnapshot!,
+      expiresAtMillis: action.terms.expiresAtMillis,
+      personalPaymentLink: action.terms.organizerPaymentLink}} : selected;
+  return applyEventOfferAction({current, context: adjusted,
     action, nowMillis: at});
 }
 

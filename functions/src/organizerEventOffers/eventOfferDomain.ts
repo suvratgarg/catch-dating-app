@@ -1,5 +1,7 @@
 import {createHash} from "node:crypto";
 import {publicWebhookUrl} from "../organizers/organizerAutomationWebhook";
+import type {CollectionPreference, OfferPaymentSnapshot} from
+  "../events/eventSetupPreferences/types";
 
 /**
  * Pure offer rules. The server-only storage adapter and service are not
@@ -29,6 +31,14 @@ export interface CurrentOfferContext {
   contactCurrent: boolean;
   eventCurrent: boolean;
   eventStartsAtMillis: number;
+  paymentSnapshot?: EventOfferPaymentSnapshot;
+  currentPaymentHash?: string;
+  currentPaymentRevision?: number;
+}
+
+export interface EventOfferPaymentSnapshot extends OfferPaymentSnapshot {
+  collectionMode: CollectionPreference | null;
+  personalPaymentLink: string | null;
 }
 
 export type OfferStatus = "draft" | "offered" | "withdrawn" | "expired";
@@ -44,6 +54,10 @@ export interface ManualPaymentReview {
   reviewedAtMillis: number | null;
   reviewNote: string | null;
   bankReceiptChecked: boolean;
+  attestedAmountMinor: number | null;
+  attestedCurrency: string | null;
+  attestedEventPaymentRevision: number | null;
+  attestedEventPaymentHash: string | null;
 }
 
 export interface EventOffer {
@@ -59,6 +73,7 @@ export interface EventOffer {
   revision: number;
   expiresAtMillis: number;
   organizerPaymentLink: string | null;
+  paymentSnapshot: EventOfferPaymentSnapshot;
   /** A withdrawn draft never became an offer and cannot receive evidence. */
   offeredAtMillis: number | null;
   manualPayment: ManualPaymentReview;
@@ -208,10 +223,41 @@ function validatedTerms(terms: Terms, now: number,
   return terms;
 }
 
+function sameCurrentPayment(context: CurrentOfferContext,
+  offer: EventOffer): boolean {
+  return context.currentPaymentHash ===
+      offer.paymentSnapshot.eventPaymentHash &&
+    context.currentPaymentRevision ===
+      offer.paymentSnapshot.eventPaymentRevision;
+}
+
+function requirePaymentSnapshot(context: CurrentOfferContext,
+  terms: Terms): EventOfferPaymentSnapshot {
+  const snapshot = context.paymentSnapshot;
+  if (!snapshot || snapshot.expiresAtMillis !== terms.expiresAtMillis ||
+      snapshot.personalPaymentLink !== terms.organizerPaymentLink ||
+      snapshot.eventPaymentHash !== context.currentPaymentHash ||
+      snapshot.eventPaymentRevision !== context.currentPaymentRevision ||
+      !Number.isSafeInteger(snapshot.eventPaymentRevision) ||
+      snapshot.eventPaymentRevision < 1 ||
+      !/^[a-f0-9]{64}$/u.test(snapshot.eventPaymentHash) ||
+      snapshot.expectedAmountMinor === null ||
+      !Number.isSafeInteger(snapshot.expectedAmountMinor) ||
+      snapshot.expectedAmountMinor < 0 ||
+      snapshot.expectedAmountMinor > 0 && !snapshot.currency) {
+    throw new OfferDomainError("conflict",
+      "Current event payment terms must be reviewed before offering.");
+  }
+  return {...snapshot};
+}
+
 function blankPayment(): ManualPaymentReview {
   return {status: "none", evidenceReference: null,
     evidenceRecordedAtMillis: null, reviewedByUid: null,
-    reviewedAtMillis: null, reviewNote: null, bankReceiptChecked: false};
+    reviewedAtMillis: null, reviewNote: null, bankReceiptChecked: false,
+    attestedAmountMinor: null, attestedCurrency: null,
+    attestedEventPaymentRevision: null,
+    attestedEventPaymentHash: null};
 }
 
 /** Pure transition; callers must supply a transactionally current context. */
@@ -227,7 +273,9 @@ export function applyEventOfferAction(params: {
   requireActorAndScope(context, nowMillis);
   requireValid(validRequestId(action.requestId) &&
     Number.isSafeInteger(action.expectedRevision) &&
-    action.expectedRevision >= 0, "Invalid action identity or revision.");
+    action.expectedRevision >= 0 &&
+    action.expectedRevision < Number.MAX_SAFE_INTEGER,
+  "Invalid action identity or revision.");
   requireValid(["createDraft", "reissueDraft", "offer", "withdraw",
     "expire", "recordEvidence", "reconcileEvidence"].includes(action.kind),
   "Invalid offer action.");
@@ -245,7 +293,11 @@ export function applyEventOfferAction(params: {
       throw new OfferDomainError("conflict",
         "Request ID was reused for different work.");
     }
-    if (!current || prior.resultingGeneration > current.generation ||
+    if (!current || !Number.isSafeInteger(prior.resultingGeneration) ||
+      prior.resultingGeneration < 1 ||
+      !Number.isSafeInteger(prior.resultingRevision) ||
+      prior.resultingRevision < 1 ||
+      prior.resultingGeneration > current.generation ||
       prior.resultingRevision > current.revision) {
       throw new OfferDomainError("conflict",
         "Offer receipt is ahead of the offer.");
@@ -259,6 +311,7 @@ export function applyEventOfferAction(params: {
     }
     const terms = validatedTerms(action.terms, nowMillis,
       context.eventStartsAtMillis);
+    const paymentSnapshot = requirePaymentSnapshot(context, terms);
     const created: EventOffer = {offerId,
       organizerId: context.organizerId, eventId: context.eventId,
       contactId: context.contactId, applicationId: context.applicationId,
@@ -266,12 +319,17 @@ export function applyEventOfferAction(params: {
       status: "draft", generation: 1, revision: 1,
       expiresAtMillis: terms.expiresAtMillis,
       organizerPaymentLink: terms.organizerPaymentLink,
-      offeredAtMillis: null,
+      paymentSnapshot, offeredAtMillis: null,
       manualPayment: blankPayment(), createdAtMillis: nowMillis,
       updatedAtMillis: nowMillis};
     return result(created, action, requestHash);
   }
-  if (!current || current.revision !== action.expectedRevision ||
+  if (!current || !Number.isSafeInteger(current.revision) ||
+      current.revision < 1 || current.revision >= Number.MAX_SAFE_INTEGER ||
+      !Number.isSafeInteger(current.generation) ||
+      current.generation < 1 ||
+      current.generation >= Number.MAX_SAFE_INTEGER ||
+      current.revision !== action.expectedRevision ||
       current.generation !== action.expectedGeneration) {
     throw new OfferDomainError("conflict", "Offer changed; review it again.");
   }
@@ -290,7 +348,9 @@ export function applyEventOfferAction(params: {
   case "reissueDraft": {
     requireCurrentIssuance(context, nowMillis);
     if (current.status !== "withdrawn" && current.status !== "expired" &&
-        !(current.status === "draft" && nowMillis >= current.expiresAtMillis)) {
+        !(current.status === "draft" &&
+          (nowMillis >= current.expiresAtMillis ||
+            !sameCurrentPayment(context, current)))) {
       throw new OfferDomainError("conflict",
         "Only a closed offer can be reissued.");
     }
@@ -300,12 +360,13 @@ export function applyEventOfferAction(params: {
     }
     const terms = validatedTerms(action.terms, nowMillis,
       context.eventStartsAtMillis);
+    const paymentSnapshot = requirePaymentSnapshot(context, terms);
     next = {...current, applicationId: context.applicationId,
       sourceKind: context.sourceKind ?? "application",
       status: "draft", generation: current.generation + 1,
       expiresAtMillis: terms.expiresAtMillis,
       organizerPaymentLink: terms.organizerPaymentLink,
-      offeredAtMillis: null,
+      paymentSnapshot, offeredAtMillis: null,
       manualPayment: blankPayment()};
     break;
   }
@@ -317,6 +378,10 @@ export function applyEventOfferAction(params: {
     validatedTerms({expiresAtMillis: current.expiresAtMillis,
       organizerPaymentLink: current.organizerPaymentLink}, nowMillis,
     context.eventStartsAtMillis);
+    if (!sameCurrentPayment(context, current)) {
+      throw new OfferDomainError("conflict",
+        "Event payment terms changed; review and refresh the draft.");
+    }
     next = {...current, status: "offered", offeredAtMillis: nowMillis};
     break;
   case "withdraw":
@@ -345,6 +410,9 @@ export function applyEventOfferAction(params: {
       status: "evidenceSubmitted", evidenceReference: reference,
       evidenceRecordedAtMillis: nowMillis, reviewedByUid: null,
       reviewedAtMillis: null, reviewNote: null, bankReceiptChecked: false,
+      attestedAmountMinor: null, attestedCurrency: null,
+      attestedEventPaymentRevision: null,
+      attestedEventPaymentHash: null,
     }};
     break;
   }
@@ -364,7 +432,16 @@ export function applyEventOfferAction(params: {
     next = {...current, manualPayment: {...current.manualPayment,
       status: action.decision, reviewedByUid: context.actorUid,
       reviewedAtMillis: nowMillis, reviewNote: action.reviewNote.trim(),
-      bankReceiptChecked: action.bankReceiptChecked}};
+      bankReceiptChecked: action.bankReceiptChecked,
+      attestedAmountMinor: action.decision === "hostAttestedReceived" ?
+        current.paymentSnapshot.expectedAmountMinor : null,
+      attestedCurrency: action.decision === "hostAttestedReceived" ?
+        current.paymentSnapshot.currency : null,
+      attestedEventPaymentRevision:
+        action.decision === "hostAttestedReceived" ?
+          current.paymentSnapshot.eventPaymentRevision : null,
+      attestedEventPaymentHash: action.decision === "hostAttestedReceived" ?
+        current.paymentSnapshot.eventPaymentHash : null}};
     break;
   }
   return result({...next, revision: current.revision + 1,
