@@ -33,6 +33,7 @@ void _registerExploreErrorsAndCreationTests() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: const ExploreMapScreen(enableNetworkTiles: false),
         ),
       ),
@@ -453,7 +454,11 @@ void _registerExploreErrorsAndCreationTests() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
+        child: MaterialApp(
+          theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
+          home: const ExploreScreen(),
+        ),
       ),
     );
     await tester.pump();
@@ -591,6 +596,7 @@ void _registerExploreErrorsAndCreationTests() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: const ClubDetailScreen(clubId: 'club-1'),
         ),
       ),
@@ -649,6 +655,7 @@ void _registerExploreErrorsAndCreationTests() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: const ClubDetailScreen(clubId: 'club-1'),
         ),
       ),

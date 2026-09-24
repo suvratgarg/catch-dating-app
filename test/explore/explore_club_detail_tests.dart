@@ -691,6 +691,7 @@ void _registerExploreClubDetailTests() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: Scaffold(
             body: Center(
               child: ClubIndexRow(
