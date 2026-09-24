@@ -80,7 +80,7 @@ export function buildOrderCreatePayload({
   inviteSource?: string | null;
   crossPathsPairHoldId?: string | null;
 }) {
-  requirePublicConfiguredEvent(event);
+  const configuredEvent = requirePublicConfiguredEvent(event);
   if (event.status === "cancelled") {
     throw new HttpsError(
       "failed-precondition",
@@ -89,7 +89,7 @@ export function buildOrderCreatePayload({
   }
 
   const trustedAmountInPaise = parsePositiveAmount(
-    amountInPaise ?? event.priceInPaise,
+    amountInPaise ?? configuredEvent.priceInPaise,
     "Event price"
   );
   const eventCurrency = event.currency ?? razorpayCurrency;

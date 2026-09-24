@@ -35,6 +35,7 @@ import {
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {requireCatchBookingAuthority} from "./eventOrigin";
+import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {
   incrementInviteLinkCounterInTransaction,
   inviteAttributionWriteFields,
@@ -135,6 +136,7 @@ export async function signUpUserForEvent(
       );
     }
     requireCatchBookingAuthority(event);
+    const configuredEvent = requirePublicConfiguredEvent(event);
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
@@ -293,7 +295,7 @@ export async function signUpUserForEvent(
 
       organizerId: event.organizerId ?? event.clubId,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: configuredEvent.endTime.toMillis(),
     });
 
     const wasWaitlisted = existingParticipation?.status === "waitlisted";
@@ -396,7 +398,7 @@ export async function signUpUserForEvent(
         conversationType: "crossPathsEventPlan",
         crossPathsInvitationId: pairHold.invitationId,
         eventPlanExpiresAt: admin.firestore.Timestamp.fromMillis(
-          event.endTime.toMillis() + 24 * 60 * 60 * 1000
+          configuredEvent.endTime.toMillis() + 24 * 60 * 60 * 1000
         ),
         closedAt: null,
       });

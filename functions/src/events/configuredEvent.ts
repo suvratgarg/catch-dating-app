@@ -1,11 +1,15 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 
-type ScheduledFields = "endTime" | "eventFormat";
+type TimedFields = "endTime";
+type ScheduledFields = "eventFormat";
 type PolicyFields = "capacityLimit" | "priceInPaise";
 type VenueFields = "meetingPoint" | "meetingLocation";
 
-export type ScheduledEventDocument = EventDocument &
+export type TimedEventDocument = EventDocument &
+  Required<Pick<EventDocument, TimedFields>>;
+export type ScheduledEventDocument = TimedEventDocument &
   Required<Pick<EventDocument, ScheduledFields>>;
 export type EventPolicyTermsDocument = EventDocument &
   Required<Pick<EventDocument, PolicyFields>>;
@@ -28,12 +32,28 @@ function isFiniteTime(value: unknown): value is FirebaseFirestore.Timestamp {
   }
 }
 
+export function isEventTimeRange(
+  event: EventDocument | null | undefined
+): event is TimedEventDocument {
+  if (!event || typeof event !== "object") return false;
+  return isFiniteTime(event.startTime) && isFiniteTime(event.endTime) &&
+    event.endTime.toMillis() > event.startTime.toMillis();
+}
+
+export function requireEventTimeRange(
+  event: EventDocument | null | undefined
+): TimedEventDocument {
+  if (!isEventTimeRange(event)) {
+    throw new HttpsError("failed-precondition",
+      "This event needs a valid time range.");
+  }
+  return event;
+}
+
 export function isScheduledEvent(
   event: EventDocument | null | undefined
 ): event is ScheduledEventDocument {
-  if (!event || typeof event !== "object") return false;
-  if (!isFiniteTime(event.startTime) || !isFiniteTime(event.endTime) ||
-      event.endTime.toMillis() <= event.startTime.toMillis()) return false;
+  if (!isEventTimeRange(event)) return false;
   const format = event.eventFormat;
   return !!format && Number.isInteger(format.version) &&
     format.version >= 1 && !!format.activityKind &&
@@ -53,9 +73,12 @@ export function requireScheduledEvent(
 export function isEventPolicyTerms(
   event: EventDocument | null | undefined
 ): event is EventPolicyTermsDocument {
-  return !!event && Number.isInteger(event.capacityLimit) &&
-    event.capacityLimit > 0 && Number.isInteger(event.priceInPaise) &&
-    event.priceInPaise >= 0;
+  if (!event) return false;
+  const {capacityLimit, priceInPaise} = event;
+  return typeof capacityLimit === "number" &&
+    Number.isInteger(capacityLimit) && capacityLimit > 0 &&
+    typeof priceInPaise === "number" &&
+    Number.isInteger(priceInPaise) && priceInPaise >= 0;
 }
 
 export function requireEventPolicyTerms(
@@ -114,14 +137,7 @@ export function requireConfiguredEvent(
 export function isPublicConfiguredEvent(
   event: EventDocument | null | undefined
 ): event is ConfiguredEventDocument {
-  if (!isConfiguredEvent(event)) return false;
-  const metadata = event as ConfiguredEventDocument & {
-    publicationState?: unknown;
-    setupRevision?: unknown;
-  };
-  return Object.prototype.hasOwnProperty.call(metadata, "publicationState") ?
-    metadata.publicationState === "published" :
-    !Object.prototype.hasOwnProperty.call(metadata, "setupRevision");
+  return isConfiguredEvent(event) && isEventPubliclyAccessible(event);
 }
 
 export function requirePublicConfiguredEvent(
