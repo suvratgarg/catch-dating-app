@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/private_event_setup_response.schema.json",
+  "title": "PrivateEventSetupCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "setupRevision",
+    "name",
+    "city",
+    "localDate",
+    "localStartTime",
+    "timezone",
+    "startTimeMillis",
+    "publicationState",
+    "status",
+    "setupDefaults",
+    "detailsConfigured"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "city": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cityId",
+        "marketId"
+      ],
+      "properties": {
+        "cityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "marketId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "localDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "localStartTime": {
+      "type": "string",
+      "pattern": "^[0-9]{2}:[0-9]{2}$"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "startTimeMillis": {
+      "type": "integer"
+    },
+    "publicationState": {
+      "type": "string",
+      "const": "private"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled"
+      ]
+    },
+    "setupDefaults": {
+      "$ref": "../embedded/event_setup_defaults.schema.json"
+    },
+    "detailsConfigured": {
+      "type": "boolean"
+    }
+  }
+}

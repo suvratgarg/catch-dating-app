@@ -515,6 +515,12 @@ import {
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
   setClubNotificationPreferenceCallablePayloadSchema,
+  eventSetupDefaultsSchema,
+  createPrivateEventSetupCallablePayloadSchema,
+  updatePrivateEventBasicsCallablePayloadSchema,
+  getPrivateEventSetupCallablePayloadSchema,
+  privateEventSetupMutationCallableResponseSchema,
+  privateEventSetupCallableResponseSchema,
   createEventCallablePayloadSchema,
   updateEventCallablePayloadSchema,
   cancelEventCallablePayloadSchema,
@@ -1366,6 +1372,12 @@ export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallabl
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
 export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
 export const validateSetClubNotificationPreferenceCallablePayload = ajv.compile(setClubNotificationPreferenceCallablePayloadSchema);
+export const validateEventSetupDefaults = ajv.compile(eventSetupDefaultsSchema);
+export const validateCreatePrivateEventSetupCallablePayload = ajv.compile(createPrivateEventSetupCallablePayloadSchema);
+export const validateUpdatePrivateEventBasicsCallablePayload = ajv.compile(updatePrivateEventBasicsCallablePayloadSchema);
+export const validateGetPrivateEventSetupCallablePayload = ajv.compile(getPrivateEventSetupCallablePayloadSchema);
+export const validatePrivateEventSetupMutationCallableResponse = ajv.compile(privateEventSetupMutationCallableResponseSchema);
+export const validatePrivateEventSetupCallableResponse = ajv.compile(privateEventSetupCallableResponseSchema);
 export const validateCreateEventCallablePayload = ajv.compile(createEventCallablePayloadSchema);
 export const validateUpdateEventCallablePayload = ajv.compile(updateEventCallablePayloadSchema);
 export const validateCancelEventCallablePayload = ajv.compile(cancelEventCallablePayloadSchema);

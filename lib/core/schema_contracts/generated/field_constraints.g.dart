@@ -13796,6 +13796,85 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const createPrivateEventSetupCallablePayloadBasicsCityMode = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.city.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsCityValueCityId = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.city.value.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsCityValueMarketId = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.city.value.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsLocalDate = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.localDate',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}\$',
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsLocalStartTime = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.localStartTime',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{2}:[0-9]{2}\$',
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsName = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsReviewedDefaultsHash = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.reviewedDefaultsHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsTimezoneMode = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.timezone.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadBasicsTimezoneValue = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.basics.timezone.value',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const createPrivateEventSetupCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'createPrivateEventSetupCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
   static const createProfileDecisionClientWriteDataComment = CatchContractFieldConstraints(
     path: 'createProfileDecisionClientWrite.data.comment',
     maxLength: 240,
@@ -52740,6 +52819,57 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventSetupDefaultsCitySource = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.city.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event'],
+  );
+
+  static const eventSetupDefaultsCityValueCityId = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.city.value.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupDefaultsCityValueMarketId = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.city.value.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupDefaultsOrganizerDefaultsHash = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.organizerDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventSetupDefaultsOrganizerDefaultsRevision = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.organizerDefaultsRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventSetupDefaultsTimezoneSource = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.timezone.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event'],
+  );
+
+  static const eventSetupDefaultsTimezoneValue = CatchContractFieldConstraints(
+    path: 'eventSetupDefaults.timezone.value',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventShareIntentDocumentActorKind = CatchContractFieldConstraints(
     path: 'eventShareIntentDocument.actorKind',
     required: true,
@@ -66359,6 +66489,22 @@ abstract final class CatchContractConstraints {
   static const getParticipantOrganizerApplicationFormCallableResponseTitle = CatchContractFieldConstraints(
     path: 'getParticipantOrganizerApplicationFormCallableResponse.title',
     maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getPrivateEventSetupCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getPrivateEventSetupCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getPrivateEventSetupCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getPrivateEventSetupCallablePayload.organizerId',
+    maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
@@ -95255,6 +95401,172 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const privateEventSetupCallableResponseCityCityId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.city.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseCityMarketId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.city.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseDetailsConfigured = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.detailsConfigured',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseLocalDate = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.localDate',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}\$',
+  );
+
+  static const privateEventSetupCallableResponseLocalStartTime = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.localStartTime',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{2}:[0-9]{2}\$',
+  );
+
+  static const privateEventSetupCallableResponseName = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponsePublicationState = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.publicationState',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsCitySource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.city.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event'],
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsCityValueCityId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.city.value.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsCityValueMarketId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.city.value.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsOrganizerDefaultsHash = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.organizerDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsOrganizerDefaultsRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.organizerDefaultsRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsTimezoneSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.timezone.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event'],
+  );
+
+  static const privateEventSetupCallableResponseSetupDefaultsTimezoneValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupDefaults.timezone.value',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseSetupRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.setupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const privateEventSetupCallableResponseStartTimeMillis = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.startTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled'],
+  );
+
+  static const privateEventSetupCallableResponseTimezone = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.timezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupMutationCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'privateEventSetupMutationCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupMutationCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'privateEventSetupMutationCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupMutationCallableResponseSetupRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupMutationCallableResponse.setupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
   static const profilePhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'profilePhoto.createdAt._nanoseconds',
     required: true,
@@ -110327,6 +110639,101 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const updatePrivateEventBasicsCallablePayloadBasicsCityMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.city.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsCityValueCityId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.city.value.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsCityValueMarketId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.city.value.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsLocalDate = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.localDate',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}\$',
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsLocalStartTime = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.localStartTime',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{2}:[0-9]{2}\$',
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsName = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsReviewedDefaultsHash = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.reviewedDefaultsHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsTimezoneMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.timezone.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadBasicsTimezoneValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.basics.timezone.value',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.expectedSetupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483646,
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventBasicsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventBasicsCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
   static const updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm',
     required: true,
@@ -117104,6 +117511,17 @@ abstract final class CatchContractConstraints {
     'createOrganizerProgramCallablePayload.transportSettings.vehicleClasses.items.luggageCapacity': createOrganizerProgramCallablePayloadTransportSettingsVehicleClassesItemsLuggageCapacity,
     'createOrganizerProgramCallablePayload.transportSettings.vehicleClasses.items.passengerCapacity': createOrganizerProgramCallablePayloadTransportSettingsVehicleClassesItemsPassengerCapacity,
     'createOrganizerProgramCallablePayload.transportSettings.vehicleClasses.items.sortOrder': createOrganizerProgramCallablePayloadTransportSettingsVehicleClassesItemsSortOrder,
+    'createPrivateEventSetupCallablePayload.basics.city.mode': createPrivateEventSetupCallablePayloadBasicsCityMode,
+    'createPrivateEventSetupCallablePayload.basics.city.value.cityId': createPrivateEventSetupCallablePayloadBasicsCityValueCityId,
+    'createPrivateEventSetupCallablePayload.basics.city.value.marketId': createPrivateEventSetupCallablePayloadBasicsCityValueMarketId,
+    'createPrivateEventSetupCallablePayload.basics.localDate': createPrivateEventSetupCallablePayloadBasicsLocalDate,
+    'createPrivateEventSetupCallablePayload.basics.localStartTime': createPrivateEventSetupCallablePayloadBasicsLocalStartTime,
+    'createPrivateEventSetupCallablePayload.basics.name': createPrivateEventSetupCallablePayloadBasicsName,
+    'createPrivateEventSetupCallablePayload.basics.reviewedDefaultsHash': createPrivateEventSetupCallablePayloadBasicsReviewedDefaultsHash,
+    'createPrivateEventSetupCallablePayload.basics.timezone.mode': createPrivateEventSetupCallablePayloadBasicsTimezoneMode,
+    'createPrivateEventSetupCallablePayload.basics.timezone.value': createPrivateEventSetupCallablePayloadBasicsTimezoneValue,
+    'createPrivateEventSetupCallablePayload.organizerId': createPrivateEventSetupCallablePayloadOrganizerId,
+    'createPrivateEventSetupCallablePayload.requestId': createPrivateEventSetupCallablePayloadRequestId,
     'createProfileDecisionClientWrite.data.comment': createProfileDecisionClientWriteDataComment,
     'createProfileDecisionClientWrite.data.createdAt._nanoseconds': createProfileDecisionClientWriteDataCreatedAtNanoseconds,
     'createProfileDecisionClientWrite.data.createdAt._seconds': createProfileDecisionClientWriteDataCreatedAtSeconds,
@@ -122295,6 +122713,13 @@ abstract final class CatchContractConstraints {
     'eventSafetyReportDocument.status': eventSafetyReportDocumentStatus,
     'eventSafetyReportDocument.updatedAt._nanoseconds': eventSafetyReportDocumentUpdatedAtNanoseconds,
     'eventSafetyReportDocument.updatedAt._seconds': eventSafetyReportDocumentUpdatedAtSeconds,
+    'eventSetupDefaults.city.source': eventSetupDefaultsCitySource,
+    'eventSetupDefaults.city.value.cityId': eventSetupDefaultsCityValueCityId,
+    'eventSetupDefaults.city.value.marketId': eventSetupDefaultsCityValueMarketId,
+    'eventSetupDefaults.organizerDefaultsHash': eventSetupDefaultsOrganizerDefaultsHash,
+    'eventSetupDefaults.organizerDefaultsRevision': eventSetupDefaultsOrganizerDefaultsRevision,
+    'eventSetupDefaults.timezone.source': eventSetupDefaultsTimezoneSource,
+    'eventSetupDefaults.timezone.value': eventSetupDefaultsTimezoneValue,
     'eventShareIntentDocument.actorKind': eventShareIntentDocumentActorKind,
     'eventShareIntentDocument.actorUid': eventShareIntentDocumentActorUid,
     'eventShareIntentDocument.channelHint': eventShareIntentDocumentChannelHint,
@@ -124132,6 +124557,8 @@ abstract final class CatchContractConstraints {
     'getParticipantOrganizerApplicationFormCallableResponse.targetId': getParticipantOrganizerApplicationFormCallableResponseTargetId,
     'getParticipantOrganizerApplicationFormCallableResponse.targetKind': getParticipantOrganizerApplicationFormCallableResponseTargetKind,
     'getParticipantOrganizerApplicationFormCallableResponse.title': getParticipantOrganizerApplicationFormCallableResponseTitle,
+    'getPrivateEventSetupCallablePayload.eventId': getPrivateEventSetupCallablePayloadEventId,
+    'getPrivateEventSetupCallablePayload.organizerId': getPrivateEventSetupCallablePayloadOrganizerId,
     'getProgramHotelInboundCallablePayload.expectedCursor': getProgramHotelInboundCallablePayloadExpectedCursor,
     'getProgramHotelInboundCallablePayload.hotelId': getProgramHotelInboundCallablePayloadHotelId,
     'getProgramHotelInboundCallablePayload.limit': getProgramHotelInboundCallablePayloadLimit,
@@ -128136,6 +128563,29 @@ abstract final class CatchContractConstraints {
     'previewOrganizerSavedAudienceCallableResponse.sample': previewOrganizerSavedAudienceCallableResponseSample,
     'previewOrganizerSavedAudienceCallableResponse.sample.items.contactId': previewOrganizerSavedAudienceCallableResponseSampleItemsContactId,
     'previewOrganizerSavedAudienceCallableResponse.sample.items.displayName': previewOrganizerSavedAudienceCallableResponseSampleItemsDisplayName,
+    'privateEventSetupCallableResponse.city.cityId': privateEventSetupCallableResponseCityCityId,
+    'privateEventSetupCallableResponse.city.marketId': privateEventSetupCallableResponseCityMarketId,
+    'privateEventSetupCallableResponse.detailsConfigured': privateEventSetupCallableResponseDetailsConfigured,
+    'privateEventSetupCallableResponse.eventId': privateEventSetupCallableResponseEventId,
+    'privateEventSetupCallableResponse.localDate': privateEventSetupCallableResponseLocalDate,
+    'privateEventSetupCallableResponse.localStartTime': privateEventSetupCallableResponseLocalStartTime,
+    'privateEventSetupCallableResponse.name': privateEventSetupCallableResponseName,
+    'privateEventSetupCallableResponse.organizerId': privateEventSetupCallableResponseOrganizerId,
+    'privateEventSetupCallableResponse.publicationState': privateEventSetupCallableResponsePublicationState,
+    'privateEventSetupCallableResponse.setupDefaults.city.source': privateEventSetupCallableResponseSetupDefaultsCitySource,
+    'privateEventSetupCallableResponse.setupDefaults.city.value.cityId': privateEventSetupCallableResponseSetupDefaultsCityValueCityId,
+    'privateEventSetupCallableResponse.setupDefaults.city.value.marketId': privateEventSetupCallableResponseSetupDefaultsCityValueMarketId,
+    'privateEventSetupCallableResponse.setupDefaults.organizerDefaultsHash': privateEventSetupCallableResponseSetupDefaultsOrganizerDefaultsHash,
+    'privateEventSetupCallableResponse.setupDefaults.organizerDefaultsRevision': privateEventSetupCallableResponseSetupDefaultsOrganizerDefaultsRevision,
+    'privateEventSetupCallableResponse.setupDefaults.timezone.source': privateEventSetupCallableResponseSetupDefaultsTimezoneSource,
+    'privateEventSetupCallableResponse.setupDefaults.timezone.value': privateEventSetupCallableResponseSetupDefaultsTimezoneValue,
+    'privateEventSetupCallableResponse.setupRevision': privateEventSetupCallableResponseSetupRevision,
+    'privateEventSetupCallableResponse.startTimeMillis': privateEventSetupCallableResponseStartTimeMillis,
+    'privateEventSetupCallableResponse.status': privateEventSetupCallableResponseStatus,
+    'privateEventSetupCallableResponse.timezone': privateEventSetupCallableResponseTimezone,
+    'privateEventSetupMutationCallableResponse.eventId': privateEventSetupMutationCallableResponseEventId,
+    'privateEventSetupMutationCallableResponse.replayed': privateEventSetupMutationCallableResponseReplayed,
+    'privateEventSetupMutationCallableResponse.setupRevision': privateEventSetupMutationCallableResponseSetupRevision,
     'profilePhoto.createdAt._nanoseconds': profilePhotoCreatedAtNanoseconds,
     'profilePhoto.createdAt._seconds': profilePhotoCreatedAtSeconds,
     'profilePhoto.id': profilePhotoId,
@@ -130180,6 +130630,19 @@ abstract final class CatchContractConstraints {
     'updateOrganizerProgramCallablePayload.transportSettings.vehicleClasses.items.luggageCapacity': updateOrganizerProgramCallablePayloadTransportSettingsVehicleClassesItemsLuggageCapacity,
     'updateOrganizerProgramCallablePayload.transportSettings.vehicleClasses.items.passengerCapacity': updateOrganizerProgramCallablePayloadTransportSettingsVehicleClassesItemsPassengerCapacity,
     'updateOrganizerProgramCallablePayload.transportSettings.vehicleClasses.items.sortOrder': updateOrganizerProgramCallablePayloadTransportSettingsVehicleClassesItemsSortOrder,
+    'updatePrivateEventBasicsCallablePayload.basics.city.mode': updatePrivateEventBasicsCallablePayloadBasicsCityMode,
+    'updatePrivateEventBasicsCallablePayload.basics.city.value.cityId': updatePrivateEventBasicsCallablePayloadBasicsCityValueCityId,
+    'updatePrivateEventBasicsCallablePayload.basics.city.value.marketId': updatePrivateEventBasicsCallablePayloadBasicsCityValueMarketId,
+    'updatePrivateEventBasicsCallablePayload.basics.localDate': updatePrivateEventBasicsCallablePayloadBasicsLocalDate,
+    'updatePrivateEventBasicsCallablePayload.basics.localStartTime': updatePrivateEventBasicsCallablePayloadBasicsLocalStartTime,
+    'updatePrivateEventBasicsCallablePayload.basics.name': updatePrivateEventBasicsCallablePayloadBasicsName,
+    'updatePrivateEventBasicsCallablePayload.basics.reviewedDefaultsHash': updatePrivateEventBasicsCallablePayloadBasicsReviewedDefaultsHash,
+    'updatePrivateEventBasicsCallablePayload.basics.timezone.mode': updatePrivateEventBasicsCallablePayloadBasicsTimezoneMode,
+    'updatePrivateEventBasicsCallablePayload.basics.timezone.value': updatePrivateEventBasicsCallablePayloadBasicsTimezoneValue,
+    'updatePrivateEventBasicsCallablePayload.eventId': updatePrivateEventBasicsCallablePayloadEventId,
+    'updatePrivateEventBasicsCallablePayload.expectedSetupRevision': updatePrivateEventBasicsCallablePayloadExpectedSetupRevision,
+    'updatePrivateEventBasicsCallablePayload.organizerId': updatePrivateEventBasicsCallablePayloadOrganizerId,
+    'updatePrivateEventBasicsCallablePayload.requestId': updatePrivateEventBasicsCallablePayloadRequestId,
     'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.paceMinSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.preferredDistances': updateUserProfilePatchActivityPreferencesRunningPreferredDistances,

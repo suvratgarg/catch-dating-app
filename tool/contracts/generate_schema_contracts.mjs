@@ -2921,6 +2921,36 @@ const schemaSpecs = [
       "functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts",
   },
   {
+    name: "EventSetupDefaults",
+    source: "embedded/event_setup_defaults.schema.json",
+    typeOutput: "functions/src/shared/generated/eventSetupDefaults.ts",
+  },
+  {
+    name: "CreatePrivateEventSetupCallablePayload",
+    source: "callables/create_private_event_setup_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/createPrivateEventSetupCallablePayload.ts",
+  },
+  {
+    name: "UpdatePrivateEventBasicsCallablePayload",
+    source: "callables/update_private_event_basics_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updatePrivateEventBasicsCallablePayload.ts",
+  },
+  {
+    name: "GetPrivateEventSetupCallablePayload",
+    source: "callables/get_private_event_setup_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getPrivateEventSetupCallablePayload.ts",
+  },
+  {
+    name: "PrivateEventSetupMutationCallableResponse",
+    source: "callable_responses/private_event_setup_mutation_response.schema.json",
+    typeOutput: "functions/src/shared/generated/privateEventSetupMutationCallableResponse.ts",
+  },
+  {
+    name: "PrivateEventSetupCallableResponse",
+    source: "callable_responses/private_event_setup_response.schema.json",
+    typeOutput: "functions/src/shared/generated/privateEventSetupCallableResponse.ts",
+  },
+  {
     name: "CreateEventCallablePayload",
     source: "callables/create_event_payload.schema.json",
     typeOutput: "functions/src/shared/generated/createEventCallablePayload.ts",

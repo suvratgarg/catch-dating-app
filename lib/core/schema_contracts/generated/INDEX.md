@@ -524,6 +524,12 @@ Do not edit it by hand.
 | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `functions/src/shared/generated/deleteClubCallablePayload.ts` |
 | ClubMembershipCallablePayload | `callables/club_membership_payload.schema.json` | `functions/src/shared/generated/clubMembershipCallablePayload.ts` |
 | SetClubNotificationPreferenceCallablePayload | `callables/set_club_notification_preference_payload.schema.json` | `functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts` |
+| EventSetupDefaults | `embedded/event_setup_defaults.schema.json` | `functions/src/shared/generated/eventSetupDefaults.ts` |
+| CreatePrivateEventSetupCallablePayload | `callables/create_private_event_setup_payload.schema.json` | `functions/src/shared/generated/createPrivateEventSetupCallablePayload.ts` |
+| UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventBasicsCallablePayload.ts` |
+| GetPrivateEventSetupCallablePayload | `callables/get_private_event_setup_payload.schema.json` | `functions/src/shared/generated/getPrivateEventSetupCallablePayload.ts` |
+| PrivateEventSetupMutationCallableResponse | `callable_responses/private_event_setup_mutation_response.schema.json` | `functions/src/shared/generated/privateEventSetupMutationCallableResponse.ts` |
+| PrivateEventSetupCallableResponse | `callable_responses/private_event_setup_response.schema.json` | `functions/src/shared/generated/privateEventSetupCallableResponse.ts` |
 | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `functions/src/shared/generated/createEventCallablePayload.ts` |
 | UpdateEventCallablePayload | `callables/update_event_payload.schema.json` | `functions/src/shared/generated/updateEventCallablePayload.ts` |
 | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `functions/src/shared/generated/cancelEventCallablePayload.ts` |
@@ -1356,6 +1362,12 @@ Do not edit it by hand.
 | `schemaDeleteClubCallablePayloadSchema` | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_club_callable_payload.g.dart` |
 | `schemaClubMembershipCallablePayloadSchema` | ClubMembershipCallablePayload | `callables/club_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/club_membership_callable_payload.g.dart` |
 | `schemaSetClubNotificationPreferenceCallablePayloadSchema` | SetClubNotificationPreferenceCallablePayload | `callables/set_club_notification_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_club_notification_preference_callable_payload.g.dart` |
+| `schemaEventSetupDefaultsSchema` | EventSetupDefaults | `embedded/event_setup_defaults.schema.json` | `lib/core/schema_contracts/generated/schemas/event_setup_defaults.g.dart` |
+| `schemaCreatePrivateEventSetupCallablePayloadSchema` | CreatePrivateEventSetupCallablePayload | `callables/create_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_private_event_setup_callable_payload.g.dart` |
+| `schemaUpdatePrivateEventBasicsCallablePayloadSchema` | UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_basics_callable_payload.g.dart` |
+| `schemaGetPrivateEventSetupCallablePayloadSchema` | GetPrivateEventSetupCallablePayload | `callables/get_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_private_event_setup_callable_payload.g.dart` |
+| `schemaPrivateEventSetupMutationCallableResponseSchema` | PrivateEventSetupMutationCallableResponse | `callable_responses/private_event_setup_mutation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/private_event_setup_mutation_callable_response.g.dart` |
+| `schemaPrivateEventSetupCallableResponseSchema` | PrivateEventSetupCallableResponse | `callable_responses/private_event_setup_response.schema.json` | `lib/core/schema_contracts/generated/schemas/private_event_setup_callable_response.g.dart` |
 | `schemaCreateEventCallablePayloadSchema` | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_callable_payload.g.dart` |
 | `schemaUpdateEventCallablePayloadSchema` | UpdateEventCallablePayload | `callables/update_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_event_callable_payload.g.dart` |
 | `schemaCancelEventCallablePayloadSchema` | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/cancel_event_callable_payload.g.dart` |
@@ -1821,6 +1833,9 @@ Do not edit it by hand.
 | DeleteClubCallableRequest | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_club_callable_request.g.dart` |
 | ClubMembershipCallableRequest | ClubMembershipCallablePayload | `callables/club_membership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/club_membership_callable_request.g.dart` |
 | SetClubNotificationPreferenceCallableRequest | SetClubNotificationPreferenceCallablePayload | `callables/set_club_notification_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_club_notification_preference_callable_request.g.dart` |
+| CreatePrivateEventSetupCallableRequest | CreatePrivateEventSetupCallablePayload | `callables/create_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_private_event_setup_callable_request.g.dart` |
+| UpdatePrivateEventBasicsCallableRequest | UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_basics_callable_request.g.dart` |
+| GetPrivateEventSetupCallableRequest | GetPrivateEventSetupCallablePayload | `callables/get_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_private_event_setup_callable_request.g.dart` |
 | CreateEventPrivateAccess | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_callable_request.g.dart` |
 | CreateEventCallableRequest | CreateEventCallablePayload | `callables/create_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_callable_request.g.dart` |
 | UpdateEventCallableRequest | UpdateEventCallablePayload | `callables/update_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_event_callable_request.g.dart` |

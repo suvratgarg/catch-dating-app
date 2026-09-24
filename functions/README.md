@@ -21,6 +21,7 @@ options when specific functions need higher or lower limits.
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | `src/payments/stripeHostAccounts.ts` | Create Stripe Connect hosted onboarding and refresh its account state |
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
+| `createPrivateEventSetup` / `updatePrivateEventBasics` / `getPrivateEventSetup` | `src/events/progressiveSetup/` | Manager-only basic event setup and sanitized reopen; mutations remain closed pending privacy migration |
 | `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
 | `upsertOrganizerEventVenue` | `src/events/organizerEventVenues.ts` | Create, update, archive, or restore one organizer-owned reusable event venue |
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |

@@ -3,6 +3,10 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {isOrganizerManager} from "../../shared/organizerHosts";
+import {validateCreatePrivateEventSetupCallablePayload} from
+  "../../shared/generated/validators/createPrivateEventSetupInput";
+import {validateUpdatePrivateEventBasicsCallablePayload} from
+  "../../shared/generated/validators/updatePrivateEventBasicsInput";
 import {requireDoc} from "../../shared/validation";
 import {
   normalizePrivateEventBasics,
@@ -50,6 +54,9 @@ export async function createPrivateEventSetup(params: {
   deps: ProgressiveSetupDependencies;
 }): Promise<ProgressiveSetupResult> {
   const {actorUid, command, deps} = params;
+  if (!validateCreatePrivateEventSetupCallablePayload(command)) {
+    throw new HttpsError("invalid-argument", "Invalid event setup request.");
+  }
   assertPrivacyReady(deps);
   assertCommandIds(actorUid, command.organizerId, command.requestId);
   const db = deps.db;
@@ -63,7 +70,9 @@ export async function createPrivateEventSetup(params: {
     const [receiptSnap, organizerSnap, deletedSnap] = await Promise.all([
       tx.get(receiptRef), tx.get(organizerRef), tx.get(deletedRef),
     ]);
-    const organizer = authorize(organizerSnap, deletedSnap, actorUid);
+    const organizer = authorizeSetupManager(
+      organizerSnap, deletedSnap, actorUid
+    );
     if (receiptSnap.exists) {
       const receipt = receiptSnap.data() as Record<string, unknown>;
       assertReceipt(receipt, "create", actorUid, command.organizerId,
@@ -127,6 +136,9 @@ export async function updatePrivateEventBasics(params: {
   deps: ProgressiveSetupDependencies;
 }): Promise<ProgressiveSetupResult> {
   const {actorUid, command, deps} = params;
+  if (!validateUpdatePrivateEventBasicsCallablePayload(command)) {
+    throw new HttpsError("invalid-argument", "Invalid event basics request.");
+  }
   assertPrivacyReady(deps);
   assertCommandIds(actorUid, command.organizerId, command.requestId);
   if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(command.eventId) ||
@@ -152,7 +164,9 @@ export async function updatePrivateEventBasics(params: {
         tx.get(receiptRef), tx.get(organizerRef), tx.get(deletedRef),
         tx.get(eventRef),
       ]);
-    const organizer = authorize(organizerSnap, deletedSnap, actorUid);
+    const organizer = authorizeSetupManager(
+      organizerSnap, deletedSnap, actorUid
+    );
     const event = eventSnap.data() as Record<string, unknown> | undefined;
     if (!event || event.organizerId !== command.organizerId) {
       throw new HttpsError("not-found", "Event not found.");
@@ -286,7 +300,9 @@ function requireRevision(event: Record<string, unknown>): number {
   return revision as number;
 }
 
-function authorize(organizerSnap: FirebaseFirestore.DocumentSnapshot,
+/** Authorizes transaction snapshots, including deleted accounts. */
+export function authorizeSetupManager(
+  organizerSnap: FirebaseFirestore.DocumentSnapshot,
   deletedSnap: FirebaseFirestore.DocumentSnapshot,
   actorUid: string): OrganizerDocument {
   if (deletedSnap.exists) {

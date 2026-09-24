@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
+import {getPrivateEventSetup} from "./readModel";
 import {HttpsError} from "firebase-functions/v2/https";
 import {localStartMillis, normalizePrivateEventBasics} from "./basics";
 import {resolveField, resolveProgressiveSetupDefaults} from "./defaults";
@@ -79,8 +81,7 @@ function setup() {
   const deps: ProgressiveSetupDependencies = {
     db: store as unknown as FirebaseFirestore.Firestore,
     privacyMigrationReady: () => migrationReady,
-    timestampFromMillis: (millis) => ({millis}) as unknown as
-      FirebaseFirestore.Timestamp,
+    timestampFromMillis: Timestamp.fromMillis,
     serverTimestamp: () => ({serverTime: true}) as unknown as
       FirebaseFirestore.FieldValue,
     assertBasicsEditable: async () => {
@@ -202,4 +203,56 @@ test("replays preserve the original revision after later edits", async () => {
     command: edit, deps: h.deps}), {...edited, replayed: true});
   assert.equal(h.store.read(`events/${created.eventId}`)?.setupRevision, 3);
   assert.equal(h.store.read(`events/${created.eventId}`)?.name, "Second edit");
+});
+
+
+test("manager reopens basics without rich fields or secrets", async () => {
+  const h = setup();
+  const created = await createPrivateEventSetup({actorUid: "host1",
+    command: {organizerId: "org1", requestId: "request-read", basics},
+    deps: h.deps});
+  const path = `events/${created.eventId}`;
+  h.store.seed(path, {...h.store.read(path), privatePaymentSecret: "never"});
+  const params = {actorUid: "host1", db: h.deps.db,
+    command: {organizerId: "org1", eventId: created.eventId}};
+  const result = await getPrivateEventSetup(params);
+  assert.equal(result.name, "Sunday Mixer");
+  assert.equal(result.detailsConfigured, false);
+  assert.equal(result.startTimeMillis, Date.UTC(2026, 9, 18, 13));
+  assert.equal(Object.hasOwn(result, "privatePaymentSecret"), false);
+  await assert.rejects(getPrivateEventSetup({...params, actorUid: "stranger"}),
+    (error) => code(error) === "permission-denied");
+  h.store.seed("deletedUsers/host1", {});
+  await assert.rejects(getPrivateEventSetup(params),
+    (error) => code(error) === "failed-precondition");
+});
+
+test("setup reads reject foreign, invalid and published records", async () => {
+  const h = setup();
+  const created = await createPrivateEventSetup({actorUid: "host1",
+    command: {organizerId: "org1", requestId: "request-read", basics},
+    deps: h.deps});
+  const path = `events/${created.eventId}`;
+  const original = h.store.read(path);
+  const params = {actorUid: "host1", db: h.deps.db,
+    command: {organizerId: "org1", eventId: created.eventId}};
+  for (const [patch, expected] of [
+    [{organizerId: "org2"}, "not-found"],
+    [{publicationState: "published"}, "failed-precondition"],
+    [{setupRevision: 0}, "failed-precondition"],
+    [{eventTimezone: null}, "failed-precondition"],
+  ] as const) {
+    h.store.seed(path, {...original, ...patch});
+    await assert.rejects(getPrivateEventSetup(params),
+      (error) => code(error) === expected);
+  }
+});
+
+test("setup payload rejects client authority and unknown fields", async () => {
+  const h = setup();
+  await assert.rejects(createPrivateEventSetup({actorUid: "host1",
+    command: {organizerId: "org1", requestId: "request-bad", basics,
+      publicationState: "published"} as never, deps: h.deps}),
+  (error) => code(error) === "invalid-argument");
+  assert.equal(h.store.read("events/1"), undefined);
 });

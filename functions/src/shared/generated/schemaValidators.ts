@@ -517,6 +517,12 @@ export {validateArchiveClubCallablePayload} from "./validators/archiveClubInput"
 export {validateDeleteClubCallablePayload} from "./validators/deleteClubInput";
 export {validateClubMembershipCallablePayload} from "./validators/clubMembershipInput";
 export {validateSetClubNotificationPreferenceCallablePayload} from "./validators/setClubNotificationPreferenceInput";
+export {validateEventSetupDefaults} from "./validators/eventSetupDefaults";
+export {validateCreatePrivateEventSetupCallablePayload} from "./validators/createPrivateEventSetupInput";
+export {validateUpdatePrivateEventBasicsCallablePayload} from "./validators/updatePrivateEventBasicsInput";
+export {validateGetPrivateEventSetupCallablePayload} from "./validators/getPrivateEventSetupInput";
+export {validatePrivateEventSetupMutationCallableResponse} from "./validators/privateEventSetupMutationOutput";
+export {validatePrivateEventSetupCallableResponse} from "./validators/privateEventSetupOutput";
 export {validateCreateEventCallablePayload} from "./validators/createEventInput";
 export {validateUpdateEventCallablePayload} from "./validators/updateEventInput";
 export {validateCancelEventCallablePayload} from "./validators/cancelEventInput";
