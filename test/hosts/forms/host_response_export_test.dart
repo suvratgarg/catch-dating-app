@@ -9,6 +9,8 @@ import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_action.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_workspace_section.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +109,62 @@ void main() {
     expect(controller.view.status, HostResponseExportStatus.idle);
   });
 
+  test('a stale pending export settles its original command without opening',
+      () async {
+    final source = _Query()..resultHash = 'new-result';
+    final query = HostResponseQueryController(source);
+    addTearDown(query.dispose);
+    await query.apply(_request);
+    final gateway = _Gateway()
+      ..saved = _command(expectedResultHash: 'old-result');
+    final opened = <Uri>[];
+    final controller = _controller(query, gateway,
+      openDownload: (uri) async { opened.add(uri); return true; });
+    addTearDown(controller.dispose);
+    await controller.recover();
+    expect(controller.view.status, HostResponseExportStatus.stale);
+    await controller.retryPending();
+    expect(gateway.calls, hasLength(2));
+    expect(gateway.calls.every((entry) =>
+        entry.requestId == 'saved_request'), isTrue);
+    expect(opened, isEmpty);
+    expect(controller.view.status, HostResponseExportStatus.idle);
+    expect(await gateway.pending(accountId: 'manager', organizerId: 'org',
+      formId: 'form'), isNull);
+  });
+
+  test('account change before completion or reopen never opens the URL',
+      () async {
+    final query = HostResponseQueryController(_Query());
+    addTearDown(query.dispose);
+    await query.apply(_request);
+    final gateway = _Gateway()..statuses = [HostFormExportStatus.completed];
+    var activeUid = 'manager';
+    final opened = <Uri>[];
+    final controller = _controller(query, gateway,
+      currentAccountId: () => activeUid,
+      openDownload: (uri) async { opened.add(uri); return true; });
+    addTearDown(controller.dispose);
+    await controller.start(HostFormExportFormat.csv);
+    expect(opened, hasLength(1));
+    activeUid = 'other-manager';
+    await controller.openReady();
+    expect(opened, hasLength(1));
+
+    final late = _Gateway()..deferred = Completer<HostFormExportReceipt>();
+    activeUid = 'manager';
+    final second = _controller(query, late,
+      currentAccountId: () => activeUid,
+      openDownload: (uri) async { opened.add(uri); return true; });
+    addTearDown(second.dispose);
+    final running = second.start(HostFormExportFormat.xlsx);
+    await Future<void>.delayed(Duration.zero);
+    activeUid = 'other-manager';
+    late.deferred!.complete(_receipt(HostFormExportStatus.completed));
+    await running;
+    expect(opened, hasLength(1));
+  });
+
   test('durable ambiguous request replays the same ID after recreation', () async {
     final storage = MemoryCommandJournalStorage();
     final repository = _Repository();
@@ -144,6 +202,7 @@ void main() {
       home: Scaffold(body: HostResponseExportAction(
         accountId: 'manager', organizerId: 'org', formId: 'form',
         queryController: query, gateway: gateway,
+        currentAccountId: () => 'manager',
         openDownload: (uri) async { opened.add(uri); return true; },
       )),
     )));
@@ -155,27 +214,70 @@ void main() {
     expect(opened, hasLength(1));
     expect(find.text('Export ready'), findsOneWidget);
   });
+
+  testWidgets('offer create action can select without a bulk review callback',
+      (tester) async {
+    final query = HostResponseQueryController(_Query(withRow: true));
+    addTearDown(query.dispose);
+    var created = false;
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: SingleChildScrollView(
+        child: HostResponseQueryWorkspaceSection(
+          controller: query, request: _request, copy: _workspaceCopy,
+          onOpenResponse: (_) {},
+          onCreateEventForSelection: () async { created = true; },
+        ),
+      )),
+    ));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Select'));
+    await tester.tap(find.text('Select'));
+    await tester.pumpAndSettle();
+    expect(query.selectionIntent?.ids, ['response-1']);
+    await tester.ensureVisible(find.text('Create event'));
+    await tester.tap(find.text('Create event'));
+    await tester.pumpAndSettle();
+    expect(created, isTrue);
+  });
 }
 
 HostResponseExportController _controller(HostResponseQueryController query,
   HostResponseExportGateway gateway, {
   required Future<bool> Function(Uri) openDownload,
+  String? Function()? currentAccountId,
 }) => HostResponseExportController(
   accountId: 'manager', organizerId: 'org', formId: 'form',
   queryController: query, gateway: gateway, openDownload: openDownload,
+  currentAccountId: currentAccountId ?? () => 'manager',
   now: () => DateTime.fromMillisecondsSinceEpoch(2000),
   wait: (_) async {},
 );
 
 class _Query implements HostResponseQueryGateway {
+  _Query({this.withRow = false});
+  final bool withRow;
   String resultHash = 'result-hash';
   @override
   Future<HostResponseQueryPage> query(HostResponseQueryRequest request) async =>
       HostResponseQueryPage(
         form: const HostResponseQueryForm(formId: 'form', title: 'Form',
           versionId: 'form_v2', version: 2),
-        items: const [], nextCursor: null, total: 0,
-        selectedIds: const {}, queryHash: 'query-hash',
+        items: withRow ? [HostResponseQueryRow(
+          responseId: 'response-1', formId: 'form', formTitle: 'Form',
+          versionId: 'form_v2', version: 2,
+          status: HostFormResponseStatus.submitted,
+          identityKind: HostFormResponseIdentityKind.phoneVerified,
+          identity: const HostFormResponseIdentity(displayName: 'Maya',
+            email: null, phoneE164: '+919999999999',
+            origin: HostFormDataOrigin.respondentGranted),
+          sourceLinkId: null, submittedAt: DateTime.utc(2026, 9, 24),
+          withdrawnAt: null,
+        )] : const [], nextCursor: null, total: withRow ? 1 : 0,
+        selectedIds: withRow ? const {'response-1'} : const {},
+        queryHash: 'query-hash',
         resultHash: resultHash,
         fieldCatalog: const [HostResponseQueryField(
           questionId: 'city', label: 'City', kind: 'singleChoice',
@@ -187,6 +289,7 @@ class _Query implements HostResponseQueryGateway {
 
 class _Gateway implements HostResponseExportGateway {
   final calls = <HostResponseExportCommand>[];
+  HostResponseExportCommand? saved;
   Completer<HostResponseExportCommand?>? pendingDeferred;
   Completer<HostFormExportReceipt>? deferred;
   String? errorCode;
@@ -196,16 +299,46 @@ class _Gateway implements HostResponseExportGateway {
   @override
   Future<HostResponseExportCommand?> pending({required String accountId,
     required String organizerId, required String formId}) async =>
-      pendingDeferred == null ? null : await pendingDeferred!.future;
+      pendingDeferred == null ? saved : await pendingDeferred!.future;
 
   @override
   Future<HostFormExportReceipt> execute(HostResponseExportCommand command) async {
     calls.add(command);
     if (deferred case final completion?) return completion.future;
-    return _receipt(statuses[(calls.length - 1).clamp(0, statuses.length - 1)],
-      errorCode: errorCode);
+    final status = statuses[(calls.length - 1).clamp(0, statuses.length - 1)];
+    if (status == HostFormExportStatus.completed ||
+        status == HostFormExportStatus.failed) saved = null;
+    return _receipt(status, errorCode: errorCode);
   }
 }
+
+HostResponseExportCommand _command({required String expectedResultHash}) =>
+    HostResponseExportCommand(
+      accountId: 'manager', organizerId: 'org', formId: 'form',
+      versionId: 'form_v2', requestId: 'saved_request',
+      format: HostFormExportFormat.csv, statuses: const ['submitted'],
+      responseQuery: _request.toJson(), expectedQueryHash: 'query-hash',
+      expectedResultHash: expectedResultHash, createdAtMillis: 1000);
+
+final _workspaceCopy = HostResponseQueryWorkspaceCopy(
+  filter: 'Filter', sort: 'Sort', newest: 'Newest', oldest: 'Oldest',
+  refresh: 'Refresh', loadMore: 'Load more', loading: 'Loading',
+  empty: 'Empty', stale: 'Stale', budgetExceeded: 'Limit reached',
+  permissionLost: 'Permission lost', failed: 'Failed',
+  selected: _selectedCount, clearSelection: 'Clear',
+  reviewSelection: 'Review', withdrawn: 'Withdrawn',
+  select: 'Select', deselect: 'Deselect',
+  editor: HostResponseQueryEditorCopy(
+    title: 'Filters', matchAll: 'All', matchAny: 'Any',
+    field: 'Field', condition: 'Condition', value: 'Value',
+    minimum: 'Minimum', maximum: 'Maximum', yes: 'Yes', no: 'No',
+    addCondition: 'Add condition', addGroup: 'Add group',
+    remove: 'Remove', apply: 'Apply', reset: 'Reset',
+    invalidCondition: 'Invalid', operatorLabels: {},
+  ),
+);
+
+String _selectedCount(int count) => '$count selected';
 
 HostFormExportReceipt _receipt(HostFormExportStatus status,
     {String? errorCode}) =>

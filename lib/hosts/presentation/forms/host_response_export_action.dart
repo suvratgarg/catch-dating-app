@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_controller.dart';
@@ -12,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class HostResponseExportAction extends ConsumerStatefulWidget {
   const HostResponseExportAction({super.key, required this.accountId,
     required this.organizerId, required this.formId, required this.queryController,
-    required this.gateway, this.openDownload});
+    required this.gateway, this.openDownload, this.currentAccountId});
 
   final String accountId;
   final String organizerId;
@@ -20,6 +21,7 @@ class HostResponseExportAction extends ConsumerStatefulWidget {
   final HostResponseQueryController queryController;
   final HostResponseExportGateway gateway;
   final Future<bool> Function(Uri)? openDownload;
+  final String? Function()? currentAccountId;
 
   @override
   ConsumerState<HostResponseExportAction> createState() =>
@@ -37,6 +39,8 @@ class _HostResponseExportActionState
       formId: widget.formId,
       queryController: widget.queryController,
       gateway: widget.gateway,
+      currentAccountId: widget.currentAccountId ??
+        () => ref.read(firebaseAuthProvider).currentUser?.uid,
       openDownload: widget.openDownload ??
         ref.read(externalLinkControllerProvider).open,
       now: DateTime.now,
@@ -62,7 +66,8 @@ class _HostResponseExportActionState
         oldWidget.organizerId != widget.organizerId ||
         oldWidget.formId != widget.formId ||
         oldWidget.queryController != widget.queryController ||
-        oldWidget.gateway != widget.gateway) {
+        oldWidget.gateway != widget.gateway ||
+        oldWidget.currentAccountId != widget.currentAccountId) {
       _controller.removeListener(_changed);
       _controller.dispose();
       _createController();
@@ -102,7 +107,9 @@ class _HostResponseExportActionState
                     view.status == HostResponseExportStatus.stale
                     ? null : () => _controller.start(format),
               ),
-            if (view.status == HostResponseExportStatus.pending && enabled)
+            if (view.command != null &&
+                (view.status == HostResponseExportStatus.pending ||
+                    view.status == HostResponseExportStatus.stale))
               CatchButton.command(
                 label: context.l10n.hostFormExportStillPreparing,
                 onPressed: _controller.retryPending,

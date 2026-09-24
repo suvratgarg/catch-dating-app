@@ -31,6 +31,7 @@ class HostResponseExportController extends ChangeNotifier {
     required this.formId,
     required this.queryController,
     required this.gateway,
+    required this.currentAccountId,
     required this.openDownload,
     required this.now,
     required this.wait,
@@ -43,6 +44,7 @@ class HostResponseExportController extends ChangeNotifier {
   final String formId;
   final HostResponseQueryController queryController;
   final HostResponseExportGateway gateway;
+  final String? Function() currentAccountId;
   final Future<bool> Function(Uri) openDownload;
   final DateTime Function() now;
   final Future<void> Function(Duration) wait;
@@ -94,6 +96,7 @@ class HostResponseExportController extends ChangeNotifier {
   }
 
   bool _current(int generation) => !_disposed && generation == _generation;
+  bool get _sameAccount => currentAccountId() == accountId;
 
   void _publish(HostResponseExportView value) {
     if (_disposed) return;
@@ -123,7 +126,8 @@ class HostResponseExportController extends ChangeNotifier {
 
   Future<void> start(HostFormExportFormat format) async {
     if (_view.status == HostResponseExportStatus.recovering ||
-        _view.status == HostResponseExportStatus.preparing) return;
+        _view.status == HostResponseExportStatus.preparing ||
+        !_sameAccount) return;
     final generation = ++_generation;
     final initial = queryController.view;
     final initialRequest = initial.request;
@@ -173,14 +177,17 @@ class HostResponseExportController extends ChangeNotifier {
 
   Future<void> retryPending() async {
     final command = _view.command;
-    if (command == null || !_sameApplied(command) ||
+    if (command == null || !_sameAccount ||
         _view.status == HostResponseExportStatus.preparing) return;
     final generation = ++_generation;
-    await _run(command, generation);
+    await _run(command, generation, resolveOnly: !_sameApplied(command));
   }
 
-  Future<void> _run(HostResponseExportCommand command, int generation) async {
-    if (!_sameApplied(command)) {
+  /// A changed query can still settle the original journaled request. Its
+  /// terminal receipt releases the journal but is never opened for new rows.
+  Future<void> _run(HostResponseExportCommand command, int generation,
+      {bool resolveOnly = false}) async {
+    if (!_sameAccount || !resolveOnly && !_sameApplied(command)) {
       _publish(HostResponseExportView(HostResponseExportStatus.stale,
         command: command));
       return;
@@ -190,17 +197,24 @@ class HostResponseExportController extends ChangeNotifier {
     try {
       for (var attempt = 0; attempt < 12; attempt++) {
         final receipt = await gateway.execute(command);
-        if (!_current(generation) || !_sameApplied(command)) return;
+        if (!_current(generation) || !_sameAccount ||
+            !resolveOnly && !_sameApplied(command)) return;
         if (receipt.status == HostFormExportStatus.pending ||
             receipt.status == HostFormExportStatus.running) {
           if (attempt == 11) {
-            _publish(HostResponseExportView(HostResponseExportStatus.pending,
+            _publish(HostResponseExportView(resolveOnly
+                ? HostResponseExportStatus.stale : HostResponseExportStatus.pending,
               command: command, receipt: receipt));
             return;
           }
           await wait(const Duration(seconds: 2));
-          if (!_current(generation) || !_sameApplied(command)) return;
+          if (!_current(generation) || !_sameAccount ||
+              !resolveOnly && !_sameApplied(command)) return;
           continue;
+        }
+        if (resolveOnly) {
+          _publish(const HostResponseExportView(HostResponseExportStatus.idle));
+          return;
         }
         if (receipt.errorCode == 'response-query-stale') {
           _staleResultHash = command.expectedResultHash;
@@ -218,16 +232,18 @@ class HostResponseExportController extends ChangeNotifier {
         if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
           throw const FormatException('Export download URL is invalid.');
         }
+        if (!_sameAccount || !_sameApplied(command)) return;
         final opened = await openDownload(uri);
-        if (_current(generation) && _sameApplied(command)) {
+        if (_current(generation) && _sameAccount && _sameApplied(command)) {
           _publish(HostResponseExportView(HostResponseExportStatus.ready,
             command: command, receipt: receipt, downloadOpened: opened));
         }
         return;
       }
     } on Object catch (error) {
-      if (_current(generation) && _sameApplied(command)) {
-        _publish(HostResponseExportView(HostResponseExportStatus.pending,
+      if (_current(generation) && _sameAccount) {
+        _publish(HostResponseExportView(resolveOnly
+            ? HostResponseExportStatus.stale : HostResponseExportStatus.pending,
           command: command, error: error));
       }
     }
@@ -237,12 +253,13 @@ class HostResponseExportController extends ChangeNotifier {
     final receipt = _view.receipt;
     final command = _view.command;
     if (receipt?.downloadUrl == null || command == null ||
-        !_sameApplied(command)) return;
+        !_sameApplied(command) || !_sameAccount) return;
     final uri = Uri.tryParse(receipt!.downloadUrl!);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return;
     final generation = _generation;
+    if (!_sameAccount) return;
     final opened = await openDownload(uri);
-    if (_current(generation) && _sameApplied(command)) {
+    if (_current(generation) && _sameAccount && _sameApplied(command)) {
       _publish(HostResponseExportView(HostResponseExportStatus.ready,
         command: command, receipt: receipt, downloadOpened: opened));
     }

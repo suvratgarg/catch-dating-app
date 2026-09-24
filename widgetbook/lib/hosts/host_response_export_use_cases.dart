@@ -69,6 +69,7 @@ class _ExportFixtureState extends State<_ExportFixture> {
       accountId: 'manager_demo', organizerId: 'org_demo',
       formId: 'form_demo', queryController: _query,
       gateway: _FixtureExport(widget.mode),
+      currentAccountId: () => 'manager_demo',
       openDownload: (_) async => true,
     ) : const Center(child: CircularProgressIndicator()),
   ));

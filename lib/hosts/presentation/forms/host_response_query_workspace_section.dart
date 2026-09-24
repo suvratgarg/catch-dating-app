@@ -354,7 +354,9 @@ class _HostResponseQueryWorkspaceSectionState
                         ? copy.withdrawn
                         : row.formTitle,
                     onTap: () => widget.onOpenResponse(row.responseId),
-                    actions: widget.onReviewSelection == null
+                    actions: widget.onReviewSelection == null &&
+                            widget.onCreateEventForSelection == null &&
+                            widget.offerWorkspace == null
                         ? null
                         : CatchButton.command(
                             label: view.selectedIds.contains(row.responseId)
