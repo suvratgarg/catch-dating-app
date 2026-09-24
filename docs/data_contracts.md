@@ -2562,6 +2562,12 @@ claim a completed refund or activate a provider.
 Binding creates no admission, booking, event publication or payment capability; offer/admission writes still need their own
 current target and source authority.
 
+Typed export commands are persisted before mutable query metadata is resolved.
+The worker rejects stale or unsupported filters with a terminal failed receipt
+before writing any export object. Exact request replay requires current manager
+and account authority but does not recompile an old query merely to retrieve its
+receipt; this permits durable client journals to settle after form changes.
+
 `requestOrganizerFormExport` accepts optional `responseQuery`,
 `expectedQueryHash` and `expectedResultHash` together. Typed exports use the
 same published-version-aware predicate, ordering and one-snapshot reader as

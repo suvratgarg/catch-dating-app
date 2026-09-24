@@ -203,9 +203,7 @@ test("export rejects ambiguous scope and page cursor", async () => {
   for (const patch of [{fromMillis: 1}, {versionId: null},
     {expectedResultHash: null}, {expectedQueryHash: null},
     {responseQuery: null},
-    {responseQuery: {...typedQuery, cursor: h.result.nextCursor}},
-    {responseQuery: {...typedQuery, predicate: {questionId: "secret",
-      op: "textEquals", value: "do-not-export"}}}]) {
+    {responseQuery: {...typedQuery, cursor: h.result.nextCursor}}]) {
     await assert.rejects(requestOrganizerFormExportHandler(
       request({...data, ...patch}), h.deps), {code: "invalid-argument"});
   }
@@ -333,4 +331,61 @@ test("typed export shows attachment presence without private asset IDs",
     assert.ok(csv.includes("Attached"));
     assert.ok(!csv.includes("private-photo-id"));
     assert.ok(!csv.includes("private-signature-id"));
+  });
+
+
+test("journaled exports settle after definition drift before or after request",
+  async () => {
+    for (const beforeRequest of [false, true]) {
+      const h = await typedFixture();
+      const request = {auth: {uid: "host-1"}, data: {
+        organizerId: "org-1", formId: "form-1", requestId: "definition-drift",
+        format: "csv", statuses: ["submitted"], versionId: "version-1",
+        fromMillis: null, toMillis: null, responseQuery: typedQuery,
+        expectedResultHash: h.result.resultHash,
+        expectedQueryHash: h.result.queryHash,
+      }} as import("firebase-functions/v2/https").CallableRequest<unknown>;
+      const definition = h.store.docs["organizerFormVersions/version-1"]
+        .definition as {sections: Array<{questions: Array<{label: string}>}>};
+      const drift = () => {
+        definition.sections[0].questions[0].label = "Updated city label";
+      };
+      if (beforeRequest) drift();
+      const receipt = await requestOrganizerFormExportHandler(request, h.deps);
+      if (!beforeRequest) drift();
+      await assert.rejects(processOrganizerFormExport(receipt.exportId, h.deps),
+        {code: "aborted"});
+      const terminal = await requestOrganizerFormExportHandler(request, h.deps);
+      assert.equal(terminal.exportId, receipt.exportId);
+      assert.equal(terminal.status, "failed");
+      assert.equal(terminal.errorCode, "response-query-stale");
+      assert.equal(terminal.downloadUrl, null);
+      assert.equal(h.saves.length, 0);
+    }
+  });
+
+test("unsupported typed fields produce a terminal failure without any export",
+  async () => {
+    const h = await typedFixture();
+    const request = {auth: {uid: "host-1"}, data: {
+      organizerId: "org-1", formId: "form-1", requestId: "unsupported-query",
+      format: "csv", statuses: ["submitted"], versionId: "version-1",
+      fromMillis: null, toMillis: null,
+      responseQuery: {...typedQuery, predicate: {questionId: "secret",
+        op: "textEquals", value: "do-not-export"}},
+      expectedResultHash: h.result.resultHash,
+      expectedQueryHash: h.result.queryHash,
+    }} as import("firebase-functions/v2/https").CallableRequest<unknown>;
+    const first = await requestOrganizerFormExportHandler(request, h.deps);
+    await assert.rejects(processOrganizerFormExport(first.exportId, h.deps),
+      {code: "invalid-argument"});
+    const terminal = await requestOrganizerFormExportHandler(request, h.deps);
+    assert.equal(terminal.exportId, first.exportId);
+    assert.equal(terminal.status, "failed");
+    assert.equal(terminal.downloadUrl, null);
+    assert.equal(h.saves.length, 0);
+    h.store.docs["organizers/org-1"] = {ownerUserId: "other",
+      hostUserIds: [], hostProfiles: []};
+    await assert.rejects(requestOrganizerFormExportHandler(request, h.deps),
+      {code: "permission-denied"});
   });

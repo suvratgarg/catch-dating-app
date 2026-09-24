@@ -1,4 +1,4 @@
-import {exportFirestoreResponseQuery, validateFirestoreResponseExport} from
+import {exportFirestoreResponseQuery} from
   "../organizerResponseQuery/firestoreAdapter";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
@@ -80,28 +80,10 @@ export async function requestOrganizerFormExportHandler(
       "The export start must be before the end."
     );
   }
-  const formSnap = await db.collection("organizerForms").doc(data.formId).get();
-  const form = formSnap.exists ? requireDoc<OrganizerFormDocument>(
-    formSnap,
-    "OrganizerFormDocument"
-  ) : null;
-  if (!form || form.organizerId !== data.organizerId) {
-    throw new HttpsError("not-found", "Form not found.");
-  }
-  if (data.versionId) {
-    const versionSnap = await db.collection("organizerFormVersions")
-      .doc(data.versionId).get();
-    const version = versionSnap.exists ?
-      versionSnap.data() as OrganizerFormVersionDocument : null;
-    if (!version || version.organizerId !== data.organizerId ||
-        version.formId !== data.formId) {
-      throw new HttpsError("not-found", "Form version not found.");
-    }
-  }
   const typedQuery = data.responseQuery ?? null;
   if (typedQuery) {
     if (!data.expectedResultHash || !data.expectedQueryHash ||
-        data.fromMillis !== null ||
+        typedQuery.cursor !== null || data.fromMillis !== null ||
         data.toMillis !== null || data.versionId !== typedQuery.versionId ||
         data.organizerId !== typedQuery.organizerId ||
         data.formId !== typedQuery.formId ||
@@ -110,9 +92,6 @@ export async function requestOrganizerFormExportHandler(
       throw new HttpsError("invalid-argument",
         "Export scope and filters must match the response query.");
     }
-    await validateFirestoreResponseExport({db, actorUid,
-      organizerId: data.organizerId, formId: data.formId,
-      versionId: typedQuery.versionId}, typedQuery, data.expectedQueryHash);
   } else if (data.expectedResultHash != null ||
       data.expectedQueryHash != null) {
     throw new HttpsError("invalid-argument", "Export query is required.");
@@ -138,6 +117,25 @@ export async function requestOrganizerFormExportHandler(
       assertSameExport(existing, data, actorUid);
       return existing;
     }
+    const formSnap = await tx.get(db.collection("organizerForms")
+      .doc(data.formId));
+    const form = formSnap.exists ? requireDoc<OrganizerFormDocument>(
+      formSnap, "OrganizerFormDocument") : null;
+    if (!form || form.organizerId !== data.organizerId) {
+      throw new HttpsError("not-found", "Form not found.");
+    }
+    if (data.versionId && !typedQuery) {
+      const versionSnap = await tx.get(db.collection("organizerFormVersions")
+        .doc(data.versionId));
+      const version = versionSnap.data();
+      if (!version || version.organizerId !== data.organizerId ||
+          version.formId !== data.formId) {
+        throw new HttpsError("not-found", "Form version not found.");
+      }
+    }
+    // Persist a typed command before resolving mutable query metadata. The
+    // worker produces a terminal failed receipt for a stale/unsupported query,
+    // so definition drift does not prevent replay of the original identity.
     const now = deps.timestamp();
     const created: OrganizerFormExportDocument = {
       organizerId: data.organizerId,
