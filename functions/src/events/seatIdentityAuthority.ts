@@ -319,7 +319,8 @@ export async function prepareCrmOriginSeatIdentity(params: {
   verifiedRespondent?: {uid: string; currentAuthPhoneNumber: string;
     now: FirebaseFirestore.Timestamp};
 }): Promise<{identity: CanonicalSeatIdentity; seatAlreadyOccupied: boolean;
-  sourceAttendeeId: string | null; apply: () => void}> {
+  sourceAttendeeId: string | null; resultingLedgerRevision: number;
+  apply: () => void}> {
   const {db, tx, eventId, organizerId, originId, responseId} = params;
   if (![eventId, organizerId, originId, responseId].every(validId)) {
     throw new SeatIdentityAuthorityError("invalid", "Invalid CRM seat scope.");
@@ -331,6 +332,8 @@ export async function prepareCrmOriginSeatIdentity(params: {
     read("organizerContactOrigins", originId),
   ]);
   if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
+      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
+      ledger.revision >= Number.MAX_SAFE_INTEGER ||
       !Number.isSafeInteger(ledger.migrationRevision) ||
       ledger.migrationRevision < 1 || !origin ||
       origin.organizerId !== organizerId || origin.eventId !== null ||
@@ -497,6 +500,7 @@ export async function prepareCrmOriginSeatIdentity(params: {
     return {identity: preparedUid.identity,
       seatAlreadyOccupied: reservation?.active === true,
       sourceAttendeeId,
+      resultingLedgerRevision: guestLink?.ledgerRevision ?? ledger.revision,
       apply: () => {
         if (applied) throw new Error("CRM seat enrollment already staged.");
         applied = true;
@@ -531,13 +535,21 @@ export async function prepareCrmOriginSeatIdentity(params: {
     }
     return {identity, seatAlreadyOccupied: reservation?.active === true,
       sourceAttendeeId: null,
+      resultingLedgerRevision: ledger.revision,
       apply: () => undefined};
   }
   // A previously imported/verified phone cannot silently become the CRM
   // survivor's seat. The Host must reconcile that source explicitly.
-  if (phoneAlias && (phoneAlias.state !== "ambiguous" ||
+  if (phoneAlias && (phone === null ||
+      phoneAlias.eventId !== eventId ||
+      phoneAlias.organizerId !== organizerId ||
+      phoneAlias.kind !== "phone" ||
+      phoneAlias.valueHash !== seatIdentityValueHash("phone", phone) ||
+      phoneAlias.migrationRevision !== ledger.migrationRevision ||
+      phoneAlias.state !== "ambiguous" ||
       !contactAlias || phoneAlias.canonicalKey !==
-        contactAlias.canonicalKey)) {
+        contactAlias.canonicalKey ||
+      phoneAlias.identityRevision !== contactAlias.identityRevision)) {
     fail("CRM phone conflicts with an existing seat identity.");
   }
   const identity = contactAlias ?
@@ -556,6 +568,7 @@ export async function prepareCrmOriginSeatIdentity(params: {
     return {identity,
       seatAlreadyOccupied: reservation?.active === true,
       sourceAttendeeId: null,
+      resultingLedgerRevision: ledger.revision,
       apply: () => undefined};
   }
   const aliasBase = {eventId, organizerId,
@@ -564,6 +577,7 @@ export async function prepareCrmOriginSeatIdentity(params: {
   let applied = false;
   return {identity, seatAlreadyOccupied: reservation?.active === true,
     sourceAttendeeId: null,
+    resultingLedgerRevision: ledger.revision,
     apply: () => {
       if (applied) throw new Error("CRM seat enrollment already staged.");
       applied = true;
@@ -601,6 +615,29 @@ export async function prepareVerifiedUidGuestSeatLink(params: {
   now: FirebaseFirestore.Timestamp;
 }): Promise<{canonicalKey: string; ledgerRevision: number;
   replayed: boolean; apply: () => void}> {
+  const prepared = await prepareVerifiedUidAttendeeEnrollmentInternal(params,
+    false);
+  return {canonicalKey: prepared.identity.key,
+    ledgerRevision: prepared.ledgerRevision,
+    replayed: prepared.replayed, apply: prepared.apply};
+}
+
+/**
+ * Enrolls a verified UID onto an existing invited/waitlisted guest alias.
+ * This does not reserve a seat. The caller prepares the reserve in this same
+ * transaction and applies both plans only after every authority read.
+ */
+export async function prepareVerifiedUidAttendeeEnrollment(params: Parameters<
+  typeof prepareVerifiedUidGuestSeatLink>[0]): Promise<{
+  identity: CanonicalSeatIdentity; seatActive: boolean;
+  ledgerRevision: number; replayed: boolean; apply: () => void}> {
+  return prepareVerifiedUidAttendeeEnrollmentInternal(params, true);
+}
+
+async function prepareVerifiedUidAttendeeEnrollmentInternal(params: Parameters<
+  typeof prepareVerifiedUidGuestSeatLink>[0], allowPending: boolean): Promise<{
+  identity: CanonicalSeatIdentity; seatActive: boolean;
+  ledgerRevision: number; replayed: boolean; apply: () => void}> {
   const {db, tx, eventId, organizerId, attendeeId, uid, now} = params;
   if (![eventId, organizerId, attendeeId, uid].every(validId)) {
     throw new SeatIdentityAuthorityError("invalid", "Invalid seat link.");
@@ -644,9 +681,11 @@ export async function prepareVerifiedUidGuestSeatLink(params: {
       ledger.migrationRevision < 1 ||
       !attendee || attendee.eventId !== eventId ||
       attendee.organizerId !== organizerId ||
-      !["hostImport", "hostManual", "providerSync"]
+      !["hostImport", "hostManual", "providerSync", "webOtp"]
         .includes(attendee.source) ||
-      !["registered", "checkedIn"].includes(attendee.status) ||
+      !(allowPending ?
+        ["registered", "checkedIn", "invited", "waitlisted"] :
+        ["registered", "checkedIn"]).includes(attendee.status) ||
       attendee.phoneE164 !== normalized.value ||
       attendee.linkedUid !== null && attendee.linkedUid !== uid) {
     fail("Current guest seat source is unavailable.");
@@ -691,9 +730,20 @@ export async function prepareVerifiedUidGuestSeatLink(params: {
       fail("Imported reference is not reconciled to this guest seat.");
     }
   }
-  if (!reservation || reservation.eventId !== eventId ||
+  const seatActive = attendee.status === "registered" ||
+    attendee.status === "checkedIn";
+  if (reservation && (reservation.eventId !== eventId ||
+      reservation.canonicalKey !== key ||
+      reservation.identityRevision !== attendeeAlias!.identityRevision ||
+      !Number.isSafeInteger(reservation.revision) ||
+      reservation.revision < 1 ||
+      typeof reservation.active !== "boolean")) {
+    fail("Guest reservation is malformed.");
+  }
+  if (seatActive && (!reservation || reservation.eventId !== eventId ||
       reservation.canonicalKey !== key || reservation.active !== true ||
-      reservation.identityRevision !== attendeeAlias!.identityRevision) {
+      reservation.identityRevision !== attendeeAlias!.identityRevision) ||
+      !seatActive && reservation?.active === true) {
     fail("Guest reservation is unavailable.");
   }
   if (uidAlias || proof || attendee.linkedUid === uid) {
@@ -708,11 +758,13 @@ export async function prepareVerifiedUidGuestSeatLink(params: {
         proof.state !== "current") {
       fail("Verified UID already has another seat or stale evidence.");
     }
-    return {canonicalKey: key, ledgerRevision: ledger.revision,
+    return {identity: {key, revision: attendeeAlias!.identityRevision},
+      seatActive, ledgerRevision: ledger.revision,
       replayed: true, apply: () => undefined};
   }
   let applied = false;
-  return {canonicalKey: key, ledgerRevision: ledger.revision + 1,
+  return {identity: {key, revision: attendeeAlias!.identityRevision},
+    seatActive, ledgerRevision: ledger.revision + (seatActive ? 1 : 0),
     replayed: false, apply: () => {
       if (applied) throw new Error("Guest seat link already staged.");
       applied = true;
@@ -724,7 +776,7 @@ export async function prepareVerifiedUidGuestSeatLink(params: {
         phoneE164: normalized.value,
         migrationRevision: ledger.migrationRevision, state: "current"});
       tx.update(attendeeRef, {linkedUid: uid, linkedAt: now, updatedAt: now});
-      tx.update(ledgerRef, {revision: ledger.revision + 1});
+      if (seatActive) tx.update(ledgerRef, {revision: ledger.revision + 1});
     }};
 }
 
