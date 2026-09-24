@@ -141,12 +141,32 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
       onRetry: () => ref.invalidate(
         programTransportPlanProvider(widget.programId, widget.pickupPointId),
       ),
-      loadingBuilder: (_) => _routeScaffold(
+      loadingBuilder: (_) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: widget.stationLabel,
+          subtitle: context.l10n.programsDispatchTitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
         body: const CatchRouteBody.standardViewport(
           child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
-      errorBuilder: (_, error, _, onBoundaryRetry) => _routeScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: widget.stationLabel,
+          subtitle: context.l10n.programsDispatchTitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
@@ -155,7 +175,17 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
           ),
         ),
       ),
-      builder: (context, result) => _routeScaffold(
+      builder: (context, result) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: widget.stationLabel,
+          subtitle: context.l10n.programsDispatchTitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
         body: CatchRouteBody.standardSections(
           sections: [
             if (result.snapshotAt != null)
@@ -194,21 +224,6 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
       ),
     );
   }
-
-  CatchRouteScaffold _routeScaffold({required CatchRouteBody body}) =>
-      CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: widget.stationLabel,
-          subtitle: context.l10n.programsDispatchTitle,
-          emphasis: scrolledUnder
-              ? CatchTopBarEmphasis.divided
-              : CatchTopBarEmphasis.plain,
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.back,
-          ),
-        ),
-        body: body,
-      );
 
   bool _sameDestination(
     TransportGroupSuggestion a,
