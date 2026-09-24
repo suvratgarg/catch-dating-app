@@ -55,17 +55,28 @@ export interface ResponseQuerySpec {
 export interface CompiledResponseQuery {
   spec: ResponseQuerySpec;
   questions: Map<string, Question>;
+  definitionHash: string;
   hash: string;
 }
 
+export interface ResponseQuerySnapshot {
+  rows: ResponseQueryRow[];
+  formTitle: string;
+  version: number;
+  definition: Definition;
+}
+
 export interface ResponseQuerySource {
-  /** Must enforce manager authority and exact organizer/form/version scope. */
-  readAll(maxRows: number): Promise<ResponseQueryRow[]>;
+  /** Must read manager, form, version and responses in one snapshot. */
+  readAll(maxRows: number): Promise<ResponseQuerySnapshot>;
 }
 
 export interface MaterializedResponseQuery {
   rows: ResponseQueryRow[];
   selectedIds: string[];
+  formTitle: string;
+  version: number;
+  fieldCatalog: ReturnType<typeof responseQueryFieldCatalog>;
   resultHash: string;
   queryHash: string;
 }
@@ -271,8 +282,10 @@ export function compileResponseQuery(input: unknown,
       nulls: sortRaw.nulls},
     limit: Number(raw.limit), cursor: raw.cursor,
   };
-  const hash = digest({...spec, limit: undefined, cursor: undefined});
-  return {spec, questions, hash};
+  const definitionHash = digest(definition);
+  const hash = digest({...spec, definitionHash, limit: undefined,
+    cursor: undefined});
+  return {spec, questions, definitionHash, hash};
 }
 
 /** Manager-only field choices from an immutable published definition. */
@@ -406,10 +419,16 @@ function compare(left: ResponseQueryRow, right: ResponseQueryRow,
 
 /** Fully resolves one bounded exact result set for pages, IDs, and export. */
 export async function materializeResponseQuery(query: CompiledResponseQuery,
-  source: ResponseQuerySource,
-  displayContext?: {formTitle: string; version: number}
+  source: ResponseQuerySource
 ): Promise<MaterializedResponseQuery> {
-  const scanned = await source.readAll(maxScanRows);
+  const snapshot = await source.readAll(maxScanRows);
+  if (digest(snapshot.definition) !== query.definitionHash ||
+      !snapshot.formTitle || !Number.isInteger(snapshot.version) ||
+      snapshot.version < 1) {
+    throw new HttpsError("aborted",
+      "Published form metadata changed. Refresh to continue.");
+  }
+  const scanned = snapshot.rows;
   if (scanned.length > maxScanRows) {
     throw new HttpsError("resource-exhausted",
       "This form exceeds the 5,000-response interactive scan limit.");
@@ -434,7 +453,9 @@ export async function materializeResponseQuery(query: CompiledResponseQuery,
         const question = query.questions.get(questionId);
         return question && question.privacyClass !== "sensitive";
       }))}));
-  const resultHash = digest({displayContext, rows: safeRows.map((row) => [
+  const resultHash = digest({displayContext: {
+    formTitle: snapshot.formTitle, version: snapshot.version,
+  }, rows: safeRows.map((row) => [
     row.id, row.status, row.submittedAtMillis, row.withdrawnAtMillis,
     row.identityKind, row.identity, row.sourceLinkId, row.answers,
   ])});
@@ -443,7 +464,9 @@ export async function materializeResponseQuery(query: CompiledResponseQuery,
     matches(row, query.spec.predicate))
     .sort((a, b) => compare(a, b, query));
   return {rows, selectedIds: rows.map((row) => row.id), resultHash,
-    queryHash: query.hash};
+    queryHash: query.hash, formTitle: snapshot.formTitle,
+    version: snapshot.version,
+    fieldCatalog: responseQueryFieldCatalog(snapshot.definition)};
 }
 
 /** Resolves an ID selection only against the same current exact result. */

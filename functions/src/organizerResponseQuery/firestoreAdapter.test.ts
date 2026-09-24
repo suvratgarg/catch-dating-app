@@ -152,10 +152,44 @@ test("field catalog follows only the authorized published version",
 
 test("Firestore adapter spends scan budget on all form versions", async () => {
   const {scope} = fixture();
-  const rows = await firestoreResponseQuerySource(scope).readAll(2);
-  assert.equal(rows.length, 3, "third form row is the budget lookahead");
+  const snapshot = await firestoreResponseQuerySource(scope).readAll(2);
+  assert.equal(snapshot.rows.length, 3,
+    "third form row is the budget lookahead");
   const complete = await firestoreResponseQuerySource(scope).readAll(3);
-  assert.deepEqual(complete.map((row) => row.id), ["one", "two"]);
+  assert.deepEqual(complete.rows.map((row) => row.id), ["one", "two"]);
+});
+
+test("form title and response share a scan snapshot", async () => {
+  const {store, scope} = fixture();
+  const original = store.runTransaction.bind(store);
+  store.runTransaction = async (body) => {
+    store.docs["organizerForms/form-1"] = {
+      ...store.docs["organizerForms/form-1"], title: "New signup"};
+    store.docs["organizerFormResponses/one"] = {
+      ...store.docs["organizerFormResponses/one"],
+      identity: {displayName: "New Asha", email: "asha@example.test",
+        phoneE164: "+919999999999", searchName: "new asha",
+        origin: "respondentGranted"}};
+    return original(body);
+  };
+  const result = await runFirestoreResponseQuery(scope, input);
+  assert.equal(result.form.title, "New signup");
+  assert.equal(result.items[0].formTitle, "New signup");
+  assert.equal(result.items[0].identity.displayName, "New Asha");
+});
+
+test("changed published definition fails closed", async () => {
+  const {store, scope} = fixture();
+  const original = store.runTransaction.bind(store);
+  store.runTransaction = async (body) => {
+    store.docs["organizerFormVersions/version-1"] = {
+      ...store.docs["organizerFormVersions/version-1"],
+      definition: {sections: [{questions: [{questionId: "other",
+        kind: "shortText", label: "Other", options: []}]}]}};
+    return original(body);
+  };
+  await assert.rejects(runFirestoreResponseQuery(scope, input),
+    {code: "aborted", message: /Refresh/u});
 });
 
 test("other-version rows cannot hide an oversized form scan", async () => {
