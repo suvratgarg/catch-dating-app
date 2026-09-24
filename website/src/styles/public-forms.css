@@ -390,6 +390,28 @@
   width: 160px;
 }
 
+.public-form__phone-row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(130px, 0.8fr) minmax(0, 1.4fr);
+}
+
+.public-form__verification {
+  border: 1px solid var(--form-hairline, #ddd8d1);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.public-form__verification > p {
+  margin: 0 0 14px;
+}
+
+@media (max-width: 480px) {
+  .public-form__phone-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .public-form__loading {
   align-items: center;
   display: flex;

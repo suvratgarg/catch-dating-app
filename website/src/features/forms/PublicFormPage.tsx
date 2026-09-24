@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router";
 import {
   Button,
@@ -252,13 +252,10 @@ function IdentityStage({
               onSubmit={controller.handlePhoneSubmit}
               pending={controller.pending}
             >
-              <TextField
-                autoComplete="tel"
+              <PhoneNumberField
                 id="public-form-phone"
-                inputMode="tel"
                 label={publicFormsCopy.phoneLabel}
-                onChange={(event) => controller.setPhoneNumber(event.target.value)}
-                placeholder={publicFormsCopy.phonePlaceholder}
+                onChange={controller.setPhoneNumber}
                 value={controller.phoneNumber}
               />
               <Button
@@ -313,6 +310,10 @@ function QuestionStage({
   const section = controller.activeSection!;
   const finalSection = controller.sectionIndex ===
     controller.visibleSections.length - 1;
+  const verifiedPhoneQuestion = definition.sections.flatMap((part) =>
+    part.questions).find((question) => question.kind === "phone" &&
+      question.canonicalFieldId === "phoneNumber");
+  const phoneVerificationForm = definition.identityPolicy === "phoneVerified";
   return (
     <PublicFormPanel
       kicker={controller.form!.organizer.name}
@@ -325,7 +326,12 @@ function QuestionStage({
         total={controller.visibleSections.length + 1}
       />
       <PublicFormSection title={section.title} description={section.description}>
-        {section.questions.map((question) => (
+        {phoneVerificationForm && controller.sectionIndex === 0 ? (
+          <InlinePhoneVerification controller={controller}
+            question={verifiedPhoneQuestion} />
+        ) : null}
+        {section.questions.filter((question) => !phoneVerificationForm ||
+          question.questionId !== verifiedPhoneQuestion?.questionId).map((question) => (
           <QuestionField
             answer={controller.answers[question.questionId]}
             error={controller.errors[question.questionId]}
@@ -363,6 +369,60 @@ function QuestionStage({
       }} />
     </PublicFormPanel>
   );
+}
+
+function InlinePhoneVerification({
+  controller,
+  question,
+}: {
+  controller: ReturnType<typeof usePublicFormController>;
+  question?: Question;
+}) {
+  const phoneValue = controller.verifiedPhone ?? controller.phoneNumber;
+  if (controller.verifiedPhone) {
+    return <div className="public-form__verification">
+      <p>{publicFormsCopy.phoneVerified}: {phoneValue}</p>
+    </div>;
+  }
+  return <div className="public-form__verification">
+    <p>{publicFormsCopy.phoneVerificationHelp}</p>
+    {controller.verificationStep === "code" ? (
+      <PublicFormForm onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
+        <TextField
+          autoComplete="one-time-code"
+          id="public-form-inline-code"
+          inputMode="numeric"
+          label={publicFormsCopy.codeLabel}
+          maxLength={6}
+          onChange={(event) => controller.setCode(event.target.value.replace(/\D/gu, ""))}
+          value={controller.code}
+        />
+        <Button loading={controller.pending} type="submit">
+          {publicFormsCopy.confirmCode}
+        </Button>
+        <Button onClick={controller.resetPhoneVerification} type="button" variant="ghost">
+          {publicFormsCopy.editPhone}
+        </Button>
+      </PublicFormForm>
+    ) : (
+      <PublicFormForm onSubmit={controller.handlePhoneSubmit} pending={controller.pending}>
+        <PhoneNumberField
+          id="public-form-inline-phone"
+          label={question?.label ?? publicFormsCopy.phoneLabel}
+          onBlur={question ? () => controller.blurQuestion(question.questionId) : undefined}
+          onChange={(value) => {
+            controller.setPhoneNumber(value);
+            if (question) controller.updateAnswer(question.questionId, value);
+          }}
+          value={phoneValue}
+        />
+        <Button loading={controller.pending} type="submit">
+          {publicFormsCopy.sendCode}
+        </Button>
+      </PublicFormForm>
+    )}
+    <div id={controller.recaptchaContainerId} />
+  </div>;
 }
 
 function QuestionField({
@@ -411,6 +471,18 @@ function QuestionField({
         />
       </PublicFormQuestion>
     );
+  }
+  if (question.kind === "phone") {
+    return <PublicFormQuestion {...common}>
+      <PhoneNumberField
+        id={`form-question-${question.questionId}`}
+        invalid={Boolean(error)}
+        label={question.label}
+        onBlur={onBlur}
+        onChange={onChange}
+        value={typeof answer === "string" ? answer : ""}
+      />
+    </PublicFormQuestion>;
   }
   if (["shortText", "date", "phone", "email", "url", "number"].includes(
     question.kind
@@ -553,6 +625,77 @@ function QuestionField({
       />
     </PublicFormQuestion>
   );
+}
+
+const phoneDialOptions = [
+  {country: "India", dialCode: "+91"},
+  {country: "Nepal", dialCode: "+977"},
+  {country: "Australia", dialCode: "+61"},
+  {country: "United States", dialCode: "+1"},
+] as const;
+
+function PhoneNumberField({
+  id,
+  invalid = false,
+  label,
+  onBlur,
+  onChange,
+  value,
+}: {
+  id: string;
+  invalid?: boolean;
+  label: string;
+  onBlur?: () => void;
+  onChange: (value: string) => void;
+  value: string;
+}) {
+  const [preferredCode, setPreferredCode] = useState("+91");
+  const known = phoneDialOptions.find((option) =>
+    value.startsWith(option.dialCode));
+  const selectedCode = known?.dialCode ??
+    (value.startsWith("+") ? "other" : preferredCode);
+  const national = known ? value.slice(known.dialCode.length) : value;
+  return <div className="public-form__phone-row">
+    <SelectField
+      id={`${id}-country`}
+      label={publicFormsCopy.phoneCountryLabel}
+      onBlur={onBlur}
+      onChange={(event) => {
+        const nextCode = event.target.value;
+        setPreferredCode(nextCode);
+        onChange(nextCode === "other" ? "" :
+          national ? `${nextCode}${national.replace(/\D/gu, "")}` : "");
+      }}
+      value={selectedCode}
+    >
+      {phoneDialOptions.map((option) => (
+        <option key={option.country} value={option.dialCode}>
+          {option.country} {option.dialCode}
+        </option>
+      ))}
+      <option value="other">{publicFormsCopy.phoneOtherCountry}</option>
+    </SelectField>
+    <TextField
+      autoComplete={selectedCode === "other" ? "tel" : "tel-national"}
+      id={id}
+      inputMode="tel"
+      invalid={invalid}
+      label={label}
+      onBlur={onBlur}
+      onChange={(event) => {
+        const entered = event.target.value.trim();
+        if (!entered) { onChange(""); return; }
+        if (entered.startsWith("+") || selectedCode === "other") {
+          onChange(entered.replace(/[^+\d]/gu, ""));
+        } else {
+          onChange(`${selectedCode}${entered.replace(/\D/gu, "")}`);
+        }
+      }}
+      placeholder={selectedCode === "other" ? "+44 7123 456789" :
+        publicFormsCopy.phoneNationalPlaceholder}
+      value={national}
+    />
+  </div>;
 }
 
 function ReviewStage({

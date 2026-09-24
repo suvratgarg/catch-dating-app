@@ -311,6 +311,68 @@ describe("form consent and authenticated draft ownership", () => {
   });
 });
 
+describe("early non-blocking phone verification", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  it("keeps answers entered while OTP arrives and binds them to the verified draft", async () => {
+    let authChanged!: (user: {uid: string; phoneNumber: string} | null) => void;
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      authChanged = listener;
+      listener(null);
+      return vi.fn();
+    });
+    const phoneQuestion = {questionId: "mobile", key: "mobile",
+      label: "Mobile number", kind: "phone", required: true,
+      canonicalFieldId: "phoneNumber", options: [], validation: {
+        minLength: null, maxLength: null, patternPreset: null}};
+    const verifiedForm = {...form, definition: {...form.definition,
+      sections: [{sectionId: "details", title: "Details",
+        questions: [phoneQuestion]}]}};
+    getPublicOrganizerForm.mockResolvedValue(verifiedForm);
+    beginOrganizerFormResponse.mockResolvedValue({...draft, form: verifiedForm});
+    saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2,
+      expiresAtMillis: 200000});
+    const confirmed = {uid: "person-1", phoneNumber: "+919876543210"};
+    beginPublicEventPhoneVerification.mockResolvedValue({
+      clear: vi.fn(),
+      confirm: vi.fn(async () => {
+        authChanged(confirmed);
+        return confirmed;
+      }),
+    });
+    const {result} = renderHook(() => usePublicFormController(
+      "public-form-1"), {wrapper: wrapper()});
+    await waitFor(() => expect(result.current.stage).toBe("form"));
+    expect(beginOrganizerFormResponse).not.toHaveBeenCalled();
+    act(() => {
+      result.current.updateAnswer("name", "Maya");
+      result.current.updateAnswer("mobile", "+919876543210");
+      result.current.setPhoneNumber("+919876543210");
+    });
+    await act(async () => {
+      await result.current.handlePhoneSubmit({preventDefault: vi.fn()} as never);
+    });
+    expect(result.current.stage).toBe("form");
+    expect(result.current.verificationStep).toBe("code");
+    act(() => result.current.updateAnswer("city", "in-mh-mumbai"));
+    await act(async () => {
+      await result.current.handleCodeSubmit({preventDefault: vi.fn()} as never);
+    });
+    await waitFor(() => expect(result.current.answers).toEqual({
+      name: "Maya", mobile: "+919876543210", city: "in-mh-mumbai",
+    }));
+    expect(result.current.verifiedPhone).toBe("+919876543210");
+    await waitFor(() => expect(saveOrganizerFormResponseDraft)
+      .toHaveBeenCalledWith(expect.objectContaining({answers: {
+        name: "Maya", mobile: "+919876543210", city: "in-mh-mumbai",
+      }})));
+  });
+});
+
 it("keeps an anonymous receipt through same-number OTP and promotes its source",
   async () => {
     window.localStorage.clear();
