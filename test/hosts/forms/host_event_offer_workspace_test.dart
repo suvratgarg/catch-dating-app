@@ -97,6 +97,8 @@ void main() {
     addTearDown(accounts.close);
     final auth = _SwitchingAuth('host-one');
     final query = _SwitchingQuery();
+    final l10n = AppLocalizationsEn();
+    final selectedLabel = find.text(l10n.hostResponseQuerySelected(count: 1));
     await tester.pumpWidget(ProviderScope(
       overrides: [
         uidProvider.overrideWith((ref) => accounts.stream),
@@ -124,9 +126,9 @@ void main() {
     accounts.add('host-one');
     await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
-    await tester.tap(find.text('Select'));
+    await tester.tap(find.text(l10n.hostResponseQuerySelect));
     await pumpFeatureUi(tester);
-    expect(find.textContaining('Selected'), findsOneWidget);
+    expect(selectedLabel, findsOneWidget);
 
     query.nextResponse = Completer<HostResponseQueryPage>();
     auth.uid = 'host-two';
@@ -134,14 +136,14 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
-    expect(find.textContaining('Selected'), findsNothing);
+    expect(selectedLabel, findsNothing);
     expect(query.calls, 2);
 
     query.nextResponse!.complete(_SwitchingQuery.page('Rohan', 'response-two'));
     await pumpFeatureUi(tester);
     expect(find.text('Rohan'), findsOneWidget);
     expect(find.text('Maya'), findsNothing);
-    expect(find.textContaining('Selected'), findsNothing);
+    expect(selectedLabel, findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -689,7 +691,7 @@ final _copy = HostEventOfferWorkspaceCopy(
     previewing: 'Checking', review: 'Review offer details',
     expires: (date) => 'Expires $date', commit: 'Record offers',
     committing: 'Recording', committed: 'Recorded', failed: 'Failed',
-    noReservation: 'No seat or admission', paymentReference: 'Reference',
+    noReservation: 'No seat or admission', paymentReference: 'Payment reference',
     recordReference: 'Record', evidenceSubmitted: 'Submitted',
     bankReceiptChecked: 'Checked', reviewNote: 'Note',
     attestReceived: 'Attest', rejectReference: 'Reject',

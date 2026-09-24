@@ -290,6 +290,10 @@ class _HostFormResponsesPanelState
         return const CatchStateViewport.sliverLoading();
       }
       if (capability == null && _legacyLoadedAccountId != routeAccountId) {
+        // Keep the fresh read alive without exposing the cached account rows.
+        ref.watch(hostFormResponsesControllerProvider(
+          _responseRequest(widget.formId),
+        ));
         if (_legacyRefreshError case final error?) {
           return CatchLocalizedSliverErrorState(
             error,
@@ -742,13 +746,6 @@ class _HostFormResponsesPanelState
       _legacyRefreshGeneration == generation &&
       ref.read(uidProvider).asData?.value == accountId &&
       ref.read(firebaseAuthProvider).currentUser?.uid == accountId;
-
-  String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
-      widget.formId == null
-      ? context.l10n.hostAudienceAllForms
-      : widget.formTitle ??
-            loaded?.responses.firstOrNull?.formTitle ??
-            context.l10n.hostAudienceSelectedForm;
 
   Future<void> _chooseSort() async {
     final value = await showCatchSelectionSheet<bool>(
