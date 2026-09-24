@@ -83,7 +83,8 @@ class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   private readonly reads = new Map<string, number>();
   constructor(private readonly firestore: FakeFirestore) {}
-  async get(ref: FakeDocRef | FakeQuery): Promise<any> {
+  async get(ref: FakeDocRef | FakeQuery): Promise<FakeSnapshot | {
+    docs: FakeSnapshot[]; size: number}> {
     if (ref instanceof FakeQuery) {
       const docs = ref.docs();
       for (const doc of docs) {
@@ -298,7 +299,9 @@ test("ready OTP links an imported external-ID guest at full capacity",
     const docs: Record<string, FakeData | undefined> = {
       "events/event-1": event,
       "organizers/organizer-1": {appVisibility: "discoverable",
-        publicPage: {publishStatus: "published"}},
+        publicPage: {publishStatus: "published"},
+        hostUserId: "host-1", ownerUserId: "host-1",
+        hostUserIds: ["host-1"], hostProfiles: []},
       "eventSeatMigrationFences/event-1": {eventId: "event-1",
         migrationRevision: 1, state: "ready"},
       "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 1,
@@ -340,6 +343,37 @@ test("ready OTP links an imported external-ID guest at full capacity",
       "user-1");
     assert.equal(firestore.get(`eventAttendees/${eventAttendeeId(
       "event-1", `phone:${phone}`)}`), undefined);
+
+    const expandedEvent = {...event, capacityLimit: 2};
+    const expandedPolicy = deriveEventSeatPolicy(expandedEvent);
+    const fresh = new FakeFirestore({...docs,
+      "events/event-1": expandedEvent,
+      "eventSeatLedgers/event-1": {...firestore.get(
+        "eventSeatLedgers/event-1"), capacity: 2, capacityRevision: 2,
+      policyHash: expandedPolicy.policyHash}});
+    const secondPhone = "+919876543211";
+    const secondRequest = {auth: {uid: "user-2",
+      token: {phone_number: secondPhone}},
+    data: {eventId: "event-1", displayName: "New Guest"},
+    rawRequest: {}} as CallableRequest<unknown>;
+    const freshDeps = {firestore: () => fresh as never,
+      checkRateLimit: async () => undefined,
+      timestamp: () => admin.firestore.Timestamp.fromMillis(2000)};
+    const newResult = await registerPublicEventHandler(secondRequest,
+      freshDeps);
+    assert.equal(newResult.status, "registered");
+    assert.equal(fresh.get("eventSeatLedgers/event-1")?.occupied, 2);
+    assert.equal((await registerPublicEventHandler(secondRequest,
+      freshDeps)).status, "alreadyRegistered");
+    assert.equal(fresh.get("eventSeatLedgers/event-1")?.occupied, 2);
+    await setEventAttendeeAttendanceHandler(attendanceRequest({
+      eventId: "event-1", attendeeId: newResult.attendeeId,
+      desiredCheckedIn: true, expectedRevision: 0,
+      clientOperationId: "otp-check-in-0001",
+    }), freshDeps);
+    assert.equal(fresh.get("eventSeatLedgers/event-1")?.occupied, 2);
+    assert.equal(fresh.get(`eventAttendees/${newResult.attendeeId}`)?.status,
+      "checkedIn");
   });
 
 test("prepareImportRows deduplicates event-scoped contact identity", () => {
@@ -870,6 +904,28 @@ test("ready Host attendance reserves and releases one canonical guest seat",
     assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
     assert.equal(firestore.get("eventAttendees/attendee-1")?.status,
       "waitlisted");
+    await setEventAttendeeAttendanceHandler(attendanceRequest({
+      eventId: "event-1", attendeeId, desiredCheckedIn: true,
+      expectedRevision: 2, clientOperationId: "ready-recheck-in-0001",
+    }), deps);
+    firestore.update("eventAttendees/attendee-1", {linkedUid: "user-1"});
+    firestore.set("eventParticipations/event-1_user-1", {
+      eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
+      status: "signedUp",
+    });
+    firestore.set(`eventSeatIdentityAliases/${seatIdentityAliasId(
+      "event-1", "uid", "user-1")}`, {eventId: "event-1",
+      organizerId: "organizer-1", kind: "uid",
+      valueHash: seatIdentityValueHash("uid", "user-1"),
+      canonicalKey, identityRevision: 1, migrationRevision: 1,
+      state: "ready"});
+    await setEventAttendeeAttendanceHandler(attendanceRequest({
+      eventId: "event-1", attendeeId, desiredCheckedIn: false,
+      expectedRevision: 3, clientOperationId: "catch-retained-undo-0001",
+    }), deps);
+    assert.equal(firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(firestore.get("eventAttendees/attendee-1")?.status,
+      "registered");
   });
 
 

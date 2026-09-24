@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createHash} from "node:crypto";
 import {
   participationStatus,
   projectEventParticipationToAttendee,
   projectedParticipationStatus,
 } from "./eventAttendeeProjection";
 import {eventAttendeeId} from "./eventAttendees";
+import {seatIdentityAliasId, seatIdentityValueHash,
+  seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 import type {EventParticipationDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -32,6 +35,32 @@ class FakeDocRef {
   async set(data: FakeData) {
     this.firestore.set(this.path, data);
   }
+  get id() {
+    return this.path.split("/").at(-1)!;
+  }
+}
+
+class FakeQuery {
+  constructor(private readonly firestore: FakeFirestore,
+    private readonly collection: string,
+    private readonly filters: Array<[string, unknown]>,
+    private readonly max = Infinity) {}
+  where(field: string, _operator: string, value: unknown) {
+    return new FakeQuery(this.firestore, this.collection,
+      [...this.filters, [field, value]], this.max);
+  }
+  limit(max: number) {
+    return new FakeQuery(this.firestore, this.collection,
+      this.filters, max);
+  }
+  docs() {
+    return this.firestore.entries(this.collection).filter(([, data]) =>
+      this.filters.every(([field, value]) => data[field] === value))
+      .slice(0, this.max).map(([id, data]) => ({
+        ref: new FakeDocRef(this.firestore, `${this.collection}/${id}`),
+        data: () => data,
+      }));
+  }
 }
 
 class FakeFirestore {
@@ -39,7 +68,31 @@ class FakeFirestore {
   collection(path: string) {
     return {
       doc: (id: string) => new FakeDocRef(this, `${path}/${id}`),
+      where: (field: string, _operator: string, value: unknown) =>
+        new FakeQuery(this, path, [[field, value]]),
     };
+  }
+  entries(collection: string): Array<[string, FakeData]> {
+    return Object.entries(this.docs).filter(([path, data]) =>
+      path.startsWith(`${collection}/`) &&
+      !path.slice(collection.length + 1).includes("/") && data !== undefined)
+      .map(([path, data]) => [path.slice(collection.length + 1),
+        data as FakeData]);
+  }
+  async runTransaction<T>(callback: (tx: {
+    get: (ref: FakeDocRef | FakeQuery) => Promise<FakeSnapshot | {
+      docs: Array<{ref: FakeDocRef; data: () => FakeData}>;
+      size: number}>;
+    set: (ref: FakeDocRef, data: FakeData) => void;
+  }) => Promise<T>): Promise<T> {
+    const writes: Array<() => void> = [];
+    const result = await callback({
+      get: async (ref) => ref instanceof FakeQuery ?
+        {docs: ref.docs(), size: ref.docs().length} : ref.get(),
+      set: (ref, data) => writes.push(() => this.set(ref.path, data)),
+    });
+    writes.forEach((write) => write());
+    return result;
   }
   get(path: string) {
     const value = this.docs[path];
@@ -187,3 +240,57 @@ test(
     assert.equal(attendee?.linkedUid, "user-1");
   }
 );
+
+test("ready projection follows current reserved source without changing seats",
+  async () => {
+    const phone = "+919876543210";
+    const eventId = "event-1";
+    const uid = "user-1";
+    const key = "uid_1";
+    const current = participation();
+    const reservationId = createHash("sha256")
+      .update(`${eventId}\u001f${key}`).digest("hex");
+    const docs: Record<string, FakeData | undefined> = {
+      [`eventParticipations/${eventId}_${uid}`]: current as unknown as
+        FakeData,
+      [`eventSeatMigrationFences/${eventId}`]: {eventId,
+        migrationRevision: 1, state: "ready"},
+      [`eventSeatLedgers/${eventId}`]: {eventId, migrationRevision: 1,
+        state: "ready", occupied: 1},
+      [`eventSeatReservations/${reservationId}`]: {eventId,
+        canonicalKey: key, identityRevision: 1, active: true},
+      [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(eventId, uid)}`]: {
+        eventId, organizerId: "organizer-1", uid, phoneE164: phone,
+        migrationRevision: 1, state: "current"},
+      [`publicProfiles/${uid}`]: {name: "Asha"},
+    };
+    for (const [kind, value] of [["uid", uid],
+      ["phone", phone]] as const) {
+      docs[`eventSeatIdentityAliases/${seatIdentityAliasId(eventId,
+        kind, value)}`] = {eventId, organizerId: "organizer-1",
+        kind, valueHash: seatIdentityValueHash(kind, value),
+        canonicalKey: key, identityRevision: 1, migrationRevision: 1,
+        state: "ready"};
+    }
+    const h = projectionHarness({docs, authPhone: phone});
+    await projectEventParticipationToAttendee(undefined,
+      participation({status: "cancelled"}), h.deps);
+    const attendeeId = eventAttendeeId(eventId, `phone:${phone}`);
+    assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.status,
+      "registered");
+    assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.source,
+      "catchBooking");
+    assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.phoneE164,
+      null);
+    assert.equal(h.firestore.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
+    h.firestore.set(`eventParticipations/${eventId}_${uid}`, {
+      ...current, status: "cancelled"});
+    h.firestore.set(`eventSeatReservations/${reservationId}`, {eventId,
+      canonicalKey: key, identityRevision: 1, active: false});
+    h.firestore.set(`eventSeatLedgers/${eventId}`, {eventId,
+      migrationRevision: 1, state: "ready", occupied: 0});
+    await projectEventParticipationToAttendee(undefined, current, h.deps);
+    assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.status,
+      "cancelled");
+    assert.equal(h.firestore.get(`eventSeatLedgers/${eventId}`)?.occupied, 0);
+  });

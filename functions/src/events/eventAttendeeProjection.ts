@@ -7,6 +7,12 @@ import type {
   PublicProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
+import {eventParticipationId} from "../shared/relationshipDocuments";
+import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {FirestoreSeatIdentityAuthority,
+  seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
+import {FirestoreSeatTransaction} from
+  "./seatAuthority/firestoreAdapter";
 
 interface ProjectionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -39,58 +45,97 @@ export async function projectEventParticipationToAttendee(
     db.collection("publicProfiles").doc(participation.uid).get(),
   ]);
   const profile = profileSnap.data() as PublicProfileDocument | undefined;
-  const stableKey = verifiedPhone ?
-    `phone:${verifiedPhone}` : `uid:${participation.uid}`;
-  const attendeeId = eventAttendeeId(participation.eventId, stableKey);
-  const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
-  const existingSnap = await attendeeRef.get();
-  const existing = existingSnap.data() as EventAttendeeDocument | undefined;
-  const now = deps.timestamp();
-  const status = projectedParticipationStatus(
-    participationStatus(after?.status),
-    existing?.status
-  );
-  const displayName = profile?.name?.trim() || existing?.displayName ||
-    participation.uid;
-
-  const document: EventAttendeeDocument = {
-    eventId: participation.eventId,
-    clubId: participation.clubId,
-    organizerId: participation.organizerId ?? participation.clubId,
-    displayName,
-    searchName: displayName.toLocaleLowerCase("en"),
-    // Preserve the first operational acquisition source when a Host-imported
-    // or web attendee later links a full Catch booking.
-    source: existing?.source ?? "catchBooking",
-    status,
-    linkedUid: participation.uid,
-    // Preserve only contact fields already supplied to this organizer. A
-    // private users/{uid} value is never an organizer disclosure source.
-    phoneE164: existing?.phoneE164 ?? null,
-    email: existing?.email ?? null,
-    externalReference: existing?.externalReference ?? null,
-    arrivalGroup: existing?.arrivalGroup ?? null,
-    ticketType: existing?.ticketType ?? null,
-    importId: existing?.importId ?? null,
-    sourceRowId: existing?.sourceRowId ?? null,
-    createdAt: existing?.createdAt ?? participation.createdAt,
-    updatedAt: now,
-    registeredAt: participation.signedUpAt ?? existing?.registeredAt ?? null,
-    waitlistedAt: participation.waitlistedAt ?? existing?.waitlistedAt ?? null,
-    checkedInAt: status === "checkedIn" ?
-      participation.attendedAt ?? existing?.checkedInAt ?? now : null,
-    cancelledAt: status === "cancelled" ?
-      participation.cancelledAt ?? participation.deletedAt ?? now : null,
-    checkedInBy: existing?.checkedInBy ?? null,
-    linkedAt: existing?.linkedAt ?? participation.createdAt,
-    inviteLinkId: existing?.inviteLinkId ?? participation.inviteLinkId ?? null,
-    inviteCapturedAt: existing?.inviteCapturedAt ??
-      participation.inviteCapturedAt ?? null,
-    attendanceRevision: existing?.attendanceRevision ?? 0,
-    preCheckInStatus: status === "checkedIn" ?
-      existing?.preCheckInStatus ?? "registered" : null,
-  };
-  await attendeeRef.set(document);
+  await db.runTransaction(async (tx) => {
+    const currentSnap = await tx.get(db.collection("eventParticipations")
+      .doc(eventParticipationId(participation.eventId, participation.uid)));
+    const mode = await readSeatMigrationWriterFence({db, tx,
+      eventId: participation.eventId});
+    // The trigger payload may be older than the current source. Ready mode
+    // never projects from that stale payload or creates occupancy.
+    if (mode === "ready" && !currentSnap.exists) return;
+    const source = (currentSnap.data() as EventParticipationDocument |
+      undefined) ?? participation;
+    if (source.eventId !== participation.eventId ||
+        source.uid !== participation.uid) return;
+    const organizerId = source.organizerId ?? source.clubId;
+    const stableKey = verifiedPhone ?
+      `phone:${verifiedPhone}` : `uid:${source.uid}`;
+    const fallbackRef = db.collection("eventAttendees")
+      .doc(eventAttendeeId(source.eventId, stableKey));
+    const linkedRows = mode === "ready" ? await tx.get(db
+      .collection("eventAttendees").where("eventId", "==", source.eventId)
+      .where("linkedUid", "==", source.uid).limit(2)) : null;
+    if (linkedRows && linkedRows.size > 1) {
+      logger.warn("Ambiguous ready roster projection", {eventId:
+        source.eventId, uid: source.uid});
+      return;
+    }
+    const attendeeRef = linkedRows?.docs[0]?.ref ?? fallbackRef;
+    const existingSnap = await tx.get(attendeeRef);
+    const existing = existingSnap.data() as EventAttendeeDocument | undefined;
+    if (mode === "ready") {
+      if (source.organizerId !== organizerId) return;
+      const identity = await new FirestoreSeatIdentityAuthority().resolve({
+        db, tx, eventId: source.eventId, organizerId,
+        subject: {kind: "verifiedUid", uid: source.uid},
+      });
+      if (!identity) return;
+      const proof = (await tx.get(db.collection("eventSeatVerifiedPhones")
+        .doc(seatVerifiedPhoneProofId(source.eventId, source.uid)))).data();
+      if (!proof || proof.phoneE164 !== verifiedPhone) return;
+      const reservation = await new FirestoreSeatTransaction(db, tx)
+        .reservation(source.eventId, identity.key);
+      const active = source.status === "signedUp" ||
+        source.status === "attended";
+      if ((reservation?.active === true) !== active ||
+          reservation && reservation.identityRevision !==
+            identity.revision) return;
+      if (existing && (existing.eventId !== source.eventId ||
+          existing.organizerId !== organizerId ||
+          existing.linkedUid !== source.uid)) return;
+      if (existing && existing.source !== "catchBooking") return;
+      if (!active && !existing && source.status !== "waitlisted") return;
+    }
+    const now = deps.timestamp();
+    const status = projectedParticipationStatus(
+      participationStatus(source.status), existing?.status);
+    const displayName = profile?.name?.trim() || existing?.displayName ||
+      source.uid;
+    const document: EventAttendeeDocument = {
+      eventId: source.eventId,
+      clubId: source.clubId,
+      organizerId,
+      displayName,
+      searchName: displayName.toLocaleLowerCase("en"),
+      source: existing?.source ?? "catchBooking",
+      status,
+      linkedUid: source.uid,
+      phoneE164: existing?.phoneE164 ?? null,
+      email: existing?.email ?? null,
+      externalReference: existing?.externalReference ?? null,
+      arrivalGroup: existing?.arrivalGroup ?? null,
+      ticketType: existing?.ticketType ?? null,
+      importId: existing?.importId ?? null,
+      sourceRowId: existing?.sourceRowId ?? null,
+      createdAt: existing?.createdAt ?? source.createdAt,
+      updatedAt: now,
+      registeredAt: source.signedUpAt ?? existing?.registeredAt ?? null,
+      waitlistedAt: source.waitlistedAt ?? existing?.waitlistedAt ?? null,
+      checkedInAt: status === "checkedIn" ?
+        source.attendedAt ?? existing?.checkedInAt ?? now : null,
+      cancelledAt: status === "cancelled" ?
+        source.cancelledAt ?? source.deletedAt ?? now : null,
+      checkedInBy: existing?.checkedInBy ?? null,
+      linkedAt: existing?.linkedAt ?? source.createdAt,
+      inviteLinkId: existing?.inviteLinkId ?? source.inviteLinkId ?? null,
+      inviteCapturedAt: existing?.inviteCapturedAt ??
+        source.inviteCapturedAt ?? null,
+      attendanceRevision: existing?.attendanceRevision ?? 0,
+      preCheckInStatus: status === "checkedIn" ?
+        existing?.preCheckInStatus ?? "registered" : null,
+    };
+    tx.set(attendeeRef, document);
+  });
 }
 
 async function verifiedPhoneForUid(

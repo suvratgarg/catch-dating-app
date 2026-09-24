@@ -59,15 +59,16 @@ import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {resolveInviteAttributionToken} from "./inviteLinks";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {eventParticipationId} from "../shared/relationshipDocuments";
 import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity,
-  prepareVerifiedUidAttendeeEnrollment} from
+  prepareVerifiedUidAttendeeEnrollment, seatIdentityAliasId,
+  seatIdentityValueHash} from
   "./seatIdentityAuthority";
-import {applyFirestoreSeat, prepareFirestoreSeat} from
+import {applyFirestoreSeat, prepareFirestoreSeat, deriveEventSeatPolicy,
+  FirestoreSeatTransaction} from
   "./seatAuthority/firestoreAdapter";
 import {applyBatchImportSeats, prepareFirestoreBatchSeatImport} from
   "./seatAuthority/batchSeatImport";
-import {deriveEventSeatPolicy, FirestoreSeatTransaction} from
-  "./seatAuthority/firestoreAdapter";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type ImportError = EventAttendeeImportDocument["errors"][number];
@@ -99,33 +100,53 @@ async function prepareAttendanceSeatChange(params: {
   attendeeId: string;
   previous: EventAttendeeDocument["status"];
   next: EventAttendeeDocument["status"];
+  source: EventAttendeeDocument["source"];
+  linkedUid: string | null;
   requestId: string;
   nowMillis: number;
-}): Promise<() => void> {
+}): Promise<{apply: () => void;
+  nextStatus: EventAttendeeDocument["status"]}> {
   const {db, tx, eventId, organizerId, attendeeId} = params;
+  const subject = params.source === "catchBooking" && params.linkedUid ?
+    {kind: "verifiedUid" as const, uid: params.linkedUid} :
+    {kind: "importAttendee" as const, attendeeId};
   const identity = await new FirestoreSeatIdentityAuthority().resolve({
     db, tx, eventId, organizerId,
-    subject: {kind: "importAttendee", attendeeId},
+    subject,
   });
   if (!identity) {
     throw new HttpsError("failed-precondition",
       "Guest seat identity requires reconciliation.");
   }
+  const participation = params.linkedUid ?
+    (await tx.get(db.collection("eventParticipations")
+      .doc(eventParticipationId(eventId, params.linkedUid)))).data() : null;
+  const independentCatchActive = participation?.eventId === eventId &&
+    participation.organizerId === organizerId &&
+    participation.uid === params.linkedUid &&
+    (participation.status === "signedUp" ||
+      participation.status === "attended");
+  const nextStatus = independentCatchActive &&
+    !occupiesSeat(params.next) ? "registered" : params.next;
   const seats = new FirestoreSeatTransaction(db, tx);
   const [ledger, reservation] = await Promise.all([
     seats.ledger(eventId), seats.reservation(eventId, identity.key),
   ]);
   if (!ledger || ledger.state !== "ready" ||
-      (reservation?.active === true) !== occupiesSeat(params.previous)) {
+      (reservation?.active === true) !==
+        (occupiesSeat(params.previous) || independentCatchActive)) {
     throw new HttpsError("failed-precondition",
       "Guest attendance and seat authority disagree.");
   }
-  const wasActive = occupiesSeat(params.previous);
-  const willBeActive = occupiesSeat(params.next);
-  if (wasActive === willBeActive) return () => undefined;
+  const wasActive = occupiesSeat(params.previous) || independentCatchActive;
+  const willBeActive = occupiesSeat(nextStatus) || independentCatchActive;
+  if (wasActive === willBeActive) {
+    return {apply: () => undefined,
+      nextStatus};
+  }
   const prepared = await prepareFirestoreSeat({db, tx,
     identityAuthority: {resolve: async () => identity},
-    command: {eventId, subject: {kind: "importAttendee", attendeeId},
+    command: {eventId, subject,
       operation: willBeActive ? "reserve" : "release",
       requestId: params.requestId,
       expectedLedgerRevision: ledger.revision,
@@ -134,7 +155,9 @@ async function prepareAttendanceSeatChange(params: {
       expectedReservationRevision: reservation?.revision ?? 0,
       nowMillis: params.nowMillis},
   });
-  return () => { applyFirestoreSeat(prepared); };
+  return {apply: () => {
+    applyFirestoreSeat(prepared);
+  }, nextStatus};
 }
 
 export interface EventAttendeeImportResult {
@@ -480,19 +503,21 @@ export async function markEventAttendeeAttendanceHandler(
     const seatMode = await readSeatMigrationWriterFence({db, tx,
       eventId: payload.eventId});
     const nextStatus = attended ? "checkedIn" : "registered";
-    const applySeat = seatMode === "ready" ?
+    const seatChange = seatMode === "ready" ?
       await prepareAttendanceSeatChange({db, tx, eventId: payload.eventId,
         organizerId: event.organizerId ?? event.clubId,
         attendeeId: payload.attendeeId, previous: attendee.status,
-        next: nextStatus, nowMillis: now.toMillis(),
+        next: nextStatus, source: attendee.source,
+        linkedUid: attendee.linkedUid,
+        nowMillis: now.toMillis(),
         requestId: `mark_${createHash("sha256").update(JSON.stringify([
           payload.eventId, payload.attendeeId,
           attendee.attendanceRevision ?? 0, nextStatus,
         ])).digest("hex")}`}) :
-      () => undefined;
-    applySeat();
+      {apply: () => undefined, nextStatus};
+    seatChange.apply();
     tx.update(attendeeRef, {
-      status: nextStatus,
+      status: seatChange.nextStatus,
       checkedInAt: attended ? now : null,
       checkedInBy: attended ? hostUid : null,
       ...(seatMode === "ready" ? {attendanceRevision:
@@ -618,17 +643,20 @@ export async function setEventAttendeeAttendanceHandler(
     const restoredStatus = attendee.preCheckInStatus ?? "registered";
     const nextStatus = payload.desiredCheckedIn ? "checkedIn" :
       restoredStatus;
-    const applySeat = seatMode === "ready" ?
+    const seatChange = seatMode === "ready" ?
       await prepareAttendanceSeatChange({db, tx, eventId: payload.eventId,
         organizerId: event.organizerId ?? event.clubId,
         attendeeId: payload.attendeeId, previous: attendee.status,
         next: changed ? nextStatus : attendee.status,
+        source: attendee.source,
+        linkedUid: attendee.linkedUid,
         nowMillis: now.toMillis(),
-        requestId: `attendance_${receiptId}`}) : () => undefined;
-    applySeat();
+        requestId: `attendance_${receiptId}`}) :
+      {apply: () => undefined, nextStatus};
+    seatChange.apply();
     if (changed) {
       tx.update(attendeeRef, {
-        status: nextStatus,
+        status: seatChange.nextStatus,
         checkedInAt: payload.desiredCheckedIn ? now : null,
         checkedInBy: payload.desiredCheckedIn ? hostUid : null,
         attendanceRevision: acceptedRevision,
@@ -794,6 +822,7 @@ export async function registerPublicEventHandler(
     ));
     let applyIdentity: () => void = () => undefined;
     let applySeat: () => void = () => undefined;
+    let createAttendeeAlias: () => void = () => undefined;
     let readyCount = activeCount;
     if (seatMode === "ready") {
       const seats = new FirestoreSeatTransaction(db, tx);
@@ -822,6 +851,22 @@ export async function registerPublicEventHandler(
           currentAuthPhoneNumber: phone});
       const identity = enrolled.identity;
       applyIdentity = enrolled.apply;
+      if (!existing) {
+        const aliasRef = db.collection("eventSeatIdentityAliases")
+          .doc(seatIdentityAliasId(payload.eventId, "attendee",
+            selectedAttendeeRef.id));
+        if ((await tx.get(aliasRef)).exists) {
+          throw new HttpsError("failed-precondition",
+            "An attendee alias already exists without its guest row.");
+        }
+        createAttendeeAlias = () => tx.create(aliasRef, {
+          eventId: payload.eventId, organizerId, kind: "attendee",
+          valueHash: seatIdentityValueHash("attendee",
+            selectedAttendeeRef.id), canonicalKey: identity.key,
+          identityRevision: identity.revision,
+          migrationRevision: ledger.migrationRevision, state: "ready",
+        });
+      }
       const reservation = await seats.reservation(payload.eventId,
         identity.key);
       const isActive = reservation?.active === true;
@@ -842,7 +887,9 @@ export async function registerPublicEventHandler(
             expectedReservationRevision: reservation?.revision ?? 0,
             nowMillis: now.toMillis()},
         });
-        applySeat = () => { applyFirestoreSeat(prepared); };
+        applySeat = () => {
+          applyFirestoreSeat(prepared);
+        };
       }
     }
     const displayName = existing?.displayName ?? payload.displayName;
@@ -885,6 +932,7 @@ export async function registerPublicEventHandler(
       preCheckInStatus: existing?.preCheckInStatus ?? null,
     };
     applyIdentity();
+    createAttendeeAlias();
     applySeat();
     tx.set(selectedAttendeeRef, document);
     if (!onboardingDraftSnap.exists) {
