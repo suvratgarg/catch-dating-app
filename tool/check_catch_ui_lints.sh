@@ -594,10 +594,15 @@ expect_code_count \
 
 stage_probe "mutation pending per-mutation clean case" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+void listenToCatchMutationErrors(
+  BuildContext context,
+  WidgetRef ref, {
+  required List<Mutation<dynamic>> mutations,
+}) {}
 
 class EventDetailMutationProbeController {
   static final saveMutation = Mutation<void>();
@@ -675,7 +680,7 @@ import 'package:flutter/material.dart' as material;
 
 typedef SnackAlias = material.SnackBar;
 
-List<Object> rawFeedback(material.BuildContext context) {
+  List<Object?> rawFeedback(material.BuildContext context) {
   final snack = material.SnackBar(content: const material.SizedBox.shrink());
   final alias = SnackAlias(content: const material.SizedBox.shrink());
   final banner = material.MaterialBanner(
@@ -710,8 +715,8 @@ List<Object> rawFeedback(material.BuildContext context) {
     publishBanner, typedMessenger, messengerWidget, app];
 }
 DART
-  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 24
-  expect_probe exact catch_use_canonical_feedback 24
+  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 30
+  expect_probe exact catch_use_canonical_feedback 30
   stage_probe "status placement $feedback_scope" <<'DART'
 import 'package:catch_ui/catch_ui.dart' as ui;
 typedef StripAlias = ui.CatchBanner;
@@ -801,7 +806,7 @@ void feedbackConsumer(BuildContext context) {
   );
 }
 DART
-  expect_probe exact catch_use_canonical_feedback 2
+  expect_probe exact catch_use_canonical_feedback 3
 done
 
 probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"

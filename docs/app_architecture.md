@@ -1773,10 +1773,11 @@ failure. Do not catch only to show UI from a controller.
 
 Transient publication is a shared boundary in both apps:
 `showCatchNotice` and `showCatchNoticeError` publish brief feedback through
-the app-level `CatchNoticeController` queue. Ordinary notices use low priority
-and a stable deduplication key so rapid actions cannot displace foreground
-arrival notices. Action labels and callbacks stay on `CatchNoticeData`; error
-notices preserve explicit retry callbacks.
+the app-level `CatchNoticeController` queue. Brief action feedback uses the
+ordinary queue priority and a stable deduplication key, so repeating one action
+replaces its queued copy. Notices keep stable FIFO ordering within their
+priority. Action labels and callbacks stay on `CatchNoticeData`; error notices
+preserve explicit retry callbacks.
 
 `catch_use_canonical_feedback` resolves Flutter symbols and rejects
 `SnackBar`, `SnackBarAction`, `MaterialBanner`, and `ScaffoldMessenger` usage,
