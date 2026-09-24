@@ -21590,6 +21590,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'A manager-authorized preferences read is required before these suggestions can be shown or edited.';
 
   @override
+  String get hostsEventDefaultsCitySource =>
+      'Future events use the organizer city. Change that city in the organizer profile.';
+
+  @override
+  String get hostsEventDefaultsTimezoneSource =>
+      'Future events can use this private timezone suggestion, or choose a timezone for each event.';
+
+  @override
+  String get hostsEventDefaultsPendingUpdate =>
+      'Previous defaults save unresolved';
+
+  @override
+  String get hostsEventDefaultsPendingUpdateBody =>
+      'The previous save may have reached Catch. Retry the same request before changing suggestions.';
+
+  @override
+  String get hostsEventDefaultsRetryUpdate => 'Retry previous defaults save';
+
+  @override
+  String get hostsPrivateEventRetryDefaultsRead =>
+      'Retry organizer defaults read';
+
+  @override
   String get hostsPrivateEventPendingExitTitle => 'Save still unresolved';
 
   @override

@@ -183,6 +183,13 @@ class _HostClubEventDefaultsScreenState
                                       : () => unawaited(
                                           _managerController!.retryPending()),
                                 ),
+                              if (_managerController?.pending == null &&
+                                  _managerController?.error != null)
+                                CatchField.action(
+                                  copy: catchFieldCopy(context.l10n),
+                                  title: context.l10n.hostsPrivateEventRetryDefaultsRead,
+                                  onTap: () => unawaited(_managerController!.load()),
+                                ),
                             ],
                           ),
                       if (errorMessage != null)

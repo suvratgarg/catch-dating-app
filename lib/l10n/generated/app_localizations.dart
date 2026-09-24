@@ -34609,6 +34609,42 @@ abstract class AppLocalizations {
   /// **'A manager-authorized preferences read is required before these suggestions can be shown or edited.'**
   String get hostsEventDefaultsManagerUnavailableBody;
 
+  /// Explains the source of inherited event city.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events use the organizer city. Change that city in the organizer profile.'**
+  String get hostsEventDefaultsCitySource;
+
+  /// Explains the private timezone suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events can use this private timezone suggestion, or choose a timezone for each event.'**
+  String get hostsEventDefaultsTimezoneSource;
+
+  /// Pending manager defaults update label.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous defaults save unresolved'**
+  String get hostsEventDefaultsPendingUpdate;
+
+  /// Explains frozen manager defaults update after uncertain response.
+  ///
+  /// In en, this message translates to:
+  /// **'The previous save may have reached Catch. Retry the same request before changing suggestions.'**
+  String get hostsEventDefaultsPendingUpdateBody;
+
+  /// Replays the same manager defaults update.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry previous defaults save'**
+  String get hostsEventDefaultsRetryUpdate;
+
+  /// Retries the manager-authorized defaults read before private event inheritance.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry organizer defaults read'**
+  String get hostsPrivateEventRetryDefaultsRead;
+
   /// Private event idempotent save and saved-event continuation copy.
   ///
   /// In en, this message translates to:
