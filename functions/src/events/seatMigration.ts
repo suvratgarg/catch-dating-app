@@ -258,6 +258,12 @@ export function planEventSeatMigration(input: SeatMigrationInput):
     let attendeeId = origin.sourceEntityKind === "eventAttendee" ?
       origin.sourceEntityId : undefined;
     if (origin.sourceEntityKind === "hostFormResponse") {
+      if (origin.sourceKind !== "hostForm" ||
+          origin.eventId !== null || !origin.responseId ||
+          origin.sourceEntityId !== origin.responseId || !origin.formId) {
+        block("formOriginConflict");
+        continue;
+      }
       const matching = input.attendees.filter((row) =>
         row.source === "hostManual" &&
         row.externalReference === origin.responseId &&

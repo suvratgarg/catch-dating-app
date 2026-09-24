@@ -148,6 +148,14 @@ test("CRM origin joins only through reviewed attendee provenance", () => {
     seatIdentityAliasId("event1", "contactOrigin", "origin1")));
   assert.ok(result.aliases.some((row) => row.id ===
     seatIdentityAliasId("event1", "contact", "contact1")));
+  const mismatched = planEventSeatMigration({...source,
+    origins: [{...source.origins[0], sourceEntityId: "other"}],
+    formReceipts: [{organizerId: "org1", eventId: "event1",
+      formId: "form1", responseId: "response1", status: "completed"}],
+    sourceReadEvidence: {...source.sourceReadEvidence}});
+  assert.equal(mismatched.state, "blocked");
+  if (mismatched.state !== "blocked") return;
+  assert.ok(mismatched.blockers.includes("formOriginConflict"));
 });
 
 test("ready output is deterministic under source row reorder", () => {
