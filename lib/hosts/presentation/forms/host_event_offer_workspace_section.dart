@@ -34,6 +34,14 @@ class HostEventOfferWorkspaceCopy {
     required this.statusWithdrawn,
     required this.statusExpired,
     required this.personalPaymentLink,
+    required this.openExisting,
+    required this.handoffPrepare,
+    required this.handoffBlocked,
+    required this.handoffDisclosure,
+    required this.openWhatsapp,
+    required this.copyMessage,
+    required this.messageCopied,
+    required this.handoffOpenFailed,
     required this.review,
   });
 
@@ -57,6 +65,14 @@ class HostEventOfferWorkspaceCopy {
   final String statusWithdrawn;
   final String statusExpired;
   final String Function(String name) personalPaymentLink;
+  final String openExisting;
+  final String handoffPrepare;
+  final String handoffBlocked;
+  final String handoffDisclosure;
+  final String openWhatsapp;
+  final String copyMessage;
+  final String messageCopied;
+  final String handoffOpenFailed;
   final HostEventOfferReviewCopy review;
 }
 
@@ -71,6 +87,10 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     required this.queryController,
     required this.offerController,
     required this.listOffers,
+    required this.getOffer,
+    required this.prepareHandoff,
+    required this.copyMessage,
+    required this.openHandoff,
     required this.targets,
     required this.getResponseDetail,
     required this.openResponseForConversion,
@@ -90,6 +110,12 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     required String eventId,
     String? afterOfferId,
   }) listOffers;
+  final Future<HostEventOffer> Function({required String organizerId,
+    required String eventId, required String contactId}) getOffer;
+  final Future<HostOfferHandoff> Function({required HostEventOffer offer})
+      prepareHandoff;
+  final Future<void> Function(String text) copyMessage;
+  final Future<bool> Function(Uri uri) openHandoff;
   final HostOfferEventTargetsGateway targets;
   final Future<HostFormResponseDetail> Function(String responseId)
       getResponseDetail;
@@ -126,6 +152,12 @@ class _HostEventOfferWorkspaceSectionState
   List<Map<String, Object?>> _offers = const [];
   String? _nextOfferCursor;
   String? _refreshedReceiptId;
+  HostEventOffer? _selectedOffer;
+  HostOfferHandoff? _handoff;
+  String? _referenceRequestId;
+  String? _reviewRequestId;
+  bool _messageCopied = false;
+  bool _handoffOpenFailed = false;
 
   @override
   void initState() {
@@ -185,6 +217,12 @@ class _HostEventOfferWorkspaceSectionState
     _offers = const [];
     _nextOfferCursor = null;
     _refreshedReceiptId = null;
+    _selectedOffer = null;
+    _handoff = null;
+    _referenceRequestId = null;
+    _reviewRequestId = null;
+    _messageCopied = false;
+    _handoffOpenFailed = false;
     _loading = false;
     _error = null;
     _selectionStale = false;
@@ -327,6 +365,8 @@ class _HostEventOfferWorkspaceSectionState
         _missingContacts = List.unmodifiable(missing);
         _draft = null;
         _commitRequestId = null;
+        _selectedOffer = null;
+        _handoff = null;
       });
       await _refreshOffers();
       if (missing.isEmpty && configuration.suggestedExpiresAt != null &&
@@ -490,13 +530,23 @@ class _HostEventOfferWorkspaceSectionState
           if (item is! Map) throw const FormatException('Offer row is invalid.');
           return item.cast<String, Object?>();
         }).toList();
-      final combined = append ? [..._offers, ...parsed] : parsed;
-      if (combined.any((item) => item['eventId'] != event.eventId ||
+      if (parsed.any((item) => item['eventId'] != event.eventId ||
           item['offerId'] is! String || item['contactId'] is! String) ||
-          combined.map((item) => item['offerId']).toSet().length !=
-              combined.length ||
+          parsed.map((item) => item['offerId']).toSet().length !=
+              parsed.length ||
           append && cursor == _nextOfferCursor) {
         throw const FormatException('Offer list is inconsistent.');
+      }
+      // This workspace belongs to one selected response set. Keep unrelated
+      // event offers out of the chooser without fetching private CRM labels.
+      final selectedContacts = _details.map((detail) => detail.contactId)
+          .whereType<String>().toSet();
+      final visible = parsed.where((item) =>
+          selectedContacts.contains(item['contactId'])).toList();
+      final combined = append ? [..._offers, ...visible] : visible;
+      if (combined.map((item) => item['offerId']).toSet().length !=
+          combined.length) {
+        throw const FormatException('Offer list repeats an offer.');
       }
       setState(() {
         _offers = List.unmodifiable(combined);
@@ -504,6 +554,142 @@ class _HostEventOfferWorkspaceSectionState
       });
     } on Object catch (error) {
       if (_current(generation, accountId)) setState(() => _error = error);
+    }
+  }
+
+  Future<void> _selectExisting(Map<String, Object?> item) async {
+    final event = _event;
+    final accountId = widget.accountId;
+    final generation = _generation;
+    final contactId = item['contactId'];
+    final offerId = item['offerId'];
+    if (event == null || accountId == null || _loading ||
+        contactId is! String || offerId is! String) return;
+    setState(() { _loading = true; _error = null; });
+    try {
+      final offer = await widget.getOffer(organizerId: widget.organizerId,
+        eventId: event.eventId, contactId: contactId);
+      if (!_current(generation, accountId) ||
+          _event?.eventId != event.eventId) return;
+      if (offer.organizerId != widget.organizerId ||
+          offer.eventId != event.eventId ||
+          offer.contactId != contactId || offer.offerId != offerId) {
+        throw const FormatException('Offer detail does not match selection.');
+      }
+      setState(() {
+        _selectedOffer = offer;
+        _handoff = null;
+        _referenceRequestId = _newRequestId();
+        _reviewRequestId = _newRequestId();
+        _messageCopied = false;
+        _handoffOpenFailed = false;
+      });
+    } on Object catch (error) {
+      if (_current(generation, accountId)) setState(() => _error = error);
+    } finally {
+      if (_current(generation, accountId)) setState(() => _loading = false);
+    }
+  }
+
+  void _manualUpdated(HostEventOffer updated) {
+    final previous = _selectedOffer;
+    if (!mounted || previous == null ||
+        previous.offerId != updated.offerId ||
+        previous.organizerId != updated.organizerId ||
+        previous.eventId != updated.eventId ||
+        previous.contactId != updated.contactId) return;
+    setState(() {
+      _selectedOffer = updated;
+      _handoff = null;
+      _referenceRequestId = _newRequestId();
+      _reviewRequestId = _newRequestId();
+      _messageCopied = false;
+    });
+    _refreshOffers();
+  }
+
+  Future<void> _prepareHandoff() async {
+    final selected = _selectedOffer;
+    final accountId = widget.accountId;
+    final generation = _generation;
+    if (selected == null || accountId == null || _loading) return;
+    setState(() { _loading = true; _error = null; _handoff = null; });
+    try {
+      final current = await widget.getOffer(
+        organizerId: selected.organizerId, eventId: selected.eventId,
+        contactId: selected.contactId);
+      if (!_current(generation, accountId) ||
+          !_sameSelectedOffer(selected)) return;
+      if (current.offerId != selected.offerId ||
+          current.organizerId != selected.organizerId ||
+          current.eventId != selected.eventId ||
+          current.contactId != selected.contactId) {
+        throw const FormatException('Offer detail changed.');
+      }
+      final handoff = await widget.prepareHandoff(offer: current);
+      if (!_current(generation, accountId) ||
+          !_sameSelectedOffer(selected)) return;
+      if (handoff.offerId != current.offerId ||
+          handoff.kind == 'prepared' &&
+              handoff.contactId != current.contactId) {
+        throw const FormatException('Offer handoff does not match selection.');
+      }
+      setState(() {
+        _selectedOffer = current;
+        _handoff = handoff;
+        _messageCopied = false;
+        _handoffOpenFailed = false;
+      });
+    } on Object catch (error) {
+      if (_current(generation, accountId)) setState(() => _error = error);
+    } finally {
+      if (_current(generation, accountId)) setState(() => _loading = false);
+    }
+  }
+
+  bool _sameSelectedOffer(HostEventOffer offer) =>
+      _selectedOffer?.offerId == offer.offerId &&
+      _selectedOffer?.revision == offer.revision &&
+      _selectedOffer?.generation == offer.generation;
+
+  Future<void> _copyHandoff() async {
+    final handoff = _handoff;
+    final accountId = widget.accountId;
+    final generation = _generation;
+    if (handoff?.kind != 'prepared' || handoff?.copyText == null ||
+        accountId == null || _loading) return;
+    try {
+      await widget.copyMessage(handoff!.copyText!);
+      if (_current(generation, accountId) && identical(_handoff, handoff)) {
+        setState(() => _messageCopied = true);
+      }
+    } on Object catch (error) {
+      if (_current(generation, accountId)) setState(() => _error = error);
+    }
+  }
+
+  Future<void> _openWhatsapp() async {
+    final handoff = _handoff;
+    final accountId = widget.accountId;
+    final generation = _generation;
+    if (handoff?.kind != 'prepared' || handoff?.whatsappUrl == null ||
+        accountId == null || _loading) return;
+    final uri = handoff!.whatsappUrl!;
+    if (uri.scheme != 'https' || uri.host != 'wa.me' ||
+        uri.userInfo.isNotEmpty ||
+        !RegExp(r'^/[0-9]{8,15}$').hasMatch(uri.path)) {
+      setState(() => _handoffOpenFailed = true);
+      return;
+    }
+    try {
+      final opened = await widget.openHandoff(uri);
+      if (_current(generation, accountId) && identical(_handoff, handoff)) {
+        setState(() => _handoffOpenFailed = !opened);
+      }
+    } on Object {
+      if (_current(generation, accountId)) {
+        setState(() => _handoffOpenFailed = true);
+      }
     }
   }
 
@@ -640,10 +826,6 @@ class _HostEventOfferWorkspaceSectionState
                 if (_offers.isEmpty)
                   Text(copy.noOffers,
                     style: CatchTextStyles.supporting(context)),
-                for (final offer in _offers)
-                  Text('${_offerLabel(offer)} · '
-                      '${_offerStatus(offer['effectiveStatus'])}',
-                    style: CatchTextStyles.supporting(context)),
                 CatchButton(label: copy.refresh,
                   variant: CatchButtonVariant.secondary,
                   onPressed: _loading ? null : _refreshOffers),
@@ -654,6 +836,63 @@ class _HostEventOfferWorkspaceSectionState
                       append: true)),
               ],
             )),
+            if (_offers.isNotEmpty)
+              CatchSection.fieldRows(children: [
+                for (final offer in _offers)
+                  CatchField.nav(
+                    key: ValueKey('offer-existing-${offer['offerId']}'),
+                    copy: catchFieldCopy(context.l10n),
+                    title: _offerLabel(offer),
+                    body: '${_offerStatus(offer['effectiveStatus'])} · '
+                        '${copy.openExisting}',
+                    onTap: _loading ? null : () => _selectExisting(offer),
+                  ),
+              ]),
+            if (_selectedOffer case final selected?) ...[
+              if (selected.effectiveStatus == HostOfferStatus.offered)
+                HostManualPaymentReviewSection(
+                  key: ValueKey('offer-manual-${selected.offerId}-'
+                    '${selected.generation}-${selected.revision}'),
+                  controller: widget.offerController,
+                  offer: selected,
+                  copy: copy.review,
+                  referenceRequestId: _referenceRequestId!,
+                  reviewRequestId: _reviewRequestId!,
+                  onUpdated: _manualUpdated,
+                ),
+              CatchSection.content(child: CatchButton(
+                label: copy.handoffPrepare,
+                variant: CatchButtonVariant.secondary,
+                onPressed: _loading ? null : _prepareHandoff,
+              )),
+              if (_handoff?.kind == 'blocked')
+                CatchSection.content(child: Text(copy.handoffBlocked,
+                  style: CatchTextStyles.supporting(context))),
+              if (_handoff?.kind == 'prepared')
+                CatchSection.content(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(copy.handoffDisclosure,
+                      style: CatchTextStyles.supporting(context)),
+                    Text(_handoff!.editableText!,
+                      style: CatchTextStyles.supporting(context)),
+                    Wrap(children: [
+                      CatchButton(label: copy.openWhatsapp,
+                        onPressed: _loading || _handoff!.whatsappUrl == null
+                            ? null : _openWhatsapp),
+                      CatchButton(label: copy.copyMessage,
+                        variant: CatchButtonVariant.secondary,
+                        onPressed: _loading ? null : _copyHandoff),
+                    ]),
+                    if (_messageCopied)
+                      Text(copy.messageCopied,
+                        style: CatchTextStyles.supporting(context)),
+                    if (_handoffOpenFailed)
+                      Text(copy.handoffOpenFailed,
+                        style: CatchTextStyles.supporting(context)),
+                  ],
+                )),
+            ],
           ],
         ],
         if (_loading)

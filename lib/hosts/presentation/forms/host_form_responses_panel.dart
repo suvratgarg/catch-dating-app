@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/clipboard.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
@@ -170,6 +172,18 @@ class _HostFormResponsesPanelState
                       afterOfferId}) => CallableHostEventOfferGateway(functions)
                       .listOffers(organizerId: organizerId, eventId: eventId,
                         afterOfferId: afterOfferId),
+                  getOffer: ({required organizerId, required eventId,
+                      required contactId}) =>
+                      CallableHostEventOfferGateway(functions).getOffer(
+                        organizerId: organizerId, eventId: eventId,
+                        contactId: contactId),
+                  prepareHandoff: ({required offer}) =>
+                      CallableHostEventOfferGateway(functions).prepareHandoff(
+                        offer: offer),
+                  copyMessage: (text) => ref.read(clipboardControllerProvider)
+                      .copyText(text),
+                  openHandoff: (uri) => ref.read(externalLinkControllerProvider)
+                      .openExternal(uri),
                   targets: CallableHostOfferEventTargetsGateway(functions),
                   getResponseDetail: (responseId) => ref.read(
                     hostFormResponseDetailProvider(

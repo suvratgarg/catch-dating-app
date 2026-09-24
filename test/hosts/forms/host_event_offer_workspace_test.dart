@@ -35,6 +35,12 @@ void main() {
               afterOfferId}) async => const {
             'items': <Object>[], 'nextCursor': null,
           },
+          getOffer: ({required organizerId, required eventId,
+              required contactId}) async => _existingOffer(),
+          prepareHandoff: ({required offer}) async =>
+              const HostOfferHandoff(kind: 'blocked', offerId: 'offer-one',
+                blockers: ['fixture']),
+          copyMessage: (_) async {}, openHandoff: (_) async => false,
           targets: _Targets(),
           getResponseDetail: (_) async => _detail(contactId),
           openResponseForConversion: (_) async => contactId = 'contact-one',
@@ -84,6 +90,12 @@ void main() {
               afterOfferId}) async => const {
             'items': <Object>[], 'nextCursor': null,
           },
+          getOffer: ({required organizerId, required eventId,
+              required contactId}) async => _existingOffer(),
+          prepareHandoff: ({required offer}) async =>
+              const HostOfferHandoff(kind: 'blocked', offerId: 'offer-one',
+                blockers: ['fixture']),
+          copyMessage: (_) async {}, openHandoff: (_) async => false,
           targets: _Targets(),
           getResponseDetail: (_) async {
             detailReads++;
@@ -105,6 +117,160 @@ void main() {
     expect(detailReads, 0);
     expect(offers.previewCalls, 0);
   });
+
+  testWidgets('existing offer opens reviewed manual state and prepared handoff '
+      'without recording a send', (tester) async {
+    final query = HostResponseQueryController(_Query());
+    final offers = _Offers();
+    final controller = HostEventOfferController(offers);
+    addTearDown(query.dispose);
+    addTearDown(controller.dispose);
+    await query.apply(const HostResponseQueryRequest(
+      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    query.toggleSelection('response-one');
+    final copied = <String>[];
+    final opened = <Uri>[];
+    var preparations = 0;
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light,
+      home: Scaffold(body: SingleChildScrollView(
+        child: HostEventOfferWorkspaceSection(
+          organizerId: 'org', accountId: 'manager',
+          queryController: query, offerController: controller,
+          listOffers: ({required organizerId, required eventId,
+              afterOfferId}) async => const {
+            'items': [
+              {'offerId': 'offer-one', 'eventId': 'event-one',
+                'contactId': 'contact-one', 'effectiveStatus': 'offered'},
+              {'offerId': 'unrelated-offer', 'eventId': 'event-one',
+                'contactId': 'another-contact', 'effectiveStatus': 'offered'},
+            ], 'nextCursor': null,
+          },
+          getOffer: ({required organizerId, required eventId,
+              required contactId}) async => _existingOffer(),
+          prepareHandoff: ({required offer}) async {
+            preparations++;
+            return HostOfferHandoff(kind: 'prepared',
+              offerId: offer.offerId, contactId: offer.contactId,
+              editableText: 'Hi Maya', copyText: 'Hi Maya',
+              whatsappUrl: Uri.parse('https://wa.me/911234567890'));
+          },
+          copyMessage: (text) async => copied.add(text),
+          openHandoff: (uri) async { opened.add(uri); return true; },
+          targets: _Targets(),
+          getResponseDetail: (_) async => _detail('contact-one'),
+          openResponseForConversion: (_) async {},
+          openEventSettings: (_) async {}, copy: _copy,
+          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+        ),
+      )),
+    ));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Create event offers'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+    await pumpFeatureUi(tester);
+    expect(find.byKey(const ValueKey('offer-existing-unrelated-offer')),
+      findsNothing);
+    await tester.tap(find.byKey(const ValueKey('offer-existing-offer-one')));
+    await pumpFeatureUi(tester);
+    expect(find.text('Payment reference'), findsOneWidget);
+    await tester.tap(find.text('Prepare personal handoff'));
+    await pumpFeatureUi(tester);
+    expect(preparations, 1);
+    expect(find.text('Hi Maya'), findsOneWidget);
+    await tester.tap(find.text('Copy message'));
+    await pumpFeatureUi(tester);
+    expect(copied, ['Hi Maya']);
+    await tester.tap(find.text('Open WhatsApp'));
+    await pumpFeatureUi(tester);
+    expect(opened.single.host, 'wa.me');
+    expect(find.text('Message copied. Sending is your choice.'),
+      findsOneWidget);
+    expect(offers.previewCalls, 0);
+  });
+
+  testWidgets('existing offer discovers and replays saved manual command',
+      (tester) async {
+    final query = HostResponseQueryController(_Query());
+    final pending = _PendingMutation();
+    final controller = HostEventOfferController(_Offers(),
+      mutationOutbox: pending, accountId: 'manager');
+    addTearDown(query.dispose);
+    addTearDown(controller.dispose);
+    await query.apply(const HostResponseQueryRequest(
+      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    query.toggleSelection('response-one');
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light,
+      home: Scaffold(body: SingleChildScrollView(
+        child: HostEventOfferWorkspaceSection(
+          organizerId: 'org', accountId: 'manager',
+          queryController: query, offerController: controller,
+          listOffers: ({required organizerId, required eventId,
+              afterOfferId}) async => const {
+            'items': [{'offerId': 'offer-one', 'eventId': 'event-one',
+              'contactId': 'contact-one', 'effectiveStatus': 'offered'}],
+            'nextCursor': null,
+          },
+          getOffer: ({required organizerId, required eventId,
+              required contactId}) async => _existingOffer(),
+          prepareHandoff: ({required offer}) async => HostOfferHandoff(
+            kind: 'blocked', offerId: offer.offerId, blockers: const ['fixture']),
+          copyMessage: (_) async {}, openHandoff: (_) async => false,
+          targets: _Targets(),
+          getResponseDetail: (_) async => _detail('contact-one'),
+          openResponseForConversion: (_) async {},
+          openEventSettings: (_) async {}, copy: _copy,
+          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+        ),
+      )),
+    ));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Create event offers'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(const ValueKey('offer-existing-offer-one')));
+    await pumpFeatureUi(tester);
+    expect(pending.reads, greaterThan(0));
+    expect(find.byKey(const ValueKey('offer-retry-saved-mutation')),
+      findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('offer-retry-saved-mutation')));
+    await pumpFeatureUi(tester);
+    expect(pending.replays, 1);
+    expect(pending.newMutations, 0);
+  });
+}
+
+class _PendingMutation implements HostOfferMutationOutbox {
+  bool unresolved = true;
+  int reads = 0;
+  int replays = 0;
+  int newMutations = 0;
+
+  @override
+  Future<HostOfferPendingMutation?> pendingMutation({required String accountId,
+      required String organizerId, required String eventId}) async {
+    reads++;
+    return unresolved ? const HostOfferPendingMutation(
+      requestId: 'reference_saved', contactId: 'contact-one',
+      kind: 'recordEvidence', decision: null) : null;
+  }
+
+  @override
+  Future<HostEventOffer> replayMutation({required String accountId,
+      required String organizerId, required String eventId}) async {
+    replays++;
+    unresolved = false;
+    return _existingOffer();
+  }
+
+  @override
+  Future<HostEventOffer> mutate({required String accountId,
+      required HostEventOffer offer,
+      required Map<String, Object?> action}) async {
+    newMutations++;
+    return offer;
+  }
 }
 
 class _Query implements HostResponseQueryGateway {
@@ -212,6 +378,13 @@ final _copy = HostEventOfferWorkspaceCopy(
   statusDraft: 'Draft', statusOffered: 'Offered',
   statusWithdrawn: 'Withdrawn', statusExpired: 'Expired',
   personalPaymentLink: (name) => 'Personal payment link for $name',
+  openExisting: 'Review offer',
+  handoffPrepare: 'Prepare personal handoff',
+  handoffBlocked: 'Handoff unavailable',
+  handoffDisclosure: 'Review and send in WhatsApp; Catch cannot track it.',
+  openWhatsapp: 'Open WhatsApp', copyMessage: 'Copy message',
+  messageCopied: 'Message copied. Sending is your choice.',
+  handoffOpenFailed: 'Could not open WhatsApp.',
   review: HostEventOfferReviewCopy(
     title: 'Event offer', preview: 'Preview offers',
     previewing: 'Checking', review: 'Review offer details',
@@ -223,4 +396,19 @@ final _copy = HostEventOfferWorkspaceCopy(
     attestReceived: 'Attest', rejectReference: 'Reject',
     hostAttested: 'Attested', rejected: 'Rejected',
   ),
+);
+
+HostEventOffer _existingOffer() => HostEventOffer(
+  offerId: 'offer-one', organizerId: 'org', eventId: 'event-one',
+  contactId: 'contact-one', sourceId: 'response-one',
+  sourceKind: HostOfferSourceKind.formResponse,
+  status: HostOfferStatus.offered,
+  effectiveStatus: HostOfferStatus.offered,
+  generation: 1, revision: 2,
+  expiresAt: DateTime.fromMillisecondsSinceEpoch(1799995000000),
+  organizerPaymentLink: null,
+  manualPayment: const HostManualPaymentReview(
+    status: HostManualPaymentStatus.none, evidenceReference: null,
+    evidenceRecordedAt: null, reviewedByUid: null, reviewedAt: null,
+    reviewNote: null, bankReceiptChecked: false),
 );

@@ -314,6 +314,7 @@ class _HostManualPaymentReviewSectionState
             style: CatchTextStyles.supporting(context))),
           if (_pendingMutation!.contactId == widget.offer.contactId)
             CatchSection.content(child: CatchButton(
+              key: const ValueKey('offer-retry-saved-mutation'),
               label: _pendingMutation!.kind == 'recordEvidence'
                   ? copy.recordReference
                   : _pendingMutation!.decision == 'rejected'

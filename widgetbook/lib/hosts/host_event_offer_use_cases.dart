@@ -14,7 +14,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import 'host_form_workspace_use_cases.dart';
 
-enum _PreviewMode { loading, empty, failure, needsContact, prepared }
+enum _PreviewMode { loading, empty, failure, needsContact, prepared, existing }
 
 @widgetbook.UseCase(
   name: 'Offer target loading',
@@ -55,6 +55,14 @@ Widget hostOfferNeedsContact(BuildContext context) =>
 )
 Widget hostOfferPrepared(BuildContext context) =>
     const _OfferWorkspaceFixture(mode: _PreviewMode.prepared);
+
+@widgetbook.UseCase(
+  name: 'Existing offer review',
+  type: HostEventOfferWorkspaceSection,
+  path: '[P1 product surfaces]/Host operations/RSVP review',
+)
+Widget hostOfferExisting(BuildContext context) =>
+    const _OfferWorkspaceFixture(mode: _PreviewMode.existing);
 
 class _OfferWorkspaceFixture extends StatefulWidget {
   const _OfferWorkspaceFixture({required this.mode});
@@ -99,9 +107,19 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
         organizerId: 'org_demo', accountId: 'manager_demo',
         queryController: _query, offerController: _offers,
         listOffers: ({required organizerId, required eventId,
-            afterOfferId}) async => const {
-          'items': <Object>[], 'nextCursor': null,
+            afterOfferId}) async => {
+          'items': widget.mode == _PreviewMode.existing ? [
+            {'offerId': 'offer_demo', 'eventId': 'event_demo',
+              'contactId': 'contact_demo', 'effectiveStatus': 'offered'},
+          ] : <Object>[],
+          'nextCursor': null,
         },
+        getOffer: ({required organizerId, required eventId,
+            required contactId}) async => _previewOffer(),
+        prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+          kind: 'blocked', offerId: 'offer_demo', blockers: ['fixture']),
+        copyMessage: (_) async {},
+        openHandoff: (_) async => false,
         targets: _FixtureTargets(widget.mode),
         getResponseDetail: (_) async => HostFormResponseDetail(
           response: hostFormResponsePreviewDetail.response,
@@ -117,7 +135,8 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
         now: () => DateTime.utc(2026, 9, 24),
         initiallyReviewSelection: true,
         initialEventId: widget.mode == _PreviewMode.needsContact ||
-            widget.mode == _PreviewMode.prepared ? 'event_demo' : null,
+            widget.mode == _PreviewMode.prepared ||
+            widget.mode == _PreviewMode.existing ? 'event_demo' : null,
       ) : const Center(child: CircularProgressIndicator()),
     )),
   );
@@ -219,6 +238,13 @@ final _copy = HostEventOfferWorkspaceCopy(
   statusDraft: 'Draft', statusOffered: 'Offered',
   statusWithdrawn: 'Withdrawn', statusExpired: 'Expired',
   personalPaymentLink: (name) => 'Personal payment link for $name',
+  openExisting: 'Review offer',
+  handoffPrepare: 'Prepare personal handoff',
+  handoffBlocked: 'Handoff unavailable',
+  handoffDisclosure: 'Review and send in WhatsApp; Catch cannot track it.',
+  openWhatsapp: 'Open WhatsApp', copyMessage: 'Copy message',
+  messageCopied: 'Message copied. Sending is your choice.',
+  handoffOpenFailed: 'Could not open WhatsApp.',
   review: HostEventOfferReviewCopy(
     title: 'Event offer', preview: 'Preview offers',
     previewing: 'Checking eligibility', review: 'Review offer details',
@@ -234,4 +260,18 @@ final _copy = HostEventOfferWorkspaceCopy(
     rejectReference: 'Reject reference', hostAttested: 'Attested',
     rejected: 'Rejected',
   ),
+);
+
+HostEventOffer _previewOffer() => HostEventOffer(
+  offerId: 'offer_demo', organizerId: 'org_demo', eventId: 'event_demo',
+  contactId: 'contact_demo', sourceId: 'response_1',
+  sourceKind: HostOfferSourceKind.formResponse,
+  status: HostOfferStatus.offered,
+  effectiveStatus: HostOfferStatus.offered,
+  generation: 1, revision: 2,
+  expiresAt: DateTime.utc(2026, 10, 1), organizerPaymentLink: null,
+  manualPayment: const HostManualPaymentReview(
+    status: HostManualPaymentStatus.none, evidenceReference: null,
+    evidenceRecordedAt: null, reviewedByUid: null, reviewedAt: null,
+    reviewNote: null, bankReceiptChecked: false),
 );
