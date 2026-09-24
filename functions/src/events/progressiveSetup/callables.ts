@@ -15,6 +15,10 @@ import {
   updatePrivateEventBasics as updateBasics,
   ProgressiveSetupDependencies,
 } from "./service";
+import {updatePrivateEventPreferences as updatePreferences} from
+  "./preferences";
+import {validateUpdatePrivateEventPreferencesCallablePayload} from
+  "../../shared/generated/validators/updatePrivateEventPreferencesInput";
 import {getPrivateEventSetup as readSetup} from "./readModel";
 
 export interface SetupCallableDependencies {
@@ -78,3 +82,18 @@ export const updatePrivateEventBasics = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventBasicsHandler(request));
 export const getPrivateEventSetup = onCall(appCheckCallableOptions,
   (request) => getPrivateEventSetupHandler(request));
+
+/** Saves a reviewed event-local settings snapshot in private storage. */
+export async function updatePrivateEventPreferencesHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateUpdatePrivateEventPreferencesCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "updatePrivateEventPreferences");
+  return updatePreferences({actorUid, command, deps: deps.service(db)});
+}
+
+export const updatePrivateEventPreferences = onCall(appCheckCallableOptions,
+  (request) => updatePrivateEventPreferencesHandler(request));

@@ -18,7 +18,8 @@
       "type": "string",
       "enum": [
         "create",
-        "update"
+        "update",
+        "preferences"
       ]
     },
     "actorUid": {

@@ -1,3 +1,4 @@
+import {eventTitleLabel} from "../shared/eventLabels";
 import * as crypto from "crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
@@ -729,6 +730,12 @@ export async function resolveEventInviteLandingHandler(
         (windowEnd && windowEnd.toMillis() < now.toMillis())) {
       throw new HttpsError("not-found", "Invitation is no longer available.");
     }
+    const endTime = event.endTime;
+    const locationName = event.meetingLocation?.name || event.meetingPoint;
+    if (!endTime || !Number.isFinite(endTime.toMillis()) || !locationName) {
+      throw new HttpsError("failed-precondition",
+        "Invitation event details are incomplete.");
+    }
     const destinationKind = link.destinationKind ?? "catchEvent";
     if (destinationKind === "catchEvent" &&
         event.publicRegistrationEnabled !== true) {
@@ -762,13 +769,12 @@ export async function resolveEventInviteLandingHandler(
           now.toMillis() + inviteTouchRetentionMillis),
       });
     }
-    const customLabel = event.eventFormat.customActivityLabel?.trim();
     return {
       eventId: resolved.link.eventId!,
-      title: customLabel || inviteActivityTitle(event.eventFormat.activityKind),
+      title: eventTitleLabel(event),
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
-      locationName: event.meetingLocation.name || event.meetingPoint,
+      endTimeMillis: endTime.toMillis(),
+      locationName,
       destinationKind, destinationUrl,
       sourceLabel: inviteSourceLabel(event, destinationKind),
     };
@@ -1071,13 +1077,6 @@ function inviteSourceLabel(
   };
   return labels[event.eventOrigin?.provider ?? "generic"] ??
     "the booking provider";
-}
-
-function inviteActivityTitle(
-  activityKind: EventDocument["eventFormat"]["activityKind"]
-): string {
-  const spaced = activityKind.replace(/([a-z])([A-Z])/gu, "$1 $2");
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 function isVersionedInviteToken(value: string): boolean {

@@ -112,6 +112,8 @@ export async function createPrivateEventSetup(params: {
       startTime: deps.timestampFromMillis(basics.startTimeMillis),
       setupDefaults: basics.setupDefaults,
       setupRevision: 1,
+      createdAt: deps.serverTimestamp(),
+      updatedAt: deps.serverTimestamp(),
       publicationState: "private",
       publicRegistrationEnabled: false,
       status: "active",
@@ -222,6 +224,7 @@ export async function updatePrivateEventBasics(params: {
       startTime: deps.timestampFromMillis(basics.startTimeMillis),
       setupDefaults: basics.setupDefaults,
       setupRevision: revision + 1,
+      updatedAt: deps.serverTimestamp(),
     });
     tx.create(receiptRef, {
       operation: "update",
@@ -237,7 +240,7 @@ export async function updatePrivateEventBasics(params: {
   });
 }
 
-function assertPrivacyReady(deps: ProgressiveSetupDependencies): void {
+export function assertPrivacyReady(deps: ProgressiveSetupDependencies): void {
   if (!deps.privacyMigrationReady()) {
     throw new HttpsError("failed-precondition",
       "Private event privacy migration is not ready.");
@@ -255,7 +258,7 @@ function assertCommandIds(
   }
 }
 
-function receiptFor(db: FirebaseFirestore.Firestore, actorUid: string,
+export function receiptFor(db: FirebaseFirestore.Firestore, actorUid: string,
   organizerId: string, requestId: string): FirebaseFirestore.DocumentReference {
   const id = createHash("sha256")
     .update(JSON.stringify(["progressive-event-setup-v1", actorUid,
@@ -264,8 +267,8 @@ function receiptFor(db: FirebaseFirestore.Firestore, actorUid: string,
   return db.collection("eventSetupReceipts").doc(id);
 }
 
-function hashRequest(operation: "create" | "update",
-  command: CreatePrivateEventSetupCommand | UpdatePrivateEventBasicsCommand
+export function hashRequest(operation: "create" | "update" | "preferences",
+  command: unknown
 ): string {
   return createHash("sha256")
     .update(canonicalJson([operation, command]))
@@ -286,8 +289,8 @@ function canonicalJson(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function assertReceipt(receipt: Record<string, unknown>,
-  operation: "create" | "update", actorUid: string,
+export function assertReceipt(receipt: Record<string, unknown>,
+  operation: "create" | "update" | "preferences", actorUid: string,
   organizerId: string, requestHash: string,
   eventId?: string): void {
   if (receipt.operation !== operation || receipt.actorUid !== actorUid ||
@@ -297,15 +300,17 @@ function assertReceipt(receipt: Record<string, unknown>,
       !/^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(receipt.eventId) ||
       !Number.isSafeInteger(receipt.appliedRevision) ||
       (receipt.appliedRevision as number) < 1 ||
+      (receipt.appliedRevision as number) > 1_000_000_000 ||
       (eventId && receipt.eventId !== eventId)) {
     throw new HttpsError("already-exists",
       "Request ID was already used for another event change.");
   }
 }
 
-function requireRevision(event: Record<string, unknown>): number {
+export function requireRevision(event: Record<string, unknown>): number {
   const revision = event.setupRevision;
-  if (!Number.isSafeInteger(revision) || (revision as number) < 1) {
+  if (!Number.isSafeInteger(revision) || (revision as number) < 1 ||
+      (revision as number) >= 1_000_000_000) {
     throw new HttpsError("failed-precondition",
       "Event has no progressive setup revision.");
   }

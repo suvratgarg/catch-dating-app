@@ -34776,6 +34776,132 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['active', 'accepted', 'declined', 'expired', 'cancelled'],
   );
 
+  static const eventPaymentTermsCurrency = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventPaymentTermsExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.expectedAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const eventPaymentTermsFieldSourcesCurrency = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsFieldSourcesExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.expectedAmountMinor',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsFieldSourcesOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.offerMessageTemplate',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsFieldSourcesOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.offerValidityMinutes',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsFieldSourcesPaymentInstructions = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.paymentInstructions',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsFieldSourcesPreferredCollection = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.preferredCollection',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsFieldSourcesReusablePaymentPage = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.fieldSources.reusablePaymentPage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventPaymentTermsOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.offerMessageTemplate',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPaymentTermsOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.offerValidityMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const eventPaymentTermsPaymentInstructions = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.paymentInstructions',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPaymentTermsPreferredCollection = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.preferredCollection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const eventPaymentTermsReusablePaymentPageReusableForEvents = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.reusablePaymentPage.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventPaymentTermsReusablePaymentPageUrl = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.reusablePaymentPage.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventPaymentTermsRevision = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventPaymentTermsSourceDefaultsHash = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.sourceDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventPaymentTermsSourceDefaultsRevision = CatchContractFieldConstraints(
+    path: 'eventPaymentTerms.sourceDefaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
   static const eventPlanChangeDocumentChangedFields = CatchContractFieldConstraints(
     path: 'eventPlanChangeDocument.changedFields',
     required: true,
@@ -34919,6 +35045,148 @@ abstract final class CatchContractConstraints {
     path: 'eventPlanChangeDocument.validUntil._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventPreferenceIntentsAdmissionPresetMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.admissionPreset.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsAdmissionPresetValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.admissionPreset.value',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const eventPreferenceIntentsCollectionPreferenceMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.collectionPreference.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsCollectionPreferenceValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.collectionPreference.value',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const eventPreferenceIntentsCurrencyMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.currency.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsCurrencyValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.currency.value',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventPreferenceIntentsExpectedAmountMinorMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.expectedAmountMinor.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsExpectedAmountMinorValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.expectedAmountMinor.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const eventPreferenceIntentsOfferMessageTemplateMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.offerMessageTemplate.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsOfferMessageTemplateValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.offerMessageTemplate.value',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsOfferValidityMinutesMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.offerValidityMinutes.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsOfferValidityMinutesValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.offerValidityMinutes.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const eventPreferenceIntentsPaymentInstructionsMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.paymentInstructions.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsPaymentInstructionsValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.paymentInstructions.value',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsPreferredVenueIdMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.preferredVenueId.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsPreferredVenueIdValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.preferredVenueId.value',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventPreferenceIntentsReusablePaymentPageMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.reusablePaymentPage.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsReusablePaymentPageValueReusableForEvents = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.reusablePaymentPage.value.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventPreferenceIntentsReusablePaymentPageValueUrl = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.reusablePaymentPage.value.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventPreferenceIntentsUsualDurationMinutesMode = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.usualDurationMinutes.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPreferenceIntentsUsualDurationMinutesValue = CatchContractFieldConstraints(
+    path: 'eventPreferenceIntents.usualDurationMinutes.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 15,
+    maximum: 240,
   );
 
   static const eventPrivateAccessDocumentClubId = CatchContractFieldConstraints(
@@ -52952,6 +53220,336 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSetupPreferencesDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupPreferencesDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsCurrency = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.expectedAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesCurrency = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.expectedAmountMinor',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.offerMessageTemplate',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.offerValidityMinutes',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesPaymentInstructions = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.paymentInstructions',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesPreferredCollection = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.preferredCollection',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsFieldSourcesReusablePaymentPage = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.fieldSources.reusablePaymentPage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.offerMessageTemplate',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.offerValidityMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsPaymentInstructions = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.paymentInstructions',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsPreferredCollection = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.preferredCollection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsReusablePaymentPageReusableForEvents = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.reusablePaymentPage.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsReusablePaymentPageUrl = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.reusablePaymentPage.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsRevision = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsSourceDefaultsHash = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.sourceDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventSetupPreferencesDocumentPaymentTermsSourceDefaultsRevision = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.paymentTerms.sourceDefaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesAdmissionPresetSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.admissionPreset.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesAdmissionPresetValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.admissionPreset.value',
+    valueTypes: <String>['string'],
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesCollectionPreferenceSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.collectionPreference.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesCollectionPreferenceValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.collectionPreference.value',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesCurrencySource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.currency.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesCurrencyValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.currency.value',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesDefaultsHash = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.defaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesDefaultsRevision = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.defaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesExpectedAmountMinorSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.expectedAmountMinor.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesExpectedAmountMinorValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.expectedAmountMinor.value',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesOfferMessageTemplateSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.offerMessageTemplate.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesOfferMessageTemplateValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.offerMessageTemplate.value',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesOfferValidityMinutesSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.offerValidityMinutes.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesOfferValidityMinutesValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.offerValidityMinutes.value',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesPaymentInstructionsSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.paymentInstructions.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesPaymentInstructionsValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.paymentInstructions.value',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesPreferredVenueIdSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.preferredVenueId.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesPreferredVenueIdValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.preferredVenueId.value',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesReusablePaymentPageSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.reusablePaymentPage.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesReusablePaymentPageValueReusableForEvents = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.reusablePaymentPage.value.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesReusablePaymentPageValueUrl = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.reusablePaymentPage.value.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesUsualDurationMinutesSource = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.usualDurationMinutes.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const eventSetupPreferencesDocumentPreferencesUsualDurationMinutesValue = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.preferences.usualDurationMinutes.value',
+    valueTypes: <String>['integer'],
+    minimum: 15,
+    maximum: 240,
+  );
+
+  static const eventSetupPreferencesDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventSetupPreferencesDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSetupPreferencesDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSetupPreferencesDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'eventSetupPreferencesDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventSetupReceiptDocumentActorUid = CatchContractFieldConstraints(
     path: 'eventSetupReceiptDocument.actorUid',
     maxLength: 180,
@@ -52993,7 +53591,7 @@ abstract final class CatchContractConstraints {
     path: 'eventSetupReceiptDocument.operation',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['create', 'update'],
+    enumValues: <String>['create', 'update', 'preferences'],
   );
 
   static const eventSetupReceiptDocumentOrganizerId = CatchContractFieldConstraints(
@@ -95939,6 +96537,298 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsCurrency = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.currency',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.expectedAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesCurrency = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesExpectedAmountMinor = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.expectedAmountMinor',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.offerMessageTemplate',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.offerValidityMinutes',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesPaymentInstructions = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.paymentInstructions',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesPreferredCollection = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.preferredCollection',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesReusablePaymentPage = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.reusablePaymentPage',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsOfferMessageTemplate = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.offerMessageTemplate',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsOfferValidityMinutes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.offerValidityMinutes',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsPaymentInstructions = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.paymentInstructions',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsPreferredCollection = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.preferredCollection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsReusablePaymentPageReusableForEvents = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.reusablePaymentPage.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsReusablePaymentPageUrl = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.reusablePaymentPage.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsSourceDefaultsHash = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.sourceDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPaymentTermsSourceDefaultsRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.paymentTerms.sourceDefaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesAdmissionPresetSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.admissionPreset.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesAdmissionPresetValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.admissionPreset.value',
+    valueTypes: <String>['string'],
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesCollectionPreferenceSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.collectionPreference.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesCollectionPreferenceValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.collectionPreference.value',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesCurrencySource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.currency.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesCurrencyValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.currency.value',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesDefaultsHash = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.defaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesDefaultsRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.defaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesExpectedAmountMinorSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.expectedAmountMinor.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesExpectedAmountMinorValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.expectedAmountMinor.value',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesOfferMessageTemplateSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.offerMessageTemplate.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesOfferMessageTemplateValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.offerMessageTemplate.value',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesOfferValidityMinutesSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.offerValidityMinutes.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesOfferValidityMinutesValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.offerValidityMinutes.value',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesPaymentInstructionsSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.paymentInstructions.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesPaymentInstructionsValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.paymentInstructions.value',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesPreferredVenueIdSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.preferredVenueId.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesPreferredVenueIdValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.preferredVenueId.value',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesReusablePaymentPageSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.reusablePaymentPage.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesReusablePaymentPageValueReusableForEvents = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.reusablePaymentPage.value.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesReusablePaymentPageValueUrl = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.reusablePaymentPage.value.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesUsualDurationMinutesSource = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.usualDurationMinutes.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesPreferencesUsualDurationMinutesValue = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.preferences.usualDurationMinutes.value',
+    valueTypes: <String>['integer'],
+    minimum: 15,
+    maximum: 240,
+  );
+
+  static const privateEventSetupCallableResponseEventPreferencesRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventPreferences.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
   static const privateEventSetupCallableResponseLocalDate = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.localDate',
     required: true,
@@ -102053,6 +102943,164 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const resolvedEventPreferencesAdmissionPresetSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.admissionPreset.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesAdmissionPresetValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.admissionPreset.value',
+    valueTypes: <String>['string'],
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const resolvedEventPreferencesCollectionPreferenceSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.collectionPreference.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesCollectionPreferenceValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.collectionPreference.value',
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const resolvedEventPreferencesCurrencySource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.currency.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesCurrencyValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.currency.value',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const resolvedEventPreferencesDefaultsHash = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.defaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const resolvedEventPreferencesDefaultsRevision = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.defaultsRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const resolvedEventPreferencesExpectedAmountMinorSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.expectedAmountMinor.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesExpectedAmountMinorValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.expectedAmountMinor.value',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const resolvedEventPreferencesOfferMessageTemplateSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.offerMessageTemplate.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesOfferMessageTemplateValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.offerMessageTemplate.value',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolvedEventPreferencesOfferValidityMinutesSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.offerValidityMinutes.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesOfferValidityMinutesValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.offerValidityMinutes.value',
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const resolvedEventPreferencesPaymentInstructionsSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.paymentInstructions.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesPaymentInstructionsValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.paymentInstructions.value',
+    maxLength: 1000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolvedEventPreferencesPreferredVenueIdSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.preferredVenueId.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesPreferredVenueIdValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.preferredVenueId.value',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const resolvedEventPreferencesReusablePaymentPageSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.reusablePaymentPage.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesReusablePaymentPageValueReusableForEvents = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.reusablePaymentPage.value.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const resolvedEventPreferencesReusablePaymentPageValueUrl = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.reusablePaymentPage.value.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const resolvedEventPreferencesUsualDurationMinutesSource = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.usualDurationMinutes.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'event', 'cleared'],
+  );
+
+  static const resolvedEventPreferencesUsualDurationMinutesValue = CatchContractFieldConstraints(
+    path: 'resolvedEventPreferences.usualDurationMinutes.value',
+    valueTypes: <String>['integer'],
+    minimum: 15,
+    maximum: 240,
   );
 
   static const resolveEventAssistanceAccountabilityCallablePayloadCheckpointCheckpointId = CatchContractFieldConstraints(
@@ -111859,6 +112907,194 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
   );
 
+  static const updatePrivateEventPreferencesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadExpectedPreferencesRevision = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.expectedPreferencesRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000000,
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.expectedSetupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.admissionPreset.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.admissionPreset.value',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsCollectionPreferenceMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.collectionPreference.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsCollectionPreferenceValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.collectionPreference.value',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manualInstructions', 'reusablePage', 'personalRequest', 'catchCheckout'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsCurrencyMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.currency.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsCurrencyValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.currency.value',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsExpectedAmountMinorMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.expectedAmountMinor.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsExpectedAmountMinorValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.expectedAmountMinor.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsOfferMessageTemplateMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.offerMessageTemplate.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsOfferMessageTemplateValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.offerMessageTemplate.value',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsOfferValidityMinutesMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.offerValidityMinutes.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsOfferValidityMinutesValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.offerValidityMinutes.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 5,
+    maximum: 10080,
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsPaymentInstructionsMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.paymentInstructions.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsPaymentInstructionsValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.paymentInstructions.value',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsPreferredVenueIdMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.preferredVenueId.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsPreferredVenueIdValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.preferredVenueId.value',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsReusablePaymentPageMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.reusablePaymentPage.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsReusablePaymentPageValueReusableForEvents = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.reusablePaymentPage.value.reusableForEvents',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsReusablePaymentPageValueUrl = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.reusablePaymentPage.value.url',
+    maxLength: 2048,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsUsualDurationMinutesMode = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.usualDurationMinutes.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadIntentsUsualDurationMinutesValue = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.intents.usualDurationMinutes.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 15,
+    maximum: 240,
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
+  static const updatePrivateEventPreferencesCallablePayloadReviewedDefaultsHash = CatchContractFieldConstraints(
+    path: 'updatePrivateEventPreferencesCallablePayload.reviewedDefaultsHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
     path: 'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm',
     required: true,
@@ -121443,6 +122679,24 @@ abstract final class CatchContractConstraints {
     'eventParticipationDocument.waitlistOfferExpiresAt._seconds': eventParticipationDocumentWaitlistOfferExpiresAtSeconds,
     'eventParticipationDocument.waitlistOfferId': eventParticipationDocumentWaitlistOfferId,
     'eventParticipationDocument.waitlistOfferStatus': eventParticipationDocumentWaitlistOfferStatus,
+    'eventPaymentTerms.currency': eventPaymentTermsCurrency,
+    'eventPaymentTerms.expectedAmountMinor': eventPaymentTermsExpectedAmountMinor,
+    'eventPaymentTerms.fieldSources.currency': eventPaymentTermsFieldSourcesCurrency,
+    'eventPaymentTerms.fieldSources.expectedAmountMinor': eventPaymentTermsFieldSourcesExpectedAmountMinor,
+    'eventPaymentTerms.fieldSources.offerMessageTemplate': eventPaymentTermsFieldSourcesOfferMessageTemplate,
+    'eventPaymentTerms.fieldSources.offerValidityMinutes': eventPaymentTermsFieldSourcesOfferValidityMinutes,
+    'eventPaymentTerms.fieldSources.paymentInstructions': eventPaymentTermsFieldSourcesPaymentInstructions,
+    'eventPaymentTerms.fieldSources.preferredCollection': eventPaymentTermsFieldSourcesPreferredCollection,
+    'eventPaymentTerms.fieldSources.reusablePaymentPage': eventPaymentTermsFieldSourcesReusablePaymentPage,
+    'eventPaymentTerms.offerMessageTemplate': eventPaymentTermsOfferMessageTemplate,
+    'eventPaymentTerms.offerValidityMinutes': eventPaymentTermsOfferValidityMinutes,
+    'eventPaymentTerms.paymentInstructions': eventPaymentTermsPaymentInstructions,
+    'eventPaymentTerms.preferredCollection': eventPaymentTermsPreferredCollection,
+    'eventPaymentTerms.reusablePaymentPage.reusableForEvents': eventPaymentTermsReusablePaymentPageReusableForEvents,
+    'eventPaymentTerms.reusablePaymentPage.url': eventPaymentTermsReusablePaymentPageUrl,
+    'eventPaymentTerms.revision': eventPaymentTermsRevision,
+    'eventPaymentTerms.sourceDefaultsHash': eventPaymentTermsSourceDefaultsHash,
+    'eventPaymentTerms.sourceDefaultsRevision': eventPaymentTermsSourceDefaultsRevision,
     'eventPlanChangeDocument.changedFields': eventPlanChangeDocumentChangedFields,
     'eventPlanChangeDocument.changedFields.items': eventPlanChangeDocumentChangedFieldsItems,
     'eventPlanChangeDocument.createdBy': eventPlanChangeDocumentCreatedBy,
@@ -121462,6 +122716,27 @@ abstract final class CatchContractConstraints {
     'eventPlanChangeDocument.startTime._seconds': eventPlanChangeDocumentStartTimeSeconds,
     'eventPlanChangeDocument.validUntil._nanoseconds': eventPlanChangeDocumentValidUntilNanoseconds,
     'eventPlanChangeDocument.validUntil._seconds': eventPlanChangeDocumentValidUntilSeconds,
+    'eventPreferenceIntents.admissionPreset.mode': eventPreferenceIntentsAdmissionPresetMode,
+    'eventPreferenceIntents.admissionPreset.value': eventPreferenceIntentsAdmissionPresetValue,
+    'eventPreferenceIntents.collectionPreference.mode': eventPreferenceIntentsCollectionPreferenceMode,
+    'eventPreferenceIntents.collectionPreference.value': eventPreferenceIntentsCollectionPreferenceValue,
+    'eventPreferenceIntents.currency.mode': eventPreferenceIntentsCurrencyMode,
+    'eventPreferenceIntents.currency.value': eventPreferenceIntentsCurrencyValue,
+    'eventPreferenceIntents.expectedAmountMinor.mode': eventPreferenceIntentsExpectedAmountMinorMode,
+    'eventPreferenceIntents.expectedAmountMinor.value': eventPreferenceIntentsExpectedAmountMinorValue,
+    'eventPreferenceIntents.offerMessageTemplate.mode': eventPreferenceIntentsOfferMessageTemplateMode,
+    'eventPreferenceIntents.offerMessageTemplate.value': eventPreferenceIntentsOfferMessageTemplateValue,
+    'eventPreferenceIntents.offerValidityMinutes.mode': eventPreferenceIntentsOfferValidityMinutesMode,
+    'eventPreferenceIntents.offerValidityMinutes.value': eventPreferenceIntentsOfferValidityMinutesValue,
+    'eventPreferenceIntents.paymentInstructions.mode': eventPreferenceIntentsPaymentInstructionsMode,
+    'eventPreferenceIntents.paymentInstructions.value': eventPreferenceIntentsPaymentInstructionsValue,
+    'eventPreferenceIntents.preferredVenueId.mode': eventPreferenceIntentsPreferredVenueIdMode,
+    'eventPreferenceIntents.preferredVenueId.value': eventPreferenceIntentsPreferredVenueIdValue,
+    'eventPreferenceIntents.reusablePaymentPage.mode': eventPreferenceIntentsReusablePaymentPageMode,
+    'eventPreferenceIntents.reusablePaymentPage.value.reusableForEvents': eventPreferenceIntentsReusablePaymentPageValueReusableForEvents,
+    'eventPreferenceIntents.reusablePaymentPage.value.url': eventPreferenceIntentsReusablePaymentPageValueUrl,
+    'eventPreferenceIntents.usualDurationMinutes.mode': eventPreferenceIntentsUsualDurationMinutesMode,
+    'eventPreferenceIntents.usualDurationMinutes.value': eventPreferenceIntentsUsualDurationMinutesValue,
     'eventPrivateAccessDocument.clubId': eventPrivateAccessDocumentClubId,
     'eventPrivateAccessDocument.createdAt._nanoseconds': eventPrivateAccessDocumentCreatedAtNanoseconds,
     'eventPrivateAccessDocument.createdAt._seconds': eventPrivateAccessDocumentCreatedAtSeconds,
@@ -123859,6 +125134,53 @@ abstract final class CatchContractConstraints {
     'eventSetupDefaults.organizerDefaultsRevision': eventSetupDefaultsOrganizerDefaultsRevision,
     'eventSetupDefaults.timezone.source': eventSetupDefaultsTimezoneSource,
     'eventSetupDefaults.timezone.value': eventSetupDefaultsTimezoneValue,
+    'eventSetupPreferencesDocument.eventId': eventSetupPreferencesDocumentEventId,
+    'eventSetupPreferencesDocument.organizerId': eventSetupPreferencesDocumentOrganizerId,
+    'eventSetupPreferencesDocument.paymentTerms.currency': eventSetupPreferencesDocumentPaymentTermsCurrency,
+    'eventSetupPreferencesDocument.paymentTerms.expectedAmountMinor': eventSetupPreferencesDocumentPaymentTermsExpectedAmountMinor,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.currency': eventSetupPreferencesDocumentPaymentTermsFieldSourcesCurrency,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.expectedAmountMinor': eventSetupPreferencesDocumentPaymentTermsFieldSourcesExpectedAmountMinor,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.offerMessageTemplate': eventSetupPreferencesDocumentPaymentTermsFieldSourcesOfferMessageTemplate,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.offerValidityMinutes': eventSetupPreferencesDocumentPaymentTermsFieldSourcesOfferValidityMinutes,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.paymentInstructions': eventSetupPreferencesDocumentPaymentTermsFieldSourcesPaymentInstructions,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.preferredCollection': eventSetupPreferencesDocumentPaymentTermsFieldSourcesPreferredCollection,
+    'eventSetupPreferencesDocument.paymentTerms.fieldSources.reusablePaymentPage': eventSetupPreferencesDocumentPaymentTermsFieldSourcesReusablePaymentPage,
+    'eventSetupPreferencesDocument.paymentTerms.offerMessageTemplate': eventSetupPreferencesDocumentPaymentTermsOfferMessageTemplate,
+    'eventSetupPreferencesDocument.paymentTerms.offerValidityMinutes': eventSetupPreferencesDocumentPaymentTermsOfferValidityMinutes,
+    'eventSetupPreferencesDocument.paymentTerms.paymentInstructions': eventSetupPreferencesDocumentPaymentTermsPaymentInstructions,
+    'eventSetupPreferencesDocument.paymentTerms.preferredCollection': eventSetupPreferencesDocumentPaymentTermsPreferredCollection,
+    'eventSetupPreferencesDocument.paymentTerms.reusablePaymentPage.reusableForEvents': eventSetupPreferencesDocumentPaymentTermsReusablePaymentPageReusableForEvents,
+    'eventSetupPreferencesDocument.paymentTerms.reusablePaymentPage.url': eventSetupPreferencesDocumentPaymentTermsReusablePaymentPageUrl,
+    'eventSetupPreferencesDocument.paymentTerms.revision': eventSetupPreferencesDocumentPaymentTermsRevision,
+    'eventSetupPreferencesDocument.paymentTerms.sourceDefaultsHash': eventSetupPreferencesDocumentPaymentTermsSourceDefaultsHash,
+    'eventSetupPreferencesDocument.paymentTerms.sourceDefaultsRevision': eventSetupPreferencesDocumentPaymentTermsSourceDefaultsRevision,
+    'eventSetupPreferencesDocument.preferences.admissionPreset.source': eventSetupPreferencesDocumentPreferencesAdmissionPresetSource,
+    'eventSetupPreferencesDocument.preferences.admissionPreset.value': eventSetupPreferencesDocumentPreferencesAdmissionPresetValue,
+    'eventSetupPreferencesDocument.preferences.collectionPreference.source': eventSetupPreferencesDocumentPreferencesCollectionPreferenceSource,
+    'eventSetupPreferencesDocument.preferences.collectionPreference.value': eventSetupPreferencesDocumentPreferencesCollectionPreferenceValue,
+    'eventSetupPreferencesDocument.preferences.currency.source': eventSetupPreferencesDocumentPreferencesCurrencySource,
+    'eventSetupPreferencesDocument.preferences.currency.value': eventSetupPreferencesDocumentPreferencesCurrencyValue,
+    'eventSetupPreferencesDocument.preferences.defaultsHash': eventSetupPreferencesDocumentPreferencesDefaultsHash,
+    'eventSetupPreferencesDocument.preferences.defaultsRevision': eventSetupPreferencesDocumentPreferencesDefaultsRevision,
+    'eventSetupPreferencesDocument.preferences.expectedAmountMinor.source': eventSetupPreferencesDocumentPreferencesExpectedAmountMinorSource,
+    'eventSetupPreferencesDocument.preferences.expectedAmountMinor.value': eventSetupPreferencesDocumentPreferencesExpectedAmountMinorValue,
+    'eventSetupPreferencesDocument.preferences.offerMessageTemplate.source': eventSetupPreferencesDocumentPreferencesOfferMessageTemplateSource,
+    'eventSetupPreferencesDocument.preferences.offerMessageTemplate.value': eventSetupPreferencesDocumentPreferencesOfferMessageTemplateValue,
+    'eventSetupPreferencesDocument.preferences.offerValidityMinutes.source': eventSetupPreferencesDocumentPreferencesOfferValidityMinutesSource,
+    'eventSetupPreferencesDocument.preferences.offerValidityMinutes.value': eventSetupPreferencesDocumentPreferencesOfferValidityMinutesValue,
+    'eventSetupPreferencesDocument.preferences.paymentInstructions.source': eventSetupPreferencesDocumentPreferencesPaymentInstructionsSource,
+    'eventSetupPreferencesDocument.preferences.paymentInstructions.value': eventSetupPreferencesDocumentPreferencesPaymentInstructionsValue,
+    'eventSetupPreferencesDocument.preferences.preferredVenueId.source': eventSetupPreferencesDocumentPreferencesPreferredVenueIdSource,
+    'eventSetupPreferencesDocument.preferences.preferredVenueId.value': eventSetupPreferencesDocumentPreferencesPreferredVenueIdValue,
+    'eventSetupPreferencesDocument.preferences.reusablePaymentPage.source': eventSetupPreferencesDocumentPreferencesReusablePaymentPageSource,
+    'eventSetupPreferencesDocument.preferences.reusablePaymentPage.value.reusableForEvents': eventSetupPreferencesDocumentPreferencesReusablePaymentPageValueReusableForEvents,
+    'eventSetupPreferencesDocument.preferences.reusablePaymentPage.value.url': eventSetupPreferencesDocumentPreferencesReusablePaymentPageValueUrl,
+    'eventSetupPreferencesDocument.preferences.usualDurationMinutes.source': eventSetupPreferencesDocumentPreferencesUsualDurationMinutesSource,
+    'eventSetupPreferencesDocument.preferences.usualDurationMinutes.value': eventSetupPreferencesDocumentPreferencesUsualDurationMinutesValue,
+    'eventSetupPreferencesDocument.revision': eventSetupPreferencesDocumentRevision,
+    'eventSetupPreferencesDocument.updatedAt._nanoseconds': eventSetupPreferencesDocumentUpdatedAtNanoseconds,
+    'eventSetupPreferencesDocument.updatedAt._seconds': eventSetupPreferencesDocumentUpdatedAtSeconds,
+    'eventSetupPreferencesDocument.updatedByUid': eventSetupPreferencesDocumentUpdatedByUid,
     'eventSetupReceiptDocument.actorUid': eventSetupReceiptDocumentActorUid,
     'eventSetupReceiptDocument.appliedRevision': eventSetupReceiptDocumentAppliedRevision,
     'eventSetupReceiptDocument.createdAt._nanoseconds': eventSetupReceiptDocumentCreatedAtNanoseconds,
@@ -129766,6 +131088,48 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.city.marketId': privateEventSetupCallableResponseCityMarketId,
     'privateEventSetupCallableResponse.detailsConfigured': privateEventSetupCallableResponseDetailsConfigured,
     'privateEventSetupCallableResponse.eventId': privateEventSetupCallableResponseEventId,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.currency': privateEventSetupCallableResponseEventPreferencesPaymentTermsCurrency,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.expectedAmountMinor': privateEventSetupCallableResponseEventPreferencesPaymentTermsExpectedAmountMinor,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.currency': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesCurrency,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.expectedAmountMinor': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesExpectedAmountMinor,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.offerMessageTemplate': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesOfferMessageTemplate,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.offerValidityMinutes': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesOfferValidityMinutes,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.paymentInstructions': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesPaymentInstructions,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.preferredCollection': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesPreferredCollection,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.fieldSources.reusablePaymentPage': privateEventSetupCallableResponseEventPreferencesPaymentTermsFieldSourcesReusablePaymentPage,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.offerMessageTemplate': privateEventSetupCallableResponseEventPreferencesPaymentTermsOfferMessageTemplate,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.offerValidityMinutes': privateEventSetupCallableResponseEventPreferencesPaymentTermsOfferValidityMinutes,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.paymentInstructions': privateEventSetupCallableResponseEventPreferencesPaymentTermsPaymentInstructions,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.preferredCollection': privateEventSetupCallableResponseEventPreferencesPaymentTermsPreferredCollection,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.reusablePaymentPage.reusableForEvents': privateEventSetupCallableResponseEventPreferencesPaymentTermsReusablePaymentPageReusableForEvents,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.reusablePaymentPage.url': privateEventSetupCallableResponseEventPreferencesPaymentTermsReusablePaymentPageUrl,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.revision': privateEventSetupCallableResponseEventPreferencesPaymentTermsRevision,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.sourceDefaultsHash': privateEventSetupCallableResponseEventPreferencesPaymentTermsSourceDefaultsHash,
+    'privateEventSetupCallableResponse.eventPreferences.paymentTerms.sourceDefaultsRevision': privateEventSetupCallableResponseEventPreferencesPaymentTermsSourceDefaultsRevision,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.admissionPreset.source': privateEventSetupCallableResponseEventPreferencesPreferencesAdmissionPresetSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.admissionPreset.value': privateEventSetupCallableResponseEventPreferencesPreferencesAdmissionPresetValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.collectionPreference.source': privateEventSetupCallableResponseEventPreferencesPreferencesCollectionPreferenceSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.collectionPreference.value': privateEventSetupCallableResponseEventPreferencesPreferencesCollectionPreferenceValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.currency.source': privateEventSetupCallableResponseEventPreferencesPreferencesCurrencySource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.currency.value': privateEventSetupCallableResponseEventPreferencesPreferencesCurrencyValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.defaultsHash': privateEventSetupCallableResponseEventPreferencesPreferencesDefaultsHash,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.defaultsRevision': privateEventSetupCallableResponseEventPreferencesPreferencesDefaultsRevision,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.expectedAmountMinor.source': privateEventSetupCallableResponseEventPreferencesPreferencesExpectedAmountMinorSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.expectedAmountMinor.value': privateEventSetupCallableResponseEventPreferencesPreferencesExpectedAmountMinorValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.offerMessageTemplate.source': privateEventSetupCallableResponseEventPreferencesPreferencesOfferMessageTemplateSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.offerMessageTemplate.value': privateEventSetupCallableResponseEventPreferencesPreferencesOfferMessageTemplateValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.offerValidityMinutes.source': privateEventSetupCallableResponseEventPreferencesPreferencesOfferValidityMinutesSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.offerValidityMinutes.value': privateEventSetupCallableResponseEventPreferencesPreferencesOfferValidityMinutesValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.paymentInstructions.source': privateEventSetupCallableResponseEventPreferencesPreferencesPaymentInstructionsSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.paymentInstructions.value': privateEventSetupCallableResponseEventPreferencesPreferencesPaymentInstructionsValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.preferredVenueId.source': privateEventSetupCallableResponseEventPreferencesPreferencesPreferredVenueIdSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.preferredVenueId.value': privateEventSetupCallableResponseEventPreferencesPreferencesPreferredVenueIdValue,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.reusablePaymentPage.source': privateEventSetupCallableResponseEventPreferencesPreferencesReusablePaymentPageSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.reusablePaymentPage.value.reusableForEvents': privateEventSetupCallableResponseEventPreferencesPreferencesReusablePaymentPageValueReusableForEvents,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.reusablePaymentPage.value.url': privateEventSetupCallableResponseEventPreferencesPreferencesReusablePaymentPageValueUrl,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.usualDurationMinutes.source': privateEventSetupCallableResponseEventPreferencesPreferencesUsualDurationMinutesSource,
+    'privateEventSetupCallableResponse.eventPreferences.preferences.usualDurationMinutes.value': privateEventSetupCallableResponseEventPreferencesPreferencesUsualDurationMinutesValue,
+    'privateEventSetupCallableResponse.eventPreferences.revision': privateEventSetupCallableResponseEventPreferencesRevision,
     'privateEventSetupCallableResponse.localDate': privateEventSetupCallableResponseLocalDate,
     'privateEventSetupCallableResponse.localStartTime': privateEventSetupCallableResponseLocalStartTime,
     'privateEventSetupCallableResponse.name': privateEventSetupCallableResponseName,
@@ -130598,6 +131962,29 @@ abstract final class CatchContractConstraints {
     'resetEventRehearsalCallablePayload.sessionId': resetEventRehearsalCallablePayloadSessionId,
     'resetMatchUnreadCountClientWrite.data.unreadCounts': resetMatchUnreadCountClientWriteDataUnreadCounts,
     'resetMatchUnreadCountClientWrite.path.matchId': resetMatchUnreadCountClientWritePathMatchId,
+    'resolvedEventPreferences.admissionPreset.source': resolvedEventPreferencesAdmissionPresetSource,
+    'resolvedEventPreferences.admissionPreset.value': resolvedEventPreferencesAdmissionPresetValue,
+    'resolvedEventPreferences.collectionPreference.source': resolvedEventPreferencesCollectionPreferenceSource,
+    'resolvedEventPreferences.collectionPreference.value': resolvedEventPreferencesCollectionPreferenceValue,
+    'resolvedEventPreferences.currency.source': resolvedEventPreferencesCurrencySource,
+    'resolvedEventPreferences.currency.value': resolvedEventPreferencesCurrencyValue,
+    'resolvedEventPreferences.defaultsHash': resolvedEventPreferencesDefaultsHash,
+    'resolvedEventPreferences.defaultsRevision': resolvedEventPreferencesDefaultsRevision,
+    'resolvedEventPreferences.expectedAmountMinor.source': resolvedEventPreferencesExpectedAmountMinorSource,
+    'resolvedEventPreferences.expectedAmountMinor.value': resolvedEventPreferencesExpectedAmountMinorValue,
+    'resolvedEventPreferences.offerMessageTemplate.source': resolvedEventPreferencesOfferMessageTemplateSource,
+    'resolvedEventPreferences.offerMessageTemplate.value': resolvedEventPreferencesOfferMessageTemplateValue,
+    'resolvedEventPreferences.offerValidityMinutes.source': resolvedEventPreferencesOfferValidityMinutesSource,
+    'resolvedEventPreferences.offerValidityMinutes.value': resolvedEventPreferencesOfferValidityMinutesValue,
+    'resolvedEventPreferences.paymentInstructions.source': resolvedEventPreferencesPaymentInstructionsSource,
+    'resolvedEventPreferences.paymentInstructions.value': resolvedEventPreferencesPaymentInstructionsValue,
+    'resolvedEventPreferences.preferredVenueId.source': resolvedEventPreferencesPreferredVenueIdSource,
+    'resolvedEventPreferences.preferredVenueId.value': resolvedEventPreferencesPreferredVenueIdValue,
+    'resolvedEventPreferences.reusablePaymentPage.source': resolvedEventPreferencesReusablePaymentPageSource,
+    'resolvedEventPreferences.reusablePaymentPage.value.reusableForEvents': resolvedEventPreferencesReusablePaymentPageValueReusableForEvents,
+    'resolvedEventPreferences.reusablePaymentPage.value.url': resolvedEventPreferencesReusablePaymentPageValueUrl,
+    'resolvedEventPreferences.usualDurationMinutes.source': resolvedEventPreferencesUsualDurationMinutesSource,
+    'resolvedEventPreferences.usualDurationMinutes.value': resolvedEventPreferencesUsualDurationMinutesValue,
     'resolveEventAssistanceAccountabilityCallablePayload.checkpoint.checkpointId': resolveEventAssistanceAccountabilityCallablePayloadCheckpointCheckpointId,
     'resolveEventAssistanceAccountabilityCallablePayload.checkpoint.progressRevision': resolveEventAssistanceAccountabilityCallablePayloadCheckpointProgressRevision,
     'resolveEventAssistanceAccountabilityCallablePayload.command.context.clockId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextClockId,
@@ -131932,6 +133319,33 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventBasicsCallablePayload.expectedSetupRevision': updatePrivateEventBasicsCallablePayloadExpectedSetupRevision,
     'updatePrivateEventBasicsCallablePayload.organizerId': updatePrivateEventBasicsCallablePayloadOrganizerId,
     'updatePrivateEventBasicsCallablePayload.requestId': updatePrivateEventBasicsCallablePayloadRequestId,
+    'updatePrivateEventPreferencesCallablePayload.eventId': updatePrivateEventPreferencesCallablePayloadEventId,
+    'updatePrivateEventPreferencesCallablePayload.expectedPreferencesRevision': updatePrivateEventPreferencesCallablePayloadExpectedPreferencesRevision,
+    'updatePrivateEventPreferencesCallablePayload.expectedSetupRevision': updatePrivateEventPreferencesCallablePayloadExpectedSetupRevision,
+    'updatePrivateEventPreferencesCallablePayload.intents.admissionPreset.mode': updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.admissionPreset.value': updatePrivateEventPreferencesCallablePayloadIntentsAdmissionPresetValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.collectionPreference.mode': updatePrivateEventPreferencesCallablePayloadIntentsCollectionPreferenceMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.collectionPreference.value': updatePrivateEventPreferencesCallablePayloadIntentsCollectionPreferenceValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.currency.mode': updatePrivateEventPreferencesCallablePayloadIntentsCurrencyMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.currency.value': updatePrivateEventPreferencesCallablePayloadIntentsCurrencyValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.expectedAmountMinor.mode': updatePrivateEventPreferencesCallablePayloadIntentsExpectedAmountMinorMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.expectedAmountMinor.value': updatePrivateEventPreferencesCallablePayloadIntentsExpectedAmountMinorValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.offerMessageTemplate.mode': updatePrivateEventPreferencesCallablePayloadIntentsOfferMessageTemplateMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.offerMessageTemplate.value': updatePrivateEventPreferencesCallablePayloadIntentsOfferMessageTemplateValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.offerValidityMinutes.mode': updatePrivateEventPreferencesCallablePayloadIntentsOfferValidityMinutesMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.offerValidityMinutes.value': updatePrivateEventPreferencesCallablePayloadIntentsOfferValidityMinutesValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.paymentInstructions.mode': updatePrivateEventPreferencesCallablePayloadIntentsPaymentInstructionsMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.paymentInstructions.value': updatePrivateEventPreferencesCallablePayloadIntentsPaymentInstructionsValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.preferredVenueId.mode': updatePrivateEventPreferencesCallablePayloadIntentsPreferredVenueIdMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.preferredVenueId.value': updatePrivateEventPreferencesCallablePayloadIntentsPreferredVenueIdValue,
+    'updatePrivateEventPreferencesCallablePayload.intents.reusablePaymentPage.mode': updatePrivateEventPreferencesCallablePayloadIntentsReusablePaymentPageMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.reusablePaymentPage.value.reusableForEvents': updatePrivateEventPreferencesCallablePayloadIntentsReusablePaymentPageValueReusableForEvents,
+    'updatePrivateEventPreferencesCallablePayload.intents.reusablePaymentPage.value.url': updatePrivateEventPreferencesCallablePayloadIntentsReusablePaymentPageValueUrl,
+    'updatePrivateEventPreferencesCallablePayload.intents.usualDurationMinutes.mode': updatePrivateEventPreferencesCallablePayloadIntentsUsualDurationMinutesMode,
+    'updatePrivateEventPreferencesCallablePayload.intents.usualDurationMinutes.value': updatePrivateEventPreferencesCallablePayloadIntentsUsualDurationMinutesValue,
+    'updatePrivateEventPreferencesCallablePayload.organizerId': updatePrivateEventPreferencesCallablePayloadOrganizerId,
+    'updatePrivateEventPreferencesCallablePayload.requestId': updatePrivateEventPreferencesCallablePayloadRequestId,
+    'updatePrivateEventPreferencesCallablePayload.reviewedDefaultsHash': updatePrivateEventPreferencesCallablePayloadReviewedDefaultsHash,
     'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.paceMinSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.preferredDistances': updateUserProfilePatchActivityPreferencesRunningPreferredDistances,

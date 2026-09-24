@@ -206,7 +206,9 @@ export function buildEventSearchRecord(
     club.appVisibility === "hidden" ||
     !discoveryMarketId ||
     !discoveryCityName ||
-    startTimeEpoch == null
+    startTimeEpoch == null ||
+    typeof event.meetingPoint !== "string" ||
+    typeof event.description !== "string"
   ) {
     return null;
   }

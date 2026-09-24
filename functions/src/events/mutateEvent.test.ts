@@ -376,6 +376,7 @@ test("createEventHandler creates a server-owned event for the club host",
       clubId: "club-1",
       organizerId: "club-1",
       name: "Sunrise Social 5K",
+      publicationState: "published",
       eventOrigin: {
         mode: "catchNative",
         bookingAuthority: "catch",

@@ -1123,7 +1123,7 @@ describe("firestore.rules", () => {
 
     it("keeps organizer event setup defaults and receipts server-only", async () => {
       for (const collectionName of ["organizerEventSetupDefaults",
-        "organizerEventSetupDefaultReceipts"]) {
+        "organizerEventSetupDefaultReceipts", "eventSetupPreferences"]) {
         await seed([collectionName, "organizer-1"], {
           organizerId: "organizer-1", revision: 1,
           eventSetup: {paymentInstructions: "Manager-only instructions"},

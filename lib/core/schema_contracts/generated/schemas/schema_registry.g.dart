@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventPreferenceIntents',
+    source: 'embedded/event_preference_intents.schema.json',
+    schema: schemaEventPreferenceIntentsSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ResolvedEventPreferences',
+    source: 'embedded/resolved_event_preferences.schema.json',
+    schema: schemaResolvedEventPreferencesSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventPaymentTerms',
+    source: 'embedded/event_payment_terms.schema.json',
+    schema: schemaEventPaymentTermsSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventSetupPreferencesDocument',
+    source: 'firestore/event_setup_preferences.schema.json',
+    schema: schemaEventSetupPreferencesDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdatePrivateEventPreferencesCallablePayload',
+    source: 'callables/update_private_event_preferences_payload.schema.json',
+    schema: schemaUpdatePrivateEventPreferencesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventSetupReceiptDocument',
     source: 'firestore/event_setup_receipts.schema.json',
     schema: schemaEventSetupReceiptDocumentSchema,
@@ -4234,6 +4259,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventPreferenceIntents': schemaEventPreferenceIntentsSchema,
+  'ResolvedEventPreferences': schemaResolvedEventPreferencesSchema,
+  'EventPaymentTerms': schemaEventPaymentTermsSchema,
+  'EventSetupPreferencesDocument': schemaEventSetupPreferencesDocumentSchema,
+  'UpdatePrivateEventPreferencesCallablePayload': schemaUpdatePrivateEventPreferencesCallablePayloadSchema,
   'EventSetupReceiptDocument': schemaEventSetupReceiptDocumentSchema,
   'OrganizerEventSetupPreferences': schemaOrganizerEventSetupPreferencesSchema,
   'GetOrganizerEventSetupDefaultsCallablePayload': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
@@ -5080,6 +5110,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'embedded/event_preference_intents.schema.json': schemaEventPreferenceIntentsSchema,
+  'embedded/resolved_event_preferences.schema.json': schemaResolvedEventPreferencesSchema,
+  'embedded/event_payment_terms.schema.json': schemaEventPaymentTermsSchema,
+  'firestore/event_setup_preferences.schema.json': schemaEventSetupPreferencesDocumentSchema,
+  'callables/update_private_event_preferences_payload.schema.json': schemaUpdatePrivateEventPreferencesCallablePayloadSchema,
   'firestore/event_setup_receipts.schema.json': schemaEventSetupReceiptDocumentSchema,
   'embedded/organizer_event_setup_preferences.schema.json': schemaOrganizerEventSetupPreferencesSchema,
   'callables/get_organizer_event_setup_defaults_payload.schema.json': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
