@@ -134,6 +134,26 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
   }]);
 });
 
+test("private or incomplete events never create a Razorpay order", async () => {
+  for (const event of [
+    buildEventDoc({publicationState: "private"} as Partial<EventDocument>),
+    buildEventDoc({capacityLimit: undefined}),
+    buildEventDoc({priceInPaise: undefined}),
+  ]) {
+    await assert.rejects(createRazorpayOrderHandler(
+      buildRequest({data: {eventId: "event-1"}, auth: {uid: "runner-1"}}),
+      {
+        firestore: () => createEventFirestore(event),
+        createClient: failOnClientUse,
+        clientKeyId: () => "unused",
+        now: () => 0,
+        serverTimestamp: () => "server-now",
+      }
+    ), isHttpsError("failed-precondition",
+      "This event is not ready for booking."));
+  }
+});
+
 test(
   "createRazorpayOrderHandler rejects duplicate bookings and full events",
   async () => {

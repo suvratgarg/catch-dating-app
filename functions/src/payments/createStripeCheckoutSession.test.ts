@@ -97,6 +97,33 @@ test("createStripeCheckoutSessionHandler creates trusted destination checkout",
     });
   });
 
+test("private or incomplete events never start Stripe checkout", async () => {
+  for (const event of [
+    buildEventDoc({publicationState: "private"} as Partial<EventDocument>),
+    buildEventDoc({capacityLimit: undefined}),
+    buildEventDoc({priceInPaise: undefined}),
+  ]) {
+    const firestore = new FakeFirestore({
+      "events/event-1": event,
+      "users/runner-1": {gender: "man", interestedInGenders: ["woman"]},
+    });
+    await assert.rejects(createStripeCheckoutSessionHandler(
+      buildRequest({data: {eventId: "event-1"}, auth: {uid: "runner-1"}}),
+      {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        stripe: () => stripeClient({
+          createCheckoutSession: async () => {
+            throw new Error("Stripe should not be called.");
+          },
+        }),
+        serverTimestamp: () => "server-now",
+        checkRateLimit: async () => undefined,
+      }
+    ), isHttpsError("failed-precondition",
+      "This event is not ready for booking."));
+  }
+});
+
 test("createStripeCheckoutSessionHandler rejects hosts without Stripe payouts",
   async () => {
     const firestore = new FakeFirestore({
