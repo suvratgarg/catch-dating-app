@@ -22,6 +22,54 @@ typedef ReadPrivateEventOrganizerDefaults =
     Future<ManagerEventSetupDefaults> Function(String organizerId);
 
 extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
+  void _openPreferences() {
+    final receipt = _receipt;
+    if (receipt == null || _preferencesController != null) return;
+    try {
+      final uid = requireSignedInUid(ref, action: 'edit private event settings');
+      final functions = ref.read(firebaseFunctionsProvider);
+      final eventRepository = PrivateEventSetupRepository(functions);
+      final defaultsRepository = ManagerEventSetupDefaultsRepository(functions);
+      final preferencesRepository = PrivateEventPreferencesRepository(functions);
+      final controller = PrivateEventPreferencesController(
+        userId: uid,
+        organizerId: widget.club.id,
+        eventId: receipt.eventId,
+        readEvent: eventRepository.get,
+        readDefaults: defaultsRepository.get,
+        write: preferencesRepository.update,
+      );
+      controller.addListener(_refresh);
+      setState(() {
+        _preferencesController = controller;
+        _editingPreferences = true;
+      });
+      unawaited(controller.load());
+    } catch (error) {
+      if (mounted) showCatchErrorSnackBar(context, error);
+    }
+  }
+
+  void _closePreferences() {
+    final controller = _preferencesController;
+    if (controller == null) return;
+    final latestRevision = controller.event?.setupRevision;
+    controller.removeListener(_refresh);
+    controller.dispose();
+    setState(() {
+      if (latestRevision != null && _receipt != null &&
+          latestRevision > _receipt!.setupRevision) {
+        _receipt = PrivateEventCreateReceipt(
+          eventId: _receipt!.eventId,
+          setupRevision: latestRevision,
+          replayed: true,
+        );
+      }
+      _preferencesController = null;
+      _editingPreferences = false;
+    });
+  }
+
   Future<void> _loadOrganizerDefaults() async {
     final read = widget.readOrganizerDefaults;
     if (read == null) return;
