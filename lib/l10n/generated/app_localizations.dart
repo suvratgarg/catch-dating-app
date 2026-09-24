@@ -34374,6 +34374,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{fileName} can be imported after event roster setup is available.'**
   String hostsPrivateEventPendingRosterBody({required String fileName});
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual duration'**
+  String get hostsEventDefaultsUsualDuration;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String hostsEventDefaultsMinutes({required int minutes});
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose duration on each event'**
+  String get hostsEventDefaultsClearDuration;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred venue'**
+  String get hostsEventDefaultsPreferredVenue;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue suggestions need an organizer venue picker.'**
+  String get hostsEventDefaultsVenueUnavailable;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved venue suggestion. Review access before using it for an event.'**
+  String get hostsEventDefaultsVenueSaved;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear preferred venue'**
+  String get hostsEventDefaultsClearVenue;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get hostsEventDefaultsOffersHeading;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual offer validity'**
+  String get hostsEventDefaultsOfferValidity;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose offer validity on each event'**
+  String get hostsEventDefaultsClearValidity;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer message template'**
+  String get hostsEventDefaultsMessageTemplate;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested text for an individual handoff'**
+  String get hostsEventDefaultsMessageTemplateHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment suggestions'**
+  String get hostsEventDefaultsPaymentHeading;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred collection method'**
+  String get hostsEventDefaultsCollectionPreference;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual instructions'**
+  String get hostsEventDefaultsManualInstructions;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable payment page'**
+  String get hostsEventDefaultsReusablePage;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal payment request'**
+  String get hostsEventDefaultsPersonalRequest;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checkout'**
+  String get hostsEventDefaultsCatchCheckout;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'A preference only. Event payment and provider readiness are reviewed separately.'**
+  String get hostsEventDefaultsCollectionSuggestionHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose collection method on each event'**
+  String get hostsEventDefaultsClearCollection;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostsEventDefaultsCurrency;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a three-letter currency code.'**
+  String get hostsEventDefaultsInvalidCurrency;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment instructions'**
+  String get hostsEventDefaultsPaymentInstructions;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested instructions for future events'**
+  String get hostsEventDefaultsPaymentInstructionsHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable organizer payment page'**
+  String get hostsEventDefaultsReusablePaymentPage;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/pay'**
+  String get hostsEventDefaultsReusablePageHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a reusable public organizer page belongs here. Personal links stay with one offer.'**
+  String get hostsEventDefaultsReusablePagePrivacyNote;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a secure https payment-page URL.'**
+  String get hostsEventDefaultsInvalidReusablePage;
+
+  /// Manager-only organizer event setup text length validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this to 1,000 characters or fewer.'**
+  String get hostsEventDefaultsTextTooLong;
+
+  /// Manager attestation before retaining a reusable payment URL.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reusable payment page'**
+  String get hostsEventDefaultsReusableConfirmTitle;
+
+  /// Manager attestation before retaining a reusable payment URL.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm this page can be shared with different guests for different events. It is not a personal payment request or invoice.'**
+  String get hostsEventDefaultsReusableConfirmBody;
+
+  /// Cancel reusable payment page attestation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get hostsEventDefaultsReusableConfirmCancel;
+
+  /// Explicitly attest that a payment page is reusable.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reusable page'**
+  String get hostsEventDefaultsReusableConfirmAccept;
+
+  /// Explains why private organizer preferences are not shown without an authorized read.
+  ///
+  /// In en, this message translates to:
+  /// **'Private organizer preferences unavailable'**
+  String get hostsEventDefaultsManagerUnavailable;
+
+  /// Explains why private organizer preferences are not shown without an authorized read.
+  ///
+  /// In en, this message translates to:
+  /// **'A manager-authorized preferences read is required before these suggestions can be shown or edited.'**
+  String get hostsEventDefaultsManagerUnavailableBody;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save still unresolved'**
+  String get hostsPrivateEventPendingExitTitle;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.'**
+  String get hostsPrivateEventPendingExitBody;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay and retry'**
+  String get hostsPrivateEventPendingStay;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave; retry later'**
+  String get hostsPrivateEventPendingLeave;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue saved event'**
+  String get hostsPrivateEventContinueSaved;
 }
 
 class _AppLocalizationsDelegate

@@ -21449,4 +21449,144 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsPrivateEventPendingRosterBody({required String fileName}) {
     return '$fileName can be imported after event roster setup is available.';
   }
+
+  @override
+  String get hostsEventDefaultsUsualDuration => 'Usual duration';
+
+  @override
+  String hostsEventDefaultsMinutes({required int minutes}) {
+    return '$minutes min';
+  }
+
+  @override
+  String get hostsEventDefaultsClearDuration => 'Choose duration on each event';
+
+  @override
+  String get hostsEventDefaultsPreferredVenue => 'Preferred venue';
+
+  @override
+  String get hostsEventDefaultsVenueUnavailable =>
+      'Venue suggestions need an organizer venue picker.';
+
+  @override
+  String get hostsEventDefaultsVenueSaved =>
+      'Saved venue suggestion. Review access before using it for an event.';
+
+  @override
+  String get hostsEventDefaultsClearVenue => 'Clear preferred venue';
+
+  @override
+  String get hostsEventDefaultsOffersHeading => 'Offers';
+
+  @override
+  String get hostsEventDefaultsOfferValidity => 'Usual offer validity';
+
+  @override
+  String get hostsEventDefaultsClearValidity =>
+      'Choose offer validity on each event';
+
+  @override
+  String get hostsEventDefaultsMessageTemplate => 'Offer message template';
+
+  @override
+  String get hostsEventDefaultsMessageTemplateHint =>
+      'Suggested text for an individual handoff';
+
+  @override
+  String get hostsEventDefaultsPaymentHeading => 'Payment suggestions';
+
+  @override
+  String get hostsEventDefaultsCollectionPreference =>
+      'Preferred collection method';
+
+  @override
+  String get hostsEventDefaultsManualInstructions => 'Manual instructions';
+
+  @override
+  String get hostsEventDefaultsReusablePage => 'Reusable payment page';
+
+  @override
+  String get hostsEventDefaultsPersonalRequest => 'Personal payment request';
+
+  @override
+  String get hostsEventDefaultsCatchCheckout => 'Catch checkout';
+
+  @override
+  String get hostsEventDefaultsCollectionSuggestionHint =>
+      'A preference only. Event payment and provider readiness are reviewed separately.';
+
+  @override
+  String get hostsEventDefaultsClearCollection =>
+      'Choose collection method on each event';
+
+  @override
+  String get hostsEventDefaultsCurrency => 'Currency';
+
+  @override
+  String get hostsEventDefaultsInvalidCurrency =>
+      'Use a three-letter currency code.';
+
+  @override
+  String get hostsEventDefaultsPaymentInstructions => 'Payment instructions';
+
+  @override
+  String get hostsEventDefaultsPaymentInstructionsHint =>
+      'Suggested instructions for future events';
+
+  @override
+  String get hostsEventDefaultsReusablePaymentPage =>
+      'Reusable organizer payment page';
+
+  @override
+  String get hostsEventDefaultsReusablePageHint => 'https://example.com/pay';
+
+  @override
+  String get hostsEventDefaultsReusablePagePrivacyNote =>
+      'Only a reusable public organizer page belongs here. Personal links stay with one offer.';
+
+  @override
+  String get hostsEventDefaultsInvalidReusablePage =>
+      'Use a secure https payment-page URL.';
+
+  @override
+  String get hostsEventDefaultsTextTooLong =>
+      'Keep this to 1,000 characters or fewer.';
+
+  @override
+  String get hostsEventDefaultsReusableConfirmTitle =>
+      'Confirm reusable payment page';
+
+  @override
+  String get hostsEventDefaultsReusableConfirmBody =>
+      'I confirm this page can be shared with different guests for different events. It is not a personal payment request or invoice.';
+
+  @override
+  String get hostsEventDefaultsReusableConfirmCancel => 'Cancel';
+
+  @override
+  String get hostsEventDefaultsReusableConfirmAccept => 'Confirm reusable page';
+
+  @override
+  String get hostsEventDefaultsManagerUnavailable =>
+      'Private organizer preferences unavailable';
+
+  @override
+  String get hostsEventDefaultsManagerUnavailableBody =>
+      'A manager-authorized preferences read is required before these suggestions can be shown or edited.';
+
+  @override
+  String get hostsPrivateEventPendingExitTitle => 'Save still unresolved';
+
+  @override
+  String get hostsPrivateEventPendingExitBody =>
+      'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.';
+
+  @override
+  String get hostsPrivateEventPendingStay => 'Stay and retry';
+
+  @override
+  String get hostsPrivateEventPendingLeave => 'Leave; retry later';
+
+  @override
+  String get hostsPrivateEventContinueSaved => 'Continue saved event';
 }
