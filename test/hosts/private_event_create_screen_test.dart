@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -211,6 +212,48 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.text('Private'), findsOneWidget);
     expect(accidentalCreateCalls, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('saved setup action remains reachable at 360px and 2x text', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    var guideOpens = 0;
+    await tester.pumpWidget(MaterialApp(
+      theme: CatchTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: MediaQuery(
+        data: const MediaQueryData(
+          size: Size(360, 800),
+          textScaler: TextScaler.linear(2),
+        ),
+        child: PrivateEventSetupScreen(
+          club: buildClub(),
+          receipt: const PrivateEventCreateReceipt(
+            eventId: 'saved-private-event',
+            setupRevision: 1,
+            replayed: false,
+          ),
+          name: 'Saturday mixer',
+          date: DateTime(2026, 10, 3),
+          start: const TimeOfDay(hour: 19, minute: 0),
+          cityLabel: 'Mumbai',
+          onClose: () {},
+          onSetupGuide: () => guideOpens++,
+        ),
+      ),
+    ));
+    await tester.ensureVisible(find.text('Live event guide'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Live event guide'));
+    await tester.pump();
+    expect(guideOpens, 1);
     expect(tester.takeException(), isNull);
   });
 }

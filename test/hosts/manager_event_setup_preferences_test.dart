@@ -113,4 +113,35 @@ void main() {
     expect(find.text('90 min'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('manager preferences remain scrollable at 360px and 2x text', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(MaterialApp(
+      theme: CatchTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: MediaQuery(
+        data: const MediaQueryData(
+          size: Size(360, 800),
+          textScaler: TextScaler.linear(2),
+        ),
+        child: const Scaffold(
+          body: SingleChildScrollView(
+            child: HostManagerEventSetupPreferencesSection(
+              preferences: ManagerEventSetupPreferences(),
+            ),
+          ),
+        ),
+      ),
+    ));
+    await tester.ensureVisible(find.text('Reusable organizer payment page'));
+    await tester.pumpAndSettle();
+    expect(find.text('Reusable organizer payment page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
