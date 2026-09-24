@@ -1,13 +1,11 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:flutter/foundation.dart';
 
-/// A gateway is implemented only after the manager callable contract is
-/// registered. The controller never treats a read result as bulk authority.
-abstract interface class HostResponseQueryGateway {
-  Future<HostResponseQueryPage> query(HostResponseQueryRequest request);
-}
+export 'package:catch_dating_app/hosts/data/host_response_query_repository.dart'
+    show HostResponseQueryGateway;
 
 enum HostResponseQueryStatus {
   idle,
@@ -96,7 +94,9 @@ class HostResponseQueryController extends ChangeNotifier {
     );
     try {
       final page = await _gateway.query(request.withCursor(null));
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       _requireValidPage(page, request, firstPage: true);
       _selection = HostResponseSelection(
         queryHash: page.queryHash,
@@ -104,7 +104,9 @@ class HostResponseQueryController extends ChangeNotifier {
       );
       _publish(_fromPage(request.withCursor(null), page));
     } on Object catch (error) {
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       final failure = _normalizeError(error);
       _publish(
         HostResponseQueryView(
@@ -120,13 +122,17 @@ class HostResponseQueryController extends ChangeNotifier {
   Future<void> loadMore() async {
     final current = _view;
     final request = current.request;
-    if (request == null || !current.canLoadMore) return;
+    if (request == null || !current.canLoadMore) {
+      return;
+    }
     final cursor = current.nextCursor!;
     final generation = _generation;
     _publish(_copy(current, loadingMore: true));
     try {
       final page = await _gateway.query(request.withCursor(cursor));
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       _requireValidPage(page, request, firstPage: false);
       if (page.queryHash != current.queryHash ||
           page.resultHash != current.resultHash ||
@@ -169,7 +175,9 @@ class HostResponseQueryController extends ChangeNotifier {
         ),
       );
     } on Object catch (error) {
-      if (!_isCurrent(generation)) return;
+      if (!_isCurrent(generation)) {
+        return;
+      }
       final failure = _normalizeError(error);
       _selection = null;
       _publish(
@@ -208,7 +216,9 @@ class HostResponseQueryController extends ChangeNotifier {
 
   void clearSelection() {
     final current = _view;
-    if (current.selectedIds.isEmpty) return;
+    if (current.selectedIds.isEmpty) {
+      return;
+    }
     _selection = HostResponseSelection(
       queryHash: current.queryHash!,
       resultHash: current.resultHash!,
@@ -220,11 +230,44 @@ class HostResponseQueryController extends ChangeNotifier {
   /// manager authority, source state, identity and this exact result itself.
   ({List<String> ids, String resultHash})? get selectionIntent {
     final current = _view;
-    if (!current.canActOnSelection || current.resultHash == null) return null;
+    if (!current.canActOnSelection || current.resultHash == null) {
+      return null;
+    }
     return (
       ids: current.selectedIds.toList()..sort(),
       resultHash: current.resultHash!,
     );
+  }
+
+  /// Rechecks the same materialized result after an async event choice or
+  /// response-detail return. This does not authorize an offer: the server's
+  /// preview and commit independently resolve current source/CRM authority.
+  Future<bool> revalidateSelection({
+    required List<String> ids,
+    required String resultHash,
+  }) async {
+    final view = _view;
+    final request = view.request;
+    final generation = _generation;
+    if (request == null || ids.isEmpty || ids.length > 25 ||
+        view.status != HostResponseQueryStatus.ready ||
+        view.resultHash != resultHash ||
+        !view.selectedIds.containsAll(ids)) {
+      return false;
+    }
+    try {
+      final page = await _gateway.query(request.withCursor(null));
+      if (!_isCurrent(generation) || _view.resultHash != resultHash ||
+          !_view.selectedIds.containsAll(ids) ||
+          page.queryHash != view.queryHash ||
+          page.resultHash != resultHash ||
+          !page.selectedIds.containsAll(ids)) {
+        return false;
+      }
+      return true;
+    } on Object {
+      return false;
+    }
   }
 
   HostResponseQueryView _fromPage(
@@ -272,6 +315,9 @@ class HostResponseQueryController extends ChangeNotifier {
   );
 
   HostResponseQueryStatus _errorStatus(AppException error) {
+    if (error.code == 'response-query-stale') {
+      return HostResponseQueryStatus.stale;
+    }
     if (error.code == 'too-many-requests') {
       return HostResponseQueryStatus.budgetExceeded;
     }
@@ -304,7 +350,9 @@ class HostResponseQueryController extends ChangeNotifier {
   );
 
   void _publish(HostResponseQueryView value) {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     _view = value;
     notifyListeners();
   }

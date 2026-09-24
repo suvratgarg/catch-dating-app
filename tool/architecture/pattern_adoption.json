@@ -1022,6 +1022,12 @@
           "role": "provider-free setup/live/report participant row policy, waitlist offer signals, attendance affordances, payment display and localized metadata",
           "providerFree": true,
           "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_forms_directory_state.dart",
+          "role": "provider-free forms directory page and pagination display state extracted from the account-scoped controller; no provider reads or mutations",
+          "providerFree": true,
+          "status": "aligned"
         }
       ],
       "variantPatterns": [],

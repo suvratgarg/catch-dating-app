@@ -1,9 +1,13 @@
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_private_event_setup_inventory_section.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -21,6 +25,9 @@ Future<HostEventEntrySelection?> showHostEventEntrySheet({
     builder: (sheetContext) => Consumer(
       builder: (context, ref, _) => HostEventEntrySheet(
         state: state,
+        readPrivateInventory: privateEventSetupAvailable()
+            ? PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).list
+            : null,
         onDeleteDraft:
             onDeleteDraft ??
             (draft) async {
@@ -43,17 +50,24 @@ class HostEventEntrySheet extends StatefulWidget {
     super.key,
     required this.state,
     this.onDeleteDraft,
+    this.readPrivateInventory,
   });
 
   final HostEventEntryState state;
   final Future<void> Function(EventDraft)? onDeleteDraft;
+  final ReadPrivateEventSetupInventory? readPrivateInventory;
 
   @override
   State<HostEventEntrySheet> createState() => _HostEventEntrySheetState();
 }
 
 class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
-  late final List<EventDraft> _drafts = List.of(widget.state.drafts);
+  late final List<EventDraft> _drafts = List.of(
+    widget.readPrivateInventory == null
+        ? widget.state.drafts
+        : widget.state.drafts.where((draft) =>
+            draft.eventCreateReceiptEventId == null),
+  );
   String? _deletingDraftId;
 
   Future<void> _deleteDraft(EventDraft draft) async {
@@ -84,6 +98,14 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
         emptyStateOmitted: true,
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (widget.readPrivateInventory case final read?)
+            HostPrivateEventSetupInventorySection(
+              organizerId: widget.state.organizerId!,
+              read: read,
+              openSaved: (eventId) async => Navigator.of(context).pop(
+                HostEventEntrySelection.saved(eventId),
+              ),
+            ),
           if (_drafts.isNotEmpty || widget.state.repeatSource != null)
             CatchSection.fieldRows(
               first: true,
@@ -93,6 +115,12 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
                 for (final draft in _drafts)
                   DraftCard(
                     draft: draft,
+                    titleOverride: draft.eventCreateReceiptEventId == null
+                        ? null
+                        : context.l10n.hostsPrivateEventContinueSaved,
+                    bodyOverride: draft.eventCreateReceiptEventId == null
+                        ? null
+                        : draft.summary,
                     isDeleting: _deletingDraftId == draft.id,
                     onSelect: () => Navigator.of(
                       context,
@@ -152,6 +180,7 @@ class _HostEventEntryRow extends StatelessWidget {
         key: ValueKey<String>('host-event-entry-${intent.name}'),
         title: _title(context),
         body: _body(context),
+        bodyMaxLines: intent == HostEventEntryIntent.createEvent ? 3 : 2,
         icon: _icon,
         emphasis: CatchFieldEmphasis.title,
         onTap: onTap,
@@ -164,10 +193,10 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetTitleContinueDraft,
     HostEventEntryIntent.repeatLastEvent =>
       context.l10n.hostsHostEventEntrySheetTitleRepeatLastEvent,
-    HostEventEntryIntent.createWithCatchBookings =>
-      context.l10n.hostsHostEventEntrySheetTitleSellTicketsWithCatch,
-    HostEventEntryIntent.createFromGuestList =>
-      context.l10n.hostsHostEventsListLabelUseGuestList,
+    HostEventEntryIntent.createEvent =>
+      context.l10n.hostsHostEventsListLabelNewEvent,
+    HostEventEntryIntent.resumePrivateEvent =>
+      context.l10n.hostsPrivateEventContinueSaved,
   };
 
   String _body(BuildContext context) => switch (intent) {
@@ -180,17 +209,15 @@ class _HostEventEntryRow extends StatelessWidget {
       context.l10n.hostsHostEventEntrySheetBodyReuseEventSetup(
         eventTitle: state.repeatSource?.title ?? '',
       ),
-    HostEventEntryIntent.createWithCatchBookings =>
-      context.l10n.hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments,
-    HostEventEntryIntent.createFromGuestList =>
-      context.l10n.hostsHostEventEntrySheetBodyImportCsvOrXlsx,
+    HostEventEntryIntent.createEvent =>
+      context.l10n.hostsPrivateEventEntryBody,
+    HostEventEntryIntent.resumePrivateEvent => '',
   };
 
   IconData get _icon => switch (intent) {
     HostEventEntryIntent.resumeDraft => CatchIcons.editNoteRounded,
     HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
-    HostEventEntryIntent.createWithCatchBookings =>
-      CatchIcons.confirmationNumberOutlined,
-    HostEventEntryIntent.createFromGuestList => CatchIcons.cloudUploadOutlined,
+    HostEventEntryIntent.createEvent => CatchIcons.eventAvailableOutlined,
+    HostEventEntryIntent.resumePrivateEvent => CatchIcons.editNoteRounded,
   };
 }

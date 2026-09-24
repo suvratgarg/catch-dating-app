@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_offers.schema.json",
+  "title": "OrganizerEventOfferDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "contactId",
+    "applicationId",
+    "sourceKind",
+    "offerId",
+    "status",
+    "generation",
+    "revision",
+    "expiresAtMillis",
+    "organizerPaymentLink",
+    "paymentSnapshot",
+    "offeredAtMillis",
+    "manualPayment",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "applicationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "sourceKind": {
+      "type": "string",
+      "enum": [
+        "application",
+        "formResponse"
+      ]
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "offered",
+        "withdrawn",
+        "expired"
+      ]
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "organizerPaymentLink": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "paymentSnapshot": {
+      "$ref": "../embedded/event_offer_payment_snapshot.schema.json"
+    },
+    "offeredAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "manualPayment": {
+      "$ref": "../embedded/event_offer_manual_payment.schema.json"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

@@ -292,8 +292,16 @@ async function claimBroadcast(params: {
         "Only an organizer manager can send a broadcast."
       );
     }
+    const endAtMillis = event.endTime?.toMillis();
+    if (typeof endAtMillis !== "number" ||
+        !Number.isFinite(endAtMillis)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "This event needs an end time before broadcasts can be sent."
+      );
+    }
     if (event.status === "cancelled" ||
-        event.endTime.toMillis() <= now.getTime()) {
+        endAtMillis <= now.getTime()) {
       throw new HttpsError(
         "failed-precondition",
         "Broadcasts are available only before an active event ends."

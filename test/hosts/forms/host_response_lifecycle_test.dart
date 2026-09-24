@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,6 +61,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            firebaseAuthProvider.overrideWithValue(_LifecycleAuth()),
             uidProvider.overrideWithValue(const AsyncData<String?>('host')),
             hostOperableClubsProvider('host').overrideWithValue(
               AsyncData([buildClub(id: 'org', ownerUserId: 'host')]),
@@ -474,4 +477,14 @@ class _Importer extends Fake implements HostApplicationsController {
       replayed: false,
     );
   }
+}
+
+class _LifecycleAuth extends Fake implements FirebaseAuth {
+  @override
+  User? get currentUser => _LifecycleUser();
+}
+
+class _LifecycleUser extends Fake implements User {
+  @override
+  String get uid => 'host';
 }

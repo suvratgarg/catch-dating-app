@@ -123,7 +123,8 @@ class Query {
 }
 
 export class AudienceTestStore {
-  constructor(readonly docs: Record<string, Data> = {}) {}
+  constructor(readonly docs: Record<string, Data> = {},
+    readonly updateTimes: Record<string, FirebaseFirestore.Timestamp> = {}) {}
   collection(path: string) {
     return new Query(this, path);
   }
@@ -132,7 +133,8 @@ export class AudienceTestStore {
   }
   snapshot(ref: Ref) {
     const data = this.docs[ref.path];
-    return {ref, id: ref.id, exists: data !== undefined, data: () => data};
+    return {ref, id: ref.id, exists: data !== undefined,
+      updateTime: this.updateTimes[ref.path], data: () => data};
   }
   async getAll(...refs: Ref[]) {
     return refs.map((ref) => this.snapshot(ref));

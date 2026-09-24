@@ -76,8 +76,9 @@ export async function readOrganizerAutomationEvent(
     const event = (
       await db.collection("events").doc(edge.eventId).get()
     ).data() as EventDocument | undefined;
+    const endAt = event?.endTime;
     if (
-      !event ||
+      !event || !endAt || !Number.isFinite(endAt.toMillis()) ||
       (event.organizerId ?? event.clubId) !== edge.organizerId ||
       event.status === "cancelled"
     ) {
@@ -91,7 +92,7 @@ export async function readOrganizerAutomationEvent(
       eventId: edge.eventId,
       contactId: edge.contactId,
       occurredAt: edge.checkedInAt,
-      eventEndAt: event.endTime,
+      eventEndAt: endAt,
       response: null,
     };
   } else {

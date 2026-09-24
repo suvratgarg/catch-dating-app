@@ -1,32 +1,15 @@
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
+
+export 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart'
+    show HostEventOfferGateway, HostOfferCommitOutbox,
+         HostOfferMutationOutbox;
 
 /// The gateway is bound to manager-only callables after shared contracts land.
 /// No client-supplied authority flags, seat holds or provider state are accepted.
-abstract interface class HostEventOfferGateway {
-  Future<HostOfferPreview> preview(HostOfferBatchDraft draft);
-
-  Future<HostOfferCommitReceipt> commit({
-    required HostOfferBatchDraft draft,
-    required HostOfferPreview preview,
-    required String requestId,
-  });
-
-  Future<HostEventOffer> recordReference({
-    required HostEventOffer offer,
-    required String reference,
-    required String requestId,
-  });
-
-  Future<HostEventOffer> reviewReference({
-    required HostEventOffer offer,
-    required HostManualPaymentStatus decision,
-    required String note,
-    required bool bankReceiptChecked,
-    required String requestId,
-  });
-}
-
 enum HostOfferFlowStatus {
   idle,
   previewing,
@@ -61,9 +44,33 @@ class HostOfferFlowView {
 /// Holds one reviewed batch from preview through idempotent commit. A changed
 /// source, CRM contact, event or terms requires a fresh preview.
 class HostEventOfferController extends ChangeNotifier {
-  HostEventOfferController(this._gateway);
+  HostEventOfferController(this._gateway, {
+    this.outbox,
+    this.mutationOutbox,
+    this.accountId,
+  });
+
+  /// Callers still gate this feature until the server integration is live.
+  factory HostEventOfferController.forCallables({
+    required FirebaseFunctions functions,
+    required Future<CommandJournalStorage> Function() storage,
+    required String? Function() currentAccountId,
+  }) {
+    final gateway = CallableHostEventOfferGateway(functions);
+    final accountId = currentAccountId();
+    return HostEventOfferController(gateway,
+      accountId: accountId,
+      outbox: JournalHostOfferCommitOutbox(storage: storage,
+        currentAccountId: currentAccountId, gateway: gateway),
+      mutationOutbox: JournalHostOfferMutationOutbox.forGateway(
+        storage: storage, currentAccountId: currentAccountId,
+        gateway: gateway));
+  }
 
   final HostEventOfferGateway _gateway;
+  final HostOfferCommitOutbox? outbox;
+  final HostOfferMutationOutbox? mutationOutbox;
+  final String? accountId;
   int _generation = 0;
   bool _disposed = false;
   HostOfferFlowView _view = const HostOfferFlowView(
@@ -72,12 +79,37 @@ class HostEventOfferController extends ChangeNotifier {
 
   HostOfferFlowView get view => _view;
 
+  Future<void> recoverPending({
+    required String organizerId,
+    required String eventId,
+  }) async {
+    final outbox = this.outbox;
+    final accountId = this.accountId;
+    if (outbox == null || accountId == null) return;
+    final generation = ++_generation;
+    final pending = await outbox.pending(accountId: accountId,
+      organizerId: organizerId, eventId: eventId);
+    if (!_isCurrent(generation) || pending == null) return;
+    _publish(HostOfferFlowView(status: HostOfferFlowStatus.failure,
+      draft: pending.draft, preview: pending.preview,
+      pendingRequestId: pending.requestId,
+      error: StateError('Resolve the saved offer operation before editing.')));
+  }
+
   Future<void> preview({
     required HostOfferBatchDraft draft,
     required DateTime now,
     required DateTime eventStartsAt,
   }) async {
     final generation = ++_generation;
+    final outbox = this.outbox;
+    final accountId = this.accountId;
+    if (outbox != null && accountId != null &&
+        await outbox.pending(accountId: accountId,
+          organizerId: draft.organizerId, eventId: draft.eventId) != null) {
+      throw StateError('Resolve the saved offer operation before editing.');
+    }
+    if (!_isCurrent(generation)) return;
     _publish(
       HostOfferFlowView(status: HostOfferFlowStatus.previewing, draft: draft),
     );
@@ -109,6 +141,11 @@ class HostEventOfferController extends ChangeNotifier {
   }
 
   Future<void> commit(String requestId) async {
+    final outbox = this.outbox;
+    final accountId = this.accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      throw StateError('Durable offer storage is required before committing.');
+    }
     final current = _view;
     if (current.draft == null ||
         current.preview == null ||
@@ -129,12 +166,16 @@ class HostEventOfferController extends ChangeNotifier {
       ),
     );
     try {
-      final receipt = await _gateway.commit(
+      final receipt = await outbox.submit(
+        accountId: accountId,
         draft: current.draft!,
         preview: current.preview!,
         requestId: requestId,
       );
       if (!_isCurrent(generation)) return;
+      if (receipt == null) {
+        throw StateError('Offer result is uncertain; retry the saved request.');
+      }
       if (receipt.requestId != requestId ||
           receipt.organizerId != current.draft!.organizerId ||
           receipt.eventId != current.draft!.eventId ||
@@ -177,11 +218,43 @@ class HostEventOfferController extends ChangeNotifier {
         RegExp(r'^[a-z]+://', caseSensitive: false).hasMatch(normalized)) {
       throw ArgumentError('Enter a new payment reference, not a URL.');
     }
-    return _gateway.recordReference(
-      offer: offer,
-      reference: normalized,
-      requestId: requestId,
-    );
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      throw StateError('Durable offer storage is required.');
+    }
+    return outbox.mutate(accountId: accountId, offer: offer, action: {
+      'kind': 'recordEvidence', 'requestId': requestId,
+      'expectedRevision': offer.revision,
+      'expectedGeneration': offer.generation,
+      'evidenceReference': normalized,
+    });
+  }
+
+  Future<HostOfferPendingMutation?> recoverPendingMutation({
+    required String organizerId,
+    required String eventId,
+  }) {
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      return Future<HostOfferPendingMutation?>.value();
+    }
+    return outbox.pendingMutation(accountId: accountId,
+      organizerId: organizerId, eventId: eventId);
+  }
+
+  Future<HostEventOffer> retryPendingMutation({
+    required String organizerId,
+    required String eventId,
+  }) {
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      throw StateError('Durable offer storage is required.');
+    }
+    return outbox.replayMutation(accountId: accountId,
+      organizerId: organizerId, eventId: eventId);
   }
 
   Future<HostEventOffer> reviewReference({
@@ -202,13 +275,19 @@ class HostEventOfferController extends ChangeNotifier {
             !bankReceiptChecked) {
       throw ArgumentError('Check bank evidence and record a review reason.');
     }
-    return _gateway.reviewReference(
-      offer: offer,
-      decision: decision,
-      note: normalized,
-      bankReceiptChecked: bankReceiptChecked,
-      requestId: requestId,
-    );
+    final outbox = mutationOutbox;
+    final accountId = this.accountId;
+    if (outbox == null || accountId == null || accountId.isEmpty) {
+      throw StateError('Durable offer storage is required.');
+    }
+    return outbox.mutate(accountId: accountId, offer: offer, action: {
+      'kind': 'reconcileEvidence', 'requestId': requestId,
+      'expectedRevision': offer.revision,
+      'expectedGeneration': offer.generation,
+      'decision': decision.name,
+      'reviewNote': normalized,
+      'bankReceiptChecked': bankReceiptChecked,
+    });
   }
 
   void _publish(HostOfferFlowView next) {

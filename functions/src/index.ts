@@ -681,3 +681,21 @@ export {
   refreshProgramFlightStatuses,
 } from "./transport/programFlightRefresh";
 export {flightAlertWebhook} from "./transport/flightAlerts";
+
+export {
+  createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
+  updatePrivateEventPreferences, listPrivateEventSetups,
+  updatePrivateEventDetails, listOfferEventTargets,
+} from "./events/progressiveSetup/callables";
+
+export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
+
+export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+  from "./organizers/eventSetupDefaults/callables";
+
+export {
+  previewEventOffers, commitEventOffers, mutateEventOffer,
+  getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  getEventOfferConfiguration,
+  configureEventOfferPreferences,
+} from "./organizerEventOffers/callables";

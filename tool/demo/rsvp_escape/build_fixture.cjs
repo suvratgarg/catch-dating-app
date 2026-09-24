@@ -32,17 +32,18 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
  const updated=await forms.updateOrganizerFormDraftHandler(host({organizerId,formId,expectedRevision:1,definition}),deps);
  await forms.publishOrganizerFormHandler(host({organizerId,formId,expectedRevision:updated.form.draftRevision}),deps);
  const guests=[['Maya Demo','Mumbai','Life Partner'],['Arjun Demo','Mumbai','Romantic Relationship'],['Asha Demo','Bangalore','Friendship'],['Kabir Demo','Bangalore','Fun Experience'],['Priya Demo','Hyderabad','Life Partner'],['Dev Demo','Ahmedabad','Networking'],['Sara Demo','Dubai','Romantic Relationship'],['Rohan Demo','Dubai','Friendship']];
+ const homeMarketId={Mumbai:'in-mh-mumbai',Bangalore:'in-ka-bengaluru',Hyderabad:'in-tg-hyderabad',Ahmedabad:'in-gj-ahmedabad',Dubai:'in-mh-mumbai'};
  const records=[];
  for(const [index,[name,city,intent]] of guests.entries()) {
   clock+=60000;
   const email=`rsvp-demo-${index+1}@example.com`,phone=`+1202555010${index+1}`;
-  const guest=data=>({auth:{uid:`synthetic-${index}`,token:{email,email_verified:true}},data});
+  const guest=data=>({auth:{uid:`synthetic-${index}`,token:{phone_number:phone}},data});
   const started=await responses.beginOrganizerFormResponseHandler(guest({publicFormId:deps.publicFormId(),requestId:`demo-rsvp-start-${index}`,sourceToken:null}),deps);
   const answers={};
   for(const q of definition.sections.flatMap(s=>s.questions)) {
    answers[q.questionId]=q.kind==='number'?32:q.kind==='boolean'||q.kind==='acknowledgement'?true:q.kind==='singleChoice'?q.options[0].value:q.kind==='multiChoice'?[q.options[0].value]:q.kind==='file'?[`formasset_demo_${index}`]:q.kind==='date'?'1994-06-10':q.kind==='url'?'https://www.linkedin.com/':'Synthetic demo answer';
   }
-  Object.assign(answers,{rsvp_fullName:name,rsvp_email:email,rsvp_phone:phone,rsvp_eventCity:city,rsvp_homeCity:city,rsvp_intent:intent,rsvp_height:5.7,rsvp_instagram:`https://www.instagram.com/rsvp_demo_${index+1}_synthetic/`,rsvp_gender:index%2?'Male':'Female'});
+  Object.assign(answers,{rsvp_fullName:name,rsvp_email:email,rsvp_phone:phone,rsvp_eventCity:city,rsvp_homeCity:homeMarketId[city],rsvp_intent:intent,rsvp_height:5.7,rsvp_instagram:`https://www.instagram.com/rsvp_demo_${index+1}_synthetic/`,rsvp_gender:index%2?'Male':'Female'});
   if(city!=='Dubai'){delete answers.rsvp_dubaiYears;delete answers.rsvp_singlesTravel;}
   store.docs[`organizerFormAssets/formasset_demo_${index}`]={organizerId,formId,versionId:started.form.versionId,draftId:started.draftId,questionId:'rsvp_photo',respondentUid:`synthetic-${index}`,status:'ready',deletedAt:null,storagePath:'synthetic-only',originalFileName:'synthetic-demo.png',contentType:'image/png',sizeBytes:100};
   const saved=await responses.saveOrganizerFormResponseDraftHandler(guest({draftId:started.draftId,draftToken:null,expectedRevision:started.revision,answers,consentAccepted:true}),deps);
@@ -73,7 +74,7 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
    submitPublic:async request => {
     const sequence = ++publicSequence;
     const uid = `synthetic-public-${sequence}`;
-    const guest = data => ({auth:{uid, token:{email:`public-${sequence}@example.com`,email_verified:true}},data});
+    const guest = data => ({auth:{uid, token:{phone_number:`+120255502${String(sequence).padStart(2,'0')}`}},data});
     const started = await responses.beginOrganizerFormResponseHandler(guest({publicFormId:deps.publicFormId(),requestId:`rsvp-public-begin-${sequence}`,sourceToken:null}),deps);
     const answers = {...request.data.answers};
     // Image selection is a local stub; the asset is scoped to this synthetic draft.

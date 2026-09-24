@@ -251,6 +251,28 @@ test("buildHostAnalyticsFromRecords aggregates host-safe metrics", () => {
   assert.equal(eventBucket.metrics.reviews, 1);
 });
 
+test("incomplete private event keeps name without fake capacity", () => {
+  const range = resolveAnalyticsRange({
+    rangePreset: "custom",
+    startDate: "2026-06-01",
+    endDate: "2026-06-30",
+  }, new Date("2026-06-18T12:00:00.000Z"));
+  const input = records();
+  input.events[0].data.name = "Private meetup";
+  input.events[0].data.capacityLimit = undefined as never;
+  input.events[0].data.eventFormat = undefined as never;
+  input.martRows = [];
+  input.operationalAttendees = [{
+    id: "attendee-1",
+    data: {eventId: "event-1", source: "hostImport",
+      status: "registered"} as never,
+  }];
+  const response = buildHostAnalyticsFromRecords(input, range,
+    new Date("2026-06-18T12:00:00.000Z"));
+  assert.equal(response.scope.eventTitle, "Private meetup");
+  assert.deepEqual(response.topEvents, []);
+});
+
 test("buildHostAnalyticsFromRecords totals beyond the top event slice", () => {
   const range = resolveAnalyticsRange({
     rangePreset: "custom",

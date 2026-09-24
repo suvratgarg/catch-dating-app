@@ -342,7 +342,7 @@
       "dartModel": "lib/events/domain/event.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "host creates and edits events through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
-      "read": "public",
+      "read": "published and legacy public events; private events require current organizer manager or active viewRoster staff grant; public lists constrain publicationState",
       "write": "all event writes are callable-owned; direct client writes are denied",
       "exportedFunctions": [
         "createEvent",
@@ -487,6 +487,10 @@
       "migrationNotes": [
         "cancelEvent handles events with history.",
         "deleteEvent hard-deletes only unused hosted events with no participations, payments, or reviews."
+      ],
+      "rulesTestNames": [
+        "protects private event reads by manager and active staff authority",
+        "publication queries cannot include private or unlabelled setup records"
       ]
     },
     {
@@ -848,11 +852,16 @@
       "typescriptInterface": "OrganizerFormDomainDocument",
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": ["keeps organizer form state server-only"],
+      "rulesTestNames": [
+        "keeps organizer form state server-only"
+      ],
       "owner": "organizer form domain registry",
       "read": "server only; manager sees bounded callable status",
       "write": "server only",
-      "exportedFunctions": ["manageOrganizerFormDomain", "resolvePublicFormDomain"]
+      "exportedFunctions": [
+        "manageOrganizerFormDomain",
+        "resolvePublicFormDomain"
+      ]
     },
     {
       "id": "organizerFormDrafts",
@@ -3250,6 +3259,213 @@
         "getEventChatProfile",
         "requestAccountDeletion"
       ]
+    },
+    {
+      "id": "organizerEventSetupDefaults",
+      "path": "organizerEventSetupDefaults/{organizerId}",
+      "rulesMatch": "/organizerEventSetupDefaults/{organizerId}",
+      "typescriptInterface": "OrganizerEventSetupDefaultsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "organizer event setup manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getOrganizerEventSetupDefaults",
+        "updateOrganizerEventSetupDefaults"
+      ]
+    },
+    {
+      "id": "organizerEventSetupDefaultReceipts",
+      "path": "organizerEventSetupDefaultReceipts/{receiptId}",
+      "rulesMatch": "/organizerEventSetupDefaultReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerEventSetupDefaultReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "organizer event setup manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getOrganizerEventSetupDefaults",
+        "updateOrganizerEventSetupDefaults"
+      ]
+    },
+    {
+      "id": "eventSetupReceipts",
+      "path": "eventSetupReceipts/{receiptId}",
+      "rulesMatch": "/eventSetupReceipts/{receiptId}",
+      "typescriptInterface": "EventSetupReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps private event setup receipts server-only"
+      ],
+      "owner": "private event setup operations",
+      "read": "server only; manager callable operation result",
+      "write": "server only",
+      "exportedFunctions": [
+        "createPrivateEventSetup",
+        "updatePrivateEventBasics",
+        "updatePrivateEventDetails",
+        "updatePrivateEventPreferences"
+      ]
+    },
+    {
+      "id": "eventSetupPreferences",
+      "path": "eventSetupPreferences/{eventId}",
+      "rulesMatch": "/eventSetupPreferences/{eventId}",
+      "typescriptInterface": "EventSetupPreferencesDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "private event setup operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "updatePrivateEventPreferences",
+        "getPrivateEventSetup",
+        "getEventOfferConfiguration",
+        "configureEventOfferPreferences"
+      ]
+    },
+    {
+      "id": "organizerEventOffers",
+      "path": "organizerEventOffers/{documentId}",
+      "rulesMatch": "/organizerEventOffers/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "organizerEventOfferActionReceipts",
+      "path": "organizerEventOfferActionReceipts/{documentId}",
+      "rulesMatch": "/organizerEventOfferActionReceipts/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferActionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "organizerEventOfferBatchReceipts",
+      "path": "organizerEventOfferBatchReceipts/{documentId}",
+      "rulesMatch": "/organizerEventOfferBatchReceipts/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferBatchReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "organizerEventOfferAudits",
+      "path": "organizerEventOfferAudits/{documentId}",
+      "rulesMatch": "/organizerEventOfferAudits/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferAuditDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps event offers and evidence server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "previewEventOffers",
+        "commitEventOffers",
+        "mutateEventOffer",
+        "getEventOffer",
+        "listEventOffers"
+      ]
+    },
+    {
+      "id": "eventOfferConfigurationReceipts",
+      "path": "eventOfferConfigurationReceipts/{receiptId}",
+      "rulesMatch": "/eventOfferConfigurationReceipts/{receiptId}",
+      "typescriptInterface": "EventOfferConfigurationReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable receipt replay",
+      "write": "server only",
+      "exportedFunctions": [
+        "configureEventOfferPreferences"
+      ]
+    },
+    {
+      "id": "organizerFormAdmissions",
+      "path": "organizerFormAdmissions/{documentId}",
+      "rulesMatch": "/organizerFormAdmissions/{documentId}",
+      "typescriptInterface": "OrganizerFormAdmissionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps atomic form admission ownership and payment receipts server-only"
+      ],
+      "owner": "atomic organizer form admission service",
+      "read": "server only; current manager receipt projection",
+      "write": "server only; immutable source marker and receipt in one transaction",
+      "exportedFunctions": []
+    },
+    {
+      "id": "organizerFormAdmissionReceipts",
+      "path": "organizerFormAdmissionReceipts/{documentId}",
+      "rulesMatch": "/organizerFormAdmissionReceipts/{documentId}",
+      "typescriptInterface": "OrganizerFormAdmissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps atomic form admission ownership and payment receipts server-only"
+      ],
+      "owner": "atomic organizer form admission service",
+      "read": "server only; current manager receipt projection",
+      "write": "server only; immutable source marker and receipt in one transaction",
+      "exportedFunctions": []
     }
   ]
 }

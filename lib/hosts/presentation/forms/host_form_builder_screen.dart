@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
@@ -6,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actions.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
@@ -71,16 +73,32 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final actor = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final responseAccountId = actor.isSettledData ? actor.value : null;
     final editor = ref.watch(
       hostFormEditorControllerProvider(widget.organizerId, widget.formId),
     );
-    final editorValue = catchAsyncStateFromAsyncValue(editor).value;
     final notifier = ref.read(
       hostFormEditorControllerProvider(
         widget.organizerId,
         widget.formId,
       ).notifier,
     );
+    final editorState = catchAsyncStateFromAsyncValue(editor);
+    final editorValue = editorState.isSettledData &&
+            notifier.editorBoundTo(responseAccountId)
+        ? editorState.value
+        : null;
+    // CatchAsyncBoundary may retain a previous account's AsyncData on refresh.
+    // Only the actor-bound editor can reach the body or its actions.
+    final safeEditor = editorValue != null
+        ? AsyncData<HostFormEditorState>(editorValue)
+        : editorState.isTerminalError
+            ? AsyncError<HostFormEditorState>(
+                editorState.error!,
+                editorState.stackTrace ?? StackTrace.current,
+              )
+            : const AsyncLoading<HostFormEditorState>();
     final compact =
         MediaQuery.sizeOf(context).width <
         CatchFormWorkspaceTokens.formBuilderExpandedBreakpoint;
@@ -157,7 +175,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
           top: false,
           bottom: false,
           child: CatchAsyncBoundary<HostFormEditorState>(
-            value: editor,
+            value: safeEditor,
             onRetry: notifier.reload,
             initialLoadTimeout: null,
             loadingBuilder: (_) => const CatchStateViewport.loading(
@@ -262,10 +280,19 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   }),
                 ),
                 HostFormWorkspaceView.responses => HostFormResponsesPanel(
+                  key: ValueKey('form-responses-${widget.organizerId}-'
+                      '${widget.formId}-$responseAccountId'),
                   organizerId: widget.organizerId,
+                  accountId: responseAccountId,
+                  requireAccount: true,
                   formId: widget.formId,
                   formTitle: value.editor.definition.title,
                   showFormContext: false,
+                  queryCapability: privateEventSetupAvailable() &&
+                          value.editor.form.activeVersionId != null
+                      ? hostResponseQueryCapability(context.l10n,
+                          versionId: value.editor.form.activeVersionId!)
+                      : null,
                 ),
                 HostFormWorkspaceView.payments => HostFormPaymentsSectionList(
                   organizerId: widget.organizerId,
@@ -279,6 +306,10 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       organizerId: widget.organizerId,
                       definition: value.editor.definition,
                       notifier: notifier,
+                      accountId: responseAccountId,
+                      enableEventTargetSettings: privateEventSetupAvailable(),
+                      hasPublishedVersion:
+                          value.editor.form.activeVersionId != null,
                     ),
                   ],
                 ),

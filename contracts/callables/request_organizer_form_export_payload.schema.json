@@ -5,15 +5,96 @@
   "description": "Idempotent response export request or status refresh.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["organizerId", "formId", "requestId", "format", "statuses", "versionId", "fromMillis", "toMillis"],
+  "required": [
+    "organizerId",
+    "formId",
+    "requestId",
+    "format",
+    "statuses",
+    "versionId",
+    "fromMillis",
+    "toMillis"
+  ],
   "properties": {
-    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "requestId": {"type": "string", "minLength": 8, "maxLength": 128},
-    "format": {"type": "string", "enum": ["csv", "xlsx"]},
-    "statuses": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseStatus"}},
-    "versionId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
-    "fromMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
-    "toMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991}
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "xlsx"
+      ]
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/organizer_form_response_common.schema.json#/definitions/responseStatus"
+      }
+    },
+    "versionId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fromMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "toMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "responseQuery": {
+      "anyOf": [
+        {
+          "$ref": "../callables/query_organizer_form_responses_payload.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional exact typed filter and sort. Export covers all matches, not one page."
+    },
+    "expectedResultHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Required with responseQuery; changed results fail rather than silently exporting a different set."
+    },
+    "expectedQueryHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Required with responseQuery; binds the published definition and filter semantics."
+    }
   }
 }

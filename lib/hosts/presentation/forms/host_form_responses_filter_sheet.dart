@@ -1,6 +1,13 @@
 part of 'host_form_responses_panel.dart';
 
 extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
+  String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
+      widget.formId == null
+      ? context.l10n.hostAudienceAllForms
+      : widget.formTitle ??
+            loaded?.responses.firstOrNull?.formTitle ??
+            context.l10n.hostAudienceSelectedForm;
+
   Future<void> _openFilters() {
     var formId = widget.formId;
     var options = _filterOptions;

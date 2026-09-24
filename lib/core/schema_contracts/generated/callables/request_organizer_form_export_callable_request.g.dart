@@ -16,6 +16,9 @@ final class RequestOrganizerFormExportCallableRequest {
     required this.versionId,
     required this.fromMillis,
     required this.toMillis,
+    this.responseQuery,
+    this.expectedResultHash,
+    this.expectedQueryHash,
   });
 
   final String organizerId;
@@ -26,6 +29,9 @@ final class RequestOrganizerFormExportCallableRequest {
   final String? versionId;
   final int? fromMillis;
   final int? toMillis;
+  final Map<String, Object?>? responseQuery;
+  final String? expectedResultHash;
+  final String? expectedQueryHash;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -36,5 +42,8 @@ final class RequestOrganizerFormExportCallableRequest {
     'versionId': versionId,
     'fromMillis': fromMillis,
     'toMillis': toMillis,
+    'responseQuery': ?responseQuery,
+    'expectedResultHash': ?expectedResultHash,
+    'expectedQueryHash': ?expectedQueryHash,
   };
 }

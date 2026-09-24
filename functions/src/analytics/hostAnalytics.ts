@@ -947,6 +947,7 @@ function applyOperationalAttendees(
       const event = eventMap.get(attendee.data.eventId);
       if (!event) continue;
       metric = eventMetricFromEvent(event);
+      if (!metric) continue;
       metrics.push(metric);
       byEvent.set(metric.eventId, metric);
     }
@@ -958,7 +959,13 @@ function applyOperationalAttendees(
   }
 }
 
-function eventMetricFromEvent(event: EventRecord): EventMetricAccumulator {
+function eventMetricFromEvent(
+  event: EventRecord
+): EventMetricAccumulator | undefined {
+  const capacityLimit = event.data.capacityLimit;
+  // An unfinished private event has no honest capacity or rate denominator.
+  if (typeof capacityLimit !== "number" ||
+      !Number.isInteger(capacityLimit) || capacityLimit < 1) return undefined;
   return {
     eventId: event.id,
     clubId: event.data.clubId,
@@ -966,7 +973,7 @@ function eventMetricFromEvent(event: EventRecord): EventMetricAccumulator {
     title: fallbackEventTitle(event),
     startTime: timestampToDate(event.data.startTime) ?? new Date(0),
     status: event.data.status,
-    capacityLimit: Math.max(0, event.data.capacityLimit),
+    capacityLimit,
     bookedCount: Math.max(0, event.data.bookedCount ?? 0),
     checkedInCount: Math.max(0, event.data.checkedInCount ?? 0),
     waitlistedCount: Math.max(0, event.data.waitlistedCount ?? 0),
@@ -1311,7 +1318,10 @@ function resolveEventTitle(
 
 function fallbackEventTitle(event: EventRecord | null): string {
   if (!event) return "Event";
+  const name = event.data.name?.trim();
+  if (name) return name;
   const format = event.data.eventFormat;
+  if (!format) return "Event";
   const activity = format.customActivityLabel?.trim() ||
     activityLabel(format.activityKind);
   const date = timestampToDate(event.data.startTime);

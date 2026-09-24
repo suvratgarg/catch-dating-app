@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import type {EventDocument} from
+  "../shared/generated/firestoreAdminTypes";
 import {
   cohortIds,
   EventPolicyBundleDocument,
@@ -7,7 +9,21 @@ import {
   quotePriceInPaise,
   quoteAttendeeCancellation,
   normalizePolicy,
+  eventPolicyFromEvent,
 } from "./eventPolicy";
+
+test("private event can review capacity and price before venue setup", () => {
+  // Future private schema permits this partial record; current type is rich.
+  const event = {
+    publicationState: "private",
+    setupRevision: 1,
+    capacityLimit: 24,
+    priceInPaise: 0,
+  } as unknown as EventDocument;
+  const resolved = eventPolicyFromEvent(event);
+  assert.equal(resolved.admission.capacityLimit, 24);
+  assert.equal(resolved.pricing.basePriceInPaise, 0);
+});
 
 test("normalizePolicy derives cancellation applicability from price", () => {
   assert.equal(normalizePolicy({

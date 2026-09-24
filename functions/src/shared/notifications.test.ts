@@ -4,9 +4,12 @@ import {
   activityNotificationId,
   allowsPushPreference,
   buildFcmMessage,
+  eventActivityNotificationCopy,
+  eventCompanionReadyNotificationCopy,
   notificationProfileAvatar,
 } from "./notifications";
-import type {PublicProfileDocument} from "./generated/firestoreAdminTypes";
+import type {EventDocument, PublicProfileDocument} from
+  "./generated/firestoreAdminTypes";
 
 test("arrival wire preserves role, recipient, identity and ids", () => {
   const message = buildFcmMessage({
@@ -54,4 +57,14 @@ test("Cross Paths activity notification ids are deterministic", () => {
     activityNotificationId("crossPathsInvitation", "invitation-1"),
     "crossPathsInvitation_invitation-1"
   );
+});
+
+test("incomplete private event notification copy uses authored facts", () => {
+  const event = {name: "  Evening walk  ", publicationState: "private"} as
+    EventDocument;
+  const reminder = eventActivityNotificationCopy("eventReminder", event);
+  assert.match(reminder.body, /Evening walk/);
+  assert.match(reminder.body, /Venue to be confirmed/);
+  const companion = eventCompanionReadyNotificationCopy(event);
+  assert.match(companion.body, /Evening walk/);
 });

@@ -1,6 +1,9 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/hosts/data/private_event_update_journal.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -41,4 +44,50 @@ class CreateEventDraftController extends _$CreateEventDraftController {
         .read(eventDraftRepositoryProvider)
         .deleteDraft(clubId: clubId, userId: uid, draftId: draftId);
   }
+
+  Future<PrivateEventCreateReceipt> createPrivateEvent({
+    required String organizerId,
+    required String requestId,
+    required PrivateEventBasics basics,
+  }) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).create(
+    organizerId: organizerId,
+    requestId: requestId,
+    basics: basics,
+  );
+
+  Future<PrivateEventCreateReceipt> updatePrivateEventBasics(
+    PrivateEventBasicsUpdateRequest request,
+  ) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider))
+      .update(request);
+
+  Future<PrivateEventBasicSummary> getPrivateEventSetup({
+    required String organizerId,
+    required String eventId,
+  }) => PrivateEventSetupRepository(ref.read(firebaseFunctionsProvider)).get(
+    organizerId: organizerId,
+    eventId: eventId,
+  );
+
+  Future<PrivateEventBasicsUpdateRequest?> loadPendingBasicsUpdate({
+    required String organizerId,
+    required String eventId,
+  }) => const PrivateEventUpdateJournal().load(
+    userId: requireSignedInUid(ref, action: 'load pending basics update'),
+    organizerId: organizerId,
+    eventId: eventId,
+  );
+
+  Future<void> savePendingBasicsUpdate(
+    PrivateEventBasicsUpdateRequest request,
+  ) => const PrivateEventUpdateJournal().save(
+    userId: requireSignedInUid(ref, action: 'save pending basics update'),
+    request: request,
+  );
+
+  Future<void> clearPendingBasicsUpdate(
+    PrivateEventBasicsUpdateRequest request,
+  ) => const PrivateEventUpdateJournal().clear(
+    userId: requireSignedInUid(ref, action: 'clear pending basics update'),
+    request: request,
+  );
 }

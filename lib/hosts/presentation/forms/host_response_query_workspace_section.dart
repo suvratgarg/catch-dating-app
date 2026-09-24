@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_response_export_action.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -62,15 +65,25 @@ class HostResponseQueryWorkspaceCopy {
 class HostResponseQueryCapability {
   const HostResponseQueryCapability({
     required this.versionId,
-    required this.gateway,
     required this.copy,
+    this.gateway,
     this.onReviewSelection,
+    this.offerWorkspace,
+    this.openEventSettings,
+    this.exportGateway,
+    this.exportAccountId,
   });
 
   final String versionId;
-  final HostResponseQueryGateway gateway;
+  /// Optional test/custom gateway; the Forms panel creates one state-owned
+  /// repository when this capability is explicitly enabled by its route.
+  final HostResponseQueryGateway? gateway;
   final HostResponseQueryWorkspaceCopy copy;
   final void Function(List<String> ids, String resultHash)? onReviewSelection;
+  final HostEventOfferWorkspaceCopy? offerWorkspace;
+  final Future<void> Function(String eventId)? openEventSettings;
+  final HostResponseExportGateway? exportGateway;
+  final String? exportAccountId;
 }
 
 /// Manager query workspace for one published form version. Its bulk callback
@@ -84,6 +97,10 @@ class HostResponseQueryWorkspaceSection extends StatefulWidget {
     required this.copy,
     required this.onOpenResponse,
     this.onReviewSelection,
+    this.offerWorkspace,
+    this.exportGateway,
+    this.exportAccountId,
+    this.onCreateEventForSelection,
   });
 
   final HostResponseQueryController controller;
@@ -91,6 +108,10 @@ class HostResponseQueryWorkspaceSection extends StatefulWidget {
   final HostResponseQueryWorkspaceCopy copy;
   final ValueChanged<String> onOpenResponse;
   final void Function(List<String> ids, String resultHash)? onReviewSelection;
+  final Widget? offerWorkspace;
+  final HostResponseExportGateway? exportGateway;
+  final String? exportAccountId;
+  final Future<void> Function()? onCreateEventForSelection;
 
   @override
   State<HostResponseQueryWorkspaceSection> createState() =>
@@ -284,6 +305,12 @@ class _HostResponseQueryWorkspaceSectionState
                               }
                             },
                           ),
+                        if (widget.onCreateEventForSelection != null &&
+                            view.canActOnSelection)
+                          CatchButton(
+                            label: context.l10n.hostsHostEventsListLabelNewEvent,
+                            onPressed: widget.onCreateEventForSelection,
+                          ),
                       ],
                     ),
                     gapH12,
@@ -304,6 +331,15 @@ class _HostResponseQueryWorkspaceSectionState
               ],
             ),
           ),
+          if (widget.exportGateway != null &&
+              widget.exportAccountId != null)
+            HostResponseExportAction(
+              accountId: widget.exportAccountId!,
+              organizerId: _request.organizerId,
+              formId: _request.formId,
+              queryController: widget.controller,
+              gateway: widget.exportGateway!,
+            ),
           if (view.status == HostResponseQueryStatus.ready)
             CatchSection.fieldRows(
               children: [
@@ -318,7 +354,9 @@ class _HostResponseQueryWorkspaceSectionState
                         ? copy.withdrawn
                         : row.formTitle,
                     onTap: () => widget.onOpenResponse(row.responseId),
-                    actions: widget.onReviewSelection == null
+                    actions: widget.onReviewSelection == null &&
+                            widget.onCreateEventForSelection == null &&
+                            widget.offerWorkspace == null
                         ? null
                         : CatchButton.command(
                             label: view.selectedIds.contains(row.responseId)
@@ -334,6 +372,9 @@ class _HostResponseQueryWorkspaceSectionState
                   ),
               ],
             ),
+          if (view.status == HostResponseQueryStatus.ready &&
+              widget.offerWorkspace != null)
+            widget.offerWorkspace!,
         ],
       );
     },

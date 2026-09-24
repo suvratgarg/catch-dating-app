@@ -84,7 +84,8 @@ void main() {
           eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.yoga),
           bookedCount: 20,
         );
-        await _seedDiscoverableEvent(firestore, matchingEvent);
+        // A legacy public event has no publication marker until backfill.
+        await _seedDiscoverableEvent(firestore, matchingEvent, legacy: true);
         await _seedDiscoverableEvent(firestore, farEvent);
         await _seedDiscoverableEvent(
           firestore,
@@ -262,6 +263,36 @@ void main() {
       expect(second.items.map((event) => event.id), ['event-3']);
       expect(second.hasMore, isFalse);
     });
+
+    test(
+      'legacy event retains the first discovery cursor slot before backfill',
+      () async {
+        final firestore = FakeFirebaseFirestore();
+        final repository = EventDiscoveryRepository(firestore);
+        final now = DateTime(2026, 5, 26, 10);
+        final legacy = buildEvent(
+          id: 'legacy-first',
+          startTime: now.add(const Duration(hours: 1)),
+        );
+        final public = buildEvent(
+          id: 'published-second',
+          startTime: now.add(const Duration(hours: 2)),
+        );
+        await _seedDiscoverableEvent(firestore, legacy, legacy: true);
+        await _seedDiscoverableEvent(firestore, public);
+        final query = EventDiscoveryQuery.forCity(
+          marketId: 'in-mh-mumbai', startAt: now, limit: 1,
+        );
+        final first = await repository.fetchDiscoverableEventsPage(query);
+        final second = await repository.fetchDiscoverableEventsPage(
+          query, startAfter: first.nextCursor,
+        );
+        expect(first.items.map((event) => event.id), ['legacy-first']);
+        expect(first.hasMore, isTrue);
+        expect(second.items.map((event) => event.id), ['published-second']);
+        expect(second.hasMore, isFalse);
+      },
+    );
   });
 }
 
@@ -279,11 +310,13 @@ Future<void> _seedDiscoverableEvent(
     'nonBinaryOrOther',
   ],
   List<String> waitlistCohorts = const [],
+  bool legacy = false,
 }) {
   final latitude = event.effectiveStartingPointLat;
   final longitude = event.effectiveStartingPointLng;
   return firestore.collection('events').doc(event.id).set({
     ...event.toJson(),
+    if (!legacy) 'publicationState': 'published',
     'discoveryCityName': cityName,
     'discoveryMarketId': marketId,
     'discoveryActivityKind': event.activityKind.name,

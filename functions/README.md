@@ -21,6 +21,9 @@ options when specific functions need higher or lower limits.
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | `src/payments/stripeHostAccounts.ts` | Create Stripe Connect hosted onboarding and refresh its account state |
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
+| `previewEventOffers` / `commitEventOffers` / `mutateEventOffer` / `getEventOffer` / `listEventOffers` / `prepareEventOfferHandoff` / `getEventOfferConfiguration` / `configureEventOfferPreferences` | `src/organizerEventOffers/` | Reviewed event-specific offers and manual bank-reference review; private storage, historical payment snapshots, no admission/provider effects; release gated |
+| `createPrivateEventSetup` / `updatePrivateEventBasics` / `updatePrivateEventPreferences` / `getPrivateEventSetup` / `listPrivateEventSetups` / `updatePrivateEventDetails` / `listOfferEventTargets` | `src/events/progressiveSetup/` | Manager-only basic event setup, private event-local payment/preferences snapshots and sanitized reopen; mutations remain closed pending privacy migration |
+| `queryOrganizerFormResponses` | `src/organizerResponseQuery/` | Manager-only bounded typed filtering/sorting, safe display page and structured stale-result errors |
 | `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
 | `upsertOrganizerEventVenue` | `src/events/organizerEventVenues.ts` | Create, update, archive, or restore one organizer-owned reusable event venue |
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
@@ -496,3 +499,6 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm
 ./tool/firebase_with_env.sh prod deploy --only firestore:rules
 npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
 ```
+
+| `getOrganizerEventSetupDefaults` | Current-manager read of public basics and private event preferences. |
+| `updateOrganizerEventSetupDefaults` | Revision-fenced manager save of private suggestions; no provider activation. |

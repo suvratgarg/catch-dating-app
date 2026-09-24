@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -309,7 +310,12 @@ Future<void> _pumpHostScreen(
         ),
         ...overrides,
       ].cast(),
-      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      child: MaterialApp.router(
+        theme: AppTheme.light,
+        routerConfig: router,
+        builder: (context, child) =>
+            CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
+      ),
     ),
   );
   if (settle) {

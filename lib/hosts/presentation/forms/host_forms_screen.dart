@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -12,10 +13,12 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
@@ -31,6 +34,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+part 'host_forms_account_binding.dart';
 part 'host_forms_filter_sheet.dart';
 part 'host_response_import.dart';
 
@@ -75,6 +79,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   String? _responseContactId;
   bool _importing = false;
   int _importRevision = 0;
+  bool _accountBound = false;
+  String? _boundAccountId;
+  int _accountGeneration = 0;
 
   void _completeResponseImport() {
     setState(() {
@@ -138,7 +145,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
-    if (uidState.hasError) {
+    if (uidState.error != null) {
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
@@ -151,13 +158,22 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         ],
       );
     }
-    if (uidState.isLoading) {
+    if (!uidState.isSettledData) {
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
+    // A settled stream value can lag a live FirebaseAuth account change.
+    if (uid != null && ref.watch(firebaseAuthProvider).currentUser?.uid != uid) {
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
+    }
+    _bindAccount(uid);
     if (uid == null) {
       return HostAudienceStateScaffold(
         selected: _view,
@@ -211,13 +227,71 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     )!;
     final request = HostFormListRequest(
       organizerId: selectedClub.id,
+      accountUid: uid,
+      accountGeneration: _accountGeneration,
       statuses: _statuses.isEmpty
           ? HostFormLifecycleStatus.values.toSet()
           : _statuses,
       purposes: _purposes,
       query: _query,
     );
+    final directoryScope = (
+      uid: uid,
+      accountGeneration: _accountGeneration,
+      request: request,
+    );
+    final scopedDirectory = catchAsyncStateFromAsyncValue(
+      ref.watch(hostFormsAccountDirectoryProvider(directoryScope)),
+    );
+    if (scopedDirectory.error case final error?) {
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: [
+          CatchLocalizedSliverErrorState(
+            error,
+            context: AppErrorContext.forms,
+            onRetry: () => ref.invalidate(
+              hostFormsAccountDirectoryProvider(directoryScope),
+            ),
+          ),
+        ],
+      );
+    }
+    if (!scopedDirectory.isSettledData) {
+      return HostAudienceStateScaffold(
+        selected: _view,
+        scrollKey: const PageStorageKey<String>('host-forms-route-state'),
+        slivers: const [CatchStateViewport.sliverLoading()],
+      );
+    }
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
+    String? responseVersionId;
+    if (canMountHostResponseQuery(
+      enabled: privateEventSetupAvailable(),
+      formId: _responseFormId,
+      searchQuery: _responseQuery,
+      contactId: _responseContactId,
+    )) {
+      final directoryState = catchAsyncStateFromAsyncValue(directory);
+      responseVersionId = directoryState.isSettledData
+          ? directoryState.value?.forms
+              .where((form) => form.formId == _responseFormId)
+              .firstOrNull?.activeVersionId
+          : null;
+      final responses = catchAsyncStateFromAsyncValue(
+        ref.watch(hostFormResponsesControllerProvider(
+          HostFormResponseListRequest(
+            organizerId: selectedClub.id,
+            formId: _responseFormId,
+            includeApplications: true,
+          ),
+        )),
+      );
+      if (responses.isSettledData) {
+        responseVersionId ??= responses.value?.versionScope?.activeVersionId;
+      }
+    }
     final activeSearchIsForms = _view == HostAudienceView.forms;
     final searchPlaceholder = activeSearchIsForms
         ? context.l10n.hostFormsSearch
@@ -289,8 +363,13 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
               children: [
                 HostFormResponsesPanel(
-                  key: ValueKey('responses-import-$_importRevision'),
+                  key: ValueKey('responses-$uid-import-$_importRevision'),
                   organizerId: selectedClub.id,
+                  accountId: uid,
+                  requireAccount: true,
+                  queryCapability: responseVersionId == null ? null :
+                      hostResponseQueryCapability(context.l10n,
+                        versionId: responseVersionId),
                   query: _responseQuery,
                   contactId: _responseContactId,
                   onClearContactFilter: () {
@@ -388,88 +467,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       Routes.hostFormTemplatesScreen.name,
       queryParameters: {'organizerId': organizerId},
     );
-  }
-
-  Future<void> _handleRowAction(
-    _HostFormRowAction action,
-    HostFormSummary form,
-    HostFormListRequest request,
-  ) async {
-    if (action == _HostFormRowAction.analytics) {
-      await context.pushNamed(
-        Routes.hostFormAnalyticsScreen.name,
-        pathParameters: {'formId': form.formId},
-        queryParameters: {'organizerId': form.organizerId},
-      );
-      return;
-    }
-    if (action == _HostFormRowAction.automations) {
-      await context.pushNamed(
-        Routes.hostFormAutomationsScreen.name,
-        pathParameters: {'formId': form.formId},
-        queryParameters: {'organizerId': form.organizerId},
-      );
-      return;
-    }
-    try {
-      switch (action) {
-        case _HostFormRowAction.analytics:
-        case _HostFormRowAction.automations:
-          break;
-        case _HostFormRowAction.duplicate:
-          final duplicate = await ref
-              .read(hostFormsControllerProvider)
-              .duplicate(source: form, requestId: _requestId('duplicate'));
-          if (!mounted) return;
-          ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          await context.pushNamed(
-            Routes.hostFormBuilderScreen.name,
-            pathParameters: {'formId': duplicate.form.formId},
-            queryParameters: {'organizerId': form.organizerId},
-          );
-          return;
-        case _HostFormRowAction.pause:
-        case _HostFormRowAction.resume:
-        case _HostFormRowAction.archive:
-          final lifecycleAction = switch (action) {
-            _HostFormRowAction.pause => HostFormLifecycleAction.pause,
-            _HostFormRowAction.resume => HostFormLifecycleAction.resume,
-            _ => HostFormLifecycleAction.archive,
-          };
-          if (lifecycleAction == HostFormLifecycleAction.archive) {
-            final confirmed = await showCatchConfirmDialog(
-              copy: catchDialogCopy(context.l10n),
-              context: context,
-              title: context.l10n.hostFormsArchiveConfirmTitle,
-              message: context.l10n.hostFormsArchiveConfirmBody,
-              confirmLabel: context.l10n.hostFormsArchive,
-              danger: true,
-            );
-            if (confirmed != true) return;
-          }
-          await ref
-              .read(hostFormsControllerProvider)
-              .setLifecycle(form: form, action: lifecycleAction);
-          ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          return;
-        case _HostFormRowAction.delete:
-          final confirmed = await showCatchConfirmDialog(
-            copy: catchDialogCopy(context.l10n),
-            context: context,
-            title: context.l10n.hostFormsDeleteConfirmTitle,
-            message: context.l10n.hostFormsDeleteConfirmBody,
-            confirmLabel: context.l10n.hostFormsDeleteDraft,
-            danger: true,
-          );
-          if (confirmed != true) return;
-          await ref.read(hostFormsControllerProvider).deleteDraft(form);
-          ref.invalidate(hostFormsDirectoryControllerProvider(request));
-          return;
-      }
-    } on Object catch (error) {
-      if (!mounted) return;
-      showCatchErrorSnackBar(context, error);
-    }
   }
 
   void _openForm(HostFormSummary form) {

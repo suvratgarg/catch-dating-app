@@ -977,6 +977,44 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                 },
               },
             },
+            'cityOptions': <String, Object?>{
+              'type': 'array',
+              'maxItems': 100,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'marketId',
+                  'cityId',
+                  'label',
+                  'regionName',
+                  'countryIsoCode',
+                ],
+                'properties': <String, Object?>{
+                  'marketId': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 120,
+                  },
+                  'cityId': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 120,
+                  },
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 160,
+                  },
+                  'regionName': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 160,
+                  },
+                  'countryIsoCode': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 2,
+                    'maxLength': 2,
+                  },
+                },
+              },
+            },
             'messagingOffer': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -1073,6 +1111,44 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
               },
             ],
           },
+        },
+        'prefillSuggestions': <String, Object?>{
+          'type': 'object',
+          'maxProperties': 4000,
+          'propertyNames': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'additionalProperties': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'maxLength': 10000,
+              },
+              <String, Object?>{
+                'type': 'number',
+                'minimum': -1000000000,
+                'maximum': 1000000000,
+              },
+              <String, Object?>{
+                'type': 'boolean',
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+              <String, Object?>{
+                'type': 'array',
+                'maxItems': 100,
+                'uniqueItems': true,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'maxLength': 500,
+                },
+              },
+            ],
+          },
+          'description': 'Private values offered only to the verified respondent for review; never written to draft answers until accepted.',
         },
         'consentAccepted': <String, Object?>{
           'type': 'boolean',

@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
@@ -13,6 +15,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -513,6 +516,8 @@ Widget _editorPreview({
   HostFormQuestionKind? firstQuestionKind,
 }) => WidgetbookFixtureScope(
   overrides: [
+    uidProvider.overrideWithValue(const AsyncData<String?>('preview-host')),
+    firebaseAuthProvider.overrideWithValue(_PreviewFormAuth()),
     hostFormsRepositoryProvider.overrideWithValue(
       _PreviewFormRepository(firstQuestionKind: firstQuestionKind),
     ),
@@ -581,4 +586,20 @@ class _PreviewFormRepository implements HostFormsRepository {
   dynamic noSuchMethod(Invocation invocation) => throw StateError(
     'Unsupported form preview operation: ${invocation.memberName}',
   );
+}
+
+class _PreviewFormAuth implements FirebaseAuth {
+  @override
+  User get currentUser => _PreviewFormUser();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _PreviewFormUser implements User {
+  @override
+  String get uid => 'preview-host';
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

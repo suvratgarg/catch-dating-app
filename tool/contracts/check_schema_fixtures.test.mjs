@@ -26,5 +26,8 @@ test("schema fixture check validates all current fixtures", () => {
   const result = checkSchemaFixtures();
   assert.deepEqual(result.errors, []);
   assert.equal(result.fixtureCount, fixtureSchemaCases.length);
-  assert.equal(result.invalidFixtureCount, 25);
+  assert.equal(
+    result.invalidFixtureCount,
+    fixtureSchemaCases.filter(([fixturePath]) => fixturePath.startsWith("invalid/")).length,
+  );
 });

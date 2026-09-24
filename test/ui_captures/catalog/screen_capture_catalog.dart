@@ -5102,6 +5102,9 @@ class _CaptureHostFormResponsesController extends HostFormResponsesController {
 
 class _CaptureHostFormEditorController extends HostFormEditorController {
   @override
+  bool editorBoundTo(String? accountId) => true;
+
+  @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
       HostFormEditorState(
         editor: HostFormEditor(
@@ -8892,6 +8895,13 @@ class _CaptureAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+}
+
+class _CaptureFirebaseAuth extends Fake implements FirebaseAuth {
+  _CaptureFirebaseAuth({required this.currentUser});
+
+  @override
+  final User? currentUser;
 }
 
 class _CaptureAuthUser extends Fake implements User {
@@ -16007,6 +16017,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
+      firebaseAuthProvider.overrideWithValue(
+        _CaptureFirebaseAuth(
+          currentUser: _CaptureAuthUser(
+            uid: HostOperationsFixtures.hostUid,
+            phoneNumber: '+919876543210',
+          ),
+        ),
+      ),
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       uidProvider.overrideWithValue(
         const AsyncData<String?>(HostOperationsFixtures.hostUid),
@@ -16038,6 +16056,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
+      firebaseAuthProvider.overrideWithValue(
+        _CaptureFirebaseAuth(
+          currentUser: _CaptureAuthUser(
+            uid: HostOperationsFixtures.hostUid,
+            phoneNumber: '+919876543210',
+          ),
+        ),
+      ),
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       uidProvider.overrideWithValue(
         const AsyncData<String?>(HostOperationsFixtures.hostUid),

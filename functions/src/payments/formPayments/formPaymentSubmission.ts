@@ -1,3 +1,5 @@
+import {organizerFormEventTargetAvailable, requireOrganizerFormEventTarget}
+  from "../../organizers/organizerFormTarget";
 import {createHash} from "node:crypto";
 import {FieldValue, Timestamp} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
@@ -86,6 +88,10 @@ export async function reserveFormPayment(params: {
     if (availability.status !== "active") {
       throw new HttpsError("failed-precondition", availability.message);
     }
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: draft.organizerId,
+      kind: version.definition.defaultTargetKind,
+      targetId: version.definition.defaultTargetId, nowMillis: now.toMillis()});
     if (!draft.consentAccepted ||
         draft.consentVersion !== version.definition.consent.consentVersion) {
       throw new HttpsError("failed-precondition",
@@ -177,6 +183,15 @@ export async function finalizeCapturedFormPayment(params: {
     }
     // Narrow after the predicate so callers cannot replace a frozen snapshot.
     if (!draft || !version || !form) throw new Error("Missing frozen form.");
+    if (!await organizerFormEventTargetAvailable({db, tx,
+      organizerId: payment.organizerId,
+      kind: version.definition.defaultTargetKind,
+      targetId: version.definition.defaultTargetId,
+      nowMillis: now.toMillis()})) {
+      tx.update(ref, {status: "refundPending", updatedAt: now,
+        lastErrorCode: "formEventUnavailable"});
+      return "refundPending";
+    }
     const answers = answersForSubmission(version.definition, draft.answers);
     let submittedAssetRefs: FirebaseFirestore.DocumentReference[];
     try {

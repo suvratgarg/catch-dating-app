@@ -181,8 +181,74 @@ class _HostManualPaymentReviewSectionState
   bool _busy = false;
   Object? _error;
   HostManualPaymentStatus? _pendingDecision;
+  HostOfferPendingMutation? _pendingMutation;
+  bool _checkingPending = true;
+  int _recoveryGeneration = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _recoverMutation();
+  }
+
+  @override
+  void didUpdateWidget(covariant HostManualPaymentReviewSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.offer.eventId != widget.offer.eventId ||
+        oldWidget.offer.contactId != widget.offer.contactId ||
+        oldWidget.controller != widget.controller) {
+      _recoverMutation();
+    }
+  }
+
+  Future<void> _recoverMutation() async {
+    final generation = ++_recoveryGeneration;
+    final organizerId = widget.offer.organizerId;
+    final eventId = widget.offer.eventId;
+    setState(() { _checkingPending = true; _error = null; });
+    try {
+      final pending = await widget.controller.recoverPendingMutation(
+        organizerId: organizerId,
+        eventId: eventId,
+      );
+      if (mounted && generation == _recoveryGeneration) {
+        setState(() => _pendingMutation = pending);
+      }
+    } on Object catch (error) {
+      if (mounted && generation == _recoveryGeneration) {
+        setState(() => _error = error);
+      }
+    } finally {
+      if (mounted && generation == _recoveryGeneration) {
+        setState(() => _checkingPending = false);
+      }
+    }
+  }
+
+  Future<void> _retrySavedMutation() async {
+    if (_pendingMutation?.contactId != widget.offer.contactId) return;
+    setState(() { _busy = true; _error = null; });
+    try {
+      final updated = await widget.controller.retryPendingMutation(
+        organizerId: widget.offer.organizerId,
+        eventId: widget.offer.eventId,
+      );
+      if (mounted) {
+        setState(() => _pendingMutation = null);
+        widget.onUpdated(updated);
+      }
+    } on Object catch (error) {
+      if (mounted) {
+        await _recoverMutation();
+        if (mounted) setState(() => _error = error);
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   Future<void> _recordReference() async {
+    if (_checkingPending || _pendingMutation != null) return;
     setState(() {
       _busy = true;
       _error = null;
@@ -195,13 +261,17 @@ class _HostManualPaymentReviewSectionState
       );
       if (mounted) widget.onUpdated(updated);
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (mounted) {
+        await _recoverMutation();
+        if (mounted) setState(() => _error = error);
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _review(HostManualPaymentStatus decision) async {
+    if (_checkingPending || _pendingMutation != null) return;
     if (_pendingDecision != null && _pendingDecision != decision) return;
     setState(() {
       _busy = true;
@@ -223,7 +293,10 @@ class _HostManualPaymentReviewSectionState
         widget.onUpdated(updated);
       }
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (mounted) {
+        await _recoverMutation();
+        if (mounted) setState(() => _error = error);
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -236,6 +309,19 @@ class _HostManualPaymentReviewSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (_pendingMutation != null) ...[
+          CatchSection.content(child: Text(copy.failed,
+            style: CatchTextStyles.supporting(context))),
+          if (_pendingMutation!.contactId == widget.offer.contactId)
+            CatchSection.content(child: CatchButton(
+              key: const ValueKey('offer-retry-saved-mutation'),
+              label: _pendingMutation!.kind == HostOfferMutationKind.recordEvidence.name
+                  ? copy.recordReference
+                  : _pendingMutation!.decision == HostManualPaymentStatus.rejected.name
+                      ? copy.rejectReference : copy.attestReceived,
+              onPressed: _busy ? null : _retrySavedMutation,
+            )),
+        ],
         CatchSection.content(
           child: Text(
             copy.noReservation,
@@ -258,7 +344,8 @@ class _HostManualPaymentReviewSectionState
           CatchSection.content(
             child: CatchButton(
               label: copy.recordReference,
-              onPressed: _busy ? null : _recordReference,
+              onPressed: _busy || _checkingPending ||
+                  _pendingMutation != null ? null : _recordReference,
             ),
           ),
         ],
@@ -276,8 +363,10 @@ class _HostManualPaymentReviewSectionState
                 title: copy.reviewNote,
                 maxLength: 240,
                 contractExemption: 'Host manual review note only.',
-                states: {if (_pendingDecision != null) WidgetState.disabled},
-                onChanged: _pendingDecision == null
+                states: {if (_pendingDecision != null || _checkingPending ||
+                    _pendingMutation != null) WidgetState.disabled},
+                onChanged: _pendingDecision == null && !_checkingPending &&
+                    _pendingMutation == null
                     ? (value) => _note = value
                     : null,
               ),
@@ -287,7 +376,8 @@ class _HostManualPaymentReviewSectionState
                 value: _bankReceiptChecked,
                 contractExemption:
                     'Explicit Host attestation after checking the bank receipt.',
-                onChanged: _busy || _pendingDecision != null
+                onChanged: _busy || _checkingPending ||
+                    _pendingMutation != null || _pendingDecision != null
                     ? null
                     : (value) => setState(() => _bankReceiptChecked = value),
               ),
@@ -299,7 +389,8 @@ class _HostManualPaymentReviewSectionState
                 CatchButton(
                   label: copy.attestReceived,
                   onPressed:
-                      _busy ||
+                      _busy || _checkingPending ||
+                          _pendingMutation != null ||
                           !_bankReceiptChecked ||
                           _pendingDecision == HostManualPaymentStatus.rejected
                       ? null
@@ -311,7 +402,8 @@ class _HostManualPaymentReviewSectionState
                   label: copy.rejectReference,
                   variant: CatchButtonVariant.secondary,
                   onPressed:
-                      _busy ||
+                      _busy || _checkingPending ||
+                          _pendingMutation != null ||
                           _pendingDecision ==
                               HostManualPaymentStatus.hostAttestedReceived
                       ? null
