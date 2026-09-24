@@ -26,7 +26,10 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     final receipt = _receipt;
     if (receipt == null || _preferencesController != null) return;
     try {
-      final uid = requireSignedInUid(ref, action: 'edit private event settings');
+      final uid = ref.read(uidProvider).asData?.value;
+      if (uid == null || uid.isEmpty) {
+        throw SignInRequiredException('edit private event settings');
+      }
       final functions = ref.read(firebaseFunctionsProvider);
       final eventRepository = PrivateEventSetupRepository(functions);
       final defaultsRepository = ManagerEventSetupDefaultsRepository(functions);

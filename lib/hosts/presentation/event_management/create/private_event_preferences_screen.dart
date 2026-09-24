@@ -67,6 +67,13 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
       'balancedSingles' => l10n.hostsEventPreferenceAdmissionBalanced,
       _ => l10n.hostsEventPreferenceAdmissionFixed,
     };
+    String inputValue(String key) {
+      final value = resolved[key];
+      if (key == 'reusablePaymentPage') {
+        return value is Map ? (value['url'] as String? ?? '') : '';
+      }
+      return value?.toString() ?? '';
+    }
 
     final fields = <({String key, String title, String hint, int maxLength})>[
       (key: 'usualDurationMinutes', title: l10n.hostsEventDefaultsUsualDuration,
@@ -263,9 +270,7 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                   key: ValueKey('event-preference-${field.key}-${resolved[field.key]}'),
                                   title: field.title,
                                   contractExemption: 'Event-local private setting.',
-                                  initialValue: field.key == 'reusablePaymentPage'
-                                      ? (resolved[field.key] as Map?)?['url'] as String? ?? ''
-                                      : resolved[field.key]?.toString() ?? '',
+                                  initialValue: inputValue(field.key),
                                   inputHint: field.hint,
                                   inputMode: editable
                                       ? CatchTextInputMode.editable
