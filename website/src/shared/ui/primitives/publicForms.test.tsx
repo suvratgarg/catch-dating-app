@@ -38,7 +38,7 @@ describe("public form organizer branding", () => {
     expect(footer.getByText("Powered by")).toBeTruthy();
     expect(footer.getByRole("link", {name: "Catch Forms"}).getAttribute("href"))
       .toBe("/");
-    expect(footer.getByRole("img", {name: "catch_"}).getAttribute("src"))
+    expect(footer.getByRole("img", {name: "catch"}).getAttribute("src"))
       .toBe("/assets/branding/catch_splash_mark_light.png");
     expect(footer.queryByText("●")).toBeNull();
     expect(footer.getByText(publicFormsCopy.privacyNote)).toBeTruthy();

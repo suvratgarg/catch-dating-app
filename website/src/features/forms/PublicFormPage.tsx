@@ -25,6 +25,8 @@ import {
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
+import {PublicFormFieldError, PublicFormPhoneFields, PublicFormVerification}
+  from "../../shared/ui/primitives/publicForms";
 import {publicFormsCopy, publicFormPaymentStatuses, formFeeLabel,
   formFeePayLabel} from "../../content/forms";
 import {
@@ -381,16 +383,16 @@ function InlinePhoneVerification({
 }) {
   const phoneValue = controller.verifiedPhone ?? controller.phoneNumber;
   if (controller.verifiedPhone) {
-    return <div className="public-form__verification">
+    return <PublicFormVerification>
       <p>{publicFormsCopy.phoneVerified}: {phoneValue}</p>
-    </div>;
+    </PublicFormVerification>;
   }
-  return <div className="public-form__verification">
+  return <PublicFormVerification>
     <p>{publicFormsCopy.phoneVerificationHelp}</p>
     {question && controller.errors[question.questionId] ?
-      <p className="public-form__error" role="alert">
+      <PublicFormFieldError>
         {controller.errors[question.questionId]}
-      </p> : null}
+      </PublicFormFieldError> : null}
     {controller.verificationStep === "code" ? (
       <PublicFormForm onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
         <TextField
@@ -428,7 +430,7 @@ function InlinePhoneVerification({
       </PublicFormForm>
     )}
     <div id={controller.recaptchaContainerId} />
-  </div>;
+  </PublicFormVerification>;
 }
 
 function QuestionField({
@@ -682,7 +684,7 @@ function PhoneNumberField({
   const selectedCode = known?.dialCode ??
     (value.startsWith("+") ? "other" : preferredCode);
   const national = known ? value.slice(known.dialCode.length) : value;
-  return <div className="public-form__phone-row">
+  return <PublicFormPhoneFields>
     <SelectField
       id={`${id}-country`}
       label={publicFormsCopy.phoneCountryLabel}
@@ -722,7 +724,7 @@ function PhoneNumberField({
         publicFormsCopy.phoneNationalPlaceholder}
       value={national}
     />
-  </div>;
+  </PublicFormPhoneFields>;
 }
 
 function ReviewStage({
