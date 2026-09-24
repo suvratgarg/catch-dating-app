@@ -8,10 +8,10 @@ import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import type {
   ProfilePhoto,
   OrganizerFollowDocument,
-  EventParticipationDocument,
   OrganizerContactIdentityLinkDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
+import {deleteAccountEventParticipations} from "./accountDeletionSeats";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -188,9 +188,12 @@ async function queueRelationshipCleanup(params: {
   writer: BatchQueue;
 }) {
   const {db, uid, now, writer} = params;
+  // Read linked Host attendee evidence before its identity is redacted below.
+  // The migration fence and participation update share one transaction.
+  await deleteAccountEventParticipations({db, uid, now,
+    nowMillis: Date.now()});
   await Promise.all([
     queueClubMembershipCleanup(db, uid, now, writer),
-    queueEventParticipationCleanup(db, uid, now, writer),
     queueEventAttendeeIdentityCleanup(db, uid, now, writer),
     queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
@@ -376,37 +379,6 @@ async function queueClubMembershipCleanup(
   });
 }
 
-/**
- * Marks event participation edges deleted and removes active roster/count
- * projections from the event document.
- */
-async function queueEventParticipationCleanup(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  now: FirebaseFirestore.FieldValue,
-  writer: BatchQueue
-) {
-  const participations = await db
-    .collection("eventParticipations")
-    .where("uid", "==", uid)
-    .get();
-  participations.forEach((doc) => {
-    const participation = doc.data() as EventParticipationDocument;
-    writer.set(doc.ref, {
-      status: "deleted",
-      updatedAt: now,
-      deletedAt: now,
-    }, {merge: true});
-    const eventPatch = eventParticipationDeletionEventPatch(uid, participation);
-    if (Object.keys(eventPatch).length > 0) {
-      writer.update(
-        db.collection("events").doc(participation.eventId),
-        eventPatch
-      );
-    }
-  });
-}
-
 /** Deletes private Cross Paths consent edges owned by the account. */
 async function queueCrossPathsConsentCleanup(
   db: FirebaseFirestore.Firestore,
@@ -450,37 +422,6 @@ async function queueCrossPathsInvitationCleanup(
     .where("participantIds", "array-contains", uid)
     .get();
   invitations.forEach((doc) => writer.delete(doc.ref));
-}
-
-/**
- * Builds the event aggregate cleanup for a deleted participation.
- */
-function eventParticipationDeletionEventPatch(
-  uid: string,
-  participation: EventParticipationDocument
-): Record<string, unknown> {
-  switch (participation.status) {
-  case "signedUp": {
-    const patch: Record<string, unknown> = {
-      bookedCount: admin.firestore.FieldValue.increment(-1),
-    };
-    if (participation.genderAtSignup) {
-      patch[`genderCounts.${participation.genderAtSignup}`] =
-        admin.firestore.FieldValue.increment(-1);
-    }
-    return patch;
-  }
-  case "waitlisted":
-    return {
-      waitlistedCount: admin.firestore.FieldValue.increment(-1),
-    };
-  case "attended":
-    return {
-      checkedInCount: admin.firestore.FieldValue.increment(-1),
-    };
-  default:
-    return {};
-  }
 }
 
 /**
