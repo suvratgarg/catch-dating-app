@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+
+const _ascendingSortDirection = 'asc';
 
 /// Labels are supplied by the owning Forms route when its callable is live.
 class HostResponseQueryWorkspaceCopy {
@@ -148,10 +151,13 @@ class _HostResponseQueryWorkspaceSectionState
   Future<void> _chooseSort(HostResponseQueryView view) async {
     final options = <HostResponseSort>[
       const HostResponseSort(),
-      const HostResponseSort(direction: 'asc'),
+      const HostResponseSort(direction: _ascendingSortDirection),
       for (final field in view.catalog.where((field) => field.sortable)) ...[
         HostResponseSort(questionId: field.questionId),
-        HostResponseSort(questionId: field.questionId, direction: 'asc'),
+        HostResponseSort(
+          questionId: field.questionId,
+          direction: _ascendingSortDirection,
+        ),
       ],
     ];
     final chosen = await showCatchSelectionSheet<int>(
@@ -167,10 +173,10 @@ class _HostResponseQueryWorkspaceSectionState
           CatchSelectionMenuItem(
             value: index,
             label: options[index].questionId == null
-                ? options[index].direction == 'asc'
+                ? options[index].direction == _ascendingSortDirection
                       ? widget.copy.oldest
                       : widget.copy.newest
-                : '${view.catalog.firstWhere((field) => field.questionId == options[index].questionId).label} · ${options[index].direction == 'asc' ? widget.copy.oldest : widget.copy.newest}',
+                : '${view.catalog.firstWhere((field) => field.questionId == options[index].questionId).label} · ${options[index].direction == _ascendingSortDirection ? widget.copy.oldest : widget.copy.newest}',
           ),
       ],
     );
@@ -308,7 +314,7 @@ class _HostResponseQueryWorkspaceSectionState
                     title:
                         row.identity.primaryLabel ??
                         context.l10n.hostFormResponsesAnonymous,
-                    body: row.status.name == 'withdrawn'
+                    body: row.status == HostFormResponseStatus.withdrawn
                         ? copy.withdrawn
                         : row.formTitle,
                     onTap: () => widget.onOpenResponse(row.responseId),
