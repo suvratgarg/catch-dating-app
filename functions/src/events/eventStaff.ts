@@ -43,6 +43,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeRosterPhone} from "./eventAttendees";
 import {eventTitleLabel} from "../shared/eventLabels";
+import {requireScheduledEvent} from "./configuredEvent";
 
 interface EventStaffDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -91,12 +92,13 @@ export async function getEventOperatorAccessHandler(
     permission: "viewRoster",
     now: deps.now(),
   });
+  const scheduledEvent = requireScheduledEvent(event);
   return {
     eventId: data.eventId,
     organizerId: event.organizerId ?? event.clubId,
-    title: eventTitleLabel(event),
-    startAtMillis: event.startTime.toMillis(),
-    endAtMillis: event.endTime.toMillis(),
+    title: eventTitleLabel(scheduledEvent),
+    startAtMillis: scheduledEvent.startTime.toMillis(),
+    endAtMillis: scheduledEvent.endTime.toMillis(),
     eventStatus: event.status,
     actorRole: access.role,
     permissions: access.role === "manager" ?

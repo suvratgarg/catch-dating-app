@@ -22,6 +22,7 @@ import {
 } from "../shared/eventOrganizers";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {requireScheduledEvent} from "./configuredEvent";
 
 interface EventLivePositionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -59,7 +60,7 @@ export async function publishEventLivePositionHandler(
     throw new HttpsError("not-found", "Event not found.");
   }
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const routePlan = event.eventFormat.activityDetails?.routePlan;
+  const routePlan = event.eventFormat?.activityDetails?.routePlan;
   const policy = routePlan?.version === 2 ? routePlan.liveTrackingPolicy : null;
   if (!policy || policy.mode === "disabled") {
     throw new HttpsError(
@@ -104,9 +105,12 @@ export async function publishEventLivePositionHandler(
   if (event.status !== "active") {
     throw new HttpsError("failed-precondition", "This event is not active.");
   }
+  const scheduledEvent = requireScheduledEvent(event);
   const nowMillis = now.toMillis();
-  if (nowMillis < event.startTime.toMillis() - eventWindowPaddingMillis ||
-      nowMillis > event.endTime.toMillis() + eventWindowPaddingMillis) {
+  if (nowMillis < scheduledEvent.startTime.toMillis() -
+      eventWindowPaddingMillis ||
+      nowMillis > scheduledEvent.endTime.toMillis() +
+      eventWindowPaddingMillis) {
     throw new HttpsError(
       "failed-precondition",
       "Live route sharing is only available around the event window."

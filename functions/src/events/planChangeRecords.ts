@@ -22,7 +22,7 @@ export function eventPlanChangeFields(
   const changed: EventPlanChangeField[] = [];
   if ((before.name ?? null) !== (after.name ?? null)) changed.push("name");
   if (before.startTime.toMillis() !== after.startTime.toMillis() ||
-      before.endTime.toMillis() !== after.endTime.toMillis()) {
+      before.endTime?.toMillis() !== after.endTime?.toMillis()) {
     changed.push("schedule");
   }
   if (!same(before.meetingLocation, after.meetingLocation)) {
