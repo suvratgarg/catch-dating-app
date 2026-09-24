@@ -28,7 +28,11 @@ const base = {organizerId: "org-1", formId: "form-1",
 function row(id: string, answers: ResponseQueryRow["answers"],
   status: ResponseQueryRow["status"] = "submitted"): ResponseQueryRow {
   return {id, organizerId: "org-1", formId: "form-1",
-    versionId: "version-1", status, submittedAtMillis: 1000, answers};
+    versionId: "version-1", status, submittedAtMillis: 1000,
+    withdrawnAtMillis: status === "withdrawn" ? 2000 : null,
+    identityKind: "phoneVerified", sourceLinkId: null,
+    identity: {displayName: "Guest", email: null, phoneE164: null,
+      searchName: "guest", origin: "respondentGranted"}, answers};
 }
 
 test("ALL/ANY typed filters share exact page and selected IDs", async () => {
@@ -76,6 +80,11 @@ test("ALL/ANY typed filters share exact page and selected IDs", async () => {
     [...await source.readAll(), row("new", {city: "Delhi", age: 21})]});
   assert.throws(() => pageResponseQuery(next, stale),
     {code: "invalid-argument", message: /Refresh/u});
+  const changedDisplay = await materializeResponseQuery(query, source,
+    {formTitle: "Renamed", version: 1});
+  const oldDisplay = await materializeResponseQuery(query, source,
+    {formTitle: "Before", version: 1});
+  assert.notEqual(changedDisplay.resultHash, oldDisplay.resultHash);
 });
 
 test("typed operators, missingness and withdrawn privacy", async () => {

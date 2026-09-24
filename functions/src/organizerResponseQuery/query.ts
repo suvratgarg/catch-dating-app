@@ -1,6 +1,7 @@
 import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {OrganizerFormVersionDocument} from
+import type {OrganizerFormResponseDocument,
+  OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 
 type Definition = OrganizerFormVersionDocument["definition"];
@@ -14,6 +15,10 @@ export interface ResponseQueryRow {
   versionId: string;
   status: "submitted" | "withdrawn";
   submittedAtMillis: number;
+  withdrawnAtMillis: number | null;
+  identityKind: OrganizerFormResponseDocument["identityKind"];
+  identity: OrganizerFormResponseDocument["identity"];
+  sourceLinkId: string | null;
   answers: Record<string, Answer>;
 }
 
@@ -401,7 +406,9 @@ function compare(left: ResponseQueryRow, right: ResponseQueryRow,
 
 /** Fully resolves one bounded exact result set for pages, IDs, and export. */
 export async function materializeResponseQuery(query: CompiledResponseQuery,
-  source: ResponseQuerySource): Promise<MaterializedResponseQuery> {
+  source: ResponseQuerySource,
+  displayContext?: {formTitle: string; version: number}
+): Promise<MaterializedResponseQuery> {
   const scanned = await source.readAll(maxScanRows);
   if (scanned.length > maxScanRows) {
     throw new HttpsError("resource-exhausted",
@@ -427,8 +434,10 @@ export async function materializeResponseQuery(query: CompiledResponseQuery,
         const question = query.questions.get(questionId);
         return question && question.privacyClass !== "sensitive";
       }))}));
-  const resultHash = digest(safeRows.map((row) => [row.id, row.status,
-    row.submittedAtMillis, row.answers]));
+  const resultHash = digest({displayContext, rows: safeRows.map((row) => [
+    row.id, row.status, row.submittedAtMillis, row.withdrawnAtMillis,
+    row.identityKind, row.identity, row.sourceLinkId, row.answers,
+  ])});
   const rows = safeRows.filter((row) =>
     query.spec.statuses.includes(row.status) &&
     matches(row, query.spec.predicate))
