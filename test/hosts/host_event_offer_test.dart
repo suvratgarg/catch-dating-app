@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -51,11 +53,64 @@ void main() {
     );
   });
 
+  test('detail preserves historical terms and manual attestation fields', () {
+    final offer = HostEventOffer.fromCallableData({
+      'effectiveStatus': 'offered',
+      'offer': {
+        'offerId': 'offer-1', 'organizerId': 'org', 'eventId': 'event-one',
+        'contactId': 'contact-kabir', 'applicationId': 'response-kabir',
+        'sourceKind': 'formResponse', 'status': 'offered',
+        'generation': 1, 'revision': 4,
+        'expiresAtMillis': now.add(const Duration(days: 1))
+            .millisecondsSinceEpoch,
+        'organizerPaymentLink': 'https://pay.example.test/kabir',
+        'paymentSnapshot': {
+          'eventPaymentRevision': 3,
+          'eventPaymentHash': List.filled(64, 'a').join(),
+          'collectionMode': 'personalRequest',
+          'expectedAmountMinor': 180000,
+          'currency': 'INR',
+          'reusablePaymentPageUrl': null,
+          'paymentInstructions': null,
+          'messageTemplate': 'Hi {name}',
+          'personalPaymentLink': 'https://pay.example.test/kabir',
+          'expiresAtMillis': now.add(const Duration(days: 1))
+              .millisecondsSinceEpoch,
+        },
+        'manualPayment': {
+          'status': 'hostAttestedReceived',
+          'evidenceReference': 'BANK-123',
+          'evidenceRecordedAtMillis': now.millisecondsSinceEpoch,
+          'reviewedByUid': 'manager-one',
+          'reviewedAtMillis': now.millisecondsSinceEpoch,
+          'reviewNote': 'Checked bank',
+          'bankReceiptChecked': true,
+          'attestedAmountMinor': 180000,
+          'attestedCurrency': 'INR',
+          'attestedEventPaymentRevision': 3,
+          'attestedEventPaymentHash': List.filled(64, 'a').join(),
+        },
+      },
+    });
+    expect(offer.paymentSnapshot?.eventPaymentRevision, 3);
+    expect(offer.paymentSnapshot?.personalPaymentLink?.host,
+        'pay.example.test');
+    expect(offer.manualPayment.attestedAmountMinor, 180000);
+    expect(offer.isHostAttested, isTrue);
+  });
+
   test(
     'preview gates commit; uncertain retry keeps the same request ID',
     () async {
       final gateway = _Gateway()..failFirstCommit = true;
-      final controller = HostEventOfferController(gateway);
+      final storage = MemoryCommandJournalStorage();
+      final outbox = JournalHostOfferCommitOutbox(
+        storage: () async => storage,
+        currentAccountId: () => 'manager-one',
+        gateway: gateway,
+      );
+      final controller = HostEventOfferController(gateway,
+        outbox: outbox, accountId: 'manager-one');
       addTearDown(controller.dispose);
       final draft = HostOfferBatchDraft(
         organizerId: 'org',
@@ -76,10 +131,18 @@ void main() {
       expect(controller.view.status, HostOfferFlowStatus.failure);
       expect(controller.view.pendingRequestId, 'request_001');
       await expectLater(controller.commit('request_002'), throwsStateError);
-      await controller.commit('request_001');
-      expect(controller.view.status, HostOfferFlowStatus.committed);
+      final restarted = HostEventOfferController(gateway,
+        outbox: JournalHostOfferCommitOutbox(
+          storage: () async => storage,
+          currentAccountId: () => 'manager-one', gateway: gateway,
+        ), accountId: 'manager-one');
+      addTearDown(restarted.dispose);
+      await restarted.recoverPending(organizerId: 'org', eventId: 'event-one');
+      expect(restarted.view.pendingRequestId, 'request_001');
+      await restarted.commit('request_001');
+      expect(restarted.view.status, HostOfferFlowStatus.committed);
       expect(gateway.commitCalls, ['request_001', 'request_001']);
-      expect(controller.view.receipt?.results.single.offerId, 'offer-kabir');
+      expect(restarted.view.receipt?.results.single.offerId, 'offer-kabir');
     },
   );
 
@@ -87,7 +150,9 @@ void main() {
     'reference and Host bank attestation cannot imply provider capture',
     () async {
       final gateway = _Gateway();
-      final controller = HostEventOfferController(gateway);
+      final controller = HostEventOfferController(gateway,
+        mutationOutbox: _FakeMutationOutbox(gateway),
+        accountId: 'manager-one');
       addTearDown(controller.dispose);
       final offered = _offer(HostManualPaymentStatus.none);
       expect(
@@ -131,6 +196,63 @@ void main() {
       expect(gateway.admissionCalls, 0);
     },
   );
+
+  test('manual mutation journal replays exact request after restart', () async {
+    final storage = MemoryCommandJournalStorage();
+    final offer = _offer(HostManualPaymentStatus.none);
+    final action = <String, Object?>{
+      'kind': 'recordEvidence', 'requestId': 'reference_001',
+      'expectedRevision': 2, 'expectedGeneration': 1,
+      'evidenceReference': 'BANK-12345',
+    };
+    final sent = <Map<String, Object?>>[];
+    var fail = true;
+    Future<void> write(Map<String, Object?> payload) async {
+      sent.add(payload);
+      if (fail) throw StateError('uncertain transport result');
+    }
+    JournalHostOfferMutationOutbox makeOutbox() =>
+        JournalHostOfferMutationOutbox(
+          storage: () async => storage,
+          currentAccountId: () => 'manager-one',
+          write: write,
+          refresh: (_) async => offer,
+        );
+    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
+      offer: offer, action: action), throwsStateError);
+    fail = false;
+    final recovered = await makeOutbox().mutate(accountId: 'manager-one',
+      offer: offer, action: action);
+    expect(recovered.offerId, offer.offerId);
+    expect(sent, hasLength(2));
+    expect(sent[1], sent[0]);
+    expect((sent[1]['action']! as Map)['requestId'], 'reference_001');
+  });
+
+  test('failed detail refresh never reissues acknowledged mutation',
+      () async {
+    final storage = MemoryCommandJournalStorage();
+    final offer = _offer(HostManualPaymentStatus.none);
+    var writes = 0;
+    JournalHostOfferMutationOutbox makeOutbox() =>
+        JournalHostOfferMutationOutbox(
+          storage: () async => storage,
+          currentAccountId: () => 'manager-one',
+          write: (_) async { writes++; },
+          refresh: (_) async => throw StateError('detail unavailable'),
+        );
+    final action = <String, Object?>{
+      'kind': 'recordEvidence', 'requestId': 'reference_002',
+      'expectedRevision': 2, 'expectedGeneration': 1,
+      'evidenceReference': 'BANK-98765',
+    };
+    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
+      offer: offer, action: action), throwsStateError);
+    expect(writes, 1);
+    await expectLater(makeOutbox().mutate(accountId: 'manager-one',
+      offer: offer, action: action), throwsA(isA<Exception>()));
+    expect(writes, 1);
+  });
 }
 
 HostOfferRow _row({required String eventId, DateTime? expiry, Uri? link}) =>
@@ -239,5 +361,27 @@ class _Gateway implements HostEventOfferGateway {
   }) async {
     reviewCalls.add(decision);
     return offer;
+  }
+}
+
+class _FakeMutationOutbox implements HostOfferMutationOutbox {
+  const _FakeMutationOutbox(this.gateway);
+  final _Gateway gateway;
+
+  @override
+  Future<HostEventOffer> mutate({required String accountId,
+    required HostEventOffer offer,
+    required Map<String, Object?> action}) {
+    if (action['kind'] == 'recordEvidence') {
+      return gateway.recordReference(offer: offer,
+        reference: action['evidenceReference']! as String,
+        requestId: action['requestId']! as String);
+    }
+    return gateway.reviewReference(offer: offer,
+      decision: HostManualPaymentStatus.values.byName(
+        action['decision']! as String),
+      note: action['reviewNote']! as String,
+      bankReceiptChecked: action['bankReceiptChecked']! as bool,
+      requestId: action['requestId']! as String);
   }
 }

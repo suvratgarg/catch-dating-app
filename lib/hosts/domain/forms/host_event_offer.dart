@@ -104,6 +104,31 @@ class HostOfferBatchDraft {
     'mode': mode,
     'rows': rows.map((row) => row.toJson()).toList(growable: false),
   };
+
+  factory HostOfferBatchDraft.fromJson(Map<String, Object?> map) =>
+      HostOfferBatchDraft(
+        organizerId: _offerString(map, 'organizerId'),
+        eventId: _offerString(map, 'eventId'),
+        mode: _offerString(map, 'mode'),
+        rows: List.unmodifiable((map['rows']! as List).map((value) {
+          final row = _offerMap(value, 'offer row');
+          return HostOfferRow(
+            organizerId: _offerString(row, 'organizerId'),
+            eventId: _offerString(row, 'eventId'),
+            contactId: _offerString(row, 'contactId'),
+            sourceKind: HostOfferSourceKind.values.byName(
+              _offerString(row, 'sourceKind'),
+            ),
+            sourceId: _offerString(row, 'applicationId'),
+            expiresAt: DateTime.fromMillisecondsSinceEpoch(
+              _offerInt(row, 'expiresAtMillis'),
+            ),
+            organizerPaymentLink: row['organizerPaymentLink'] is String
+                ? Uri.parse(row['organizerPaymentLink']! as String)
+                : null,
+          );
+        })),
+      );
 }
 
 @immutable
@@ -134,6 +159,19 @@ class HostOfferPreview {
 
   final String planDigest;
   final List<HostOfferPreviewRow> rows;
+
+  Map<String, Object?> toJson() => {
+    'planDigest': planDigest,
+    'rows': [
+      for (final row in rows)
+        {
+          'offerId': row.offerId,
+          'revision': row.revision,
+          'generation': row.generation,
+          'status': row.status,
+        },
+    ],
+  };
 }
 
 @immutable
@@ -158,6 +196,7 @@ class HostOfferCommitReceipt {
     required this.eventId,
     required this.requestId,
     required this.results,
+    this.requestHash,
   });
 
   factory HostOfferCommitReceipt.fromCallableData(Object? data) {
@@ -170,6 +209,7 @@ class HostOfferCommitReceipt {
       organizerId: _offerString(map, 'organizerId'),
       eventId: _offerString(map, 'eventId'),
       requestId: _offerString(map, 'requestId'),
+      requestHash: _offerString(map, 'requestHash'),
       results: List.unmodifiable(
         results.map((entry) {
           final result = _offerMap(entry, 'offer commit row');
@@ -187,7 +227,53 @@ class HostOfferCommitReceipt {
   final String organizerId;
   final String eventId;
   final String requestId;
+  final String? requestHash;
   final List<HostOfferPreviewRow> results;
+}
+
+@immutable
+class HostOfferPaymentSnapshot {
+  const HostOfferPaymentSnapshot({
+    required this.eventPaymentRevision,
+    required this.eventPaymentHash,
+    required this.collectionMode,
+    required this.expectedAmountMinor,
+    required this.currency,
+    required this.reusablePaymentPageUrl,
+    required this.paymentInstructions,
+    required this.messageTemplate,
+    required this.personalPaymentLink,
+    required this.expiresAt,
+  });
+
+  factory HostOfferPaymentSnapshot.fromMap(Object? value) {
+    final map = _offerMap(value, 'offer payment snapshot');
+    return HostOfferPaymentSnapshot(
+      eventPaymentRevision: _offerInt(map, 'eventPaymentRevision'),
+      eventPaymentHash: _offerString(map, 'eventPaymentHash'),
+      collectionMode: _offerNullableString(map['collectionMode']),
+      expectedAmountMinor: _offerInt(map, 'expectedAmountMinor'),
+      currency: _offerNullableString(map['currency']),
+      reusablePaymentPageUrl: _offerNullableUri(map['reusablePaymentPageUrl']),
+      paymentInstructions: _offerNullableString(map['paymentInstructions']),
+      messageTemplate: _offerNullableString(map['messageTemplate']),
+      personalPaymentLink: _offerNullableUri(map['personalPaymentLink']),
+      expiresAt: DateTime.fromMillisecondsSinceEpoch(
+        _offerInt(map, 'expiresAtMillis'),
+      ),
+    );
+  }
+
+  final int eventPaymentRevision;
+  final String eventPaymentHash;
+  final String? collectionMode;
+  final int expectedAmountMinor;
+  final String? currency;
+  final Uri? reusablePaymentPageUrl;
+  final String? paymentInstructions;
+  final String? messageTemplate;
+  final Uri? personalPaymentLink;
+  final DateTime expiresAt;
 }
 
 @immutable
@@ -200,6 +286,10 @@ class HostManualPaymentReview {
     required this.reviewedAt,
     required this.reviewNote,
     required this.bankReceiptChecked,
+    this.attestedAmountMinor,
+    this.attestedCurrency,
+    this.attestedEventPaymentRevision,
+    this.attestedEventPaymentHash,
   });
 
   factory HostManualPaymentReview.fromMap(Object? data) {
@@ -214,6 +304,14 @@ class HostManualPaymentReview {
       reviewedAt: _offerNullableTime(map['reviewedAtMillis']),
       reviewNote: _offerNullableString(map['reviewNote']),
       bankReceiptChecked: map['bankReceiptChecked'] == true,
+      attestedAmountMinor: _offerNullableInt(map['attestedAmountMinor']),
+      attestedCurrency: _offerNullableString(map['attestedCurrency']),
+      attestedEventPaymentRevision: _offerNullableInt(
+        map['attestedEventPaymentRevision'],
+      ),
+      attestedEventPaymentHash: _offerNullableString(
+        map['attestedEventPaymentHash'],
+      ),
     );
   }
 
@@ -224,6 +322,10 @@ class HostManualPaymentReview {
   final DateTime? reviewedAt;
   final String? reviewNote;
   final bool bankReceiptChecked;
+  final int? attestedAmountMinor;
+  final String? attestedCurrency;
+  final int? attestedEventPaymentRevision;
+  final String? attestedEventPaymentHash;
 }
 
 @immutable
@@ -242,6 +344,7 @@ class HostEventOffer {
     required this.expiresAt,
     required this.organizerPaymentLink,
     required this.manualPayment,
+    this.paymentSnapshot,
   });
 
   factory HostEventOffer.fromCallableData(Object? data) {
@@ -271,6 +374,9 @@ class HostEventOffer {
         _ => throw const FormatException('Offer payment link is invalid.'),
       },
       manualPayment: HostManualPaymentReview.fromMap(offer['manualPayment']),
+      paymentSnapshot: HostOfferPaymentSnapshot.fromMap(
+        offer['paymentSnapshot'],
+      ),
     );
   }
 
@@ -287,10 +393,112 @@ class HostEventOffer {
   final DateTime expiresAt;
   final Uri? organizerPaymentLink;
   final HostManualPaymentReview manualPayment;
+  final HostOfferPaymentSnapshot? paymentSnapshot;
 
   bool get hasOffer => status == HostOfferStatus.offered;
   bool get isHostAttested =>
       manualPayment.status == HostManualPaymentStatus.hostAttestedReceived;
+}
+
+@immutable
+class HostOfferHandoff {
+  const HostOfferHandoff({
+    required this.kind,
+    required this.offerId,
+    required this.blockers,
+    this.contactId,
+    this.editableText,
+    this.copyText,
+    this.whatsappUrl,
+  });
+
+  factory HostOfferHandoff.fromCallableData(Object? value) {
+    final map = _offerMap(value, 'offer handoff');
+    final kind = _offerString(map, 'kind');
+    if (kind != 'blocked' && kind != 'prepared') {
+      throw const FormatException('Offer handoff kind is invalid.');
+    }
+    final blockers = map['blockers'];
+    if (kind == 'blocked' && (blockers is! List ||
+        blockers.any((entry) => entry is! String))) {
+      throw const FormatException('Offer handoff blockers are invalid.');
+    }
+    return HostOfferHandoff(
+      kind: kind,
+      offerId: _offerString(map, 'offerId'),
+      blockers: kind == 'blocked'
+          ? List<String>.unmodifiable(blockers! as List)
+          : const [],
+      contactId: kind == 'prepared' ? _offerString(map, 'contactId') : null,
+      editableText: kind == 'prepared'
+          ? _offerString(map, 'editableText')
+          : null,
+      copyText: kind == 'prepared' ? _offerString(map, 'copyText') : null,
+      whatsappUrl: kind == 'prepared'
+          ? _offerNullableUri(_offerString(map, 'whatsappUrl'))
+          : null,
+    );
+  }
+
+  final String kind;
+  final String offerId;
+  final List<String> blockers;
+  final String? contactId;
+  final String? editableText;
+  final String? copyText;
+  final Uri? whatsappUrl;
+}
+
+abstract interface class HostEventOfferGateway {
+  Future<HostOfferPreview> preview(HostOfferBatchDraft draft);
+  Future<HostOfferCommitReceipt> commit({
+    required HostOfferBatchDraft draft,
+    required HostOfferPreview preview,
+    required String requestId,
+  });
+  Future<HostEventOffer> recordReference({
+    required HostEventOffer offer,
+    required String reference,
+    required String requestId,
+  });
+  Future<HostEventOffer> reviewReference({
+    required HostEventOffer offer,
+    required HostManualPaymentStatus decision,
+    required String note,
+    required bool bankReceiptChecked,
+    required String requestId,
+  });
+}
+
+@immutable
+class HostOfferPendingCommit {
+  const HostOfferPendingCommit({required this.draft,
+    required this.preview, required this.requestId});
+  final HostOfferBatchDraft draft;
+  final HostOfferPreview preview;
+  final String requestId;
+}
+
+abstract interface class HostOfferCommitOutbox {
+  Future<HostOfferCommitReceipt?> submit({
+    required String accountId,
+    required HostOfferBatchDraft draft,
+    required HostOfferPreview preview,
+    required String requestId,
+  });
+  Future<HostOfferPendingCommit?> pending({
+    required String accountId,
+    required String organizerId,
+    required String eventId,
+  });
+}
+
+abstract interface class HostOfferMutationOutbox {
+  Future<HostEventOffer> mutate({
+    required String accountId,
+    required HostEventOffer offer,
+    required Map<String, Object?> action,
+  });
 }
 
 Map<String, Object?> _offerMap(Object? value, String label) {
@@ -329,4 +537,20 @@ DateTime? _offerNullableTime(Object? value) {
     throw const FormatException('Offer time is invalid.');
   }
   return DateTime.fromMillisecondsSinceEpoch(value);
+}
+
+int? _offerNullableInt(Object? value) {
+  if (value == null) return null;
+  if (value is! int || value < 0) {
+    throw const FormatException('Offer number is invalid.');
+  }
+  return value;
+}
+
+Uri? _offerNullableUri(Object? value) {
+  if (value == null) return null;
+  if (value is! String) {
+    throw const FormatException('Offer link is invalid.');
+  }
+  return Uri.parse(value);
 }
