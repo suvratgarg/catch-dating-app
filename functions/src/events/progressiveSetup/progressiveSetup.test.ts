@@ -242,12 +242,15 @@ test("basics edit preserves venue city and existing plan dependencies",
       const before = h.store.read(path);
       const nextBasics = patch.meetingPoint ? {...basics,
         city: {mode: "set" as const, value: {
-          cityId: "in-ka-bangalore", marketId: "in-ka-bangalore",
+          cityId: "in-mp-indore", marketId: "in-mp-indore",
         }}} : basics;
       await assert.rejects(updatePrivateEventBasics({actorUid: "host1",
         command: {organizerId: "org1", eventId: created.eventId,
           requestId: "guard-edit-1", expectedSetupRevision: 1,
-          basics: nextBasics}, deps: h.deps}));
+          basics: nextBasics}, deps: h.deps}), (error) =>
+        error instanceof HttpsError && (patch.meetingPoint ?
+          error.message.includes("Clear the venue") :
+          ["failed-precondition", "not-found"].includes(error.code)));
       assert.deepEqual(h.store.read(path), before);
     }
   });
