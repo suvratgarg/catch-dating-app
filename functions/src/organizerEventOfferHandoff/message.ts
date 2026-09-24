@@ -16,7 +16,7 @@ export interface ReviewedOfferHandoff {
     status: "draft" | "offered" | "withdrawn" | "expired";
     expiresAtMillis: number;
     organizerPaymentLink: string | null;
-    /** Frozen at offer issuance; current terms must still be reviewed. */
+    /** Frozen at offer issuance; later event defaults do not rewrite it. */
     paymentTermsHash: string;
   };
   event: {
@@ -44,7 +44,6 @@ export interface ReviewedOfferHandoff {
     paymentInstructions: string | null;
     eventPaymentHash: string;
   };
-  currentPaymentTermsHash: string;
   /** Optional event-authored intro or complete four-placeholder template. */
   messageTemplate: string | null;
   nowMillis: number;
@@ -183,9 +182,7 @@ export function prepareOfferHandoff(
   }
   const payment = input.payment;
   if (!offer.paymentTermsHash || !payment.eventPaymentHash ||
-      !input.currentPaymentTermsHash ||
-      offer.paymentTermsHash !== payment.eventPaymentHash ||
-      offer.paymentTermsHash !== input.currentPaymentTermsHash) {
+      offer.paymentTermsHash !== payment.eventPaymentHash) {
     blockers.push("termsChanged");
   }
   const name = nonblank(recipient.displayName);
@@ -212,15 +209,19 @@ export function prepareOfferHandoff(
     if (offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
   } else if (payment.expectedAmountMinor > 0 &&
       (payment.collectionMode === "reusablePage" ||
-        payment.collectionMode === "manualInstructions")) {
-    mode = payment.collectionMode;
+        payment.collectionMode === "manualInstructions" ||
+        payment.collectionMode === "personalRequest")) {
+    mode = payment.collectionMode === "manualInstructions" ?
+      "manualInstructions" : "reusablePage";
     if (!nonblank(payment.currency ?? "")) blockers.push("currencyMissing");
     if (mode === "reusablePage") {
-      if (!payment.reusablePaymentPageUrl ||
-          !offer.organizerPaymentLink) blockers.push("paymentLinkMissing");
-      else if (payment.reusablePaymentPageUrl !==
-          offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
-      else {
+      const expectedLink = payment.collectionMode === "personalRequest" ?
+        offer.organizerPaymentLink : payment.reusablePaymentPageUrl;
+      if (!expectedLink || !offer.organizerPaymentLink) {
+        blockers.push("paymentLinkMissing");
+      } else if (expectedLink !== offer.organizerPaymentLink) {
+        blockers.push("paymentLinkMismatch");
+      } else {
         link = publicPaymentLink(offer.organizerPaymentLink);
         if (!link) blockers.push("paymentLinkInvalid");
       }
@@ -229,8 +230,7 @@ export function prepareOfferHandoff(
       if (!instructions) blockers.push("paymentInstructionsMissing");
       if (offer.organizerPaymentLink) blockers.push("paymentLinkMismatch");
     }
-  } else if (payment.collectionMode === "personalRequest" ||
-      payment.collectionMode === "catchCheckout") {
+  } else if (payment.collectionMode === "catchCheckout") {
     blockers.push("paymentModeUnsupported");
   } else {
     blockers.push("paymentPolicyMissing");
