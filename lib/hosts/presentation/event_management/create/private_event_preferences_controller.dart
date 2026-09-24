@@ -13,9 +13,29 @@ typedef ReadDefaultsForPrivateEvent = Future<ManagerEventSetupDefaults>
 typedef WritePrivateEventPreferences = Future<PrivateEventCreateReceipt>
     Function(PrivateEventPreferencesUpdateRequest request);
 
+/// Shared presentation contract. Private setup and published offer settings
+/// retain separate reads, revision fences, journals and mutations.
+abstract class EventPreferencesEditorController extends ChangeNotifier {
+  String? get eventName;
+  bool get hasLoadedEvent;
+  bool get isPrivateEvent;
+  PrivateEventPreferenceIntents get intents;
+  Map<String, Object?> get resolvedValues;
+  ManagerEventSetupDefaults? get defaults;
+  bool get hasPending;
+  Object? get error;
+  set error(Object? value);
+  bool get loading;
+  bool get saving;
+  bool get canEdit;
+  Future<void> load();
+  Future<void> retryPending();
+  Future<void> save(PrivateEventPreferenceIntents intents);
+}
+
 /// Event-scoped editor state. Once a command is sent, every retry uses the
 /// same persisted body even after a lost response, revocation or app restart.
-class PrivateEventPreferencesController extends ChangeNotifier {
+class PrivateEventPreferencesController extends EventPreferencesEditorController {
   PrivateEventPreferencesController({
     required this.userId,
     required this.organizerId,
@@ -41,6 +61,22 @@ class PrivateEventPreferencesController extends ChangeNotifier {
   bool loading = false;
   bool saving = false;
   bool _disposed = false;
+
+  @override
+  String? get eventName => event?.name;
+  @override
+  bool get hasLoadedEvent => event != null;
+  @override
+  bool get isPrivateEvent => true;
+  @override
+  PrivateEventPreferenceIntents get intents =>
+      event?.eventPreferences?.intents ?? const PrivateEventPreferenceIntents();
+  @override
+  Map<String, Object?> get resolvedValues =>
+      event?.eventPreferences?.resolvedValues ??
+      defaults?.preferences.toSparseJson() ?? const <String, Object?>{};
+  @override
+  bool get hasPending => pending != null;
 
   @override
   void notifyListeners() {

@@ -11,16 +11,16 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-/// Manager-only settings on the same saved private event. Every field shows
-/// whether it inherits, overrides, or clears an organizer suggestion.
-class PrivateEventPreferencesScreen extends StatelessWidget {
+/// Manager-only settings on a saved event. Private and published events share
+/// controls; each controller retains its own authoritative command protocol.
+class PrivateEventPreferencesScreen extends AnimatedWidget {
   const PrivateEventPreferencesScreen({
-    super.key,
+    Key? key,
     required this.controller,
     required this.onBack,
-  });
+  }) : super(key: key, listenable: controller);
 
-  final PrivateEventPreferencesController controller;
+  final EventPreferencesEditorController controller;
   final VoidCallback onBack;
 
   @override
@@ -28,13 +28,12 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
     final l10n = context.l10n;
     final copy = catchFieldCopy(l10n);
     final tokens = CatchTokens.of(context);
-    final event = controller.event;
     final defaults = controller.defaults;
-    final snapshot = event?.eventPreferences;
-    final intents = snapshot?.intents ?? const PrivateEventPreferenceIntents();
+    final intents = controller.intents;
     final intentsJson = intents.toJson();
     final suggestions = defaults?.preferences.toSparseJson() ?? const <String, Object?>{};
-    final resolved = snapshot?.resolvedValues ?? suggestions;
+    final resolved = controller.hasLoadedEvent
+        ? controller.resolvedValues : suggestions;
     final editable = controller.canEdit;
 
     void saveField(String field, Map<String, Object?> intent) {
@@ -98,7 +97,7 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
         hint: l10n.hostsEventPreferenceExpectedAmountHint, maxLength: 9),
     ];
 
-    if (controller.loading && event == null) {
+    if (controller.loading && !controller.hasLoadedEvent) {
       return const CatchScaffold.stepFlow(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -110,7 +109,7 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
         children: [
           CatchStepHeader(
             title: l10n.hostsEventPreferenceTitle,
-            subtitle: event?.name ?? l10n.hostsPrivateEventPayments,
+            subtitle: controller.eventName ?? l10n.hostsPrivateEventPayments,
             stepLabelBuilder: catchStepHeaderLabelBuilder(l10n),
             compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(l10n),
             onBack: onBack,
@@ -135,11 +134,17 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                           children: [
                             CatchField.read(
                               copy: copy,
-                              title: l10n.hostsPrivateEventPrivateTitle,
-                              body: l10n.hostsEventPreferencePrivateHint,
-                              icon: CatchIcons.lockOutline,
+                              title: controller.isPrivateEvent
+                                  ? l10n.hostsPrivateEventPrivateTitle
+                                  : l10n.hostsEventPreferencePublishedTitle,
+                              body: controller.isPrivateEvent
+                                  ? l10n.hostsEventPreferencePrivateHint
+                                  : l10n.hostsEventPreferencePublishedHint,
+                              icon: controller.isPrivateEvent
+                                  ? CatchIcons.lockOutline
+                                  : CatchIcons.infoOutlineRounded,
                             ),
-                            if (controller.pending != null) ...[
+                            if (controller.hasPending) ...[
                               CatchField.read(
                                 copy: copy,
                                 title: l10n.hostsEventPreferencePending,
@@ -161,7 +166,7 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                                   l10n: l10n, context: AppErrorContext.event),
                                 icon: CatchIcons.errorOutlineRounded,
                               ),
-                            if (controller.pending == null &&
+                            if (!controller.hasPending &&
                                 controller.error != null)
                               CatchField.action(
                                 copy: copy,
@@ -177,7 +182,7 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                             CatchField<EventCollectionPreference>.control(
                               copy: copy,
                               title: l10n.hostsEventDefaultsCollectionPreference,
-                              contractExemption: 'Private event collection preference only.',
+                              contractExemption: 'Event collection preference only.',
                               body: resolved['collectionPreference'] is String
                                   ? collectionLabel(EventCollectionPreference.values.byName(
                                       resolved['collectionPreference'] as String))
@@ -204,7 +209,7 @@ class PrivateEventPreferencesScreen extends StatelessWidget {
                             CatchField<String>.control(
                               copy: copy,
                               title: l10n.hostsEventPreferenceAdmission,
-                              contractExemption: 'Private event admission suggestion only.',
+                              contractExemption: 'Event admission suggestion only.',
                               body: resolved['admissionPreset'] is String
                                   ? admissionLabel(resolved['admissionPreset'] as String)
                                   : l10n.hostsEventDefaultsChooseEachEvent,
