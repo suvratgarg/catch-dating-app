@@ -6,6 +6,9 @@ import {
   ReviewedOfferHandoff,
 } from "./message";
 
+import {validateEventOfferHandoffCallableResponse} from
+  "../shared/generated/validators/eventOfferHandoffOutput";
+
 const now = Date.parse("2026-10-01T00:00:00Z");
 
 function reviewed(): ReviewedOfferHandoff {
@@ -24,20 +27,21 @@ function reviewed(): ReviewedOfferHandoff {
       currency: "INR", reusablePaymentPageUrl:
         "https://pay.example.test/a?x=1&y=2",
       paymentInstructions: null, eventPaymentHash: "terms-1"},
-    currentPaymentTermsHash: "terms-1", messageTemplate: null,
-    nowMillis: now,
+    messageTemplate: null, nowMillis: now,
   };
 }
 
 function blockers(input: ReviewedOfferHandoff): string[] {
   const result = prepareOfferHandoff(input);
   assert.equal(result.kind, "blocked");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
   return result.kind === "blocked" ? result.blockers : [];
 }
 
 test("prepares editable individual copy and encoded WhatsApp fallback", () => {
   const result = prepareOfferHandoff(reviewed());
   assert.equal(result.kind, "prepared");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
   if (result.kind !== "prepared") return;
   assert.match(result.editableText, /Hi Asha & Co/);
   assert.match(result.editableText, /Catch & Dance/);
@@ -136,7 +140,7 @@ test("withdrawal, expiry, opt-out and stale provenance cannot prepare", () => {
       input.recipient.contactCurrent = false;
     }],
     ["termsChanged", (input) => {
-      input.currentPaymentTermsHash = "terms-2";
+      input.payment.eventPaymentHash = "terms-2";
     }],
     ["eventMismatch", (input) => {
       input.event.eventId = "event-2";
@@ -189,7 +193,7 @@ test("missing or unsafe contact, event and payment values are blockers", () => {
       input.recipient.phoneE164 = "9876543210";
     }],
     ["paymentModeUnsupported", (input) => {
-      input.payment.collectionMode = "personalRequest";
+      input.payment.collectionMode = "catchCheckout";
     }],
     ["currencyMissing", (input) => {
       input.payment.currency = null;
@@ -199,6 +203,19 @@ test("missing or unsafe contact, event and payment values are blockers", () => {
     const input = reviewed();
     change(input);
     assert.ok(blockers(input).includes(expected), expected);
+  }
+});
+
+test("reviewed personal request link is a recipient payment URL", () => {
+  const input = reviewed();
+  input.payment.collectionMode = "personalRequest";
+  input.payment.reusablePaymentPageUrl = null;
+  const result = prepareOfferHandoff(input);
+  assert.equal(result.kind, "prepared");
+  assert.equal(validateEventOfferHandoffCallableResponse(result), true);
+  if (result.kind === "prepared") {
+    assert.match(result.editableText, /https:\/\/pay\.example\.test\/a/u);
+    assert.equal("providerReceipt" in result, false);
   }
 });
 

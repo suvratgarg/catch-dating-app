@@ -10,7 +10,19 @@ import type {
   OrganizerContactDocument, OrganizerContactOriginDocument,
   OrganizerFormResponseDocument, OrganizerFormVersionDocument,
   OrganizerFormConversionReceiptDocument,
+  OrganizerCommunicationPreferenceDocument,
+  OrganizerContactChannelStateDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {effectiveOrganizerWhatsappPurposeStatus,
+  organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
+import {organizerContactChannelStateId, hashEndpoint} from
+  "../organizers/organizerCampaignModel";
+import {whatsappStopId} from "../shared/organizerWhatsappStops";
+import {resolveIndividualCommunicationPlan} from
+  "../communications/organizerCommunicationPlan";
+import {projectEventPreferences} from
+  "../events/progressiveSetup/preferences";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {organizerContactOriginId} from
@@ -355,8 +367,12 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const sourceRevision = Number.isSafeInteger(setupRevision) &&
             setupRevision! > 0 ? setupRevision! :
             data.updatedAt?.toMillis();
-          if (!data.startTime ||
+          const startsAtMillis = data.startTime?.toMillis();
+          if (!Number.isSafeInteger(startsAtMillis) ||
+              startsAtMillis! <= 0 ||
               typeof data.clubId !== "string" ||
+              data.organizerId !== undefined &&
+                data.organizerId !== data.clubId ||
               !["active", "cancelled"].includes(data.status) ||
               !Number.isSafeInteger(sourceRevision) ||
               sourceRevision! < 1) {
@@ -364,7 +380,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               "Stored event is malformed.");
           }
           return {organizerId: data.organizerId ?? data.clubId,
-            eventId, startsAtMillis: data.startTime.toMillis(),
+            eventId, startsAtMillis: startsAtMillis!,
             cancelled: data.status === "cancelled",
             sourceRevision: sourceRevision!};
         },
@@ -373,9 +389,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           const data = await read("eventSetupPreferences", eventId);
           if (!data) return null;
           if (!object(data) || data.eventId !== eventId ||
-              typeof data.organizerId !== "string" ||
-              !object(data.paymentTerms) ||
-              data.revision !== data.paymentTerms.revision) {
+              typeof data.organizerId !== "string") {
             throw new OfferDomainError("conflict",
               "Stored event payment terms are malformed.");
           }
@@ -386,8 +400,12 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             throw new OfferDomainError("conflict",
               "Event payment terms have a foreign organizer.");
           }
-          const terms = data.paymentTerms as unknown as EventPaymentTerms;
+          let terms: EventPaymentTerms;
           try {
+            const projected = projectEventPreferences(data,
+              data.organizerId, eventId);
+            if (!projected) throw new Error("missing preferences");
+            terms = projected.paymentTerms as EventPaymentTerms;
             validateEventPaymentTerms(terms);
             eventPaymentTermsHash(terms);
           } catch {
@@ -395,6 +413,91 @@ export class FirestoreEventOfferRepository implements OfferRepository {
               "Stored event payment terms are invalid.");
           }
           return terms;
+        },
+        handoffPresentation: async (offer, sourceResponseId) => {
+          const [eventData, contactData] = await Promise.all([
+            read("events", offer.eventId),
+            read("organizerContacts", offer.contactId),
+          ]);
+          const event = eventData as EventDocument | undefined;
+          const contact = contactData as OrganizerContactDocument | undefined;
+          if (!event || !contact ||
+              (event.organizerId ?? event.clubId) !== offer.organizerId ||
+              contact.organizerId !== offer.organizerId) {
+            throw new OfferDomainError("denied",
+              "Offer event or contact is unavailable.");
+          }
+          const phone = contact.phoneE164;
+          const [preferenceData, channelData, stopData] = await Promise.all([
+            contact.linkedUid ? read("organizerCommunicationPreferences",
+              organizerCommunicationPreferenceId(offer.organizerId,
+                contact.linkedUid)) : Promise.resolve(undefined),
+            read("organizerContactChannelStates",
+              organizerContactChannelStateId(offer.organizerId,
+                offer.contactId)),
+            phone ? read("organizerWhatsappEndpointStops",
+              whatsappStopId(offer.organizerId, hashEndpoint(phone))) :
+              Promise.resolve(undefined),
+          ]);
+          const preference = preferenceData as
+            OrganizerCommunicationPreferenceDocument | undefined;
+          const channel = channelData as
+            OrganizerContactChannelStateDocument | undefined;
+          if (preference && (preference.organizerId !== offer.organizerId ||
+              preference.uid !== contact.linkedUid)) {
+            throw new OfferDomainError("conflict",
+              "Stored contact permission has a foreign owner.");
+          }
+          if (channel && (channel.organizerId !== offer.organizerId ||
+              channel.contactId !== offer.contactId)) {
+            throw new OfferDomainError("conflict",
+              "Stored contact channel has a foreign owner.");
+          }
+          const purposeStatus = effectiveOrganizerWhatsappPurposeStatus(
+            preference, "eventOperations", phone, sourceResponseId);
+          const optedOut = contact.whatsappStatus === "optedOut" ||
+            purposeStatus === "optedOut";
+          const suppressed = channel?.adminSuppressed === true ||
+            channel?.suppressionStatus !== undefined &&
+              channel.suppressionStatus !== "none" ||
+            !!phone && channel?.endpointHash !== undefined &&
+              channel.endpointHash !== hashEndpoint(phone) ||
+            !!stopData;
+          const plan = resolveIndividualCommunicationPlan({
+            contactId: offer.contactId,
+            displayName: contact.displayNameOverride?.trim() ||
+              contact.displayName,
+            linkedUid: contact.linkedUid,
+            identityState: contact.identityState === "merged" ?
+              "ambiguous" : contact.identityState,
+            ambiguousCandidateCount:
+              contact.ambiguousCandidateContactIds?.length ?? 0,
+            phoneE164: phone,
+            whatsappStatus: optedOut ? "optedOut" : contact.whatsappStatus,
+            whatsappAdminSuppressed: suppressed,
+          });
+          const handoff = plan.routes.find((route) =>
+            route.routeId === "personalWhatsappHandoff");
+          return {event: {eventId: offer.eventId,
+            title: event.name ?? "", startsAtMillis:
+              event.startTime?.toMillis() ?? 0,
+            timeZone: event.eventTimezone ?? "",
+            lifecycle: event.status === "cancelled" ? "canceled" as const :
+              "current" as const},
+          recipient: {contactId: offer.contactId,
+            displayName: contact.displayNameOverride?.trim() ||
+              contact.displayName,
+            phoneE164: phone,
+            whatsappPermission: optedOut ?
+              "optedOut" as const :
+              handoff?.availability === "available" ?
+                "available" as const : "unavailable" as const,
+            sourceCurrent: true,
+            contactCurrent: contact.deletedAt === null &&
+              contact.hiddenAt == null &&
+              contact.mergedIntoContactId === null &&
+              contact.identityState !== "merged" &&
+              contact.identityState !== "ambiguous"}};
         },
         offer: async (offerId) => {
           const data = await read(collections.offers, offerId);

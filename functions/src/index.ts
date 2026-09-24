@@ -684,10 +684,17 @@ export {flightAlertWebhook} from "./transport/flightAlerts";
 
 export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
-  updatePrivateEventPreferences,
+  updatePrivateEventPreferences, listPrivateEventSetups,
+  updatePrivateEventDetails,
 } from "./events/progressiveSetup/callables";
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
 
 export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
   from "./organizers/eventSetupDefaults/callables";
+
+export {
+  previewEventOffers, commitEventOffers, mutateEventOffer,
+  getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  getEventOfferConfiguration,
+} from "./organizerEventOffers/callables";

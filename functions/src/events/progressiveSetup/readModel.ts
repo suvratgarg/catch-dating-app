@@ -37,10 +37,22 @@ export async function getPrivateEventSetup(params: {
       throw new HttpsError("failed-precondition",
         "Use the published event editor for this event.");
     }
+    const endTimeMillis = event.endTime?.toMillis?.() ?? null;
+    if (event.endTime !== undefined &&
+        (!Number.isSafeInteger(endTimeMillis) ||
+          endTimeMillis <= event.startTime?.toMillis?.())) {
+      throw new HttpsError("failed-precondition", "Event duration is invalid.");
+    }
     const result: unknown = {
       eventId: command.eventId,
       organizerId: command.organizerId,
       setupRevision: event.setupRevision,
+      eventDetails: {
+        endTimeMillis,
+        venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
+        sourceVenueId: event.sourceVenueId ?? null,
+        eventFormat: event.eventFormat ?? null,
+      },
       eventPreferences: projectEventPreferences(preferencesSnap.data(),
         command.organizerId, command.eventId),
       name: event.name,
@@ -54,6 +66,8 @@ export async function getPrivateEventSetup(params: {
       setupDefaults: event.setupDefaults,
       detailsConfigured: event.endTime !== undefined ||
         event.meetingLocation !== undefined ||
+        event.meetingPoint !== undefined ||
+        event.eventFormat !== undefined ||
         event.eventSuccessPlanId !== undefined,
     };
     if (!validatePrivateEventSetupCallableResponse(result)) {

@@ -3,6 +3,13 @@
 
 import {createRequire} from "node:module";
 import {
+  getEventOfferConfigurationCallablePayloadSchema,
+  eventOfferConfigurationCallableResponseSchema,
+  updatePrivateEventDetailsCallablePayloadSchema,
+  prepareEventOfferHandoffCallablePayloadSchema,
+  eventOfferHandoffCallableResponseSchema,
+  listPrivateEventSetupsCallablePayloadSchema,
+  privateEventSetupListCallableResponseSchema,
   eventPreferenceIntentsSchema,
   resolvedEventPreferencesSchema,
   eventPaymentTermsSchema,
@@ -528,6 +535,25 @@ import {
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
   setClubNotificationPreferenceCallablePayloadSchema,
+  eventOfferAuthorityRowSchema,
+  eventOfferRowSchema,
+  eventOfferPaymentSnapshotSchema,
+  eventOfferManualPaymentSchema,
+  organizerEventOfferDocumentSchema,
+  eventOfferActionSchema,
+  organizerEventOfferActionReceiptDocumentSchema,
+  organizerEventOfferBatchReceiptDocumentSchema,
+  organizerEventOfferAuditDocumentSchema,
+  previewEventOffersCallablePayloadSchema,
+  commitEventOffersCallablePayloadSchema,
+  mutateEventOfferCallablePayloadSchema,
+  getEventOfferCallablePayloadSchema,
+  listEventOffersCallablePayloadSchema,
+  eventOfferPreviewCallableResponseSchema,
+  eventOfferCommitCallableResponseSchema,
+  eventOfferDetailCallableResponseSchema,
+  eventOfferMutationCallableResponseSchema,
+  eventOfferListCallableResponseSchema,
   eventSetupDefaultsSchema,
   createPrivateEventSetupCallablePayloadSchema,
   updatePrivateEventBasicsCallablePayloadSchema,
@@ -875,6 +901,13 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateGetEventOfferConfigurationCallablePayload = ajv.compile(getEventOfferConfigurationCallablePayloadSchema);
+export const validateEventOfferConfigurationCallableResponse = ajv.compile(eventOfferConfigurationCallableResponseSchema);
+export const validateUpdatePrivateEventDetailsCallablePayload = ajv.compile(updatePrivateEventDetailsCallablePayloadSchema);
+export const validatePrepareEventOfferHandoffCallablePayload = ajv.compile(prepareEventOfferHandoffCallablePayloadSchema);
+export const validateEventOfferHandoffCallableResponse = ajv.compile(eventOfferHandoffCallableResponseSchema);
+export const validateListPrivateEventSetupsCallablePayload = ajv.compile(listPrivateEventSetupsCallablePayloadSchema);
+export const validatePrivateEventSetupListCallableResponse = ajv.compile(privateEventSetupListCallableResponseSchema);
 export const validateEventPreferenceIntents = ajv.compile(eventPreferenceIntentsSchema);
 export const validateResolvedEventPreferences = ajv.compile(resolvedEventPreferencesSchema);
 export const validateEventPaymentTerms = ajv.compile(eventPaymentTermsSchema);
@@ -1400,6 +1433,25 @@ export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallabl
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
 export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
 export const validateSetClubNotificationPreferenceCallablePayload = ajv.compile(setClubNotificationPreferenceCallablePayloadSchema);
+export const validateEventOfferAuthorityRow = ajv.compile(eventOfferAuthorityRowSchema);
+export const validateEventOfferRow = ajv.compile(eventOfferRowSchema);
+export const validateEventOfferPaymentSnapshot = ajv.compile(eventOfferPaymentSnapshotSchema);
+export const validateEventOfferManualPayment = ajv.compile(eventOfferManualPaymentSchema);
+export const validateOrganizerEventOfferDocument = ajv.compile(organizerEventOfferDocumentSchema);
+export const validateEventOfferAction = ajv.compile(eventOfferActionSchema);
+export const validateOrganizerEventOfferActionReceiptDocument = ajv.compile(organizerEventOfferActionReceiptDocumentSchema);
+export const validateOrganizerEventOfferBatchReceiptDocument = ajv.compile(organizerEventOfferBatchReceiptDocumentSchema);
+export const validateOrganizerEventOfferAuditDocument = ajv.compile(organizerEventOfferAuditDocumentSchema);
+export const validatePreviewEventOffersCallablePayload = ajv.compile(previewEventOffersCallablePayloadSchema);
+export const validateCommitEventOffersCallablePayload = ajv.compile(commitEventOffersCallablePayloadSchema);
+export const validateMutateEventOfferCallablePayload = ajv.compile(mutateEventOfferCallablePayloadSchema);
+export const validateGetEventOfferCallablePayload = ajv.compile(getEventOfferCallablePayloadSchema);
+export const validateListEventOffersCallablePayload = ajv.compile(listEventOffersCallablePayloadSchema);
+export const validateEventOfferPreviewCallableResponse = ajv.compile(eventOfferPreviewCallableResponseSchema);
+export const validateEventOfferCommitCallableResponse = ajv.compile(eventOfferCommitCallableResponseSchema);
+export const validateEventOfferDetailCallableResponse = ajv.compile(eventOfferDetailCallableResponseSchema);
+export const validateEventOfferMutationCallableResponse = ajv.compile(eventOfferMutationCallableResponseSchema);
+export const validateEventOfferListCallableResponse = ajv.compile(eventOfferListCallableResponseSchema);
 export const validateEventSetupDefaults = ajv.compile(eventSetupDefaultsSchema);
 export const validateCreatePrivateEventSetupCallablePayload = ajv.compile(createPrivateEventSetupCallablePayloadSchema);
 export const validateUpdatePrivateEventBasicsCallablePayload = ajv.compile(updatePrivateEventBasicsCallablePayloadSchema);

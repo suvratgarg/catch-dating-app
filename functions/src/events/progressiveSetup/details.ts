@@ -1,7 +1,7 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {EventFormatSnapshot, OrganizerEventVenueDocument} from
+import type {OrganizerEventVenueDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
@@ -19,49 +19,14 @@ import {assertPrivacyReady, authorizeSetupManager, receiptFor,
   requireRevision, ProgressiveSetupDependencies,
   ProgressiveSetupResult} from "./service";
 
-type Decision<T> = {mode: "set"; value: T} | {mode: "clear"};
-type Inheritable<T> = Decision<T> | {mode: "inherit"};
+import type {UpdatePrivateEventDetailsCallablePayload} from
+  "../../shared/generated/updatePrivateEventDetailsCallablePayload";
+import {validateUpdatePrivateEventDetailsCallablePayload} from
+  "../../shared/generated/validators/updatePrivateEventDetailsInput";
 
-export interface UpdatePrivateEventDetailsCommand {
-  organizerId: string;
-  eventId: string;
-  requestId: string;
-  expectedSetupRevision: number;
-  /** GET manager defaults.preferencesHash, never a client-computed hash. */
-  reviewedDefaultsHash: string;
-  details: {
-    durationMinutes?: Inheritable<number>;
-    venue?: Inheritable<{name: string}>;
-    eventFormat?: Decision<EventFormatSnapshot>;
-  };
-}
-
+export type UpdatePrivateEventDetailsCommand =
+  UpdatePrivateEventDetailsCallablePayload;
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
-const REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$/;
-
-function validateCommand(command: UpdatePrivateEventDetailsCommand): void {
-  if (!command || !ID.test(command.organizerId) ||
-      !ID.test(command.eventId) || !REQUEST_ID.test(command.requestId) ||
-      !Number.isSafeInteger(command.expectedSetupRevision) ||
-      command.expectedSetupRevision < 1 ||
-      !/^[a-f0-9]{64}$/.test(command.reviewedDefaultsHash) ||
-      !command.details || typeof command.details !== "object" ||
-      Array.isArray(command.details) ||
-      Object.keys(command.details).length === 0 ||
-      Object.keys(command.details).some((key) =>
-        !["durationMinutes", "venue", "eventFormat"].includes(key))) {
-    throw new HttpsError("invalid-argument", "Invalid event details.");
-  }
-  for (const [key, decision] of Object.entries(command.details)) {
-    if (!decision || typeof decision !== "object" ||
-        !["set", "clear", "inherit"].includes(decision.mode) ||
-        (key === "eventFormat" && decision.mode === "inherit") ||
-        (decision.mode === "set" && decision.value === undefined) ||
-        (decision.mode !== "set" && "value" in decision)) {
-      throw new HttpsError("invalid-argument", "Invalid detail decision.");
-    }
-  }
-}
 
 function duration(value: unknown): number {
   if (!Number.isInteger(value) || (value as number) < 15 ||
@@ -99,7 +64,9 @@ export async function updatePrivateEventDetails(params: {
   if (!ID.test(actorUid)) {
     throw new HttpsError("unauthenticated", "Sign in first.");
   }
-  validateCommand(command);
+  if (!validateUpdatePrivateEventDetailsCallablePayload(command)) {
+    throw new HttpsError("invalid-argument", "Invalid event details.");
+  }
   assertPrivacyReady(deps);
   const {db} = deps;
   const eventRef = db.collection("events").doc(command.eventId);

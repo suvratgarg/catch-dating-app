@@ -12,6 +12,13 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `functions/src/shared/generated/getEventOfferConfigurationCallablePayload.ts` |
+| EventOfferConfigurationCallableResponse | `callable_responses/event_offer_configuration_response.schema.json` | `functions/src/shared/generated/eventOfferConfigurationCallableResponse.ts` |
+| UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventDetailsCallablePayload.ts` |
+| PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `functions/src/shared/generated/prepareEventOfferHandoffCallablePayload.ts` |
+| EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `functions/src/shared/generated/eventOfferHandoffCallableResponse.ts` |
+| ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `functions/src/shared/generated/listPrivateEventSetupsCallablePayload.ts` |
+| PrivateEventSetupListCallableResponse | `callable_responses/private_event_setup_list_response.schema.json` | `functions/src/shared/generated/privateEventSetupListCallableResponse.ts` |
 | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `functions/src/shared/generated/eventPreferenceIntents.ts` |
 | ResolvedEventPreferences | `embedded/resolved_event_preferences.schema.json` | `functions/src/shared/generated/resolvedEventPreferences.ts` |
 | EventPaymentTerms | `embedded/event_payment_terms.schema.json` | `functions/src/shared/generated/eventPaymentTerms.ts` |
@@ -537,6 +544,25 @@ Do not edit it by hand.
 | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `functions/src/shared/generated/deleteClubCallablePayload.ts` |
 | ClubMembershipCallablePayload | `callables/club_membership_payload.schema.json` | `functions/src/shared/generated/clubMembershipCallablePayload.ts` |
 | SetClubNotificationPreferenceCallablePayload | `callables/set_club_notification_preference_payload.schema.json` | `functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts` |
+| EventOfferAuthorityRow | `embedded/event_offer_authority_row.schema.json` | `functions/src/shared/generated/eventOfferAuthorityRow.ts` |
+| EventOfferRow | `embedded/event_offer_row.schema.json` | `functions/src/shared/generated/eventOfferRow.ts` |
+| EventOfferPaymentSnapshot | `embedded/event_offer_payment_snapshot.schema.json` | `functions/src/shared/generated/eventOfferPaymentSnapshot.ts` |
+| EventOfferManualPayment | `embedded/event_offer_manual_payment.schema.json` | `functions/src/shared/generated/eventOfferManualPayment.ts` |
+| OrganizerEventOfferDocument | `firestore/organizer_event_offers.schema.json` | `functions/src/shared/generated/organizerEventOfferDocument.ts` |
+| EventOfferAction | `embedded/event_offer_action.schema.json` | `functions/src/shared/generated/eventOfferAction.ts` |
+| OrganizerEventOfferActionReceiptDocument | `firestore/organizer_event_offer_action_receipts.schema.json` | `functions/src/shared/generated/organizerEventOfferActionReceiptDocument.ts` |
+| OrganizerEventOfferBatchReceiptDocument | `firestore/organizer_event_offer_batch_receipts.schema.json` | `functions/src/shared/generated/organizerEventOfferBatchReceiptDocument.ts` |
+| OrganizerEventOfferAuditDocument | `firestore/organizer_event_offer_audits.schema.json` | `functions/src/shared/generated/organizerEventOfferAuditDocument.ts` |
+| PreviewEventOffersCallablePayload | `callables/preview_event_offers_payload.schema.json` | `functions/src/shared/generated/previewEventOffersCallablePayload.ts` |
+| CommitEventOffersCallablePayload | `callables/commit_event_offers_payload.schema.json` | `functions/src/shared/generated/commitEventOffersCallablePayload.ts` |
+| MutateEventOfferCallablePayload | `callables/mutate_event_offer_payload.schema.json` | `functions/src/shared/generated/mutateEventOfferCallablePayload.ts` |
+| GetEventOfferCallablePayload | `callables/get_event_offer_payload.schema.json` | `functions/src/shared/generated/getEventOfferCallablePayload.ts` |
+| ListEventOffersCallablePayload | `callables/list_event_offers_payload.schema.json` | `functions/src/shared/generated/listEventOffersCallablePayload.ts` |
+| EventOfferPreviewCallableResponse | `callable_responses/event_offer_preview_response.schema.json` | `functions/src/shared/generated/eventOfferPreviewCallableResponse.ts` |
+| EventOfferCommitCallableResponse | `callable_responses/event_offer_commit_response.schema.json` | `functions/src/shared/generated/eventOfferCommitCallableResponse.ts` |
+| EventOfferDetailCallableResponse | `callable_responses/event_offer_detail_response.schema.json` | `functions/src/shared/generated/eventOfferDetailCallableResponse.ts` |
+| EventOfferMutationCallableResponse | `callable_responses/event_offer_mutation_response.schema.json` | `functions/src/shared/generated/eventOfferMutationCallableResponse.ts` |
+| EventOfferListCallableResponse | `callable_responses/event_offer_list_response.schema.json` | `functions/src/shared/generated/eventOfferListCallableResponse.ts` |
 | EventSetupDefaults | `embedded/event_setup_defaults.schema.json` | `functions/src/shared/generated/eventSetupDefaults.ts` |
 | CreatePrivateEventSetupCallablePayload | `callables/create_private_event_setup_payload.schema.json` | `functions/src/shared/generated/createPrivateEventSetupCallablePayload.ts` |
 | UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `functions/src/shared/generated/updatePrivateEventBasicsCallablePayload.ts` |
@@ -865,6 +891,13 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaGetEventOfferConfigurationCallablePayloadSchema` | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_offer_configuration_callable_payload.g.dart` |
+| `schemaEventOfferConfigurationCallableResponseSchema` | EventOfferConfigurationCallableResponse | `callable_responses/event_offer_configuration_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_configuration_callable_response.g.dart` |
+| `schemaUpdatePrivateEventDetailsCallablePayloadSchema` | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_details_callable_payload.g.dart` |
+| `schemaPrepareEventOfferHandoffCallablePayloadSchema` | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/prepare_event_offer_handoff_callable_payload.g.dart` |
+| `schemaEventOfferHandoffCallableResponseSchema` | EventOfferHandoffCallableResponse | `callable_responses/event_offer_handoff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_handoff_callable_response.g.dart` |
+| `schemaListPrivateEventSetupsCallablePayloadSchema` | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_private_event_setups_callable_payload.g.dart` |
+| `schemaPrivateEventSetupListCallableResponseSchema` | PrivateEventSetupListCallableResponse | `callable_responses/private_event_setup_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/private_event_setup_list_callable_response.g.dart` |
 | `schemaEventPreferenceIntentsSchema` | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_preference_intents.g.dart` |
 | `schemaResolvedEventPreferencesSchema` | ResolvedEventPreferences | `embedded/resolved_event_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/resolved_event_preferences.g.dart` |
 | `schemaEventPaymentTermsSchema` | EventPaymentTerms | `embedded/event_payment_terms.schema.json` | `lib/core/schema_contracts/generated/schemas/event_payment_terms.g.dart` |
@@ -1390,6 +1423,25 @@ Do not edit it by hand.
 | `schemaDeleteClubCallablePayloadSchema` | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_club_callable_payload.g.dart` |
 | `schemaClubMembershipCallablePayloadSchema` | ClubMembershipCallablePayload | `callables/club_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/club_membership_callable_payload.g.dart` |
 | `schemaSetClubNotificationPreferenceCallablePayloadSchema` | SetClubNotificationPreferenceCallablePayload | `callables/set_club_notification_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_club_notification_preference_callable_payload.g.dart` |
+| `schemaEventOfferAuthorityRowSchema` | EventOfferAuthorityRow | `embedded/event_offer_authority_row.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_authority_row.g.dart` |
+| `schemaEventOfferRowSchema` | EventOfferRow | `embedded/event_offer_row.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_row.g.dart` |
+| `schemaEventOfferPaymentSnapshotSchema` | EventOfferPaymentSnapshot | `embedded/event_offer_payment_snapshot.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_payment_snapshot.g.dart` |
+| `schemaEventOfferManualPaymentSchema` | EventOfferManualPayment | `embedded/event_offer_manual_payment.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_manual_payment.g.dart` |
+| `schemaOrganizerEventOfferDocumentSchema` | OrganizerEventOfferDocument | `firestore/organizer_event_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_document.g.dart` |
+| `schemaEventOfferActionSchema` | EventOfferAction | `embedded/event_offer_action.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_action.g.dart` |
+| `schemaOrganizerEventOfferActionReceiptDocumentSchema` | OrganizerEventOfferActionReceiptDocument | `firestore/organizer_event_offer_action_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_action_receipt_document.g.dart` |
+| `schemaOrganizerEventOfferBatchReceiptDocumentSchema` | OrganizerEventOfferBatchReceiptDocument | `firestore/organizer_event_offer_batch_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_batch_receipt_document.g.dart` |
+| `schemaOrganizerEventOfferAuditDocumentSchema` | OrganizerEventOfferAuditDocument | `firestore/organizer_event_offer_audits.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_audit_document.g.dart` |
+| `schemaPreviewEventOffersCallablePayloadSchema` | PreviewEventOffersCallablePayload | `callables/preview_event_offers_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_event_offers_callable_payload.g.dart` |
+| `schemaCommitEventOffersCallablePayloadSchema` | CommitEventOffersCallablePayload | `callables/commit_event_offers_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/commit_event_offers_callable_payload.g.dart` |
+| `schemaMutateEventOfferCallablePayloadSchema` | MutateEventOfferCallablePayload | `callables/mutate_event_offer_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mutate_event_offer_callable_payload.g.dart` |
+| `schemaGetEventOfferCallablePayloadSchema` | GetEventOfferCallablePayload | `callables/get_event_offer_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_offer_callable_payload.g.dart` |
+| `schemaListEventOffersCallablePayloadSchema` | ListEventOffersCallablePayload | `callables/list_event_offers_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_offers_callable_payload.g.dart` |
+| `schemaEventOfferPreviewCallableResponseSchema` | EventOfferPreviewCallableResponse | `callable_responses/event_offer_preview_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_preview_callable_response.g.dart` |
+| `schemaEventOfferCommitCallableResponseSchema` | EventOfferCommitCallableResponse | `callable_responses/event_offer_commit_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_commit_callable_response.g.dart` |
+| `schemaEventOfferDetailCallableResponseSchema` | EventOfferDetailCallableResponse | `callable_responses/event_offer_detail_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_detail_callable_response.g.dart` |
+| `schemaEventOfferMutationCallableResponseSchema` | EventOfferMutationCallableResponse | `callable_responses/event_offer_mutation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_mutation_callable_response.g.dart` |
+| `schemaEventOfferListCallableResponseSchema` | EventOfferListCallableResponse | `callable_responses/event_offer_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_offer_list_callable_response.g.dart` |
 | `schemaEventSetupDefaultsSchema` | EventSetupDefaults | `embedded/event_setup_defaults.schema.json` | `lib/core/schema_contracts/generated/schemas/event_setup_defaults.g.dart` |
 | `schemaCreatePrivateEventSetupCallablePayloadSchema` | CreatePrivateEventSetupCallablePayload | `callables/create_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_private_event_setup_callable_payload.g.dart` |
 | `schemaUpdatePrivateEventBasicsCallablePayloadSchema` | UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_private_event_basics_callable_payload.g.dart` |
@@ -1718,6 +1770,10 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventOfferConfigurationCallableRequest | GetEventOfferConfigurationCallablePayload | `callables/get_event_offer_configuration_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_offer_configuration_callable_request.g.dart` |
+| UpdatePrivateEventDetailsCallableRequest | UpdatePrivateEventDetailsCallablePayload | `callables/update_private_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_details_callable_request.g.dart` |
+| PrepareEventOfferHandoffCallableRequest | PrepareEventOfferHandoffCallablePayload | `callables/prepare_event_offer_handoff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_handoff_callable_request.g.dart` |
+| ListPrivateEventSetupsCallableRequest | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_private_event_setups_callable_request.g.dart` |
 | UpdatePrivateEventPreferencesCallableRequest | UpdatePrivateEventPreferencesCallablePayload | `callables/update_private_event_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_preferences_callable_request.g.dart` |
 | GetOrganizerEventSetupDefaultsCallableRequest | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_event_setup_defaults_callable_request.g.dart` |
 | UpdateOrganizerEventSetupDefaultsCallableRequest | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_organizer_event_setup_defaults_callable_request.g.dart` |
@@ -1866,6 +1922,10 @@ Do not edit it by hand.
 | DeleteClubCallableRequest | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_club_callable_request.g.dart` |
 | ClubMembershipCallableRequest | ClubMembershipCallablePayload | `callables/club_membership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/club_membership_callable_request.g.dart` |
 | SetClubNotificationPreferenceCallableRequest | SetClubNotificationPreferenceCallablePayload | `callables/set_club_notification_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_club_notification_preference_callable_request.g.dart` |
+| PreviewEventOffersCallableRequest | PreviewEventOffersCallablePayload | `callables/preview_event_offers_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_event_offers_callable_request.g.dart` |
+| CommitEventOffersCallableRequest | CommitEventOffersCallablePayload | `callables/commit_event_offers_payload.schema.json` | `lib/core/schema_contracts/generated/callables/commit_event_offers_callable_request.g.dart` |
+| GetEventOfferCallableRequest | GetEventOfferCallablePayload | `callables/get_event_offer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_offer_callable_request.g.dart` |
+| ListEventOffersCallableRequest | ListEventOffersCallablePayload | `callables/list_event_offers_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_offers_callable_request.g.dart` |
 | CreatePrivateEventSetupCallableRequest | CreatePrivateEventSetupCallablePayload | `callables/create_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_private_event_setup_callable_request.g.dart` |
 | UpdatePrivateEventBasicsCallableRequest | UpdatePrivateEventBasicsCallablePayload | `callables/update_private_event_basics_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_basics_callable_request.g.dart` |
 | GetPrivateEventSetupCallableRequest | GetPrivateEventSetupCallablePayload | `callables/get_private_event_setup_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_private_event_setup_callable_request.g.dart` |
@@ -2057,6 +2117,7 @@ Do not edit it by hand.
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateOrganizerDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
+| MutateEventOfferCallablePayload | cannot map field "action" (no type) |
 | UpsertOrganizerSavedAudienceCallablePayload | cannot map field "scope" (no type) |
 | PrepareOrganizerManualSendTaskCallablePayload | cannot map field "intent" (no type) |
 | ManageOrganizerFormDomainCallablePayload | not an object schema |

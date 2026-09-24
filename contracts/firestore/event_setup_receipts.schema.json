@@ -19,7 +19,8 @@
       "enum": [
         "create",
         "update",
-        "preferences"
+        "preferences",
+        "details"
       ]
     },
     "actorUid": {

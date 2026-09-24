@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 export interface EventSetupReceiptDocument {
-  operation: "create" | "update" | "preferences";
+  operation: "create" | "update" | "preferences" | "details";
   actorUid: string;
   organizerId: string;
   requestHash: string;

@@ -1756,17 +1756,33 @@ The contract layer owns:
 ### Progressive Event Setup Contracts
 
 The progressive wizard uses `createPrivateEventSetup`,
-`updatePrivateEventBasics`, and `getPrivateEventSetup` payload contracts.
+`updatePrivateEventBasics`, `getPrivateEventSetup`, and
+`listPrivateEventSetups` payload contracts.
+`updatePrivateEventDetails` adds or clears duration, venue and format on the
+same private event, with setup revision, reviewed defaults hash and durable
+request identity. Duration and saved venue can inherit reviewed organizer
+defaults. A named venue does not invent coordinates; replacing a saved venue
+clears stale map fields. Neither save publishes the event nor admits a guest.
+The manager read includes `eventDetails` for reopening those actual values;
+event preferences remain separate recommendations.
 Create/edit accept explicit city and timezone decisions, a stable request ID,
 and a reviewed defaults hash when inheriting organizer values. Edit also
 requires the current setup revision. Unknown authority fields are rejected.
 
 The manager read response is a whitelist projection with civil date/time,
 resolved city/timezone, revision and setup provenance. It does not parse a
-minimal event through the rich Event model, expose payment preferences, or
-invent venue, end time, capacity or price. Organizer management and deleted-user
+minimal event through the rich Event model or invent venue, end time, capacity
+or price. Its event-local preferences are read from manager-only storage. Organizer management and deleted-user
 checks occur in the same transaction as the current event read. Published
 events use the published event editor instead.
+
+The private event picker reads at most 51 event documents for a 50-row page,
+with a composite index on organizer, private publication state, active status,
+start time and document ID. Its cursor keeps the first page's time cutoff and
+expires after 24 hours; every page rechecks current manager and deleted-account
+authority. It cannot expose private payment settings. Basic date/city edits
+check roster, import, participation, waitlist, offer and payment commitments
+inside the same transaction before changing the canonical event.
 
 These contracts and services are not rollout authorization. Private persistence
 remains disabled until the canonical document schema, Firestore rules and
