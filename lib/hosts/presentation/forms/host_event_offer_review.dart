@@ -96,11 +96,11 @@ class HostEventOfferReview extends StatelessWidget {
             if (view.status == HostOfferFlowStatus.review && sameDraft) ...[
               Text(copy.review, style: CatchTextStyles.supporting(context)),
               gapH8,
-              Text(eventTitle, style: CatchTextStyles.bodyM(context)),
+              Text(eventTitle, style: CatchTextStyles.supporting(context)),
               for (final row in draft.rows)
                 Text(
                   '${contactLabel(row.contactId)} · ${copy.expires(MaterialLocalizations.of(context).formatMediumDate(row.expiresAt.toLocal()))}',
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.supporting(context),
                 ),
               gapH16,
             ],
@@ -266,7 +266,7 @@ class _HostManualPaymentReviewPanelState
           CatchSection.content(
             child: Text(
               '${copy.evidenceSubmitted}: ${widget.offer.manualPayment.evidenceReference ?? ''}',
-              style: CatchTextStyles.bodyM(context),
+              style: CatchTextStyles.supporting(context),
             ),
           ),
           CatchSection.fieldRows(

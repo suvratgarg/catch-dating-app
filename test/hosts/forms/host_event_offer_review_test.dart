@@ -38,7 +38,7 @@ void main() {
             draft: draft,
             eventTitle: 'Sunday run',
             contactLabel: (_) => 'Maya',
-            eventStartsAt: DateTime.utc(2026, 10, 1),
+            eventStartsAt: DateTime.utc(2026, 10),
             now: () => DateTime.utc(2026, 9, 24),
             commitRequestId: 'request_001',
             copy: _copy,
