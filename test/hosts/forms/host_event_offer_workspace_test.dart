@@ -57,7 +57,6 @@ void main() {
       ),
     ));
     accounts.add('host-one');
-    await flushTestEventQueue();
     await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
 
@@ -123,7 +122,6 @@ void main() {
       ),
     ));
     accounts.add('host-one');
-    await flushTestEventQueue();
     await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
     await tester.tap(find.text('Select'));
