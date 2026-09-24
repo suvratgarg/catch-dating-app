@@ -7,8 +7,9 @@ import {seatIdentityAliasId, seatIdentityValueHash} from
   "../events/seatIdentityAuthority";
 import {deriveEventSeatPolicy} from
   "../events/seatAuthority/firestoreAdapter";
-import {lumaAttendeeDocument, providerSyncRunId,
-  reconcileLumaGuests} from "./organizerProviderSetup";
+import {externalEventMappingId, lumaAttendeeDocument, providerSyncRunId,
+  reconcileLumaGuests, syncOrganizerProviderEventHandler} from
+  "./organizerProviderSetup";
 import {prepareProviderSeatChanges, ProviderSeatWrite} from
   "./organizerProviderSeats";
 
@@ -17,6 +18,8 @@ const eventId = "event1";
 const organizerId = "org1";
 const attendeeId = "att1";
 const uid = "runner1";
+const operationId = "operation12345678";
+const mappingId = externalEventMappingId(eventId);
 const guest = {id: "guest1", displayName: "Asha", phone: null,
   email: null, approvalStatus: "approved" as const,
   registeredAt: null, checkedInAt: null, ticketType: null};
@@ -169,11 +172,13 @@ test("ready provider roster cap fails before any transaction write",
     assert.equal(h.pendingCount, 0);
   });
 
-function reconcileFixture(options: {locked?: boolean;
-  changedMapping?: boolean; checkedInBeforeTx?: boolean} = {}) {
-  const runId = providerSyncRunId(eventId, "host1", "operation1");
+function reconcileFixture(options: {locked?: boolean; ready?: boolean;
+  changedMapping?: boolean; checkedInBeforeTx?: boolean;
+  uncertainCommit?: boolean; withoutRun?: boolean} = {}) {
+  const runId = providerSyncRunId(eventId, "host1", operationId);
   const event = {clubId: organizerId, organizerId, status: "active",
     eventOrigin: {mode: "externalCompanion", provider: "luma"},
+    capacityLimit: 2, constraints: {},
     bookedCount: 0, checkedInCount: 1};
   const old = lumaAttendeeDocument({eventId, clubId: organizerId,
     organizerId, connectionId: "connection1", guest, now});
@@ -181,22 +186,32 @@ function reconcileFixture(options: {locked?: boolean;
     [`organizers/${organizerId}`]: {hostUserId: "host1",
       hostUserIds: [], hostProfiles: []},
     [`events/${eventId}`]: event,
-    "externalEventMappings/mapping1": {eventId, organizerId,
+    [`externalEventMappings/${mappingId}`]: {eventId, organizerId,
       status: "active", connectionId: "connection1", revision: 1,
       externalEventId: "lumaEvent1", lastSyncRunId: runId},
     "organizerProviderConnections/connection1": {organizerId,
       status: "active", revision: 1, secretVersionResource: "secret1"},
-    [`providerSyncRuns/${runId}`]: {organizerId, eventId,
-      connectionId: "connection1", mappingId: "mapping1",
-      provider: "luma", clientOperationId: "operation1",
+    ...(!options.withoutRun ? {[`providerSyncRuns/${runId}`]: {
+      organizerId, eventId,
+      connectionId: "connection1", mappingId,
+      provider: "luma", clientOperationId: operationId,
       inputHash: "inputHash", status: "running", pageCount: 0,
       receivedCount: 0, createdCount: 0, updatedCount: 0,
       skippedCount: 0, truncated: false, errorCode: null,
       startedByUid: "host1", startedAt: now, completedAt: null,
-      expiresAt: now},
-    [`eventAttendees/${attendeeId}`]: old as unknown as
-      Record<string, unknown>,
+      expiresAt: now}} : {}),
+    ...(!options.ready ? {[`eventAttendees/${attendeeId}`]: old as unknown as
+      Record<string, unknown>} : {}),
   };
+  if (options.ready) {
+    const policy = deriveEventSeatPolicy(event);
+    docs[`eventSeatMigrationFences/${eventId}`] = {eventId,
+      migrationRevision: 1, state: "ready"};
+    docs[`eventSeatLedgers/${eventId}`] = {eventId, capacity: 2,
+      occupied: 0, revision: 1, capacityRevision: 1, migrationRevision: 1,
+      state: "ready", policyHash: policy.policyHash,
+      policyVersion: policy.policyVersion};
+  }
   if (options.locked) {
     docs[`eventSeatMigrationFences/${eventId}`] = {eventId,
       migrationRevision: 1, state: "locked"};
@@ -218,13 +233,17 @@ function reconcileFixture(options: {locked?: boolean;
         ref: {path}, data: () => value}))}),
   });
   const db = {collection: (name: string) => ({
-    doc: (id: string) => ({id, path: `${name}/${id}`}),
+    doc: (id: string) => ({id, path: `${name}/${id}`,
+      get: async () => {
+        const value = docs[`${name}/${id}`];
+        return {exists: value !== undefined, data: () => value};
+      }}),
     where: query(name).where,
   }),
   runTransaction: async <T>(callback: (
     tx: FirebaseFirestore.Transaction) => Promise<T>) => {
     if (options.changedMapping) {
-      docs["externalEventMappings/mapping1"].revision = 2;
+      docs[`externalEventMappings/${mappingId}`].revision = 2;
     }
     if (options.checkedInBeforeTx) {
       docs[`eventAttendees/${attendeeId}`].status = "checkedIn";
@@ -245,9 +264,20 @@ function reconcileFixture(options: {locked?: boolean;
       writes.push(() => {
         docs[ref.path] = {...docs[ref.path], ...value};
       }),
+    create: (ref: {path: string}, value: Record<string, unknown>) =>
+      writes.push(() => {
+        assert.equal(docs[ref.path], undefined);
+        docs[ref.path] = value;
+      }),
     } as unknown as FirebaseFirestore.Transaction;
     const result = await callback(tx);
     writes.forEach((write) => write());
+    if (options.uncertainCommit && writes.some((write) =>
+      Boolean(write)) && docs[`providerSyncRuns/${runId}`]?.status ===
+      "completed") {
+      options.uncertainCommit = false;
+      throw new Error("commit acknowledgement lost");
+    }
     return result;
   }};
   return {db: db as unknown as FirebaseFirestore.Firestore,
@@ -256,7 +286,7 @@ function reconcileFixture(options: {locked?: boolean;
 
 async function reconcileFixtureRun(h: ReturnType<typeof reconcileFixture>) {
   return reconcileLumaGuests({db: h.db, actorUid: "host1",
-    connectionId: "connection1", mappingId: "mapping1",
+    connectionId: "connection1", mappingId: mappingId,
     expectedMappingRevision: 1, expectedConnectionRevision: 1,
     expectedSecretVersionResource: "secret1",
     expectedExternalEventId: "lumaEvent1", guests: [guest],
@@ -271,7 +301,7 @@ test("legacy provider sync rereads a concurrent check-in in its writer TX",
     assert.equal(h.docs[`eventAttendees/${attendeeId}`].status, "checkedIn");
     assert.equal(h.docs[`events/${eventId}`].checkedInCount, 1);
     assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
-      "host1", "operation1")}`].status, "completed");
+      "host1", operationId)}`].status, "completed");
   });
 
 test("migration lock or changed provider mapping rejects all roster writes",
@@ -281,6 +311,81 @@ test("migration lock or changed provider mapping rejects all roster writes",
       await assert.rejects(reconcileFixtureRun(h));
       assert.equal(h.docs[`eventAttendees/${attendeeId}`], h.old);
       assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
-        "host1", "operation1")}`].status, "running");
+        "host1", operationId)}`].status, "running");
     }
+  });
+
+
+test("ready provider sync commits attendee, seat, and run atomically",
+  async () => {
+    const h = reconcileFixture({ready: true});
+    const receipt = await reconcileFixtureRun(h);
+    assert.equal(receipt.status, "completed");
+    assert.equal(h.docs[`eventSeatLedgers/${eventId}`].occupied, 1);
+    assert.equal(h.docs[`eventAttendees/${eventId}`], undefined);
+    assert.equal(Object.values(h.docs).filter((row) =>
+      row.providerGuestId === guest.id).length, 1);
+    assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
+      "host1", operationId)}`].status, "completed");
+  });
+
+test("ready provider sync rejects roster over fifty without partial writes",
+  async () => {
+    const h = reconcileFixture({ready: true});
+    const before = Object.fromEntries(Object.entries(h.docs).map(
+      ([path, value]) => [path, {...value}]));
+    await assert.rejects(reconcileLumaGuests({db: h.db, actorUid: "host1",
+      connectionId: "connection1", mappingId: mappingId,
+      expectedMappingRevision: 1, expectedConnectionRevision: 1,
+      expectedSecretVersionResource: "secret1",
+      expectedExternalEventId: "lumaEvent1",
+      guests: Array.from({length: 51}, (_, index) => ({...guest,
+        id: `guest${index}`})), pageCount: 1, truncated: false, now,
+      run: h.run}), /exceeds one atomic provider review/u);
+    assert.deepEqual(h.docs, before);
+  });
+
+
+test("handler recovers a committed ready sync after lost acknowledgement",
+  async () => {
+    const h = reconcileFixture({ready: true, withoutRun: true,
+      uncertainCommit: true});
+    const response = await syncOrganizerProviderEventHandler({
+      auth: {uid: "host1"}, data: {organizerId, eventId,
+        clientOperationId: operationId},
+    } as never, {firestore: () => h.db,
+      checkRateLimit: async () => undefined,
+      luma: () => ({listGuests: async () => ({entries: [guest],
+        nextCursor: null, hasMore: false})}) as never,
+      credentialStore: {access: async () => "test-key"} as never,
+      now: () => now});
+    assert.equal(response.status, "completed");
+    assert.equal(response.replayed, true);
+    assert.equal(response.createdCount, 1);
+    assert.equal(h.docs[`eventSeatLedgers/${eventId}`].occupied, 1);
+    assert.equal(Object.values(h.docs).filter((row) =>
+      row.providerGuestId === guest.id).length, 1);
+  });
+
+test("oversize ready handler records failure without a partial roster",
+  async () => {
+    const h = reconcileFixture({ready: true, withoutRun: true});
+    const providerGuests = Array.from({length: 51}, (_, index) => ({...guest,
+      id: `guest${index}`}));
+    await assert.rejects(syncOrganizerProviderEventHandler({
+      auth: {uid: "host1"}, data: {organizerId, eventId,
+        clientOperationId: operationId},
+    } as never, {firestore: () => h.db,
+      checkRateLimit: async () => undefined,
+      luma: () => ({listGuests: async () => ({entries: providerGuests,
+        nextCursor: null, hasMore: false})}) as never,
+      credentialStore: {access: async () => "test-key"} as never,
+      now: () => now}), /exceeds one atomic provider review/u);
+    const run = h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
+      "host1", operationId)}`];
+    assert.equal(run.status, "failed");
+    assert.equal(run.createdCount, 0);
+    assert.equal(h.docs[`eventSeatLedgers/${eventId}`].occupied, 0);
+    assert.equal(Object.values(h.docs).filter((row) =>
+      row.providerGuestId !== undefined).length, 0);
   });
