@@ -76500,6 +76500,30 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['unknown', 'optedIn', 'optedOut'],
   );
 
+  static const listPrivateEventSetupsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listPrivateEventSetupsCallablePayload.cursor',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const listPrivateEventSetupsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listPrivateEventSetupsCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listPrivateEventSetupsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listPrivateEventSetupsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listProgramGuestsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listProgramGuestsCallablePayload.cursor',
     maxLength: 240,
@@ -98920,6 +98944,101 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseEvents = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsCityCityId = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.city.cityId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsCityMarketId = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.city.marketId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsDetailsConfigured = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.detailsConfigured',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsEventId = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsLocalDate = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.localDate',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}\$',
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsLocalStartTime = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.localStartTime',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{2}:[0-9]{2}\$',
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsName = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsSetupRevision = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.setupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsStartTimeMillis = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.startTimeMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsStatus = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseEventsItemsTimezone = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.events.items.timezone',
+    maxLength: 100,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupListCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'privateEventSetupListCallableResponse.nextCursor',
+    maxLength: 1024,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
   );
 
   static const privateEventSetupMutationCallableResponseEventId = CatchContractFieldConstraints(
@@ -130271,6 +130390,9 @@ abstract final class CatchContractConstraints {
     'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.purposes.marketing.status': listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferencePurposesMarketingStatus,
     'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.receiptId': listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferenceReceiptId,
     'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.status': listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferenceStatus,
+    'listPrivateEventSetupsCallablePayload.cursor': listPrivateEventSetupsCallablePayloadCursor,
+    'listPrivateEventSetupsCallablePayload.limit': listPrivateEventSetupsCallablePayloadLimit,
+    'listPrivateEventSetupsCallablePayload.organizerId': listPrivateEventSetupsCallablePayloadOrganizerId,
     'listProgramGuestsCallablePayload.cursor': listProgramGuestsCallablePayloadCursor,
     'listProgramGuestsCallablePayload.limit': listProgramGuestsCallablePayloadLimit,
     'listProgramGuestsCallablePayload.programId': listProgramGuestsCallablePayloadProgramId,
@@ -133376,6 +133498,19 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.startTimeMillis': privateEventSetupCallableResponseStartTimeMillis,
     'privateEventSetupCallableResponse.status': privateEventSetupCallableResponseStatus,
     'privateEventSetupCallableResponse.timezone': privateEventSetupCallableResponseTimezone,
+    'privateEventSetupListCallableResponse.events': privateEventSetupListCallableResponseEvents,
+    'privateEventSetupListCallableResponse.events.items.city.cityId': privateEventSetupListCallableResponseEventsItemsCityCityId,
+    'privateEventSetupListCallableResponse.events.items.city.marketId': privateEventSetupListCallableResponseEventsItemsCityMarketId,
+    'privateEventSetupListCallableResponse.events.items.detailsConfigured': privateEventSetupListCallableResponseEventsItemsDetailsConfigured,
+    'privateEventSetupListCallableResponse.events.items.eventId': privateEventSetupListCallableResponseEventsItemsEventId,
+    'privateEventSetupListCallableResponse.events.items.localDate': privateEventSetupListCallableResponseEventsItemsLocalDate,
+    'privateEventSetupListCallableResponse.events.items.localStartTime': privateEventSetupListCallableResponseEventsItemsLocalStartTime,
+    'privateEventSetupListCallableResponse.events.items.name': privateEventSetupListCallableResponseEventsItemsName,
+    'privateEventSetupListCallableResponse.events.items.setupRevision': privateEventSetupListCallableResponseEventsItemsSetupRevision,
+    'privateEventSetupListCallableResponse.events.items.startTimeMillis': privateEventSetupListCallableResponseEventsItemsStartTimeMillis,
+    'privateEventSetupListCallableResponse.events.items.status': privateEventSetupListCallableResponseEventsItemsStatus,
+    'privateEventSetupListCallableResponse.events.items.timezone': privateEventSetupListCallableResponseEventsItemsTimezone,
+    'privateEventSetupListCallableResponse.nextCursor': privateEventSetupListCallableResponseNextCursor,
     'privateEventSetupMutationCallableResponse.eventId': privateEventSetupMutationCallableResponseEventId,
     'privateEventSetupMutationCallableResponse.replayed': privateEventSetupMutationCallableResponseReplayed,
     'privateEventSetupMutationCallableResponse.setupRevision': privateEventSetupMutationCallableResponseSetupRevision,

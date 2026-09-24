@@ -3,6 +3,10 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {listPrivateEventSetups} from "./listPrivateEventSetups";
+import {validatePrivateEventSetupListCallableResponse} from
+  "../../shared/generated/validators/privateEventSetupListOutput";
+import {listPrivateEventSetupsHandler} from "./callables";
+import type {CallableRequest} from "firebase-functions/v2/https";
 
 type Row = Record<string, unknown>;
 const NOW = Date.parse("2026-10-01T00:00:00Z");
@@ -136,6 +140,7 @@ test("manager sees only upcoming private whitelisted summaries", async () => {
   const result = await list(store, {organizerId: "org1"});
   assert.deepEqual(result.events.map((row) => row.eventId), ["b"]);
   assert.equal(result.nextCursor, null);
+  assert.equal(validatePrivateEventSetupListCallableResponse(result), true);
   assert.deepEqual(Object.keys(result.events[0]).sort(), [
     "city", "detailsConfigured", "eventId", "localDate",
     "localStartTime", "name", "setupRevision", "startTimeMillis",
@@ -193,3 +198,38 @@ test("malformed matching row rejects instead of disappearing", async () => {
     (error) => error instanceof HttpsError &&
       error.code === "failed-precondition");
 });
+
+test("list API validates bounded input, rate limits and returns private DTO",
+  async () => {
+    const store = setup();
+    store.rows.set("events/future", event(Date.now() + 60_000));
+    const actions: string[] = [];
+    const deps = {
+      firestore: () => store.db(),
+      checkRateLimit: async (_db: FirebaseFirestore.Firestore, uid: string,
+        action: string) => {
+        actions.push(`${uid}:${action}`);
+      },
+      service: () => {
+        throw new Error("Read cannot invoke mutation service");
+      },
+    };
+    const request = (data: unknown) => ({data, auth: {uid: "host1"}}) as
+      CallableRequest<unknown>;
+    for (const data of [{organizerId: "org1", limit: 51},
+      {organizerId: "org1", cursor: ""},
+      {organizerId: "org1", includeForeignEvents: true}]) {
+      await assert.rejects(listPrivateEventSetupsHandler(request(data), deps),
+        (e) => e instanceof HttpsError && e.code === "invalid-argument");
+    }
+    assert.deepEqual(actions, []);
+    const result = await listPrivateEventSetupsHandler(
+      request({organizerId: "org1", limit: 10}), deps);
+    assert.equal(validatePrivateEventSetupListCallableResponse(result), true);
+    assert.deepEqual(result.events.map((row) => row.eventId), ["future"]);
+    assert.deepEqual(actions, ["host1:listPrivateEventSetups"]);
+    store.rows.set("deletedUsers/host1", {});
+    await assert.rejects(listPrivateEventSetupsHandler(
+      request({organizerId: "org1"}), deps),
+    (e) => e instanceof HttpsError && e.code === "failed-precondition");
+  });

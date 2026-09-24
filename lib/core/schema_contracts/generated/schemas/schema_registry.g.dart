@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ListPrivateEventSetupsCallablePayload',
+    source: 'callables/list_private_event_setups_payload.schema.json',
+    schema: schemaListPrivateEventSetupsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PrivateEventSetupListCallableResponse',
+    source: 'callable_responses/private_event_setup_list_response.schema.json',
+    schema: schemaPrivateEventSetupListCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventPreferenceIntents',
     source: 'embedded/event_preference_intents.schema.json',
     schema: schemaEventPreferenceIntentsSchema,
@@ -4354,6 +4364,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ListPrivateEventSetupsCallablePayload': schemaListPrivateEventSetupsCallablePayloadSchema,
+  'PrivateEventSetupListCallableResponse': schemaPrivateEventSetupListCallableResponseSchema,
   'EventPreferenceIntents': schemaEventPreferenceIntentsSchema,
   'ResolvedEventPreferences': schemaResolvedEventPreferencesSchema,
   'EventPaymentTerms': schemaEventPaymentTermsSchema,
@@ -5224,6 +5236,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/list_private_event_setups_payload.schema.json': schemaListPrivateEventSetupsCallablePayloadSchema,
+  'callable_responses/private_event_setup_list_response.schema.json': schemaPrivateEventSetupListCallableResponseSchema,
   'embedded/event_preference_intents.schema.json': schemaEventPreferenceIntentsSchema,
   'embedded/resolved_event_preferences.schema.json': schemaResolvedEventPreferencesSchema,
   'embedded/event_payment_terms.schema.json': schemaEventPaymentTermsSchema,

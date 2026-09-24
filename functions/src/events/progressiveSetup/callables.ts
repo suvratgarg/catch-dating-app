@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {CallableRequest, onCall} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
@@ -21,6 +21,13 @@ import {validateUpdatePrivateEventPreferencesCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventPreferencesInput";
 import {getPrivateEventSetup as readSetup} from "./readModel";
 
+import {assertPrivateEventBasicsEditable} from "./commitments";
+import {listPrivateEventSetups as listSetups} from "./listPrivateEventSetups";
+import {validateListPrivateEventSetupsCallablePayload} from
+  "../../shared/generated/validators/listPrivateEventSetupsInput";
+import {validatePrivateEventSetupListCallableResponse} from
+  "../../shared/generated/validators/privateEventSetupListOutput";
+
 export interface SetupCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -37,6 +44,7 @@ const defaultDeps: SetupCallableDependencies = {
     privacyMigrationReady: () => false,
     timestampFromMillis: admin.firestore.Timestamp.fromMillis,
     serverTimestamp: admin.firestore.FieldValue.serverTimestamp,
+    assertBasicsEditable: assertPrivateEventBasicsEditable,
   }),
 };
 
@@ -97,3 +105,22 @@ export async function updatePrivateEventPreferencesHandler(
 
 export const updatePrivateEventPreferences = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventPreferencesHandler(request));
+
+/** Bounded manager list that also works for basics-only private events. */
+export async function listPrivateEventSetupsHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateListPrivateEventSetupsCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "listPrivateEventSetups");
+  const result = await listSetups({actorUid, command, db});
+  if (!validatePrivateEventSetupListCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid private event list response.");
+  }
+  return result;
+}
+
+export const listPrivateEventSetups = onCall(appCheckCallableOptions,
+  (request) => listPrivateEventSetupsHandler(request));

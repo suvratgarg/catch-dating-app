@@ -15,6 +15,8 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ListPrivateEventSetupsCallablePayload", "source": "callables/list_private_event_setups_payload.schema.json", "typeOutput": "functions/src/shared/generated/listPrivateEventSetupsCallablePayload.ts"},
+  {"name": "PrivateEventSetupListCallableResponse", "source": "callable_responses/private_event_setup_list_response.schema.json", "typeOutput": "functions/src/shared/generated/privateEventSetupListCallableResponse.ts"},
   {"name": "EventPreferenceIntents", "source": "embedded/event_preference_intents.schema.json", "typeOutput": "functions/src/shared/generated/eventPreferenceIntents.ts"},
   {"name": "ResolvedEventPreferences", "source": "embedded/resolved_event_preferences.schema.json", "typeOutput": "functions/src/shared/generated/resolvedEventPreferences.ts"},
   {"name": "EventPaymentTerms", "source": "embedded/event_payment_terms.schema.json", "typeOutput": "functions/src/shared/generated/eventPaymentTerms.ts"},

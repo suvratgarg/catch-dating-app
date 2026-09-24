@@ -54,6 +54,8 @@ export async function getPrivateEventSetup(params: {
       setupDefaults: event.setupDefaults,
       detailsConfigured: event.endTime !== undefined ||
         event.meetingLocation !== undefined ||
+        event.meetingPoint !== undefined ||
+        event.eventFormat !== undefined ||
         event.eventSuccessPlanId !== undefined,
     };
     if (!validatePrivateEventSetupCallableResponse(result)) {

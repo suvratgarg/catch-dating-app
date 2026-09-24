@@ -200,6 +200,7 @@ export 'callables/list_organizer_saved_audiences_callable_request.g.dart';
 export 'callables/list_organizer_whatsapp_threads_callable_request.g.dart';
 export 'callables/list_participant_form_profiles_callable_request.g.dart';
 export 'callables/list_participant_messaging_preferences_callable_request.g.dart';
+export 'callables/list_private_event_setups_callable_request.g.dart';
 export 'callables/list_program_guests_callable_request.g.dart';
 export 'callables/list_program_staff_callable_request.g.dart';
 export 'callables/list_program_trips_callable_request.g.dart';

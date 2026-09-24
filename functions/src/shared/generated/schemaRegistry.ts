@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {listPrivateEventSetupsCallablePayloadSchema} from "./schemas/listPrivateEventSetupsInput";
+export {privateEventSetupListCallableResponseSchema} from "./schemas/privateEventSetupListOutput";
 export {eventPreferenceIntentsSchema} from "./schemas/eventPreferenceIntents";
 export {resolvedEventPreferencesSchema} from "./schemas/resolvedEventPreferences";
 export {eventPaymentTermsSchema} from "./schemas/eventPaymentTerms";

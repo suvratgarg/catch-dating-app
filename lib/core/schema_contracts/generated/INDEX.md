@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `functions/src/shared/generated/listPrivateEventSetupsCallablePayload.ts` |
+| PrivateEventSetupListCallableResponse | `callable_responses/private_event_setup_list_response.schema.json` | `functions/src/shared/generated/privateEventSetupListCallableResponse.ts` |
 | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `functions/src/shared/generated/eventPreferenceIntents.ts` |
 | ResolvedEventPreferences | `embedded/resolved_event_preferences.schema.json` | `functions/src/shared/generated/resolvedEventPreferences.ts` |
 | EventPaymentTerms | `embedded/event_payment_terms.schema.json` | `functions/src/shared/generated/eventPaymentTerms.ts` |
@@ -884,6 +886,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaListPrivateEventSetupsCallablePayloadSchema` | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_private_event_setups_callable_payload.g.dart` |
+| `schemaPrivateEventSetupListCallableResponseSchema` | PrivateEventSetupListCallableResponse | `callable_responses/private_event_setup_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/private_event_setup_list_callable_response.g.dart` |
 | `schemaEventPreferenceIntentsSchema` | EventPreferenceIntents | `embedded/event_preference_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/event_preference_intents.g.dart` |
 | `schemaResolvedEventPreferencesSchema` | ResolvedEventPreferences | `embedded/resolved_event_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/resolved_event_preferences.g.dart` |
 | `schemaEventPaymentTermsSchema` | EventPaymentTerms | `embedded/event_payment_terms.schema.json` | `lib/core/schema_contracts/generated/schemas/event_payment_terms.g.dart` |
@@ -1756,6 +1760,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| ListPrivateEventSetupsCallableRequest | ListPrivateEventSetupsCallablePayload | `callables/list_private_event_setups_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_private_event_setups_callable_request.g.dart` |
 | UpdatePrivateEventPreferencesCallableRequest | UpdatePrivateEventPreferencesCallablePayload | `callables/update_private_event_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_private_event_preferences_callable_request.g.dart` |
 | GetOrganizerEventSetupDefaultsCallableRequest | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_event_setup_defaults_callable_request.g.dart` |
 | UpdateOrganizerEventSetupDefaultsCallableRequest | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_organizer_event_setup_defaults_callable_request.g.dart` |

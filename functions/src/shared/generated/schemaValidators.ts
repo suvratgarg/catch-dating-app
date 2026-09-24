@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateListPrivateEventSetupsCallablePayload} from "./validators/listPrivateEventSetupsInput";
+export {validatePrivateEventSetupListCallableResponse} from "./validators/privateEventSetupListOutput";
 export {validateEventPreferenceIntents} from "./validators/eventPreferenceIntents";
 export {validateResolvedEventPreferences} from "./validators/resolvedEventPreferences";
 export {validateEventPaymentTerms} from "./validators/eventPaymentTerms";
