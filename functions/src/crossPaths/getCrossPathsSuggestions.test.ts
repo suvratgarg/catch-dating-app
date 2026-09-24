@@ -252,6 +252,20 @@ test("returns at most two sanitized, deterministic suggestions", async () => {
   );
 });
 
+test("private events never enter public Cross Paths suggestions", async () => {
+  const h = harness({"events/event-1": event({
+    publicationState: "private",
+    setupRevision: 1,
+  })});
+  const response = await getCrossPathsSuggestionsHandler(
+    request("viewer", {eventIds: ["event-1"],
+      sessionId: "explore-session-0001"}), h.deps
+  );
+  assert.deepEqual(response.suggestions, []);
+  assert.equal(h.firestore.collectionRows(
+    "crossPathsSuggestionExposures").length, 0);
+});
+
 test(
   "returns no suggestions for unselected or non-Mumbai real events",
   async () => {
@@ -479,10 +493,15 @@ function event(overrides: FakeData = {}): FakeData {
     startTime: timestamp(eventStartMillis),
     endTime: timestamp(eventStartMillis + 2 * 60 * 60 * 1000),
     meetingPoint: "Marine Drive",
+    meetingLocation: {
+      name: "Marine Drive",
+      latitude: 18.94,
+      longitude: 72.82,
+    },
     eventFormat: {
       version: 1,
       activityKind: "socialRun",
-      interactionModel: "continuousMovement",
+      interactionModel: "pacePods",
     },
     capacityLimit: 20,
     bookedCount: 3,
