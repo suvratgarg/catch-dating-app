@@ -1528,6 +1528,11 @@
           "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
           "role": "pushed-route adopter using shared platform compact route-title typography while delegating section rhythm and responsive columns to CatchSectionList.page",
           "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_audience_no_organizer_empty_state.dart",
+          "role": "shared Audience no-organizer route composition for People, Audiences, Forms and Responses; preserves tab-specific copy, scroll keys, button sizing and the Create Club navigation callback; render widget rather than a display-state model",
+          "status": "aligned"
         }
       ],
       "exceptions": [],
