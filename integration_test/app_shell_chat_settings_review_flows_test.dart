@@ -99,6 +99,12 @@ void main() {
     expect(safetyRepository.reportContextId, match.id);
     expect(find.text('Report submitted for Taylor.'), findsOneWidget);
 
+    // The notice temporarily covers the top-bar action; close it before
+    // opening the next menu, just as a person would in the app.
+    await tester.tap(find.byTooltip('Dismiss'));
+    await pumpAppShellFrames(tester);
+    expect(find.text('Report submitted for Taylor.'), findsNothing);
+
     await tester.tap(find.byTooltip('Chat actions'));
     await pumpAppShellFrames(tester);
     await tester.tap(find.text('Block'));
