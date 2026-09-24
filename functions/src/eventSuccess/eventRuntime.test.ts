@@ -644,10 +644,18 @@ test("ready auto-create claims exactly one seat and replays without another",
     assert.equal(first.attendeeId, eventAttendeeId("event-1",
       "phone:+919876543210"));
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
     assert.equal(h.firestore.get(`eventAttendees/${first.attendeeId}`)
       ?.status, "registered");
     await claimEventRuntimeAccessHandler(claim, h.deps);
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    const ledger = h.firestore.get("eventSeatLedgers/event-1")!;
+    h.firestore.set("eventSeatLedgers/event-1", {...ledger,
+      policyHash: "f".repeat(64)});
+    await assert.rejects(claimEventRuntimeAccessHandler(claim, h.deps),
+      (error) => code(error, "failed-precondition"));
+    h.firestore.set("eventSeatLedgers/event-1", ledger);
     await assert.rejects(claimEventRuntimeAccessHandler(request("runner-2",
       {publicRuntimeId: "runtime_123456789012345678901234",
         displayName: "Another", runtimeTermsVersion: "event-runtime-v1"},
@@ -680,12 +688,22 @@ test("ready Host approval converts an invited claim into one reserved seat",
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
     assert.equal(h.firestore.get(`eventAttendees/${claim.attendeeId}`)
       ?.status, "invited");
+    const ledger = h.firestore.get("eventSeatLedgers/event-1")!;
+    h.firestore.set("eventSeatLedgers/event-1", {...ledger,
+      policyHash: "f".repeat(64)});
+    await assert.rejects(approveEventRuntimeClaimHandler(request("host-1", {
+      eventId: "event-1", uid: "runner-1", decision: "approve",
+      attendeeId: claim.attendeeId,
+    }), h.deps), (error) => code(error, "failed-precondition"));
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
+    h.firestore.set("eventSeatLedgers/event-1", ledger);
     const approved = await approveEventRuntimeClaimHandler(request("host-1", {
       eventId: "event-1", uid: "runner-1", decision: "approve",
       attendeeId: claim.attendeeId,
     }), h.deps);
     assert.equal(approved.status, "approved");
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
     assert.equal(h.firestore.get(`eventAttendees/${claim.attendeeId}`)
       ?.status, "registered");
   });
@@ -702,7 +720,7 @@ test("ready Catch reservation can claim runtime before display projection",
     const docs: Record<string, FakeData> = {
       "events/event-1": currentEvent,
       "eventParticipations/event-1_runner-1": {eventId: "event-1",
-        organizerId: "organizer-1", uid, status: "signedUp"},
+        clubId: "organizer-1", uid, status: "signedUp"},
       "eventSeatMigrationFences/event-1": {eventId: "event-1",
         migrationRevision: 1, state: "ready"},
       "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 20,

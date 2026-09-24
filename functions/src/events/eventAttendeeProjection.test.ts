@@ -9,6 +9,7 @@ import {
 import {eventAttendeeId} from "./eventAttendees";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import type {EventParticipationDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -265,18 +266,25 @@ test("ready projection follows current reserved source without changing seats",
     const eventId = "event-1";
     const uid = "user-1";
     const key = "uid_1";
-    const current = participation();
+    const current = participation({organizerId: undefined});
+    const event = {clubId: "organizer-1", capacityLimit: 20,
+      status: "active", constraints: {minAge: 0, maxAge: 99}};
+    const policy = deriveEventSeatPolicy(event);
     const reservationId = createHash("sha256")
       .update(`${eventId}\u001f${key}`).digest("hex");
     const docs: Record<string, FakeData | undefined> = {
       [`eventParticipations/${eventId}_${uid}`]: current as unknown as
         FakeData,
+      [`events/${eventId}`]: event,
       [`eventSeatMigrationFences/${eventId}`]: {eventId,
         migrationRevision: 1, state: "ready"},
       [`eventSeatLedgers/${eventId}`]: {eventId, migrationRevision: 1,
-        state: "ready", occupied: 1},
+        state: "ready", occupied: 1, capacity: 20, revision: 1,
+        capacityRevision: 1, policyVersion: policy.policyVersion,
+        policyHash: policy.policyHash},
       [`eventSeatReservations/${reservationId}`]: {eventId,
-        canonicalKey: key, identityRevision: 1, active: true},
+        canonicalKey: key, identityRevision: 1, active: true,
+        revision: 1, reservedAtMillis: 100, releasedAtMillis: null},
       [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(eventId, uid)}`]: {
         eventId, organizerId: "organizer-1", uid, phoneE164: phone,
         migrationRevision: 1, state: "current"},
@@ -304,9 +312,12 @@ test("ready projection follows current reserved source without changing seats",
     h.firestore.set(`eventParticipations/${eventId}_${uid}`, {
       ...current, status: "cancelled"});
     h.firestore.set(`eventSeatReservations/${reservationId}`, {eventId,
-      canonicalKey: key, identityRevision: 1, active: false});
+      canonicalKey: key, identityRevision: 1, active: false,
+      revision: 2, reservedAtMillis: 100, releasedAtMillis: 200});
     h.firestore.set(`eventSeatLedgers/${eventId}`, {eventId,
-      migrationRevision: 1, state: "ready", occupied: 0});
+      migrationRevision: 1, state: "ready", occupied: 0,
+      capacity: 20, revision: 2, capacityRevision: 1,
+      policyVersion: policy.policyVersion, policyHash: policy.policyHash});
     await projectEventParticipationToAttendee(undefined, current, h.deps);
     assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.status,
       "cancelled");

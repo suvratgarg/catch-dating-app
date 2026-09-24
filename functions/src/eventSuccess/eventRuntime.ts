@@ -73,7 +73,8 @@ import {readSeatMigrationWriterFence} from
 import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity,
   prepareVerifiedUidAttendeeEnrollment, seatIdentityAliasId,
   seatIdentityValueHash} from "../events/seatIdentityAuthority";
-import {applyFirestoreSeat, FirestoreSeatTransaction,
+import {applyFirestoreSeat, assertCurrentReadySeatSnapshot,
+  FirestoreSeatTransaction,
   prepareFirestoreSeat} from "../events/seatAuthority/firestoreAdapter";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireRuntimeVenueEvent,
@@ -317,12 +318,20 @@ export async function claimEventRuntimeAccessHandler(
             eventId: resolved.eventId,
             organizerId: currentEvent.organizerId ?? currentEvent.clubId,
             uid, currentAuthPhoneNumber: phone});
-          const reservation = await new FirestoreSeatTransaction(db, tx)
-            .reservation(resolved.eventId, checked.identity.key);
+          const seats = new FirestoreSeatTransaction(db, tx);
+          const [ledger, reservation] = await Promise.all([
+            seats.ledger(resolved.eventId),
+            seats.reservation(resolved.eventId, checked.identity.key),
+          ]);
+          requireRuntimeSeatSnapshot({event: currentEvent,
+            eventId: resolved.eventId,
+            organizerId: currentEvent.organizerId ?? currentEvent.clubId,
+            identity: checked.identity, ledger, reservation,
+            expectedActive: true});
           if (!currentAttendee || currentAttendee.eventId !==
               resolved.eventId || currentAttendee.linkedUid !== uid ||
               !["registered", "checkedIn"].includes(
-                currentAttendee.status) || !reservation?.active) {
+                currentAttendee.status)) {
             throw new HttpsError("failed-precondition",
               "Runtime guest seat is unavailable.");
           }
@@ -401,9 +410,11 @@ export async function claimEventRuntimeAccessHandler(
         seats.ledger(resolved.eventId),
         seats.reservation(resolved.eventId, identity.key),
       ]);
+      requireRuntimeSeatSnapshot({event: currentEvent,
+        eventId: resolved.eventId, organizerId, identity, ledger,
+        reservation});
       seatAlreadyActive = reservation?.active === true;
-      if (!ledger || ledger.state !== "ready" ||
-          attendee && (reservation?.active === true) !==
+      if (attendee && (reservation?.active === true) !==
             (attendee.status === "registered" ||
               attendee.status === "checkedIn")) {
         throw new HttpsError("failed-precondition",
@@ -422,7 +433,7 @@ export async function claimEventRuntimeAccessHandler(
           eventId: resolved.eventId, organizerId, kind: "attendee",
           valueHash: seatIdentityValueHash("attendee", exactAttendeeId),
           canonicalKey: identity.key, identityRevision: identity.revision,
-          migrationRevision: ledger.migrationRevision, state: "ready",
+          migrationRevision: ledger!.migrationRevision, state: "ready",
         });
       }
       const shouldReserve = walkInPolicy === "autoCreate" &&
@@ -435,9 +446,9 @@ export async function claimEventRuntimeAccessHandler(
             subject: {kind: "verifiedUid", uid}, operation: "reserve",
             requestId: `runtime_${sha256(`${uid}_${
               reservation?.revision ?? 0}`).slice(0, 48)}`,
-            expectedLedgerRevision: ledger.revision,
-            expectedCapacityRevision: ledger.capacityRevision,
-            expectedMigrationRevision: ledger.migrationRevision,
+            expectedLedgerRevision: ledger!.revision,
+            expectedCapacityRevision: ledger!.capacityRevision,
+            expectedMigrationRevision: ledger!.migrationRevision,
             expectedReservationRevision: reservation?.revision ?? 0,
             nowMillis: now.toMillis()},
         });
@@ -773,13 +784,18 @@ export async function checkInEventRuntimeHandler(
           {kind: "importAttendee",
             attendeeId: participant.eventAttendeeId},
       });
-      const reservation = identity && await new FirestoreSeatTransaction(db,
-        tx).reservation(resolved.eventId, identity.key);
-      if (!reservation?.active ||
-          reservation.identityRevision !== identity?.revision) {
+      if (!identity) {
         throw new HttpsError("failed-precondition",
           "Guest check-in has no current reserved seat.");
       }
+      const seats = new FirestoreSeatTransaction(db, tx);
+      const [ledger, reservation] = await Promise.all([
+        seats.ledger(resolved.eventId),
+        seats.reservation(resolved.eventId, identity.key),
+      ]);
+      requireRuntimeSeatSnapshot({event, eventId: resolved.eventId,
+        organizerId: event.organizerId ?? event.clubId, identity,
+        ledger, reservation, expectedActive: true});
     }
     rejectVenueSessionReplay(redemptionSnap);
     if (attendee.status === "checkedIn") {
@@ -944,11 +960,9 @@ export async function approveEventRuntimeClaimHandler(
       ]);
       const wasActive = attendee.status === "registered" ||
         attendee.status === "checkedIn";
-      if (!ledger || ledger.state !== "ready" ||
-          wasActive !== (reservation?.active === true)) {
-        throw new HttpsError("failed-precondition",
-          "Claim roster and seat authority disagree.");
-      }
+      requireRuntimeSeatSnapshot({event, eventId: payload.eventId,
+        organizerId, identity: verified, ledger, reservation,
+        expectedActive: wasActive});
       if (!wasActive) {
         const prepared = await prepareFirestoreSeat({db, tx,
           identityAuthority: {resolve: async () => verified},
@@ -957,9 +971,9 @@ export async function approveEventRuntimeClaimHandler(
             operation: "reserve",
             requestId: `runtime_approve_${sha256(`${payload.uid}_${
               attendeeId}_${reservation?.revision ?? 0}`).slice(0, 48)}`,
-            expectedLedgerRevision: ledger.revision,
-            expectedCapacityRevision: ledger.capacityRevision,
-            expectedMigrationRevision: ledger.migrationRevision,
+            expectedLedgerRevision: ledger!.revision,
+            expectedCapacityRevision: ledger!.capacityRevision,
+            expectedMigrationRevision: ledger!.migrationRevision,
             expectedReservationRevision: reservation?.revision ?? 0,
             nowMillis: now.toMillis()},
         });
@@ -1007,6 +1021,17 @@ export function eventRuntimeParticipantId(
   uid: string
 ): string {
   return `${eventId}_${uid}`;
+}
+
+function requireRuntimeSeatSnapshot(
+  params: Parameters<typeof assertCurrentReadySeatSnapshot>[0]
+): void {
+  try {
+    assertCurrentReadySeatSnapshot(params);
+  } catch {
+    throw new HttpsError("failed-precondition",
+      "Runtime guest and seat authority disagree.");
+  }
 }
 
 async function resolveRuntimeEvent(

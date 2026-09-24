@@ -11,7 +11,7 @@ import {eventParticipationId} from "../shared/relationshipDocuments";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 import {FirestoreSeatIdentityAuthority,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
-import {FirestoreSeatTransaction} from
+import {assertCurrentReadySeatSnapshot, FirestoreSeatTransaction} from
   "./seatAuthority/firestoreAdapter";
 
 interface ProjectionDeps {
@@ -74,6 +74,8 @@ export async function projectEventParticipationToAttendee(
     const existingSnap = await tx.get(attendeeRef);
     const existing = existingSnap.data() as EventAttendeeDocument | undefined;
     if (mode === "ready") {
+      const event = (await tx.get(db.collection("events")
+        .doc(source.eventId))).data();
       if (source.clubId !== organizerId ||
           source.organizerId !== undefined &&
             source.organizerId !== organizerId) return;
@@ -85,13 +87,20 @@ export async function projectEventParticipationToAttendee(
       const proof = (await tx.get(db.collection("eventSeatVerifiedPhones")
         .doc(seatVerifiedPhoneProofId(source.eventId, source.uid)))).data();
       if (!proof || proof.phoneE164 !== verifiedPhone) return;
-      const reservation = await new FirestoreSeatTransaction(db, tx)
-        .reservation(source.eventId, identity.key);
+      const seats = new FirestoreSeatTransaction(db, tx);
+      const [ledger, reservation] = await Promise.all([
+        seats.ledger(source.eventId),
+        seats.reservation(source.eventId, identity.key),
+      ]);
       const active = source.status === "signedUp" ||
         source.status === "attended";
-      if ((reservation?.active === true) !== active ||
-          reservation && reservation.identityRevision !==
-            identity.revision) return;
+      try {
+        assertCurrentReadySeatSnapshot({event, eventId: source.eventId,
+          organizerId, identity, ledger, reservation,
+          expectedActive: active});
+      } catch {
+        return;
+      }
       if (existing && (existing.eventId !== source.eventId ||
           existing.organizerId !== organizerId ||
           existing.linkedUid !== source.uid)) return;

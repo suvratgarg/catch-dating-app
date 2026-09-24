@@ -65,6 +65,7 @@ import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity,
   seatIdentityValueHash} from
   "./seatIdentityAuthority";
 import {applyFirestoreSeat, prepareFirestoreSeat, deriveEventSeatPolicy,
+  assertCurrentReadySeatSnapshot,
   FirestoreSeatTransaction} from
   "./seatAuthority/firestoreAdapter";
 import {applyBatchImportSeats, prepareFirestoreBatchSeatImport} from
@@ -141,38 +142,12 @@ async function prepareAttendanceSeatChange(params: {
   const [ledger, reservation] = await Promise.all([
     seats.ledger(eventId), seats.reservation(eventId, identity.key),
   ]);
-  const policy = deriveEventSeatPolicy(params.event);
-  if (policy.organizerId !== organizerId || !ledger ||
-      ledger.state !== "ready" ||
-      ledger.eventId !== eventId ||
-      ledger.capacity !== policy.capacity ||
-      ledger.policyHash !== policy.policyHash ||
-      ledger.policyVersion !== policy.policyVersion ||
-      !Number.isSafeInteger(ledger.occupied) || ledger.occupied < 0 ||
-      ledger.occupied > ledger.capacity ||
-      !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
-      ledger.revision === Number.MAX_SAFE_INTEGER ||
-      !Number.isSafeInteger(ledger.capacityRevision) ||
-      ledger.capacityRevision < 1 ||
-      !Number.isSafeInteger(ledger.migrationRevision) ||
-      ledger.migrationRevision < 1 ||
-      reservation && (reservation.eventId !== eventId ||
-        reservation.canonicalKey !== identity.key ||
-        reservation.identityRevision !== identity.revision ||
-        !Number.isSafeInteger(reservation.revision) ||
-        reservation.revision < 1 ||
-        reservation.revision === Number.MAX_SAFE_INTEGER ||
-        !Number.isSafeInteger(reservation.identityRevision) ||
-        reservation.identityRevision < 0 ||
-        typeof reservation.active !== "boolean" ||
-        !Number.isSafeInteger(reservation.reservedAtMillis) ||
-        reservation.reservedAtMillis < 0 ||
-        !(reservation.releasedAtMillis === null ||
-          Number.isSafeInteger(reservation.releasedAtMillis) &&
-          reservation.releasedAtMillis >= 0) ||
-        (reservation.releasedAtMillis === null) !== reservation.active) ||
-      (reservation?.active === true) !==
-        (occupiesSeat(params.previous) || independentCatchActive)) {
+  try {
+    assertCurrentReadySeatSnapshot({event: params.event, eventId,
+      organizerId, identity, ledger, reservation,
+      expectedActive: occupiesSeat(params.previous) ||
+        independentCatchActive});
+  } catch {
     throw new HttpsError("failed-precondition",
       "Guest attendance and seat authority disagree.");
   }
@@ -187,9 +162,9 @@ async function prepareAttendanceSeatChange(params: {
     command: {eventId, subject,
       operation: willBeActive ? "reserve" : "release",
       requestId: params.requestId,
-      expectedLedgerRevision: ledger.revision,
-      expectedCapacityRevision: ledger.capacityRevision,
-      expectedMigrationRevision: ledger.migrationRevision,
+      expectedLedgerRevision: ledger!.revision,
+      expectedCapacityRevision: ledger!.capacityRevision,
+      expectedMigrationRevision: ledger!.migrationRevision,
       expectedReservationRevision: reservation?.revision ?? 0,
       nowMillis: params.nowMillis},
   });
