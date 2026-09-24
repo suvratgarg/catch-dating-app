@@ -22,7 +22,7 @@ const MAX_OUTPUT_ROWS = 1500;
 const SOURCES = ["eventParticipations", "eventAttendees",
   "organizerContactOrigins"] as const;
 type Source = typeof SOURCES[number];
-type Phase = "scan" | "apply" | "cleanup" | "complete";
+type Phase = "scan" | "plan" | "apply" | "cleanup" | "complete";
 
 interface MigrationRun {
   eventId: string;
@@ -106,8 +106,18 @@ function sourceProjection(kind: Source,
         "phoneE164", "externalReference", "sourceRowId"] :
       ["eventId", "organizerId", "sourceKind", "sourceEntityKind",
         "sourceEntityId", "responseId", "formId", "currentContactId"];
-  return Object.fromEntries(keys.filter((key) => raw[key] !== undefined)
+  const projected = Object.fromEntries(keys.filter((key) =>
+    raw[key] !== undefined)
     .map((key) => [key, raw[key]]));
+  if (kind === "eventAttendees") {
+    // Legacy unclaimed rows may omit nullable identity fields. Missing never
+    // implies a UID or verified endpoint; the pure planner sees explicit null.
+    for (const key of ["linkedUid", "phoneE164", "externalReference",
+      "sourceRowId"]) {
+      if (projected[key] === undefined) projected[key] = null;
+    }
+  }
+  return projected;
 }
 
 function exactEvent(raw: FirebaseFirestore.DocumentData | undefined,
@@ -129,7 +139,8 @@ function exactRun(raw: FirebaseFirestore.DocumentData | undefined,
       raw.asOfMillis !== command.asOfMillis ||
       !ID.test(raw.fenceToken) ||
       !/^[a-f0-9]{64}$/u.test(raw.policyHash) ||
-      !["scan", "apply", "cleanup", "complete"].includes(raw.phase) ||
+      !["scan", "plan", "apply", "cleanup", "complete"]
+        .includes(raw.phase) ||
       !Number.isSafeInteger(raw.sourceIndex) ||
       raw.sourceIndex < 0 || raw.sourceIndex > SOURCES.length ||
       raw.cursor !== null &&
@@ -194,21 +205,33 @@ async function readBase(params: {tx: FirebaseFirestore.Transaction;
 async function initialize(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<void> {
   await deps.db.runTransaction(async (tx) => {
-    const base = await readBase({tx, db: deps.db, command});
-    if (base.run) {
-      const run = exactRun(base.run, command);
+    const runRef = deps.db.collection("eventSeatMigrationRuns")
+      .doc(command.eventId);
+    const existingRun = await tx.get(runRef);
+    if (existingRun.exists) {
+      const run = exactRun(existingRun.data(), command);
       if (run.phase === "cleanup" || run.phase === "complete") {
-        if (base.fence?.state !== "ready" ||
-            base.fence?.token !== run.fenceToken ||
-            base.ledger?.state !== "ready" ||
-            base.ledger?.migrationRevision !== run.migrationRevision) {
+        const [fenceSnap, ledgerSnap] = await Promise.all([
+          tx.get(deps.db.collection("eventSeatMigrationFences")
+            .doc(command.eventId)),
+          tx.get(deps.db.collection("eventSeatLedgers")
+            .doc(command.eventId)),
+        ]);
+        if (fenceSnap.data()?.state !== "ready" ||
+            fenceSnap.data()?.token !== run.fenceToken ||
+            ledgerSnap.data()?.state !== "ready" ||
+            ledgerSnap.data()?.migrationRevision !==
+              run.migrationRevision) {
           unavailable("Completed seat migration authority changed.");
         }
         return;
-      } else {
-        assertFence(base.fence, run);
-        assertLedger(base.ledger, run);
       }
+    }
+    const base = await readBase({tx, db: deps.db, command});
+    if (base.run) {
+      const run = exactRun(base.run, command);
+      assertFence(base.fence, run);
+      assertLedger(base.ledger, run);
       if (base.policy.status !== "active" ||
           base.policy.policyHash !== run.policyHash) {
         unavailable("Event policy changed during migration.");
@@ -296,7 +319,7 @@ async function scanPage(command: PagedSeatBootstrapCommand,
       sourceIndex: hasMore ? run.sourceIndex : run.sourceIndex + 1,
       cursor: hasMore ? rows.at(-1)!.id : null,
       phase: run.sourceIndex + 1 === SOURCES.length && !hasMore ?
-        "apply" : "scan"});
+        "plan" : "scan"});
     return true;
   });
 }
@@ -342,6 +365,31 @@ interface PlannedOutput {
     "eventSeatVerifiedPhones";
   id: string;
   value: FirebaseFirestore.DocumentData;
+}
+
+interface FrozenPlan {
+  eventId: string;
+  organizerId: string;
+  migrationRevision: number;
+  hash: string;
+  ledger: FirebaseFirestore.DocumentData;
+  outputs: PlannedOutput[];
+}
+
+function exactFrozenPlan(raw: FirebaseFirestore.DocumentData | undefined,
+  run: MigrationRun): FrozenPlan {
+  if (!raw || raw.eventId !== run.eventId ||
+      raw.organizerId !== run.organizerId ||
+      raw.migrationRevision !== run.migrationRevision ||
+      raw.hash !== run.planHash ||
+      !Array.isArray(raw.outputs) ||
+      raw.outputs.length !== run.outputCount ||
+      raw.outputs.length > MAX_OUTPUT_ROWS ||
+      !raw.ledger ||
+      digest({ledger: raw.ledger, outputs: raw.outputs}) !== raw.hash) {
+    unavailable("Frozen seat migration plan is inconsistent.");
+  }
+  return raw as FrozenPlan;
 }
 
 async function readPlan(params: {command: PagedSeatBootstrapCommand;
@@ -471,6 +519,35 @@ async function readPlan(params: {command: PagedSeatBootstrapCommand;
     verifiedPhones};
 }
 
+/** Freeze the globally validated plan once; output pages read this document. */
+async function freezePlan(command: PagedSeatBootstrapCommand,
+  deps: PagedSeatBootstrapDeps): Promise<void> {
+  await deps.db.runTransaction(async (tx) => {
+    const base = await readBase({tx, db: deps.db, command});
+    const run = exactRun(base.run, command);
+    assertFence(base.fence, run);
+    assertLedger(base.ledger, run);
+    if (run.phase !== "plan" || base.policy.status !== "active" ||
+        base.policy.policyHash !== run.policyHash ||
+        deps.allWritersIntegrated?.() !== true) {
+      unavailable("Seat migration source is not ready for planning.");
+    }
+    const computed = await readPlan({command, deps, tx, base, run});
+    const frozen: FrozenPlan = {eventId: command.eventId,
+      organizerId: command.organizerId,
+      migrationRevision: command.migrationRevision,
+      hash: computed.hash, ledger: computed.plan.ledger,
+      outputs: computed.outputs};
+    if (Buffer.byteLength(JSON.stringify(frozen), "utf8") > 750000) {
+      unavailable("Frozen seat plan exceeds the document byte budget.");
+    }
+    tx.create(deps.db.collection("eventSeatMigrationPlans")
+      .doc(command.eventId), frozen);
+    tx.update(base.runRef, {phase: "apply", planHash: computed.hash,
+      outputCount: computed.outputs.length});
+  });
+}
+
 /** Apply at most one output page and its durable cursor in one transaction. */
 async function applyPage(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<boolean> {
@@ -485,24 +562,25 @@ async function applyPage(command: PagedSeatBootstrapCommand,
       unavailable("Seat sources changed during migration.");
     }
     if (run.phase !== "apply") unavailable("Source scan is incomplete.");
-    const computed = await readPlan({command, deps, tx, base, run});
-    if (run.planHash !== null &&
-        (run.planHash !== computed.hash ||
-          run.outputCount !== computed.outputs.length)) {
-      unavailable("Migration input changed after plan creation.");
-    }
-    if (run.outputCursor === computed.outputs.length) {
-      // Cursor and every output page share transactions. Rechecking source,
-      // Auth, policy and fence here is the terminal readiness witness.
-      tx.update(base.ledgerRef, {...computed.plan.ledger,
+    const frozenSnap = await tx.get(deps.db
+      .collection("eventSeatMigrationPlans").doc(command.eventId));
+    const frozen = exactFrozenPlan(frozenSnap.data(), run);
+    if (run.outputCursor === frozen.outputs.length) {
+      // The final transaction re-reads current source, CRM and Admin Auth
+      // once. Every writer remained fenced throughout the staged pages.
+      const current = await readPlan({command, deps, tx, base, run});
+      if (current.hash !== frozen.hash) {
+        unavailable("Migration source changed before activation.");
+      }
+      tx.update(base.ledgerRef, {...frozen.ledger,
         revision: (base.ledger!.revision as number) + 1,
         capacityRevision: base.ledger!.capacityRevision,
         state: "ready"});
       tx.update(base.fenceRef, {state: "ready"});
-      tx.update(base.runRef, {phase: "cleanup", planHash: computed.hash});
+      tx.update(base.runRef, {phase: "cleanup"});
       return true;
     }
-    const page = computed.outputs.slice(run.outputCursor,
+    const page = frozen.outputs.slice(run.outputCursor,
       run.outputCursor + PAGE_SIZE);
     const snaps = await Promise.all(page.map((output) =>
       tx.get(deps.db.collection(output.collection).doc(output.id))));
@@ -513,9 +591,7 @@ async function applyPage(command: PagedSeatBootstrapCommand,
       tx.create(deps.db.collection(output.collection).doc(output.id),
         output.value);
     });
-    tx.update(base.runRef, {planHash: computed.hash,
-      outputCount: computed.outputs.length,
-      outputCursor: run.outputCursor + page.length});
+    tx.update(base.runRef, {outputCursor: run.outputCursor + page.length});
     return true;
   });
 }
@@ -524,12 +600,21 @@ async function applyPage(command: PagedSeatBootstrapCommand,
 async function cleanupPage(command: PagedSeatBootstrapCommand,
   deps: PagedSeatBootstrapDeps): Promise<boolean> {
   return deps.db.runTransaction(async (tx) => {
-    const base = await readBase({tx, db: deps.db, command});
-    const run = exactRun(base.run, command);
-    if (run.phase !== "cleanup" || base.fence?.state !== "ready" ||
-        base.fence?.token !== run.fenceToken ||
-        base.ledger?.state !== "ready" ||
-        base.ledger?.migrationRevision !== run.migrationRevision) {
+    const runRef = deps.db.collection("eventSeatMigrationRuns")
+      .doc(command.eventId);
+    const [runSnap, fenceSnap, ledgerSnap] = await Promise.all([
+      tx.get(runRef),
+      tx.get(deps.db.collection("eventSeatMigrationFences")
+        .doc(command.eventId)),
+      tx.get(deps.db.collection("eventSeatLedgers")
+        .doc(command.eventId)),
+    ]);
+    const run = exactRun(runSnap.data(), command);
+    if (run.phase !== "cleanup" ||
+        fenceSnap.data()?.state !== "ready" ||
+        fenceSnap.data()?.token !== run.fenceToken ||
+        ledgerSnap.data()?.state !== "ready" ||
+        ledgerSnap.data()?.migrationRevision !== run.migrationRevision) {
       unavailable("Seat migration cleanup authority changed.");
     }
     const page = await tx.get(deps.db
@@ -538,7 +623,12 @@ async function cleanupPage(command: PagedSeatBootstrapCommand,
       .where("migrationRevision", "==", command.migrationRevision)
       .limit(PAGE_SIZE));
     if (page.empty || page.docs.length === 0) {
-      tx.update(base.runRef, {phase: "complete"});
+      const frozenRef = deps.db.collection("eventSeatMigrationPlans")
+        .doc(command.eventId);
+      const frozenSnap = await tx.get(frozenRef);
+      exactFrozenPlan(frozenSnap.data(), run);
+      tx.delete(frozenRef);
+      tx.update(runRef, {phase: "complete"});
       return false;
     }
     for (const doc of page.docs) {
@@ -574,8 +664,10 @@ export async function bootstrapEventSeatLedgerPaged(params: {
     unavailable("Seat bootstrap is unavailable.");
   }
   await initialize(command, deps);
-  for (let page = 0; page <= MAX_SOURCE_ROWS * SOURCES.length /
-      PAGE_SIZE + MAX_OUTPUT_ROWS / PAGE_SIZE + 2; page++) {
+  const maxPageSteps = Math.ceil(MAX_SOURCE_ROWS * SOURCES.length /
+    PAGE_SIZE) + Math.ceil(MAX_OUTPUT_ROWS / PAGE_SIZE) +
+    Math.ceil(MAX_SOURCE_ROWS * SOURCES.length / PAGE_SIZE) + 8;
+  for (let page = 0; page <= maxPageSteps; page++) {
     const runSnap = await deps.db.collection("eventSeatMigrationRuns")
       .doc(command.eventId).get();
     const run = exactRun(runSnap.data(), command);
@@ -591,6 +683,10 @@ export async function bootstrapEventSeatLedgerPaged(params: {
     }
     if (run.phase === "scan") {
       await scanPage(command, deps);
+      continue;
+    }
+    if (run.phase === "plan") {
+      await freezePlan(command, deps);
       continue;
     }
     if (run.phase === "apply") {

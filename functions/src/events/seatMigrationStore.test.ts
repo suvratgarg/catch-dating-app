@@ -128,11 +128,16 @@ function setup(count = 1) {
       attendee(index));
   }
   let integrated = true;
+  let authCalls = 0;
   const command = {eventId: "event1", organizerId: "org1",
     migrationRevision: 1, asOfMillis: 1000};
   const deps = {db: store.db(), allWritersIntegrated: () => integrated,
-    auth: {getUser: async (uid: string) => ({uid, phoneNumber: null})}};
+    auth: {getUser: async (uid: string) => {
+      authCalls++;
+      return {uid, phoneNumber: null};
+    }}};
   return {store, command, deps,
+    authCalls: () => authCalls,
     setIntegrated: (value: boolean) => integrated = value,
     bootstrap: () => bootstrapEventSeatLedger({command, deps})};
 }
@@ -169,6 +174,17 @@ test("150 imported and 50 Catch participants reconcile one capacity",
     assert.equal((await h.bootstrap()).occupied, 200);
     assert.equal([...h.store.rows.keys()].filter((path) =>
       path.startsWith("eventSeatReservations/")).length, 200);
+    assert.equal(h.authCalls(), 100,
+      "Auth is read once for planning and once before activation");
+  });
+
+test("legacy unclaimed attendee omits nullable fields without UID inference",
+  async () => {
+    const h = setup(1);
+    h.store.rows.set("eventAttendees/att000", {eventId: "event1",
+      organizerId: "org1", source: "hostImport", status: "registered"});
+    assert.equal((await h.bootstrap()).occupied, 1);
+    assert.equal(h.authCalls(), 0);
   });
 
 test("interrupted page resumes without duplicate reservation", async () => {
@@ -208,6 +224,8 @@ test("cleanup resumes after activation and removes private source copies",
     assert.equal(h.store.rows.get("eventSeatMigrationRuns/event1")?.phase,
       "cleanup");
     h.store.failTransactionNumber = null;
+    // Retention cleanup must still finish if the event later disappears.
+    h.store.rows.delete("events/event1");
     assert.equal((await h.bootstrap()).occupied, 80);
     assert.equal([...h.store.rows.keys()].filter((path) =>
       path.startsWith("eventSeatMigrationStages/")).length, 0);
