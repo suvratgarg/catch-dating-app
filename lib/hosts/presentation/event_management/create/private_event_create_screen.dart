@@ -470,6 +470,29 @@ class _PrivateEventCreateScreenState
 
   Future<void> _close() async {
     if (_saving) return;
+    if (_receipt == null && _submittedPayloadJson != null) {
+      final leave = await showCatchAdaptiveDialog<bool>(
+        context: context,
+        title: context.l10n.hostsPrivateEventPendingExitTitle,
+        message: context.l10n.hostsPrivateEventPendingExitBody,
+        actions: [
+          CatchDialogAction(
+            label: context.l10n.hostsPrivateEventPendingStay,
+            value: false,
+          ),
+          CatchDialogAction(
+            label: context.l10n.hostsPrivateEventPendingLeave,
+            value: true,
+            isDefault: true,
+          ),
+        ],
+        barrierDismissible: false,
+      );
+      if (!mounted || leave != true) return;
+      setState(() => _allowPop = true);
+      Navigator.of(context).pop();
+      return;
+    }
     if (_receipt != null || !_hasChanges) {
       setState(() => _allowPop = true);
       Navigator.of(context).pop();

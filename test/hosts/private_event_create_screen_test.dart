@@ -194,6 +194,19 @@ void main() {
     expect(completed.eventCreateReceiptRevision, 1);
     expect(replayAttempts, 2);
     expect(find.text('Private'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    var accidentalCreateCalls = 0;
+    await tester.pumpWidget(app(completed, ({
+      required organizerId,
+      required requestId,
+      required basics,
+    }) async {
+      accidentalCreateCalls += 1;
+      throw StateError('saved event must not be created twice');
+    }));
+    await pumpFeatureUi(tester);
+    expect(find.text('Private'), findsOneWidget);
+    expect(accidentalCreateCalls, 0);
     expect(tester.takeException(), isNull);
   });
 }

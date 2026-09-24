@@ -93,6 +93,12 @@ class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
                 for (final draft in _drafts)
                   DraftCard(
                     draft: draft,
+                    titleOverride: draft.eventCreateReceiptEventId == null
+                        ? null
+                        : context.l10n.hostsPrivateEventContinueSaved,
+                    bodyOverride: draft.eventCreateReceiptEventId == null
+                        ? null
+                        : draft.summary,
                     isDeleting: _deletingDraftId == draft.id,
                     onSelect: () => Navigator.of(
                       context,
