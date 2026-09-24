@@ -17,6 +17,41 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'OrganizerEventSetupPreferences',
+    source: 'embedded/organizer_event_setup_preferences.schema.json',
+    schema: schemaOrganizerEventSetupPreferencesSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetOrganizerEventSetupDefaultsCallablePayload',
+    source: 'callables/get_organizer_event_setup_defaults_payload.schema.json',
+    schema: schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdateOrganizerEventSetupDefaultsCallablePayload',
+    source: 'callables/update_organizer_event_setup_defaults_payload.schema.json',
+    schema: schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupDefaultsCallableResponse',
+    source: 'callable_responses/organizer_event_setup_defaults_response.schema.json',
+    schema: schemaOrganizerEventSetupDefaultsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UpdateOrganizerEventSetupDefaultsCallableResponse',
+    source: 'callable_responses/update_organizer_event_setup_defaults_response.schema.json',
+    schema: schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupDefaultsDocument',
+    source: 'firestore/organizer_event_setup_defaults.schema.json',
+    schema: schemaOrganizerEventSetupDefaultsDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerEventSetupDefaultReceiptDocument',
+    source: 'firestore/organizer_event_setup_default_receipts.schema.json',
+    schema: schemaOrganizerEventSetupDefaultReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRehearsalMilestoneDocument',
     source: 'firestore/event_rehearsal_milestones.schema.json',
     schema: schemaEventRehearsalMilestoneDocumentSchema,
@@ -4194,6 +4229,13 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'OrganizerEventSetupPreferences': schemaOrganizerEventSetupPreferencesSchema,
+  'GetOrganizerEventSetupDefaultsCallablePayload': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'UpdateOrganizerEventSetupDefaultsCallablePayload': schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'OrganizerEventSetupDefaultsCallableResponse': schemaOrganizerEventSetupDefaultsCallableResponseSchema,
+  'UpdateOrganizerEventSetupDefaultsCallableResponse': schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema,
+  'OrganizerEventSetupDefaultsDocument': schemaOrganizerEventSetupDefaultsDocumentSchema,
+  'OrganizerEventSetupDefaultReceiptDocument': schemaOrganizerEventSetupDefaultReceiptDocumentSchema,
   'EventRehearsalMilestoneDocument': schemaEventRehearsalMilestoneDocumentSchema,
   'GetEventRehearsalSummaryCallablePayload': schemaGetEventRehearsalSummaryCallablePayloadSchema,
   'EventRehearsalSummaryCallableResponse': schemaEventRehearsalSummaryCallableResponseSchema,
@@ -5032,6 +5074,13 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'embedded/organizer_event_setup_preferences.schema.json': schemaOrganizerEventSetupPreferencesSchema,
+  'callables/get_organizer_event_setup_defaults_payload.schema.json': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'callables/update_organizer_event_setup_defaults_payload.schema.json': schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  'callable_responses/organizer_event_setup_defaults_response.schema.json': schemaOrganizerEventSetupDefaultsCallableResponseSchema,
+  'callable_responses/update_organizer_event_setup_defaults_response.schema.json': schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema,
+  'firestore/organizer_event_setup_defaults.schema.json': schemaOrganizerEventSetupDefaultsDocumentSchema,
+  'firestore/organizer_event_setup_default_receipts.schema.json': schemaOrganizerEventSetupDefaultReceiptDocumentSchema,
   'firestore/event_rehearsal_milestones.schema.json': schemaEventRehearsalMilestoneDocumentSchema,
   'callables/get_event_rehearsal_summary_payload.schema.json': schemaGetEventRehearsalSummaryCallablePayloadSchema,
   'callable_responses/event_rehearsal_summary_response.schema.json': schemaEventRehearsalSummaryCallableResponseSchema,

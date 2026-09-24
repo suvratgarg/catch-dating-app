@@ -1047,6 +1047,14 @@ service cloud.firestore {
     // Canonical organizer authority. All mutations remain callable-owned so
     // type audits, relationship projections, and compatibility shadows stay
     // atomic during the released-client migration window.
+    // Private configuration is exposed only through current-manager callables.
+    match /organizerEventSetupDefaults/{organizerId} {
+      allow read, write: if false;
+    }
+    match /organizerEventSetupDefaultReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizers/{organizerId} {
       allow read: if true;
       allow create, update, delete: if false;

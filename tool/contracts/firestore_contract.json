@@ -848,11 +848,16 @@
       "typescriptInterface": "OrganizerFormDomainDocument",
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": ["keeps organizer form state server-only"],
+      "rulesTestNames": [
+        "keeps organizer form state server-only"
+      ],
       "owner": "organizer form domain registry",
       "read": "server only; manager sees bounded callable status",
       "write": "server only",
-      "exportedFunctions": ["manageOrganizerFormDomain", "resolvePublicFormDomain"]
+      "exportedFunctions": [
+        "manageOrganizerFormDomain",
+        "resolvePublicFormDomain"
+      ]
     },
     {
       "id": "organizerFormDrafts",
@@ -3249,6 +3254,42 @@
         "updateEventChatProfileSharing",
         "getEventChatProfile",
         "requestAccountDeletion"
+      ]
+    },
+    {
+      "id": "organizerEventSetupDefaults",
+      "path": "organizerEventSetupDefaults/{organizerId}",
+      "rulesMatch": "/organizerEventSetupDefaults/{organizerId}",
+      "typescriptInterface": "OrganizerEventSetupDefaultsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "organizer event setup manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getOrganizerEventSetupDefaults",
+        "updateOrganizerEventSetupDefaults"
+      ]
+    },
+    {
+      "id": "organizerEventSetupDefaultReceipts",
+      "path": "organizerEventSetupDefaultReceipts/{receiptId}",
+      "rulesMatch": "/organizerEventSetupDefaultReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerEventSetupDefaultReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "organizer event setup manager operations",
+      "read": "server only; current manager callable projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "getOrganizerEventSetupDefaults",
+        "updateOrganizerEventSetupDefaults"
       ]
     }
   ]

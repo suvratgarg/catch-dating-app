@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
 import type {EventOrigin} from "./eventOrigin";
 import type {EventRuntimeAccess} from "./eventRuntimeAccess";
 import type {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
@@ -535,6 +536,23 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+export interface OrganizerEventSetupDefaultsDocument {
+  organizerId: string;
+  revision: number;
+  eventSetup: OrganizerEventSetupPreferences;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+export interface OrganizerEventSetupDefaultReceiptDocument {
+  actorUid: string;
+  organizerId: string;
+  requestId: string;
+  requestHash: string;
+  appliedRevision: number;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**

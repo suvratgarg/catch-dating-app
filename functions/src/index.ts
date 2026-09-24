@@ -687,3 +687,6 @@ export {
 } from "./events/progressiveSetup/callables";
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
+
+export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+  from "./organizers/eventSetupDefaults/callables";

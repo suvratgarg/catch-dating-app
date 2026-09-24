@@ -498,3 +498,6 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm
 ./tool/firebase_with_env.sh prod deploy --only firestore:rules
 npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
 ```
+
+| `getOrganizerEventSetupDefaults` | Current-manager read of public basics and private event preferences. |
+| `updateOrganizerEventSetupDefaults` | Revision-fenced manager save of private suggestions; no provider activation. |

@@ -533,3 +533,6 @@ using `X-Catch-Timestamp` (Unix seconds), enforce their replay window, and dedup
 `X-Catch-Delivery-Id` / `Idempotency-Key`. Delivery is at least once across uncertain
 network outcomes; receiver idempotency is required. Signing secrets remain in
 server-only rule documents and are never returned by callable projections.
+
+| `getOrganizerEventSetupDefaults` | Callable | Current-manager projection of private event defaults. |
+| `updateOrganizerEventSetupDefaults` | Callable | Idempotent private defaults save with current-manager and revision checks. |

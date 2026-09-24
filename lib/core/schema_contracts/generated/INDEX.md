@@ -12,6 +12,13 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| OrganizerEventSetupPreferences | `embedded/organizer_event_setup_preferences.schema.json` | `functions/src/shared/generated/organizerEventSetupPreferences.ts` |
+| GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `functions/src/shared/generated/getOrganizerEventSetupDefaultsCallablePayload.ts` |
+| UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallablePayload.ts` |
+| OrganizerEventSetupDefaultsCallableResponse | `callable_responses/organizer_event_setup_defaults_response.schema.json` | `functions/src/shared/generated/organizerEventSetupDefaultsCallableResponse.ts` |
+| UpdateOrganizerEventSetupDefaultsCallableResponse | `callable_responses/update_organizer_event_setup_defaults_response.schema.json` | `functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallableResponse.ts` |
+| OrganizerEventSetupDefaultsDocument | `firestore/organizer_event_setup_defaults.schema.json` | `functions/src/shared/generated/organizerEventSetupDefaultsDocument.ts` |
+| OrganizerEventSetupDefaultReceiptDocument | `firestore/organizer_event_setup_default_receipts.schema.json` | `functions/src/shared/generated/organizerEventSetupDefaultReceiptDocument.ts` |
 | EventRehearsalMilestoneDocument | `firestore/event_rehearsal_milestones.schema.json` | `functions/src/shared/generated/eventRehearsalMilestoneDocument.ts` |
 | GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `functions/src/shared/generated/getEventRehearsalSummaryCallablePayload.ts` |
 | EventRehearsalSummaryCallableResponse | `callable_responses/event_rehearsal_summary_response.schema.json` | `functions/src/shared/generated/eventRehearsalSummaryCallableResponse.ts` |
@@ -852,6 +859,13 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaOrganizerEventSetupPreferencesSchema` | OrganizerEventSetupPreferences | `embedded/organizer_event_setup_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_setup_preferences.g.dart` |
+| `schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema` | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_event_setup_defaults_callable_payload.g.dart` |
+| `schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema` | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_event_setup_defaults_callable_payload.g.dart` |
+| `schemaOrganizerEventSetupDefaultsCallableResponseSchema` | OrganizerEventSetupDefaultsCallableResponse | `callable_responses/organizer_event_setup_defaults_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_setup_defaults_callable_response.g.dart` |
+| `schemaUpdateOrganizerEventSetupDefaultsCallableResponseSchema` | UpdateOrganizerEventSetupDefaultsCallableResponse | `callable_responses/update_organizer_event_setup_defaults_response.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_event_setup_defaults_callable_response.g.dart` |
+| `schemaOrganizerEventSetupDefaultsDocumentSchema` | OrganizerEventSetupDefaultsDocument | `firestore/organizer_event_setup_defaults.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_setup_defaults_document.g.dart` |
+| `schemaOrganizerEventSetupDefaultReceiptDocumentSchema` | OrganizerEventSetupDefaultReceiptDocument | `firestore/organizer_event_setup_default_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_setup_default_receipt_document.g.dart` |
 | `schemaEventRehearsalMilestoneDocumentSchema` | EventRehearsalMilestoneDocument | `firestore/event_rehearsal_milestones.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_milestone_document.g.dart` |
 | `schemaGetEventRehearsalSummaryCallablePayloadSchema` | GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_rehearsal_summary_callable_payload.g.dart` |
 | `schemaEventRehearsalSummaryCallableResponseSchema` | EventRehearsalSummaryCallableResponse | `callable_responses/event_rehearsal_summary_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_summary_callable_response.g.dart` |
@@ -1692,6 +1706,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetOrganizerEventSetupDefaultsCallableRequest | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_organizer_event_setup_defaults_callable_request.g.dart` |
+| UpdateOrganizerEventSetupDefaultsCallableRequest | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_organizer_event_setup_defaults_callable_request.g.dart` |
 | GetEventRehearsalSummaryCallableRequest | GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rehearsal_summary_callable_request.g.dart` |
 | GetEventAssistanceParticipantContextCallableRequest | GetEventAssistanceParticipantContextCallablePayload | `callables/get_event_assistance_participant_context_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_participant_context_callable_request.g.dart` |
 | ListEventAssistanceDepartureRostersCallableRequest | ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_assistance_departure_rosters_callable_request.g.dart` |

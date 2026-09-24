@@ -3,6 +3,13 @@
 
 import {createRequire} from "node:module";
 import {
+  organizerEventSetupPreferencesSchema,
+  getOrganizerEventSetupDefaultsCallablePayloadSchema,
+  updateOrganizerEventSetupDefaultsCallablePayloadSchema,
+  organizerEventSetupDefaultsCallableResponseSchema,
+  updateOrganizerEventSetupDefaultsCallableResponseSchema,
+  organizerEventSetupDefaultsDocumentSchema,
+  organizerEventSetupDefaultReceiptDocumentSchema,
   eventRehearsalMilestoneDocumentSchema,
   getEventRehearsalSummaryCallablePayloadSchema,
   eventRehearsalSummaryCallableResponseSchema,
@@ -862,6 +869,13 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateOrganizerEventSetupPreferences = ajv.compile(organizerEventSetupPreferencesSchema);
+export const validateGetOrganizerEventSetupDefaultsCallablePayload = ajv.compile(getOrganizerEventSetupDefaultsCallablePayloadSchema);
+export const validateUpdateOrganizerEventSetupDefaultsCallablePayload = ajv.compile(updateOrganizerEventSetupDefaultsCallablePayloadSchema);
+export const validateOrganizerEventSetupDefaultsCallableResponse = ajv.compile(organizerEventSetupDefaultsCallableResponseSchema);
+export const validateUpdateOrganizerEventSetupDefaultsCallableResponse = ajv.compile(updateOrganizerEventSetupDefaultsCallableResponseSchema);
+export const validateOrganizerEventSetupDefaultsDocument = ajv.compile(organizerEventSetupDefaultsDocumentSchema);
+export const validateOrganizerEventSetupDefaultReceiptDocument = ajv.compile(organizerEventSetupDefaultReceiptDocumentSchema);
 export const validateEventRehearsalMilestoneDocument = ajv.compile(eventRehearsalMilestoneDocumentSchema);
 export const validateGetEventRehearsalSummaryCallablePayload = ajv.compile(getEventRehearsalSummaryCallablePayloadSchema);
 export const validateEventRehearsalSummaryCallableResponse = ajv.compile(eventRehearsalSummaryCallableResponseSchema);

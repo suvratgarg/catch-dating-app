@@ -1,6 +1,932 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const organizerEventSetupPreferencesSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/organizer_event_setup_preferences.schema.json",
+  "title": "OrganizerEventSetupPreferences",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "usualDurationMinutes": {
+      "type": "integer",
+      "minimum": 15,
+      "maximum": 240
+    },
+    "preferredVenueId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "offerValidityMinutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 10080
+    },
+    "collectionPreference": {
+      "type": "string",
+      "enum": [
+        "manualInstructions",
+        "reusablePage",
+        "personalRequest",
+        "catchCheckout"
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "offerMessageTemplate": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "paymentInstructions": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reusablePaymentPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "reusableForEvents"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "reusableForEvents": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    }
+  }
+};
+
+export const getOrganizerEventSetupDefaultsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_event_setup_defaults_payload.schema.json",
+  "title": "GetOrganizerEventSetupDefaultsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    }
+  }
+};
+
+export const updateOrganizerEventSetupDefaultsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_event_setup_defaults_payload.schema.json",
+  "title": "UpdateOrganizerEventSetupDefaultsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "expectedRevision",
+    "reviewedDefaultsHash",
+    "changes"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "reviewedDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "usualDurationMinutes": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 15,
+                  "maximum": 240
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "preferredVenueId": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "offerValidityMinutes": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 10080
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "collectionPreference": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "manualInstructions",
+                    "reusablePage",
+                    "personalRequest",
+                    "catchCheckout"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "currency": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "offerMessageTemplate": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "paymentInstructions": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "reusablePaymentPage": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "url",
+                    "reusableForEvents"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048
+                    },
+                    "reusableForEvents": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "minProperties": 1,
+      "maxProperties": 8
+    }
+  }
+};
+
+export const organizerEventSetupDefaultsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_event_setup_defaults_response.schema.json",
+  "title": "OrganizerEventSetupDefaultsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "city",
+    "timezone",
+    "organizerDefaultsRevision",
+    "basicsReviewedHash",
+    "preferencesRevision",
+    "preferences",
+    "preferencesHash",
+    "reviewedDefaultsHash"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cityId",
+            "marketId"
+          ],
+          "properties": {
+            "cityId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "marketId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "timezone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "organizerDefaultsRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "basicsReviewedHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "preferencesRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "preferences": {
+      "title": "OrganizerEventSetupPreferences",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "usualDurationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 240
+        },
+        "preferredVenueId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "offerValidityMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 10080
+        },
+        "collectionPreference": {
+          "type": "string",
+          "enum": [
+            "manualInstructions",
+            "reusablePage",
+            "personalRequest",
+            "catchCheckout"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "offerMessageTemplate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "paymentInstructions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "reusablePaymentPage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "reusableForEvents"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "reusableForEvents": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "preferencesHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewedDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const updateOrganizerEventSetupDefaultsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_organizer_event_setup_defaults_response.schema.json",
+  "title": "UpdateOrganizerEventSetupDefaultsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appliedRevision",
+    "current",
+    "replayed"
+  ],
+  "properties": {
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "current": {
+      "title": "OrganizerEventSetupDefaultsCallableResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "city",
+        "timezone",
+        "organizerDefaultsRevision",
+        "basicsReviewedHash",
+        "preferencesRevision",
+        "preferences",
+        "preferencesHash",
+        "reviewedDefaultsHash"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "cityId",
+                "marketId"
+              ],
+              "properties": {
+                "cityId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                },
+                "marketId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timezone": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "organizerDefaultsRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "basicsReviewedHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "preferencesRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "preferences": {
+          "title": "OrganizerEventSetupPreferences",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "usualDurationMinutes": {
+              "type": "integer",
+              "minimum": 15,
+              "maximum": 240
+            },
+            "preferredVenueId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+            },
+            "offerValidityMinutes": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 10080
+            },
+            "collectionPreference": {
+              "type": "string",
+              "enum": [
+                "manualInstructions",
+                "reusablePage",
+                "personalRequest",
+                "catchCheckout"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "offerMessageTemplate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "paymentInstructions": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "reusablePaymentPage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "url",
+                "reusableForEvents"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048
+                },
+                "reusableForEvents": {
+                  "type": "boolean",
+                  "const": true
+                }
+              }
+            }
+          }
+        },
+        "preferencesHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reviewedDefaultsHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const organizerEventSetupDefaultsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_setup_defaults.schema.json",
+  "title": "OrganizerEventSetupDefaultsDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "revision",
+    "eventSetup",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "eventSetup": {
+      "title": "OrganizerEventSetupPreferences",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "usualDurationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 240
+        },
+        "preferredVenueId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+        },
+        "offerValidityMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 10080
+        },
+        "collectionPreference": {
+          "type": "string",
+          "enum": [
+            "manualInstructions",
+            "reusablePage",
+            "personalRequest",
+            "catchCheckout"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "offerMessageTemplate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "paymentInstructions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "reusablePaymentPage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url",
+            "reusableForEvents"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "reusableForEvents": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedByUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    }
+  },
+  "x-firestore-collection": "organizerEventSetupDefaults",
+  "x-firestore-path": "organizerEventSetupDefaults/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "organizer event setup manager operations"
+};
+
+export const organizerEventSetupDefaultReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_event_setup_default_receipts.schema.json",
+  "title": "OrganizerEventSetupDefaultReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actorUid",
+    "organizerId",
+    "requestId",
+    "requestHash",
+    "appliedRevision",
+    "createdAt"
+  ],
+  "properties": {
+    "actorUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "organizerEventSetupDefaultReceipts",
+  "x-firestore-path": "organizerEventSetupDefaultReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer event setup manager operations"
+};
+
 export const eventRehearsalMilestoneDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_rehearsal_milestones.schema.json",

@@ -5,6 +5,13 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {organizerEventSetupPreferencesSchema} from "./schemas/organizerEventSetupPreferences";
+export {getOrganizerEventSetupDefaultsCallablePayloadSchema} from "./schemas/getOrganizerEventSetupDefaultsInput";
+export {updateOrganizerEventSetupDefaultsCallablePayloadSchema} from "./schemas/updateOrganizerEventSetupDefaultsInput";
+export {organizerEventSetupDefaultsCallableResponseSchema} from "./schemas/organizerEventSetupDefaultsOutput";
+export {updateOrganizerEventSetupDefaultsCallableResponseSchema} from "./schemas/updateOrganizerEventSetupDefaultsOutput";
+export {organizerEventSetupDefaultsDocumentSchema} from "./schemas/organizerEventSetupDefaultsDocument";
+export {organizerEventSetupDefaultReceiptDocumentSchema} from "./schemas/organizerEventSetupDefaultReceiptDocument";
 export {eventRehearsalMilestoneDocumentSchema} from "./schemas/eventRehearsalMilestoneDocument";
 export {getEventRehearsalSummaryCallablePayloadSchema} from "./schemas/getEventRehearsalSummaryInput";
 export {eventRehearsalSummaryCallableResponseSchema} from "./schemas/eventRehearsalSummaryOutput";

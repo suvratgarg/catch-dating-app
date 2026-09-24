@@ -15,6 +15,41 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+{
+    "name": "OrganizerEventSetupPreferences",
+    "source": "embedded/organizer_event_setup_preferences.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupPreferences.ts"
+},
+{
+    "name": "GetOrganizerEventSetupDefaultsCallablePayload",
+    "source": "callables/get_organizer_event_setup_defaults_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getOrganizerEventSetupDefaultsCallablePayload.ts"
+},
+{
+    "name": "UpdateOrganizerEventSetupDefaultsCallablePayload",
+    "source": "callables/update_organizer_event_setup_defaults_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallablePayload.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultsCallableResponse",
+    "source": "callable_responses/organizer_event_setup_defaults_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultsCallableResponse.ts"
+},
+{
+    "name": "UpdateOrganizerEventSetupDefaultsCallableResponse",
+    "source": "callable_responses/update_organizer_event_setup_defaults_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallableResponse.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultsDocument",
+    "source": "firestore/organizer_event_setup_defaults.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultsDocument.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultReceiptDocument",
+    "source": "firestore/organizer_event_setup_default_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultReceiptDocument.ts"
+},
   {
     "name": "EventRehearsalMilestoneDocument",
     "source": "firestore/event_rehearsal_milestones.schema.json",
