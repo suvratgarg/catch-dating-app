@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ConfigureEventOfferPreferencesCallablePayload',
+    source: 'callables/configure_event_offer_preferences_payload.schema.json',
+    schema: schemaConfigureEventOfferPreferencesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ConfigureEventOfferPreferencesCallableResponse',
+    source: 'callable_responses/configure_event_offer_preferences_response.schema.json',
+    schema: schemaConfigureEventOfferPreferencesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventOfferConfigurationReceiptDocument',
+    source: 'firestore/event_offer_configuration_receipts.schema.json',
+    schema: schemaEventOfferConfigurationReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListOfferEventTargetsCallablePayload',
     source: 'callables/list_offer_event_targets_payload.schema.json',
     schema: schemaListOfferEventTargetsCallablePayloadSchema,
@@ -4399,6 +4414,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ConfigureEventOfferPreferencesCallablePayload': schemaConfigureEventOfferPreferencesCallablePayloadSchema,
+  'ConfigureEventOfferPreferencesCallableResponse': schemaConfigureEventOfferPreferencesCallableResponseSchema,
+  'EventOfferConfigurationReceiptDocument': schemaEventOfferConfigurationReceiptDocumentSchema,
   'ListOfferEventTargetsCallablePayload': schemaListOfferEventTargetsCallablePayloadSchema,
   'OfferEventTargetListCallableResponse': schemaOfferEventTargetListCallableResponseSchema,
   'GetEventOfferConfigurationCallablePayload': schemaGetEventOfferConfigurationCallablePayloadSchema,
@@ -5278,6 +5296,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/configure_event_offer_preferences_payload.schema.json': schemaConfigureEventOfferPreferencesCallablePayloadSchema,
+  'callable_responses/configure_event_offer_preferences_response.schema.json': schemaConfigureEventOfferPreferencesCallableResponseSchema,
+  'firestore/event_offer_configuration_receipts.schema.json': schemaEventOfferConfigurationReceiptDocumentSchema,
   'callables/list_offer_event_targets_payload.schema.json': schemaListOfferEventTargetsCallablePayloadSchema,
   'callable_responses/offer_event_target_list_response.schema.json': schemaOfferEventTargetListCallableResponseSchema,
   'callables/get_event_offer_configuration_payload.schema.json': schemaGetEventOfferConfigurationCallablePayloadSchema,

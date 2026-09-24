@@ -44,6 +44,13 @@ import {validateGetEventOfferConfigurationCallablePayload} from
 import {validateEventOfferConfigurationCallableResponse} from
   "../shared/generated/validators/eventOfferConfigurationOutput";
 
+import {configureEventOfferPreferences as configurePreferences} from
+  "./eventOfferConfigurationService";
+import {validateConfigureEventOfferPreferencesCallablePayload} from
+  "../shared/generated/validators/configureEventOfferPreferencesInput";
+import {validateConfigureEventOfferPreferencesCallableResponse} from
+  "../shared/generated/validators/configureEventOfferPreferencesOutput";
+
 export interface OfferCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   repository: (db: FirebaseFirestore.Firestore) => OfferRepository;
@@ -183,3 +190,28 @@ export async function getEventOfferConfigurationHandler(
 }
 export const getEventOfferConfiguration = onCall(appCheckCallableOptions,
   (request) => getEventOfferConfigurationHandler(request));
+
+/** Changes future offer defaults; issued offer snapshots remain immutable. */
+export async function configureEventOfferPreferencesHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateConfigureEventOfferPreferencesCallablePayload);
+  if (!deps.integrationReady()) {
+    throw new HttpsError("failed-precondition",
+      "Event offer integration is not ready.");
+  }
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "configureEventOfferPreferences");
+  const result = await configurePreferences({actorUid, command, deps: {
+    db, configurationReady: deps.integrationReady,
+    serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  }});
+  if (!validateConfigureEventOfferPreferencesCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event preference result.");
+  }
+  return result;
+}
+export const configureEventOfferPreferences = onCall(appCheckCallableOptions,
+  (request) => configureEventOfferPreferencesHandler(request));

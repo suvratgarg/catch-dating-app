@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  configureEventOfferPreferencesCallablePayloadSchema,
+  configureEventOfferPreferencesCallableResponseSchema,
+  eventOfferConfigurationReceiptDocumentSchema,
   listOfferEventTargetsCallablePayloadSchema,
   offerEventTargetListCallableResponseSchema,
   getEventOfferConfigurationCallablePayloadSchema,
@@ -903,6 +906,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateConfigureEventOfferPreferencesCallablePayload = ajv.compile(configureEventOfferPreferencesCallablePayloadSchema);
+export const validateConfigureEventOfferPreferencesCallableResponse = ajv.compile(configureEventOfferPreferencesCallableResponseSchema);
+export const validateEventOfferConfigurationReceiptDocument = ajv.compile(eventOfferConfigurationReceiptDocumentSchema);
 export const validateListOfferEventTargetsCallablePayload = ajv.compile(listOfferEventTargetsCallablePayloadSchema);
 export const validateOfferEventTargetListCallableResponse = ajv.compile(offerEventTargetListCallableResponseSchema);
 export const validateGetEventOfferConfigurationCallablePayload = ajv.compile(getEventOfferConfigurationCallablePayloadSchema);

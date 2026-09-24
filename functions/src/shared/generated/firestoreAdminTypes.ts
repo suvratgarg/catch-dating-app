@@ -543,6 +543,16 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventOfferConfigurationReceiptDocument {
+  actorUid: string;
+  organizerId: string;
+  requestId: string;
+  requestHash: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  appliedPreferencesRevision: number;
+  eventId: string;
+}
+
 export interface EventSetupPreferencesDocument {
   organizerId: string;
   eventId: string;

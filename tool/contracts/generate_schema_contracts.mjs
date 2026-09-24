@@ -15,6 +15,9 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ConfigureEventOfferPreferencesCallablePayload", "source": "callables/configure_event_offer_preferences_payload.schema.json", "typeOutput": "functions/src/shared/generated/configureEventOfferPreferencesCallablePayload.ts"},
+  {"name": "ConfigureEventOfferPreferencesCallableResponse", "source": "callable_responses/configure_event_offer_preferences_response.schema.json", "typeOutput": "functions/src/shared/generated/configureEventOfferPreferencesCallableResponse.ts"},
+  {"name": "EventOfferConfigurationReceiptDocument", "source": "firestore/event_offer_configuration_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventOfferConfigurationReceiptDocument.ts"},
   {"name": "ListOfferEventTargetsCallablePayload", "source": "callables/list_offer_event_targets_payload.schema.json", "typeOutput": "functions/src/shared/generated/listOfferEventTargetsCallablePayload.ts"},
   {"name": "OfferEventTargetListCallableResponse", "source": "callable_responses/offer_event_target_list_response.schema.json", "typeOutput": "functions/src/shared/generated/offerEventTargetListCallableResponse.ts"},
   {"name": "GetEventOfferConfigurationCallablePayload", "source": "callables/get_event_offer_configuration_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventOfferConfigurationCallablePayload.ts"},

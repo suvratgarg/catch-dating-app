@@ -5,7 +5,8 @@ import {eventPaymentTermsHash, validateEventPaymentTerms} from
   "../events/eventSetupPreferences/resolve";
 import {prepareOfferHandoff, PreparedOfferHandoff,
   ReviewedOfferHandoff} from "../organizerEventOfferHandoff/message";
-import type {EventPaymentTerms, OfferPaymentSnapshot} from
+import type {EventPaymentTerms, OfferPaymentSnapshot,
+  ResolvedEventPreferences} from
   "../events/eventSetupPreferences/types";
 import {
   applyEventOfferAction, CurrentOfferContext, EventOffer,
@@ -108,6 +109,10 @@ export interface OfferTransaction {
     Promise<OfferOrigin | null>;
   event(eventId: string): Promise<OfferEvent | null>;
   eventPaymentTerms(eventId: string): Promise<EventPaymentTerms | null>;
+  eventPreferences(eventId: string): Promise<{
+    revision: number; preferences: ResolvedEventPreferences;
+    paymentTerms: EventPaymentTerms;
+  } | null>;
   handoffPresentation(offer: EventOffer, sourceResponseId: string):
     Promise<{event: ReviewedOfferHandoff["event"];
       recipient: ReviewedOfferHandoff["recipient"]}>;
@@ -761,7 +766,8 @@ export async function getEventOfferConfiguration(params: {
     if (!Number.isSafeInteger(nowMillis) || nowMillis < 0) {
       fail("conflict", "Server time is unavailable.");
     }
-    const paymentTerms = await tx.eventPaymentTerms(eventId);
+    const saved = await tx.eventPreferences(eventId);
+    const paymentTerms = saved?.paymentTerms ?? null;
     if (paymentTerms) validateEventPaymentTerms(paymentTerms);
     const validity = paymentTerms?.offerValidityMinutes;
     const suggestedExpiresAtMillis = validity != null &&
@@ -770,6 +776,7 @@ export async function getEventOfferConfiguration(params: {
       Math.min(nowMillis + validity * 60_000, event.startsAtMillis) : null;
     return {organizerId, eventId, eventSourceRevision: event.sourceRevision,
       startsAtMillis: event.startsAtMillis, nowMillis, paymentTerms,
-      suggestedExpiresAtMillis};
+      suggestedExpiresAtMillis, preferencesRevision: saved?.revision ?? 0,
+      preferences: saved?.preferences ?? null};
   });
 }

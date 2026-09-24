@@ -1060,6 +1060,9 @@ service cloud.firestore {
     match /organizerEventOfferAudits/{documentId} {
       allow read, write: if false;
     }
+    match /eventOfferConfigurationReceipts/{receiptId} {
+      allow read, write: if false;
+    }
     match /eventSetupPreferences/{eventId} {
       allow read, write: if false;
     }

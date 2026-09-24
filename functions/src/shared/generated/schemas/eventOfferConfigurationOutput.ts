@@ -15,7 +15,9 @@ export const eventOfferConfigurationCallableResponseSchema: Record<string, unkno
     "startsAtMillis",
     "nowMillis",
     "paymentTerms",
-    "suggestedExpiresAtMillis"
+    "suggestedExpiresAtMillis",
+    "preferencesRevision",
+    "preferences"
   ],
   "properties": {
     "organizerId": {
@@ -259,6 +261,368 @@ export const eventOfferConfigurationCallableResponseSchema: Record<string, unkno
         "null"
       ],
       "minimum": 1
+    },
+    "preferencesRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "preferences": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "title": "ResolvedEventPreferences",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "defaultsRevision",
+            "defaultsHash",
+            "usualDurationMinutes",
+            "preferredVenueId",
+            "offerValidityMinutes",
+            "collectionPreference",
+            "currency",
+            "offerMessageTemplate",
+            "paymentInstructions",
+            "reusablePaymentPage",
+            "admissionPreset",
+            "expectedAmountMinor"
+          ],
+          "properties": {
+            "defaultsRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "defaultsHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "usualDurationMinutes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 15,
+                      "maximum": 240
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "preferredVenueId": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "offerValidityMinutes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 5,
+                      "maximum": 10080
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "collectionPreference": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "manualInstructions",
+                        "reusablePage",
+                        "personalRequest",
+                        "catchCheckout"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "offerMessageTemplate": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "paymentInstructions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "reusablePaymentPage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "url",
+                        "reusableForEvents"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048
+                        },
+                        "reusableForEvents": {
+                          "type": "boolean",
+                          "const": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "admissionPreset": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "openCapacity",
+                        "inviteOnly",
+                        "balancedSingles",
+                        "fixedCohortCaps"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            },
+            "expectedAmountMinor": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "source"
+              ],
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "organizer",
+                    "event",
+                    "cleared"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 } as const;

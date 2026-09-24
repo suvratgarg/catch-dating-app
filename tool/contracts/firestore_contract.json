@@ -3328,7 +3328,8 @@
       "exportedFunctions": [
         "updatePrivateEventPreferences",
         "getPrivateEventSetup",
-        "getEventOfferConfiguration"
+        "getEventOfferConfiguration",
+        "configureEventOfferPreferences"
       ]
     },
     {
@@ -3413,6 +3414,23 @@
         "mutateEventOffer",
         "getEventOffer",
         "listEventOffers"
+      ]
+    },
+    {
+      "id": "eventOfferConfigurationReceipts",
+      "path": "eventOfferConfigurationReceipts/{receiptId}",
+      "rulesMatch": "/eventOfferConfigurationReceipts/{receiptId}",
+      "typescriptInterface": "EventOfferConfigurationReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer event setup defaults and receipts server-only"
+      ],
+      "owner": "event offer manager operations",
+      "read": "server only; current manager callable receipt replay",
+      "write": "server only",
+      "exportedFunctions": [
+        "configureEventOfferPreferences"
       ]
     }
   ]

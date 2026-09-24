@@ -11,7 +11,9 @@
     "startsAtMillis",
     "nowMillis",
     "paymentTerms",
-    "suggestedExpiresAtMillis"
+    "suggestedExpiresAtMillis",
+    "preferencesRevision",
+    "preferences"
   ],
   "properties": {
     "organizerId": {
@@ -48,6 +50,21 @@
         "null"
       ],
       "minimum": 1
+    },
+    "preferencesRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "preferences": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../embedded/resolved_event_preferences.schema.json"
+        }
+      ]
     }
   }
 }

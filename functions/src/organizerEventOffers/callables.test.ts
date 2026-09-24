@@ -5,7 +5,7 @@ import {
   commitEventOffersHandler, getEventOfferHandler, listEventOffersHandler,
   mutateEventOfferHandler, OfferCallableDependencies,
   previewEventOffersHandler, prepareEventOfferHandoffHandler,
-  getEventOfferConfigurationHandler,
+  getEventOfferConfigurationHandler, configureEventOfferPreferencesHandler,
 } from "./callables";
 import {applyEventOfferAction, EventOffer} from "./eventOfferDomain";
 import type {OfferTransaction} from "./eventOfferService";
@@ -58,6 +58,7 @@ function fixture() {
       event: async () => ({organizerId: "org1", eventId: "event1",
         startsAtMillis: now + 100000, cancelled: false, sourceRevision: 1}),
       eventPaymentTerms: async () => null,
+      eventPreferences: async () => null,
       offer: async () => saved,
       listOffers: async () => [saved],
     } as unknown as OfferTransaction)}),
@@ -75,7 +76,8 @@ test("all offer endpoints require auth and exact input before database access",
     };
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
       mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
-      prepareEventOfferHandoffHandler, getEventOfferConfigurationHandler]) {
+      prepareEventOfferHandoffHandler, getEventOfferConfigurationHandler,
+      configureEventOfferPreferencesHandler]) {
       await assert.rejects(handler(request({}, ""), h.deps),
         code("unauthenticated"));
       await assert.rejects(handler(request({actorAuthorized: true}), h.deps),
@@ -156,4 +158,27 @@ test("configuration reports missing private terms", async () => {
   assert.equal(result.suggestedExpiresAtMillis, null);
   assert.equal(result.nowMillis, now);
   assert.deepEqual(h.actions, ["getEventOfferConfiguration"]);
+});
+
+test("event preference write cannot bypass release gate", async () => {
+  const h = fixture();
+  h.setReady(false);
+  h.deps.firestore = () => {
+    throw new Error("Unexpected database access");
+  };
+  const intents = Object.fromEntries(["usualDurationMinutes",
+    "preferredVenueId", "offerValidityMinutes", "admissionPreset",
+    "collectionPreference", "currency", "offerMessageTemplate",
+    "paymentInstructions", "reusablePaymentPage", "expectedAmountMinor"]
+    .map((key) => [key, {mode: "clear"}]));
+  const data = {organizerId: "org1", eventId: "event1",
+    requestId: "settings-1", expectedPreferencesRevision: 0,
+    expectedEventSourceRevision: 1, reviewedDefaultsHash: "a".repeat(64),
+    intents};
+  await assert.rejects(configureEventOfferPreferencesHandler(
+    request(data), h.deps), code("failed-precondition"));
+  await assert.rejects(configureEventOfferPreferencesHandler(
+    request({...data, configurationReady: true}), h.deps),
+  code("invalid-argument"));
+  assert.deepEqual(h.actions, []);
 });

@@ -231,6 +231,34 @@ export class FirestoreEventOfferRepository implements OfferRepository {
       const read = async (collection: string, id: string) =>
         (await firestoreTx.get(this.db.collection(collection).doc(id)))
           .data();
+      const readPreferences = async (eventId: string) => {
+        const data = await read("eventSetupPreferences", eventId);
+        if (!data) return null;
+        if (!object(data) || data.eventId !== eventId ||
+              typeof data.organizerId !== "string") {
+          throw new OfferDomainError("conflict",
+            "Stored event payment terms are malformed.");
+        }
+        const event = await read("events", eventId) as
+            EventDocument | undefined;
+        if (!event || data.organizerId !==
+            (event.organizerId ?? event.clubId)) {
+          throw new OfferDomainError("conflict",
+            "Event payment terms have a foreign organizer.");
+        }
+        try {
+          const projected = projectEventPreferences(data,
+            data.organizerId, eventId);
+          if (!projected) throw new Error("missing preferences");
+          const terms = projected.paymentTerms as EventPaymentTerms;
+          validateEventPaymentTerms(terms);
+          eventPaymentTermsHash(terms);
+          return projected;
+        } catch {
+          throw new OfferDomainError("conflict",
+            "Stored event payment terms are invalid.");
+        }
+      };
       const tx: OfferTransaction = {
         nowMillis: () => this.serverClock(),
         managerAuthorized: async (organizerId, actorUid) => {
@@ -384,36 +412,9 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             cancelled: data.status === "cancelled",
             sourceRevision: sourceRevision!};
         },
-        eventPaymentTerms: async (eventId): Promise<EventPaymentTerms |
-          null> => {
-          const data = await read("eventSetupPreferences", eventId);
-          if (!data) return null;
-          if (!object(data) || data.eventId !== eventId ||
-              typeof data.organizerId !== "string") {
-            throw new OfferDomainError("conflict",
-              "Stored event payment terms are malformed.");
-          }
-          const event = await read("events", eventId) as
-            EventDocument | undefined;
-          if (!event || data.organizerId !==
-            (event.organizerId ?? event.clubId)) {
-            throw new OfferDomainError("conflict",
-              "Event payment terms have a foreign organizer.");
-          }
-          let terms: EventPaymentTerms;
-          try {
-            const projected = projectEventPreferences(data,
-              data.organizerId, eventId);
-            if (!projected) throw new Error("missing preferences");
-            terms = projected.paymentTerms as EventPaymentTerms;
-            validateEventPaymentTerms(terms);
-            eventPaymentTermsHash(terms);
-          } catch {
-            throw new OfferDomainError("conflict",
-              "Stored event payment terms are invalid.");
-          }
-          return terms;
-        },
+        eventPaymentTerms: async (eventId) =>
+          (await readPreferences(eventId))?.paymentTerms ?? null,
+        eventPreferences: readPreferences,
         handoffPresentation: async (offer, sourceResponseId) => {
           const [eventData, contactData] = await Promise.all([
             read("events", offer.eventId),

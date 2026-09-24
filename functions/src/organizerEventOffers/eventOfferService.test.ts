@@ -112,6 +112,12 @@ class AtomicStore implements OfferRepository {
       origin: async (id) => next.origins.get(id) ?? null,
       event: async (id) => next.events.get(id) ?? null,
       eventPaymentTerms: async (id) => next.paymentTerms.get(id) ?? null,
+      eventPreferences: async (id) => {
+        const paymentTerms = next.paymentTerms.get(id);
+        return paymentTerms ? {revision: paymentTerms.revision,
+          preferences: {} as import("../events/eventSetupPreferences/types")
+            .ResolvedEventPreferences, paymentTerms} : null;
+      },
       handoffPresentation: async (offer) => ({
         event: {eventId: offer.eventId, title: "Saturday Social",
           startsAtMillis: now + 3_600_000,
@@ -795,12 +801,15 @@ test("event configuration uses current terms and server expiry with no writes",
       organizerId: row.organizerId, eventId: row.eventId});
     const first = await read();
     assert.equal(first.paymentTerms?.revision, 1);
+    assert.equal(first.preferencesRevision, 1);
     assert.equal(first.suggestedExpiresAtMillis, Math.min(
       first.nowMillis + first.paymentTerms!.offerValidityMinutes! * 60_000,
       first.startsAtMillis));
     store.state.paymentTerms.delete(row.eventId);
     const missing = await read();
     assert.equal(missing.paymentTerms, null);
+    assert.equal(missing.preferences, null);
+    assert.equal(missing.preferencesRevision, 0);
     assert.equal(missing.suggestedExpiresAtMillis, null);
     assert.equal(store.state.audit.length, 0);
     assert.equal(store.state.offers.size, 0);

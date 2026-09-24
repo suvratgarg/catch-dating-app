@@ -4,7 +4,7 @@ import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
 import {canonicalJson, eventPaymentTermsFromPreferences,
   resolveEventPreferences} from "../events/eventSetupPreferences/resolve";
-import {EventPreferenceError, EventPreferenceIntents,
+import {EventPreferenceError,
   OrganizerEventDefaults} from "../events/eventSetupPreferences/types";
 import {projectEventPreferences} from
   "../events/progressiveSetup/preferences";
@@ -14,15 +14,15 @@ import {projectManagerEventSetupDefaults} from
 import {eventSetupDefaultsDependencies} from
   "../organizers/eventSetupDefaults/dependencies";
 
-export interface ConfigureEventOfferPreferencesCommand {
-  organizerId: string;
-  eventId: string;
-  requestId: string;
-  expectedPreferencesRevision: number;
-  expectedEventSourceRevision: number;
-  reviewedDefaultsHash: string;
-  intents: EventPreferenceIntents;
-}
+import type {ConfigureEventOfferPreferencesCallablePayload} from
+  "../shared/generated/configureEventOfferPreferencesCallablePayload";
+import {validateConfigureEventOfferPreferencesCallablePayload} from
+  "../shared/generated/validators/configureEventOfferPreferencesInput";
+import {validateEventOfferConfigurationReceiptDocument} from
+  "../shared/generated/validators/eventOfferConfigurationReceiptDocument";
+
+export type ConfigureEventOfferPreferencesCommand =
+  ConfigureEventOfferPreferencesCallablePayload;
 
 export interface EventOfferConfigurationDependencies {
   db: FirebaseFirestore.Firestore;
@@ -38,39 +38,9 @@ export interface EventOfferConfigurationResult {
 }
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
-const REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$/;
-const FIELDS = new Set(["usualDurationMinutes", "preferredVenueId",
-  "offerValidityMinutes", "admissionPreset", "collectionPreference",
-  "currency", "offerMessageTemplate", "paymentInstructions",
-  "reusablePaymentPage", "expectedAmountMinor"]);
-
 function validateCommand(command: ConfigureEventOfferPreferencesCommand) {
-  if (!command || Object.keys(command).sort().join(",") !==
-      "eventId,expectedEventSourceRevision,expectedPreferencesRevision," +
-      "intents,organizerId,requestId,reviewedDefaultsHash" ||
-      !ID.test(command.organizerId) ||
-      !ID.test(command.eventId) || !REQUEST_ID.test(command.requestId) ||
-      !Number.isSafeInteger(command.expectedPreferencesRevision) ||
-      command.expectedPreferencesRevision < 0 ||
-      !Number.isSafeInteger(command.expectedEventSourceRevision) ||
-      command.expectedEventSourceRevision < 1 ||
-      !/^[a-f0-9]{64}$/.test(command.reviewedDefaultsHash) ||
-      !command.intents || typeof command.intents !== "object" ||
-      Array.isArray(command.intents) ||
-      Object.keys(command.intents).length !== FIELDS.size ||
-      Object.keys(command.intents).some((key) => !FIELDS.has(key))) {
+  if (!validateConfigureEventOfferPreferencesCallablePayload(command)) {
     throw new HttpsError("invalid-argument", "Invalid event offer settings.");
-  }
-  for (const [key, intent] of Object.entries(command.intents)) {
-    if (!intent || typeof intent !== "object" ||
-        !["set", "clear", "inherit"].includes(intent.mode) ||
-        key === "expectedAmountMinor" && intent.mode === "inherit" ||
-        intent.mode === "set" && !Object.hasOwn(intent, "value") ||
-        intent.mode !== "set" && Object.hasOwn(intent, "value") ||
-        Object.keys(intent).sort().join(",") !==
-          (intent.mode === "set" ? "mode,value" : "mode")) {
-      throw new HttpsError("invalid-argument", "Invalid setting decision.");
-    }
   }
 }
 
@@ -137,7 +107,8 @@ export async function configureEventOfferPreferences(params: {
     }
     if (receiptSnap.exists) {
       const receipt = receiptSnap.data();
-      if (receipt?.actorUid !== actorUid ||
+      if (!validateEventOfferConfigurationReceiptDocument(receipt) ||
+          receipt.actorUid !== actorUid ||
           receipt?.organizerId !== command.organizerId ||
           receipt?.eventId !== command.eventId ||
           receipt?.requestId !== command.requestId ||

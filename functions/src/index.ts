@@ -697,4 +697,5 @@ export {
   previewEventOffers, commitEventOffers, mutateEventOffer,
   getEventOffer, listEventOffers, prepareEventOfferHandoff,
   getEventOfferConfiguration,
+  configureEventOfferPreferences,
 } from "./organizerEventOffers/callables";

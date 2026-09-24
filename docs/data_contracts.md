@@ -1794,7 +1794,16 @@ uses canonical `clubId`, status, start time and document ID; contradictory
 organizer ownership fails. This list exposes no payment settings.
 `getEventOfferConfiguration` separately reads manager-only current terms for
 the selected event and suggests expiry from the server clock and event policy.
-Missing configuration remains null, never an invented free price or expiry.
+The read includes the private preference revision and resolved intent provenance
+so editing preserves inherit/set/clear decisions. Missing configuration remains
+null with revision zero, never an invented free price or expiry.
+`configureEventOfferPreferences` writes the same private preferences for owned
+published, legacy or private events. The transaction rechecks manager/deleted-user
+authority, event source revision, preference revision and reviewed organizer
+defaults. Its actor-scoped request receipt returns the original revision after a
+lost response; changed requests cannot reuse that identity. Events and issued
+offer snapshots are never rewritten. Clients cannot read or write the receipt
+collection directly; the endpoint remains release gated with the offer flow.
 Offer preview and commit recheck these facts rather than trusting a picker row.
 
 ### Functions Runtime Schema Modules
