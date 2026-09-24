@@ -34147,6 +34147,264 @@ abstract class AppLocalizations {
   /// **'The event is saved privately. You can link a form after saving.'**
   String get hostsPrivateEventSaveHint;
 
+  /// Host response query Loading label.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading responses…'**
+  String get hostResponseQueryLoading;
+
+  /// Host response query Empty label.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses match this query.'**
+  String get hostResponseQueryEmpty;
+
+  /// Host response query Stale label.
+  ///
+  /// In en, this message translates to:
+  /// **'The response result changed. Refresh and review your selection.'**
+  String get hostResponseQueryStale;
+
+  /// Host response query BudgetExceeded label.
+  ///
+  /// In en, this message translates to:
+  /// **'This form exceeds the size or time limit for interactive filtering.'**
+  String get hostResponseQueryBudgetExceeded;
+
+  /// Host response query PermissionLost label.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have access to these responses.'**
+  String get hostResponseQueryPermissionLost;
+
+  /// Host response query Failed label.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load responses. Try again.'**
+  String get hostResponseQueryFailed;
+
+  /// Host response query ReviewSelection label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review selected responses'**
+  String get hostResponseQueryReviewSelection;
+
+  /// Host response query Select label.
+  ///
+  /// In en, this message translates to:
+  /// **'Select response'**
+  String get hostResponseQuerySelect;
+
+  /// Host response query Deselect label.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect response'**
+  String get hostResponseQueryDeselect;
+
+  /// Host response query EditorTitle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter responses'**
+  String get hostResponseQueryEditorTitle;
+
+  /// Host response query MatchAll label.
+  ///
+  /// In en, this message translates to:
+  /// **'Match all conditions'**
+  String get hostResponseQueryMatchAll;
+
+  /// Host response query MatchAny label.
+  ///
+  /// In en, this message translates to:
+  /// **'Match any condition'**
+  String get hostResponseQueryMatchAny;
+
+  /// Host response query Field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get hostResponseQueryField;
+
+  /// Host response query Value label.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get hostResponseQueryValue;
+
+  /// Host response query Minimum label.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum'**
+  String get hostResponseQueryMinimum;
+
+  /// Host response query Maximum label.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum'**
+  String get hostResponseQueryMaximum;
+
+  /// Host response query AddCondition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Add condition'**
+  String get hostResponseQueryAddCondition;
+
+  /// Host response query AddGroup label.
+  ///
+  /// In en, this message translates to:
+  /// **'Add group'**
+  String get hostResponseQueryAddGroup;
+
+  /// Host response query Remove label.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostResponseQueryRemove;
+
+  /// Host response query Apply label.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get hostResponseQueryApply;
+
+  /// Host response query InvalidCondition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this condition.'**
+  String get hostResponseQueryInvalidCondition;
+
+  /// Host response query OperatorPresent label.
+  ///
+  /// In en, this message translates to:
+  /// **'is answered'**
+  String get hostResponseQueryOperatorPresent;
+
+  /// Host response query OperatorMissing label.
+  ///
+  /// In en, this message translates to:
+  /// **'is not answered'**
+  String get hostResponseQueryOperatorMissing;
+
+  /// Host response query OperatorChoiceAny label.
+  ///
+  /// In en, this message translates to:
+  /// **'includes any of'**
+  String get hostResponseQueryOperatorChoiceAny;
+
+  /// Host response query OperatorChoiceAll label.
+  ///
+  /// In en, this message translates to:
+  /// **'includes all of'**
+  String get hostResponseQueryOperatorChoiceAll;
+
+  /// Host response query OperatorChoiceNone label.
+  ///
+  /// In en, this message translates to:
+  /// **'includes none of'**
+  String get hostResponseQueryOperatorChoiceNone;
+
+  /// Host response query OperatorTextEquals label.
+  ///
+  /// In en, this message translates to:
+  /// **'equals'**
+  String get hostResponseQueryOperatorTextEquals;
+
+  /// Host response query OperatorTextContains label.
+  ///
+  /// In en, this message translates to:
+  /// **'contains'**
+  String get hostResponseQueryOperatorTextContains;
+
+  /// Host response query OperatorTextStartsWith label.
+  ///
+  /// In en, this message translates to:
+  /// **'starts with'**
+  String get hostResponseQueryOperatorTextStartsWith;
+
+  /// Host response query OperatorNumberEq label.
+  ///
+  /// In en, this message translates to:
+  /// **'equals'**
+  String get hostResponseQueryOperatorNumberEq;
+
+  /// Host response query OperatorNumberGt label.
+  ///
+  /// In en, this message translates to:
+  /// **'is greater than'**
+  String get hostResponseQueryOperatorNumberGt;
+
+  /// Host response query OperatorNumberGte label.
+  ///
+  /// In en, this message translates to:
+  /// **'is at least'**
+  String get hostResponseQueryOperatorNumberGte;
+
+  /// Host response query OperatorNumberLt label.
+  ///
+  /// In en, this message translates to:
+  /// **'is less than'**
+  String get hostResponseQueryOperatorNumberLt;
+
+  /// Host response query OperatorNumberLte label.
+  ///
+  /// In en, this message translates to:
+  /// **'is at most'**
+  String get hostResponseQueryOperatorNumberLte;
+
+  /// Host response query OperatorNumberBetween label.
+  ///
+  /// In en, this message translates to:
+  /// **'is between'**
+  String get hostResponseQueryOperatorNumberBetween;
+
+  /// Host response query OperatorDateOn label.
+  ///
+  /// In en, this message translates to:
+  /// **'is on'**
+  String get hostResponseQueryOperatorDateOn;
+
+  /// Host response query OperatorDateBefore label.
+  ///
+  /// In en, this message translates to:
+  /// **'is before'**
+  String get hostResponseQueryOperatorDateBefore;
+
+  /// Host response query OperatorDateAfter label.
+  ///
+  /// In en, this message translates to:
+  /// **'is after'**
+  String get hostResponseQueryOperatorDateAfter;
+
+  /// Host response query OperatorDateBetween label.
+  ///
+  /// In en, this message translates to:
+  /// **'is between'**
+  String get hostResponseQueryOperatorDateBetween;
+
+  /// Host response query OperatorBooleanIs label.
+  ///
+  /// In en, this message translates to:
+  /// **'is'**
+  String get hostResponseQueryOperatorBooleanIs;
+
+  /// Host response query ClearSelection label.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get hostResponseQueryClearSelection;
+
+  /// Host response query Selected label.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected response} other{{count} selected responses}}'**
+  String hostResponseQuerySelected({required int count});
+
+  /// Saves a private event and returns to the form response selection that opened the event editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & return to responses'**
+  String get hostsPrivateEventSaveReturnResponses;
+
   /// Copy for the progressive private event setup flow.
   ///
   /// In en, this message translates to:
@@ -34645,6 +34903,12 @@ abstract class AppLocalizations {
   /// **'Retry organizer defaults read'**
   String get hostsPrivateEventRetryDefaultsRead;
 
+  /// Retries the manager-authorized read of a saved private event.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry event read'**
+  String get hostsPrivateEventRetrySavedRead;
+
   /// Private event idempotent save and saved-event continuation copy.
   ///
   /// In en, this message translates to:
@@ -34794,6 +35058,444 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid value for this setting.'**
   String get hostsEventPreferenceInvalidValue;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Create event offers'**
+  String get hostEventOfferCreate;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostEventOfferSelectEvent;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible upcoming events are available.'**
+  String get hostEventOfferSelectEventEmpty;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert this response to a CRM contact before offering an event.'**
+  String get hostEventOfferNeedsContact;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Create CRM contact'**
+  String get hostEventOfferConvertContact;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected responses changed. Review them again.'**
+  String get hostEventOfferSelectionChanged;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load event offers. Try again.'**
+  String get hostEventOfferLoadFailed;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers recorded. Sending and admission are separate steps.'**
+  String get hostEventOfferIssued;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh offers'**
+  String get hostEventOfferRefresh;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing offers'**
+  String get hostEventOfferExisting;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No offers recorded for this event.'**
+  String get hostEventOfferNoOffers;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled event'**
+  String get hostEventOfferUntitledEvent;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more events'**
+  String get hostEventOfferLoadMoreEvents;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure event payment terms before creating offers.'**
+  String get hostEventOfferConfigurePayment;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event settings'**
+  String get hostEventOfferOpenSettings;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostEventOfferStatusDraft;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered'**
+  String get hostEventOfferStatusOffered;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostEventOfferStatusWithdrawn;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get hostEventOfferStatusExpired;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'These choices update this event. Organizer defaults are suggestions until you apply them.'**
+  String get hostsPrivateEventDetailActualHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Current end time'**
+  String get hostsPrivateEventDetailCurrentDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get hostsPrivateEventDetailNotSet;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes'**
+  String hostsPrivateEventDetailMinutes({required int minutes});
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration in minutes'**
+  String get hostsPrivateEventDetailDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'15–240 minutes'**
+  String get hostsPrivateEventDetailDurationHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Use suggested duration'**
+  String get hostsPrivateEventDetailUseDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No duration suggestion is saved.'**
+  String get hostsPrivateEventDetailNoDurationSuggestion;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove end time'**
+  String get hostsPrivateEventDetailClearDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Current place'**
+  String get hostsPrivateEventDetailCurrentVenue;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Place name'**
+  String get hostsPrivateEventDetailVenueName;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a venue name'**
+  String get hostsPrivateEventDetailVenueHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Use saved place'**
+  String get hostsPrivateEventDetailUseSavedPlace;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved place is selected.'**
+  String get hostsPrivateEventDetailNoSavedPlace;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy the saved place after availability is checked.'**
+  String get hostsPrivateEventDetailSavedPlaceHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove place'**
+  String get hostsPrivateEventDetailClearVenue;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity format'**
+  String get hostsPrivateEventDetailFormat;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Current activity'**
+  String get hostsPrivateEventDetailCurrentFormat;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove activity format'**
+  String get hostsPrivateEventDetailClearFormat;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event offer'**
+  String get hostEventOfferReviewTitle;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview offers'**
+  String get hostEventOfferPreview;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking current eligibility…'**
+  String get hostEventOfferPreviewing;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review offer details'**
+  String get hostEventOfferReview;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String hostEventOfferExpires({required String date});
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Record offers'**
+  String get hostEventOfferCommit;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording offers…'**
+  String get hostEventOfferCommitting;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers recorded'**
+  String get hostEventOfferCommitted;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete this offer action.'**
+  String get hostEventOfferFailed;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No seat or admission is created.'**
+  String get hostEventOfferNoReservation;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal payment link for {name}'**
+  String hostEventOfferPersonalPaymentLink({required String name});
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reference'**
+  String get hostEventOfferPaymentReference;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Record reference'**
+  String get hostEventOfferRecordReference;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence submitted'**
+  String get hostEventOfferEvidenceSubmitted;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'I checked the bank receipt'**
+  String get hostEventOfferBankReceiptChecked;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review note'**
+  String get hostEventOfferReviewNote;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attest received'**
+  String get hostEventOfferAttestReceived;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject reference'**
+  String get hostEventOfferRejectReference;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Host attested'**
+  String get hostEventOfferHostAttested;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get hostEventOfferRejected;
+
+  /// Host forms existing offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review offer'**
+  String get hostEventOfferOpenExisting;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare personal handoff'**
+  String get hostEventOfferHandoffPrepare;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff unavailable. Review the current offer and contact permissions.'**
+  String get hostEventOfferHandoffBlocked;
+
+  /// Host forms existing offer handoff disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens WhatsApp with editable text. You review and press Send; Catch cannot track delivery or replies.'**
+  String get hostEventOfferHandoffDisclosure;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get hostEventOfferOpenWhatsapp;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy message'**
+  String get hostEventOfferCopyMessage;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message copied. Sending is still your choice.'**
+  String get hostEventOfferMessageCopied;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp on this device.'**
+  String get hostEventOfferHandoffOpenFailed;
+
+  /// Published event offer preferences context.
+  ///
+  /// In en, this message translates to:
+  /// **'Published event offers'**
+  String get hostsEventPreferencePublishedTitle;
+
+  /// Published event offer preferences context.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings apply to future offers. Existing offers keep their recorded terms.'**
+  String get hostsEventPreferencePublishedHint;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Private event setups'**
+  String get hostsPrivateEventInventoryTitle;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading private events…'**
+  String get hostsPrivateEventInventoryLoading;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming private event setups.'**
+  String get hostsPrivateEventInventoryEmpty;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more private events'**
+  String get hostsPrivateEventInventoryLoadMore;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load private events.'**
+  String get hostsPrivateEventInventoryError;
 }
 
 class _AppLocalizationsDelegate

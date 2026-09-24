@@ -21316,6 +21316,147 @@ class AppLocalizationsEn extends AppLocalizations {
       'The event is saved privately. You can link a form after saving.';
 
   @override
+  String get hostResponseQueryLoading => 'Loading responses…';
+
+  @override
+  String get hostResponseQueryEmpty => 'No responses match this query.';
+
+  @override
+  String get hostResponseQueryStale =>
+      'The response result changed. Refresh and review your selection.';
+
+  @override
+  String get hostResponseQueryBudgetExceeded =>
+      'This form exceeds the size or time limit for interactive filtering.';
+
+  @override
+  String get hostResponseQueryPermissionLost =>
+      'You no longer have access to these responses.';
+
+  @override
+  String get hostResponseQueryFailed => 'Could not load responses. Try again.';
+
+  @override
+  String get hostResponseQueryReviewSelection => 'Review selected responses';
+
+  @override
+  String get hostResponseQuerySelect => 'Select response';
+
+  @override
+  String get hostResponseQueryDeselect => 'Deselect response';
+
+  @override
+  String get hostResponseQueryEditorTitle => 'Filter responses';
+
+  @override
+  String get hostResponseQueryMatchAll => 'Match all conditions';
+
+  @override
+  String get hostResponseQueryMatchAny => 'Match any condition';
+
+  @override
+  String get hostResponseQueryField => 'Question';
+
+  @override
+  String get hostResponseQueryValue => 'Value';
+
+  @override
+  String get hostResponseQueryMinimum => 'Minimum';
+
+  @override
+  String get hostResponseQueryMaximum => 'Maximum';
+
+  @override
+  String get hostResponseQueryAddCondition => 'Add condition';
+
+  @override
+  String get hostResponseQueryAddGroup => 'Add group';
+
+  @override
+  String get hostResponseQueryRemove => 'Remove';
+
+  @override
+  String get hostResponseQueryApply => 'Apply filters';
+
+  @override
+  String get hostResponseQueryInvalidCondition => 'Review this condition.';
+
+  @override
+  String get hostResponseQueryOperatorPresent => 'is answered';
+
+  @override
+  String get hostResponseQueryOperatorMissing => 'is not answered';
+
+  @override
+  String get hostResponseQueryOperatorChoiceAny => 'includes any of';
+
+  @override
+  String get hostResponseQueryOperatorChoiceAll => 'includes all of';
+
+  @override
+  String get hostResponseQueryOperatorChoiceNone => 'includes none of';
+
+  @override
+  String get hostResponseQueryOperatorTextEquals => 'equals';
+
+  @override
+  String get hostResponseQueryOperatorTextContains => 'contains';
+
+  @override
+  String get hostResponseQueryOperatorTextStartsWith => 'starts with';
+
+  @override
+  String get hostResponseQueryOperatorNumberEq => 'equals';
+
+  @override
+  String get hostResponseQueryOperatorNumberGt => 'is greater than';
+
+  @override
+  String get hostResponseQueryOperatorNumberGte => 'is at least';
+
+  @override
+  String get hostResponseQueryOperatorNumberLt => 'is less than';
+
+  @override
+  String get hostResponseQueryOperatorNumberLte => 'is at most';
+
+  @override
+  String get hostResponseQueryOperatorNumberBetween => 'is between';
+
+  @override
+  String get hostResponseQueryOperatorDateOn => 'is on';
+
+  @override
+  String get hostResponseQueryOperatorDateBefore => 'is before';
+
+  @override
+  String get hostResponseQueryOperatorDateAfter => 'is after';
+
+  @override
+  String get hostResponseQueryOperatorDateBetween => 'is between';
+
+  @override
+  String get hostResponseQueryOperatorBooleanIs => 'is';
+
+  @override
+  String get hostResponseQueryClearSelection => 'Clear selection';
+
+  @override
+  String hostResponseQuerySelected({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count selected responses',
+      one: '1 selected response',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostsPrivateEventSaveReturnResponses =>
+      'Save & return to responses';
+
+  @override
   String get hostsPrivateEventSaveContinue => 'Save & continue';
 
   @override
@@ -21613,6 +21754,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Retry organizer defaults read';
 
   @override
+  String get hostsPrivateEventRetrySavedRead => 'Retry event read';
+
+  @override
   String get hostsPrivateEventPendingExitTitle => 'Save still unresolved';
 
   @override
@@ -21695,4 +21839,246 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEventPreferenceInvalidValue =>
       'Enter a valid value for this setting.';
+
+  @override
+  String get hostEventOfferCreate => 'Create event offers';
+
+  @override
+  String get hostEventOfferSelectEvent => 'Choose an event';
+
+  @override
+  String get hostEventOfferSelectEventEmpty =>
+      'No eligible upcoming events are available.';
+
+  @override
+  String get hostEventOfferNeedsContact =>
+      'Convert this response to a CRM contact before offering an event.';
+
+  @override
+  String get hostEventOfferConvertContact => 'Create CRM contact';
+
+  @override
+  String get hostEventOfferSelectionChanged =>
+      'Selected responses changed. Review them again.';
+
+  @override
+  String get hostEventOfferLoadFailed =>
+      'Could not load event offers. Try again.';
+
+  @override
+  String get hostEventOfferIssued =>
+      'Offers recorded. Sending and admission are separate steps.';
+
+  @override
+  String get hostEventOfferRefresh => 'Refresh offers';
+
+  @override
+  String get hostEventOfferExisting => 'Existing offers';
+
+  @override
+  String get hostEventOfferNoOffers => 'No offers recorded for this event.';
+
+  @override
+  String get hostEventOfferUntitledEvent => 'Untitled event';
+
+  @override
+  String get hostEventOfferLoadMoreEvents => 'Load more events';
+
+  @override
+  String get hostEventOfferConfigurePayment =>
+      'Configure event payment terms before creating offers.';
+
+  @override
+  String get hostEventOfferOpenSettings => 'Open event settings';
+
+  @override
+  String get hostEventOfferStatusDraft => 'Draft';
+
+  @override
+  String get hostEventOfferStatusOffered => 'Offered';
+
+  @override
+  String get hostEventOfferStatusWithdrawn => 'Withdrawn';
+
+  @override
+  String get hostEventOfferStatusExpired => 'Expired';
+
+  @override
+  String get hostsPrivateEventDetailActualHint =>
+      'These choices update this event. Organizer defaults are suggestions until you apply them.';
+
+  @override
+  String get hostsPrivateEventDetailCurrentDuration => 'Current end time';
+
+  @override
+  String get hostsPrivateEventDetailNotSet => 'Not set';
+
+  @override
+  String hostsPrivateEventDetailMinutes({required int minutes}) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get hostsPrivateEventDetailDuration => 'Duration in minutes';
+
+  @override
+  String get hostsPrivateEventDetailDurationHint => '15–240 minutes';
+
+  @override
+  String get hostsPrivateEventDetailUseDuration => 'Use suggested duration';
+
+  @override
+  String get hostsPrivateEventDetailNoDurationSuggestion =>
+      'No duration suggestion is saved.';
+
+  @override
+  String get hostsPrivateEventDetailClearDuration => 'Remove end time';
+
+  @override
+  String get hostsPrivateEventDetailCurrentVenue => 'Current place';
+
+  @override
+  String get hostsPrivateEventDetailVenueName => 'Place name';
+
+  @override
+  String get hostsPrivateEventDetailVenueHint => 'Enter a venue name';
+
+  @override
+  String get hostsPrivateEventDetailUseSavedPlace => 'Use saved place';
+
+  @override
+  String get hostsPrivateEventDetailNoSavedPlace =>
+      'No saved place is selected.';
+
+  @override
+  String get hostsPrivateEventDetailSavedPlaceHint =>
+      'Copy the saved place after availability is checked.';
+
+  @override
+  String get hostsPrivateEventDetailClearVenue => 'Remove place';
+
+  @override
+  String get hostsPrivateEventDetailFormat => 'Activity format';
+
+  @override
+  String get hostsPrivateEventDetailCurrentFormat => 'Current activity';
+
+  @override
+  String get hostsPrivateEventDetailClearFormat => 'Remove activity format';
+
+  @override
+  String get hostEventOfferReviewTitle => 'Event offer';
+
+  @override
+  String get hostEventOfferPreview => 'Preview offers';
+
+  @override
+  String get hostEventOfferPreviewing => 'Checking current eligibility…';
+
+  @override
+  String get hostEventOfferReview => 'Review offer details';
+
+  @override
+  String hostEventOfferExpires({required String date}) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get hostEventOfferCommit => 'Record offers';
+
+  @override
+  String get hostEventOfferCommitting => 'Recording offers…';
+
+  @override
+  String get hostEventOfferCommitted => 'Offers recorded';
+
+  @override
+  String get hostEventOfferFailed => 'Could not complete this offer action.';
+
+  @override
+  String get hostEventOfferNoReservation => 'No seat or admission is created.';
+
+  @override
+  String hostEventOfferPersonalPaymentLink({required String name}) {
+    return 'Personal payment link for $name';
+  }
+
+  @override
+  String get hostEventOfferPaymentReference => 'Payment reference';
+
+  @override
+  String get hostEventOfferRecordReference => 'Record reference';
+
+  @override
+  String get hostEventOfferEvidenceSubmitted => 'Evidence submitted';
+
+  @override
+  String get hostEventOfferBankReceiptChecked => 'I checked the bank receipt';
+
+  @override
+  String get hostEventOfferReviewNote => 'Review note';
+
+  @override
+  String get hostEventOfferAttestReceived => 'Attest received';
+
+  @override
+  String get hostEventOfferRejectReference => 'Reject reference';
+
+  @override
+  String get hostEventOfferHostAttested => 'Host attested';
+
+  @override
+  String get hostEventOfferRejected => 'Rejected';
+
+  @override
+  String get hostEventOfferOpenExisting => 'Review offer';
+
+  @override
+  String get hostEventOfferHandoffPrepare => 'Prepare personal handoff';
+
+  @override
+  String get hostEventOfferHandoffBlocked =>
+      'Handoff unavailable. Review the current offer and contact permissions.';
+
+  @override
+  String get hostEventOfferHandoffDisclosure =>
+      'Opens WhatsApp with editable text. You review and press Send; Catch cannot track delivery or replies.';
+
+  @override
+  String get hostEventOfferOpenWhatsapp => 'Open WhatsApp';
+
+  @override
+  String get hostEventOfferCopyMessage => 'Copy message';
+
+  @override
+  String get hostEventOfferMessageCopied =>
+      'Message copied. Sending is still your choice.';
+
+  @override
+  String get hostEventOfferHandoffOpenFailed =>
+      'Could not open WhatsApp on this device.';
+
+  @override
+  String get hostsEventPreferencePublishedTitle => 'Published event offers';
+
+  @override
+  String get hostsEventPreferencePublishedHint =>
+      'These settings apply to future offers. Existing offers keep their recorded terms.';
+
+  @override
+  String get hostsPrivateEventInventoryTitle => 'Private event setups';
+
+  @override
+  String get hostsPrivateEventInventoryLoading => 'Loading private events…';
+
+  @override
+  String get hostsPrivateEventInventoryEmpty =>
+      'No upcoming private event setups.';
+
+  @override
+  String get hostsPrivateEventInventoryLoadMore => 'Load more private events';
+
+  @override
+  String get hostsPrivateEventInventoryError =>
+      'Could not load private events.';
 }
