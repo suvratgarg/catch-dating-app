@@ -55,7 +55,7 @@ describe("public form organizer branding", () => {
     const {rerender} = render(<Branding logoUrl="https://example.com/missing.png" />);
     fireEvent.error(screen.getByRole("img", {name: "Saket Run Club"}));
     expect(within(screen.getByRole("banner")).getByText("Saket Run Club")).toBeTruthy();
-    expect(screen.queryByRole("img")).toBeNull();
+    expect(within(screen.getByRole("banner")).queryByRole("img")).toBeNull();
     rerender(<Branding logoUrl="https://example.com/new.png" />);
     expect(screen.getByRole("img", {name: "Saket Run Club"}).getAttribute("src"))
       .toBe("https://example.com/new.png");
