@@ -53,7 +53,8 @@ class FakeStore {
             !path.slice(ref.collection!.length + 1).includes("/") &&
             ref.filters!.every(([field, value]) => row[field] === value))
             .slice(0, ref.count)
-            .map(([path]) => ({id: path.split("/").at(-1)}));
+            .map(([path, row]) => ({id: path.split("/").at(-1),
+              data: () => row}));
           return {docs};
         }
         assert.ok(ref.path);
@@ -229,11 +230,47 @@ test("anonymous form contact enrolls without a phone or UID claim",
       tx: tx.tx, eventId, organizerId,
       originId: "origin1", responseId: "response1"});
     assert.equal(prepared.seatAlreadyOccupied, false);
+    assert.equal(prepared.sourceAttendeeId, null);
     prepared.apply();
     tx.commit();
     assert.equal(store.writes.length, 2);
     assert.equal([...store.rows.values()].some((row) =>
       row?.kind === "phone" || row?.kind === "uid"), false);
+  });
+
+test("later verified response upgrades its contact seat without duplication",
+  async () => {
+    const store = new FakeStore();
+    store.ready();
+    crmSource(store);
+    const first = store.writeTx();
+    const initial = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: first.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1"});
+    initial.apply();
+    first.commit();
+    store.rows.set("organizerFormResponses/response1", {
+      organizerId, status: "submitted", withdrawnAt: null,
+      identityKind: "phoneVerified", respondentUid: "uid1",
+      identity: {phoneE164: phone},
+    });
+    store.rows.get("organizerContacts/contact1")!.linkedUid = "uid1";
+    store.rows.get("organizerContacts/contact1")!.identityState = "verified";
+    const second = store.writeTx();
+    const verified = await prepareCrmOriginSeatIdentity({db: store.db(),
+      tx: second.tx, eventId, organizerId,
+      originId: "origin1", responseId: "response1",
+      verifiedRespondent: {uid: "uid1", currentAuthPhoneNumber: phone,
+        now: Timestamp.now()}});
+    assert.deepEqual(verified.identity, initial.identity);
+    assert.equal(verified.sourceAttendeeId, null);
+    verified.apply();
+    second.commit();
+    assert.equal(store.rows.get(`eventSeatIdentityAliases/${
+      seatIdentityAliasId(eventId, "phone", phone)}`)?.state, "ready");
+    assert.equal(store.rows.get(`eventSeatIdentityAliases/${
+      seatIdentityAliasId(eventId, "uid", "uid1")}`)?.canonicalKey,
+    initial.identity.key);
   });
 
 test("same contact origin converges while moved origin and guest phone deny",
@@ -331,6 +368,7 @@ test("verified form origin reuses imported guest seat without reserving again",
       verifiedRespondent: {uid: "uid1",
         currentAuthPhoneNumber: phone, now: Timestamp.now()}});
     assert.equal(prepared.seatAlreadyOccupied, true);
+    assert.equal(prepared.sourceAttendeeId, "guest1");
     assert.equal(prepared.identity.key, "guest_existing");
     prepared.apply();
     tx.commit();
