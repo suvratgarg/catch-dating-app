@@ -54,6 +54,8 @@ import {
   rosterFromEvent,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
+import {requireEventTimeRange} from "./configuredEvent";
+import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 
 interface PromotionPush {
   token: string;
@@ -191,6 +193,7 @@ export async function cancelEventSignUpHandler(
     if (participation?.status !== "signedUp") {
       return;
     }
+    const scheduledEvent = requireEventTimeRange(event);
 
     const cancellerGender = user.gender;
     const cancellerCohort =
@@ -243,7 +246,8 @@ export async function cancelEventSignUpHandler(
 
     // Promote the first waitlist user who passes gender-cap and block checks.
     const activePeerIds = participantUids(activeParticipations, userId);
-    for (const waitlistedParticipation of waitlistedParticipations) {
+    for (const waitlistedParticipation of isEventPubliclyAccessible(event) ?
+      waitlistedParticipations : []) {
       const waitlistUserId = waitlistedParticipation.data.uid;
       const waitlistUserSnap =
           await tx.get(db.collection("users").doc(waitlistUserId));
@@ -290,7 +294,7 @@ export async function cancelEventSignUpHandler(
 
           organizerId: event.organizerId ?? event.clubId,
           startTimeMillis: event.startTime.toMillis(),
-          endTimeMillis: event.endTime.toMillis(),
+          endTimeMillis: scheduledEvent.endTime.toMillis(),
         });
       } catch (error) {
         if (error instanceof HttpsError &&
@@ -398,7 +402,7 @@ export async function cancelEventSignUpHandler(
       uid: userId,
       eventId,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: scheduledEvent.endTime.toMillis(),
     });
     if (promotedParticipationRef && promotedParticipationPatch) {
       tx.set(promotedParticipationRef, promotedParticipationPatch, {

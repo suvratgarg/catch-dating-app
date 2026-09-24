@@ -28,6 +28,8 @@ import {
 } from "./scheduleConflicts";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {requireCatchBookingAuthority} from "./eventOrigin";
+import {requirePublicConfiguredEvent, requireEventTimeRange} from
+  "./configuredEvent";
 import {
   cohortIdForUser,
   eventPolicyFromEvent,
@@ -106,6 +108,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       );
     }
     requireCatchBookingAuthority(event);
+    const configuredEvent = requirePublicConfiguredEvent(event);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;
@@ -157,7 +160,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
 
       organizerId: event.organizerId ?? event.clubId,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: configuredEvent.endTime.toMillis(),
     });
 
     tx.update(eventRef, {
@@ -252,6 +255,7 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
     if (!isWaitlisted) {
       return;
     }
+    const scheduledEvent = requireEventTimeRange(event);
 
     const cohortAtSignup =
       (existingParticipation as {cohortAtSignup?: string} | null)
@@ -273,7 +277,7 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
       uid: userId,
       eventId,
       startTimeMillis: event.startTime.toMillis(),
-      endTimeMillis: event.endTime.toMillis(),
+      endTimeMillis: scheduledEvent.endTime.toMillis(),
     });
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,

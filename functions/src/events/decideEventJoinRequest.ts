@@ -48,6 +48,7 @@ import {
   normalizeEventJoinRequestDecisionPayload,
 } from "./eventPayloadNormalization";
 import {signUpUserForEvent} from "./signUpUserForEvent";
+import {requireEventTimeRange} from "./configuredEvent";
 
 interface DecideEventJoinRequestDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -176,6 +177,7 @@ export async function decideEventJoinRequestHandler(
         "This person does not have an active request."
       );
     }
+    const scheduledEvent = requireEventTimeRange(event);
 
     const cohortId = participation.cohortAtSignup ?? cohortIdForUser(requester);
     const decidedAt = deps.serverTimestamp();
@@ -209,7 +211,7 @@ export async function decideEventJoinRequestHandler(
         uid: userId,
         eventId,
         startTimeMillis: event.startTime.toMillis(),
-        endTimeMillis: event.endTime.toMillis(),
+        endTimeMillis: scheduledEvent.endTime.toMillis(),
       });
       queueRequestDecisionNotification({
         tx,
@@ -345,8 +347,12 @@ function requestDecisionCopy(
   event: EventDocument,
   decision: "approved" | "declined"
 ): {title: string; body: string} {
-  const locationName = event.meetingLocation?.name ?? event.meetingPoint;
-  const eventLabel = `${formatDistance(event.distanceKm)} event`;
+  const locationName = event.meetingLocation?.name ?? event.meetingPoint ??
+    "venue to be confirmed";
+  const eventLabel = typeof event.distanceKm === "number" &&
+    Number.isFinite(event.distanceKm) ?
+    `${formatDistance(event.distanceKm)} event` :
+    event.name?.trim() || "event";
   return decision === "approved" ? {
     title: "Request approved",
     body: `Complete booking for your ${eventLabel} from ${locationName}.`,

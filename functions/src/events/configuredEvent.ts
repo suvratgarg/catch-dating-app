@@ -2,11 +2,14 @@ import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 
-type ScheduledFields = "endTime" | "eventFormat";
+type TimedFields = "endTime";
+type ScheduledFields = "eventFormat";
 type PolicyFields = "capacityLimit" | "priceInPaise";
 type VenueFields = "meetingPoint" | "meetingLocation";
 
-export type ScheduledEventDocument = EventDocument &
+export type TimedEventDocument = EventDocument &
+  Required<Pick<EventDocument, TimedFields>>;
+export type ScheduledEventDocument = TimedEventDocument &
   Required<Pick<EventDocument, ScheduledFields>>;
 export type EventPolicyTermsDocument = EventDocument &
   Required<Pick<EventDocument, PolicyFields>>;
@@ -29,12 +32,28 @@ function isFiniteTime(value: unknown): value is FirebaseFirestore.Timestamp {
   }
 }
 
+export function isEventTimeRange(
+  event: EventDocument | null | undefined
+): event is TimedEventDocument {
+  if (!event || typeof event !== "object") return false;
+  return isFiniteTime(event.startTime) && isFiniteTime(event.endTime) &&
+    event.endTime.toMillis() > event.startTime.toMillis();
+}
+
+export function requireEventTimeRange(
+  event: EventDocument | null | undefined
+): TimedEventDocument {
+  if (!isEventTimeRange(event)) {
+    throw new HttpsError("failed-precondition",
+      "This event needs a valid time range.");
+  }
+  return event;
+}
+
 export function isScheduledEvent(
   event: EventDocument | null | undefined
 ): event is ScheduledEventDocument {
-  if (!event || typeof event !== "object") return false;
-  if (!isFiniteTime(event.startTime) || !isFiniteTime(event.endTime) ||
-      event.endTime.toMillis() <= event.startTime.toMillis()) return false;
+  if (!isEventTimeRange(event)) return false;
   const format = event.eventFormat;
   return !!format && Number.isInteger(format.version) &&
     format.version >= 1 && !!format.activityKind &&

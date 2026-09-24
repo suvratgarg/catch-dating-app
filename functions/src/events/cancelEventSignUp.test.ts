@@ -288,6 +288,33 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
   }]);
 });
 
+test("private event cancellation does not auto-promote waitlist", async () => {
+  const h = harness({
+    "events/event-1": event({
+      bookedCount: 1, waitlistedCount: 1,
+      publicationState: "private", setupRevision: 1,
+    }),
+    "users/runner-1": user(),
+    "users/runner-2": user({gender: "woman"}),
+    "eventParticipations/event-1_runner-1": participation(
+      "runner-1", "signedUp"
+    ),
+    "eventParticipations/event-1_runner-2": participation(
+      "runner-2", "waitlisted"
+    ),
+  });
+
+  await cancelEventSignUpHandler(request("runner-1"), h.deps);
+
+  assert.equal(h.firestore.get("eventParticipations/event-1_runner-1")
+    ?.status, "cancelled");
+  assert.equal(h.firestore.get("eventParticipations/event-1_runner-2")
+    ?.status, "waitlisted");
+  assert.equal(h.firestore.get("events/event-1")?.bookedCount, 0);
+  assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 1);
+  assert.deepEqual(h.notifications, []);
+});
+
 test(
   "cancelEventSignUpHandler still refunds when promotion push fails",
   async () => {

@@ -177,6 +177,11 @@ function event(overrides: FakeData = {}): FakeData {
     endTime: admin.firestore.Timestamp.fromMillis(
       Date.parse("2026-05-02T02:30:00.000Z")
     ),
+    eventFormat: {
+      version: 1,
+      activityKind: "socialRun",
+      interactionModel: "pacePods",
+    },
     meetingPoint: "Carter Road",
     meetingLocation: {
       name: "Carter Road",
@@ -449,6 +454,22 @@ test("signUpUserForEvent rejects cancelled events", async () => {
       "code" in error &&
       error.code === "failed-precondition"
   );
+});
+
+test("signUpUserForEvent never books a private event", async () => {
+  const db = firestore({
+    "events/event-1": event({
+      publicationState: "private", setupRevision: 1,
+    }),
+    "users/runner-1": user(),
+  });
+  await assert.rejects(
+    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    (error) => error instanceof Error && "code" in error &&
+      error.code === "failed-precondition"
+  );
+  assert.equal((db as unknown as FakeFirestore)
+    .get("eventParticipations/event-1_runner-1"), undefined);
 });
 
 test("signUpUserForEvent rejects booking-incomplete profiles", async () => {
