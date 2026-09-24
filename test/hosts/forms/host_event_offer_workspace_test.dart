@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,43 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  test('workspace controller invalidates selected offer context when the '
+      'underlying query selection changes', () async {
+    final query = HostResponseQueryController(_Query());
+    final offers = HostEventOfferController(_Offers());
+    addTearDown(query.dispose);
+    addTearDown(offers.dispose);
+    await query.apply(const HostResponseQueryRequest(
+      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    query.toggleSelection('response-one');
+    final workspace = HostEventOfferWorkspaceController(
+      organizerId: 'org', accountId: 'manager',
+      queryController: query, offerController: offers,
+      listOffers: ({required organizerId, required eventId,
+          afterOfferId}) async => const {
+        'items': <Object>[], 'nextCursor': null,
+      },
+      getOffer: ({required organizerId, required eventId,
+          required contactId}) async => _existingOffer(),
+      prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+        kind: 'blocked', offerId: 'offer-one', blockers: ['fixture']),
+      copyMessage: (_) async {}, openHandoff: (_) async => false,
+      targets: _Targets(), getResponseDetail: (_) async => _detail('contact-one'),
+      openResponseForConversion: (_) async {},
+      openEventSettings: (_) async {},
+      now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+    );
+    addTearDown(workspace.dispose);
+
+    await workspace.start();
+    expect(workspace.ids, ['response-one']);
+    expect(workspace.events.single.eventId, 'event-one');
+    query.clearSelection();
+    expect(workspace.ids, isEmpty);
+    expect(workspace.events, isEmpty);
+    expect(workspace.draft, isNull);
+  });
+
   testWidgets('CRM conversion return rechecks exact selected response before '
       'offer preview', (tester) async {
     final query = HostResponseQueryController(_Query());
