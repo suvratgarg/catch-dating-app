@@ -626,6 +626,7 @@ export 'profile_prompt_answer.g.dart';
 export 'program_access_callable_response.g.dart';
 export 'program_arrivals_roster_callable_response.g.dart';
 export 'program_function_document.g.dart';
+export 'program_function_guest_document.g.dart';
 export 'program_guest_document.g.dart';
 export 'program_guest_list_callable_response.g.dart';
 export 'program_hotel_document.g.dart';

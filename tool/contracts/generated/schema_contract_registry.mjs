@@ -117316,6 +117316,74 @@ export const organizerCampaignDocumentSchema = {
       ],
       "pattern": "^[a-f0-9]{64}$"
     },
+    "recipientSource": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "description": "Where recipients resolve from. Absent reads as savedAudience backed by savedAudienceId. kind=programSelection draws recipients from programFunctionGuests/programGuests instead of CRM audiences.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "savedAudience",
+            "programSelection"
+          ]
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=programSelection; ignored otherwise."
+        },
+        "functionIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Restricts to guests invited to these functions; null or empty means every function in the program."
+        },
+        "rsvpStatuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "description": "Restricts to matching per-function RSVP states; null or empty means every status."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "When true, one message is sent per household primary contact instead of per guest. Default false."
+        }
+      }
+    },
     "connectionId": {
       "type": "string",
       "minLength": 1,
@@ -125771,6 +125839,114 @@ export const organizerProgramDocumentSchema = {
         ]
       }
     },
+    "entitlement": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sku",
+            "limits",
+            "capabilitiesAllowed",
+            "grantedAtMillis",
+            "receiptRef"
+          ],
+          "description": "Immutable copy of the organizer entitlement terms captured when the program was created; later plan changes do not rewrite program history.",
+          "properties": {
+            "sku": {
+              "type": "string",
+              "pattern": "^[a-z0-9_]{1,60}$",
+              "description": "Catalog key from contracts/catalogs/organizer_entitlement_skus.json at grant time."
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "guests",
+                "functions",
+                "staffAssignments",
+                "momentsPerFunction"
+              ],
+              "properties": {
+                "guests": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000
+                },
+                "functions": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "staffAssignments": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "momentsPerFunction": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 50
+                }
+              }
+            },
+            "capabilitiesAllowed": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "arrivalsTransport",
+                  "accommodation",
+                  "forms",
+                  "messaging"
+                ]
+              },
+              "description": "Ceiling on organizerPrograms.capabilities; an enabled capability must also appear here."
+            },
+            "grantedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "receiptRef": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180,
+              "description": "Manual invoice or checkout reference recorded by the granting admin."
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Immutable snapshot of the organizer entitlement terms captured at program creation. Absent on programs predating entitlements; owning callables treat absence as the unpaid default ceiling."
+    },
+    "householdSideLabels": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "partnerA": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "partnerB": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        }
+      },
+      "description": "Optional display labels for programHouseholds.side (such as bride/groom or two family names); defaults to generic partner labels."
+    },
     "transportSettings": {
       "type": "object",
       "additionalProperties": false,
@@ -126010,6 +126186,109 @@ export const programFunctionDocumentSchema = {
       ],
       "maxLength": 500
     },
+    "venueLocation": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+          "required": [
+            "name",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "placeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional precise venue pin selected from Places or dropped manually; venueName remains the display string."
+    },
+    "dressCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140,
+      "description": "Short wardrobe guidance shown on invitations and reminders, such as 'Pastel formal' or 'Poolside casual'."
+    },
+    "instructions": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 2000,
+      "description": "Guest-facing instructions for this function (entry gate, shuttle note, what to bring). Never carries staff-only detail."
+    },
+    "invitationMode": {
+      "type": "string",
+      "enum": [
+        "allGuests",
+        "selectedGuests"
+      ],
+      "description": "Absent on functions written before per-function invitations; reads as allGuests."
+    },
+    "checkInEnabled": {
+      "type": "boolean",
+      "description": "When true, functionCheckIn/functionLead duties may mark programFunctionGuests attendanceStatus at the door."
+    },
+    "expectedCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Server-maintained rollup of attending party sizes for catering and venue counts."
+    },
+    "checkedInCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000,
+      "description": "Server-maintained rollup of programFunctionGuests attendanceStatus=checkedIn."
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -126017,6 +126296,165 @@ export const programFunctionDocumentSchema = {
         "completed",
         "cancelled"
       ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const programFunctionGuestDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_function_guests.schema.json",
+  "title": "ProgramFunctionGuestDocument",
+  "description": "Server-owned per-function invitation, RSVP and door-attendance join record. One document per (functionId, guestId) pair; the document id is the deterministic `${functionId}_${guestId}` join key so invites and responses upsert idempotently. Per-function truth lives here; programGuests.rsvpStatus is only a derived rollup.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programFunctionGuests",
+  "x-firestore-path": "programFunctionGuests/{functionGuestId}",
+  "x-document-id-field": "functionGuestId",
+  "x-owner": "program guest management, RSVP conversion, and function check-in callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "functionId",
+    "guestId",
+    "invited",
+    "rsvpStatus",
+    "attendanceStatus",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "invited": {
+      "type": "boolean",
+      "description": "Whether this guest is on the function's invitation list. Rows exist only for functions with invitationMode=selectedGuests when invited=false; allGuests functions may omit rows entirely."
+    },
+    "rsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    },
+    "attendanceStatus": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "checkedIn",
+        "noShow"
+      ],
+      "description": "Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends."
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Attending party size including children when the guest RSVPs for more than themselves; null reads as 1."
+    },
+    "respondedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "When the guest's current RSVP response was recorded; null while still pending."
+    },
+    "responseNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "description": "Optional guest note captured with the response, such as dietary or plus-one detail."
     },
     "createdAt": {
       "type": "object",
@@ -126165,7 +126603,8 @@ export const programGuestDocumentSchema = {
         "attending",
         "declined",
         "maybe"
-      ]
+      ],
+      "description": "Derived program-wide rollup maintained by the server from programFunctionGuests rows (any attending -> attending, else strongest other response). Per-function truth lives only on programFunctionGuests; writers never set this directly."
     },
     "source": {
       "type": "string",
@@ -126304,6 +126743,23 @@ export const programHouseholdDocumentSchema = {
       ],
       "description": "Invitation delivery preference; does not grant messaging consent by itself."
     },
+    "side": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "partnerA",
+            "partnerB",
+            "mutual"
+          ],
+          "description": "Which side of the couple or family a household belongs to; display labels live on organizerPrograms.householdSideLabels."
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional side assignment used for per-side counts and seating; labels are configured on the program."
+    },
     "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -126422,10 +126878,15 @@ export const programStaffGrantDocumentSchema = {
             "type": "string",
             "enum": [
               "programCoordinator",
+              "guestRelations",
+              "communications",
+              "functionCheckIn",
+              "functionLead",
               "airportGreeter",
               "hotelDesk",
               "transportDispatcher",
-              "reconciliationViewer"
+              "reconciliationViewer",
+              "stakeholderViewer"
             ]
           },
           "pickupPointIds": {
@@ -126449,6 +126910,17 @@ export const programStaffGrantDocumentSchema = {
               "maxLength": 180
             },
             "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "functionIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
           },
           "expiresAtMillis": {
             "type": "integer",
@@ -126642,10 +127114,15 @@ export const programStaffInviteDocumentSchema = {
             "type": "string",
             "enum": [
               "programCoordinator",
+              "guestRelations",
+              "communications",
+              "functionCheckIn",
+              "functionLead",
               "airportGreeter",
               "hotelDesk",
               "transportDispatcher",
-              "reconciliationViewer"
+              "reconciliationViewer",
+              "stakeholderViewer"
             ]
           },
           "pickupPointIds": {
@@ -126669,6 +127146,17 @@ export const programStaffInviteDocumentSchema = {
               "maxLength": 180
             },
             "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "functionIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
           }
         }
       }
@@ -129149,10 +129637,15 @@ export const grantProgramStaffCallablePayloadSchema = {
             "type": "string",
             "enum": [
               "programCoordinator",
+              "guestRelations",
+              "communications",
+              "functionCheckIn",
+              "functionLead",
               "airportGreeter",
               "hotelDesk",
               "transportDispatcher",
-              "reconciliationViewer"
+              "reconciliationViewer",
+              "stakeholderViewer"
             ]
           },
           "pickupPointIds": {
@@ -129176,6 +129669,17 @@ export const grantProgramStaffCallablePayloadSchema = {
               "maxLength": 180
             },
             "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "functionIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
           }
         }
       }
@@ -129269,10 +129773,15 @@ export const inviteProgramStaffCallablePayloadSchema = {
             "type": "string",
             "enum": [
               "programCoordinator",
+              "guestRelations",
+              "communications",
+              "functionCheckIn",
+              "functionLead",
               "airportGreeter",
               "hotelDesk",
               "transportDispatcher",
-              "reconciliationViewer"
+              "reconciliationViewer",
+              "stakeholderViewer"
             ]
           },
           "pickupPointIds": {
@@ -129296,6 +129805,17 @@ export const inviteProgramStaffCallablePayloadSchema = {
               "maxLength": 180
             },
             "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "functionIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
           }
         }
       }
@@ -130967,10 +131487,15 @@ export const programAccessCallableResponseSchema = {
             "type": "string",
             "enum": [
               "programCoordinator",
+              "guestRelations",
+              "communications",
+              "functionCheckIn",
+              "functionLead",
               "airportGreeter",
               "hotelDesk",
               "transportDispatcher",
-              "reconciliationViewer"
+              "reconciliationViewer",
+              "stakeholderViewer"
             ]
           },
           "pickupPointIds": {
@@ -130994,6 +131519,17 @@ export const programAccessCallableResponseSchema = {
               "maxLength": 180
             },
             "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+          },
+          "functionIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
           },
           "expiresAtMillis": {
             "type": "integer",
@@ -131624,10 +132160,15 @@ export const programStaffListCallableResponseSchema = {
                   "type": "string",
                   "enum": [
                     "programCoordinator",
+                    "guestRelations",
+                    "communications",
+                    "functionCheckIn",
+                    "functionLead",
                     "airportGreeter",
                     "hotelDesk",
                     "transportDispatcher",
-                    "reconciliationViewer"
+                    "reconciliationViewer",
+                    "stakeholderViewer"
                   ]
                 },
                 "pickupPointIds": {
@@ -131651,6 +132192,17 @@ export const programStaffListCallableResponseSchema = {
                     "maxLength": 180
                   },
                   "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+                },
+                "functionIds": {
+                  "type": "array",
+                  "maxItems": 64,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
                 },
                 "expiresAtMillis": {
                   "type": "integer",

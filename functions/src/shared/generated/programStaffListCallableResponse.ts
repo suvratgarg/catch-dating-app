@@ -17,10 +17,15 @@ export interface ProgramStaffListCallableResponse {
     duties: {
       duty:
         | "programCoordinator"
+        | "guestRelations"
+        | "communications"
+        | "functionCheckIn"
+        | "functionLead"
         | "airportGreeter"
         | "hotelDesk"
         | "transportDispatcher"
-        | "reconciliationViewer";
+        | "reconciliationViewer"
+        | "stakeholderViewer";
       /**
        * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
        *
@@ -33,6 +38,12 @@ export interface ProgramStaffListCallableResponse {
        * @maxItems 64
        */
       hotelIds: string[];
+      /**
+       * Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed.
+       *
+       * @maxItems 64
+       */
+      functionIds?: string[];
       /**
        * Exclusive expiry of this exact duty and resource scope. Independent of other assignments.
        */

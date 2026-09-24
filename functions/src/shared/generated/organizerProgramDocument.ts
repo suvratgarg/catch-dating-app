@@ -37,6 +37,44 @@ export interface OrganizerProgramDocument {
     | "forms"
     | "messaging"
   )[];
+  /**
+   * Immutable snapshot of the organizer entitlement terms captured at program creation. Absent on programs predating entitlements; owning callables treat absence as the unpaid default ceiling.
+   */
+  entitlement?: {
+    /**
+     * Catalog key from contracts/catalogs/organizer_entitlement_skus.json at grant time.
+     */
+    sku: string;
+    limits: {
+      guests: number;
+      functions: number;
+      staffAssignments: number;
+      momentsPerFunction: number;
+    };
+    /**
+     * Ceiling on organizerPrograms.capabilities; an enabled capability must also appear here.
+     *
+     * @maxItems 8
+     */
+    capabilitiesAllowed: (
+      | "arrivalsTransport"
+      | "accommodation"
+      | "forms"
+      | "messaging"
+    )[];
+    grantedAtMillis: number;
+    /**
+     * Manual invoice or checkout reference recorded by the granting admin.
+     */
+    receiptRef: string | null;
+  } | null;
+  /**
+   * Optional display labels for programHouseholds.side (such as bride/groom or two family names); defaults to generic partner labels.
+   */
+  householdSideLabels?: {
+    partnerA?: string;
+    partnerB?: string;
+  } | null;
   transportSettings: {
     /**
      * Anchored curb-time window used by grouping suggestions. Default 30 minutes.

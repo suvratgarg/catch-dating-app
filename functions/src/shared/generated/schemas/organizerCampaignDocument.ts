@@ -126,6 +126,74 @@ export const organizerCampaignDocumentSchema: Record<string, unknown> = {
       ],
       "pattern": "^[a-f0-9]{64}$"
     },
+    "recipientSource": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "description": "Where recipients resolve from. Absent reads as savedAudience backed by savedAudienceId. kind=programSelection draws recipients from programFunctionGuests/programGuests instead of CRM audiences.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "savedAudience",
+            "programSelection"
+          ]
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=programSelection; ignored otherwise."
+        },
+        "functionIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Restricts to guests invited to these functions; null or empty means every function in the program."
+        },
+        "rsvpStatuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "description": "Restricts to matching per-function RSVP states; null or empty means every status."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "When true, one message is sent per household primary contact instead of per guest. Default false."
+        }
+      }
+    },
     "connectionId": {
       "type": "string",
       "minLength": 1,

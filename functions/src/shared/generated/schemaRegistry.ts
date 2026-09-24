@@ -324,6 +324,7 @@ export {eventAttendeeDocumentSchema} from "./schemas/eventAttendeeDocument";
 export {eventStaffGrantDocumentSchema} from "./schemas/eventStaffGrantDocument";
 export {organizerProgramDocumentSchema} from "./schemas/organizerProgramDocument";
 export {programFunctionDocumentSchema} from "./schemas/programFunctionDocument";
+export {programFunctionGuestDocumentSchema} from "./schemas/programFunctionGuestDocument";
 export {programGuestDocumentSchema} from "./schemas/programGuestDocument";
 export {programHouseholdDocumentSchema} from "./schemas/programHouseholdDocument";
 export {programStaffGrantDocumentSchema} from "./schemas/programStaffGrantDocument";

@@ -66454,7 +66454,23 @@ abstract final class CatchContractConstraints {
     path: 'grantProgramStaffCallablePayload.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+  );
+
+  static const grantProgramStaffCallablePayloadDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'grantProgramStaffCallablePayload.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const grantProgramStaffCallablePayloadDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'grantProgramStaffCallablePayload.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const grantProgramStaffCallablePayloadDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -68699,7 +68715,23 @@ abstract final class CatchContractConstraints {
     path: 'inviteProgramStaffCallablePayload.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const inviteProgramStaffCallablePayloadDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -78660,6 +78692,57 @@ abstract final class CatchContractConstraints {
     path: 'organizerCampaignDocument.recipientSnapshotHash',
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerCampaignDocumentRecipientSourceFunctionIds = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 32,
+    uniqueItems: true,
+  );
+
+  static const organizerCampaignDocumentRecipientSourceFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentRecipientSourceHouseholdDedupe = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.householdDedupe',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerCampaignDocumentRecipientSourceKind = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['savedAudience', 'programSelection'],
+  );
+
+  static const organizerCampaignDocumentRecipientSourceProgramId = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerCampaignDocumentRecipientSourceRsvpStatuses = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.rsvpStatuses',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerCampaignDocumentRecipientSourceRsvpStatusesItems = CatchContractFieldConstraints(
+    path: 'organizerCampaignDocument.recipientSource.rsvpStatuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
   );
 
   static const organizerCampaignDocumentRevision = CatchContractFieldConstraints(
@@ -90725,6 +90808,93 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerProgramDocumentEntitlementCapabilitiesAllowed = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.capabilitiesAllowed',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['arrivalsTransport', 'accommodation', 'forms', 'messaging'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const organizerProgramDocumentEntitlementCapabilitiesAllowedItems = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.capabilitiesAllowed.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['arrivalsTransport', 'accommodation', 'forms', 'messaging'],
+  );
+
+  static const organizerProgramDocumentEntitlementGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerProgramDocumentEntitlementLimitsFunctions = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.limits.functions',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const organizerProgramDocumentEntitlementLimitsGuests = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.limits.guests',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100000,
+  );
+
+  static const organizerProgramDocumentEntitlementLimitsMomentsPerFunction = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.limits.momentsPerFunction',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 50,
+  );
+
+  static const organizerProgramDocumentEntitlementLimitsStaffAssignments = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.limits.staffAssignments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 500,
+  );
+
+  static const organizerProgramDocumentEntitlementReceiptRef = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.receiptRef',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProgramDocumentEntitlementSku = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.entitlement.sku',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9_]{1,60}\$',
+  );
+
+  static const organizerProgramDocumentHouseholdSideLabelsPartnerA = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.householdSideLabels.partnerA',
+    maxLength: 40,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProgramDocumentHouseholdSideLabelsPartnerB = CatchContractFieldConstraints(
+    path: 'organizerProgramDocument.householdSideLabels.partnerB',
+    maxLength: 40,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerProgramDocumentKind = CatchContractFieldConstraints(
     path: 'organizerProgramDocument.kind',
     required: true,
@@ -95447,7 +95617,7 @@ abstract final class CatchContractConstraints {
     path: 'programAccessCallableResponse.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programAccessCallableResponseDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
@@ -95456,6 +95626,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const programAccessCallableResponseDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'programAccessCallableResponse.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const programAccessCallableResponseDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'programAccessCallableResponse.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const programAccessCallableResponseDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -95949,6 +96135,18 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const programFunctionDocumentCheckedInCount = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.checkedInCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const programFunctionDocumentCheckInEnabled = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.checkInEnabled',
+    valueTypes: <String>['boolean'],
+  );
+
   static const programFunctionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programFunctionDocument.createdAt._nanoseconds',
     required: true,
@@ -95963,6 +96161,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programFunctionDocumentDressCode = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.dressCode',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
   static const programFunctionDocumentEndsAtNanoseconds = CatchContractFieldConstraints(
     path: 'programFunctionDocument.endsAt._nanoseconds',
     required: true,
@@ -95975,6 +96179,25 @@ abstract final class CatchContractConstraints {
     path: 'programFunctionDocument.endsAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const programFunctionDocumentExpectedCount = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.expectedCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const programFunctionDocumentInstructions = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.instructions',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionDocumentInvitationMode = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.invitationMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['allGuests', 'selectedGuests'],
   );
 
   static const programFunctionDocumentName = CatchContractFieldConstraints(
@@ -96044,6 +96267,49 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programFunctionDocumentVenueLocationAddress = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.venueLocation.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionDocumentVenueLocationLatitude = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.venueLocation.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const programFunctionDocumentVenueLocationLongitude = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.venueLocation.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const programFunctionDocumentVenueLocationName = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.venueLocation.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionDocumentVenueLocationNotes = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.venueLocation.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionDocumentVenueLocationPlaceId = CatchContractFieldConstraints(
+    path: 'programFunctionDocument.venueLocation.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const programFunctionDocumentVenueName = CatchContractFieldConstraints(
     path: 'programFunctionDocument.venueName',
     maxLength: 180,
@@ -96056,6 +96322,121 @@ abstract final class CatchContractConstraints {
     path: 'programFunctionDocument.venueNotes',
     maxLength: 500,
     valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentAttendanceStatus = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.attendanceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['expected', 'checkedIn', 'noShow'],
+  );
+
+  static const programFunctionGuestDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programFunctionGuestDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programFunctionGuestDocumentFunctionId = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentGuestId = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentInvited = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.invited',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programFunctionGuestDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentPartySize = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const programFunctionGuestDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentRespondedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.respondedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programFunctionGuestDocumentRespondedAtSeconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.respondedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programFunctionGuestDocumentResponseNote = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.responseNote',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const programFunctionGuestDocumentRevision = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programFunctionGuestDocumentRsvpStatus = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.rsvpStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
+  static const programFunctionGuestDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programFunctionGuestDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programFunctionGuestDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const programGuestDocumentContactId = CatchContractFieldConstraints(
@@ -96698,6 +97079,12 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const programHouseholdDocumentSide = CatchContractFieldConstraints(
+    path: 'programHouseholdDocument.side',
+    valueTypes: <String>['string'],
+    enumValues: <String>['partnerA', 'partnerB', 'mutual'],
+  );
+
   static const programHouseholdDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programHouseholdDocument.updatedAt._nanoseconds',
     required: true,
@@ -96993,7 +97380,7 @@ abstract final class CatchContractConstraints {
     path: 'programStaffGrantDocument.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programStaffGrantDocumentDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
@@ -97002,6 +97389,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const programStaffGrantDocumentDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const programStaffGrantDocumentDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const programStaffGrantDocumentDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -97197,7 +97600,23 @@ abstract final class CatchContractConstraints {
     path: 'programStaffInviteDocument.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
+  );
+
+  static const programStaffInviteDocumentDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const programStaffInviteDocumentDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const programStaffInviteDocumentDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -97349,7 +97768,7 @@ abstract final class CatchContractConstraints {
     path: 'programStaffListCallableResponse.members.items.duties.items.duty',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+    enumValues: <String>['programCoordinator', 'guestRelations', 'communications', 'functionCheckIn', 'functionLead', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer', 'stakeholderViewer'],
   );
 
   static const programStaffListCallableResponseMembersItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
@@ -97358,6 +97777,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const programStaffListCallableResponseMembersItemsDutiesItemsFunctionIds = CatchContractFieldConstraints(
+    path: 'programStaffListCallableResponse.members.items.duties.items.functionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const programStaffListCallableResponseMembersItemsDutiesItemsFunctionIdsItems = CatchContractFieldConstraints(
+    path: 'programStaffListCallableResponse.members.items.duties.items.functionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const programStaffListCallableResponseMembersItemsDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -124144,6 +124579,8 @@ abstract final class CatchContractConstraints {
     'grantEventStaffCallablePayload.phoneNumber': grantEventStaffCallablePayloadPhoneNumber,
     'grantProgramStaffCallablePayload.duties': grantProgramStaffCallablePayloadDuties,
     'grantProgramStaffCallablePayload.duties.items.duty': grantProgramStaffCallablePayloadDutiesItemsDuty,
+    'grantProgramStaffCallablePayload.duties.items.functionIds': grantProgramStaffCallablePayloadDutiesItemsFunctionIds,
+    'grantProgramStaffCallablePayload.duties.items.functionIds.items': grantProgramStaffCallablePayloadDutiesItemsFunctionIdsItems,
     'grantProgramStaffCallablePayload.duties.items.hotelIds': grantProgramStaffCallablePayloadDutiesItemsHotelIds,
     'grantProgramStaffCallablePayload.duties.items.hotelIds.items': grantProgramStaffCallablePayloadDutiesItemsHotelIdsItems,
     'grantProgramStaffCallablePayload.duties.items.pickupPointIds': grantProgramStaffCallablePayloadDutiesItemsPickupPointIds,
@@ -124458,6 +124895,8 @@ abstract final class CatchContractConstraints {
     'inviteProgramStaffCallablePayload.displayName': inviteProgramStaffCallablePayloadDisplayName,
     'inviteProgramStaffCallablePayload.duties': inviteProgramStaffCallablePayloadDuties,
     'inviteProgramStaffCallablePayload.duties.items.duty': inviteProgramStaffCallablePayloadDutiesItemsDuty,
+    'inviteProgramStaffCallablePayload.duties.items.functionIds': inviteProgramStaffCallablePayloadDutiesItemsFunctionIds,
+    'inviteProgramStaffCallablePayload.duties.items.functionIds.items': inviteProgramStaffCallablePayloadDutiesItemsFunctionIdsItems,
     'inviteProgramStaffCallablePayload.duties.items.hotelIds': inviteProgramStaffCallablePayloadDutiesItemsHotelIds,
     'inviteProgramStaffCallablePayload.duties.items.hotelIds.items': inviteProgramStaffCallablePayloadDutiesItemsHotelIdsItems,
     'inviteProgramStaffCallablePayload.duties.items.pickupPointIds': inviteProgramStaffCallablePayloadDutiesItemsPickupPointIds,
@@ -125826,6 +126265,13 @@ abstract final class CatchContractConstraints {
     'organizerCampaignDocument.name': organizerCampaignDocumentName,
     'organizerCampaignDocument.organizerId': organizerCampaignDocumentOrganizerId,
     'organizerCampaignDocument.recipientSnapshotHash': organizerCampaignDocumentRecipientSnapshotHash,
+    'organizerCampaignDocument.recipientSource.functionIds': organizerCampaignDocumentRecipientSourceFunctionIds,
+    'organizerCampaignDocument.recipientSource.functionIds.items': organizerCampaignDocumentRecipientSourceFunctionIdsItems,
+    'organizerCampaignDocument.recipientSource.householdDedupe': organizerCampaignDocumentRecipientSourceHouseholdDedupe,
+    'organizerCampaignDocument.recipientSource.kind': organizerCampaignDocumentRecipientSourceKind,
+    'organizerCampaignDocument.recipientSource.programId': organizerCampaignDocumentRecipientSourceProgramId,
+    'organizerCampaignDocument.recipientSource.rsvpStatuses': organizerCampaignDocumentRecipientSourceRsvpStatuses,
+    'organizerCampaignDocument.recipientSource.rsvpStatuses.items': organizerCampaignDocumentRecipientSourceRsvpStatusesItems,
     'organizerCampaignDocument.revision': organizerCampaignDocumentRevision,
     'organizerCampaignDocument.savedAudienceDefinitionHash': organizerCampaignDocumentSavedAudienceDefinitionHash,
     'organizerCampaignDocument.savedAudienceId': organizerCampaignDocumentSavedAudienceId,
@@ -127513,6 +127959,17 @@ abstract final class CatchContractConstraints {
     'organizerProgramDocument.createdBy': organizerProgramDocumentCreatedBy,
     'organizerProgramDocument.endsAt._nanoseconds': organizerProgramDocumentEndsAtNanoseconds,
     'organizerProgramDocument.endsAt._seconds': organizerProgramDocumentEndsAtSeconds,
+    'organizerProgramDocument.entitlement.capabilitiesAllowed': organizerProgramDocumentEntitlementCapabilitiesAllowed,
+    'organizerProgramDocument.entitlement.capabilitiesAllowed.items': organizerProgramDocumentEntitlementCapabilitiesAllowedItems,
+    'organizerProgramDocument.entitlement.grantedAtMillis': organizerProgramDocumentEntitlementGrantedAtMillis,
+    'organizerProgramDocument.entitlement.limits.functions': organizerProgramDocumentEntitlementLimitsFunctions,
+    'organizerProgramDocument.entitlement.limits.guests': organizerProgramDocumentEntitlementLimitsGuests,
+    'organizerProgramDocument.entitlement.limits.momentsPerFunction': organizerProgramDocumentEntitlementLimitsMomentsPerFunction,
+    'organizerProgramDocument.entitlement.limits.staffAssignments': organizerProgramDocumentEntitlementLimitsStaffAssignments,
+    'organizerProgramDocument.entitlement.receiptRef': organizerProgramDocumentEntitlementReceiptRef,
+    'organizerProgramDocument.entitlement.sku': organizerProgramDocumentEntitlementSku,
+    'organizerProgramDocument.householdSideLabels.partnerA': organizerProgramDocumentHouseholdSideLabelsPartnerA,
+    'organizerProgramDocument.householdSideLabels.partnerB': organizerProgramDocumentHouseholdSideLabelsPartnerB,
     'organizerProgramDocument.kind': organizerProgramDocumentKind,
     'organizerProgramDocument.organizerId': organizerProgramDocumentOrganizerId,
     'organizerProgramDocument.revision': organizerProgramDocumentRevision,
@@ -128163,6 +128620,8 @@ abstract final class CatchContractConstraints {
     'programAccessCallableResponse.duties': programAccessCallableResponseDuties,
     'programAccessCallableResponse.duties.items.duty': programAccessCallableResponseDutiesItemsDuty,
     'programAccessCallableResponse.duties.items.expiresAtMillis': programAccessCallableResponseDutiesItemsExpiresAtMillis,
+    'programAccessCallableResponse.duties.items.functionIds': programAccessCallableResponseDutiesItemsFunctionIds,
+    'programAccessCallableResponse.duties.items.functionIds.items': programAccessCallableResponseDutiesItemsFunctionIdsItems,
     'programAccessCallableResponse.duties.items.hotelIds': programAccessCallableResponseDutiesItemsHotelIds,
     'programAccessCallableResponse.duties.items.hotelIds.items': programAccessCallableResponseDutiesItemsHotelIdsItems,
     'programAccessCallableResponse.duties.items.pickupPointIds': programAccessCallableResponseDutiesItemsPickupPointIds,
@@ -128229,10 +128688,16 @@ abstract final class CatchContractConstraints {
     'programArrivalsRosterCallableResponse.vehicleClasses.items.luggageCapacity': programArrivalsRosterCallableResponseVehicleClassesItemsLuggageCapacity,
     'programArrivalsRosterCallableResponse.vehicleClasses.items.passengerCapacity': programArrivalsRosterCallableResponseVehicleClassesItemsPassengerCapacity,
     'programArrivalsRosterCallableResponse.vehicleClasses.items.sortOrder': programArrivalsRosterCallableResponseVehicleClassesItemsSortOrder,
+    'programFunctionDocument.checkedInCount': programFunctionDocumentCheckedInCount,
+    'programFunctionDocument.checkInEnabled': programFunctionDocumentCheckInEnabled,
     'programFunctionDocument.createdAt._nanoseconds': programFunctionDocumentCreatedAtNanoseconds,
     'programFunctionDocument.createdAt._seconds': programFunctionDocumentCreatedAtSeconds,
+    'programFunctionDocument.dressCode': programFunctionDocumentDressCode,
     'programFunctionDocument.endsAt._nanoseconds': programFunctionDocumentEndsAtNanoseconds,
     'programFunctionDocument.endsAt._seconds': programFunctionDocumentEndsAtSeconds,
+    'programFunctionDocument.expectedCount': programFunctionDocumentExpectedCount,
+    'programFunctionDocument.instructions': programFunctionDocumentInstructions,
+    'programFunctionDocument.invitationMode': programFunctionDocumentInvitationMode,
     'programFunctionDocument.name': programFunctionDocumentName,
     'programFunctionDocument.organizerId': programFunctionDocumentOrganizerId,
     'programFunctionDocument.programId': programFunctionDocumentProgramId,
@@ -128242,8 +128707,30 @@ abstract final class CatchContractConstraints {
     'programFunctionDocument.status': programFunctionDocumentStatus,
     'programFunctionDocument.updatedAt._nanoseconds': programFunctionDocumentUpdatedAtNanoseconds,
     'programFunctionDocument.updatedAt._seconds': programFunctionDocumentUpdatedAtSeconds,
+    'programFunctionDocument.venueLocation.address': programFunctionDocumentVenueLocationAddress,
+    'programFunctionDocument.venueLocation.latitude': programFunctionDocumentVenueLocationLatitude,
+    'programFunctionDocument.venueLocation.longitude': programFunctionDocumentVenueLocationLongitude,
+    'programFunctionDocument.venueLocation.name': programFunctionDocumentVenueLocationName,
+    'programFunctionDocument.venueLocation.notes': programFunctionDocumentVenueLocationNotes,
+    'programFunctionDocument.venueLocation.placeId': programFunctionDocumentVenueLocationPlaceId,
     'programFunctionDocument.venueName': programFunctionDocumentVenueName,
     'programFunctionDocument.venueNotes': programFunctionDocumentVenueNotes,
+    'programFunctionGuestDocument.attendanceStatus': programFunctionGuestDocumentAttendanceStatus,
+    'programFunctionGuestDocument.createdAt._nanoseconds': programFunctionGuestDocumentCreatedAtNanoseconds,
+    'programFunctionGuestDocument.createdAt._seconds': programFunctionGuestDocumentCreatedAtSeconds,
+    'programFunctionGuestDocument.functionId': programFunctionGuestDocumentFunctionId,
+    'programFunctionGuestDocument.guestId': programFunctionGuestDocumentGuestId,
+    'programFunctionGuestDocument.invited': programFunctionGuestDocumentInvited,
+    'programFunctionGuestDocument.organizerId': programFunctionGuestDocumentOrganizerId,
+    'programFunctionGuestDocument.partySize': programFunctionGuestDocumentPartySize,
+    'programFunctionGuestDocument.programId': programFunctionGuestDocumentProgramId,
+    'programFunctionGuestDocument.respondedAt._nanoseconds': programFunctionGuestDocumentRespondedAtNanoseconds,
+    'programFunctionGuestDocument.respondedAt._seconds': programFunctionGuestDocumentRespondedAtSeconds,
+    'programFunctionGuestDocument.responseNote': programFunctionGuestDocumentResponseNote,
+    'programFunctionGuestDocument.revision': programFunctionGuestDocumentRevision,
+    'programFunctionGuestDocument.rsvpStatus': programFunctionGuestDocumentRsvpStatus,
+    'programFunctionGuestDocument.updatedAt._nanoseconds': programFunctionGuestDocumentUpdatedAtNanoseconds,
+    'programFunctionGuestDocument.updatedAt._seconds': programFunctionGuestDocumentUpdatedAtSeconds,
     'programGuestDocument.contactId': programGuestDocumentContactId,
     'programGuestDocument.createdAt._nanoseconds': programGuestDocumentCreatedAtNanoseconds,
     'programGuestDocument.createdAt._seconds': programGuestDocumentCreatedAtSeconds,
@@ -128332,6 +128819,7 @@ abstract final class CatchContractConstraints {
     'programHouseholdDocument.primaryPhoneE164': programHouseholdDocumentPrimaryPhoneE164,
     'programHouseholdDocument.programId': programHouseholdDocumentProgramId,
     'programHouseholdDocument.revision': programHouseholdDocumentRevision,
+    'programHouseholdDocument.side': programHouseholdDocumentSide,
     'programHouseholdDocument.updatedAt._nanoseconds': programHouseholdDocumentUpdatedAtNanoseconds,
     'programHouseholdDocument.updatedAt._seconds': programHouseholdDocumentUpdatedAtSeconds,
     'programIdCallablePayload.programId': programIdCallablePayloadProgramId,
@@ -128375,6 +128863,8 @@ abstract final class CatchContractConstraints {
     'programStaffGrantDocument.duties': programStaffGrantDocumentDuties,
     'programStaffGrantDocument.duties.items.duty': programStaffGrantDocumentDutiesItemsDuty,
     'programStaffGrantDocument.duties.items.expiresAtMillis': programStaffGrantDocumentDutiesItemsExpiresAtMillis,
+    'programStaffGrantDocument.duties.items.functionIds': programStaffGrantDocumentDutiesItemsFunctionIds,
+    'programStaffGrantDocument.duties.items.functionIds.items': programStaffGrantDocumentDutiesItemsFunctionIdsItems,
     'programStaffGrantDocument.duties.items.hotelIds': programStaffGrantDocumentDutiesItemsHotelIds,
     'programStaffGrantDocument.duties.items.hotelIds.items': programStaffGrantDocumentDutiesItemsHotelIdsItems,
     'programStaffGrantDocument.duties.items.pickupPointIds': programStaffGrantDocumentDutiesItemsPickupPointIds,
@@ -128401,6 +128891,8 @@ abstract final class CatchContractConstraints {
     'programStaffInviteDocument.displayName': programStaffInviteDocumentDisplayName,
     'programStaffInviteDocument.duties': programStaffInviteDocumentDuties,
     'programStaffInviteDocument.duties.items.duty': programStaffInviteDocumentDutiesItemsDuty,
+    'programStaffInviteDocument.duties.items.functionIds': programStaffInviteDocumentDutiesItemsFunctionIds,
+    'programStaffInviteDocument.duties.items.functionIds.items': programStaffInviteDocumentDutiesItemsFunctionIdsItems,
     'programStaffInviteDocument.duties.items.hotelIds': programStaffInviteDocumentDutiesItemsHotelIds,
     'programStaffInviteDocument.duties.items.hotelIds.items': programStaffInviteDocumentDutiesItemsHotelIdsItems,
     'programStaffInviteDocument.duties.items.pickupPointIds': programStaffInviteDocumentDutiesItemsPickupPointIds,
@@ -128422,6 +128914,8 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.members.items.duties': programStaffListCallableResponseMembersItemsDuties,
     'programStaffListCallableResponse.members.items.duties.items.duty': programStaffListCallableResponseMembersItemsDutiesItemsDuty,
     'programStaffListCallableResponse.members.items.duties.items.expiresAtMillis': programStaffListCallableResponseMembersItemsDutiesItemsExpiresAtMillis,
+    'programStaffListCallableResponse.members.items.duties.items.functionIds': programStaffListCallableResponseMembersItemsDutiesItemsFunctionIds,
+    'programStaffListCallableResponse.members.items.duties.items.functionIds.items': programStaffListCallableResponseMembersItemsDutiesItemsFunctionIdsItems,
     'programStaffListCallableResponse.members.items.duties.items.hotelIds': programStaffListCallableResponseMembersItemsDutiesItemsHotelIds,
     'programStaffListCallableResponse.members.items.duties.items.hotelIds.items': programStaffListCallableResponseMembersItemsDutiesItemsHotelIdsItems,
     'programStaffListCallableResponse.members.items.duties.items.pickupPointIds': programStaffListCallableResponseMembersItemsDutiesItemsPickupPointIds,

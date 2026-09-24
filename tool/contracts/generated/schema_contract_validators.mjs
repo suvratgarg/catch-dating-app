@@ -322,6 +322,7 @@ import {
   eventStaffGrantDocumentSchema,
   organizerProgramDocumentSchema,
   programFunctionDocumentSchema,
+  programFunctionGuestDocumentSchema,
   programGuestDocumentSchema,
   programHouseholdDocumentSchema,
   programStaffGrantDocumentSchema,
@@ -1173,6 +1174,7 @@ export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSc
 export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
 export const validateOrganizerProgramDocument = ajv.compile(organizerProgramDocumentSchema);
 export const validateProgramFunctionDocument = ajv.compile(programFunctionDocumentSchema);
+export const validateProgramFunctionGuestDocument = ajv.compile(programFunctionGuestDocumentSchema);
 export const validateProgramGuestDocument = ajv.compile(programGuestDocumentSchema);
 export const validateProgramHouseholdDocument = ajv.compile(programHouseholdDocumentSchema);
 export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDocumentSchema);

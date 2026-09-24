@@ -1724,6 +1724,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programFunctionDocument.ts",
   },
   {
+    name: "ProgramFunctionGuestDocument",
+    source: "firestore/program_function_guests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programFunctionGuestDocument.ts",
+  },
+  {
     name: "ProgramGuestDocument",
     source: "firestore/program_guests.schema.json",
     typeOutput: "functions/src/shared/generated/programGuestDocument.ts",

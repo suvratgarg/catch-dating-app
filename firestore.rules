@@ -1643,6 +1643,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /programFunctionGuests/{functionGuestId} {
+      allow read, write: if false;
+    }
+
     match /programHouseholds/{householdId} {
       allow read, write: if false;
     }

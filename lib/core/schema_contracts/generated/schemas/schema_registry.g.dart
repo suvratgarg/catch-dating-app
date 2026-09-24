@@ -1612,6 +1612,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaProgramFunctionDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'ProgramFunctionGuestDocument',
+    source: 'firestore/program_function_guests.schema.json',
+    schema: schemaProgramFunctionGuestDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ProgramGuestDocument',
     source: 'firestore/program_guests.schema.json',
     schema: schemaProgramGuestDocumentSchema,
@@ -4473,6 +4478,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventStaffGrantDocument': schemaEventStaffGrantDocumentSchema,
   'OrganizerProgramDocument': schemaOrganizerProgramDocumentSchema,
   'ProgramFunctionDocument': schemaProgramFunctionDocumentSchema,
+  'ProgramFunctionGuestDocument': schemaProgramFunctionGuestDocumentSchema,
   'ProgramGuestDocument': schemaProgramGuestDocumentSchema,
   'ProgramHouseholdDocument': schemaProgramHouseholdDocumentSchema,
   'ProgramStaffGrantDocument': schemaProgramStaffGrantDocumentSchema,
@@ -5303,6 +5309,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_staff_grants.schema.json': schemaEventStaffGrantDocumentSchema,
   'firestore/organizer_programs.schema.json': schemaOrganizerProgramDocumentSchema,
   'firestore/program_functions.schema.json': schemaProgramFunctionDocumentSchema,
+  'firestore/program_function_guests.schema.json': schemaProgramFunctionGuestDocumentSchema,
   'firestore/program_guests.schema.json': schemaProgramGuestDocumentSchema,
   'firestore/program_households.schema.json': schemaProgramHouseholdDocumentSchema,
   'firestore/program_staff_grants.schema.json': schemaProgramStaffGrantDocumentSchema,

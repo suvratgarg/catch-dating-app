@@ -83,6 +83,23 @@ export const programHouseholdDocumentSchema: Record<string, unknown> = {
       ],
       "description": "Invitation delivery preference; does not grant messaging consent by itself."
     },
+    "side": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "partnerA",
+            "partnerB",
+            "mutual"
+          ],
+          "description": "Which side of the couple or family a household belongs to; display labels live on organizerPrograms.householdSideLabels."
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional side assignment used for per-side counts and seating; labels are configured on the program."
+    },
     "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",

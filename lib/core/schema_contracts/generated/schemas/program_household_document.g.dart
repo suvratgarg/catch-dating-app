@@ -85,6 +85,23 @@ const schemaProgramHouseholdDocumentSchema = <String, Object?>{
       ],
       'description': 'Invitation delivery preference; does not grant messaging consent by itself.',
     },
+    'side': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'partnerA',
+            'partnerB',
+            'mutual',
+          ],
+          'description': 'Which side of the couple or family a household belongs to; display labels live on organizerPrograms.householdSideLabels.',
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Optional side assignment used for per-side counts and seating; labels are configured on the program.',
+    },
     'createdAt': <String, Object?>{
       'type': 'object',
       'description': 'Serialized Firestore Timestamp fixture shape.',

@@ -331,6 +331,7 @@ Do not edit it by hand.
 | EventStaffGrantDocument | `firestore/event_staff_grants.schema.json` | `functions/src/shared/generated/eventStaffGrantDocument.ts` |
 | OrganizerProgramDocument | `firestore/organizer_programs.schema.json` | `functions/src/shared/generated/organizerProgramDocument.ts` |
 | ProgramFunctionDocument | `firestore/program_functions.schema.json` | `functions/src/shared/generated/programFunctionDocument.ts` |
+| ProgramFunctionGuestDocument | `firestore/program_function_guests.schema.json` | `functions/src/shared/generated/programFunctionGuestDocument.ts` |
 | ProgramGuestDocument | `firestore/program_guests.schema.json` | `functions/src/shared/generated/programGuestDocument.ts` |
 | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `functions/src/shared/generated/programHouseholdDocument.ts` |
 | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `functions/src/shared/generated/programStaffGrantDocument.ts` |
@@ -1163,6 +1164,7 @@ Do not edit it by hand.
 | `schemaEventStaffGrantDocumentSchema` | EventStaffGrantDocument | `firestore/event_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_staff_grant_document.g.dart` |
 | `schemaOrganizerProgramDocumentSchema` | OrganizerProgramDocument | `firestore/organizer_programs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_program_document.g.dart` |
 | `schemaProgramFunctionDocumentSchema` | ProgramFunctionDocument | `firestore/program_functions.schema.json` | `lib/core/schema_contracts/generated/schemas/program_function_document.g.dart` |
+| `schemaProgramFunctionGuestDocumentSchema` | ProgramFunctionGuestDocument | `firestore/program_function_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_function_guest_document.g.dart` |
 | `schemaProgramGuestDocumentSchema` | ProgramGuestDocument | `firestore/program_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_document.g.dart` |
 | `schemaProgramHouseholdDocumentSchema` | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `lib/core/schema_contracts/generated/schemas/program_household_document.g.dart` |
 | `schemaProgramStaffGrantDocumentSchema` | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_grant_document.g.dart` |

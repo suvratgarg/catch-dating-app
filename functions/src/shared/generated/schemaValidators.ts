@@ -324,6 +324,7 @@ export {validateEventAttendeeDocument} from "./validators/eventAttendeeDocument"
 export {validateEventStaffGrantDocument} from "./validators/eventStaffGrantDocument";
 export {validateOrganizerProgramDocument} from "./validators/organizerProgramDocument";
 export {validateProgramFunctionDocument} from "./validators/programFunctionDocument";
+export {validateProgramFunctionGuestDocument} from "./validators/programFunctionGuestDocument";
 export {validateProgramGuestDocument} from "./validators/programGuestDocument";
 export {validateProgramHouseholdDocument} from "./validators/programHouseholdDocument";
 export {validateProgramStaffGrantDocument} from "./validators/programStaffGrantDocument";
