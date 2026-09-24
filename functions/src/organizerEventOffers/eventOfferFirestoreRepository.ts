@@ -11,7 +11,6 @@ import type {
   OrganizerFormResponseDocument, OrganizerFormVersionDocument,
   OrganizerFormConversionReceiptDocument,
   OrganizerCommunicationPreferenceDocument,
-  OrganizerCommunicationPermissionReceiptDocument,
   OrganizerContactChannelStateDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {effectiveOrganizerWhatsappPurposeStatus,
@@ -20,6 +19,8 @@ import {effectiveOrganizerWhatsappPurposeStatus,
 import {organizerContactChannelStateId, hashEndpoint} from
   "../organizers/organizerCampaignModel";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
+import {resolveIndividualCommunicationPlan} from
+  "../communications/organizerCommunicationPlan";
 import {projectEventPreferences} from
   "../events/progressiveSetup/preferences";
 import {requireOrganizerManager} from
@@ -452,33 +453,31 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             throw new OfferDomainError("conflict",
               "Stored contact channel has a foreign owner.");
           }
-          const status = effectiveOrganizerWhatsappPurposeStatus(preference,
-            "eventOperations", phone, sourceResponseId);
-          const scoped = preference?.whatsappPurposes?.eventOperations;
-          const receiptData = status === "optedIn" && scoped?.currentReceiptId ?
-            await read("organizerCommunicationPermissionReceipts",
-              scoped.currentReceiptId) : undefined;
-          const receipt = receiptData as
-            OrganizerCommunicationPermissionReceiptDocument | undefined;
-          const grantVerified = receipt?.organizerId === offer.organizerId &&
-            receipt.uid === contact.linkedUid &&
-            receipt.channel === "whatsapp" &&
-            receipt.purpose === "eventOperations" &&
-            receipt.decision === "optedIn" &&
-            receipt.evidenceStatus === "complete" &&
-            receipt.endpointE164 === phone &&
-            receipt.sourceResponseId === sourceResponseId &&
-            receipt.revokedAt === null && receipt.grantedAt !== null &&
-            receipt.source === scoped?.source &&
-            receipt.termsVersion === scoped?.termsVersion &&
-            typeof receipt.consentCopyHash === "string" &&
-            /^[a-f0-9]{64}$/u.test(receipt.consentCopyHash);
+          const purposeStatus = effectiveOrganizerWhatsappPurposeStatus(
+            preference, "eventOperations", phone, sourceResponseId);
+          const optedOut = contact.whatsappStatus === "optedOut" ||
+            purposeStatus === "optedOut";
           const suppressed = channel?.adminSuppressed === true ||
             channel?.suppressionStatus !== undefined &&
               channel.suppressionStatus !== "none" ||
             !!phone && channel?.endpointHash !== undefined &&
               channel.endpointHash !== hashEndpoint(phone) ||
-            contact.whatsappStatus === "optedOut" || !!stopData;
+            !!stopData;
+          const plan = resolveIndividualCommunicationPlan({
+            contactId: offer.contactId,
+            displayName: contact.displayNameOverride?.trim() ||
+              contact.displayName,
+            linkedUid: contact.linkedUid,
+            identityState: contact.identityState === "merged" ?
+              "ambiguous" : contact.identityState,
+            ambiguousCandidateCount:
+              contact.ambiguousCandidateContactIds?.length ?? 0,
+            phoneE164: phone,
+            whatsappStatus: optedOut ? "optedOut" : contact.whatsappStatus,
+            whatsappAdminSuppressed: suppressed,
+          });
+          const handoff = plan.routes.find((route) =>
+            route.routeId === "personalWhatsappHandoff");
           return {event: {eventId: offer.eventId,
             title: event.name ?? "", startsAtMillis:
               event.startTime?.toMillis() ?? 0,
@@ -489,9 +488,9 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             displayName: contact.displayNameOverride?.trim() ||
               contact.displayName,
             phoneE164: phone,
-            whatsappPermission: status === "optedOut" ?
+            whatsappPermission: optedOut ?
               "optedOut" as const :
-              status === "optedIn" && grantVerified && !suppressed ?
+              handoff?.availability === "available" ?
                 "available" as const : "unavailable" as const,
             sourceCurrent: true,
             contactCurrent: contact.deletedAt === null &&
