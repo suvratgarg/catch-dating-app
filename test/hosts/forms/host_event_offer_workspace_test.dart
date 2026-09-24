@@ -398,15 +398,27 @@ void main() {
     expect(find.byKey(const ValueKey('offer-existing-unrelated-offer')),
       findsNothing);
     await tester.tap(find.byKey(const ValueKey('offer-existing-offer-one')));
-    await pumpUntilFound(tester, find.text('Payment reference'));
+    final manualReview = find.byType(HostManualPaymentReviewSection);
+    await pumpUntilFound(tester, manualReview);
+    final referenceInput = find.descendant(
+      of: manualReview, matching: find.byType(TextField));
+    expect(referenceInput, findsOneWidget);
+    // Empty row inputs show an inline Add prompt; editing reveals the label.
+    await tester.ensureVisible(referenceInput);
+    await tester.enterText(referenceInput, 'demo-reference');
+    await pumpFeatureUi(tester);
     expect(find.text('Payment reference'), findsOneWidget);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.ensureVisible(find.text('Prepare personal handoff'));
     await tester.tap(find.text('Prepare personal handoff'));
     await pumpFeatureUi(tester);
     expect(preparations, 1);
     expect(find.text('Hi Maya'), findsOneWidget);
+    await tester.ensureVisible(find.text('Copy message'));
     await tester.tap(find.text('Copy message'));
     await pumpFeatureUi(tester);
     expect(copied, ['Hi Maya']);
+    await tester.ensureVisible(find.text('Open WhatsApp'));
     await tester.tap(find.text('Open WhatsApp'));
     await pumpFeatureUi(tester);
     expect(opened.single.host, 'wa.me');
