@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync} from "node:fs";
+import {join} from "node:path";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {getManagerEventSetupDefaults} from
@@ -16,7 +17,8 @@ const NOW = Date.parse("2026-10-20T18:00:00Z");
 
 function richEvent(): Row {
   const source = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/event_doc.json", "utf8")) as Row;
+    join(__dirname, "../../../contracts/fixtures/valid/event_doc.json"),
+    "utf8")) as Row;
   return {...source, clubId: "org1", organizerId: "org1",
     publicationState: "published", updatedAt: Timestamp.fromMillis(41),
     startTime: Timestamp.fromMillis(NOW),
@@ -215,6 +217,43 @@ test("closed gate and unrecognized client fields cannot write", async () => {
     Partial<ConfigureEventOfferPreferencesCommand>),
   code("invalid-argument"));
   assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
+});
+
+test("malformed intent keys and values reject before writing", async () => {
+  const h = await setup();
+  const bad = [
+    {...h.command.intents, extraSetting: {mode: "clear"}},
+    {...h.command.intents, currency: {mode: "clear", value: "INR"}},
+    {...h.command.intents, currency: {mode: "set", value: "INR",
+      providerActivated: true}},
+    {...h.command.intents, expectedAmountMinor: {mode: "inherit"}},
+    {...h.command.intents, expectedAmountMinor: {mode: "set", value: -1}},
+  ];
+  for (const intents of bad) {
+    await assert.rejects(h.save({intents: intents as
+      ConfigureEventOfferPreferencesCommand["intents"]}),
+    code("invalid-argument"));
+  }
+  assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
+  assert.equal(h.writePaths.length, 0);
+});
+
+test("changed organizer defaults cannot rewrite an issued offer", async () => {
+  const h = await setup();
+  const issuedOffer = {eventId: "event1", revision: 2,
+    paymentSnapshot: {expectedAmountMinor: 12000, currency: "INR"}};
+  h.rows.set("organizerEventOffers/issued", issuedOffer);
+  h.rows.set("organizerEventSetupDefaults/org1", {organizerId: "org1",
+    revision: 2, eventSetup: {currency: "USD"}});
+  await assert.rejects(h.save(), code("aborted"));
+  assert.deepEqual(h.rows.get("organizerEventOffers/issued"), issuedOffer);
+  const current = await getManagerEventSetupDefaults({actorUid: "host1",
+    organizerId: "org1", deps: eventSetupDefaultsDependencies(h.deps.db)});
+  await h.save({requestId: "offer-settings-2",
+    reviewedDefaultsHash: current.preferencesHash});
+  assert.deepEqual(h.rows.get("organizerEventOffers/issued"), issuedOffer);
+  assert.ok(h.writePaths.every((path) => !path.startsWith(
+    "organizerEventOffers/")));
 });
 
 test("replay rechecks current manager and event tenant", async () => {
