@@ -10,6 +10,7 @@ import {
   OfferBatchInput, OfferBatchReceipt, OfferContact, OfferEvent, OfferOrigin,
   OfferRepository, OfferSourceState, OfferTransaction, previewEventOffers,
   getEventOffer, listEventOffers,
+  prepareEventOfferHandoff,
 } from "./eventOfferService";
 import {parseStoredEventOffer} from "./eventOfferFirestoreRepository";
 
@@ -48,6 +49,8 @@ function copy(state: State): State {
 class AtomicStore implements OfferRepository {
   state: State;
   clockMillis = now;
+  handoffPermission: "available" | "optedOut" | "unavailable" =
+    "available";
   private queue: Promise<void> = Promise.resolve();
 
   constructor() {
@@ -109,6 +112,18 @@ class AtomicStore implements OfferRepository {
       origin: async (id) => next.origins.get(id) ?? null,
       event: async (id) => next.events.get(id) ?? null,
       eventPaymentTerms: async (id) => next.paymentTerms.get(id) ?? null,
+      handoffPresentation: async (offer) => ({
+        event: {eventId: offer.eventId, title: "Saturday Social",
+          startsAtMillis: now + 3_600_000,
+          timeZone: "Asia/Kolkata", lifecycle:
+            next.events.get(offer.eventId)?.cancelled ?
+              "canceled" as const : "current" as const},
+        recipient: {contactId: offer.contactId,
+          displayName: "Asha", phoneE164: "+919876543210",
+          whatsappPermission: this.handoffPermission,
+          sourceCurrent: true,
+          contactCurrent: !next.contacts.get(offer.contactId)?.deleted},
+      }),
       offer: async (id) => next.offers.get(id) ?? null,
       actionReceipt: async (id, requestId) =>
         next.receipts.get(`${id}|${requestId}`) ?? null,
@@ -214,6 +229,112 @@ test("review digest and draft issuance fence changed event payment terms",
           organizerPaymentLink: null}}});
     assert.equal(refreshed.offer.paymentSnapshot.eventPaymentRevision, 3);
     assert.equal(refreshed.offer.paymentSnapshot.expectedAmountMinor, 2000);
+  });
+
+test("handoff uses issued snapshot after terms change without writing",
+  async () => {
+    const store = new AtomicStore();
+    const terms = store.state.paymentTerms.get(row.eventId)!;
+    store.state.paymentTerms.set(row.eventId, {...terms,
+      preferredCollection: "personalRequest", expectedAmountMinor: 1800});
+    const personalRow = {...row,
+      organizerPaymentLink: "https://pay.example.test/asha"};
+    const issued = await mutateEventOffer({repository: store, actor,
+      row: personalRow, action: {kind: "createDraft",
+        requestId: "personal-draft", expectedRevision: 0,
+        terms: {expiresAtMillis: row.expiresAtMillis,
+          organizerPaymentLink: personalRow.organizerPaymentLink}}});
+    const offered = await mutateEventOffer({repository: store, actor,
+      row: personalRow, action: {kind: "offer",
+        requestId: "personal-issued",
+        expectedRevision: issued.offer.revision,
+        expectedGeneration: issued.offer.generation}});
+    store.state.paymentTerms.set(row.eventId, {...terms, revision: 2,
+      preferredCollection: "manualInstructions",
+      paymentInstructions: "New instructions", expectedAmountMinor: 5000});
+    const before = store.state.audit.length;
+    const result = await prepareEventOfferHandoff({repository: store,
+      actor, organizerId: row.organizerId, eventId: row.eventId,
+      contactId: row.contactId, expectedOfferRevision: offered.offer.revision,
+      expectedGeneration: offered.offer.generation});
+    assert.equal(result.kind, "prepared");
+    if (result.kind === "prepared") {
+      assert.match(result.editableText, /https:\/\/pay\.example\.test\/asha/u);
+      assert.equal(result.editableText.includes("New instructions"), false);
+      assert.equal(new URL(result.whatsappUrl).searchParams.get("text"),
+        result.copyText);
+    }
+    store.state.paymentTerms.delete(row.eventId);
+    const historical = await prepareEventOfferHandoff({repository: store,
+      actor, organizerId: row.organizerId, eventId: row.eventId,
+      contactId: row.contactId, expectedOfferRevision: offered.offer.revision,
+      expectedGeneration: offered.offer.generation});
+    assert.equal(historical.kind, "prepared");
+    assert.equal(store.state.audit.length, before);
+    assert.equal(store.state.offers.get(offered.offer.offerId)?.revision,
+      offered.offer.revision);
+  });
+
+test("handoff rechecks manager, source, contact, event, offer and permission",
+  async () => {
+    const store = new AtomicStore();
+    const preview = await previewEventOffers({repository: store,
+      actor, input});
+    await commitEventOffers({repository: store, actor,
+      input: {...input, requestId: "handoff-offer-batch",
+        planDigest: preview.planDigest}});
+    const offer = [...store.state.offers.values()][0];
+    const prepare = () => prepareEventOfferHandoff({repository: store,
+      actor, organizerId: row.organizerId, eventId: row.eventId,
+      contactId: row.contactId, expectedOfferRevision: offer.revision,
+      expectedGeneration: offer.generation});
+    store.handoffPermission = "optedOut";
+    const optedOut = await prepare();
+    assert.equal(optedOut.kind, "blocked");
+    if (optedOut.kind === "blocked") {
+      assert.ok(optedOut.blockers.includes("contactOptedOut"));
+    }
+    store.handoffPermission = "available";
+    store.state.managers.clear();
+    await assert.rejects(prepare, (error) => assertCode(error, "denied"));
+    store.state.managers.add("organizer-one|manager-one");
+    store.state.sources.set(row.applicationId, "revokedParticipantGrant");
+    const revoked = await prepare();
+    assert.equal(revoked.kind, "blocked");
+    if (revoked.kind === "blocked") {
+      assert.ok(revoked.blockers.includes("sourceRevoked"));
+    }
+    store.state.sources.set(row.applicationId, "submittedFormResponse");
+    store.state.contacts.get(row.contactId)!.mergedIntoContactId =
+      "survivor";
+    await assert.rejects(prepare, (error) => assertCode(error, "denied"));
+    store.state.contacts.get(row.contactId)!.mergedIntoContactId = null;
+    store.state.events.get(row.eventId)!.cancelled = true;
+    const canceled = await prepare();
+    assert.equal(canceled.kind, "blocked");
+    if (canceled.kind === "blocked") {
+      assert.ok(canceled.blockers.includes("eventCanceled"));
+    }
+    store.state.events.get(row.eventId)!.cancelled = false;
+    await assert.rejects(() => prepareEventOfferHandoff({repository: store,
+      actor, organizerId: row.organizerId, eventId: row.eventId,
+      contactId: "foreign-contact", expectedOfferRevision: offer.revision,
+      expectedGeneration: offer.generation}),
+    (error) => assertCode(error, "conflict"));
+    store.clockMillis = row.expiresAtMillis;
+    const expired = await prepare();
+    assert.equal(expired.kind, "blocked");
+    if (expired.kind === "blocked") {
+      assert.ok(expired.blockers.includes("offerExpired"));
+    }
+    store.clockMillis = now;
+    store.state.offers.set(offer.offerId, {...offer, status: "withdrawn"});
+    const withdrawn = await prepare();
+    assert.equal(withdrawn.kind, "blocked");
+    if (withdrawn.kind === "blocked") {
+      assert.ok(withdrawn.blockers.includes("offerWithdrawn"));
+    }
+    assert.equal(store.state.audit.length, 2);
   });
 
 test("stored offer parser rejects missing lifecycle evidence", async () => {
