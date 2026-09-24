@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
+import {deriveEventSeatPolicy} from
+  "../events/seatAuthority/firestoreAdapter";
+import {seatIdentityAliasId, seatIdentityValueHash,
+  seatVerifiedPhoneProofId} from "../events/seatIdentityAuthority";
+import {deleteAccountEventParticipations} from "./accountDeletionSeats";
 import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
@@ -136,6 +142,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "signedUp",
         genderAtSignup: "woman",
       },
+      "events/event-1": {clubId: "club-1", bookedCount: 1},
       "eventAttendees/attendee-1": {
         eventId: "event-1",
         organizerId: "club-1",
@@ -686,6 +693,7 @@ interface UpdateWrite {
 function createAccountDeletionHarness(params: {
   seed: Record<string, FakeDocumentData>;
   now: unknown;
+  beforeTransaction?: () => void;
 }) {
   const setWrites: SetWrite[] = [];
   const updateWrites: UpdateWrite[] = [];
@@ -742,6 +750,8 @@ function createAccountDeletionHarness(params: {
         docs.forEach(callback);
       },
     }),
+    limit: (count: number) => queryFor(collectionPath,
+      docs.slice(0, count)),
   });
 
   const allDocs = (collectionPath: string): FakeDocumentReference[] =>
@@ -784,6 +794,37 @@ function createAccountDeletionHarness(params: {
     }),
     collectionGroup: (collectionId: string) =>
       queryFor(collectionId, collectionGroupDocs(collectionId)),
+    runTransaction: async <T>(callback: (
+      tx: FirebaseFirestore.Transaction) => Promise<T>): Promise<T> => {
+      params.beforeTransaction?.();
+      const pending: Array<() => void> = [];
+      const tx = {
+        get: async (source: {get: () => Promise<unknown>}) => {
+          assert.equal(pending.length, 0, "transaction reads precede writes");
+          return source.get();
+        },
+        set: (ref: FakeDocumentReference, data: FakeDocumentData,
+          options?: {merge: boolean}) => pending.push(() => {
+          setWrites.push({path: ref.path, data, options});
+          seed[ref.path] = options?.merge ? {...seed[ref.path], ...data} : data;
+        }),
+        update: (ref: FakeDocumentReference, data: FakeDocumentData) =>
+          pending.push(() => {
+            assert.ok(seed[ref.path]);
+            updateWrites.push({path: ref.path, data});
+            seed[ref.path] = {...seed[ref.path], ...data};
+          }),
+        create: (ref: FakeDocumentReference, data: FakeDocumentData) =>
+          pending.push(() => {
+            assert.equal(seed[ref.path], undefined);
+            setWrites.push({path: ref.path, data});
+            seed[ref.path] = data;
+          }),
+      } as unknown as FirebaseFirestore.Transaction;
+      const result = await callback(tx);
+      pending.forEach((write) => write());
+      return result;
+    },
     batch: () => ({
       set: (
         ref: FakeDocumentReference,
@@ -827,6 +868,7 @@ function createAccountDeletionHarness(params: {
     deletedPublicDocs,
     deletedAuthUsers,
     deletedStorageFiles,
+    rows: seed,
     get commits() {
       return commits;
     },
@@ -836,3 +878,180 @@ function createAccountDeletionHarness(params: {
 function hasOwn(data: FakeDocumentData, field: string): boolean {
   return Object.prototype.hasOwnProperty.call(data, field);
 }
+
+function seatReservationPath(key: string): string {
+  const id = createHash("sha256").update(["event1", key]
+    .join("\u001f")).digest("hex");
+  return `eventSeatReservations/${id}`;
+}
+
+function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
+  status?: "signedUp" | "attended"} = {}): Record<string, FakeDocumentData> {
+  const uid = "runner1";
+  const key = "canonical_runner1";
+  const event = {clubId: "org1", organizerId: "org1", status: "active",
+    capacityLimit: 5, constraints: {}, bookedCount: 1,
+    genderCounts: {woman: 1}, checkedInCount: options.status === "attended" ?
+      1 : 0, waitlistedCount: 0};
+  const policy = deriveEventSeatPolicy(event);
+  const seed: Record<string, FakeDocumentData> = {
+    "events/event1": event,
+    "eventParticipations/event1_runner1": {eventId: "event1",
+      clubId: "org1", organizerId: "org1", uid,
+      status: options.status ?? "signedUp", genderAtSignup: "woman"},
+    "eventSeatMigrationFences/event1": {eventId: "event1",
+      migrationRevision: 1, state: "ready"},
+    "eventSeatLedgers/event1": {eventId: "event1", capacity: 5,
+      occupied: 1, revision: 1, capacityRevision: 1,
+      policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+      migrationRevision: 1, state: "ready"},
+    [seatReservationPath(key)]: {eventId: "event1", canonicalKey: key,
+      identityRevision: 1, active: true, revision: 1,
+      reservedAtMillis: 100, releasedAtMillis: null},
+    [`eventSeatIdentityAliases/${seatIdentityAliasId("event1",
+      "uid", uid)}`]: {eventId: "event1", organizerId: "org1",
+      kind: "uid", valueHash: seatIdentityValueHash("uid", uid),
+      canonicalKey: key, identityRevision: 1,
+      migrationRevision: 1, state: "ready"},
+    [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId("event1",
+      uid)}`]: {eventId: "event1", organizerId: "org1", uid,
+      phoneE164: null, migrationRevision: 1, state: "current"},
+  };
+  const source = options.host ? "hostImport" : "catchBooking";
+  if (options.host || options.catchMirror) {
+    seed["eventAttendees/att1"] = {eventId: "event1",
+      organizerId: "org1", source, status: "registered", linkedUid: uid,
+      phoneE164: null, externalReference: null};
+    seed[`eventSeatIdentityAliases/${seatIdentityAliasId("event1",
+      "attendee", "att1")}`] = {eventId: "event1", organizerId: "org1",
+      kind: "attendee", valueHash: seatIdentityValueHash("attendee",
+        "att1"), canonicalKey: key, identityRevision: 1,
+      migrationRevision: 1, state: "ready"};
+  }
+  return seed;
+}
+
+test("ready account deletion releases the last seat exactly once", async () => {
+  const h = createAccountDeletionHarness({seed: readySeatSeed({
+    catchMirror: true, status: "attended"}), now: {kind: "serverTimestamp"}});
+  const command = {db: h.deps.firestore(), uid: "runner1",
+    now: admin.firestore.FieldValue.serverTimestamp(),
+    nowMillis: 1000};
+  await deleteAccountEventParticipations(command);
+  assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 0);
+  assert.equal(h.rows["eventSeatLedgers/event1"].revision, 2);
+  assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
+    false);
+  assert.equal(h.rows["events/event1"].bookedCount, 0);
+  assert.equal(h.rows["events/event1"].checkedInCount, 0);
+  assert.equal(h.rows["eventAttendees/att1"].status, "cancelled");
+  assert.equal(h.rows[`eventSeatIdentityAliases/${seatIdentityAliasId(
+    "event1", "uid", "runner1")}`].state, "retired");
+  assert.equal(h.rows[`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
+    "event1", "runner1")}`].state, "revoked");
+  assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+    "deleted");
+  assert.equal(Object.keys(h.rows).filter((path) =>
+    path.startsWith("eventSeatRequestReceipts/")).length, 1);
+  await deleteAccountEventParticipations(command);
+  assert.equal(h.rows["eventSeatLedgers/event1"].revision, 2);
+  assert.equal(Object.keys(h.rows).filter((path) =>
+    path.startsWith("eventSeatRequestReceipts/")).length, 1);
+});
+
+test("deletion retains an independently imported occupied Host seat",
+  async () => {
+    const h = createAccountDeletionHarness({seed: readySeatSeed({host: true}),
+      now: {kind: "serverTimestamp"}});
+    await requestAccountDeletionHandler({auth: {uid: "runner1"}} as
+      Parameters<typeof requestAccountDeletionHandler>[0], h.deps);
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+    assert.equal(h.rows["eventSeatLedgers/event1"].revision, 1);
+    assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
+      true);
+    assert.equal(h.rows["events/event1"].bookedCount, 1);
+    assert.equal(h.rows["eventAttendees/att1"].status, "registered");
+    assert.equal(h.rows[`eventSeatIdentityAliases/${seatIdentityAliasId(
+      "event1", "uid", "runner1")}`].state, "retired");
+    assert.equal(h.updateWrites.some((row) =>
+      row.path === "eventAttendees/att1" && row.data.linkedUid === null),
+    true);
+  });
+
+test("deletion releases only the Catch seat beside an imported guest",
+  async () => {
+    const seed = readySeatSeed();
+    seed["eventSeatLedgers/event1"].occupied = 2;
+    seed["eventAttendees/guest2"] = {eventId: "event1",
+      organizerId: "org1", source: "hostImport", status: "registered",
+      linkedUid: null};
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}});
+    await deleteAccountEventParticipations({db: h.deps.firestore(),
+      uid: "runner1", now: admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: 1000});
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+    assert.equal(h.rows["events/event1"].bookedCount, 1);
+    assert.equal(h.rows["eventAttendees/guest2"].status, "registered");
+    assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
+      false);
+  });
+
+test("locked migration and unresolved UID deny deletion without seat writes",
+  async () => {
+    for (const broken of ["locked", "missingAlias"]) {
+      const seed = readySeatSeed();
+      if (broken === "locked") {
+        seed["eventSeatMigrationFences/event1"].state = "locked";
+      } else {
+        delete seed[`eventSeatIdentityAliases/${seatIdentityAliasId(
+          "event1", "uid", "runner1")}`];
+      }
+      const h = createAccountDeletionHarness({seed,
+        now: {kind: "serverTimestamp"}});
+      await assert.rejects(deleteAccountEventParticipations({
+        db: h.deps.firestore(), uid: "runner1",
+        now: admin.firestore.FieldValue.serverTimestamp(),
+        nowMillis: 1000}));
+      assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+        "signedUp");
+      assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+      assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
+        true);
+    }
+  });
+
+test("a linked Host attendee on another canonical seat blocks deletion",
+  async () => {
+    const seed = readySeatSeed({host: true});
+    const alias = seed[`eventSeatIdentityAliases/${seatIdentityAliasId(
+      "event1", "attendee", "att1")}`];
+    alias.canonicalKey = "another_seat";
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}});
+    await assert.rejects(deleteAccountEventParticipations({
+      db: h.deps.firestore(), uid: "runner1",
+      now: admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: 1000}), /reconcile identity/u);
+    assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+      "signedUp");
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+  });
+
+test("a participation changed after query is reread before any release",
+  async () => {
+    const seed = readySeatSeed();
+    const h = createAccountDeletionHarness({seed,
+      now: {kind: "serverTimestamp"}, beforeTransaction: () => {
+        seed["eventParticipations/event1_runner1"].status = "deleted";
+      }});
+    await assert.rejects(deleteAccountEventParticipations({
+      db: h.deps.firestore(),
+      uid: "runner1",
+      now: admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: 1000}), /still owns an active seat/u);
+    assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
+    assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
+      true);
+    assert.equal(h.updateWrites.length, 0);
+  });
