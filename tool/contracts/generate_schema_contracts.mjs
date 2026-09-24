@@ -15,6 +15,7 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "EventSetupReceiptDocument", source: "firestore/event_setup_receipts.schema.json", typeOutput: "functions/src/shared/generated/eventSetupReceiptDocument.ts"},
 {
     "name": "OrganizerEventSetupPreferences",
     "source": "embedded/organizer_event_setup_preferences.schema.json",

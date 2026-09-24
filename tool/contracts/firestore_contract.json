@@ -3291,6 +3291,24 @@
         "getOrganizerEventSetupDefaults",
         "updateOrganizerEventSetupDefaults"
       ]
+    },
+    {
+      "id": "eventSetupReceipts",
+      "path": "eventSetupReceipts/{receiptId}",
+      "rulesMatch": "/eventSetupReceipts/{receiptId}",
+      "typescriptInterface": "EventSetupReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps private event setup receipts server-only"
+      ],
+      "owner": "private event setup operations",
+      "read": "server only; manager callable operation result",
+      "write": "server only",
+      "exportedFunctions": [
+        "createPrivateEventSetup",
+        "updatePrivateEventBasics"
+      ]
     }
   ]
 }

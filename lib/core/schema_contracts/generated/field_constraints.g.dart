@@ -52870,6 +52870,65 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventSetupReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.appliedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const eventSetupReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventSetupReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventSetupReceiptDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupReceiptDocumentOperation = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.operation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['create', 'update'],
+  );
+
+  static const eventSetupReceiptDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSetupReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventShareIntentDocumentActorKind = CatchContractFieldConstraints(
     path: 'eventShareIntentDocument.actorKind',
     required: true,
@@ -123658,6 +123717,14 @@ abstract final class CatchContractConstraints {
     'eventSetupDefaults.organizerDefaultsRevision': eventSetupDefaultsOrganizerDefaultsRevision,
     'eventSetupDefaults.timezone.source': eventSetupDefaultsTimezoneSource,
     'eventSetupDefaults.timezone.value': eventSetupDefaultsTimezoneValue,
+    'eventSetupReceiptDocument.actorUid': eventSetupReceiptDocumentActorUid,
+    'eventSetupReceiptDocument.appliedRevision': eventSetupReceiptDocumentAppliedRevision,
+    'eventSetupReceiptDocument.createdAt._nanoseconds': eventSetupReceiptDocumentCreatedAtNanoseconds,
+    'eventSetupReceiptDocument.createdAt._seconds': eventSetupReceiptDocumentCreatedAtSeconds,
+    'eventSetupReceiptDocument.eventId': eventSetupReceiptDocumentEventId,
+    'eventSetupReceiptDocument.operation': eventSetupReceiptDocumentOperation,
+    'eventSetupReceiptDocument.organizerId': eventSetupReceiptDocumentOrganizerId,
+    'eventSetupReceiptDocument.requestHash': eventSetupReceiptDocumentRequestHash,
     'eventShareIntentDocument.actorKind': eventShareIntentDocumentActorKind,
     'eventShareIntentDocument.actorUid': eventShareIntentDocumentActorUid,
     'eventShareIntentDocument.channelHint': eventShareIntentDocumentChannelHint,

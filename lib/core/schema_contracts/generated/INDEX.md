@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventSetupReceiptDocument | `firestore/event_setup_receipts.schema.json` | `functions/src/shared/generated/eventSetupReceiptDocument.ts` |
 | OrganizerEventSetupPreferences | `embedded/organizer_event_setup_preferences.schema.json` | `functions/src/shared/generated/organizerEventSetupPreferences.ts` |
 | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `functions/src/shared/generated/getOrganizerEventSetupDefaultsCallablePayload.ts` |
 | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallablePayload.ts` |
@@ -859,6 +860,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventSetupReceiptDocumentSchema` | EventSetupReceiptDocument | `firestore/event_setup_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_setup_receipt_document.g.dart` |
 | `schemaOrganizerEventSetupPreferencesSchema` | OrganizerEventSetupPreferences | `embedded/organizer_event_setup_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_setup_preferences.g.dart` |
 | `schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema` | GetOrganizerEventSetupDefaultsCallablePayload | `callables/get_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_organizer_event_setup_defaults_callable_payload.g.dart` |
 | `schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema` | UpdateOrganizerEventSetupDefaultsCallablePayload | `callables/update_organizer_event_setup_defaults_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_event_setup_defaults_callable_payload.g.dart` |

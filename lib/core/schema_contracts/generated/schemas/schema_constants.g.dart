@@ -297,6 +297,7 @@ export 'event_runtime_data_request_receipt_document.g.dart';
 export 'event_runtime_participant_document.g.dart';
 export 'event_safety_report_document.g.dart';
 export 'event_setup_defaults.g.dart';
+export 'event_setup_receipt_document.g.dart';
 export 'event_share_intent_document.g.dart';
 export 'event_staff_grant_document.g.dart';
 export 'event_staff_list_callable_response.g.dart';

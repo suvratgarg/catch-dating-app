@@ -538,6 +538,16 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventSetupReceiptDocument {
+  operation: "create" | "update";
+  actorUid: string;
+  organizerId: string;
+  requestHash: string;
+  eventId: string;
+  appliedRevision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
 export interface OrganizerEventSetupDefaultsDocument {
   organizerId: string;
   revision: number;

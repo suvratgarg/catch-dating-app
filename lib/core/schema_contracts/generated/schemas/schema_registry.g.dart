@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventSetupReceiptDocument',
+    source: 'firestore/event_setup_receipts.schema.json',
+    schema: schemaEventSetupReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OrganizerEventSetupPreferences',
     source: 'embedded/organizer_event_setup_preferences.schema.json',
     schema: schemaOrganizerEventSetupPreferencesSchema,
@@ -4229,6 +4234,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventSetupReceiptDocument': schemaEventSetupReceiptDocumentSchema,
   'OrganizerEventSetupPreferences': schemaOrganizerEventSetupPreferencesSchema,
   'GetOrganizerEventSetupDefaultsCallablePayload': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
   'UpdateOrganizerEventSetupDefaultsCallablePayload': schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
@@ -5074,6 +5080,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_setup_receipts.schema.json': schemaEventSetupReceiptDocumentSchema,
   'embedded/organizer_event_setup_preferences.schema.json': schemaOrganizerEventSetupPreferencesSchema,
   'callables/get_organizer_event_setup_defaults_payload.schema.json': schemaGetOrganizerEventSetupDefaultsCallablePayloadSchema,
   'callables/update_organizer_event_setup_defaults_payload.schema.json': schemaUpdateOrganizerEventSetupDefaultsCallablePayloadSchema,
