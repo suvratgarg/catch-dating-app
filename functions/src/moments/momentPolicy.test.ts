@@ -65,13 +65,16 @@ test("consent checks are skipped when the send does not require them", () => {
   {kind: "suppress", reason: "optedOut"});
 });
 
-test("uid endpoints gate on token and preference, not consent", () => {
+test("uid endpoints are deliverable without a token; opt-out still " +
+    "suppresses", () => {
   const uidBase: PolicyInput = {...base,
     endpoint: {kind: "uid", uid: "u1", fcmToken: "tok"}};
   assert.deepEqual(evaluateRecipientPolicy(uidBase), {kind: "send"});
+  // A uid endpoint always lands as an activity item; a missing FCM token
+  // only forgoes the push leg at delivery (reminder parity).
   assert.deepEqual(evaluateRecipientPolicy({...uidBase,
     endpoint: {kind: "uid", uid: "u1", fcmToken: null}}),
-  {kind: "suppress", reason: "noEndpoint"});
+  {kind: "send"});
   assert.deepEqual(evaluateRecipientPolicy({...uidBase,
     consent: {communicationPermission: "optedOut"}}),
   {kind: "suppress", reason: "preferenceOff"});

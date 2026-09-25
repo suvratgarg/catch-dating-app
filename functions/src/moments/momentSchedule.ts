@@ -2,6 +2,7 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import type {TravelLegEvent} from "./momentConditions";
+import {ensureEventDefaultMoments} from "./momentDefaults";
 import {ingestTravelLegEvent, runMomentSweep} from "./momentRunner";
 import {buildMomentRunnerDeps} from "./momentWiring";
 
@@ -22,6 +23,9 @@ export const organizerMomentSweep = onSchedule(
   },
   async () => {
     try {
+      // Provision system-default moments (the T-15m event reminder that
+      // replaced the legacy sendEventReminders cron), then plan/fire.
+      await ensureEventDefaultMoments();
       const summary = await runMomentSweep(buildMomentRunnerDeps());
       if (summary.runsFired + summary.runsCreated +
           summary.runsSuperseded + summary.runsSkipped +

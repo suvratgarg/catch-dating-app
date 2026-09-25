@@ -62,11 +62,10 @@ test("deps resolve local time and quiet hours from the scope doc",
     assert.ok(quietEnd !== null && quietEnd > inside);
   });
 
-test("loadConsentFacts maps household consent and push pref", async () => {
+test("loadConsentFacts maps household consent only", async () => {
   const db = new FakeFirestore({
     "programHouseholds/hh1": {messagingConsent: {granted: false}},
     "programHouseholds/hh2": {messagingConsent: {granted: true}},
-    "users/u-yes": {fcmToken: "tok", prefsEventReminders: true},
     "users/u-no": {fcmToken: "tok", prefsEventReminders: false},
   });
   const deps = buildMomentRunnerDeps({firestore: () => db as never});
@@ -92,22 +91,10 @@ test("loadConsentFacts maps household consent and push pref", async () => {
     (await deps.loadConsentFacts(phone("hh2"), pushMoment))
       .householdConsentGranted,
     true);
-  assert.equal(
-    (await deps.loadConsentFacts(uid("u-yes"), pushMoment))
-      .communicationPermission,
-    "optedIn");
-  assert.equal(
-    (await deps.loadConsentFacts(uid("u-no"), pushMoment))
-      .communicationPermission,
-    "optedOut");
-  // Unknown preference keys fail closed.
-  const badKey = {
-    action: {kind: "push", notificationType: "x", preferenceKey: "nope"},
-  } as MomentDefinition;
-  assert.equal(
-    (await deps.loadConsentFacts(uid("u-yes"), badKey))
-      .communicationPermission,
-    "optedOut");
+  // Push preference no longer feeds suppression: it gates only the FCM
+  // leg at delivery so the activity item still lands (reminder parity).
+  assert.deepEqual(
+    await deps.loadConsentFacts(uid("u-no"), pushMoment), {});
 });
 
 test("pushCopyFor derives event reminder copy from the event doc", async () => {

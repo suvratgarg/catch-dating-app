@@ -19,7 +19,6 @@ import {
   sendFcmNotification,
   type ActivityNotificationType,
   type NotificationPreference,
-  type NotificationPreferenceDocument,
 } from "../shared/notifications";
 import type {
   OrganizerMessageTemplateDocument,
@@ -102,8 +101,8 @@ export function buildMomentRunnerDeps(
       sendTemplate(firestore(), tokenStore, provider(), params),
     sendPushToUid: (params) => sendPush(firestore(), params),
     writeStaffAttention: (params) => staffAttention(firestore(), params),
-    loadConsentFacts: (recipient, moment) =>
-      consentFacts(firestore(), recipient, moment),
+    loadConsentFacts: (recipient) =>
+      consentFacts(firestore(), recipient),
     ...overrides,
   };
   return deps;
@@ -277,6 +276,7 @@ async function sendPush(
     title: string;
     body: string;
     notificationType: string;
+    preferenceKey: string;
     scope: MomentScope;
     runId: string;
     recipientKey: string;
@@ -284,6 +284,8 @@ async function sendPush(
 ): Promise<void> {
   const type = ACTIVITY_TYPES.has(params.notificationType) ?
     params.notificationType as ActivityNotificationType : "organizerUpdate";
+  // The durable send is the activity item; the user's push preference
+  // gates only the FCM leg, matching the shipped reminder behavior.
   await createActivityNotificationIfAbsent(db, {
     id: activityNotificationId(type, `${params.runId}`),
     uid: params.uid,
@@ -296,7 +298,12 @@ async function sendPush(
   });
   const userSnap = await db.collection("users").doc(params.uid).get();
   const user = userSnap.data() as UserProfileDocument | undefined;
-  if (!user?.fcmToken) return;
+  const preferenceKey = PREFERENCE_KEYS.has(params.preferenceKey) ?
+    params.preferenceKey as NotificationPreference : null;
+  if (!user?.fcmToken || preferenceKey === null ||
+      !allowsPushPreference(user, preferenceKey)) {
+    return;
+  }
   await sendFcmNotification({
     token: user.fcmToken,
     title: params.title,
@@ -355,7 +362,6 @@ async function staffAttention(
 async function consentFacts(
   db: Firestore,
   recipient: ResolvedRecipient,
-  moment: MomentDefinition,
 ): Promise<ConsentFacts> {
   const facts: ConsentFacts = {};
   if (recipient.householdId !== null) {
@@ -368,19 +374,6 @@ async function consentFacts(
       facts.householdConsentGranted =
         (consent as {granted: boolean}).granted;
     }
-  }
-  if (recipient.endpoint.kind === "uid" &&
-      moment.action.kind === "push") {
-    const snap = await db.collection("users")
-      .doc(recipient.endpoint.uid).get();
-    const user = snap.data() as NotificationPreferenceDocument | undefined;
-    const key = PREFERENCE_KEYS.has(moment.action.preferenceKey) ?
-      moment.action.preferenceKey as NotificationPreference : null;
-    // Unknown preference keys fail closed; a missing user doc is treated
-    // as opted out, matching allowsPushPreference's default.
-    facts.communicationPermission =
-      key !== null && allowsPushPreference(user, key) ?
-        "optedIn" : "optedOut";
   }
   return facts;
 }

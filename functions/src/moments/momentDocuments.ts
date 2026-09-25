@@ -2,6 +2,7 @@ import type {Query, Firestore} from "firebase-admin/firestore";
 import {
   requireMillis,
   sameScope,
+  scopeId,
   type AnchorFacts,
   type MomentDefinition,
   type MomentScope,
@@ -43,6 +44,32 @@ export function momentFromDocument(
     approval: readApproval(data.approval),
     origin: data.origin === "systemDefault" ? "systemDefault" : "organizer",
     revision: readInt(data.revision, 1),
+  };
+}
+
+/** Serializes a definition for storage; scopeKind/scopeId are denormalized
+ *  for list queries. */
+export function momentToDocument(
+  moment: MomentDefinition,
+  nowMillis: number,
+  isCreate: boolean,
+): Record<string, unknown> {
+  return {
+    momentId: moment.momentId,
+    scope: moment.scope,
+    scopeKind: moment.scope.kind,
+    scopeId: scopeId(moment.scope),
+    name: moment.name,
+    initiation: moment.initiation,
+    sense: moment.sense,
+    audience: moment.audience,
+    action: moment.action,
+    status: moment.status,
+    approval: moment.approval,
+    origin: moment.origin,
+    revision: moment.revision,
+    updatedAtMillis: nowMillis,
+    ...(isCreate ? {createdAtMillis: nowMillis} : {}),
   };
 }
 
@@ -571,4 +598,4 @@ function readTimestamp(value: unknown): number | null {
   return null;
 }
 
-export {sameScope, requireMillis};
+export {sameScope, scopeId, requireMillis};

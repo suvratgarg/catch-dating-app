@@ -36,7 +36,8 @@ export interface ReplanResult {
 
 export type FireDisposition =
   "dispatch" | "skip:momentNotArmed" | "skip:messagingDisabled" |
-    "skip:scopeCancelled" | "skip:functionCancelled" | "skip:staleAnchor";
+    "skip:scopeCancelled" | "skip:functionCancelled" | "skip:staleAnchor" |
+    "skip:anchorPassed";
 
 const DEFAULT_GRACE_MILLIS = 5 * 60_000;
 
@@ -254,6 +255,7 @@ export function resolveFireDisposition(
   run: RunRecord,
   moment: MomentDefinition,
   facts: AnchorFacts,
+  nowMillis?: number,
 ): FireDisposition {
   if (moment.status !== "armed") return "skip:momentNotArmed";
   if (facts.scope.cancelled) return "skip:scopeCancelled";
@@ -289,6 +291,15 @@ export function resolveFireDisposition(
   const currentRevision = currentAnchorRevision(initiation, facts);
   if (currentRevision === null || currentRevision !== run.anchorRevision) {
     return "skip:staleAnchor";
+  }
+  // A "before the anchor" send is pointless once the anchor has passed —
+  // a T-15m reminder delivered after the event started is worse than
+  // none. Post-anchor sends (positive offsets) stay valid when late.
+  if (nowMillis !== undefined && initiation.offsetMinutes <= 0) {
+    const anchor = resolveAnchor(initiation, facts);
+    if (anchor.kind === "resolved" && anchor.atMillis <= nowMillis) {
+      return "skip:anchorPassed";
+    }
   }
   return "dispatch";
 }

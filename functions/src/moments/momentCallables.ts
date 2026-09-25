@@ -47,6 +47,7 @@ import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {
   MOMENTS_COLLECTION,
   momentFromDocument,
+  momentToDocument,
   readAction,
   readAudience,
   readInitiation,
@@ -549,29 +550,3 @@ export const listOrganizerMoments = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),
   (request) => listHandler(request)
 );
-
-/** Serializes a definition for storage; scopeKind/scopeId are denormalized
- *  for list queries. */
-function momentToDocument(
-  moment: MomentDefinition,
-  nowMillis: number,
-  isCreate: boolean,
-): Record<string, unknown> {
-  return {
-    momentId: moment.momentId,
-    scope: moment.scope,
-    scopeKind: moment.scope.kind,
-    scopeId: scopeId(moment.scope),
-    name: moment.name,
-    initiation: moment.initiation,
-    sense: moment.sense,
-    audience: moment.audience,
-    action: moment.action,
-    status: moment.status,
-    approval: moment.approval,
-    origin: moment.origin,
-    revision: moment.revision,
-    updatedAtMillis: nowMillis,
-    ...(isCreate ? {createdAtMillis: nowMillis} : {}),
-  };
-}

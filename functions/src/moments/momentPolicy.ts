@@ -79,11 +79,9 @@ export function inQuietHours(
 export function evaluateRecipientPolicy(input: PolicyInput): PolicyDecision {
   const {endpoint, consent} = input;
   if (endpoint.kind === "uid") {
-    if (endpoint.fcmToken === null) {
-      return {kind: "suppress", reason: "noEndpoint"};
-    }
-    // Push is governed by the user's own notification preference; consent
-    // fields do not apply.
+    // A uid endpoint is always deliverable: the send lands as an in-app
+    // activity item, and the FCM leg is gated separately at delivery by
+    // the user's own notification preference and token.
     if (consent.communicationPermission === "optedOut") {
       return {kind: "suppress", reason: "preferenceOff"};
     }

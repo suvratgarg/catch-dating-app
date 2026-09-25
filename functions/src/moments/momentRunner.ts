@@ -85,6 +85,9 @@ export interface MomentRunnerDeps {
     title: string;
     body: string;
     notificationType: string;
+    /** User notification preference gating the FCM leg only; the
+     *  in-app activity item is written regardless (reminder parity). */
+    preferenceKey: string;
     scope: MomentScope;
     runId: string;
     recipientKey: string;
@@ -174,9 +177,15 @@ export async function runMomentSweep(
       summary.runsSuperseded += 1;
     }
     if (plan.create !== null) {
-      await db.collection(MOMENT_RUNS_COLLECTION).doc(plan.create.runId)
-        .set({...plan.create});
-      summary.runsCreated += 1;
+      // Create-only: a deterministic run id may already exist as a
+      // completed (dispatched/skipped/superseded) journal entry and must
+      // never be resurrected into a second fire.
+      const runRef =
+        db.collection(MOMENT_RUNS_COLLECTION).doc(plan.create.runId);
+      if (!(await runRef.get()).exists) {
+        await runRef.set({...plan.create});
+        summary.runsCreated += 1;
+      }
     }
     if (plan.supersede.length > 0 || plan.create !== null) {
       summary.momentsReplanned += 1;
@@ -296,7 +305,7 @@ async function dispatchRun(
   facts: AnchorFacts,
   now: number,
 ): Promise<DispatchOutcome> {
-  const disposition = resolveFireDisposition(run, moment, facts);
+  const disposition = resolveFireDisposition(run, moment, facts, now);
   if (disposition !== "dispatch") {
     await markRun(db, run, "skipped", {reason: disposition});
     return "skipped";
@@ -406,6 +415,7 @@ async function deliver(
       title: copy.title,
       body: copy.body,
       notificationType: action.notificationType,
+      preferenceKey: action.preferenceKey,
       scope: moment.scope,
       runId: run.runId,
       recipientKey: recipient.recipientKey,
