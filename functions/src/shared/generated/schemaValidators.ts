@@ -333,6 +333,16 @@ export {validateProgramPickupPointDocument} from "./validators/programPickupPoin
 export {validateProgramHotelDocument} from "./validators/programHotelDocument";
 export {validateProgramTravelLegDocument} from "./validators/programTravelLegDocument";
 export {validateProgramTravelPartyDocument} from "./validators/programTravelPartyDocument";
+export {validateOrganizerMomentDocument} from "./validators/organizerMomentDocument";
+export {validateOrganizerMomentRunDocument} from "./validators/organizerMomentRunDocument";
+export {validateOrganizerMomentSendDocument} from "./validators/organizerMomentSendDocument";
+export {validateUpsertOrganizerMomentCallablePayload} from "./validators/upsertOrganizerMomentInput";
+export {validateOrganizerMomentActionCallablePayload} from "./validators/organizerMomentActionInput";
+export {validateRunOrganizerMomentCallablePayload} from "./validators/runOrganizerMomentInput";
+export {validateListOrganizerMomentsCallablePayload} from "./validators/listOrganizerMomentsInput";
+export {validateOrganizerMomentCallableResponse} from "./validators/organizerMomentOutput";
+export {validateListOrganizerMomentsCallableResponse} from "./validators/listOrganizerMomentsOutput";
+export {validateRunOrganizerMomentCallableResponse} from "./validators/runOrganizerMomentOutput";
 export {validateTransportVendorDocument} from "./validators/transportVendorDocument";
 export {validateTransportTripDocument} from "./validators/transportTripDocument";
 export {validateTransportActiveAssignmentDocument} from "./validators/transportActiveAssignmentDocument";

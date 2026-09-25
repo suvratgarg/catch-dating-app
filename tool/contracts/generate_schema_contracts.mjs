@@ -1770,6 +1770,56 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programTravelPartyDocument.ts",
   },
   {
+    name: "OrganizerMomentDocument",
+    source: "firestore/organizer_moments.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentDocument.ts",
+  },
+  {
+    name: "OrganizerMomentRunDocument",
+    source: "firestore/organizer_moment_runs.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentRunDocument.ts",
+  },
+  {
+    name: "OrganizerMomentSendDocument",
+    source: "firestore/organizer_moment_sends.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentSendDocument.ts",
+  },
+  {
+    name: "UpsertOrganizerMomentCallablePayload",
+    source: "callables/upsert_organizer_moment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/upsertOrganizerMomentCallablePayload.ts",
+  },
+  {
+    name: "OrganizerMomentActionCallablePayload",
+    source: "callables/organizer_moment_action_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentActionCallablePayload.ts",
+  },
+  {
+    name: "RunOrganizerMomentCallablePayload",
+    source: "callables/run_organizer_moment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/runOrganizerMomentCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerMomentsCallablePayload",
+    source: "callables/list_organizer_moments_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listOrganizerMomentsCallablePayload.ts",
+  },
+  {
+    name: "OrganizerMomentCallableResponse",
+    source: "callable_responses/organizer_moment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerMomentsCallableResponse",
+    source: "callable_responses/list_organizer_moments_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listOrganizerMomentsCallableResponse.ts",
+  },
+  {
+    name: "RunOrganizerMomentCallableResponse",
+    source: "callable_responses/run_organizer_moment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/runOrganizerMomentCallableResponse.ts",
+  },
+  {
     name: "TransportVendorDocument",
     source: "firestore/transport_vendors.schema.json",
     typeOutput: "functions/src/shared/generated/transportVendorDocument.ts",

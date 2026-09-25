@@ -331,6 +331,16 @@ import {
   programHotelDocumentSchema,
   programTravelLegDocumentSchema,
   programTravelPartyDocumentSchema,
+  organizerMomentDocumentSchema,
+  organizerMomentRunDocumentSchema,
+  organizerMomentSendDocumentSchema,
+  upsertOrganizerMomentCallablePayloadSchema,
+  organizerMomentActionCallablePayloadSchema,
+  runOrganizerMomentCallablePayloadSchema,
+  listOrganizerMomentsCallablePayloadSchema,
+  organizerMomentCallableResponseSchema,
+  listOrganizerMomentsCallableResponseSchema,
+  runOrganizerMomentCallableResponseSchema,
   transportVendorDocumentSchema,
   transportTripDocumentSchema,
   transportActiveAssignmentDocumentSchema,
@@ -1193,6 +1203,16 @@ export const validateProgramPickupPointDocument = ajv.compile(programPickupPoint
 export const validateProgramHotelDocument = ajv.compile(programHotelDocumentSchema);
 export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
 export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
+export const validateOrganizerMomentDocument = ajv.compile(organizerMomentDocumentSchema);
+export const validateOrganizerMomentRunDocument = ajv.compile(organizerMomentRunDocumentSchema);
+export const validateOrganizerMomentSendDocument = ajv.compile(organizerMomentSendDocumentSchema);
+export const validateUpsertOrganizerMomentCallablePayload = ajv.compile(upsertOrganizerMomentCallablePayloadSchema);
+export const validateOrganizerMomentActionCallablePayload = ajv.compile(organizerMomentActionCallablePayloadSchema);
+export const validateRunOrganizerMomentCallablePayload = ajv.compile(runOrganizerMomentCallablePayloadSchema);
+export const validateListOrganizerMomentsCallablePayload = ajv.compile(listOrganizerMomentsCallablePayloadSchema);
+export const validateOrganizerMomentCallableResponse = ajv.compile(organizerMomentCallableResponseSchema);
+export const validateListOrganizerMomentsCallableResponse = ajv.compile(listOrganizerMomentsCallableResponseSchema);
+export const validateRunOrganizerMomentCallableResponse = ajv.compile(runOrganizerMomentCallableResponseSchema);
 export const validateTransportVendorDocument = ajv.compile(transportVendorDocumentSchema);
 export const validateTransportTripDocument = ajv.compile(transportTripDocumentSchema);
 export const validateTransportActiveAssignmentDocument = ajv.compile(transportActiveAssignmentDocumentSchema);

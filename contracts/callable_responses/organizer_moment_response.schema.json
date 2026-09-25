@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_moment_response.schema.json",
+  "title": "OrganizerMomentCallableResponse",
+  "description": "Single-moment response for upsert/arm/pause/resume.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["moment"],
+  "properties": {
+    "moment": {"$ref": "../shared/moment_common.schema.json#/definitions/momentDefinition"}
+  }
+}

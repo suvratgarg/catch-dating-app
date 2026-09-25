@@ -1,0 +1,8 @@
+{
+  "momentId": "moment-1",
+  "recipientKey": "household:hh-1",
+  "decision": "suppressed",
+  "reason": "vibes",
+  "dayKey": "2026-09-24",
+  "createdAtMillis": 1700000000000
+}

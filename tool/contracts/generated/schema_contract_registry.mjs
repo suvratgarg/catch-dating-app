@@ -128502,6 +128502,1924 @@ export const programTravelPartyDocumentSchema = {
   }
 };
 
+export const organizerMomentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moments.schema.json",
+  "title": "OrganizerMomentDocument",
+  "description": "Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMoments",
+  "x-firestore-path": "organizerMoments/{momentId}",
+  "x-document-id-field": "momentId",
+  "x-owner": "organizer moment callables + moment sweep",
+  "required": [
+    "momentId",
+    "scope",
+    "scopeKind",
+    "scopeId",
+    "name",
+    "initiation",
+    "sense",
+    "audience",
+    "action",
+    "status",
+    "approval",
+    "origin",
+    "revision",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "scopeKind": {
+      "type": "string",
+      "enum": [
+        "event",
+        "program"
+      ],
+      "description": "Denormalized scope.kind for list queries."
+    },
+    "scopeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Denormalized scope id (eventId or programId) for list queries."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "initiation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "scheduled",
+            "anchored",
+            "triggered"
+          ]
+        },
+        "atMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Scheduled fire time; required when kind=scheduled."
+        },
+        "anchorKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "scopeStart",
+                "scopeEnd",
+                "functionStart",
+                "functionEnd",
+                "rsvpDeadline",
+                "travelLegTime"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=anchored."
+        },
+        "anchorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+        },
+        "offsetMinutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -43200,
+          "maximum": 43200,
+          "description": "Minutes relative to the anchor; negative is before."
+        },
+        "triggerKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "lateArrivalAtHotel",
+                "flightDisrupted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=triggered."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Optional function scope for triggered moments."
+        }
+      }
+    },
+    "sense": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "audience"
+      ]
+    },
+    "audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "subject",
+            "eventParticipants",
+            "functionGuests",
+            "households",
+            "staffDuty"
+          ]
+        },
+        "statuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "signedUp"
+            ]
+          },
+          "description": "eventParticipants: participation statuses included."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "functionGuests: the function whose guests resolve."
+        },
+        "rsvp": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "attending",
+              "maybe"
+            ]
+          },
+          "description": "functionGuests: RSVP states included."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: one send per household when true (default)."
+        },
+        "rsvpPendingOnly": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "households: restrict to households with a pending member."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffDuty: duty whose grant holders resolve."
+        },
+        "scopeIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sendTemplate",
+            "push",
+            "staffAttention"
+          ]
+        },
+        "connectionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerSenderConnections doc id."
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerMessageTemplates doc id."
+        },
+        "variables": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "description": "sendTemplate: template variable substitutions."
+        },
+        "notificationType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: activity/push type written to the feed."
+        },
+        "preferenceKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: user notification preference gating FCM."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffAttention: duty the attention item targets."
+        },
+        "severity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "info",
+            "warning",
+            "urgent",
+            null
+          ],
+          "description": "staffAttention: attention severity."
+        },
+        "titleTemplate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200,
+          "description": "staffAttention: rendered attention title."
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "armed",
+        "paused",
+        "done"
+      ]
+    },
+    "approval": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "approvedByUid",
+        "approvedAtMillis"
+      ],
+      "properties": {
+        "approvedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Approve-the-rule-once record; required while armed."
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "organizer",
+        "systemDefault"
+      ],
+      "description": "systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const organizerMomentRunDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_runs.schema.json",
+  "title": "OrganizerMomentRunDocument",
+  "description": "Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentRuns",
+  "x-firestore-path": "organizerMomentRuns/{runId}",
+  "x-document-id-field": "runId",
+  "x-owner": "moment runner",
+  "required": [
+    "runId",
+    "momentId",
+    "dueAtMillis",
+    "anchorRevision",
+    "status"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "dueAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "anchorRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "resolving",
+        "dispatched",
+        "skipped",
+        "superseded",
+        "failed"
+      ]
+    },
+    "targetFunctionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "subjectId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "description": "Triggered runs: the fact's subject (e.g. travel leg id)."
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Skip/failure reason written at run transition."
+    },
+    "recipients": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "sent": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "suppressed": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Suppression reason -> recipient count rollup."
+    },
+    "suppressedNoEndpoint": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  }
+};
+
+export const organizerMomentSendDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_sends.schema.json",
+  "title": "OrganizerMomentSendDocument",
+  "description": "Per-recipient send decision for a moment run; document id is {runId}_{recipientKey} so retries never double-send and every suppression carries its audited reason.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentSends",
+  "x-firestore-path": "organizerMomentSends/{sendId}",
+  "x-document-id-field": "sendId",
+  "x-owner": "moment runner",
+  "required": [
+    "momentId",
+    "recipientKey",
+    "decision",
+    "dayKey",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220,
+      "description": "Stable recipient idempotency key: household:|guest:|uid:|contact: prefixed."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "suppressed"
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "noEndpoint",
+        "preferenceOff",
+        "noConsent",
+        "optedOut",
+        "endpointSuppressed",
+        "dailyCap",
+        null
+      ],
+      "description": "Suppression reason; null on sent."
+    },
+    "dayKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "description": "Scope-local calendar day (YYYY-MM-DD) for per-endpoint daily caps."
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const upsertOrganizerMomentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_moment_payload.schema.json",
+  "title": "UpsertOrganizerMomentCallablePayload",
+  "description": "Create or revise an organizer moment. New moments land as drafts; revising an existing moment keeps its scope (immutable) and drops it back to draft with approval cleared, requiring re-arm.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "name",
+    "initiation",
+    "sense",
+    "audience",
+    "action"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "momentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Existing moment to revise; null/omitted creates a new moment."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "initiation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "scheduled",
+            "anchored",
+            "triggered"
+          ]
+        },
+        "atMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Scheduled fire time; required when kind=scheduled."
+        },
+        "anchorKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "scopeStart",
+                "scopeEnd",
+                "functionStart",
+                "functionEnd",
+                "rsvpDeadline",
+                "travelLegTime"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=anchored."
+        },
+        "anchorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+        },
+        "offsetMinutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -43200,
+          "maximum": 43200,
+          "description": "Minutes relative to the anchor; negative is before."
+        },
+        "triggerKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "lateArrivalAtHotel",
+                "flightDisrupted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=triggered."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Optional function scope for triggered moments."
+        }
+      }
+    },
+    "sense": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "audience"
+      ]
+    },
+    "audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "subject",
+            "eventParticipants",
+            "functionGuests",
+            "households",
+            "staffDuty"
+          ]
+        },
+        "statuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "signedUp"
+            ]
+          },
+          "description": "eventParticipants: participation statuses included."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "functionGuests: the function whose guests resolve."
+        },
+        "rsvp": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "attending",
+              "maybe"
+            ]
+          },
+          "description": "functionGuests: RSVP states included."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: one send per household when true (default)."
+        },
+        "rsvpPendingOnly": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "households: restrict to households with a pending member."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffDuty: duty whose grant holders resolve."
+        },
+        "scopeIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sendTemplate",
+            "push",
+            "staffAttention"
+          ]
+        },
+        "connectionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerSenderConnections doc id."
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerMessageTemplates doc id."
+        },
+        "variables": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "description": "sendTemplate: template variable substitutions."
+        },
+        "notificationType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: activity/push type written to the feed."
+        },
+        "preferenceKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: user notification preference gating FCM."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffAttention: duty the attention item targets."
+        },
+        "severity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "info",
+            "warning",
+            "urgent",
+            null
+          ],
+          "description": "staffAttention: attention severity."
+        },
+        "titleTemplate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200,
+          "description": "staffAttention: rendered attention title."
+        }
+      }
+    }
+  }
+};
+
+export const organizerMomentActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/organizer_moment_action_payload.schema.json",
+  "title": "OrganizerMomentActionCallablePayload",
+  "description": "Lifecycle transition on one moment: arm (approve the rule once), pause, or resume. Scope must match the stored moment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "momentId"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const runOrganizerMomentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/run_organizer_moment_payload.schema.json",
+  "title": "RunOrganizerMomentCallablePayload",
+  "description": "Fire a manual moment immediately. The caller-supplied requestKey scopes idempotency: retries and double-submits with the same key resolve to the same run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "momentId",
+    "requestKey"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listOrganizerMomentsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_moments_payload.schema.json",
+  "title": "ListOrganizerMomentsCallablePayload",
+  "description": "List all moments for one event or program scope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    }
+  }
+};
+
+export const organizerMomentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_moment_response.schema.json",
+  "title": "OrganizerMomentCallableResponse",
+  "description": "Single-moment response for upsert/arm/pause/resume.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "moment"
+  ],
+  "properties": {
+    "moment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "momentId",
+        "scope",
+        "name",
+        "initiation",
+        "sense",
+        "audience",
+        "action",
+        "status",
+        "approval",
+        "origin",
+        "revision"
+      ],
+      "properties": {
+        "momentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "event",
+                "program"
+              ]
+            },
+            "eventId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180,
+              "description": "Required when kind=event; must be null otherwise."
+            },
+            "programId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180,
+              "description": "Required when kind=program; must be null otherwise."
+            }
+          }
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "initiation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "manual",
+                "scheduled",
+                "anchored",
+                "triggered"
+              ]
+            },
+            "atMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Scheduled fire time; required when kind=scheduled."
+            },
+            "anchorKind": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "scopeStart",
+                    "scopeEnd",
+                    "functionStart",
+                    "functionEnd",
+                    "rsvpDeadline",
+                    "travelLegTime"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required when kind=anchored."
+            },
+            "anchorId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+            },
+            "offsetMinutes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": -43200,
+              "maximum": 43200,
+              "description": "Minutes relative to the anchor; negative is before."
+            },
+            "triggerKind": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "lateArrivalAtHotel",
+                    "flightDisrupted"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required when kind=triggered."
+            },
+            "functionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "Optional function scope for triggered moments."
+            }
+          }
+        },
+        "sense": {
+          "type": "string",
+          "enum": [
+            "individual",
+            "audience"
+          ]
+        },
+        "audience": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "subject",
+                "eventParticipants",
+                "functionGuests",
+                "households",
+                "staffDuty"
+              ]
+            },
+            "statuses": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "signedUp"
+                ]
+              },
+              "description": "eventParticipants: participation statuses included."
+            },
+            "functionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "functionGuests: the function whose guests resolve."
+            },
+            "rsvp": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "attending",
+                  "maybe"
+                ]
+              },
+              "description": "functionGuests: RSVP states included."
+            },
+            "householdDedupe": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "functionGuests: one send per household when true (default)."
+            },
+            "rsvpPendingOnly": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "households: restrict to households with a pending member."
+            },
+            "duty": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "staffDuty: duty whose grant holders resolve."
+            },
+            "scopeIds": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 50,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 180
+              },
+              "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+            }
+          }
+        },
+        "action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "sendTemplate",
+                "push",
+                "staffAttention"
+              ]
+            },
+            "connectionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "sendTemplate: organizerSenderConnections doc id."
+            },
+            "templateId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "sendTemplate: organizerMessageTemplates doc id."
+            },
+            "variables": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "description": "sendTemplate: template variable substitutions."
+            },
+            "notificationType": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "push: activity/push type written to the feed."
+            },
+            "preferenceKey": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "push: user notification preference gating FCM."
+            },
+            "duty": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "staffAttention: duty the attention item targets."
+            },
+            "severity": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "info",
+                "warning",
+                "urgent",
+                null
+              ],
+              "description": "staffAttention: attention severity."
+            },
+            "titleTemplate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200,
+              "description": "staffAttention: rendered attention title."
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "armed",
+            "paused",
+            "done"
+          ]
+        },
+        "approval": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "approvedByUid",
+            "approvedAtMillis"
+          ],
+          "properties": {
+            "approvedByUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "approvedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "description": "Approve-the-rule-once record; required while armed."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "systemDefault"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "The full moment definition returned by moment callables."
+    }
+  }
+};
+
+export const listOrganizerMomentsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_moments_response.schema.json",
+  "title": "ListOrganizerMomentsCallableResponse",
+  "description": "All moments for one scope, sorted by momentId.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "moments"
+  ],
+  "properties": {
+    "moments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "momentId",
+          "scope",
+          "name",
+          "initiation",
+          "sense",
+          "audience",
+          "action",
+          "status",
+          "approval",
+          "origin",
+          "revision"
+        ],
+        "properties": {
+          "momentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "event",
+                  "program"
+                ]
+              },
+              "eventId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180,
+                "description": "Required when kind=event; must be null otherwise."
+              },
+              "programId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180,
+                "description": "Required when kind=program; must be null otherwise."
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "initiation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "scheduled",
+                  "anchored",
+                  "triggered"
+                ]
+              },
+              "atMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "Scheduled fire time; required when kind=scheduled."
+              },
+              "anchorKind": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "scopeStart",
+                      "scopeEnd",
+                      "functionStart",
+                      "functionEnd",
+                      "rsvpDeadline",
+                      "travelLegTime"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Required when kind=anchored."
+              },
+              "anchorId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+              },
+              "offsetMinutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -43200,
+                "maximum": 43200,
+                "description": "Minutes relative to the anchor; negative is before."
+              },
+              "triggerKind": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "lateArrivalAtHotel",
+                      "flightDisrupted"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Required when kind=triggered."
+              },
+              "functionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "Optional function scope for triggered moments."
+              }
+            }
+          },
+          "sense": {
+            "type": "string",
+            "enum": [
+              "individual",
+              "audience"
+            ]
+          },
+          "audience": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "subject",
+                  "eventParticipants",
+                  "functionGuests",
+                  "households",
+                  "staffDuty"
+                ]
+              },
+              "statuses": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "signedUp"
+                  ]
+                },
+                "description": "eventParticipants: participation statuses included."
+              },
+              "functionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "functionGuests: the function whose guests resolve."
+              },
+              "rsvp": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "attending",
+                    "maybe"
+                  ]
+                },
+                "description": "functionGuests: RSVP states included."
+              },
+              "householdDedupe": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "functionGuests: one send per household when true (default)."
+              },
+              "rsvpPendingOnly": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "households: restrict to households with a pending member."
+              },
+              "duty": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "staffDuty: duty whose grant holders resolve."
+              },
+              "scopeIds": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "maxItems": 50,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 180
+                },
+                "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+              }
+            }
+          },
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "sendTemplate",
+                  "push",
+                  "staffAttention"
+                ]
+              },
+              "connectionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "sendTemplate: organizerSenderConnections doc id."
+              },
+              "templateId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "sendTemplate: organizerMessageTemplates doc id."
+              },
+              "variables": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "description": "sendTemplate: template variable substitutions."
+              },
+              "notificationType": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "push: activity/push type written to the feed."
+              },
+              "preferenceKey": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "push: user notification preference gating FCM."
+              },
+              "duty": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "staffAttention: duty the attention item targets."
+              },
+              "severity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "info",
+                  "warning",
+                  "urgent",
+                  null
+                ],
+                "description": "staffAttention: attention severity."
+              },
+              "titleTemplate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 200,
+                "description": "staffAttention: rendered attention title."
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "armed",
+              "paused",
+              "done"
+            ]
+          },
+          "approval": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "approvedByUid",
+              "approvedAtMillis"
+            ],
+            "properties": {
+              "approvedByUid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "approvedAtMillis": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "description": "Approve-the-rule-once record; required while armed."
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "organizer",
+              "systemDefault"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "description": "The full moment definition returned by moment callables."
+      }
+    }
+  }
+};
+
+export const runOrganizerMomentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/run_organizer_moment_response.schema.json",
+  "title": "RunOrganizerMomentCallableResponse",
+  "description": "Result of a manual moment fire: the deterministic run id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    }
+  }
+};
+
 export const transportVendorDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/transport_vendors.schema.json",

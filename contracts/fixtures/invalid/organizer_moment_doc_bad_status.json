@@ -1,0 +1,17 @@
+{
+  "momentId": "moment-1",
+  "scope": {"kind": "program", "programId": "program-1"},
+  "scopeKind": "program",
+  "scopeId": "program-1",
+  "name": "Bad status",
+  "initiation": {"kind": "manual"},
+  "sense": "audience",
+  "audience": {"kind": "households"},
+  "action": {"kind": "push", "notificationType": "x", "preferenceKey": "y"},
+  "status": "exploded",
+  "approval": null,
+  "origin": "organizer",
+  "revision": 1,
+  "createdAtMillis": 1700000000000,
+  "updatedAtMillis": 1700000000000
+}

@@ -73538,6 +73538,291 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const listOrganizerMomentsCallablePayloadScopeEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallablePayload.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallablePayloadScopeKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallablePayload.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const listOrganizerMomentsCallablePayloadScopeProgramId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallablePayload.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMoments = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionConnectionId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.connectionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionDuty = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sendTemplate', 'push', 'staffAttention'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionNotificationType = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.notificationType',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionPreferenceKey = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.preferenceKey',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionSeverity = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.severity',
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionTemplateId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.templateId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionTitleTemplate = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.titleTemplate',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsActionVariables = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.action.variables',
+    valueTypes: <String>['object'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsApprovalApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.approval.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsApprovalApprovedByUid = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.approval.approvedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceDuty = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceFunctionId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceHouseholdDedupe = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.householdDedupe',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['subject', 'eventParticipants', 'functionGuests', 'households', 'staffDuty'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceRsvp = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.rsvp',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['attending', 'maybe'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceRsvpItems = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.rsvp.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['attending', 'maybe'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceRsvpPendingOnly = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.rsvpPendingOnly',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceScopeIds = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.scopeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceScopeIdsItems = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.scopeIds.items',
+    maxLength: 180,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceStatuses = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.statuses',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['signedUp'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsAudienceStatusesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.audience.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['signedUp'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['scopeStart', 'scopeEnd', 'functionStart', 'functionEnd', 'rsvpDeadline', 'travelLegTime'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.atMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationFunctionId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetMinutes = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetMinutes',
+    valueTypes: <String>['integer'],
+    minimum: -43200,
+    maximum: 43200,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsInitiationTriggerKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.initiation.triggerKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsMomentId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsName = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.name',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsOrigin = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'systemDefault'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsRevision = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsScopeEventId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsScopeKind = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsScopeProgramId = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsSense = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.sense',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individual', 'audience'],
+  );
+
+  static const listOrganizerMomentsCallableResponseMomentsItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerMomentsCallableResponse.moments.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'armed', 'paused', 'done'],
+  );
+
   static const listOrganizerProgramsCallablePayloadLimit = CatchContractFieldConstraints(
     path: 'listOrganizerProgramsCallablePayload.limit',
     valueTypes: <String>['integer'],
@@ -89818,6 +90103,705 @@ abstract final class CatchContractConstraints {
     pattern: '^[0-9]{1,32}\$',
   );
 
+  static const organizerMomentActionCallablePayloadMomentId = CatchContractFieldConstraints(
+    path: 'organizerMomentActionCallablePayload.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentActionCallablePayloadScopeEventId = CatchContractFieldConstraints(
+    path: 'organizerMomentActionCallablePayload.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentActionCallablePayloadScopeKind = CatchContractFieldConstraints(
+    path: 'organizerMomentActionCallablePayload.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const organizerMomentActionCallablePayloadScopeProgramId = CatchContractFieldConstraints(
+    path: 'organizerMomentActionCallablePayload.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionConnectionId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.connectionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionDuty = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionKind = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sendTemplate', 'push', 'staffAttention'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionNotificationType = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.notificationType',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionPreferenceKey = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.preferenceKey',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionSeverity = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.severity',
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionTemplateId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.templateId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionTitleTemplate = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.titleTemplate',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentActionVariables = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.action.variables',
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerMomentCallableResponseMomentApprovalApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.approval.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentCallableResponseMomentApprovalApprovedByUid = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.approval.approvedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceDuty = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceFunctionId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceHouseholdDedupe = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.householdDedupe',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceKind = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['subject', 'eventParticipants', 'functionGuests', 'households', 'staffDuty'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceRsvp = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.rsvp',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['attending', 'maybe'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceRsvpItems = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.rsvp.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['attending', 'maybe'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceRsvpPendingOnly = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.rsvpPendingOnly',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceScopeIds = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.scopeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceScopeIdsItems = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.scopeIds.items',
+    maxLength: 180,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceStatuses = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.statuses',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['signedUp'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerMomentCallableResponseMomentAudienceStatusesItems = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.audience.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['signedUp'],
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAnchorId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.anchorId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAnchorKind = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.anchorKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['scopeStart', 'scopeEnd', 'functionStart', 'functionEnd', 'rsvpDeadline', 'travelLegTime'],
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.atMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationFunctionId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationKind = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationOffsetMinutes = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.offsetMinutes',
+    valueTypes: <String>['integer'],
+    minimum: -43200,
+    maximum: 43200,
+  );
+
+  static const organizerMomentCallableResponseMomentInitiationTriggerKind = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.initiation.triggerKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+  );
+
+  static const organizerMomentCallableResponseMomentMomentId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentName = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.name',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentOrigin = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'systemDefault'],
+  );
+
+  static const organizerMomentCallableResponseMomentRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentCallableResponseMomentScopeEventId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentScopeKind = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const organizerMomentCallableResponseMomentScopeProgramId = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentCallableResponseMomentSense = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.sense',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individual', 'audience'],
+  );
+
+  static const organizerMomentCallableResponseMomentStatus = CatchContractFieldConstraints(
+    path: 'organizerMomentCallableResponse.moment.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'armed', 'paused', 'done'],
+  );
+
+  static const organizerMomentDocumentActionConnectionId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.connectionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentActionDuty = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentActionKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sendTemplate', 'push', 'staffAttention'],
+  );
+
+  static const organizerMomentDocumentActionNotificationType = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.notificationType',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentActionPreferenceKey = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.preferenceKey',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentActionSeverity = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.severity',
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const organizerMomentDocumentActionTemplateId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.templateId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentActionTitleTemplate = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.titleTemplate',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentActionVariables = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.action.variables',
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerMomentDocumentApprovalApprovedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.approval.approvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentDocumentApprovalApprovedByUid = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.approval.approvedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentAudienceDuty = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentAudienceFunctionId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentAudienceHouseholdDedupe = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.householdDedupe',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMomentDocumentAudienceKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['subject', 'eventParticipants', 'functionGuests', 'households', 'staffDuty'],
+  );
+
+  static const organizerMomentDocumentAudienceRsvp = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.rsvp',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['attending', 'maybe'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerMomentDocumentAudienceRsvpItems = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.rsvp.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['attending', 'maybe'],
+  );
+
+  static const organizerMomentDocumentAudienceRsvpPendingOnly = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.rsvpPendingOnly',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerMomentDocumentAudienceScopeIds = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.scopeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const organizerMomentDocumentAudienceScopeIdsItems = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.scopeIds.items',
+    maxLength: 180,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentAudienceStatuses = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.statuses',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['signedUp'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const organizerMomentDocumentAudienceStatusesItems = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.audience.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['signedUp'],
+  );
+
+  static const organizerMomentDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentDocumentInitiationAnchorId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.anchorId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentInitiationAnchorKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.anchorKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['scopeStart', 'scopeEnd', 'functionStart', 'functionEnd', 'rsvpDeadline', 'travelLegTime'],
+  );
+
+  static const organizerMomentDocumentInitiationAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.atMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentDocumentInitiationFunctionId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentInitiationKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
+  );
+
+  static const organizerMomentDocumentInitiationOffsetMinutes = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.offsetMinutes',
+    valueTypes: <String>['integer'],
+    minimum: -43200,
+    maximum: 43200,
+  );
+
+  static const organizerMomentDocumentInitiationTriggerKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.initiation.triggerKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+  );
+
+  static const organizerMomentDocumentMomentId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentName = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.name',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentOrigin = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizer', 'systemDefault'],
+  );
+
+  static const organizerMomentDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentDocumentScopeEventId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentScopeKindAtScopePropertyKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const organizerMomentDocumentScopeProgramId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentScopeId = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.scopeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentDocumentScopeKindAtScopeKind = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.scopeKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const organizerMomentDocumentSense = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.sense',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individual', 'audience'],
+  );
+
+  static const organizerMomentDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'armed', 'paused', 'done'],
+  );
+
+  static const organizerMomentDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentAnchorRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.anchorRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentDueAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.dueAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentMomentId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentReason = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.reason',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentRecipients = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.recipients',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerMomentRunDocumentRunId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.runId',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentSent = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.sent',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerMomentRunDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planned', 'resolving', 'dispatched', 'skipped', 'superseded', 'failed'],
+  );
+
+  static const organizerMomentRunDocumentSubjectId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.subjectId',
+    maxLength: 300,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentRunDocumentSuppressed = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.suppressed',
+    valueTypes: <String>['object'],
+  );
+
+  static const organizerMomentRunDocumentSuppressedNoEndpoint = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.suppressedNoEndpoint',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerMomentRunDocumentTargetFunctionId = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.targetFunctionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentSendDocumentDayKey = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.dayKey',
+    maxLength: 40,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentDecision = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sent', 'suppressed'],
+  );
+
+  static const organizerMomentSendDocumentMomentId = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentReason = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.reason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['noEndpoint', 'preferenceOff', 'noConsent', 'optedOut', 'endpointSuppressed', 'dailyCap'],
+  );
+
+  static const organizerMomentSendDocumentRecipientKey = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.recipientKey',
+    maxLength: 220,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerPaymentConnectionDocumentAccountId = CatchContractFieldConstraints(
     path: 'organizerPaymentConnectionDocument.accountId',
     valueTypes: <String>['string'],
@@ -102965,6 +103949,51 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const runOrganizerMomentCallablePayloadMomentId = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallablePayload.momentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const runOrganizerMomentCallablePayloadRequestKey = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallablePayload.requestKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const runOrganizerMomentCallablePayloadScopeEventId = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallablePayload.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const runOrganizerMomentCallablePayloadScopeKind = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallablePayload.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const runOrganizerMomentCallablePayloadScopeProgramId = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallablePayload.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const runOrganizerMomentCallableResponseRunId = CatchContractFieldConstraints(
+    path: 'runOrganizerMomentCallableResponse.runId',
+    maxLength: 300,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const savedEventDocumentDemoOps = CatchContractFieldConstraints(
     path: 'savedEventDocument.demoOps',
     valueTypes: <String>['boolean'],
@@ -112362,6 +113391,224 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionConnectionId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.connectionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionDuty = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['sendTemplate', 'push', 'staffAttention'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionNotificationType = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.notificationType',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionPreferenceKey = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.preferenceKey',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionSeverity = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.severity',
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionTemplateId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.templateId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionTitleTemplate = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.titleTemplate',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadActionVariables = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.action.variables',
+    valueTypes: <String>['object'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceDuty = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceFunctionId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceHouseholdDedupe = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.householdDedupe',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['subject', 'eventParticipants', 'functionGuests', 'households', 'staffDuty'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceRsvp = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.rsvp',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['attending', 'maybe'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceRsvpItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.rsvp.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['attending', 'maybe'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceRsvpPendingOnly = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.rsvpPendingOnly',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceScopeIds = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.scopeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceScopeIdsItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.scopeIds.items',
+    maxLength: 180,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceStatuses = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.statuses',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['signedUp'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadAudienceStatusesItems = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.audience.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['signedUp'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAnchorId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.anchorId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAnchorKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.anchorKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['scopeStart', 'scopeEnd', 'functionStart', 'functionEnd', 'rsvpDeadline', 'travelLegTime'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationAtMillis = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.atMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationFunctionId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.functionId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['manual', 'scheduled', 'anchored', 'triggered'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationOffsetMinutes = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.offsetMinutes',
+    valueTypes: <String>['integer'],
+    minimum: -43200,
+    maximum: 43200,
+  );
+
+  static const upsertOrganizerMomentCallablePayloadInitiationTriggerKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.initiation.triggerKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['lateArrivalAtHotel', 'flightDisrupted'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadMomentId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.momentId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadName = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.name',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadScopeEventId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.scope.eventId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadScopeKind = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadScopeProgramId = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.scope.programId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertOrganizerMomentCallablePayloadSense = CatchContractFieldConstraints(
+    path: 'upsertOrganizerMomentCallablePayload.sense',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['individual', 'audience'],
   );
 
   static const upsertOrganizerSavedAudienceCallablePayloadAudienceId = CatchContractFieldConstraints(
@@ -126190,6 +127437,48 @@ abstract final class CatchContractConstraints {
     'listOrganizerManualSendTasksCallableResponse.tasks.items.status': listOrganizerManualSendTasksCallableResponseTasksItemsStatus,
     'listOrganizerManualSendTasksCallableResponse.tasks.items.taskId': listOrganizerManualSendTasksCallableResponseTasksItemsTaskId,
     'listOrganizerManualSendTasksCallableResponse.tasks.items.updatedAtMillis': listOrganizerManualSendTasksCallableResponseTasksItemsUpdatedAtMillis,
+    'listOrganizerMomentsCallablePayload.scope.eventId': listOrganizerMomentsCallablePayloadScopeEventId,
+    'listOrganizerMomentsCallablePayload.scope.kind': listOrganizerMomentsCallablePayloadScopeKind,
+    'listOrganizerMomentsCallablePayload.scope.programId': listOrganizerMomentsCallablePayloadScopeProgramId,
+    'listOrganizerMomentsCallableResponse.moments': listOrganizerMomentsCallableResponseMoments,
+    'listOrganizerMomentsCallableResponse.moments.items.action.connectionId': listOrganizerMomentsCallableResponseMomentsItemsActionConnectionId,
+    'listOrganizerMomentsCallableResponse.moments.items.action.duty': listOrganizerMomentsCallableResponseMomentsItemsActionDuty,
+    'listOrganizerMomentsCallableResponse.moments.items.action.kind': listOrganizerMomentsCallableResponseMomentsItemsActionKind,
+    'listOrganizerMomentsCallableResponse.moments.items.action.notificationType': listOrganizerMomentsCallableResponseMomentsItemsActionNotificationType,
+    'listOrganizerMomentsCallableResponse.moments.items.action.preferenceKey': listOrganizerMomentsCallableResponseMomentsItemsActionPreferenceKey,
+    'listOrganizerMomentsCallableResponse.moments.items.action.severity': listOrganizerMomentsCallableResponseMomentsItemsActionSeverity,
+    'listOrganizerMomentsCallableResponse.moments.items.action.templateId': listOrganizerMomentsCallableResponseMomentsItemsActionTemplateId,
+    'listOrganizerMomentsCallableResponse.moments.items.action.titleTemplate': listOrganizerMomentsCallableResponseMomentsItemsActionTitleTemplate,
+    'listOrganizerMomentsCallableResponse.moments.items.action.variables': listOrganizerMomentsCallableResponseMomentsItemsActionVariables,
+    'listOrganizerMomentsCallableResponse.moments.items.approval.approvedAtMillis': listOrganizerMomentsCallableResponseMomentsItemsApprovalApprovedAtMillis,
+    'listOrganizerMomentsCallableResponse.moments.items.approval.approvedByUid': listOrganizerMomentsCallableResponseMomentsItemsApprovalApprovedByUid,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.duty': listOrganizerMomentsCallableResponseMomentsItemsAudienceDuty,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.functionId': listOrganizerMomentsCallableResponseMomentsItemsAudienceFunctionId,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.householdDedupe': listOrganizerMomentsCallableResponseMomentsItemsAudienceHouseholdDedupe,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.kind': listOrganizerMomentsCallableResponseMomentsItemsAudienceKind,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.rsvp': listOrganizerMomentsCallableResponseMomentsItemsAudienceRsvp,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.rsvp.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceRsvpItems,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.rsvpPendingOnly': listOrganizerMomentsCallableResponseMomentsItemsAudienceRsvpPendingOnly,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.scopeIds': listOrganizerMomentsCallableResponseMomentsItemsAudienceScopeIds,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.scopeIds.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceScopeIdsItems,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.statuses': listOrganizerMomentsCallableResponseMomentsItemsAudienceStatuses,
+    'listOrganizerMomentsCallableResponse.moments.items.audience.statuses.items': listOrganizerMomentsCallableResponseMomentsItemsAudienceStatusesItems,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorId': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorId,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.anchorKind': listOrganizerMomentsCallableResponseMomentsItemsInitiationAnchorKind,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.atMillis': listOrganizerMomentsCallableResponseMomentsItemsInitiationAtMillis,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.functionId': listOrganizerMomentsCallableResponseMomentsItemsInitiationFunctionId,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.kind': listOrganizerMomentsCallableResponseMomentsItemsInitiationKind,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.offsetMinutes': listOrganizerMomentsCallableResponseMomentsItemsInitiationOffsetMinutes,
+    'listOrganizerMomentsCallableResponse.moments.items.initiation.triggerKind': listOrganizerMomentsCallableResponseMomentsItemsInitiationTriggerKind,
+    'listOrganizerMomentsCallableResponse.moments.items.momentId': listOrganizerMomentsCallableResponseMomentsItemsMomentId,
+    'listOrganizerMomentsCallableResponse.moments.items.name': listOrganizerMomentsCallableResponseMomentsItemsName,
+    'listOrganizerMomentsCallableResponse.moments.items.origin': listOrganizerMomentsCallableResponseMomentsItemsOrigin,
+    'listOrganizerMomentsCallableResponse.moments.items.revision': listOrganizerMomentsCallableResponseMomentsItemsRevision,
+    'listOrganizerMomentsCallableResponse.moments.items.scope.eventId': listOrganizerMomentsCallableResponseMomentsItemsScopeEventId,
+    'listOrganizerMomentsCallableResponse.moments.items.scope.kind': listOrganizerMomentsCallableResponseMomentsItemsScopeKind,
+    'listOrganizerMomentsCallableResponse.moments.items.scope.programId': listOrganizerMomentsCallableResponseMomentsItemsScopeProgramId,
+    'listOrganizerMomentsCallableResponse.moments.items.sense': listOrganizerMomentsCallableResponseMomentsItemsSense,
+    'listOrganizerMomentsCallableResponse.moments.items.status': listOrganizerMomentsCallableResponseMomentsItemsStatus,
     'listOrganizerProgramsCallablePayload.limit': listOrganizerProgramsCallablePayloadLimit,
     'listOrganizerProgramsCallablePayload.organizerId': listOrganizerProgramsCallablePayloadOrganizerId,
     'listOrganizerSavedAudiencesCallablePayload.cursor': listOrganizerSavedAudiencesCallablePayloadCursor,
@@ -128451,6 +129740,108 @@ abstract final class CatchContractConstraints {
     'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds': organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds': organizerMessagingWebhookEventDocumentProviderOccurredAtSeconds,
     'organizerMessagingWebhookEventDocument.providerPhoneNumberId': organizerMessagingWebhookEventDocumentProviderPhoneNumberId,
+    'organizerMomentActionCallablePayload.momentId': organizerMomentActionCallablePayloadMomentId,
+    'organizerMomentActionCallablePayload.scope.eventId': organizerMomentActionCallablePayloadScopeEventId,
+    'organizerMomentActionCallablePayload.scope.kind': organizerMomentActionCallablePayloadScopeKind,
+    'organizerMomentActionCallablePayload.scope.programId': organizerMomentActionCallablePayloadScopeProgramId,
+    'organizerMomentCallableResponse.moment.action.connectionId': organizerMomentCallableResponseMomentActionConnectionId,
+    'organizerMomentCallableResponse.moment.action.duty': organizerMomentCallableResponseMomentActionDuty,
+    'organizerMomentCallableResponse.moment.action.kind': organizerMomentCallableResponseMomentActionKind,
+    'organizerMomentCallableResponse.moment.action.notificationType': organizerMomentCallableResponseMomentActionNotificationType,
+    'organizerMomentCallableResponse.moment.action.preferenceKey': organizerMomentCallableResponseMomentActionPreferenceKey,
+    'organizerMomentCallableResponse.moment.action.severity': organizerMomentCallableResponseMomentActionSeverity,
+    'organizerMomentCallableResponse.moment.action.templateId': organizerMomentCallableResponseMomentActionTemplateId,
+    'organizerMomentCallableResponse.moment.action.titleTemplate': organizerMomentCallableResponseMomentActionTitleTemplate,
+    'organizerMomentCallableResponse.moment.action.variables': organizerMomentCallableResponseMomentActionVariables,
+    'organizerMomentCallableResponse.moment.approval.approvedAtMillis': organizerMomentCallableResponseMomentApprovalApprovedAtMillis,
+    'organizerMomentCallableResponse.moment.approval.approvedByUid': organizerMomentCallableResponseMomentApprovalApprovedByUid,
+    'organizerMomentCallableResponse.moment.audience.duty': organizerMomentCallableResponseMomentAudienceDuty,
+    'organizerMomentCallableResponse.moment.audience.functionId': organizerMomentCallableResponseMomentAudienceFunctionId,
+    'organizerMomentCallableResponse.moment.audience.householdDedupe': organizerMomentCallableResponseMomentAudienceHouseholdDedupe,
+    'organizerMomentCallableResponse.moment.audience.kind': organizerMomentCallableResponseMomentAudienceKind,
+    'organizerMomentCallableResponse.moment.audience.rsvp': organizerMomentCallableResponseMomentAudienceRsvp,
+    'organizerMomentCallableResponse.moment.audience.rsvp.items': organizerMomentCallableResponseMomentAudienceRsvpItems,
+    'organizerMomentCallableResponse.moment.audience.rsvpPendingOnly': organizerMomentCallableResponseMomentAudienceRsvpPendingOnly,
+    'organizerMomentCallableResponse.moment.audience.scopeIds': organizerMomentCallableResponseMomentAudienceScopeIds,
+    'organizerMomentCallableResponse.moment.audience.scopeIds.items': organizerMomentCallableResponseMomentAudienceScopeIdsItems,
+    'organizerMomentCallableResponse.moment.audience.statuses': organizerMomentCallableResponseMomentAudienceStatuses,
+    'organizerMomentCallableResponse.moment.audience.statuses.items': organizerMomentCallableResponseMomentAudienceStatusesItems,
+    'organizerMomentCallableResponse.moment.initiation.anchorId': organizerMomentCallableResponseMomentInitiationAnchorId,
+    'organizerMomentCallableResponse.moment.initiation.anchorKind': organizerMomentCallableResponseMomentInitiationAnchorKind,
+    'organizerMomentCallableResponse.moment.initiation.atMillis': organizerMomentCallableResponseMomentInitiationAtMillis,
+    'organizerMomentCallableResponse.moment.initiation.functionId': organizerMomentCallableResponseMomentInitiationFunctionId,
+    'organizerMomentCallableResponse.moment.initiation.kind': organizerMomentCallableResponseMomentInitiationKind,
+    'organizerMomentCallableResponse.moment.initiation.offsetMinutes': organizerMomentCallableResponseMomentInitiationOffsetMinutes,
+    'organizerMomentCallableResponse.moment.initiation.triggerKind': organizerMomentCallableResponseMomentInitiationTriggerKind,
+    'organizerMomentCallableResponse.moment.momentId': organizerMomentCallableResponseMomentMomentId,
+    'organizerMomentCallableResponse.moment.name': organizerMomentCallableResponseMomentName,
+    'organizerMomentCallableResponse.moment.origin': organizerMomentCallableResponseMomentOrigin,
+    'organizerMomentCallableResponse.moment.revision': organizerMomentCallableResponseMomentRevision,
+    'organizerMomentCallableResponse.moment.scope.eventId': organizerMomentCallableResponseMomentScopeEventId,
+    'organizerMomentCallableResponse.moment.scope.kind': organizerMomentCallableResponseMomentScopeKind,
+    'organizerMomentCallableResponse.moment.scope.programId': organizerMomentCallableResponseMomentScopeProgramId,
+    'organizerMomentCallableResponse.moment.sense': organizerMomentCallableResponseMomentSense,
+    'organizerMomentCallableResponse.moment.status': organizerMomentCallableResponseMomentStatus,
+    'organizerMomentDocument.action.connectionId': organizerMomentDocumentActionConnectionId,
+    'organizerMomentDocument.action.duty': organizerMomentDocumentActionDuty,
+    'organizerMomentDocument.action.kind': organizerMomentDocumentActionKind,
+    'organizerMomentDocument.action.notificationType': organizerMomentDocumentActionNotificationType,
+    'organizerMomentDocument.action.preferenceKey': organizerMomentDocumentActionPreferenceKey,
+    'organizerMomentDocument.action.severity': organizerMomentDocumentActionSeverity,
+    'organizerMomentDocument.action.templateId': organizerMomentDocumentActionTemplateId,
+    'organizerMomentDocument.action.titleTemplate': organizerMomentDocumentActionTitleTemplate,
+    'organizerMomentDocument.action.variables': organizerMomentDocumentActionVariables,
+    'organizerMomentDocument.approval.approvedAtMillis': organizerMomentDocumentApprovalApprovedAtMillis,
+    'organizerMomentDocument.approval.approvedByUid': organizerMomentDocumentApprovalApprovedByUid,
+    'organizerMomentDocument.audience.duty': organizerMomentDocumentAudienceDuty,
+    'organizerMomentDocument.audience.functionId': organizerMomentDocumentAudienceFunctionId,
+    'organizerMomentDocument.audience.householdDedupe': organizerMomentDocumentAudienceHouseholdDedupe,
+    'organizerMomentDocument.audience.kind': organizerMomentDocumentAudienceKind,
+    'organizerMomentDocument.audience.rsvp': organizerMomentDocumentAudienceRsvp,
+    'organizerMomentDocument.audience.rsvp.items': organizerMomentDocumentAudienceRsvpItems,
+    'organizerMomentDocument.audience.rsvpPendingOnly': organizerMomentDocumentAudienceRsvpPendingOnly,
+    'organizerMomentDocument.audience.scopeIds': organizerMomentDocumentAudienceScopeIds,
+    'organizerMomentDocument.audience.scopeIds.items': organizerMomentDocumentAudienceScopeIdsItems,
+    'organizerMomentDocument.audience.statuses': organizerMomentDocumentAudienceStatuses,
+    'organizerMomentDocument.audience.statuses.items': organizerMomentDocumentAudienceStatusesItems,
+    'organizerMomentDocument.createdAtMillis': organizerMomentDocumentCreatedAtMillis,
+    'organizerMomentDocument.initiation.anchorId': organizerMomentDocumentInitiationAnchorId,
+    'organizerMomentDocument.initiation.anchorKind': organizerMomentDocumentInitiationAnchorKind,
+    'organizerMomentDocument.initiation.atMillis': organizerMomentDocumentInitiationAtMillis,
+    'organizerMomentDocument.initiation.functionId': organizerMomentDocumentInitiationFunctionId,
+    'organizerMomentDocument.initiation.kind': organizerMomentDocumentInitiationKind,
+    'organizerMomentDocument.initiation.offsetMinutes': organizerMomentDocumentInitiationOffsetMinutes,
+    'organizerMomentDocument.initiation.triggerKind': organizerMomentDocumentInitiationTriggerKind,
+    'organizerMomentDocument.momentId': organizerMomentDocumentMomentId,
+    'organizerMomentDocument.name': organizerMomentDocumentName,
+    'organizerMomentDocument.origin': organizerMomentDocumentOrigin,
+    'organizerMomentDocument.revision': organizerMomentDocumentRevision,
+    'organizerMomentDocument.scope.eventId': organizerMomentDocumentScopeEventId,
+    'organizerMomentDocument.scope.kind': organizerMomentDocumentScopeKindAtScopePropertyKind,
+    'organizerMomentDocument.scope.programId': organizerMomentDocumentScopeProgramId,
+    'organizerMomentDocument.scopeId': organizerMomentDocumentScopeId,
+    'organizerMomentDocument.scopeKind': organizerMomentDocumentScopeKindAtScopeKind,
+    'organizerMomentDocument.sense': organizerMomentDocumentSense,
+    'organizerMomentDocument.status': organizerMomentDocumentStatus,
+    'organizerMomentDocument.updatedAtMillis': organizerMomentDocumentUpdatedAtMillis,
+    'organizerMomentRunDocument.anchorRevision': organizerMomentRunDocumentAnchorRevision,
+    'organizerMomentRunDocument.dueAtMillis': organizerMomentRunDocumentDueAtMillis,
+    'organizerMomentRunDocument.momentId': organizerMomentRunDocumentMomentId,
+    'organizerMomentRunDocument.reason': organizerMomentRunDocumentReason,
+    'organizerMomentRunDocument.recipients': organizerMomentRunDocumentRecipients,
+    'organizerMomentRunDocument.runId': organizerMomentRunDocumentRunId,
+    'organizerMomentRunDocument.sent': organizerMomentRunDocumentSent,
+    'organizerMomentRunDocument.status': organizerMomentRunDocumentStatus,
+    'organizerMomentRunDocument.subjectId': organizerMomentRunDocumentSubjectId,
+    'organizerMomentRunDocument.suppressed': organizerMomentRunDocumentSuppressed,
+    'organizerMomentRunDocument.suppressedNoEndpoint': organizerMomentRunDocumentSuppressedNoEndpoint,
+    'organizerMomentRunDocument.targetFunctionId': organizerMomentRunDocumentTargetFunctionId,
+    'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,
+    'organizerMomentSendDocument.dayKey': organizerMomentSendDocumentDayKey,
+    'organizerMomentSendDocument.decision': organizerMomentSendDocumentDecision,
+    'organizerMomentSendDocument.momentId': organizerMomentSendDocumentMomentId,
+    'organizerMomentSendDocument.reason': organizerMomentSendDocumentReason,
+    'organizerMomentSendDocument.recipientKey': organizerMomentSendDocumentRecipientKey,
     'organizerPaymentConnectionDocument.accountId': organizerPaymentConnectionDocumentAccountId,
     'organizerPaymentConnectionDocument.connectedByUid': organizerPaymentConnectionDocumentConnectedByUid,
     'organizerPaymentConnectionDocument.createdAt._nanoseconds': organizerPaymentConnectionDocumentCreatedAtNanoseconds,
@@ -130243,6 +131634,12 @@ abstract final class CatchContractConstraints {
     'revokeProgramStaffInviteCallablePayload.inviteId': revokeProgramStaffInviteCallablePayloadInviteId,
     'revokeProgramStaffInviteCallablePayload.programId': revokeProgramStaffInviteCallablePayloadProgramId,
     'rotateEventRehearsalGuestLinkCallablePayload.sessionId': rotateEventRehearsalGuestLinkCallablePayloadSessionId,
+    'runOrganizerMomentCallablePayload.momentId': runOrganizerMomentCallablePayloadMomentId,
+    'runOrganizerMomentCallablePayload.requestKey': runOrganizerMomentCallablePayloadRequestKey,
+    'runOrganizerMomentCallablePayload.scope.eventId': runOrganizerMomentCallablePayloadScopeEventId,
+    'runOrganizerMomentCallablePayload.scope.kind': runOrganizerMomentCallablePayloadScopeKind,
+    'runOrganizerMomentCallablePayload.scope.programId': runOrganizerMomentCallablePayloadScopeProgramId,
+    'runOrganizerMomentCallableResponse.runId': runOrganizerMomentCallableResponseRunId,
     'savedEventDocument.demoOps': savedEventDocumentDemoOps,
     'savedEventDocument.demoOpsCommand': savedEventDocumentDemoOpsCommand,
     'savedEventDocument.demoOpsId': savedEventDocumentDemoOpsId,
@@ -131526,6 +132923,39 @@ abstract final class CatchContractConstraints {
     'upsertOrganizerEventVenueCallableResponse.venue.organizerId': upsertOrganizerEventVenueCallableResponseVenueOrganizerId,
     'upsertOrganizerEventVenueCallableResponse.venue.status': upsertOrganizerEventVenueCallableResponseVenueStatus,
     'upsertOrganizerEventVenueCallableResponse.venue.venueId': upsertOrganizerEventVenueCallableResponseVenueVenueId,
+    'upsertOrganizerMomentCallablePayload.action.connectionId': upsertOrganizerMomentCallablePayloadActionConnectionId,
+    'upsertOrganizerMomentCallablePayload.action.duty': upsertOrganizerMomentCallablePayloadActionDuty,
+    'upsertOrganizerMomentCallablePayload.action.kind': upsertOrganizerMomentCallablePayloadActionKind,
+    'upsertOrganizerMomentCallablePayload.action.notificationType': upsertOrganizerMomentCallablePayloadActionNotificationType,
+    'upsertOrganizerMomentCallablePayload.action.preferenceKey': upsertOrganizerMomentCallablePayloadActionPreferenceKey,
+    'upsertOrganizerMomentCallablePayload.action.severity': upsertOrganizerMomentCallablePayloadActionSeverity,
+    'upsertOrganizerMomentCallablePayload.action.templateId': upsertOrganizerMomentCallablePayloadActionTemplateId,
+    'upsertOrganizerMomentCallablePayload.action.titleTemplate': upsertOrganizerMomentCallablePayloadActionTitleTemplate,
+    'upsertOrganizerMomentCallablePayload.action.variables': upsertOrganizerMomentCallablePayloadActionVariables,
+    'upsertOrganizerMomentCallablePayload.audience.duty': upsertOrganizerMomentCallablePayloadAudienceDuty,
+    'upsertOrganizerMomentCallablePayload.audience.functionId': upsertOrganizerMomentCallablePayloadAudienceFunctionId,
+    'upsertOrganizerMomentCallablePayload.audience.householdDedupe': upsertOrganizerMomentCallablePayloadAudienceHouseholdDedupe,
+    'upsertOrganizerMomentCallablePayload.audience.kind': upsertOrganizerMomentCallablePayloadAudienceKind,
+    'upsertOrganizerMomentCallablePayload.audience.rsvp': upsertOrganizerMomentCallablePayloadAudienceRsvp,
+    'upsertOrganizerMomentCallablePayload.audience.rsvp.items': upsertOrganizerMomentCallablePayloadAudienceRsvpItems,
+    'upsertOrganizerMomentCallablePayload.audience.rsvpPendingOnly': upsertOrganizerMomentCallablePayloadAudienceRsvpPendingOnly,
+    'upsertOrganizerMomentCallablePayload.audience.scopeIds': upsertOrganizerMomentCallablePayloadAudienceScopeIds,
+    'upsertOrganizerMomentCallablePayload.audience.scopeIds.items': upsertOrganizerMomentCallablePayloadAudienceScopeIdsItems,
+    'upsertOrganizerMomentCallablePayload.audience.statuses': upsertOrganizerMomentCallablePayloadAudienceStatuses,
+    'upsertOrganizerMomentCallablePayload.audience.statuses.items': upsertOrganizerMomentCallablePayloadAudienceStatusesItems,
+    'upsertOrganizerMomentCallablePayload.initiation.anchorId': upsertOrganizerMomentCallablePayloadInitiationAnchorId,
+    'upsertOrganizerMomentCallablePayload.initiation.anchorKind': upsertOrganizerMomentCallablePayloadInitiationAnchorKind,
+    'upsertOrganizerMomentCallablePayload.initiation.atMillis': upsertOrganizerMomentCallablePayloadInitiationAtMillis,
+    'upsertOrganizerMomentCallablePayload.initiation.functionId': upsertOrganizerMomentCallablePayloadInitiationFunctionId,
+    'upsertOrganizerMomentCallablePayload.initiation.kind': upsertOrganizerMomentCallablePayloadInitiationKind,
+    'upsertOrganizerMomentCallablePayload.initiation.offsetMinutes': upsertOrganizerMomentCallablePayloadInitiationOffsetMinutes,
+    'upsertOrganizerMomentCallablePayload.initiation.triggerKind': upsertOrganizerMomentCallablePayloadInitiationTriggerKind,
+    'upsertOrganizerMomentCallablePayload.momentId': upsertOrganizerMomentCallablePayloadMomentId,
+    'upsertOrganizerMomentCallablePayload.name': upsertOrganizerMomentCallablePayloadName,
+    'upsertOrganizerMomentCallablePayload.scope.eventId': upsertOrganizerMomentCallablePayloadScopeEventId,
+    'upsertOrganizerMomentCallablePayload.scope.kind': upsertOrganizerMomentCallablePayloadScopeKind,
+    'upsertOrganizerMomentCallablePayload.scope.programId': upsertOrganizerMomentCallablePayloadScopeProgramId,
+    'upsertOrganizerMomentCallablePayload.sense': upsertOrganizerMomentCallablePayloadSense,
     'upsertOrganizerSavedAudienceCallablePayload.audienceId': upsertOrganizerSavedAudienceCallablePayloadAudienceId,
     'upsertOrganizerSavedAudienceCallablePayload.definition.join': upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
     'upsertOrganizerSavedAudienceCallablePayload.definition.predicates': upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicates,

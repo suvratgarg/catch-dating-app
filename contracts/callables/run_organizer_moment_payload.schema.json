@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/run_organizer_moment_payload.schema.json",
+  "title": "RunOrganizerMomentCallablePayload",
+  "description": "Fire a manual moment immediately. The caller-supplied requestKey scopes idempotency: retries and double-submits with the same key resolve to the same run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scope", "momentId", "requestKey"],
+  "properties": {
+    "scope": {"$ref": "../shared/moment_common.schema.json#/definitions/momentScope"},
+    "momentId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "requestKey": {"type": "string", "minLength": 1, "maxLength": 180}
+  }
+}

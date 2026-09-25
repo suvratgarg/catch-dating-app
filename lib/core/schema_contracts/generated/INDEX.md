@@ -340,6 +340,16 @@ Do not edit it by hand.
 | ProgramHotelDocument | `firestore/program_hotels.schema.json` | `functions/src/shared/generated/programHotelDocument.ts` |
 | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `functions/src/shared/generated/programTravelLegDocument.ts` |
 | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `functions/src/shared/generated/programTravelPartyDocument.ts` |
+| OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `functions/src/shared/generated/organizerMomentDocument.ts` |
+| OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `functions/src/shared/generated/organizerMomentRunDocument.ts` |
+| OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `functions/src/shared/generated/organizerMomentSendDocument.ts` |
+| UpsertOrganizerMomentCallablePayload | `callables/upsert_organizer_moment_payload.schema.json` | `functions/src/shared/generated/upsertOrganizerMomentCallablePayload.ts` |
+| OrganizerMomentActionCallablePayload | `callables/organizer_moment_action_payload.schema.json` | `functions/src/shared/generated/organizerMomentActionCallablePayload.ts` |
+| RunOrganizerMomentCallablePayload | `callables/run_organizer_moment_payload.schema.json` | `functions/src/shared/generated/runOrganizerMomentCallablePayload.ts` |
+| ListOrganizerMomentsCallablePayload | `callables/list_organizer_moments_payload.schema.json` | `functions/src/shared/generated/listOrganizerMomentsCallablePayload.ts` |
+| OrganizerMomentCallableResponse | `callable_responses/organizer_moment_response.schema.json` | `functions/src/shared/generated/organizerMomentCallableResponse.ts` |
+| ListOrganizerMomentsCallableResponse | `callable_responses/list_organizer_moments_response.schema.json` | `functions/src/shared/generated/listOrganizerMomentsCallableResponse.ts` |
+| RunOrganizerMomentCallableResponse | `callable_responses/run_organizer_moment_response.schema.json` | `functions/src/shared/generated/runOrganizerMomentCallableResponse.ts` |
 | TransportVendorDocument | `firestore/transport_vendors.schema.json` | `functions/src/shared/generated/transportVendorDocument.ts` |
 | TransportTripDocument | `firestore/transport_trips.schema.json` | `functions/src/shared/generated/transportTripDocument.ts` |
 | TransportActiveAssignmentDocument | `firestore/transport_active_assignments.schema.json` | `functions/src/shared/generated/transportActiveAssignmentDocument.ts` |
@@ -1183,6 +1193,16 @@ Do not edit it by hand.
 | `schemaProgramHotelDocumentSchema` | ProgramHotelDocument | `firestore/program_hotels.schema.json` | `lib/core/schema_contracts/generated/schemas/program_hotel_document.g.dart` |
 | `schemaProgramTravelLegDocumentSchema` | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_leg_document.g.dart` |
 | `schemaProgramTravelPartyDocumentSchema` | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_party_document.g.dart` |
+| `schemaOrganizerMomentDocumentSchema` | OrganizerMomentDocument | `firestore/organizer_moments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_document.g.dart` |
+| `schemaOrganizerMomentRunDocumentSchema` | OrganizerMomentRunDocument | `firestore/organizer_moment_runs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_run_document.g.dart` |
+| `schemaOrganizerMomentSendDocumentSchema` | OrganizerMomentSendDocument | `firestore/organizer_moment_sends.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_send_document.g.dart` |
+| `schemaUpsertOrganizerMomentCallablePayloadSchema` | UpsertOrganizerMomentCallablePayload | `callables/upsert_organizer_moment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_organizer_moment_callable_payload.g.dart` |
+| `schemaOrganizerMomentActionCallablePayloadSchema` | OrganizerMomentActionCallablePayload | `callables/organizer_moment_action_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_action_callable_payload.g.dart` |
+| `schemaRunOrganizerMomentCallablePayloadSchema` | RunOrganizerMomentCallablePayload | `callables/run_organizer_moment_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/run_organizer_moment_callable_payload.g.dart` |
+| `schemaListOrganizerMomentsCallablePayloadSchema` | ListOrganizerMomentsCallablePayload | `callables/list_organizer_moments_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_moments_callable_payload.g.dart` |
+| `schemaOrganizerMomentCallableResponseSchema` | OrganizerMomentCallableResponse | `callable_responses/organizer_moment_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_moment_callable_response.g.dart` |
+| `schemaListOrganizerMomentsCallableResponseSchema` | ListOrganizerMomentsCallableResponse | `callable_responses/list_organizer_moments_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_moments_callable_response.g.dart` |
+| `schemaRunOrganizerMomentCallableResponseSchema` | RunOrganizerMomentCallableResponse | `callable_responses/run_organizer_moment_response.schema.json` | `lib/core/schema_contracts/generated/schemas/run_organizer_moment_callable_response.g.dart` |
 | `schemaTransportVendorDocumentSchema` | TransportVendorDocument | `firestore/transport_vendors.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_vendor_document.g.dart` |
 | `schemaTransportTripDocumentSchema` | TransportTripDocument | `firestore/transport_trips.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_trip_document.g.dart` |
 | `schemaTransportActiveAssignmentDocumentSchema` | TransportActiveAssignmentDocument | `firestore/transport_active_assignments.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_active_assignment_document.g.dart` |
@@ -1764,6 +1784,10 @@ Do not edit it by hand.
 | ListParticipantMessagingPreferencesCallableRequest | ListParticipantMessagingPreferencesCallablePayload | `callables/list_participant_messaging_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_participant_messaging_preferences_callable_request.g.dart` |
 | WithdrawParticipantMessagingPermissionCallableRequest | WithdrawParticipantMessagingPermissionCallablePayload | `callables/withdraw_participant_messaging_permission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_participant_messaging_permission_callable_request.g.dart` |
 | PromoteFormCommunicationIntentCallableRequest | PromoteFormCommunicationIntentCallablePayload | `callables/promote_form_communication_intent_payload.schema.json` | `lib/core/schema_contracts/generated/callables/promote_form_communication_intent_callable_request.g.dart` |
+| UpsertOrganizerMomentCallableRequest | UpsertOrganizerMomentCallablePayload | `callables/upsert_organizer_moment_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_organizer_moment_callable_request.g.dart` |
+| OrganizerMomentActionCallableRequest | OrganizerMomentActionCallablePayload | `callables/organizer_moment_action_payload.schema.json` | `lib/core/schema_contracts/generated/callables/organizer_moment_action_callable_request.g.dart` |
+| RunOrganizerMomentCallableRequest | RunOrganizerMomentCallablePayload | `callables/run_organizer_moment_payload.schema.json` | `lib/core/schema_contracts/generated/callables/run_organizer_moment_callable_request.g.dart` |
+| ListOrganizerMomentsCallableRequest | ListOrganizerMomentsCallablePayload | `callables/list_organizer_moments_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_organizer_moments_callable_request.g.dart` |
 | ProgramIdCallableRequest | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `lib/core/schema_contracts/generated/callables/program_id_callable_request.g.dart` |
 | ListOrganizerProgramsCallableRequest | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_organizer_programs_callable_request.g.dart` |
 | CreateOrganizerProgramCallableRequest | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_program_callable_request.g.dart` |
