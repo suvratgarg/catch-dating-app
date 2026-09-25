@@ -219,68 +219,102 @@ must keep this path exactly as light as it is today.
 
 ---
 
-## 4. Scheduling engine — "Moments"
+## 4. Moments — the unified send engine
 
-### 4.1 Why a rule engine and not a calendar
-A calendar view is a *display* of `programFunctions`. The business logic
-("15 min before X, tell attending guests", "taxis are ready", "someone meet
-the late family") needs an authority that:
-- is anchored to a **mutable** time (functions slip by an hour routinely),
-- resolves an **audience at fire time** (RSVPs change until the last minute),
-- knows a **channel + consent** (WhatsApp service message vs staff push),
-- is **idempotent** across retries and re-planning.
+### 4.1 One concept for every send
+Campaigns, lifecycle reminders, and transactional sends are **not separate
+systems**. Every organizer-facing message — a manual blast, a scheduled
+announcement, a "your function starts in 15 min" reminder, a "flight
+disrupted → alert the greeter" rule, a post-event feedback form — is a
+**Moment**. Three orthogonal axes describe any send:
+
+- **initiation**: `manual` | `scheduled` | `anchored` | `triggered`
+- **sense**: `individual` (the message is about the recipient's own fact —
+  idempotent by recipient × fact, no preview needed) vs `audience` (a
+  selector resolves the set at fire time — resolution, dedupe, suppression)
+- **action/channel**: `sendTemplate` (WhatsApp) | `push` (+activity item) |
+  `staffAttention`
+
+**Scope** (`{kind: event, eventId}` | `{kind: program, programId}`) makes the
+same engine serve single Catch events and multi-day programs; the legal
+anchors/audiences differ per scope and `validateMomentDefinition` enforces
+it. The existing `sendEventReminders` T-15m cron and form automations are
+moment-shaped and migrate onto this model (see §9 decisions 7–9).
 
 ### 4.2 Model
 
 ```
-programMoments/{momentId}
-  programId, organizerId, name
-  trigger: oneOf
-    timeAnchor { anchorKind: functionStart | functionEnd | programStart
-                            | rsvpDeadline | transportPlanDeparture,
-                 anchorId: functionId | pickupPointId | null,
-                 offsetMinutes: -15 }
-    conditionAnchor { kind: lateArrivalAtHotel | flightDisrupted, functionId? }   (v1: only these two)
+organizerMoments/{momentId}
+  scope: {kind: event|program, eventId|programId}
+  scopeKind, scopeId            (denormalized for list queries)
+  name, sense: individual|audience
+  initiation: oneOf
+    manual     {}
+    scheduled  { atMillis }
+    anchored   { anchorKind: scopeStart|scopeEnd|functionStart|functionEnd
+                            |rsvpDeadline|travelLegTime,
+                 anchorId?, offsetMinutes }   (program-only anchors enforced)
+    triggered  { triggerKind: lateArrivalAtHotel|flightDisrupted, functionId? }
   audience: oneOf
-    functionGuests { functionId, rsvp ⊆ {attending, maybe}, householdDedupe: true }
-    households     { rsvpPendingOnly: bool }
-    staffDuty      { duty, scopeIds? }
-  action: oneOf
-    sendTemplate   { connectionId, templateId, variables{}, messageClass: programService }
-    staffAttention { duty, severity, titleTemplate }
-  status: draft | armed | paused | done, revision, createdBy, timestamps
+    subject            (the triggering fact's subject — triggered only)
+    eventParticipants  { statuses ⊆ {signedUp} }            (event scope)
+    functionGuests     { functionId, rsvp ⊆ {attending, maybe},
+                         householdDedupe }                  (program scope)
+    households         { rsvpPendingOnly }                  (program scope)
+    staffDuty          { duty, scopeIds? }                  (both scopes)
+  action: sendTemplate {connectionId, templateId, variables}
+        | push {notificationType, preferenceKey}
+        | staffAttention {duty, severity, titleTemplate}
+  status: draft|armed|paused|done
+  approval: {approvedByUid, approvedAtMillis} | null   (required while armed)
+  origin: organizer|systemDefault, revision, timestamps
 
-programMomentRuns/{runId}   (server-owned)
-  momentId, programId, dueAt, anchorRevision,
-  status: planned | resolving | dispatched | skipped | superseded | failed,
-  recipientSnapshotHash, campaignId?, attentionItemIds[], receipts
+organizerMomentRuns/{runId}   (server-owned)
+  momentId, dueAtMillis, anchorRevision, status:
+    planned|resolving|dispatched|skipped|superseded|failed,
+  targetFunctionId?, subjectId?
+
+organizerMomentSends/{runId}_{recipientKey}   (server-owned; per-recipient
+  decision: sent|suppressed + reason + dayKey — the idempotency + audit key)
 ```
 
-### 4.3 Workflow
-1. Manager arms a moment → server plans a run (`dueAt = anchor + offset`).
-2. Function time changes (`revision++`) → re-plan every armed moment anchored
-   to it: old run `superseded`, new run planned. (`anchorRevision` exists for
-   exactly this.)
-3. Scheduled Function (per minute; reuse `operations/` lease + idempotency)
-   picks `planned` runs due, resolves audience *now*, creates a program-scoped
-   `organizerCampaign` (`automationOrigin={kind: programMoment, runId}`) and
-   hands it to the existing preview→approve→dispatch worker. Auto-approve only
-   when the arming manager holds messaging authority. Staff-attention actions
-   write `organizerAttentionItems` scoped to the duty; the work shell renders
-   them.
-4. Condition anchors: trigger on `programTravelLegs` readiness change evaluates
-   `lateArrivalAtHotel` / `flightDisrupted` for that program and creates a run
-   immediately.
+### 4.3 Approve-the-rule-once
+Arming a moment writes `approval`; while armed, runs fire without further
+approval — the "preview each send" step exists only at arm time. **Any edit
+to when/who/what drops the moment back to draft and clears approval**;
+pause/resume preserves it. Scope is immutable.
 
-### 4.4 Guard rails
-- Service-purpose only (`messageClass: programService`); no promotion via
-  moments. Consent basis = explicit tick on the RSVP page (recommended) —
-  `STOP` still honoured by sender machinery.
-- Caps: N moments/function, M messages/household/day (reuse the
-  `event_whatsapp_budgets` pattern). Kill switch: removing `messaging` from
-  program capabilities pauses all runs. Cancelled function → runs `skipped`.
+### 4.4 Workflow
+1. Upsert (draft) → arm (approval recorded) → the sweep plans runs:
+   anchored `dueAt = anchor + offset`, keyed by `anchorRevision` so a moved
+   function supersedes the stale run; `scheduled` fires at `atMillis`;
+   `manual` fires once per caller `requestKey`.
+2. Triggered moments fire on ingested facts (travel-leg readiness/flight
+   transitions today) — deterministic run ids make re-ingested facts
+   no-ops.
+3. At fire time the runner resolves the audience, evaluates the shared
+   per-recipient policy (consent, quiet hours in scope tz, per-endpoint
+   daily cap), then delivers via the injected seams: Meta WhatsApp
+   provider (same token store as the campaign dispatcher), FCM + activity
+   item, or staff-attention delivery.
+4. Every decision writes an `organizerMomentSends` record — retries, sweep
+   overlap, and replan races are all idempotent.
 
-### 4.5 Guest-side calendar
+### 4.5 Guard rails
+- WhatsApp template sends require explicit consent not-declined: an
+  explicit household decline (`messagingConsent.granted === false`) or
+  unresolved CRM permission suppresses; absent consent does not (service
+  messages precede the first consent opportunity — mirrors the shipped
+  campaign rule).
+- `STOP` flows through household consent decline via the existing webhook.
+- Quiet hours default 21:00–08:00 scope-local (IANA tz on the scope doc);
+  `messagingQuietHours`/`messagingDailyCap` doc overrides. Runs *defer*
+  (re-due at quiet end), never drop.
+- Event scope `messagingEnabled: true`; program scope reads
+  `capabilities.includes("messaging")` — removing the capability stops
+  fires. Cancelled scope/function → runs skipped.
+
+### 4.6 Guest-side calendar
 `/rsvp/:householdToken` (website) shows the invited itinerary and offers a
 `webcal://` feed / `.ics` download built server-side. No dependency on the
 Flutter method channel; app users can additionally use it.
@@ -451,6 +485,23 @@ RSVP and transport-only duties get baked into UI.
 5. **Family stakeholder view is in v1** as the `stakeholderViewer` duty
    (read-only counts, no PII, no finance).
 6. **Flight provider** — remains open on the airport branch; unchanged here.
+7. **"Moment" is the organizer-facing noun for every send** (approved
+   2026-09-24): campaigns, lifecycle reminders, and transactional sends are
+   one configurable system — `manual | scheduled | anchored | triggered`
+   initiation × `individual | audience` sense × channel. A one-off manual
+   blast is a moment with `initiation: manual`. Approved in response to the
+   review that separate campaign/moment/transactional pipelines would be
+   brittle duplication.
+8. **Approve-the-rule-once** (approved 2026-09-24): individual
+   (transactional) sends do not require per-send preview — arming the rule
+   is the approval. Edits to when/who/what reset to draft and require
+   re-approval.
+9. **Existing sends migrate onto Moments** (approved 2026-09-24):
+   `sendEventReminders` becomes a `systemDefault` event-scope moment
+   (anchored `scopeStart` −15m, individual, push + activity item);
+   `organizerFormAutomations` triggers map to `triggered` moments. Live
+   operational notices may remain a specialized fast path but must share
+   the policy layer.
 
 ---
 
@@ -470,7 +521,7 @@ Unmerged branches (all rebased onto current `main` 2026-09-24):
 
 | Branch | Contents | State |
 |---|---|---|
-| `codex/moments-engine-core-20260922` | `functions/src/moments`: pure engine (planning, conditions, audience, guard rails) + `momentTemplates` wedding pack. 40 tests | Verified on new main; awaiting callable wiring (W4) |
+| `codex/moments-engine-core-20260922` | `functions/src/moments`: **unified scope-agnostic engine** — Moment model (`initiation` × `sense` × `action`, `scope: event|program`, approve-once lifecycle: `armMoment`/`pauseMoment`/`resumeMoment`/`reviseMoment`), planning (anchored/scheduled replan with anchor-revision supersede, manual request-key runs), conditions (`lateArrivalAtHotel`, `flightDisrupted`), `momentPolicy` shared per-recipient gate (consent / quiet hours / daily cap / suppression reasons), `momentTemplates` system defaults incl. event-scope T-15m reminder + post-event feedback. 54 tests | Scope-agnostic refactor complete; merged into `w3-program-rsvp-callables` as `ba37fe1b3` |
 | `codex/program-schedule-domain-20260922` | `functions/src/programSchedule`: timeline ordering, overlap/gap detection, tz day grouping, live-function + late-arrival classification, itineraries, headcounts, `.ics` serializer. 26 tests | Verified on new main; consumed by W1/W3/W4 |
 | `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables, admin finance panel, `programLimits` usage/capability evaluator (13 tests) | Verified on new main; merge-ready |
 | `codex/program-rsvp-domain-20260924` | `functions/src/programRsvp` (W3 core): effective invite-set resolution, RSVP rollups (attending>maybe>pending>declined), conversion write plans into `programFunctionGuests`, HMAC household link tokens, `resolveProgramSelection` campaign recipients. 42 tests | New; wired by W3 callables/web page + campaign dispatcher |
@@ -516,3 +567,26 @@ Current blockers (claims measured after #424 merged):
   `program_transport_ready`, `program_rsvp_deadline_reminder`) each need an
   approved `organizerMessageTemplates` doc per sender connection before a
   `sendTemplate` run can deliver. That is runbook/setup work, not code.
+
+### 10.1 Unified Moments engine — built on `codex/w3-program-rsvp-callables` (2026-09-24)
+
+The moments engine was reworked from the program-only draft in §4's old
+model into the unified send engine (decisions 7–9). Commits on the W3
+branch (which carries the moments-core merge at `ba37fe1b3`):
+
+| Commit | Slice |
+|---|---|
+| `ca8a80b2a` | Scope-agnostic model: `initiation` (manual/scheduled/anchored/triggered) × `sense` × `action`, `scope: event\|program`, approve-once lifecycle helpers + invariant validation. 48 tests |
+| `de5cdc49a` | `momentPolicy`: pure per-recipient policy gate — household consent (absent ≠ declined), CRM/opt-out, endpoint validity, quiet hours, daily cap, suppression reasons |
+| `cc371726e` | `momentDocuments` + `momentRunner`: lenient doc boundary, scope-facts loader (events / programs+functions+travel legs), fire-time audience resolution (subject, functionGuests w/ household dedupe, households, staffDuty, eventParticipants), sweep replan + due-run fire, travel-leg trigger ingestion, keyed manual runs, idempotent `organizerMomentSends` records. 60 tests |
+| `9406e2367` | `momentCallables`: deps-injected upsert/arm/pause/resume/list handlers — program scope needs manager or `communications` duty (coordinator satisfies), event scope is organizer-manager only; edits reset approval; scope immutable. 66 tests |
+| `0da69118f` | `momentWiring`: production seams — Meta provider send (same token store as campaign dispatcher), FCM + activity items, household/pref consent loader, scope-tz quiet hours + daily cap, staff-attention delivery to staff uids. 71 tests |
+
+**Not yet wired (needs the shared-surface window):** `index.ts` exports for
+the callables + the `onSchedule` sweep, generated payload validators and
+contract schemas for `organizerMoments`/`organizerMomentRuns`/
+`organizerMomentSends`, and the `sendEventReminders` → system-default
+moment migration (M4). The `staffAttention` action currently delivers
+`organizerUpdate` activity + push to resolved staff uids; projecting into
+`organizerAttentionItems` needs a new source in the (Codex-claimed)
+attention projection.
