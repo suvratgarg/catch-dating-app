@@ -379,6 +379,7 @@ export {validateTransportVehicleAssignmentDocument} from "./validators/transport
 export {validateTransportOperationReceiptDocument} from "./validators/transportOperationReceiptDocument";
 export {validateProgramIdCallablePayload} from "./validators/programIdInput";
 export {validateListOrganizerProgramsCallablePayload} from "./validators/listOrganizerProgramsInput";
+export {validateListMyHostAssignmentsCallablePayload} from "./validators/listMyHostAssignmentsInput";
 export {validateCreateOrganizerProgramCallablePayload} from "./validators/createOrganizerProgramInput";
 export {validateUpdateOrganizerProgramCallablePayload} from "./validators/updateOrganizerProgramInput";
 export {validateGrantProgramStaffCallablePayload} from "./validators/grantProgramStaffInput";
@@ -418,6 +419,7 @@ export {validateProgramHouseholdRsvpViewCallableResponse} from "./validators/pro
 export {validateSubmitProgramHouseholdRsvpCallableResponse} from "./validators/submitProgramHouseholdRsvpOutput";
 export {validateOrganizerProgramListCallableResponse} from "./validators/organizerProgramListOutput";
 export {validateProgramAccessCallableResponse} from "./validators/programAccessOutput";
+export {validateListMyHostAssignmentsCallableResponse} from "./validators/listMyHostAssignmentsOutput";
 export {validateOrganizerProgramCallableResponse} from "./validators/organizerProgramOutput";
 export {validateProgramInviteClaimCallableResponse} from "./validators/programInviteClaimOutput";
 export {validateProgramStaffListCallableResponse} from "./validators/programStaffListOutput";

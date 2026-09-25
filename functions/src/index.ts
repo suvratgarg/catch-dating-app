@@ -644,6 +644,7 @@ export {
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programs/programStaff";
+export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,
   claimProgramStaffInvite,
