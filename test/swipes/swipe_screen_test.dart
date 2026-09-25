@@ -38,6 +38,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: const SwipeScreen(eventId: 'event-1'),
         ),
       ),
@@ -140,6 +141,7 @@ Future<void> _pumpLoadedSwipeScreen(
       ],
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
         home: SwipeScreen(eventId: event.id, now: CatchesSurfaceFixtures.now),
       ),
     ),

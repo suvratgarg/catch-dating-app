@@ -236,6 +236,14 @@ test("sends one durable invitation for two eligible attendees", async () => {
   );
 });
 
+test("unscheduled event cannot create a Cross Paths invitation", async () => {
+  const h = harness({"events/event-1": {...event(), endTime: undefined}});
+  await assert.rejects(sendCrossPathsInvitationHandler(
+    request("sender", sendPayload()), h.deps
+  ), hasCode("failed-precondition"));
+  assert.equal(h.firestore.collectionRows("crossPathsInvitations").length, 0);
+});
+
 test(
   "sending fails closed when the selected-event pilot gate is off",
   async () => {
@@ -492,6 +500,11 @@ function event(): FakeData {
     },
     startTime: timestamp(eventStartMillis),
     endTime: timestamp(eventStartMillis + 2 * 60 * 60 * 1000),
+    eventFormat: {
+      version: 1,
+      activityKind: "socialRun",
+      interactionModel: "pacePods",
+    },
   };
 }
 

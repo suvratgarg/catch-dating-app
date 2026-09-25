@@ -1753,6 +1753,105 @@ The contract layer owns:
 - migration metadata for path/storage renames;
 - valid and invalid fixtures.
 
+### Progressive Event Setup Contracts
+
+The progressive wizard uses `createPrivateEventSetup`,
+`updatePrivateEventBasics`, `getPrivateEventSetup`, and
+`listPrivateEventSetups` payload contracts.
+`updatePrivateEventDetails` adds or clears duration, venue and format on the
+same private event, with setup revision, reviewed defaults hash and durable
+request identity. Duration and saved venue can inherit reviewed organizer
+defaults. A named venue does not invent coordinates; replacing a saved venue
+clears stale map fields. Neither save publishes the event nor admits a guest.
+The manager read includes `eventDetails` for reopening those actual values;
+event preferences remain separate recommendations. Hosts can add or edit venue
+and duration after creating offers or importing a roster. Changing format still
+requires an uncommitted event because it can change guest/rotation expectations;
+saving an unchanged format does not block later detail completion. None of these
+writes changes existing offer payment snapshots or guest admission state.
+Create/edit accept explicit city and timezone decisions, a stable request ID,
+and a reviewed defaults hash when inheriting organizer values. Edit also
+requires the current setup revision. Unknown authority fields are rejected.
+
+The manager read response is a whitelist projection with civil date/time,
+resolved city/timezone, revision and setup provenance. It does not parse a
+minimal event through the rich Event model or invent venue, end time, capacity
+or price. Its event-local preferences are read from manager-only storage. Organizer management and deleted-user
+checks occur in the same transaction as the current event read. Published
+events use the published event editor instead.
+
+The private event picker reads at most 51 event documents for a 50-row page,
+with a composite index on organizer, private publication state, active status,
+start time and document ID. Its cursor keeps the first page's time cutoff and
+expires after 24 hours; every page rechecks current manager and deleted-account
+authority. It cannot expose private payment settings. Basic date/city edits
+check roster, import, participation, waitlist, offer and payment commitments
+inside the same transaction before changing the canonical event.
+The single-event read exposes `canEditBasics` using those same commitment reads,
+and `canChangeCity` is false while a venue snapshot exists. Adding details alone
+does not freeze uncommitted basics: moving the start preserves configured
+duration and the venue/format snapshot. Clear the venue through Details before
+changing city. A dependent event plan or guest/offer/payment history still blocks
+basics edits. These UI affordances never replace the transaction's final checks.
+
+The compatibility stage retains legacy public event list queries because
+installed clients do not constrain `publicationState`, and the legacy
+publication backfill is not yet complete. The current `/events` list rule is
+therefore permissive. **No private event document may be stored in `/events`
+while this rule is deployed.** The production private-create callable has a
+server-owned, immutable false migration gate, and the Host private-create route
+is disabled. The latest full migration dry run, live writer inventory, and
+these source gates must remain release checks; client-side filtering is not a
+privacy boundary. A privileged out-of-band Admin write of a private document
+would be readable by old list clients and is prohibited in this stage.
+
+The later privacy cutover must backfill or reconcile every legacy event, deploy
+and verify the published-query indexes, release compatible clients, and retire
+old list readers before changing `/events` list rules to require
+`publicationState == published` (with a separate manager read path). The
+role-scoped Remote Config build minimum is helpful but is not a sufficient
+barrier by itself: old clients may start offline or use bundled nonblocking
+defaults when the fetch fails. Only after the restrictive rules are live and
+tested may the production private-create gate and Host route be enabled.
+Individual legacy document reads remain compatible only when neither
+`publicationState` nor `setupRevision` exists.
+Direct private event reads require a current organizer manager or active viewRoster
+staff grant; deleted users, foreign tenants and expired/revoked staff grants
+are denied. Consumer bookmarks cannot target private events.
+
+`node tool/data/backfill_event_publication.mjs --project <id>` plans the legacy
+publication migration without writes. It validates complete legacy documents,
+rejects contradictory organizer identities and unlabelled progressive records,
+and scans bounded document-ID pages. Apply requires the reviewed plan digest and
+an explicit production flag for the production project. Each transaction
+rechecks the exact source update time and changes only publicationState; an
+interrupted or stale run requires a fresh reviewed plan. Existing private events,
+booking capabilities, provenance, counters and cancellation status are preserved.
+Before switching public readers/rules, deploy explicit publication writers and
+require a complete final dry run with zero legacy candidates and zero blockers.
+
+These contracts and services are not rollout authorization. Private persistence
+remains disabled until the explicit legacy publication backfill, all public
+readers/search projections and integrated privacy checks are complete.
+
+The offer picker uses `listOfferEventTargets` for both private and already
+published owned events, including valid rich legacy events. The bounded index
+uses canonical `clubId`, status, start time and document ID; contradictory
+organizer ownership fails. This list exposes no payment settings.
+`getEventOfferConfiguration` separately reads manager-only current terms for
+the selected event and suggests expiry from the server clock and event policy.
+The read includes the private preference revision and resolved intent provenance
+so editing preserves inherit/set/clear decisions. Missing configuration remains
+null with revision zero, never an invented free price or expiry.
+`configureEventOfferPreferences` writes the same private preferences for owned
+published, legacy or private events. The transaction rechecks manager/deleted-user
+authority, event source revision, preference revision and reviewed organizer
+defaults. Its actor-scoped request receipt returns the original revision after a
+lost response; changed requests cannot reuse that identity. Events and issued
+offer snapshots are never rewritten. Clients cannot read or write the receipt
+collection directly; the endpoint remains release gated with the offer flow.
+Offer preview and commit recheck these facts rather than trusting a picker row.
+
 ### Functions Runtime Schema Modules
 
 The schema generator emits independent runtime modules under
@@ -2461,6 +2560,67 @@ Generic Forms is the source for application, registration, intake, waiver,
 feedback, and survey definitions. The existing application collections below
 remain the application-review projection and import compatibility boundary;
 they are not the generic response store.
+
+Fixed-event form targets are validated in the same transaction as creation,
+draft updates, duplication and publication. Binding accepts a schema-valid,
+active upcoming event owned by the organizer, including a privately saved
+basics-only event. The mutation also rechecks current manager and deleted-account
+authority. Missing, foreign, cancelled, malformed or past targets reject the
+write; changing the draft to organizer-wide intake clears the event binding.
+Resuming a paused form validates the immutable published version's target,
+not an unpublished draft edit. Public resolution closes a fixed-event form when
+its current event is missing,
+foreign, cancelled or has started. Begin/save and the final response write
+recheck the event inside their transaction; already submitted responses retain
+idempotent receipt replay. Paid checkout rechecks before reserving a payment.
+A captured payment whose event became unavailable enters the existing
+`refundPending` reconciliation path without creating a response; this does not
+claim a completed refund or activate a provider.
+Binding creates no admission, booking, event publication or payment capability; offer/admission writes still need their own
+current target and source authority.
+
+Typed export commands are persisted before mutable query metadata is resolved.
+The worker rejects stale or unsupported filters with a terminal failed receipt
+before writing any export object. Exact request replay requires current manager
+and account authority but does not recompile an old query merely to retrieve its
+receipt; this permits durable client journals to settle after form changes.
+Pending or running exports older than ten minutes settle as `export_interrupted`
+on an authorized status retry. Polling does not extend the deadline. The user
+can refresh the response set and start a new export; the original command is
+never silently restarted. Delayed workers cannot overwrite that terminal
+receipt or publish a download for it.
+
+`requestOrganizerFormExport` accepts optional `responseQuery`,
+`expectedQueryHash` and `expectedResultHash` together. Typed exports use the
+same published-version-aware predicate, ordering and one-snapshot reader as
+`queryOrganizerFormResponses`. The page cursor must be null; the export covers
+all matching rows, including rows beyond the displayed page. Legacy date/status
+filters cannot be combined with a typed query. Query and result hashes prevent
+silent changes between review and background processing. CSV and XLSX redact
+sensitive and withdrawn answers and neutralize spreadsheet formulas. File and
+signature cells show attachment presence, never private asset IDs. The
+worker rechecks current manager/deleted-account authority through the query
+reader; download requests recheck current manager authority. Typed exports
+retain the interactive 5,000 scanned responses / 8 MiB / 25-second bounds and
+fail before storage on overflow or changed results. Legacy exports retain
+their existing 10,000 matching / 50,000 scanned bounds. Receipts distinguish
+query settings and both hashes; a reused request ID cannot change its filters.
+The result hash includes exported consent/completion metadata. Failed receipts
+return the stable `response-query-stale` code when the reviewed set changes;
+clients must refresh and use a new request ID, not replay a different query.
+
+The shared response reader emits one `organizer_response_scan` diagnostic per
+scan: fetched document count, serialized bytes, query page count, elapsed
+milliseconds and a closed completion/limit/failure outcome. It contains no
+organizer, form, actor, query, identity, answer or error-text data. All form
+versions consume scan budget; the telemetry counts fetched rows even when a
+byte/time ceiling rejects the result. At the 5,000-row ceiling, batches of 25
+need 201 response queries including the exhaustion/sentinel query. This is
+not a billed-read count: authority/version reads, empty-query minimums,
+rate-limit transactions and provider billing rules are separate. Each UI page
+and export worker currently rescans; this diagnostic does not prove deployed
+latency. Production percentiles and representative response sizes must be
+measured before changing batching or the actor/organizer rate ceilings.
 
 ### Organizer-connected form payments
 

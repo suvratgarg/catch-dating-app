@@ -1,6 +1,7 @@
+import {exportFirestoreResponseQuery} from
+  "../organizerResponseQuery/firestoreAdapter";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
-import ExcelJS from "exceljs";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -44,8 +45,11 @@ const defaultDeps: FormExportDeps = {
 
 const exportLifetimeMs = 24 * 60 * 60 * 1000;
 const downloadLifetimeMs = 15 * 60 * 1000;
+// Longer than the 540-second worker limit; polling never extends this lease.
+const exportWorkerDeadlineMs = 10 * 60 * 1000;
 const exportPageSize = 250;
 const maxExportRows = 10_000;
+const maxExportScannedResponses = 50_000;
 
 interface ExportRow {
   values: Map<string, string | number | boolean | null>;
@@ -77,23 +81,21 @@ export async function requestOrganizerFormExportHandler(
       "The export start must be before the end."
     );
   }
-  const formSnap = await db.collection("organizerForms").doc(data.formId).get();
-  const form = formSnap.exists ? requireDoc<OrganizerFormDocument>(
-    formSnap,
-    "OrganizerFormDocument"
-  ) : null;
-  if (!form || form.organizerId !== data.organizerId) {
-    throw new HttpsError("not-found", "Form not found.");
-  }
-  if (data.versionId) {
-    const versionSnap = await db.collection("organizerFormVersions")
-      .doc(data.versionId).get();
-    const version = versionSnap.exists ?
-      versionSnap.data() as OrganizerFormVersionDocument : null;
-    if (!version || version.organizerId !== data.organizerId ||
-        version.formId !== data.formId) {
-      throw new HttpsError("not-found", "Form version not found.");
+  const typedQuery = data.responseQuery ?? null;
+  if (typedQuery) {
+    if (!data.expectedResultHash || !data.expectedQueryHash ||
+        typedQuery.cursor !== null || data.fromMillis !== null ||
+        data.toMillis !== null || data.versionId !== typedQuery.versionId ||
+        data.organizerId !== typedQuery.organizerId ||
+        data.formId !== typedQuery.formId ||
+        JSON.stringify([...data.statuses].sort()) !==
+        JSON.stringify([...typedQuery.statuses].sort())) {
+      throw new HttpsError("invalid-argument",
+        "Export scope and filters must match the response query.");
     }
+  } else if (data.expectedResultHash != null ||
+      data.expectedQueryHash != null) {
+    throw new HttpsError("invalid-argument", "Export query is required.");
   }
   const exportId = deterministicExportId(
     data.organizerId,
@@ -101,7 +103,12 @@ export async function requestOrganizerFormExportHandler(
     data.requestId
   );
   const exportRef = db.collection("organizerFormExports").doc(exportId);
-  let document = await db.runTransaction(async (tx) => {
+  const document = await db.runTransaction(async (tx) => {
+    await requireOrganizerManager({db, organizerId: data.organizerId,
+      actorUid, transaction: tx});
+    if ((await tx.get(db.collection("deletedUsers").doc(actorUid))).exists) {
+      throw new HttpsError("permission-denied", "Account is deleted.");
+    }
     const snapshot = await tx.get(exportRef);
     if (snapshot.exists) {
       const existing = requireDoc<OrganizerFormExportDocument>(
@@ -109,8 +116,33 @@ export async function requestOrganizerFormExportHandler(
         "OrganizerFormExportDocument"
       );
       assertSameExport(existing, data, actorUid);
-      return existing;
+      const now = deps.timestamp();
+      const patch = interruptedExport(existing, now) ??
+        (existing.status === "completed" &&
+          existing.expiresAt.toMillis() <= now.toMillis() ?
+          {status: "expired" as const, updatedAt: now} : null);
+      if (patch) tx.update(exportRef, patch);
+      return patch ? {...existing, ...patch} : existing;
     }
+    const formSnap = await tx.get(db.collection("organizerForms")
+      .doc(data.formId));
+    const form = formSnap.exists ? requireDoc<OrganizerFormDocument>(
+      formSnap, "OrganizerFormDocument") : null;
+    if (!form || form.organizerId !== data.organizerId) {
+      throw new HttpsError("not-found", "Form not found.");
+    }
+    if (data.versionId && !typedQuery) {
+      const versionSnap = await tx.get(db.collection("organizerFormVersions")
+        .doc(data.versionId));
+      const version = versionSnap.data();
+      if (!version || version.organizerId !== data.organizerId ||
+          version.formId !== data.formId) {
+        throw new HttpsError("not-found", "Form version not found.");
+      }
+    }
+    // Persist a typed command before resolving mutable query metadata. The
+    // worker produces a terminal failed receipt for a stale/unsupported query,
+    // so definition drift does not prevent replay of the original identity.
     const now = deps.timestamp();
     const created: OrganizerFormExportDocument = {
       organizerId: data.organizerId,
@@ -118,6 +150,9 @@ export async function requestOrganizerFormExportHandler(
       requestedByUid: actorUid,
       requestId: data.requestId,
       format: data.format,
+      responseQuery: typedQuery,
+      expectedResultHash: data.expectedResultHash ?? null,
+      expectedQueryHash: data.expectedQueryHash ?? null,
       statuses: data.statuses,
       versionId: data.versionId,
       fromMillis: data.fromMillis,
@@ -137,11 +172,6 @@ export async function requestOrganizerFormExportHandler(
     tx.create(exportRef, created);
     return created;
   });
-  if (document.expiresAt.toMillis() <= deps.timestamp().toMillis() &&
-      document.status === "completed") {
-    await exportRef.update({status: "expired", updatedAt: deps.timestamp()});
-    document = {...document, status: "expired"};
-  }
   return exportProjection(exportId, document, deps);
 }
 
@@ -160,8 +190,15 @@ export async function processOrganizerFormExport(
       "OrganizerFormExportDocument"
     );
     if (current.status !== "pending") return null;
-    tx.update(exportRef, {status: "running", updatedAt: deps.timestamp()});
-    return current;
+    const now = deps.timestamp();
+    const interrupted = interruptedExport(current, now);
+    if (interrupted) {
+      tx.update(exportRef, interrupted);
+      return null;
+    }
+    const running = {...current, status: "running" as const, updatedAt: now};
+    tx.update(exportRef, {status: running.status, updatedAt: now});
+    return running;
   });
   if (!document) return;
   try {
@@ -186,24 +223,71 @@ export async function processOrganizerFormExport(
     const versions = new Map<string, OrganizerFormVersionDocument>();
     let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
     let exhausted = false;
-    while (!exhausted && rows.length < maxExportRows) {
+    let scanned = 0;
+    if (document.responseQuery) {
+      const query = document.responseQuery;
+      if (!document.expectedResultHash || !document.expectedQueryHash ||
+          query.organizerId !==
+          document.organizerId || query.formId !== document.formId ||
+          query.versionId !== document.versionId) {
+        throw new HttpsError("failed-precondition", "Invalid export scope.");
+      }
+      const result = await exportFirestoreResponseQuery({db,
+        actorUid: document.requestedByUid, organizerId: document.organizerId,
+        formId: document.formId, versionId: query.versionId}, query,
+      document.expectedResultHash, document.expectedQueryHash);
+      for (const field of result.fieldCatalog) {
+        columns.set(`v${result.version}_${field.questionId}`,
+          `Version ${result.version}: ${field.label}`);
+      }
+      for (const {row, document: response} of result.rows) {
+        const values = baseExportValues(row.id, response, result.version);
+        for (const field of result.fieldCatalog) {
+          const key = `v${result.version}_${field.questionId}`;
+          const answer = row.answers[field.questionId] ?? null;
+          const attachment = field.kind === "file" ||
+            field.kind === "signature";
+          values.set(key, attachment ?
+            (answer === null || answer === "" ||
+              (Array.isArray(answer) && answer.length === 0) ?
+              null : "Attached") : exportAnswer(answer));
+        }
+        rows.push({values});
+      }
+      exhausted = true;
+    }
+    while (!exhausted) {
+      // Reserve one read beyond the scan budget to prove exhaustion.
+      const pageSize = Math.min(exportPageSize,
+        maxExportScannedResponses - scanned + 1);
       let query: FirebaseFirestore.Query = db
         .collection("organizerFormResponses")
         .where("organizerId", "==", document.organizerId)
         .where("formId", "==", document.formId)
         .orderBy("submittedAt", "asc")
         .orderBy(admin.firestore.FieldPath.documentId(), "asc")
-        .limit(exportPageSize);
+        .limit(pageSize);
       if (last) query = query.startAfter(last);
       const snapshot = await query.get();
       if (snapshot.empty) break;
       for (const doc of snapshot.docs) {
+        scanned += 1;
+        if (scanned > maxExportScannedResponses) {
+          throw new HttpsError("resource-exhausted",
+            "Export scan exceeds 50,000 responses. Narrow the filters.");
+        }
         last = doc;
         const response = requireDoc<OrganizerFormResponseDocument>(
           doc,
           "OrganizerFormResponseDocument"
         );
         if (!exportIncludesResponse(document, response)) continue;
+        // A further matching row proves the bounded export would be partial.
+        // Fail the receipt before writing an apparently complete file.
+        if (rows.length === maxExportRows) {
+          throw new HttpsError("resource-exhausted",
+            "Export exceeds 10,000 responses. Narrow the filters.");
+        }
         let version = versions.get(response.versionId);
         if (!version) {
           const versionSnap = await db.collection("organizerFormVersions")
@@ -223,9 +307,8 @@ export async function processOrganizerFormExport(
           values.set(key, exportAnswer(answer.answer));
         }
         rows.push({values});
-        if (rows.length === maxExportRows) break;
       }
-      exhausted = snapshot.size < exportPageSize;
+      exhausted = snapshot.size < pageSize;
     }
     const buffer = document.format === "csv" ?
       Buffer.from(csvFor(columns, rows), "utf8") :
@@ -243,7 +326,7 @@ export async function processOrganizerFormExport(
       },
     });
     const now = deps.timestamp();
-    await exportRef.update({
+    await settleExport(db, exportRef, document, deps, {
       status: "completed",
       rowCount: rows.length,
       storagePath,
@@ -253,14 +336,50 @@ export async function processOrganizerFormExport(
       completedAt: now,
     });
   } catch (error) {
-    await exportRef.update({
+    await settleExport(db, exportRef, document, deps, {
       status: "failed",
-      errorCode: "export_failed",
+      errorCode: error instanceof HttpsError && error.code === "aborted" &&
+        (error.details as {reason?: string})?.reason ===
+          "response-query-stale" ? "response-query-stale" : "export_failed",
       errorMessage: sanitizeError(error),
       updatedAt: deps.timestamp(),
     });
     throw error;
   }
+}
+
+/** A retry settles an abandoned command; it never changes its query or ID. */
+function interruptedExport(
+  document: OrganizerFormExportDocument,
+  now: FirebaseFirestore.Timestamp
+): Partial<OrganizerFormExportDocument> | null {
+  if (document.status !== "pending" && document.status !== "running") {
+    return null;
+  }
+  if (now.toMillis() - document.updatedAt.toMillis() < exportWorkerDeadlineMs &&
+      document.expiresAt.toMillis() > now.toMillis()) return null;
+  return {status: "failed", errorCode: "export_interrupted",
+    errorMessage: "Export was interrupted. Refresh responses and export again.",
+    storagePath: null, rowCount: 0, updatedAt: now};
+}
+
+/** A late worker must not resurrect an interrupted or settled receipt. */
+async function settleExport(
+  db: FirebaseFirestore.Firestore,
+  ref: FirebaseFirestore.DocumentReference,
+  running: OrganizerFormExportDocument,
+  deps: FormExportDeps,
+  patch: Partial<OrganizerFormExportDocument>
+): Promise<void> {
+  await db.runTransaction(async (tx) => {
+    const snapshot = await tx.get(ref);
+    if (!snapshot.exists) return;
+    const current = requireDoc<OrganizerFormExportDocument>(snapshot,
+      "OrganizerFormExportDocument");
+    if (current.status !== "running" || !current.updatedAt.isEqual(
+      running.updatedAt)) return;
+    tx.update(ref, interruptedExport(current, deps.timestamp()) ?? patch);
+  });
 }
 
 function baseExportValues(
@@ -323,6 +442,7 @@ async function xlsxFor(
   columns: Map<string, string>,
   rows: ExportRow[]
 ): Promise<Buffer> {
+  const ExcelJS = (await import("exceljs")).default;
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Catch Host Forms";
   workbook.created = new Date();
@@ -376,6 +496,7 @@ async function exportProjection(
     downloadUrl,
     expiresAtMillis: document.expiresAt.toMillis(),
     errorMessage: document.errorMessage,
+    errorCode: document.errorCode ?? null,
   };
 }
 
@@ -391,6 +512,12 @@ function assertSameExport(
       existing.versionId !== data.versionId ||
       existing.fromMillis !== data.fromMillis ||
       existing.toMillis !== data.toMillis ||
+      canonicalJson(existing.responseQuery ?? null) !==
+        canonicalJson(data.responseQuery ?? null) ||
+      (existing.expectedQueryHash ?? null) !==
+        (data.expectedQueryHash ?? null) ||
+      (existing.expectedResultHash ?? null) !==
+        (data.expectedResultHash ?? null) ||
       JSON.stringify([...existing.statuses].sort()) !==
         JSON.stringify([...data.statuses].sort())) {
     throw new HttpsError(
@@ -434,3 +561,14 @@ export const onOrganizerFormExportRequested = onDocumentCreated(
   },
   async (event) => processOrganizerFormExport(event.params.exportId)
 );
+
+/** Object property order must not change idempotent request identity. */
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort().map((key) =>
+      `${JSON.stringify(key)}:${canonicalJson(record[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}

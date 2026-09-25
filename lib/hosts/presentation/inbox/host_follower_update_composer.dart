@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -32,7 +33,7 @@ Future<bool> showHostFollowerUpdateComposer({
     ),
   );
   if (result == true && context.mounted) {
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       context.l10n.hostsHostClubToolsCatchbuttonPostedToFollowers,
     );

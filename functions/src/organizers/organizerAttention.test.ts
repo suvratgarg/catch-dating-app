@@ -129,6 +129,25 @@ test("projects staffAttention sends as one item per run", () => {
   assert.equal(program.destination.section, "moments");
 });
 
+test("private basics do not create waitlist or payout obligations", () => {
+  const sources = sourceFixture();
+  sources.events = [row("event-1", {
+    name: "Sunday Social Run",
+    clubId: "organizer-1",
+    organizerId: "organizer-1",
+    startTime: timestamp(nowMillis + hourMillis),
+    status: "active",
+    publicationState: "private",
+    setupRevision: 1,
+  } as EventDocument, nowMillis)];
+  const items = deriveOrganizerAttentionItems({
+    organizerId: "organizer-1", nowMillis, sources,
+  });
+  assert.equal(items.some((item) => item.kind === "eventLiveOperations" ||
+    item.kind === "eventWaitlistReview" || item.kind === "payoutSetup"),
+  false);
+});
+
 test("latest terminal outcomes resolve failures without weak proxies", () => {
   const base = sourceFixture();
   base.events[0].data = event({manualApprovalRequired: true});

@@ -1,5 +1,7 @@
 import {createHash} from "crypto";
 import {eventPolicyFromEvent} from "../events/eventPolicy";
+import {isEventPolicyTerms, isEventTimeRange, TimedEventDocument} from
+  "../events/configuredEvent";
 import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
 import type {EventAssistanceDeliveryWork} from
@@ -105,8 +107,9 @@ export function deriveOrganizerAttentionItems(params: {
   sources: OrganizerAttentionSources;
 }): DesiredHostAttentionItem[] {
   const horizonEndsAtMillis = params.nowMillis + hostAttentionHorizonMillis;
-  const activeEvents = params.sources.events.filter((row) =>
-    row.data.status === "active" &&
+  const activeEvents = params.sources.events.filter((row): row is
+    AttentionSourceRow<TimedEventDocument> =>
+    isEventTimeRange(row.data) && row.data.status === "active" &&
     row.data.endTime.toMillis() > params.nowMillis &&
     row.data.startTime.toMillis() <= horizonEndsAtMillis
   );
@@ -147,10 +150,11 @@ export function deriveOrganizerAttentionItems(params: {
       }));
     }
 
-    const policy = eventPolicyFromEvent(event);
+    const policy = isEventPolicyTerms(event) ?
+      eventPolicyFromEvent(event) : null;
     const waitlistedCount = event.waitlistedCount ?? 0;
     if (waitlistedCount > 0 &&
-        policy.admission.manualApprovalRequired !== true) {
+        policy && policy.admission.manualApprovalRequired !== true) {
       items.push(buildItem({
         kind: "eventWaitlistReview",
         scope: "event",
@@ -321,7 +325,7 @@ export function deriveOrganizerAttentionItems(params: {
     if (row.data.status !== "waitlisted" ||
         row.data.hostApprovalStatus !== "pending") continue;
     const event = activeEventsById.get(row.data.eventId);
-    if (!event ||
+    if (!event || !isEventPolicyTerms(event.data) ||
         eventPolicyFromEvent(event.data).admission.manualApprovalRequired !==
           true) continue;
     const requests = pendingRequestsByEvent.get(row.data.eventId) ?? [];
@@ -591,15 +595,17 @@ function derivePayoutItems(params: {
   organizerId: string;
   nowMillis: number;
   organizer: AttentionSourceRow<OrganizerDocument>;
-  activeEvents: Array<AttentionSourceRow<EventDocument>>;
+  activeEvents: Array<AttentionSourceRow<TimedEventDocument>>;
   paymentAccounts: OrganizerAttentionSources["paymentAccounts"];
 }): DesiredHostAttentionItem[] {
   const paidByProvider = new Map<
     HostPaymentProvider,
-    Array<AttentionSourceRow<EventDocument>>
+    Array<AttentionSourceRow<TimedEventDocument>>
   >();
   for (const row of params.activeEvents) {
-    if (row.data.priceInPaise <= 0) continue;
+    if (!isEventPolicyTerms(row.data) || row.data.priceInPaise <= 0) {
+      continue;
+    }
     const provider = paymentProviderForCurrency(row.data.currency);
     const rows = paidByProvider.get(provider) ?? [];
     rows.push(row);
@@ -780,7 +786,7 @@ function paymentAccountReady(account: HostPaymentAccountDocument): boolean {
 }
 
 function displayEventName(event: EventDocument): string {
-  return event.name?.trim() || event.meetingPoint;
+  return event.name?.trim() || event.meetingPoint?.trim() || "Event";
 }
 
 function urgencyFor(

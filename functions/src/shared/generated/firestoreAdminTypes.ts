@@ -2,10 +2,17 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import type {ResolvedEventPreferences} from "./resolvedEventPreferences";
+import type {EventPaymentTerms} from "./eventPaymentTerms";
+import type {OrganizerEventSetupPreferences} from "./organizerEventSetupPreferences";
 import type {EventOrigin} from "./eventOrigin";
 import type {EventRuntimeAccess} from "./eventRuntimeAccess";
 import type {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
 import type {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
+import type {EventOfferPaymentSnapshot} from "./eventOfferPaymentSnapshot";
+import type {EventOfferManualPayment} from "./eventOfferManualPayment";
+import type {EventSetupDefaults} from "./eventSetupDefaults";
+import type {QueryOrganizerFormResponsesCallablePayload} from "./queryOrganizerFormResponsesCallablePayload";
 
 /**
  * Schema-derived Admin SDK Firestore document types.
@@ -535,6 +542,90 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+/**
+ * Server-owned immutable organizer/event/response admission ownership. Created atomically with the seat and request receipt; new request IDs cannot admit this source again.
+ */
+export interface OrganizerFormAdmissionDocument {
+  organizerId: string;
+  eventId: string;
+  responseId: string;
+  receiptId: string;
+  attendeeId: string;
+  canonicalSeatKey: string;
+  offerId: string;
+  offerRevision: number;
+  offerGeneration: number;
+}
+
+export interface OrganizerFormAdmissionReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  responseId: string;
+  contactId: string;
+  offerId: string;
+  expectedOfferRevision: number;
+  expectedOfferGeneration: number;
+  expectedLedgerRevision: number;
+  requestId: string;
+  receiptId: string;
+  attendeeId: string;
+  canonicalSeatKey: string;
+  requestHash: string;
+  resultingLedgerRevision: number;
+  admittedAtMillis: number;
+  seatAlreadyOccupied: boolean;
+  actorUid: string;
+  paymentSnapshot: EventOfferPaymentSnapshot;
+  manualPayment: EventOfferManualPayment;
+}
+
+export interface EventOfferConfigurationReceiptDocument {
+  actorUid: string;
+  organizerId: string;
+  requestId: string;
+  requestHash: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  appliedPreferencesRevision: number;
+  eventId: string;
+}
+
+export interface EventSetupPreferencesDocument {
+  organizerId: string;
+  eventId: string;
+  revision: number;
+  preferences: ResolvedEventPreferences;
+  paymentTerms: EventPaymentTerms;
+  updatedByUid: string;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+export interface EventSetupReceiptDocument {
+  operation: "create" | "update" | "preferences" | "details";
+  actorUid: string;
+  organizerId: string;
+  requestHash: string;
+  eventId: string;
+  appliedRevision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+export interface OrganizerEventSetupDefaultsDocument {
+  organizerId: string;
+  revision: number;
+  eventSetup: OrganizerEventSetupPreferences;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+export interface OrganizerEventSetupDefaultReceiptDocument {
+  actorUid: string;
+  organizerId: string;
+  requestId: string;
+  requestHash: string;
+  appliedRevision: number;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -6042,6 +6133,80 @@ export interface OrganizerContactMergeReceiptDocument {
   idempotencyKey: string;
   reversalOfReceiptId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
+  /**
+   * @maxItems 200
+   */
+  seatMoves?: {
+    eventId: string;
+    aliasId: string;
+    kind: "contact" | "contactOrigin";
+    valueHash: string;
+    before: {
+      canonicalKey: string;
+      identityRevision: number;
+      migrationRevision: number;
+      state: "ready";
+    } | null;
+    after: {
+      canonicalKey: string;
+      identityRevision: number;
+      migrationRevision: number;
+      state: "ready";
+    };
+  }[];
+  /**
+   * @maxItems 100
+   */
+  seatEventGuards?: {
+    eventId: string;
+    ledgerRevision: number;
+    migrationRevision: number;
+    sourceReservation: {
+      canonicalKey: string;
+      identityRevision: number;
+      revision: number;
+      active: boolean;
+    } | null;
+    survivorReservation: {
+      canonicalKey: string;
+      identityRevision: number;
+      revision: number;
+      active: boolean;
+    } | null;
+    /**
+     * @maxItems 200
+     */
+    aliasIdsBefore: string[];
+    sourceAlias: {
+      canonicalKey: string;
+      identityRevision: number;
+      migrationRevision: number;
+      state: "ready";
+    } | null;
+    survivorAlias: {
+      canonicalKey: string;
+      identityRevision: number;
+      migrationRevision: number;
+      state: "ready";
+    } | null;
+  }[];
+  /**
+   * @maxItems 200
+   */
+  seatAdmissionGuards?: {
+    eventId: string;
+    responseId: string;
+    ownershipId: string;
+    receiptId: string | null;
+  }[];
+  /**
+   * @maxItems 400
+   */
+  survivorOriginIdsBefore?: string[];
+  /**
+   * @maxItems 200
+   */
+  sourceOriginAliasIdsBefore?: string[];
 }
 
 /**
@@ -7110,6 +7275,18 @@ export interface OrganizerFormExportDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
   expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Optional exact typed filter and sort. Export covers all matches, not one page.
+   */
+  responseQuery?: QueryOrganizerFormResponsesCallablePayload | null;
+  /**
+   * Required with responseQuery; changed results fail rather than silently exporting a different set.
+   */
+  expectedResultHash?: string | null;
+  /**
+   * Required with responseQuery; binds the published definition and filter semantics.
+   */
+  expectedQueryHash?: string | null;
 }
 
 /**
@@ -8312,11 +8489,11 @@ export interface EventDocument {
   eventOrigin?: EventOrigin;
   runtimeAccess?: EventRuntimeAccess;
   startTime: FirebaseFirestore.Timestamp;
-  endTime: FirebaseFirestore.Timestamp;
-  meetingPoint: string;
-  meetingLocation: EventMeetingLocation;
-  startingPointLat: number;
-  startingPointLng: number;
+  endTime?: FirebaseFirestore.Timestamp;
+  meetingPoint?: string;
+  meetingLocation?: EventMeetingLocation;
+  startingPointLat?: number;
+  startingPointLng?: number;
   locationDetails?: string | null;
   /**
    * @maxItems 40
@@ -8340,12 +8517,12 @@ export interface EventDocument {
   }[];
   photoUrl?: string | null;
   eventPhotos?: UploadedPhoto[];
-  distanceKm: number;
-  eventFormat: EventFormatSnapshot;
-  pace: "easy" | "moderate" | "fast" | "competitive";
-  capacityLimit: number;
-  description: string;
-  priceInPaise: number;
+  distanceKm?: number;
+  eventFormat?: EventFormatSnapshot;
+  pace?: "easy" | "moderate" | "fast" | "competitive";
+  capacityLimit?: number;
+  description?: string;
+  priceInPaise?: number;
   currency?: string;
   bookedCount?: number;
   checkedInCount?: number;
@@ -8357,7 +8534,7 @@ export interface EventDocument {
    * When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.
    */
   publicRegistrationEnabled?: boolean;
-  constraints: EventConstraints;
+  constraints?: EventConstraints;
   eventPolicy?: EventPolicyBundleDocument | null;
   genderCounts: {
     [k: string]: number;
@@ -8374,9 +8551,9 @@ export interface EventDocument {
     [k: string]: number;
   };
   crossPathsDiscoveryEnabled?: boolean;
-  discoveryMarketId: string;
-  discoveryCityName: string;
-  discoveryActivityKind:
+  discoveryMarketId?: string;
+  discoveryCityName?: string;
+  discoveryActivityKind?:
     | "socialRun"
     | "running"
     | "walking"
@@ -8393,13 +8570,13 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell: string;
-  discoveryHasOpenSpots: boolean;
-  discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  discoveryGeoCell?: string;
+  discoveryHasOpenSpots?: boolean;
+  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**
    * @maxItems 4
    */
-  discoveryOpenCohorts: (
+  discoveryOpenCohorts?: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
@@ -8408,17 +8585,17 @@ export interface EventDocument {
   /**
    * @maxItems 4
    */
-  discoveryWaitlistCohorts: (
+  discoveryWaitlistCohorts?: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
     | "nonBinaryOrOther"
   )[];
-  discoveryInviteRequired: boolean;
-  discoveryMembershipRequired: boolean;
-  discoveryManualApprovalRequired: boolean;
-  discoveryMinAge: number;
-  discoveryMaxAge: number;
+  discoveryInviteRequired?: boolean;
+  discoveryMembershipRequired?: boolean;
+  discoveryManualApprovalRequired?: boolean;
+  discoveryMinAge?: number;
+  discoveryMaxAge?: number;
   /**
    * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
    */
@@ -8431,11 +8608,23 @@ export interface EventDocument {
     updatedAt: FirebaseFirestore.Timestamp;
     updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
   };
+  createdAt?: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
   /**
    * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.
    */
   planChangeRevision?: number;
+  /**
+   * Explicit publication boundary. Legacy absent values require full rich event data; new progressive events must declare their state.
+   */
+  publicationState?: "private" | "published";
+  setupRevision?: number;
+  eventCityId?: string;
+  eventMarketId?: string;
+  eventLocalDate?: string;
+  eventLocalStartTime?: string;
+  eventTimezone?: string;
+  setupDefaults?: EventSetupDefaults;
 }
 
 /**
@@ -13305,4 +13494,72 @@ export interface OrganizerPolicyGapReviewDecisionDocument {
   reviewedAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   operationalState: "blocked_until_policy_encoded" | "not_approved";
+}
+
+export interface OrganizerEventOfferDocument {
+  organizerId: string;
+  eventId: string;
+  contactId: string;
+  applicationId: string;
+  sourceKind: "application" | "formResponse";
+  offerId: string;
+  status: "draft" | "offered" | "withdrawn" | "expired";
+  generation: number;
+  revision: number;
+  expiresAtMillis: number;
+  organizerPaymentLink: string | null;
+  paymentSnapshot: EventOfferPaymentSnapshot;
+  offeredAtMillis: number | null;
+  manualPayment: EventOfferManualPayment;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+export interface OrganizerEventOfferActionReceiptDocument {
+  offerId: string;
+  requestId: string;
+  requestHash: string;
+  resultingGeneration: number;
+  resultingRevision: number;
+}
+
+export interface OrganizerEventOfferBatchReceiptDocument {
+  organizerId: string;
+  eventId: string;
+  requestId: string;
+  requestHash: string;
+  /**
+   * @minItems 1
+   * @maxItems 25
+   */
+  results: {
+    offerId: string;
+    revision: number;
+    generation: number;
+  }[];
+}
+
+export interface OrganizerEventOfferAuditDocument {
+  offerId: string;
+  requestId: string;
+  actorUid: string;
+  kind:
+    | "createDraft"
+    | "reissueDraft"
+    | "offer"
+    | "withdraw"
+    | "expire"
+    | "recordEvidence"
+    | "reconcileEvidence";
+  beforeRevision: number;
+  afterRevision: number;
+  generation: number;
+  atMillis: number;
+  paymentStatus:
+    | "none"
+    | "evidenceSubmitted"
+    | "hostAttestedReceived"
+    | "rejected";
+  bankReceiptChecked: boolean;
+  reviewNote: string | null;
 }

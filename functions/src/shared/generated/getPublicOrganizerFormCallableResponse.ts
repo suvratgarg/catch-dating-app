@@ -248,6 +248,16 @@ export type GetPublicOrganizerFormCallableResponse = {
       actionUrl: string | null;
     };
   };
+  /**
+   * @maxItems 100
+   */
+  cityOptions?: {
+    marketId: string;
+    cityId: string;
+    label: string;
+    regionName: string;
+    countryIsoCode: string;
+  }[];
   messagingOffer?: {
     termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: string | null;

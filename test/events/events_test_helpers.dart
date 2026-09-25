@@ -4,6 +4,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -318,7 +319,13 @@ Future<void> pumpEventsTestApp(
       ],
       child: _EventTestProviderPrimer(
         primeUid: signedInUid != null,
-        child: MaterialApp(theme: AppTheme.light, home: child),
+        child: MaterialApp(
+          theme: AppTheme.light,
+          builder: (context, appChild) => CatchNoticeOverlay(
+            child: appChild ?? const SizedBox.shrink(),
+          ),
+          home: child,
+        ),
       ),
     ),
   );

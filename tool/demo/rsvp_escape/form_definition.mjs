@@ -30,14 +30,16 @@ export function buildRsvpFormDefinition() {
     title: 'RSVP Escape — application demo',
     description: 'DEMO · One application, five cities. Explore the application and review experience with synthetic guests. This is not a live RSVP Escape registration.',
     purpose: 'application', defaultTargetKind: 'organizer', defaultTargetId: null,
-    identityPolicy: 'emailOrPhoneVerified',
+    identityPolicy: 'phoneVerified',
     sections: [
-      section('welcome', 'Your city & contact details', 'Choose the city where you would like to join an experience. The team reviews each application before inviting guests.', [
+      section('welcome', 'Your Catch details', 'Verify your phone early to see saved details. You can start the form before verification.', [
+        question('fullName', 'Full name', 'shortText', {canonicalFieldId: 'displayName', privacyClass: 'contact', answerDestination: 'catchProfile', prefillPolicy: 'participantReviewRequired', hostPresentation: 'sortable', validation: {maxLength: 160}}),
+        question('email', 'Email address', 'email', {canonicalFieldId: 'email', privacyClass: 'contact', answerDestination: 'catchProfile', prefillPolicy: 'participantReviewRequired'}),
+        question('phone', 'Phone number', 'phone', {canonicalFieldId: 'phoneNumber', privacyClass: 'contact', answerDestination: 'catchProfile', prefillPolicy: 'participantReviewRequired'}),
+        question('homeCity', 'Which city do you currently live in?', 'shortText', {canonicalFieldId: 'city', privacyClass: 'profile', answerDestination: 'catchProfile', prefillPolicy: 'participantReviewRequired'}),
+      ]),
+      section('application', 'Your RSVP Escape application', 'These details are for Saket Run Club to review your application.', [
         question('eventCity', 'Event city', 'singleChoice', {choices: cities, hostPresentation: 'filterable'}),
-        question('fullName', 'Full name', 'shortText', {canonicalFieldId: 'displayName', privacyClass: 'contact', hostPresentation: 'sortable', validation: {maxLength: 160}}),
-        question('email', 'Email address', 'email', {canonicalFieldId: 'email', privacyClass: 'contact'}),
-        question('phone', 'Phone number', 'phone', {canonicalFieldId: 'phoneNumber', privacyClass: 'contact', helpText: 'Include your country code, for example +91.'}),
-        question('homeCity', 'Which city do you currently live in?', 'shortText'),
         question('dubaiYears', 'How many years have you lived in Dubai?', 'shortText'),
         question('single', 'I am single and interested in participating in an RSVP Escape experience.', 'acknowledgement', {helpText: 'The source form includes never married, divorced, filing for divorce and widowed applicants.'}),
       ]),
@@ -78,8 +80,8 @@ export function buildRsvpFormDefinition() {
     ], appearance: {preset: 'editorial', logoAssetId: null, coverAssetId: null, activityKind: null},
     availability: {opensAt: null, closesAt: null, responseLimit: 100, closedMessage: 'This demonstration is closed.'},
     consent: {
-      consentCopy: 'I understand this is a demonstration hosted by Saket Run Club. I agree to share these answers with the host for this application review. This does not subscribe me to marketing messages.',
-      consentVersion: 'rsvp-demo-2026-09-21',
+      consentCopy: 'I understand this is a demonstration hosted by Saket Run Club. I agree to share this application with the host for review. Catch may save the marked contact and city details privately for my future forms. This does not subscribe me to marketing messages.',
+      consentVersion: 'rsvp-demo-2026-09-24',
       retentionCopy: 'Demo only. Please use synthetic details. Responses are visible to Saket Run Club’s authorized host team and can be withdrawn after submission.',
     },
     completion: {title: 'Application received', message: 'The host can now review your application. Admission and payment are separate next steps. This demo does not reserve a paid place.', actionKind: 'none', actionLabel: null, actionUrl: null},

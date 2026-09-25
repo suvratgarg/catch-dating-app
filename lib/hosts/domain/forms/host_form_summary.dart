@@ -9,6 +9,8 @@ enum HostFormConsequenceCoverage { exact, identityOnly, unavailable }
 class HostFormListRequest {
   const HostFormListRequest({
     required this.organizerId,
+    this.accountUid,
+    this.accountGeneration = 0,
     this.statuses = const {},
     this.purposes = const {},
     this.query,
@@ -17,6 +19,9 @@ class HostFormListRequest {
   });
 
   final String organizerId;
+  // Client-only provider identity. The callable payload never includes these.
+  final String? accountUid;
+  final int accountGeneration;
   final Set<HostFormLifecycleStatus> statuses;
   final Set<HostFormPurpose> purposes;
   final String? query;
@@ -25,6 +30,8 @@ class HostFormListRequest {
 
   HostFormListRequest copyWith({String? cursor}) => HostFormListRequest(
     organizerId: organizerId,
+    accountUid: accountUid,
+    accountGeneration: accountGeneration,
     statuses: statuses,
     purposes: purposes,
     query: query,
@@ -36,6 +43,8 @@ class HostFormListRequest {
   bool operator ==(Object other) =>
       other is HostFormListRequest &&
       organizerId == other.organizerId &&
+      accountUid == other.accountUid &&
+      accountGeneration == other.accountGeneration &&
       formDefinitionSetEquals(statuses, other.statuses) &&
       formDefinitionSetEquals(purposes, other.purposes) &&
       query == other.query &&
@@ -45,6 +54,8 @@ class HostFormListRequest {
   @override
   int get hashCode => Object.hash(
     organizerId,
+    accountUid,
+    accountGeneration,
     Object.hashAllUnordered(statuses),
     Object.hashAllUnordered(purposes),
     query,

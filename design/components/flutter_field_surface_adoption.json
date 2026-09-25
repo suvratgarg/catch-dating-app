@@ -111,7 +111,7 @@
       "semanticFieldCount": 8,
       "bindings": [
         {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "HostClubEditTab"},
-        {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubEventDefaultsScreen"},
+        {"file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart", "symbol": "HostClubEventDefaultsScreen"},
         {"file": "lib/hosts/presentation/host_operations/host_club_live_guide_screen.dart", "symbol": "HostClubLiveGuideScreen"}
       ],
       "anchors": [

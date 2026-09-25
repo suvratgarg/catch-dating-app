@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
@@ -344,7 +344,7 @@ class _HostFormAnalyticsScreenState
             .read(externalLinkControllerProvider)
             .open(Uri.parse(receipt.downloadUrl!));
         if (!mounted) return;
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           opened
               ? context.l10n.hostFormExportReady
@@ -352,14 +352,14 @@ class _HostFormAnalyticsScreenState
         );
       } else if (receipt.status == HostFormExportStatus.pending ||
           receipt.status == HostFormExportStatus.running) {
-        showCatchSnackBar(context, context.l10n.hostFormExportStillPreparing);
+        showCatchNotice(context, context.l10n.hostFormExportStillPreparing);
       } else {
         throw StateError(
           receipt.errorMessage ?? context.l10n.hostFormExportFailed,
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) setState(() => _exporting = null);
     }

@@ -1,8 +1,19 @@
-import 'package:flutter/widgets.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _featureTestFrame = Duration(milliseconds: 16);
 const _maximumFeatureTestFrames = 120;
+
+/// Matches the app shell's notice host in focused feature test applications.
+Widget catchNoticeOverlayBuilder(BuildContext context, Widget? child) =>
+    CatchNoticeOverlay(child: child ?? const SizedBox.shrink());
+
+/// Compact app root for feature specs with visible Catch notices.
+class CatchNoticeTestApp extends MaterialApp {
+  const CatchNoticeTestApp({super.key, super.theme, super.home})
+    : super(builder: catchNoticeOverlayBuilder);
+}
 
 /// Finds the vertical [Scrollable] owned by a named surface or route.
 ///

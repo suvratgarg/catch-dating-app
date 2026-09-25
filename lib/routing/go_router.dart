@@ -639,11 +639,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialPrefill,
                     _ => null,
                   },
-                  initialDraft: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialDraft,
-                    _ => null,
-                  },
+                  initialDraft: extra is HostCreateEventRouteArguments
+                      ? extra.initialDraft : null,
+
+                  initialSavedEventId: extra is HostCreateEventRouteArguments
+                      ? extra.initialSavedEventId : null,
                   externalBookingMode: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.externalBookingMode,
@@ -654,11 +654,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialRosterImportPlan,
                     _ => null,
                   },
-                  promptForDrafts: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.promptForDrafts,
-                    _ => true,
-                  },
+                  promptForDrafts: extra is HostCreateEventRouteArguments
+                      ? extra.promptForDrafts
+                      : true,
+                  returnToResponsesOnSave: extra is HostCreateEventRouteArguments
+                      ? extra.returnToResponsesOnSave : false,
                 );
               },
             ),

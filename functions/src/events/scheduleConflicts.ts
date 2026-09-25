@@ -190,26 +190,50 @@ export async function claimUserEventScheduleInTransaction(
   db: FirebaseFirestore.Firestore,
   params: ClaimUserScheduleParams
 ) {
+  const prepared = await prepareUserEventScheduleClaimInTransaction(
+    tx, db, params);
+  prepared.apply();
+}
+
+/**
+ * Separates schedule reads from writes so a booking can finish its other
+ * transaction authority reads before staging the schedule lock.
+ */
+export async function prepareUserEventScheduleClaimInTransaction(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  params: ClaimUserScheduleParams
+): Promise<{apply: () => void}> {
   assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
   await assertNoUserConflictByParticipationQuery(tx, db, params);
-  await claimLocksInTransaction(
-    tx,
-    db,
-    userLockRefs(db, params.uid, params),
-    params.eventId,
-    "You are already booked or waitlisted for another event at that time.",
-    (slot) => ({
-      ownerType: "user",
-      ownerId: params.uid,
-      slot,
-      eventId: params.eventId,
-      clubId: params.clubId,
-      organizerId: params.organizerId ?? params.clubId,
-      uid: params.uid,
-      startTimeMillis: params.startTimeMillis,
-      endTimeMillis: params.endTimeMillis,
-    })
-  );
+  const refs = userLockRefs(db, params.uid, params);
+  const snaps = await Promise.all(refs.map(({ref}) => tx.get(ref)));
+  for (const snap of snaps) {
+    const existing = snap.exists ?
+      snap.data() as ScheduleLockDocument : null;
+    if (existing && existing.eventId !== params.eventId) {
+      throw new HttpsError("failed-precondition",
+        "You are already booked or waitlisted for another event at that time.");
+    }
+  }
+  let applied = false;
+  return {apply: () => {
+    if (applied) throw new Error("Schedule claim already applied.");
+    applied = true;
+    for (const {slot, ref} of refs) {
+      tx.set(ref, {
+        ownerType: "user",
+        ownerId: params.uid,
+        slot,
+        eventId: params.eventId,
+        clubId: params.clubId,
+        organizerId: params.organizerId ?? params.clubId,
+        uid: params.uid,
+        startTimeMillis: params.startTimeMillis,
+        endTimeMillis: params.endTimeMillis,
+      });
+    }
+  }};
 }
 
 /**
@@ -395,6 +419,20 @@ function eventDocOverlaps(
   endTimeMillis: number
 ): boolean {
   if (event.status === "cancelled") return false;
+  const progressive = event as EventDocument & {
+    publicationState?: unknown;
+    setupRevision?: unknown;
+  };
+  // First-page private events have a start but no committed end or schedule
+  // lock. They cannot reserve an interval until details are configured.
+  if (event.endTime == null && progressive.publicationState === "private" &&
+      Number.isSafeInteger(progressive.setupRevision) &&
+      (progressive.setupRevision as number) >= 1) return false;
+  if (typeof event.startTime?.toMillis !== "function" ||
+      typeof event.endTime?.toMillis !== "function") {
+    throw new HttpsError("failed-precondition",
+      "An active event has an incomplete schedule.");
+  }
   return intervalsOverlap(
     startTimeMillis,
     endTimeMillis,

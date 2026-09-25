@@ -22,6 +22,7 @@ import '../test_pump_helpers.dart';
 Widget _wrapPhoneSized(Widget child) {
   return MaterialApp(
     theme: AppTheme.light,
+    builder: catchNoticeOverlayBuilder,
     home: SizedBox(width: 375, height: 812, child: child),
   );
 }

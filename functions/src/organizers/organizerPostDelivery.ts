@@ -20,6 +20,7 @@ import {
   sendFcmNotification,
 } from "../shared/notifications";
 import {hasBlockingRelationship} from "../safety/blocking";
+import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 import type {CreateOrganizerPostCallableResponse} from
   "../shared/generated/createOrganizerPostCallableResponse";
 
@@ -204,6 +205,18 @@ async function dispatchOrganizerPostDeliveryPage(
     }
     const organizer = organizerSnap.data() as OrganizerDocument;
     const post = postSnap.data() as OrganizerPostDocument;
+    let suppressLinkedEvent = claimed.errorCodes.includes(
+      "linked-event-not-public");
+    if (!suppressLinkedEvent && post.eventId != null) {
+      const eventSnap = typeof post.eventId === "string" && post.eventId ?
+        await db.collection("events").doc(post.eventId).get() : null;
+      const event = eventSnap?.data();
+      suppressLinkedEvent = !event || !isEventPubliclyAccessible(event) ||
+        (event.organizerId ?? event.clubId) !== claimed.organizerId;
+      if (suppressLinkedEvent) {
+        await markLinkedEventSuppressed(operationRef, leaseOwner, deps);
+      }
+    }
     let query: FirebaseFirestore.Query = db.collection("organizerFollows")
       .where("organizerId", "==", claimed.organizerId)
       .where("status", "==", "active")
@@ -222,6 +235,7 @@ async function dispatchOrganizerPostDeliveryPage(
         operation: claimed,
         organizer,
         post,
+        suppressLinkedEvent,
         follow: followSnap.data() as OrganizerFollowDocument,
       });
     }
@@ -249,6 +263,28 @@ async function dispatchOrganizerPostDeliveryPage(
     });
     return null;
   }
+}
+
+// Once the linked event is unavailable, retries must not resume delivery if
+// publication changes again after some follower receipts were suppressed.
+async function markLinkedEventSuppressed(
+  operationRef: FirebaseFirestore.DocumentReference,
+  leaseOwner: string,
+  deps: OrganizerPostDeliveryDeps,
+): Promise<void> {
+  await operationRef.firestore.runTransaction(async (tx) => {
+    const snap = await tx.get(operationRef);
+    if (!snap.exists || snap.data()?.leaseOwner !== leaseOwner) {
+      throw new Error("organizer-post-lease-changed");
+    }
+    const operation = snap.data() as OrganizerPostDeliveryOperationDocument;
+    const errorCodes = [...new Set([...operation.errorCodes,
+      "linked-event-not-public"])].slice(-20);
+    tx.update(operationRef, {
+      errorCodes,
+      updatedAt: deps.serverTimestamp(),
+    });
+  });
 }
 
 async function claimOperation(params: {
@@ -292,6 +328,7 @@ async function deliverRecipient(params: {
   operation: OrganizerPostDeliveryOperationDocument;
   organizer: OrganizerDocument;
   post: OrganizerPostDocument;
+  suppressLinkedEvent: boolean;
   follow: OrganizerFollowDocument;
 }): Promise<void> {
   const receiptId = organizerFollowerReceiptId(
@@ -305,6 +342,16 @@ async function deliverRecipient(params: {
     "organizerUpdate",
     params.operation.postId,
   );
+  if (params.suppressLinkedEvent) {
+    await recordRecipient(params, receiptRef, {
+      activityStatus: "failed",
+      pushStatus: "ineligible",
+      activityNotificationId: notificationId,
+      excluded: true,
+      errorCode: "linked-event-not-public",
+    });
+    return;
+  }
   if (params.follow.uid === params.operation.authorUid) {
     await recordRecipient(params, receiptRef, {
       activityStatus: "failed",
@@ -451,8 +498,9 @@ async function finishPage(params: {
       });
       return operationResponse({...operation, status: "pending"}, false);
     }
-    const partial = operation.activityAvailableCount +
-      operation.excludedCount < operation.recipientCount ||
+    const partial = operation.errorCodes.includes("linked-event-not-public") ||
+      operation.activityAvailableCount + operation.excludedCount <
+        operation.recipientCount ||
       operation.pushFailedCount > 0 || operation.pushUnknownCount > 0;
     const status = partial ? "partial" : "completed";
     const completedAt = params.deps.now();
@@ -488,8 +536,13 @@ async function releaseOperation(
     if (!snap.exists) return;
     const operation = snap.data() as OrganizerPostDeliveryOperationDocument;
     if (operation.leaseOwner !== leaseOwner) return;
+    // Suppression is a durable delivery decision, not a recent retry error.
+    const suppressed = operation.errorCodes.includes(
+      "linked-event-not-public");
     const errorCodes = [...new Set([...operation.errorCodes, errorCode])]
-      .slice(-20);
+      .filter((code) => code !== "linked-event-not-public")
+      .slice(suppressed ? -19 : -20);
+    if (suppressed) errorCodes.push("linked-event-not-public");
     tx.update(operationRef, {
       status: "pending",
       leaseOwner: null,

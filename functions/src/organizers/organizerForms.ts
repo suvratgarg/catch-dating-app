@@ -1,4 +1,6 @@
 import {createHash, randomBytes} from "crypto";
+import {authorizeFormMutation, requireOrganizerFormEventTarget} from
+  "./organizerFormTarget";
 import {validateFormCapabilities} from "./organizerFormCapabilities";
 import {requireReadyFormPaymentConnection} from
   "../payments/formPayments/formPaymentConnectionPolicy";
@@ -156,6 +158,9 @@ const formTemplates = (organizerFormTemplateCatalog as unknown as {
 }).templates;
 
 interface FormsCursor {
+  version: 2;
+  organizerId: string;
+  filterHash: string;
   updatedAtMillis: number;
   formId: string;
 }
@@ -198,6 +203,8 @@ export async function createOrganizerFormHandler(
   const draftRef = db.collection("organizerFormDrafts").doc(formId);
   const publicFormId = deps.publicFormId();
   const result = await db.runTransaction(async (tx) => {
+    await authorizeFormMutation({db, tx, actorUid,
+      organizerId: data.organizerId});
     const [formSnap, draftSnap] = await Promise.all([
       tx.get(formRef),
       tx.get(draftRef),
@@ -215,6 +222,11 @@ export async function createOrganizerFormHandler(
         "A form draft exists without its metadata record."
       );
     }
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: data.organizerId,
+      kind: data.defaultTargetKind,
+      targetId: data.defaultTargetId,
+      nowMillis: deps.timestamp().toMillis()});
     const now = deps.timestamp();
     const definition = materializeTemplate({
       template,
@@ -285,6 +297,8 @@ export async function updateOrganizerFormDraftHandler(
   const formRef = db.collection("organizerForms").doc(data.formId);
   const draftRef = db.collection("organizerFormDrafts").doc(data.formId);
   const result = await db.runTransaction(async (tx) => {
+    await authorizeFormMutation({db, tx, actorUid,
+      organizerId: data.organizerId});
     const [formSnap, draftSnap] = await Promise.all([
       tx.get(formRef),
       tx.get(draftRef),
@@ -310,6 +324,11 @@ export async function updateOrganizerFormDraftHandler(
         "A form purpose cannot change after its first publication."
       );
     }
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: data.organizerId,
+      kind: definition.defaultTargetKind,
+      targetId: definition.defaultTargetId,
+      nowMillis: deps.timestamp().toMillis()});
     const now = deps.timestamp();
     const revision = current.draft.revision + 1;
     const form: OrganizerFormDocument = {
@@ -385,7 +404,14 @@ export async function listOrganizerFormsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerForms");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const cursor = decodeFormsCursor(data.cursor);
+  const filterHash = createHash("sha256").update(JSON.stringify({
+    organizerId: data.organizerId,
+    statuses: [...data.statuses].sort(),
+    purposes: [...data.purposes].sort(),
+    query: data.query?.trim().toLowerCase() ?? "",
+    order: "updatedAt:desc,id:desc",
+  })).digest("hex");
+  const cursor = decodeFormsCursor(data.cursor, data.organizerId, filterHash);
   const scanLimit = Math.min(Math.max(data.limit * 4, data.limit + 1), 400);
   let query: FirebaseFirestore.Query = db.collection("organizerForms")
     .where("organizerId", "==", data.organizerId)
@@ -433,7 +459,8 @@ export async function listOrganizerFormsHandler(
   return {
     organizerId: data.organizerId,
     items,
-    nextCursor: cursorDoc ? encodeFormsCursor(cursorDoc) : null,
+    nextCursor: cursorDoc ? encodeFormsCursor(cursorDoc,
+      data.organizerId, filterHash) : null,
   };
 }
 
@@ -483,6 +510,8 @@ export async function publishOrganizerFormHandler(
   const formRef = db.collection("organizerForms").doc(data.formId);
   const draftRef = db.collection("organizerFormDrafts").doc(data.formId);
   const form = await db.runTransaction(async (tx) => {
+    await authorizeFormMutation({db, tx, actorUid,
+      organizerId: data.organizerId});
     const [formSnap, draftSnap] = await Promise.all([
       tx.get(formRef),
       tx.get(draftRef),
@@ -509,6 +538,11 @@ export async function publishOrganizerFormHandler(
         `${error.message} (${error.path})`
       );
     }
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: data.organizerId,
+      kind: current.draft.definition.defaultTargetKind,
+      targetId: current.draft.definition.defaultTargetId,
+      nowMillis: deps.timestamp().toMillis()});
     const payment = current.draft.definition.payment;
     if (payment) {
       const connectionSnap = await tx.get(
@@ -604,6 +638,8 @@ export async function setOrganizerFormLifecycleHandler(
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formRef = db.collection("organizerForms").doc(data.formId);
   const form = await db.runTransaction(async (tx) => {
+    await authorizeFormMutation({db, tx, actorUid,
+      organizerId: data.organizerId});
     const snap = await tx.get(formRef);
     const current = requireOwnedForm(snap, data.organizerId);
     if (current.status !== data.expectedStatus) {
@@ -623,6 +659,22 @@ export async function setOrganizerFormLifecycleHandler(
       if (current.status !== "paused" || !current.activeVersionId) {
         throw invalidTransition("Only a paused form can be resumed.");
       }
+      const versionSnap = await tx.get(db.collection("organizerFormVersions")
+        .doc(current.activeVersionId));
+      if (!versionSnap.exists) {
+        throw invalidTransition("The published form version is missing.");
+      }
+      const version = requireDoc<OrganizerFormVersionDocument>(versionSnap,
+        "OrganizerFormVersionDocument");
+      if (version.organizerId !== data.organizerId ||
+          version.formId !== data.formId) {
+        throw invalidTransition("The published form version needs review.");
+      }
+      await requireOrganizerFormEventTarget({db, tx,
+        organizerId: data.organizerId,
+        kind: version.definition.defaultTargetKind,
+        targetId: version.definition.defaultTargetId,
+        nowMillis: now.toMillis()});
       next = {...current, status: "published", pausedAt: null, updatedAt: now};
     } else {
       if (current.status === "archived") return current;
@@ -671,6 +723,8 @@ export async function duplicateOrganizerFormHandler(
   const draftRef = db.collection("organizerFormDrafts").doc(formId);
   const publicFormId = deps.publicFormId();
   const result = await db.runTransaction(async (tx) => {
+    await authorizeFormMutation({db, tx, actorUid,
+      organizerId: data.organizerId});
     const [sourceFormSnap, sourceDraftSnap, formSnap, draftSnap] =
       await Promise.all([
         tx.get(sourceFormRef),
@@ -692,6 +746,11 @@ export async function duplicateOrganizerFormHandler(
     });
     const title = data.title ?? `${source.form.title} copy`;
     const definition = remapDefinition(source.draft.definition, formId, title);
+    await requireOrganizerFormEventTarget({db, tx,
+      organizerId: data.organizerId,
+      kind: definition.defaultTargetKind,
+      targetId: definition.defaultTargetId,
+      nowMillis: deps.timestamp().toMillis()});
     const now = deps.timestamp();
     const form: OrganizerFormDocument = {
       organizerId: data.organizerId,
@@ -1590,25 +1649,33 @@ function scopedNestedId(
 }
 
 function encodeFormsCursor(
-  doc: FirebaseFirestore.QueryDocumentSnapshot
+  doc: FirebaseFirestore.QueryDocumentSnapshot,
+  organizerId: string,
+  filterHash: string
 ): string {
   const form = requireDoc<OrganizerFormDocument>(
     doc,
     "OrganizerFormDocument"
   );
   return Buffer.from(JSON.stringify({
+    version: 2,
+    organizerId,
+    filterHash,
     updatedAtMillis: form.updatedAt.toMillis(),
     formId: doc.id,
   } satisfies FormsCursor)).toString("base64url");
 }
 
-function decodeFormsCursor(value: string | null): FormsCursor | null {
+function decodeFormsCursor(value: string | null, organizerId: string,
+  filterHash: string): FormsCursor | null {
   if (!value) return null;
   try {
     const decoded = JSON.parse(
       Buffer.from(value, "base64url").toString("utf8")
     );
     if (!decoded || typeof decoded !== "object" ||
+        decoded.version !== 2 || decoded.organizerId !== organizerId ||
+        decoded.filterHash !== filterHash ||
         !Number.isSafeInteger(decoded.updatedAtMillis) ||
         decoded.updatedAtMillis < 0 ||
         typeof decoded.formId !== "string" ||
@@ -1617,7 +1684,8 @@ function decodeFormsCursor(value: string | null): FormsCursor | null {
     }
     return decoded as FormsCursor;
   } catch {
-    throw new HttpsError("invalid-argument", "Form list cursor is invalid.");
+    throw new HttpsError("invalid-argument",
+      "The form list changed. Refresh to continue.");
   }
 }
 

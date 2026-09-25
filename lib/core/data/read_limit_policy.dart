@@ -16,6 +16,9 @@ abstract final class ReadLimitPolicy {
   /// Directories and other medium-density entity lists.
   static const int directoryPage = 30;
 
+  /// Compact manager inventory of saved private event setups.
+  static const int privateEventSetupPage = 20;
+
   /// Message, notification, payment, and audit histories.
   static const int historyPage = 50;
 

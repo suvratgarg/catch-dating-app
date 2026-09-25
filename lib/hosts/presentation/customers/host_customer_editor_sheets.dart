@@ -86,7 +86,7 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
       if (mounted) Navigator.of(context).pop(preview.audience);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customers,

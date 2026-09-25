@@ -13,4 +13,8 @@ export interface RequestOrganizerFormExportCallableResponse {
   downloadUrl: string | null;
   expiresAtMillis: number;
   errorMessage: string | null;
+  /**
+   * Stable failure code; response-query-stale requires refreshing before a new export request.
+   */
+  errorCode?: string | null;
 }

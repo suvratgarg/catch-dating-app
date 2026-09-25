@@ -594,10 +594,15 @@ expect_code_count \
 
 stage_probe "mutation pending per-mutation clean case" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+void listenToCatchMutationErrors(
+  BuildContext context,
+  WidgetRef ref, {
+  required List<Mutation<dynamic>> mutations,
+}) {}
 
 class EventDetailMutationProbeController {
   static final saveMutation = Mutation<void>();
@@ -661,8 +666,8 @@ expect_code_count \
   "catch_no_async_flush_hack" \
   1
 
-# The feedback rule must resolve framework identities across app and package roots,
-# including core widgets (no broad primitive exemption), aliases and tear-offs.
+# The feedback rule blocks generic Flutter messenger access across app and
+# package roots, including aliases, tear-offs, actions, and clearing APIs.
 for feedback_scope in \
   "lib/hosts/presentation/feedback_probe.dart" \
   "apps/consumer/lib/feedback_probe.dart" \
@@ -675,7 +680,7 @@ import 'package:flutter/material.dart' as material;
 
 typedef SnackAlias = material.SnackBar;
 
-List<Object> rawFeedback(material.BuildContext context) {
+  List<Object?> rawFeedback(material.BuildContext context) {
   final snack = material.SnackBar(content: const material.SizedBox.shrink());
   final alias = SnackAlias(content: const material.SizedBox.shrink());
   final banner = material.MaterialBanner(
@@ -684,16 +689,37 @@ List<Object> rawFeedback(material.BuildContext context) {
   );
   final makeSnack = material.SnackBar.new;
   final makeBanner = material.MaterialBanner.new;
+  final action = material.SnackBarAction(label: 'Open', onPressed: () {});
+  final makeAction = material.SnackBarAction.new;
+  final themeData = material.SnackBarThemeData();
+  final theme = material.SnackBarTheme(data: themeData, child: const material.SizedBox());
+  final makeTheme = material.SnackBarTheme.new;
   final messenger = material.ScaffoldMessenger.of(context);
+  final maybeMessenger = material.ScaffoldMessenger.maybeOf(context);
+  final messengerWidget = material.ScaffoldMessenger(
+    child: const material.SizedBox.shrink(),
+  );
   messenger.showSnackBar(snack);
   messenger.showMaterialBanner(banner);
+  messenger.clearSnackBars();
+  messenger.hideCurrentSnackBar();
+  messenger.removeCurrentSnackBar();
+  messenger.clearMaterialBanners();
+  messenger.hideCurrentMaterialBanner();
+  messenger.removeCurrentMaterialBanner();
   final publishSnack = messenger.showSnackBar;
   final publishBanner = material.ScaffoldMessenger.of(context).showMaterialBanner;
-  return [alias, makeSnack, makeBanner, publishSnack, publishBanner];
+  final material.ScaffoldMessengerState? typedMessenger = maybeMessenger;
+  final app = material.MaterialApp(
+    scaffoldMessengerKey: material.GlobalKey<material.ScaffoldMessengerState>(),
+    home: const material.SizedBox(),
+  );
+  return [alias, makeSnack, makeBanner, action, makeAction, themeData, theme, makeTheme, publishSnack,
+    publishBanner, typedMessenger, messengerWidget, app];
 }
 DART
-  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 9
-  expect_probe exact catch_use_canonical_feedback 9
+  expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 33
+  expect_probe exact catch_use_canonical_feedback 33
   stage_probe "status placement $feedback_scope" <<'DART'
 import 'package:catch_ui/catch_ui.dart' as ui;
 typedef StripAlias = ui.CatchBanner;
@@ -761,26 +787,18 @@ DART
   expect_probe exact catch_status_strip_is_layout_owned 1
 done
 
-probe_path="$probe_root/packages/catch_ui/lib/src/components/catch_snack_bar.dart"
-stage_probe "canonical feedback owner" <<'DART'
-import 'package:flutter/material.dart';
-import 'package:catch_ui/catch_ui.dart';
-
-final misplaced = CatchBanner.statuses(statuses: const []);
-
-void owner(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: SizedBox.shrink()),
-  );
-}
+probe_path="$probe_root/lib/consumer/presentation/feedback_api_probe.dart"
+stage_probe "canonical feedback API" <<'DART'
+import 'package:flutter/widgets.dart';
+void showCatchNotice(BuildContext context, String message) {}
+void owner(BuildContext context) => showCatchNotice(context, 'Saved');
 DART
 expect_probe exact catch_use_canonical_feedback 0
-expect_code_count "feedback owner is not a status layout" "catch_status_strip_is_layout_owned" 1
 
-# Extraction grants raw feedback ownership only to the exact package helper.
+# No source path grants an exemption for raw framework feedback.
 for feedback_scope in \
   "packages/catch_ui/lib/src/components/snack_bar_consumer.dart" \
-  "lib/core/widgets/catch_error_snackbar.dart"; do
+  "lib/core/widgets/catch_error_notice_consumer.dart"; do
   probe_path="$probe_root/$feedback_scope"
   stage_probe "feedback non-owner $feedback_scope" <<'DART'
 import 'package:flutter/material.dart';
@@ -791,14 +809,15 @@ void feedbackConsumer(BuildContext context) {
   );
 }
 DART
-  expect_probe exact catch_use_canonical_feedback 2
+  expect_probe exact catch_use_canonical_feedback 3
 done
 
 probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"
 stage_probe "canonical API and same-name non-framework symbols" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:catch_ui/catch_ui.dart' as ui;
+void showCatchNotice(material.BuildContext context, String message) {}
+void showCatchNoticeError(material.BuildContext context, Object error) {}
 
 class SnackBar {}
 class MaterialBanner {}
@@ -809,8 +828,8 @@ class ScaffoldMessengerState {
 }
 
 List<Object> allowedFeedback(material.BuildContext context) {
-  ui.showCatchSnackBar(context, 'Saved');
-  showCatchErrorSnackBar(context, StateError('example'));
+  showCatchNotice(context, 'Saved');
+  showCatchNoticeError(context, StateError('example'));
   final messenger = ScaffoldMessengerState();
   messenger.showSnackBar(SnackBar());
   messenger.showMaterialBanner(MaterialBanner());

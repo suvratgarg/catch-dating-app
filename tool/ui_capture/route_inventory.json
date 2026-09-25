@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "af2994297424c7d2600d96ce3e88af82ed1a095491be31520833335e3f21e8a8",
-    "routeContractSha256": "63d0df815f3a46282a3e1f83ab50a9b7086bf7325e72f7f24fe4fe3c96667aff",
+    "normalizedFileSha256": "06540062c45f6d95b41126eeca7ee1abfc56006a09144b234eec287fa04ad239",
+    "routeContractSha256": "1395560c7cd7d72c195fdf5f11d3e822f2818b5cb6f6f5ec9a37bef99c2d47dd",
     "goRouteCount": 99,
     "shellBranchCount": 9,
     "enumRouteCount": 84,
@@ -19,8 +19,8 @@
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
     ],
-    "imperativePageRouteCount": 12,
-    "imperativePageTargetCount": 8
+    "imperativePageRouteCount": 13,
+    "imperativePageTargetCount": 9
   },
   "routes": [
     {
@@ -1222,7 +1222,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'create-event'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(clubId:state.pathParameters['clubId']!,initialClub:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialClub,final Club club=>club,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialDraft,_=>null},externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},initialRosterImportPlan:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialRosterImportPlan,_=>null},promptForDrafts:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.promptForDrafts,_=>true});}",
+      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(clubId:state.pathParameters['clubId']!,initialClub:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialClub,final Club club=>club,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:extra is HostCreateEventRouteArguments?extra.initialDraft:null,initialSavedEventId:extra is HostCreateEventRouteArguments?extra.initialSavedEventId:null,externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},initialRosterImportPlan:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialRosterImportPlan,_=>null},promptForDrafts:extra is HostCreateEventRouteArguments?extra.promptForDrafts:true,returnToResponsesOnSave:extra is HostCreateEventRouteArguments?extra.returnToResponsesOnSave:false);}",
       "presentationTarget": "HostCreateEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1457,6 +1457,15 @@
       "presentationExpression": "(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles)",
       "presentationTarget": "RoutePathBuilderScreen",
       "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_panel.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
+      "line": 265,
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(key:ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
+      "presentationTarget": "HostEventOfferPreferencesScreen",
+      "fullscreenDialogExpression": null
     },
     {
       "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_tab.dart:1",

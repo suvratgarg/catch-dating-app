@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {eventAttendeeId, importEventAttendeesHandler} from
   "../events/eventAttendees";
+import {deriveEventSeatPolicy} from
+  "../events/seatAuthority/firestoreAdapter";
+import {seatIdentityAliasId, seatIdentityValueHash,
+  seatVerifiedPhoneProofId} from "../events/seatIdentityAuthority";
 import {eventVenueSessionRedemptionId} from "../events/venueSessions";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
@@ -50,6 +55,9 @@ class FakeSnapshot {
   ) {}
   get id(): string {
     return this.path.split("/").at(-1) ?? "";
+  }
+  get ref(): FakeDocRef {
+    return new FakeDocRef(this.firestore, this.path);
   }
   get exists(): boolean {
     return this.firestore.get(this.path) !== undefined;
@@ -99,7 +107,9 @@ class FakeCollectionRef {
 class FakeTransaction {
   private readonly writes: Array<() => void> = [];
   constructor(private readonly firestore: FakeFirestore) {}
-  async get(ref: FakeDocRef): Promise<FakeSnapshot> {
+  async get(ref: FakeDocRef | FakeCollectionRef): Promise<FakeSnapshot | {
+    docs: FakeSnapshot[]; empty: boolean; size: number}> {
+    if (ref instanceof FakeCollectionRef) return ref.get();
     return new FakeSnapshot(this.firestore, ref.path);
   }
   create(ref: FakeDocRef, data: FakeData): void {
@@ -198,6 +208,8 @@ function event(overrides: FakeData = {}): FakeData {
       latitude: 19.1,
       longitude: 72.8,
     },
+    capacityLimit: 20,
+    priceInPaise: 0,
     eventFormat: {
       version: 1,
       activityKind: "singlesMixer",
@@ -463,6 +475,16 @@ test("bootstrap returns bounded event and own state", async () => {
   assert.equal((result.event as FakeData).organizerId, undefined);
 });
 
+test("incomplete setup cannot open the runtime bootstrap", async () => {
+  const h = harness({"events/event-1": event({
+    meetingLocation: undefined,
+  })});
+  await assert.rejects(getEventRuntimeBootstrapHandler(request(
+    "runner-1", {publicRuntimeId: "runtime_123456789012345678901234"}
+  ), h.deps), (error) => error instanceof HttpsError &&
+    error.code === "failed-precondition");
+});
+
 test("authored movement and fresh positions reach bootstrap", async () => {
   const routePlan = {
     version: 2,
@@ -597,6 +619,143 @@ test("verified phone claims the matching imported attendee", async () => {
   assert.equal(h.firestore.get("eventParticipations/event-1_runner-1"),
     undefined);
 });
+
+test("ready auto-create claims exactly one seat and replays without another",
+  async () => {
+    const currentEvent = event({capacityLimit: 1,
+      runtimeAccess: {enabled: true,
+        publicRuntimeId: "runtime_123456789012345678901234",
+        walkInPolicy: "autoCreate", termsVersion: "event-runtime-v1"}});
+    const policy = deriveEventSeatPolicy(currentEvent);
+    const h = harness({
+      "events/event-1": currentEvent,
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 1,
+        occupied: 0, revision: 1, capacityRevision: 1,
+        migrationRevision: 1, policyVersion: policy.policyVersion,
+        policyHash: policy.policyHash, state: "ready"},
+    });
+    const claim = request("runner-1", {
+      publicRuntimeId: "runtime_123456789012345678901234",
+      displayName: "Walk-in", runtimeTermsVersion: "event-runtime-v1",
+    });
+    const first = await claimEventRuntimeAccessHandler(claim, h.deps);
+    assert.equal(first.attendeeId, eventAttendeeId("event-1",
+      "phone:+919876543210"));
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    assert.equal(h.firestore.get(`eventAttendees/${first.attendeeId}`)
+      ?.status, "registered");
+    await claimEventRuntimeAccessHandler(claim, h.deps);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    const ledger = h.firestore.get("eventSeatLedgers/event-1")!;
+    h.firestore.set("eventSeatLedgers/event-1", {...ledger,
+      policyHash: "f".repeat(64)});
+    await assert.rejects(claimEventRuntimeAccessHandler(claim, h.deps),
+      (error) => code(error, "failed-precondition"));
+    h.firestore.set("eventSeatLedgers/event-1", ledger);
+    await assert.rejects(claimEventRuntimeAccessHandler(request("runner-2",
+      {publicRuntimeId: "runtime_123456789012345678901234",
+        displayName: "Another", runtimeTermsVersion: "event-runtime-v1"},
+      "+919876543211"), h.deps));
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+  });
+
+test("ready Host approval converts an invited claim into one reserved seat",
+  async () => {
+    const currentEvent = event({capacityLimit: 1,
+      runtimeAccess: {enabled: true,
+        publicRuntimeId: "runtime_123456789012345678901234",
+        walkInPolicy: "hostApproval", termsVersion: "event-runtime-v1"}});
+    const policy = deriveEventSeatPolicy(currentEvent);
+    const h = harness({
+      "events/event-1": currentEvent,
+      "organizers/organizer-1": organizer(),
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 1,
+        occupied: 0, revision: 1, capacityRevision: 1,
+        migrationRevision: 1, policyVersion: policy.policyVersion,
+        policyHash: policy.policyHash, state: "ready"},
+    });
+    const claim = await claimEventRuntimeAccessHandler(request("runner-1", {
+      publicRuntimeId: "runtime_123456789012345678901234",
+      displayName: "Walk-in", runtimeTermsVersion: "event-runtime-v1",
+    }), h.deps);
+    assert.equal(claim.status, "pendingApproval");
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
+    assert.equal(h.firestore.get(`eventAttendees/${claim.attendeeId}`)
+      ?.status, "invited");
+    const ledger = h.firestore.get("eventSeatLedgers/event-1")!;
+    h.firestore.set("eventSeatLedgers/event-1", {...ledger,
+      policyHash: "f".repeat(64)});
+    await assert.rejects(approveEventRuntimeClaimHandler(request("host-1", {
+      eventId: "event-1", uid: "runner-1", decision: "approve",
+      attendeeId: claim.attendeeId,
+    }), h.deps), (error) => code(error, "failed-precondition"));
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 0);
+    h.firestore.set("eventSeatLedgers/event-1", ledger);
+    const approved = await approveEventRuntimeClaimHandler(request("host-1", {
+      eventId: "event-1", uid: "runner-1", decision: "approve",
+      attendeeId: claim.attendeeId,
+    }), h.deps);
+    assert.equal(approved.status, "approved");
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    assert.equal(h.firestore.get(`eventAttendees/${claim.attendeeId}`)
+      ?.status, "registered");
+  });
+
+test("ready Catch reservation can claim runtime before display projection",
+  async () => {
+    const currentEvent = event();
+    const policy = deriveEventSeatPolicy(currentEvent);
+    const phone = "+919876543210";
+    const uid = "runner-1";
+    const key = "uid_existing";
+    const reservationId = createHash("sha256")
+      .update(`event-1\u001f${key}`).digest("hex");
+    const docs: Record<string, FakeData> = {
+      "events/event-1": currentEvent,
+      "eventParticipations/event-1_runner-1": {eventId: "event-1",
+        clubId: "organizer-1", uid, status: "signedUp"},
+      "eventSeatMigrationFences/event-1": {eventId: "event-1",
+        migrationRevision: 1, state: "ready"},
+      "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 20,
+        occupied: 1, revision: 1, capacityRevision: 1,
+        migrationRevision: 1, policyVersion: policy.policyVersion,
+        policyHash: policy.policyHash, state: "ready"},
+      [`eventSeatReservations/${reservationId}`]: {eventId: "event-1",
+        canonicalKey: key, identityRevision: 1, active: true,
+        revision: 1, reservedAtMillis: 100, releasedAtMillis: null},
+      [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
+        "event-1", uid)}`]: {eventId: "event-1",
+        organizerId: "organizer-1", uid, phoneE164: phone,
+        migrationRevision: 1, state: "current"},
+    };
+    for (const [kind, value] of [["uid", uid],
+      ["phone", phone]] as const) {
+      docs[`eventSeatIdentityAliases/${seatIdentityAliasId("event-1",
+        kind, value)}`] = {eventId: "event-1", organizerId: "organizer-1",
+        kind, valueHash: seatIdentityValueHash(kind, value),
+        canonicalKey: key, identityRevision: 1, migrationRevision: 1,
+        state: "ready"};
+    }
+    const h = harness(docs);
+    const result = await claimEventRuntimeAccessHandler(request(uid, {
+      publicRuntimeId: "runtime_123456789012345678901234",
+      displayName: "Catch Guest", runtimeTermsVersion: "event-runtime-v1",
+    }), h.deps);
+    assert.equal(result.attendeeId, eventAttendeeId("event-1",
+      `phone:${phone}`));
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
+    assert.equal(h.firestore.get(`eventAttendees/${result.attendeeId}`)
+      ?.source, "catchBooking");
+    assert.equal(h.firestore.get(`eventAttendees/${result.attendeeId}`)
+      ?.phoneE164, null);
+  });
 
 test("canonical import feeds verified claim, readiness and checked-in roster",
   async () => {

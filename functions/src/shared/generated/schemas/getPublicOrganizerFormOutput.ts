@@ -949,6 +949,44 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
             }
           }
         },
+        "cityOptions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "marketId",
+              "cityId",
+              "label",
+              "regionName",
+              "countryIsoCode"
+            ],
+            "properties": {
+              "marketId": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "cityId": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "regionName": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "countryIsoCode": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 2
+              }
+            }
+          }
+        },
         "messagingOffer": {
           "type": "object",
           "additionalProperties": false,

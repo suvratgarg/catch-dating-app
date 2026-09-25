@@ -28,11 +28,3 @@ String hostApplicationContextLabel(
     if (eventTitle != null && eventTitle != formTitle) eventTitle,
   ].join(' · ');
 }
-
-String hostApplicationFormScopeLabel(
-  BuildContext context,
-  String formId,
-  HostSavedAudienceFilterOptions? sources,
-) =>
-    sources?.forms.where((form) => form.id == formId).firstOrNull?.title ??
-    context.l10n.hostAudienceSelectedForm;

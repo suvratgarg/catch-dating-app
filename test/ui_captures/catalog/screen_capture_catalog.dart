@@ -44,9 +44,10 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
@@ -1270,16 +1271,16 @@ class _CatchesReactionCommentSheetCapture extends StatelessWidget {
   }
 }
 
-class _SwipeWriteFailureSnackBarCapture extends ConsumerStatefulWidget {
-  const _SwipeWriteFailureSnackBarCapture();
+class _SwipeWriteFailureNoticeCapture extends ConsumerStatefulWidget {
+  const _SwipeWriteFailureNoticeCapture();
 
   @override
-  ConsumerState<_SwipeWriteFailureSnackBarCapture> createState() =>
-      _SwipeWriteFailureSnackBarCaptureState();
+  ConsumerState<_SwipeWriteFailureNoticeCapture> createState() =>
+      _SwipeWriteFailureNoticeCaptureState();
 }
 
-class _SwipeWriteFailureSnackBarCaptureState
-    extends ConsumerState<_SwipeWriteFailureSnackBarCapture> {
+class _SwipeWriteFailureNoticeCaptureState
+    extends ConsumerState<_SwipeWriteFailureNoticeCapture> {
   bool _started = false;
 
   @override
@@ -1299,7 +1300,7 @@ class _SwipeWriteFailureSnackBarCaptureState
           .swipe(SwipeDirection.pass);
     } catch (error) {
       if (!mounted) return;
-      showCatchErrorSnackBar(
+      showCatchNoticeError(
         context,
         error,
         errorContext: AppErrorContext.swipes,
@@ -2799,6 +2800,8 @@ class _HostRoutedShellCaptureState extends State<_HostRoutedShellCapture> {
       debugShowCheckedModeBanner: false,
       theme: Theme.of(context),
       routerConfig: _router,
+      builder: (context, child) =>
+          CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
     );
   }
 }
@@ -5102,6 +5105,9 @@ class _CaptureHostFormResponsesController extends HostFormResponsesController {
 
 class _CaptureHostFormEditorController extends HostFormEditorController {
   @override
+  bool editorBoundTo(String? accountId) => true;
+
+  @override
   Future<HostFormEditorState> build(String organizerId, String formId) async =>
       HostFormEditorState(
         editor: HostFormEditor(
@@ -5777,8 +5783,8 @@ class _HostChatBlockDialogCaptureState
   Widget build(BuildContext context) => widget.child;
 }
 
-class _HostChatReportFailureSnackBarCapture extends StatelessWidget {
-  const _HostChatReportFailureSnackBarCapture();
+class _HostChatReportFailureNoticeCapture extends StatelessWidget {
+  const _HostChatReportFailureNoticeCapture();
 
   @override
   Widget build(BuildContext context) {
@@ -6311,8 +6317,8 @@ class _MatchChatKeyboardInset extends StatelessWidget {
   }
 }
 
-class _MatchChatFeedbackSnackBarCapture extends StatelessWidget {
-  const _MatchChatFeedbackSnackBarCapture({required this.message});
+class _MatchChatFeedbackNoticeCapture extends StatelessWidget {
+  const _MatchChatFeedbackNoticeCapture({required this.message});
 
   final String message;
 
@@ -7983,7 +7989,7 @@ class _ActivityMarkAllReadCaptureState
     unawaited(
       mutation.run(ref, (_) async => throw error).catchError((_) {
         if (!mounted) return;
-        showCatchErrorSnackBar(context, error);
+        showCatchNoticeError(context, error);
       }),
     );
   }
@@ -8010,7 +8016,7 @@ class _ActivityDeepLinkErrorCaptureState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _shown) return;
       _shown = true;
-      showCatchErrorSnackBar(
+      showCatchNoticeError(
         context,
         const ExternalActionException('Could not open this activity update.'),
       );
@@ -8100,18 +8106,18 @@ class _PaymentReceiptSheetCapture extends StatelessWidget {
   }
 }
 
-class _PaymentSupportSnackBarCapture extends StatefulWidget {
-  const _PaymentSupportSnackBarCapture({required this.payment});
+class _PaymentSupportNoticeCapture extends StatefulWidget {
+  const _PaymentSupportNoticeCapture({required this.payment});
 
   final Payment payment;
 
   @override
-  State<_PaymentSupportSnackBarCapture> createState() =>
-      _PaymentSupportSnackBarCaptureState();
+  State<_PaymentSupportNoticeCapture> createState() =>
+      _PaymentSupportNoticeCaptureState();
 }
 
-class _PaymentSupportSnackBarCaptureState
-    extends State<_PaymentSupportSnackBarCapture> {
+class _PaymentSupportNoticeCaptureState
+    extends State<_PaymentSupportNoticeCapture> {
   bool _shown = false;
 
   @override
@@ -8120,12 +8126,10 @@ class _PaymentSupportSnackBarCaptureState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _shown) return;
       _shown = true;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please contact Catch support for assistance with this booking.',
-          ),
-        ),
+      showCatchNotice(
+        context,
+        'Please contact Catch support for assistance with this booking.',
+        tone: CatchNoticeTone.warning,
       );
     });
   }
@@ -8892,6 +8896,13 @@ class _CaptureAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+}
+
+class _CaptureFirebaseAuth extends Fake implements FirebaseAuth {
+  _CaptureFirebaseAuth({required this.currentUser});
+
+  @override
+  final User? currentUser;
 }
 
 class _CaptureAuthUser extends Fake implements User {
@@ -14175,7 +14186,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _catchesOpenEvent,
       swipeRepository: const _CaptureThrowingSwipeRepository(),
     ),
-    builder: (context) => const _SwipeWriteFailureSnackBarCapture(),
+    builder: (context) => const _SwipeWriteFailureNoticeCapture(),
   ),
   ScreenCaptureEntry(
     id: 'swipe_event_text_scale_2',
@@ -15453,7 +15464,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['chatScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _matchChatProviderOverrides(),
-    builder: (context) => const _MatchChatFeedbackSnackBarCapture(
+    builder: (context) => const _MatchChatFeedbackNoticeCapture(
       message: 'Unable to send message. Please try again.',
     ),
   ),
@@ -15462,7 +15473,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['chatScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _matchChatProviderOverrides(),
-    builder: (context) => const _MatchChatFeedbackSnackBarCapture(
+    builder: (context) => const _MatchChatFeedbackNoticeCapture(
       message: 'Unable to submit report. Please try again.',
     ),
   ),
@@ -16007,6 +16018,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
+      firebaseAuthProvider.overrideWithValue(
+        _CaptureFirebaseAuth(
+          currentUser: _CaptureAuthUser(
+            uid: HostOperationsFixtures.hostUid,
+            phoneNumber: '+919876543210',
+          ),
+        ),
+      ),
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       uidProvider.overrideWithValue(
         const AsyncData<String?>(HostOperationsFixtures.hostUid),
@@ -16038,6 +16057,14 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostAudienceScreen'],
     device: CaptureDevice.claudePhone390,
     providerOverrides: [
+      firebaseAuthProvider.overrideWithValue(
+        _CaptureFirebaseAuth(
+          currentUser: _CaptureAuthUser(
+            uid: HostOperationsFixtures.hostUid,
+            phoneNumber: '+919876543210',
+          ),
+        ),
+      ),
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
       uidProvider.overrideWithValue(
         const AsyncData<String?>(HostOperationsFixtures.hostUid),
@@ -16469,7 +16496,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostChatScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostChatProviderOverrides(),
-    builder: (context) => const _HostChatReportFailureSnackBarCapture(),
+    builder: (context) => const _HostChatReportFailureNoticeCapture(),
   ),
   ScreenCaptureEntry(
     id: 'host_chat_block_confirm_dialog',
@@ -17205,7 +17232,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'payment_history_support_snackbar',
     routeIds: const <String>['paymentHistoryScreen'],
     device: CaptureDevice.reviewPhone,
-    builder: (context) => _PaymentSupportSnackBarCapture(
+    builder: (context) => _PaymentSupportNoticeCapture(
       payment: _paymentHistoryPayments.firstWhere(
         (payment) => payment.signUpFailed,
       ),

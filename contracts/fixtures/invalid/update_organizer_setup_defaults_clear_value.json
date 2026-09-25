@@ -1,0 +1,12 @@
+{
+  "organizerId": "org1",
+  "requestId": "request-123",
+  "expectedRevision": 0,
+  "reviewedDefaultsHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "changes": {
+    "paymentInstructions": {
+      "mode": "clear",
+      "value": "test"
+    }
+  }
+}
