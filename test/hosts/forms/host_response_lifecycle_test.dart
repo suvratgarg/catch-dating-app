@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
@@ -9,11 +10,13 @@ import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,6 +26,33 @@ import '../../clubs/clubs_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  test('response contact links normalize E.164 and restrict social hosts', () {
+    expect(
+      hostResponsePhoneUri(' +919876543210 ')?.toString(),
+      'tel:+919876543210',
+    );
+    expect(hostResponsePhoneUri('91 98765 43210'), isNull);
+    expect(hostResponsePhoneUri('tel:+919876543210'), isNull);
+    expect(
+      hostResponseSocialUri(
+        ' https://www.instagram.com/runner/ ',
+        'instagram.com',
+      )?.toString(),
+      'https://www.instagram.com/runner/',
+    );
+    expect(
+      hostResponseSocialUri('javascript:alert(1)', 'instagram.com'),
+      isNull,
+    );
+    expect(
+      hostResponseSocialUri('https://instagram.com.evil.test/a', 'instagram.com'),
+      isNull,
+    );
+    expect(
+      hostResponseSocialUri('https://linkedin.com:444/a', 'linkedin.com'),
+      isNull,
+    );
+  });
   testWidgets(
     'Responses app-bar import confirms in a sheet and refreshes unfiltered inbox',
     (tester) async {
@@ -31,6 +61,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            firebaseAuthProvider.overrideWithValue(_LifecycleAuth()),
             uidProvider.overrideWithValue(const AsyncData<String?>('host')),
             hostOperableClubsProvider('host').overrideWithValue(
               AsyncData([buildClub(id: 'org', ownerUserId: 'host')]),
@@ -187,6 +218,7 @@ void main() {
         ),
         HostFormInboxEntry.fromResponse(ordinary),
       ];
+      HostResponseReviewQueue? openedQueue;
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -200,16 +232,22 @@ void main() {
           GoRoute(
             path: '/applications/:applicationId',
             name: Routes.hostApplicationDetailScreen.name,
-            builder: (_, state) => Scaffold(
-              body: Text('Review ${state.pathParameters['applicationId']}'),
-            ),
+            builder: (_, state) {
+              openedQueue = state.extra as HostResponseReviewQueue?;
+              return Scaffold(
+                body: Text('Review ${state.pathParameters['applicationId']}'),
+              );
+            },
           ),
           GoRoute(
             path: '/responses/:responseId',
             name: Routes.hostFormResponseDetailScreen.name,
-            builder: (_, state) => Scaffold(
-              body: Text('Response ${state.pathParameters['responseId']}'),
-            ),
+            builder: (_, state) {
+              openedQueue = state.extra as HostResponseReviewQueue?;
+              return Scaffold(
+                body: Text('Response ${state.pathParameters['responseId']}'),
+              );
+            },
           ),
         ],
       );
@@ -249,14 +287,17 @@ void main() {
         ),
         findsNothing,
       );
-      for (final (name, expected) in [
+      for (final (index, (name, expected)) in [
         ('Maya', 'Review application-native'),
         ('Asha', 'Review application-import'),
         ('Noor', 'Response ordinary'),
-      ]) {
+      ].indexed) {
         await tester.tap(find.text(name));
         await pumpFeatureUi(tester);
         expect(find.text(expected), findsOneWidget);
+        expect(openedQueue?.index, index);
+        expect(openedQueue?.entryId, entries[index].entryId);
+        expect(openedQueue?.request, requests.last);
         router.pop();
         await pumpFeatureUi(tester);
       }
@@ -300,6 +341,32 @@ void main() {
       request,
       isNot(const HostFormResponseListRequest(organizerId: 'org')),
     );
+  });
+
+  test('review queue targets the shifted neighbor when the current row leaves', () {
+    final entries = [
+      for (final id in ['a', 'b', 'c'])
+        HostFormInboxEntry.fromResponse(_response(id, id)),
+    ];
+    const queue = HostResponseReviewQueue(
+      request: HostFormResponseListRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v2',
+        answerFilters: {'city': {'Mumbai', 'Delhi'}},
+      ),
+      entryId: 'response:b',
+      index: 1,
+    );
+    expect(queue.targetIndex(entries, -1), 0);
+    expect(queue.targetIndex(entries, 1), 2);
+    final afterReview = [entries.first, entries.last];
+    expect(queue.targetIndex(afterReview, -1), 0);
+    expect(queue.targetIndex(afterReview, 1), 1);
+    expect(queue.targetIndex([entries.first], -1, hasMore: false), 0);
+    expect(queue.targetIndex([entries.first], 1, hasMore: false), 1);
+    expect(queue.request.versionId, 'form_v2');
+    expect(queue.request.answerFilters['city'], {'Mumbai', 'Delhi'});
   });
 }
 
@@ -410,4 +477,14 @@ class _Importer extends Fake implements HostApplicationsController {
       replayed: false,
     );
   }
+}
+
+class _LifecycleAuth extends Fake implements FirebaseAuth {
+  @override
+  User? get currentUser => _LifecycleUser();
+}
+
+class _LifecycleUser extends Fake implements User {
+  @override
+  String get uid => 'host';
 }

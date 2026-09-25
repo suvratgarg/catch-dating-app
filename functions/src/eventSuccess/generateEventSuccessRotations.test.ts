@@ -6,6 +6,8 @@ import {
   overrideEventSuccessRotationsHandler,
 } from "./generateEventSuccessRotations";
 import {isHttpsError} from "../shared/testUtils";
+import {assignmentFeatureConsentId} from
+  "./assignmentFeatureConsent";
 
 type FakeData = Record<string, unknown>;
 
@@ -53,7 +55,8 @@ class FakeCollectionRef {
       field: string;
       operator: string;
       value: unknown;
-    }> = []
+    }> = [],
+    private readonly cap = Infinity
   ) {}
 
   doc(docId: string) {
@@ -64,18 +67,18 @@ class FakeCollectionRef {
     return new FakeCollectionRef(this.firestore, this.path, [
       ...this.filters,
       {field, operator, value},
-    ]);
+    ], this.cap);
   }
 
   limit(count: number) {
-    void count;
-    return this;
+    return new FakeCollectionRef(this.firestore, this.path,
+      this.filters, count);
   }
 
   async get() {
-    return {
-      docs: this.firestore.query(this.path, this.filters),
-    };
+    const docs = this.firestore.query(this.path, this.filters)
+      .slice(0, this.cap);
+    return {docs, size: docs.length};
   }
 }
 
@@ -140,6 +143,10 @@ class FakeFirestore {
     return new FakeBatch(this);
   }
 
+  async getAll(...refs: FakeDocRef[]): Promise<FakeSnapshot[]> {
+    return Promise.all(refs.map((ref) => ref.get()));
+  }
+
   async runTransaction<T>(
     callback: (transaction: FakeTransaction) => Promise<T>
   ): Promise<T> {
@@ -148,7 +155,10 @@ class FakeFirestore {
 
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
-    if (data !== undefined) return {...data};
+    if (data !== undefined) {
+      return path.startsWith("events/") ?
+        {...configuredEventFields(), ...data} : {...data};
+    }
     const draftPath = path.replace(
       "eventSuccessAssignments/",
       "eventSuccessAssignmentDrafts/"
@@ -292,6 +302,21 @@ test(
   }
 );
 
+test("incomplete setup cannot generate a rotation draft", async () => {
+  const {deps} = harness({"events/event-1": {
+    publicationState: "private",
+    setupRevision: 1,
+    endTime: undefined,
+  }});
+  await assert.rejects(generateEventSuccessRotationsHandler(
+    callableRequest("host-1"), deps
+  ), (error) => {
+    isHttpsError(error, "failed-precondition",
+      "This event needs a valid schedule and format.");
+    return true;
+  });
+});
+
 test("pickleball defaults to profile-free coverage schedules", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
     ...participation("man-1"),
@@ -362,6 +387,89 @@ test("pickleball defaults to profile-free coverage schedules", async () => {
     repeatPeerCount: 0,
   });
 });
+
+test("configured consented answers affect generated rotation drafts",
+  async () => {
+    const ids = ["man-1", "man-2", "woman-1", "woman-2"];
+    const stamp = {_seconds: 1, _nanoseconds: 0};
+    const rule = {featureId: "pace", formId: "form-1",
+      versionId: "version-1", questionId: "question-1",
+      transformVersion: 1, kind: "category", mode: "preferSimilar",
+      weight: 100, optionIds: ["option-a", "option-b"]};
+    const answers = Object.fromEntries(ids.flatMap((uid) => {
+      const choice = uid.endsWith("1") ? "a" : "b";
+      return [
+        [`organizerFormResponses/response-${uid}`, {
+          organizerId: "club-1", formId: "form-1",
+          versionId: "version-1", status: "submitted",
+          respondentUid: uid, identityKind: "phoneVerified",
+          withdrawnAt: null, answers: {"question-1": choice},
+        }],
+        [`eventAssignmentFeatureConsents/${assignmentFeatureConsentId(
+          "event-1", uid, "pace")}`, {
+          eventId: "event-1", organizerId: "club-1", uid,
+          responseId: `response-${uid}`, featureId: "pace",
+          formId: "form-1", versionId: "version-1",
+          questionId: "question-1", transformVersion: 1,
+          purpose: "eventAssignmentMatching", status: "granted",
+          receiptId: `receipt-${uid}`, revision: 1,
+          lastRequestId: `grant-${uid}`, createdAt: stamp,
+          updatedAt: stamp,
+        }],
+      ];
+    }));
+    const {firestore, deps} = harness({
+      ...Object.fromEntries(ids.flatMap((uid) => [
+        ...Object.entries(participation(uid)),
+        [`users/${uid}`, user(uid.startsWith("man") ? "man" :
+          "woman", [uid.startsWith("man") ? "woman" : "man"])],
+      ])),
+      ...answers,
+      "organizerFormVersions/version-1": {organizerId: "club-1",
+        formId: "form-1", definition: {sections: [{questions: [{
+          questionId: "question-1", privacyClass: "organizerCustom",
+          kind: "singleChoice", options: [
+            {optionId: "option-a", value: "a"},
+            {optionId: "option-b", value: "b"},
+          ],
+        }]}]}},
+      "eventSuccessPlans/event-1": {eventId: "event-1",
+        organizerId: "club-1", selectedModuleIds: ["guided_rotations"],
+        liveControlRevision: 0, assignmentDraftRevision: 0,
+        publishedRotationRoundIndex: -1,
+        assignmentFeatureRules: [rule], assignmentFeatureRevision: 1,
+        assignmentFeatureConfigHash: "hash-1",
+        structureConfig: {unitKind: "pairs", unitSize: 2,
+          rotationIntervalMinutes: 15, revealCountdownSeconds: 10}},
+    });
+    await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"), deps);
+    const manOne = firestore.get(
+      "eventSuccessAssignmentDrafts/event-1_guided_rotations_man-1");
+    const assignment = manOne?.assignment as FakeData;
+    const slots = assignment.rotationSlots as Array<FakeData>;
+    assert.equal(slots[0].peerUid, "woman-1");
+    const guard = manOne?.assignmentFeatureGuard as FakeData;
+    assert.equal(guard.configHash, "hash-1");
+    assert.equal((guard.snapshots as unknown[]).length, 1);
+    const audit = assignment.assignmentFeatureAudit as FakeData;
+    assert.equal(audit.algorithmVersion, "typed-soft-features-v1");
+    assert.equal(audit.configHash, "hash-1");
+    assert.match(audit.inputSnapshotId as string, /^[a-f0-9]{64}$/u);
+    assert.equal(JSON.stringify(assignment).includes("response-man"), false);
+    assert.equal(JSON.stringify(assignment).includes("answer"), false);
+
+    for (let index = 0; index < 401; index++) {
+      firestore.set(`eventSuccessAssignmentDrafts/old-${index}`, {
+        eventId: "event-1", moduleId: "guided_rotations",
+        roundIndex: 0, uid: `old-${index}`});
+    }
+    await assert.rejects(() => generateEventSuccessRotationsHandler(
+      callableRequest("host-1", {expectedRevision: 1}), deps), (error) => {
+      isHttpsError(error, "failed-precondition", "supported draft size");
+      return true;
+    });
+  });
 
 test("sequence topology uses configured court capacity", async () => {
   const {firestore, deps} = harness({
@@ -1227,6 +1335,23 @@ function rotationEvent(
     },
     startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
     endTime: fakeTimestamp(endTime),
+  };
+}
+
+function configuredEventFields(): FakeData {
+  return {
+    clubId: "club-1",
+    startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+    endTime: fakeTimestamp("2026-05-21T09:00:00.000Z"),
+    meetingPoint: "Court entrance",
+    meetingLocation: {name: "Court", latitude: 19, longitude: 72},
+    eventFormat: {
+      version: 1,
+      activityKind: "pickleball",
+      interactionModel: "pairedRotations",
+    },
+    capacityLimit: 20,
+    priceInPaise: 0,
   };
 }
 

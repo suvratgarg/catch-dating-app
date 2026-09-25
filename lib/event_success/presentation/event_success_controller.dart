@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
@@ -44,9 +45,39 @@ class EventSuccessController extends _$EventSuccessController {
   static final resolveLateArrivalMutation =
       Mutation<EventSuccessLateArrivalResolution>();
   static final accountabilityResolutionMutation = Mutation<void>();
+  static final configureAssignmentFeaturesMutation =
+      Mutation<EventSuccessAssignmentFeatureSaveResult>();
 
   @override
   void build() {}
+
+  Future<EventSuccessAssignmentFeaturePreview> previewAssignmentFeatures({
+    required String eventId,
+    required List<EventSuccessAssignmentFeatureRule> rules,
+    List<String> sourceFormIds = const [],
+  }) async {
+    requireSignedInUid(ref, action: 'preview event matching coverage');
+    return ref.read(eventSuccessRepositoryProvider).previewAssignmentFeatures(
+      eventId: eventId,
+      rules: rules,
+      sourceFormIds: sourceFormIds,
+    );
+  }
+
+  Future<EventSuccessAssignmentFeatureSaveResult> configureAssignmentFeatures({
+    required String eventId,
+    required int expectedRevision,
+    required String requestId,
+    required List<EventSuccessAssignmentFeatureRule> rules,
+  }) async {
+    requireSignedInUid(ref, action: 'save event matching preferences');
+    return ref.read(eventSuccessRepositoryProvider).configureAssignmentFeatures(
+      eventId: eventId,
+      expectedRevision: expectedRevision,
+      requestId: requestId,
+      rules: rules,
+    );
+  }
 
   Future<EventSuccessPlan> ensurePlan(Event event) async {
     requireSignedInUid(ref, action: 'set up the live event guide');

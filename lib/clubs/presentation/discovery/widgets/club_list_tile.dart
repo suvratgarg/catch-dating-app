@@ -8,7 +8,7 @@ import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/explore/explore.dart';

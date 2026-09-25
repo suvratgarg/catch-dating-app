@@ -55,20 +55,14 @@ void main() {
       await mouse.removePointer();
     });
   }
-  testWidgets('page action has no floating perimeter and clears snackbars', (
-    tester,
-  ) async {
+  testWidgets('page action has no floating perimeter', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CatchTheme.light,
         home: Scaffold(
           body: Builder(
-            builder: (context) => TextButton(
-              onPressed: () => ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Saved'))),
-              child: const Text('Save'),
-            ),
+            builder: (context) =>
+                const TextButton(onPressed: null, child: Text('Save')),
           ),
           bottomNavigationBar: CatchDockSurface.pageAction(
             label: 'Open person',
@@ -80,12 +74,6 @@ void main() {
     expect(
       find.byKey(const ValueKey('catch_bottom_action.floating_chrome')),
       findsNothing,
-    );
-    await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
-    expect(
-      tester.getBottomLeft(find.byType(SnackBar)).dy,
-      lessThanOrEqualTo(tester.getTopLeft(find.text('Open person')).dy),
     );
     expect(find.text('Open person').hitTestable(), findsOneWidget);
   });

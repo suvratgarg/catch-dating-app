@@ -98,14 +98,6 @@
   },
   {
    "authority": "flutter_screens",
-   "authorityId": "screen.catches.hub",
-   "status": "contracted",
-   "priority": "P1",
-   "reason": "Compiled Catches hub contract covers all registered states, active-window navigation, recap entry, and empty recovery.",
-   "featureContract": "feature.catches_hub"
-  },
-  {
-   "authority": "flutter_screens",
    "authorityId": "screen.catches.event",
    "status": "contracted",
    "priority": "P1",

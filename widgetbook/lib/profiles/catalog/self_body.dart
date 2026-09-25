@@ -153,9 +153,14 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
         label: 'edit tab complete profile',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
-          child: ProfileTab(
+          child: ProfileTabContent(
             user: widgetbookProfileViewer,
             uploadState: widgetbookProfileIdlePhotoUploadState,
+            builder: (context, children) => ListView(
+              key: const ValueKey('profile-tab-scroll-view'),
+              padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+              children: children,
+            ),
           ),
         ),
       ),
@@ -163,9 +168,14 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
         label: 'edit tab incomplete profile',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: ProfileTab(
+          child: ProfileTabContent(
             user: widgetbookProfileIncompleteViewer,
             uploadState: widgetbookProfileIdlePhotoUploadState,
+            builder: (context, children) => ListView(
+              key: const ValueKey('profile-tab-scroll-view'),
+              padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+              children: children,
+            ),
           ),
         ),
       ),
@@ -205,9 +215,14 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileEditorPreviewHeight,
           child: WidgetbookMediaOverride(
             textScaler: const TextScaler.linear(1.45),
-            child: ProfileTab(
+            child: ProfileTabContent(
               user: _longContentViewer,
               uploadState: widgetbookProfileIdlePhotoUploadState,
+              builder: (context, children) => ListView(
+                key: const ValueKey('profile-tab-scroll-view'),
+                padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+                children: children,
+              ),
             ),
           ),
         ),
@@ -279,29 +294,6 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
     return ListView(
       padding: CatchInsets.content,
       children: [
-        ProfileDirectTextEntryField(
-          icon: CatchIcons.personOutlined,
-          label: 'Display name',
-          contract: CatchContractConstraints.updateUserProfilePatchDisplayName,
-          currentValue: 'Neha',
-          currentFieldValue: 'Neha',
-          fieldName: 'displayName',
-          patchForValue: (value) =>
-              UpdateUserProfilePatch(displayName: value as String),
-        ),
-        gapH12,
-        ProfileDirectTextEntryField(
-          icon: CatchIcons.workOutline,
-          label: 'Job title',
-          contract: CatchContractConstraints.updateUserProfilePatchOccupation,
-          inputHint: 'e.g. Product designer',
-          currentValue: '',
-          currentFieldValue: null,
-          fieldName: 'occupation',
-          patchForValue: (value) =>
-              UpdateUserProfilePatch(occupation: value as String),
-        ),
-        gapH12,
         const ProfileInlineRelationshipGoalChoiceEntryEditor(),
         gapH12,
         const ProfileInlineLanguageMultiChoiceEntryEditor(),

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {createFormPaymentFixture} from "./formPaymentTestStore";
 import {getOrganizerFormPaymentHandler, prepareOrganizerFormPaymentHandler,
@@ -95,6 +96,45 @@ test("ended and manual-review payments can be read without provider mutations",
         status === "reviewRequired" ? paymentId : null);
     }
     assert.equal(h.runtimeCalls(), 0);
+  });
+
+test("newer ended retries do not conceal an earlier paid receipt", async () => {
+  const h = harness();
+  const {paymentId} = await h.reserve();
+  h.capture(paymentId);
+  await h.finalize(paymentId);
+  const old = h.store.records.get(`organizerFormPayments/${paymentId}`)!;
+  h.store.records.set(`organizerFormPayments/cfp_${"a".repeat(32)}`, {
+    ...old, status: "expired", responseId: null,
+    createdAt: Timestamp.fromMillis(2000),
+  });
+  const found = await findOrganizerFormPaymentHandler(request({
+    publicFormId: h.draft.publicFormId,
+  }), h.deps);
+  assert.equal(found.payment?.paymentId, paymentId);
+  assert.equal(found.payment?.receipt?.completion.title, "Received");
+  assert.equal(h.runtimeCalls(), 0);
+});
+
+test("bounded discovery fails explicitly when ended retries fill the window",
+  async () => {
+    const h = harness();
+    const {paymentId, payment} = await h.reserve();
+    h.store.records.set(`organizerFormPayments/${paymentId}`,
+      {...payment, status: "expired"});
+    for (let index = 0; index < 24; index++) {
+      h.store.records.set(`organizerFormPayments/cfp_${index.toString(16)
+        .padStart(32, "0")}`, {...payment, status: "expired",
+        createdAt: Timestamp.fromMillis(2000 + index)});
+    }
+    assert.deepEqual(await findOrganizerFormPaymentHandler(request({
+      publicFormId: h.draft.publicFormId,
+    }), h.deps), {payment: null});
+    h.store.records.set(`organizerFormPayments/cfp_${"f".repeat(32)}`,
+      {...payment, status: "expired", createdAt: Timestamp.fromMillis(3000)});
+    await assert.rejects(findOrganizerFormPaymentHandler(request({
+      publicFormId: h.draft.publicFormId,
+    }), h.deps), /Too many ended attempts/u);
   });
 
 test("connection actions require manager authority before provider work",

@@ -1,49 +1,8 @@
 part of '../host_operations_screen.dart';
 
-class HostClubEventDefaultsScreen extends StatelessWidget {
-  const HostClubEventDefaultsScreen({super.key, required this.clubId});
-
-  final String clubId;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostClubSpokeResolver._(
-      clubId: clubId,
-      title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
-      builder: (context, club, _, isOwner) => isOwner
-          ? HostClubDefaultsEditor._(
-              club: club,
-              builder: (context, defaults, apply, errorMessage, _) =>
-                  CatchSectionList(
-                    emptyStateOmitted: true,
-                    children: [
-                      ClubPolicyDefaultsCard(
-                        defaults: defaults.eventPolicy,
-                        currencyCode: currencyCodeForCityName(club.location),
-                        activityKind: defaults.primaryActivityKind,
-                        onActivityChanged: (activityKind) => apply(
-                          (current) =>
-                              _hostDefaultsWithActivity(current, activityKind),
-                        ),
-                        onChanged: (update) => apply(
-                          (current) => current.copyWith(
-                            eventPolicy: update(current.eventPolicy),
-                          ),
-                        ),
-                      ),
-                      if (errorMessage != null)
-                        CatchFieldSupportRow(
-                          text: errorMessage,
-                          color: CatchTokens.of(context).danger,
-                          showErrorIcon: true,
-                        ),
-                    ],
-                  ),
-            )
-          : HostClubReadOnlyEventDefaults._(club: club),
-    );
-  }
-}
+// The current updateOrganizer contract rejects progressive default fields.
+// Show these controls only with the versioned defaults save command.
+bool _progressiveEventDefaultsAvailable() => false;
 
 class HostClubSpokeResolver extends ConsumerWidget {
   const HostClubSpokeResolver._({
@@ -86,7 +45,9 @@ class HostClubSpokeResolver extends ConsumerWidget {
         ),
       );
     }
-    if (uidState.isLoading) return HostLoadingScreen(title: title);
+    if (uidState.isLoading) {
+      return HostLoadingScreen(title: title);
+    }
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
@@ -296,6 +257,19 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
       first: true,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       children: [
+        if (_progressiveEventDefaultsAvailable()) CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostsPrivateEventCity,
+          body: club.location,
+          icon: CatchIcons.locationOnOutlined,
+        ),
+        if (_progressiveEventDefaultsAvailable()) CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostsPrivateEventTimezone,
+          body: club.hostDefaults.timezone ??
+              context.l10n.hostsEventDefaultsChooseEachEvent,
+          icon: CatchIcons.languageOutlined,
+        ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleDefaultActivity,

@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.32.0
+version: 1.32.1
 updated: 2026-09-23
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -509,8 +509,9 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   record badge rather than an action's resting fill.
 - Persistent control docking routes through `CatchDockSurface`. `pageAction`
   is the borderless page-background recipe for one detail action. The scaffold
-  reserves its measured height and positions snackbars above it. It owns the
-  page gutter and safe area; features do not wrap it in a card.
+  reserves its measured height. The app-level `CatchNoticeOverlay` places
+  transient notices in the top safe area without changing the route layout. The
+  dock owns the page gutter and safe area; features do not wrap it in a card.
 - Other persistent control docking routes through `CatchDockSurface`. Its default
   constructor hosts utility content; `primary` owns floating Cupertino or
   anchored Material action chrome. `primaryContent` reuses the same action body
@@ -671,6 +672,14 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchFormRowList` sections. An existing surface may opt the complete section
   into on-blur commit while it awaits a reviewed product migration; individual
   row descriptors cannot mix policies or choose their own commit chrome.
+  Consumer profile text rows now use this explicit default. Text editors keep
+  the outlined Cancel and existing field chrome; their character count occupies
+  the leading side of the commit row. Short errors replace the caption while
+  retaining the input's accessible name; longer errors wrap naturally. Generated
+  value constraints supply the localized Optional label. An emptied optional
+  value uses Clear as its commit action, while its domain adapter owns whether
+  absence is encoded as null or an empty string. Hints share value typography
+  and use the shared secondary text color.
 
 
 The API boundary is the first enforcement layer: duplicate placement variants
@@ -834,7 +843,7 @@ is registered separately with shell, top-bar, and state policies and validated
 with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
-`catch.ui_label` (`CatchSectionHeaderTitle`, website `UiLabel`, admin
+`catch.typography` (`CatchKickerText`, website `UiLabel`, admin
 `AdminEyebrow`, web-ui `UiLabel`) for eyebrows and compact hierarchy context.
 Use `catch.badge` (`CatchBadge`, `StatusBadge`, `StatusChip`, `BadgeControl`)
 for status, state, counts, and alerts. The lexicon gate pins these mappings so a

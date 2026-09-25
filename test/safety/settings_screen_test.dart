@@ -543,6 +543,7 @@ Future<void> _pumpSettings(
       container: container,
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
         home: const _SettingsTestPrimer(child: SettingsScreen()),
       ),
     ),

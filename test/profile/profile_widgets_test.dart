@@ -62,7 +62,15 @@ Widget _profileTab(UserProfile user) {
     child: MaterialApp(
       theme: AppTheme.light,
       home: Scaffold(
-        body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
+        body: ProfileTabContent(
+          user: user,
+          uploadState: const PhotoUploadState(),
+          builder: (context, children) => ListView(
+            key: const ValueKey('profile-tab-scroll-view'),
+            padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+            children: children,
+          ),
+        ),
       ),
     ),
   );
@@ -196,7 +204,15 @@ Widget _editableProfileTab(
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: ProfileTab(user: user, uploadState: const PhotoUploadState()),
+          body: ProfileTabContent(
+            user: user,
+            uploadState: const PhotoUploadState(),
+            builder: (context, children) => ListView(
+              key: const ValueKey('profile-tab-scroll-view'),
+              padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+              children: children,
+            ),
+          ),
         ),
       ),
     ),
@@ -209,7 +225,7 @@ Future<void> _dragProfileTabUntilVisible(
 ) async {
   await tester.dragUntilVisible(
     finder,
-    find.byKey(ProfileTab.scrollViewKey),
+    find.byKey(const ValueKey('profile-tab-scroll-view')),
     const Offset(0, -300),
   );
   await tester.ensureVisible(finder);
@@ -222,7 +238,7 @@ Future<void> _dragProfileTabUntilTappable(
 ) async {
   await _dragProfileTabUntilVisible(tester, finder);
   await tester.drag(
-    find.byKey(ProfileTab.scrollViewKey),
+    find.byKey(const ValueKey('profile-tab-scroll-view')),
     const Offset(0, -260),
   );
   await tester.pump();

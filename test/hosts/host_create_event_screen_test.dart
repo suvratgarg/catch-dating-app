@@ -3,6 +3,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -23,6 +24,8 @@ import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
@@ -907,7 +910,7 @@ Future<void> _pumpCreateEventFlow(
           data: MediaQuery.of(
             context,
           ).copyWith(alwaysUse24HourFormat: alwaysUse24HourFormat),
-          child: child!,
+          child: CatchNoticeOverlay(child: child!),
         ),
         routerConfig: router,
       ),

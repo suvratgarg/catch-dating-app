@@ -9,7 +9,7 @@
       "source": "packages/web-ui/src/primitives.tsx",
       "exportName": "UiLabel",
       "lexicon": true,
-      "lexiconId": "catch.ui_label",
+      "lexiconId": "catch.typography",
       "storybook": {
         "status": "ready",
         "story": "packages/web-ui/src/primitives.stories.tsx",
@@ -71,7 +71,7 @@
         "exportName": "Feedback",
         "states": ["inline", "surface-tone-adapter"]
       },
-      "notes": "Shared non-interactive inline badge root for status-oriented surface adapters; structural eyebrow labels use catch.ui_label instead."
+      "notes": "Shared non-interactive inline badge root for status-oriented surface adapters; structural eyebrow labels use catch.typography instead."
     },
     {
       "id": "webui_button_control",

@@ -9,8 +9,6 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_loadin
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
-import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -333,28 +331,6 @@ Widget eventPhotoHeaderState(BuildContext context) {
   return SizedBox(
     height: WidgetbookPreviewLayout.tallNarrowPanelHeight,
     child: EventPhotoHeader(event: widgetbookEvent),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Event stats',
-  type: EventStatsGrid,
-  path: '[Event Detail]/Sections',
-)
-Widget eventStatsGridState(BuildContext context) {
-  return EventStatsGrid(event: widgetbookEvent);
-}
-
-@widgetbook.UseCase(
-  name: 'Requirements',
-  type: RequirementsRow,
-  path: '[Event Detail]/Sections',
-)
-Widget requirementsRowState(BuildContext context) {
-  return RequirementsRow(
-    event: widgetbookEvent.copyWith(
-      constraints: widgetbookEvent.constraints.copyWith(minAge: 24, maxAge: 36),
-    ),
   );
 }
 

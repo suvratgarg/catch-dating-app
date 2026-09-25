@@ -8,10 +8,10 @@ import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import type {
   ProfilePhoto,
   OrganizerFollowDocument,
-  EventParticipationDocument,
   OrganizerContactIdentityLinkDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {releaseCrossPathsPairHold} from "../crossPaths/pairHolds";
+import {deleteAccountEventParticipations} from "./accountDeletionSeats";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -188,10 +188,12 @@ async function queueRelationshipCleanup(params: {
   writer: BatchQueue;
 }) {
   const {db, uid, now, writer} = params;
+  // The migration fence, participation and linked attendee identity update
+  // share one transaction, including attendee-only imported seats.
+  await deleteAccountEventParticipations({db, uid, now,
+    nowMillis: Date.now()});
   await Promise.all([
     queueClubMembershipCleanup(db, uid, now, writer),
-    queueEventParticipationCleanup(db, uid, now, writer),
-    queueEventAttendeeIdentityCleanup(db, uid, now, writer),
     queueOrganizerAudienceIdentityCleanup(db, uid, now, writer),
     queueCrossPathsConsentCleanup(db, uid, writer),
     queueCrossPathsSuggestionExposureCleanup(db, uid, writer),
@@ -210,26 +212,6 @@ async function queueRelationshipCleanup(params: {
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
-}
-
-/**
- * Removes the deleted Catch identity from retained organizer roster history.
- */
-async function queueEventAttendeeIdentityCleanup(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  now: FirebaseFirestore.FieldValue,
-  writer: BatchQueue
-) {
-  const attendees = await db
-    .collection("eventAttendees")
-    .where("linkedUid", "==", uid)
-    .get();
-  attendees.forEach((doc) => writer.update(doc.ref, {
-    linkedUid: null,
-    linkedAt: null,
-    updatedAt: now,
-  }));
 }
 
 /** Removes Catch identity linkage from retained organizer CRM projections. */
@@ -335,7 +317,8 @@ async function queueParticipantPrivateStateCleanup(
   for (const collection of ["participantFormProfileProposals",
     "participantOrganizerCards", "participantProfileClaimReceipts",
     "eventChatMemberships", "eventChatAccessReceipts",
-    "eventChatReactions", "eventChatPresence", "eventChatProfileShares"]) {
+    "eventChatReactions", "eventChatPresence", "eventChatProfileShares",
+    "eventAssignmentFeatureConsents"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));
@@ -371,37 +354,6 @@ async function queueClubMembershipCleanup(
       writer.update(db.collection("organizers").doc(follow.organizerId), {
         followerCount: admin.firestore.FieldValue.increment(-1),
       });
-    }
-  });
-}
-
-/**
- * Marks event participation edges deleted and removes active roster/count
- * projections from the event document.
- */
-async function queueEventParticipationCleanup(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  now: FirebaseFirestore.FieldValue,
-  writer: BatchQueue
-) {
-  const participations = await db
-    .collection("eventParticipations")
-    .where("uid", "==", uid)
-    .get();
-  participations.forEach((doc) => {
-    const participation = doc.data() as EventParticipationDocument;
-    writer.set(doc.ref, {
-      status: "deleted",
-      updatedAt: now,
-      deletedAt: now,
-    }, {merge: true});
-    const eventPatch = eventParticipationDeletionEventPatch(uid, participation);
-    if (Object.keys(eventPatch).length > 0) {
-      writer.update(
-        db.collection("events").doc(participation.eventId),
-        eventPatch
-      );
     }
   });
 }
@@ -449,37 +401,6 @@ async function queueCrossPathsInvitationCleanup(
     .where("participantIds", "array-contains", uid)
     .get();
   invitations.forEach((doc) => writer.delete(doc.ref));
-}
-
-/**
- * Builds the event aggregate cleanup for a deleted participation.
- */
-function eventParticipationDeletionEventPatch(
-  uid: string,
-  participation: EventParticipationDocument
-): Record<string, unknown> {
-  switch (participation.status) {
-  case "signedUp": {
-    const patch: Record<string, unknown> = {
-      bookedCount: admin.firestore.FieldValue.increment(-1),
-    };
-    if (participation.genderAtSignup) {
-      patch[`genderCounts.${participation.genderAtSignup}`] =
-        admin.firestore.FieldValue.increment(-1);
-    }
-    return patch;
-  }
-  case "waitlisted":
-    return {
-      waitlistedCount: admin.firestore.FieldValue.increment(-1),
-    };
-  case "attended":
-    return {
-      checkedInCount: admin.firestore.FieldValue.increment(-1),
-    };
-  default:
-    return {};
-  }
 }
 
 /**

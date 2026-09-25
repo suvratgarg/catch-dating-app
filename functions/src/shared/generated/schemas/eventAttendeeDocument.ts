@@ -107,6 +107,31 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
       "format": "email",
       "maxLength": 320
     },
+    "cityMarketId": {
+      "description": "Private organizer-reported roster city; never a verified participant profile or eligibility input.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "citySource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "hostImport",
+        "hostManual",
+        null
+      ]
+    },
     "externalReference": {
       "type": [
         "string",

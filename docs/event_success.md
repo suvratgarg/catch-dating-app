@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.153.0
-updated: 2026-09-16
+version: 1.154.0
+updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -3558,6 +3558,44 @@ sit-outs and stable resource-unit ids, prioritizes the T3 cumulative exclusion
 ledger when capacity is scarce, and minimizes attendee movement over the T5
 derived unit-proximity graph. Host-authored overrides are rejected when a round
 exceeds the same configured capacity.
+
+### Event-local structured answer matching
+
+The Host may map up to eight typed, published `organizerCustom` form questions,
+each bound to its exact form version, to soft assignment features. The mapping supports
+category, multi-select set, bounded number, and explicit ordinal option-score
+values, with `preferSimilar`, `preferDifferent`, or
+`balanceAcrossGroups` modes. The Host preview reads the published version,
+shows saved mappings and aggregate current-roster usable/missing coverage,
+and does not show another person's answer. Coverage is a planning estimate;
+the eligible runtime pool can differ. Host configuration never grants answer
+use. Unsupported adjacency/table engines and invalid mappings fail before
+save or generation; old events without feature rules retain their old solver
+result.
+
+The event-detail matching sheet lets a verified respondent review only their
+own eligible answer and separately allow or withdraw its use for this event.
+Its current and historical grants remain withdrawable after a mapping or
+source changes. The grant is distinct from organizer-card, event-room and
+messaging consent. The server checks the exact event, organizer, form,
+published version, question, submitted response, verified endpoint, subject,
+purpose and current revision. It excludes withdrawn or missing answers. An
+account deletion removes the private matching decisions. Firestore clients
+cannot directly read or write the decision collection.
+
+The existing assignment engine consumes only authorized typed snapshots;
+hard admission, safety, capacity, compatibility and repeat-pair constraints
+run first. Missing or withheld answers are neutral. Group balance compares
+each unit to the eligible pool rather than pairing different values blindly.
+Configured runs cap the roster at 1,000 before profile reads. Pod publication
+and rotation draft preparation cap total mutations at 400 and fail closed
+above that bound. Prepared rotations recheck exact response, consent and
+configuration during both preparation and publication, so withdrawal before
+publish aborts the draft. Published assignments retain only algorithm
+version, configuration hash and an opaque digest of the source snapshot
+identity; private answers, subject IDs, response IDs and receipt IDs stay out
+of attendee-readable assignment documents. Existing manual Host overrides
+remain explicitly marked as such and do not fabricate a feature audit.
 
 Algorithms without a dedicated engine, including `none`, `teamBalancer`, and
 `tableSeating`, resolve to `unsupported` with an honest reason. They never run

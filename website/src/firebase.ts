@@ -170,6 +170,12 @@ export interface EventRuntimeAttendeeInviteLink {
 }
 
 let runtimePromise: Promise<FirebaseRuntime | null> | null = null;
+let publicRuntimePromise: Promise<PublicFirebaseRuntime | null> | null = null;
+
+interface PublicFirebaseRuntime {
+  app: FirebaseApp;
+  functions: Functions;
+}
 
 interface FirebaseRuntime {
   app: FirebaseApp;
@@ -214,12 +220,16 @@ export const watchPublicFormAuthState = watchClaimAuthState;
 export async function getPublicOrganizerForm(
   payload: GetPublicOrganizerFormCallablePayload
 ): Promise<GetPublicOrganizerFormCallableResponse> {
-  return invokeWebsiteCallable(
-    "getPublicOrganizerForm",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
+  const runtime = await getPublicFirebaseRuntime();
+  if (!runtime || !publicFormsFirebaseConfigured) {
+    throw new Error("Public forms are not configured for this build.");
+  }
+  const {httpsCallable} = await import("firebase/functions");
+  const callable = httpsCallable<GetPublicOrganizerFormCallablePayload,
+    GetPublicOrganizerFormCallableResponse>(
+    runtime.functions, "getPublicOrganizerForm"
   );
+  return (await callable(payload)).data;
 }
 
 export async function beginOrganizerFormResponse(
@@ -986,19 +996,22 @@ async function getFirebaseRuntime() {
   return runtimePromise;
 }
 
-async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
+async function getPublicFirebaseRuntime() {
+  if (!config || !appCheckSiteKey) return null;
+  publicRuntimePromise ??= loadPublicFirebaseRuntime();
+  return publicRuntimePromise;
+}
+
+async function loadPublicFirebaseRuntime():
+  Promise<PublicFirebaseRuntime | null> {
   if (!config || !appCheckSiteKey) return null;
   const [
     {initializeApp},
     {initializeAppCheck, ReCaptchaEnterpriseProvider},
-    {getAuth},
-    {getFirestore},
     {getFunctions},
   ] = await Promise.all([
     import("firebase/app"),
     import("firebase/app-check"),
-    import("firebase/auth"),
-    import("firebase/firestore"),
     import("firebase/functions"),
   ]);
   const app = initializeApp(config);
@@ -1006,11 +1019,22 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
     provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey),
     isTokenAutoRefreshEnabled: true,
   });
+  return {app, functions: getFunctions(app, "asia-south1")};
+}
+
+async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
+  const [publicRuntime, {getAuth}, {getFirestore}] = await Promise.all([
+    getPublicFirebaseRuntime(),
+    import("firebase/auth"),
+    import("firebase/firestore"),
+  ]);
+  if (!publicRuntime) return null;
+  const {app, functions} = publicRuntime;
   return {
     app,
     auth: getAuth(app),
     firestore: getFirestore(app),
-    functions: getFunctions(app, "asia-south1"),
+    functions,
   };
 }
 

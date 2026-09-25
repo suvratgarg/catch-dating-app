@@ -19,6 +19,7 @@ export interface ImportEventAttendeesCallablePayload {
     displayName: string;
     phone?: string | null;
     email?: string | null;
+    cityMarketId?: string | null;
     externalReference?: string | null;
     arrivalGroup?: string | null;
     ticketType?: string | null;

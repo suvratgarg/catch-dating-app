@@ -12,6 +12,8 @@ import {
 } from "../events/eventPolicy";
 import {assertNoUserEventScheduleConflict} from
   "../events/scheduleConflicts";
+import {isPublicConfiguredEvent,
+  type ConfiguredEventDocument} from "../events/configuredEvent";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
@@ -93,7 +95,7 @@ export interface SuggestionTokenPayload {
 
 interface EventContext {
   eventId: string;
-  event: EventDocument;
+  event: ConfiguredEventDocument;
   viewerBookingStatus: "signedUp" | "canBookNow";
   pairHoldAvailable: boolean;
   candidateUids: string[];
@@ -343,10 +345,12 @@ async function loadEventContext(params: {
       .doc(`${eventId}_${viewerUid}`).get(),
   ]);
   if (!eventSnap.exists) return null;
-  const event = requireDoc<EventDocument>(
+  const candidate = requireDoc<EventDocument>(
     eventSnap,
     "EventDocument (Cross Paths suggestion)"
   );
+  if (!isPublicConfiguredEvent(candidate)) return null;
+  const event = candidate;
   const startMillis = event.startTime.toMillis();
   if (
     !crossPathsPilotEventEnabled(event) ||

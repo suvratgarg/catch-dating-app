@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/update_organizer_event_setup_defaults_response.schema.json",
+  "title": "UpdateOrganizerEventSetupDefaultsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appliedRevision",
+    "current",
+    "replayed"
+  ],
+  "properties": {
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "current": {
+      "$ref": "organizer_event_setup_defaults_response.schema.json"
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+}

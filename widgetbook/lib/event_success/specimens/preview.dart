@@ -58,15 +58,7 @@ Widget eventSuccessStrictPreview(
       componentName: componentName,
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          EventSuccessHostSetupFlow(),
-          gapH16,
-          EventSuccessLiveHostMode(),
-          gapH16,
-          EventSuccessAttendeeCompanionPreview(),
-          gapH16,
-          EventSuccessPostEventReport(),
-        ],
+        children: [EventSuccessPostEventReport()],
       ),
     ),
     EventSuccessStrictSurface.host => StrictCoverageScaffold(

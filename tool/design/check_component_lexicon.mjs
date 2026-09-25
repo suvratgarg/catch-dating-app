@@ -34,8 +34,8 @@ validateSemanticDistinction("catch.badge", {
   admin: "StatusChip",
   webui: "BadgeControl",
 });
-validateSemanticDistinction("catch.ui_label", {
-  flutter: "CatchSectionHeaderTitle",
+validateSemanticDistinction("catch.typography", {
+  flutter: "CatchKickerText",
   website: "UiLabel",
   admin: "AdminEyebrow",
   webui: "UiLabel",

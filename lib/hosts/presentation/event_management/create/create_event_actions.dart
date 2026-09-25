@@ -176,13 +176,13 @@ extension _CreateEventActions on _CreateEventScreenState {
       _setLocalState(() => _setRosterPlan(plan));
     } on HostRosterImportException catch (error) {
       if (mounted) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           hostRosterImportIssueCopy(context, error.issue),
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 

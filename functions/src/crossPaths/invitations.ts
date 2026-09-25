@@ -65,6 +65,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {isReciprocallyEligible} from
   "../shared/relationshipEligibility";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {requireScheduledEvent,
+  type ScheduledEventDocument} from "../events/configuredEvent";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -1142,9 +1144,10 @@ function validUpcomingEvent(
   snap: FirebaseFirestore.DocumentSnapshot,
   now: FirebaseFirestore.Timestamp,
   requireLead: boolean
-): EventDocument {
+): ScheduledEventDocument {
   if (!snap.exists) throw unavailable();
-  const event = requireDoc<EventDocument>(snap, "EventDocument");
+  const event = requireScheduledEvent(
+    requireDoc<EventDocument>(snap, "EventDocument"));
   const minimumStart = now.toMillis() +
     (requireLead ? minimumInvitationLeadMillis : responseBufferMillis);
   if (

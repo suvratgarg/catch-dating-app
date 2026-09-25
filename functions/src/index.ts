@@ -1,7 +1,11 @@
 import {setGlobalOptions} from "firebase-functions";
 import * as admin from "firebase-admin";
 
-setGlobalOptions({region: "asia-south1", maxInstances: 50});
+setGlobalOptions({
+  region: "asia-south1",
+  maxInstances: 50,
+  memory: "512MiB",
+});
 
 admin.initializeApp();
 
@@ -375,6 +379,11 @@ export {
   generateEventSuccessRotations,
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
+export {configureEventAssignmentFeatures,
+  listEventAssignmentFeatureChoices,
+  previewEventAssignmentFeatures,
+  setEventAssignmentFeatureConsent} from
+  "./eventSuccess/assignmentFeatureActions";
 export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,
@@ -611,6 +620,7 @@ export {promoteFormCommunicationIntent} from
 
 export {getEventChatAccess, updateEventChatAccess}
   from "./chats/eventChatAccess";
+export {manageEventChatMember} from "./chats/manageEventChatMember";
 
 export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
   from "./chats/eventChatMessages";
@@ -675,3 +685,21 @@ export {
   refreshProgramFlightStatuses,
 } from "./transport/programFlightRefresh";
 export {flightAlertWebhook} from "./transport/flightAlerts";
+
+export {
+  createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
+  updatePrivateEventPreferences, listPrivateEventSetups,
+  updatePrivateEventDetails, listOfferEventTargets,
+} from "./events/progressiveSetup/callables";
+
+export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
+
+export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+  from "./organizers/eventSetupDefaults/callables";
+
+export {
+  previewEventOffers, commitEventOffers, mutateEventOffer,
+  getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  getEventOfferConfiguration,
+  configureEventOfferPreferences,
+} from "./organizerEventOffers/callables";

@@ -38,6 +38,7 @@ class FakeSnapshot {
 }
 
 class FakeFirestore {
+  afterEventsQuery: (() => void) | undefined;
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
   collection(collectionPath: string) {
@@ -109,8 +110,9 @@ class FakeCollectionRef {
   }
 
   async get() {
-    return {empty: this.firestore.query(this.path, this.filters).length === 0,
-      docs: this.firestore.query(this.path, this.filters)};
+    const docs = this.firestore.query(this.path, this.filters);
+    if (this.path === "events") this.firestore.afterEventsQuery?.();
+    return {empty: docs.length === 0, docs};
   }
 }
 
@@ -243,3 +245,57 @@ test("sendEventRemindersHandler creates durable reminders and push once",
     }]);
   }
 );
+
+test("private and unconfigured progressive events do not send reminders",
+  async () => {
+    const startTime = ts("2026-05-02T01:20:00.000Z");
+    const event = {clubId: "club-1", startTime, distanceKm: 5,
+      meetingPoint: "Carter Road", status: "active", setupRevision: 1};
+    const h = harness({
+      "events/private": {...event, publicationState: "private",
+        publicRegistrationEnabled: true},
+      "events/unconfigured": {...event, publicationState: "published",
+        publicRegistrationEnabled: false},
+      "events/public": {...event, publicationState: "published",
+        publicRegistrationEnabled: true},
+      ...Object.fromEntries(["private", "unconfigured", "public"].map(
+        (eventId) => [`eventParticipations/${eventId}_runner`,
+          {eventId, uid: "runner", status: "signedUp"}]
+      )),
+      "users/runner": {fcmToken: "token-1", prefsEventReminders: true},
+    });
+
+    await sendEventRemindersHandler(h.deps);
+
+    assert.equal(h.firestore.get(
+      "notifications/runner/items/eventReminder_private"), undefined);
+    assert.equal(h.firestore.get(
+      "notifications/runner/items/eventReminder_unconfigured"), undefined);
+    assert.equal(h.firestore.get(
+      "notifications/runner/items/eventReminder_public")?.type,
+    "eventReminder");
+    assert.deepEqual(h.notifications.map((notification) =>
+      notification.eventId), ["public"]);
+  });
+
+test("unpublishing after the reminder scan prevents fanout", async () => {
+  const h = harness({
+    "events/event-1": {clubId: "club-1", status: "active",
+      publicationState: "published", setupRevision: 1,
+      publicRegistrationEnabled: true,
+      startTime: ts("2026-05-02T01:20:00.000Z"), distanceKm: 5,
+      meetingPoint: "Carter Road"},
+    "eventParticipations/event-1_runner": {eventId: "event-1",
+      uid: "runner", status: "signedUp"},
+    "users/runner": {fcmToken: "token-1", prefsEventReminders: true},
+  });
+  h.firestore.afterEventsQuery = () => h.firestore.set("events/event-1", {
+    ...h.firestore.get("events/event-1"), publicationState: "private",
+  });
+
+  await sendEventRemindersHandler(h.deps);
+
+  assert.equal(h.firestore.get(
+    "notifications/runner/items/eventReminder_event-1"), undefined);
+  assert.equal(h.notifications.length, 0);
+});

@@ -10,7 +10,6 @@ import 'package:catch_dating_app/event_success/presentation/event_message_prefer
 import 'package:catch_dating_app/event_success/presentation/event_message_preferences_navigation_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_preferences_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_sender_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_sms_section.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,14 +47,6 @@ Widget eventMessageSenderSection(BuildContext context) =>
     const _Preview(surface: _Surface.sender);
 
 @widgetbook.UseCase(
-  name: 'Legacy SMS permission owner',
-  type: EventMessageSmsSection,
-  path: _path,
-)
-Widget eventMessageSmsSection(BuildContext context) =>
-    const _Preview(surface: _Surface.sms);
-
-@widgetbook.UseCase(
   name: 'Server-authored permission terms',
   type: EventMessagePreferenceSection,
   path: _path,
@@ -71,7 +62,7 @@ Widget eventMessagePreferenceSection(BuildContext context) =>
 Widget eventMessageChannelAccordion(BuildContext context) =>
     const _Preview(surface: _Surface.accordion);
 
-enum _Surface { navigation, sheet, sender, sms, preference, accordion }
+enum _Surface { navigation, sheet, sender, preference, accordion }
 
 class _Preview extends StatelessWidget {
   const _Preview({required this.surface});
@@ -110,16 +101,6 @@ class _Preview extends StatelessWidget {
                       EventMessageSenderSection(
                         scope: EventSenderPreferenceScope(
                           channel: EventSenderChannel.whatsapp,
-                          eventId: _eventId,
-                          attendeeId: _attendeeId,
-                        ),
-                      ),
-                    ],
-                  ),
-                  _Surface.sms => CatchSection.fieldRows(
-                    children: [
-                      EventMessageSmsSection(
-                        scope: EventSmsPreferenceScope(
                           eventId: _eventId,
                           attendeeId: _attendeeId,
                         ),

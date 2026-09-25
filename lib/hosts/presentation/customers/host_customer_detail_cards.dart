@@ -254,7 +254,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
       });
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,

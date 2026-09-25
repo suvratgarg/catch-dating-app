@@ -31,6 +31,13 @@ const schemaUpdateEventChatAccessCallablePayloadSchema = <String, Object?>{
         'close',
         'join',
         'leave',
+        'mute',
+        'unmute',
+        'pause',
+        'announcementsOnly',
+        'resume',
+        'schedule',
+        'archive',
       ],
     },
     'expectedRevision': <String, Object?>{
@@ -60,6 +67,14 @@ const schemaUpdateEventChatAccessCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+    'opensAtMillis': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'closesAtMillis': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
     },
   },
 };

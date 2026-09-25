@@ -165,7 +165,11 @@ mixin _HostEventRehearsalScreenActions
             .copyGuestLink(guestUrl),
       );
       if (mounted) {
-        showCatchSnackBar(context, context.l10n.hostEventRehearsalLinkCopied);
+        showCatchNotice(
+          context,
+          context.l10n.hostEventRehearsalLinkCopied,
+          tone: CatchNoticeTone.success,
+        );
       }
     } on Object {
       // The mutation listener owns user-visible action failure.
@@ -257,9 +261,10 @@ mixin _HostEventRehearsalScreenActions
             .exportReproduction(widget.sessionId),
       );
       if (mounted) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostEventRehearsalReproductionCopied,
+          tone: CatchNoticeTone.success,
         );
       }
     } on Object {

@@ -65,6 +65,14 @@ export const requestOrganizerFormExportCallableResponseSchema: Record<string, un
         "null"
       ],
       "maxLength": 500
+    },
+    "errorCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "description": "Stable failure code; response-query-stale requires refreshing before a new export request."
     }
   }
 } as const;

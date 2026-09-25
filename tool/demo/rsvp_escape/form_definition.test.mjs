@@ -14,7 +14,10 @@ test('consolidated intake retains five cities, mapped contact links and conditio
  assert.equal(byId.get('rsvp_instagram').canonicalFieldId,'instagramHandle');
  assert.deepEqual(definition.logicRules.map(rule=>rule.targetQuestionId),['rsvp_dubaiYears','rsvp_singlesTravel']);
  assert.ok(definition.logicRules.every(rule=>rule.conditions[0].expectedValues[0]==='Dubai'));
- assert.equal(definition.identityPolicy,'emailOrPhoneVerified');
+ assert.equal(definition.identityPolicy,'phoneVerified');
+ assert.deepEqual(definition.sections[0].questions.map(question=>question.canonicalFieldId),['displayName','email','phoneNumber','city']);
+ assert.ok(definition.sections[0].questions.every(question=>question.answerDestination==='catchProfile'&&question.prefillPolicy==='participantReviewRequired'));
+ assert.equal(definition.sections[1].questions[0].questionId,'rsvp_eventCity');
  assert.match(definition.description,/DEMO/);
  assert.equal(definition.completion.actionUrl,null);
 });

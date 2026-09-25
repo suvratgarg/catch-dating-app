@@ -66,6 +66,7 @@ export async function readMembership(db: Firestore, tx: Transaction,
         (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
     throw invalidSource();
   }
+  if (!event.eventFormat) throw invalidSource();
   const guest = guestSnap.exists ? parseGuest(guestSnap.data()) : null;
   if (guest && (guest.guestId !== guestIdentity(context, attendeeId) ||
       guest.updatedAt > now)) throw invalidSource();

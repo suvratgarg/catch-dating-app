@@ -6,7 +6,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 
 type Definition = Pick<OrganizerFormDraftDocument["definition"],
   "identityPolicy" | "sections" | "payment" | "messagingConsent" |
-  "eventProfile">;
+  "eventProfile" | "logicRules">;
 type Question = Definition["sections"][number]["questions"][number];
 type AddIssue = (code: string, path: string, message: string) => void;
 
@@ -43,6 +43,23 @@ export function validateFormCapabilities(definition: Definition,
         "Use each Catch profile building block once in a form.");
     }
     profileFields.add(question.canonicalFieldId);
+  }
+  const catchQuestions = new Set(questions.filter((question) =>
+    formAnswerDestination(question) === "catchProfile")
+    .map((question) => question.questionId));
+  const reusableCatchQuestions = new Set(questions.filter((question) =>
+    catchQuestions.has(question.questionId) &&
+    question.prefillPolicy === "participantReviewRequired")
+    .map((question) => question.questionId));
+  for (const rule of definition.logicRules) {
+    if (rule.conditions.some((condition) =>
+      catchQuestions.has(condition.questionId)) ||
+      (rule.targetQuestionId !== null &&
+        catchQuestions.has(rule.targetQuestionId))) {
+      add("catchFieldCustomLogic", "logicRules",
+        "Catch fields use built-in behavior and cannot be used " +
+        "in custom logic.");
+    }
   }
   const preparesProfile = questions.some((question) =>
     formAnswerDestination(question) !== "organizerOnly");
@@ -122,6 +139,18 @@ export function validateFormCapabilities(definition: Definition,
           add("profileKindMismatch", `${path}.kind`,
             "Use the answer type supported by this Catch profile field.");
         }
+      }
+      if (catchQuestions.has(question.questionId)) {
+        if (question.validation.patternPreset !== null ||
+            question.validation.customError !== null) {
+          add("catchFieldCustomValidation", `${path}.validation`,
+            "Catch fields use their built-in validation.");
+        }
+      }
+      if (reusableCatchQuestions.has(question.questionId) &&
+          sectionIndex !== 0) {
+        add("catchFieldFirstPage", path,
+          "Place reusable Catch fields on the first page.");
       }
       if (destination !== "organizerOnly" &&
           (question.kind === "acknowledgement" ||

@@ -1,3 +1,4 @@
+const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const {after, before, beforeEach, describe, it} = require("node:test");
@@ -1119,6 +1120,92 @@ describe("firestore.rules", () => {
         collection(authedDb("owner-1"), "organizerForms"),
         where("organizerId", "==", "organizer-1"),
       )));
+    });
+
+    it("keeps organizer event setup defaults and receipts server-only", async () => {
+      for (const collectionName of ["organizerEventSetupDefaults",
+        "organizerEventSetupDefaultReceipts", "eventSetupPreferences",
+        "eventOfferConfigurationReceipts"]) {
+        await seed([collectionName, "organizer-1"], {
+          organizerId: "organizer-1", revision: 1,
+          eventSetup: {paymentInstructions: "Manager-only instructions"},
+        });
+        for (const uid of ["owner-1", "owner-2"]) {
+          const db = authedDb(uid);
+          const ref = doc(db, collectionName, "organizer-1");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {revision: 2}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            organizerId: "organizer-1", revision: 1,
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "organizer-1"))));
+        }
+      }
+    });
+
+    it("keeps atomic form admission ownership and payment receipts server-only", async () => {
+      for (const collectionName of ["organizerFormAdmissions",
+        "organizerFormAdmissionReceipts"]) {
+        await seed([collectionName, "receipt-1"], {
+          organizerId: "organizer-1", eventId: "event-1",
+          responseId: "response-1", actorUid: "owner-1",
+          manualPayment: {reviewNote: "Private bank reference"},
+        });
+        for (const db of [authedDb("owner-1"), authedDb("owner-2"),
+          testEnv.unauthenticatedContext().firestore()]) {
+          const ref = doc(db, collectionName, "receipt-1");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {responseId: "forged"}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            organizerId: "organizer-1", eventId: "event-1",
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "organizer-1"))));
+        }
+      }
+    });
+
+    it("keeps event offers and evidence server-only", async () => {
+      for (const collectionName of ["organizerEventOffers",
+        "organizerEventOfferActionReceipts", "organizerEventOfferBatchReceipts",
+        "organizerEventOfferAudits"]) {
+        await seed([collectionName, "offer-1"], {
+          organizerId: "organizer-1", eventId: "event-1", revision: 1,
+          manualPayment: {status: "none"},
+        });
+        for (const uid of ["owner-1", "owner-2"]) {
+          const db = authedDb(uid);
+          const ref = doc(db, collectionName, "offer-1");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {revision: 2}));
+          await assertFails(deleteDoc(ref));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            organizerId: "organizer-1", revision: 1,
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("organizerId", "==", "organizer-1"))));
+        }
+      }
+    });
+
+    it("keeps private event setup receipts server-only", async () => {
+      await seed(["eventSetupReceipts", "receipt-1"], {
+        organizerId: "organizer-1", actorUid: "owner-1", eventId: "event-1",
+        operation: "create", appliedRevision: 1,
+      });
+      for (const uid of ["owner-1", "owner-2"]) {
+        const db = authedDb(uid);
+        const ref = doc(db, "eventSetupReceipts", "receipt-1");
+        await assertFails(getDoc(ref));
+        await assertFails(deleteDoc(ref));
+        await assertFails(updateDoc(ref, {appliedRevision: 2}));
+        await assertFails(setDoc(doc(db, "eventSetupReceipts", "forged"), {
+          organizerId: "organizer-1", actorUid: uid, appliedRevision: 1,
+        }));
+      }
     });
 
     it("keeps form payment state server-only", async () => {
@@ -3046,6 +3133,63 @@ describe("firestore.rules", () => {
   });
 
   describe("events", () => {
+    it("protects private event reads by manager and active staff authority", async () => {
+      await seed(["organizers", "club-1"], club());
+      await seed(["events", "event-1"], event({publicationState: "private", setupRevision: 1}));
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await assertFails(getDoc(doc(anonymous, "events", "event-1")));
+      await assertFails(getDoc(doc(authedDb("foreign-host"), "events", "event-1")));
+      await assertSucceeds(getDoc(doc(authedDb("host-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant());
+      await assertSucceeds(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({status: "revoked"}));
+      await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({expiresAt: Timestamp.fromMillis(1)}));
+      await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["deletedUsers", "host-1"], {});
+      await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
+    });
+
+    it("direct reads deny private or unlabelled setup records", async () => {
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await seed(["events", "published"], event({publicationState: "published"}));
+      await seed(["events", "legacy"], event());
+      await seed(["events", "private"], event({publicationState: "private", setupRevision: 1}));
+      await seed(["events", "unlabelled"], event({setupRevision: 1}));
+      await seed(["events", "malformed"], event({publicationState: null}));
+      for (const id of ["published", "legacy"]) {
+        await assertSucceeds(getDoc(doc(anonymous, "events", id)));
+      }
+      for (const id of ["private", "unlabelled", "malformed"]) {
+        await assertFails(getDoc(doc(anonymous, "events", id)));
+      }
+    });
+
+    it("keeps legacy public list queries working while private writes are disabled", async () => {
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await seed(["events", "published"], event({publicationState: "published"}));
+      await seed(["events", "legacy"], event());
+      const all = await assertSucceeds(getDocs(collection(anonymous, "events")));
+      assert.deepEqual(all.docs.map((row) => row.id).sort(), ["legacy", "published"]);
+      const owned = await assertSucceeds(getDocs(query(collection(anonymous, "events"),
+        where("organizerId", "==", "club-1"))));
+      assert.equal(owned.size, 2);
+      const published = await assertSucceeds(getDocs(query(collection(anonymous, "events"), where("publicationState", "==", "published"))));
+      assert.equal(published.size, 1);
+      assert.equal(published.docs[0].id, "published");
+    });
+
+    it("private event cannot be bookmarked by guessing its ID", async () => {
+      await seed(["events", "public"], event({publicationState: "published"}));
+      await assertSucceeds(setDoc(doc(authedDb("guest-1"), "savedEvents", "guest-1_public"), {
+        uid: "guest-1", eventId: "public", savedAt: Timestamp.now(),
+      }));
+      await seed(["events", "private"], event({publicationState: "private", setupRevision: 1}));
+      await assertFails(setDoc(doc(authedDb("guest-1"), "savedEvents", "guest-1_private"), {
+        uid: "guest-1", eventId: "private", savedAt: Timestamp.now(),
+      }));
+    });
+
     it("denies direct event creates because creation is callable-owned", async () => {
       await seed(["organizers", "club-1"], club());
 
@@ -4084,6 +4228,25 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(draftRef("host-1"), {
         eventId: "event-1",
       }));
+    });
+
+    it("keeps event matching answer decisions callable-only", async () => {
+      await seed(["eventAssignmentFeatureConsents", "consent-1"], {
+        eventId: "event-1",
+        organizerId: "club-1",
+        uid: "runner-1",
+        featureId: "feature-1",
+        status: "granted",
+      });
+      for (const uid of ["runner-1", "host-1", "other-1"]) {
+        const ref = doc(authedDb(uid),
+          "eventAssignmentFeatureConsents", "consent-1");
+        await assertFails(getDoc(ref));
+        await assertFails(setDoc(ref, {status: "withdrawn"}));
+        await assertFails(deleteDoc(ref));
+      }
+      await assertFails(getDocs(collection(authedDb("runner-1"),
+        "eventAssignmentFeatureConsents")));
     });
 
     it("keeps presence private and scopes late-arrival outcomes", async () => {

@@ -16,22 +16,81 @@ const city = {
   validation: {},
 } as PublicFormQuestion;
 
-function renderForm(question = city, answer?: string) {
+function renderForm(question = city, answer?: string,
+  cityOptions?: Array<{marketId: string; cityId: string; label: string;
+    regionName: string; countryIsoCode: string}>) {
   const updateAnswer = vi.fn();
+  const blurQuestion = vi.fn();
   const section = {title: "Your city", questions: [question]};
   usePublicFormController.mockReturnValue({
-    stage: "form", form: {organizer: {name: "Saket Run Club"}, definition: {
+    stage: "form", form: {organizer: {name: "Saket Run Club"}, cityOptions, definition: {
       title: "RSVP Escape — demo", appearance: {preset: "editorial"},
       sections: [section],
     }}, activeSection: section, visibleSections: [section], sectionIndex: 0,
     answers: {city: answer}, errors: {}, uploads: {}, updateAnswer,
+    blurQuestion,
     status: {message: "", tone: ""},
   });
   render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
-  return updateAnswer;
+  return Object.assign(updateAnswer, {blurQuestion});
 }
 
 describe("public form choices", () => {
+  it("uses canonical market ids for reusable Catch city answers", () => {
+    const change = renderForm({...city, kind: "shortText", options: [],
+      canonicalFieldId: "city", answerDestination: "catchProfile",
+      label: "Where do you live?"}, "in-mh-mumbai", [{
+      marketId: "in-mh-mumbai", cityId: "in-mh-mumbai", label: "Mumbai",
+      regionName: "Maharashtra", countryIsoCode: "IN",
+    }]);
+    const select = screen.getByRole("combobox", {name: "Where do you live?"});
+    expect((select as HTMLSelectElement).value).toBe("in-mh-mumbai");
+    expect(screen.getByRole("option", {name: "Mumbai, Maharashtra"})).toBeTruthy();
+    fireEvent.change(select, {target: {value: "in-mh-mumbai"}});
+    expect(change).toHaveBeenCalledWith("city", "in-mh-mumbai");
+  });
+  it("shows an India country picker instead of asking people to type +91", () => {
+    const change = renderForm({...city, label: "Phone number", kind: "phone",
+      options: [], canonicalFieldId: null}, "+919876543210");
+    const number = screen.getByRole("textbox", {name: "Phone number"}) as HTMLInputElement;
+    const country = screen.getByRole("combobox", {name: "Country code"}) as HTMLSelectElement;
+    expect(country.value).toBe("+91");
+    expect(number.value).toBe("9876543210");
+    fireEvent.change(number, {target: {value: "9876543211"}});
+    expect(change).toHaveBeenCalledWith("city", "+919876543211");
+  });
+
+  it("puts phone verification within the first page without duplicating the phone field", () => {
+    const updateAnswer = vi.fn();
+    const setPhoneNumber = vi.fn();
+    const question = {...city, questionId: "mobile", label: "Mobile number",
+      kind: "phone", options: [], canonicalFieldId: "phoneNumber"} as PublicFormQuestion;
+    const section = {sectionId: "details", title: "Your details", questions: [question]};
+    usePublicFormController.mockReturnValue({
+      stage: "form", form: {organizer: {name: "Saket Run Club"}, definition: {
+        title: "RSVP Escape", appearance: {preset: "editorial"},
+        identityPolicy: "phoneVerified", sections: [section],
+      }}, activeSection: section, visibleSections: [section], sectionIndex: 0,
+      answers: {}, errors: {mobile: "Mobile number is required."}, uploads: {}, updateAnswer,
+      blurQuestion: vi.fn(), setPhoneNumber, phoneNumber: "",
+      verifiedPhone: null, verificationStep: "phone", pending: false,
+      recaptchaContainerId: "test-recaptcha", status: {message: "", tone: ""},
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    expect(screen.getAllByRole("textbox", {name: "Mobile number"})).toHaveLength(1);
+    expect(screen.getByRole("alert").textContent).toBe("Mobile number is required.");
+    expect(screen.getByRole("button", {name: "Send code"})).toBeTruthy();
+    fireEvent.change(screen.getByRole("textbox", {name: "Mobile number"}),
+      {target: {value: "9876543210"}});
+    expect(setPhoneNumber).toHaveBeenCalledWith("+919876543210");
+    expect(updateAnswer).toHaveBeenCalledWith("mobile", "+919876543210");
+  });
+
+  it("requests validation when a field loses focus", () => {
+    const change = renderForm(city);
+    fireEvent.blur(screen.getByRole("combobox", {name: "Event city"}));
+    expect(change.blurQuestion).toHaveBeenCalledWith("city");
+  });
   it("renders all five cities in an accessible dropdown and preserves values", () => {
     const change = renderForm(city, "Mumbai");
     const select = screen.getByRole("combobox", {name: "Event city"});

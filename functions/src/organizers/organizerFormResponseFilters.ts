@@ -12,7 +12,8 @@ export function responseFilterOptions(
   definition: OrganizerFormVersionDocument["definition"]
 ) {
   return definition.sections.flatMap((section) => section.questions)
-    .filter((question) => question.hostPresentation !== "detailOnly" &&
+    .filter((question) => question.hostPresentation === "filterable" &&
+      question.privacyClass !== "sensitive" &&
       ["singleChoice", "multiChoice"].includes(question.kind))
     .map((question) => ({questionId: question.questionId, label: question.label,
       options: question.options.map(({value, label}) => ({value, label}))}));

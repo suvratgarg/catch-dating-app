@@ -72,6 +72,7 @@ export function usePublicFormPayment(publicFormId: string,
       paymentId: pending.paymentId, callback: null,
     }) : pending.request ? await prepareOrganizerFormPayment(pending.request) : null;
     if (value) apply(value, pending, epoch);
+    return value;
   }, [apply]);
   const mutation = useMutation<void, unknown, () => Promise<void>>({
     mutationFn: (action) => action(),
@@ -86,11 +87,26 @@ export function usePublicFormPayment(publicFormId: string,
       if (local?.uid === uid) {
         pendingRef.current = local;
         onStart();
-        try {await check();} catch (error) {report(error, epoch);}
+        try {
+          const latest = await check();
+          if (latest && !latest.receipt && ["expired", "refunded"].includes(latest.status) &&
+              mountedRef.current && epoch === epochRef.current &&
+              pendingRef.current?.uid === uid &&
+              pendingRef.current.paymentId === latest.paymentId) {
+            const found = await findOrganizerFormPayment({publicFormId});
+            if (found.payment && mountedRef.current && epoch === epochRef.current &&
+                pendingRef.current?.uid === uid &&
+                pendingRef.current.paymentId === latest.paymentId) {
+              const owner = {uid, request: null, paymentId: found.payment.paymentId};
+              persist(owner);
+              apply(found.payment, owner, epoch);
+            }
+          }
+        } catch (error) {report(error, epoch);}
         return true;
       }
-      // No provider side effect: discovery returns only this account's latest
-      // frozen payment. A failed lookup must not silently start a new draft.
+      // No provider side effect: discovery returns this account's recoverable
+      // payment. A failed lookup must not silently start a new draft.
       const found = await findOrganizerFormPayment({publicFormId});
       if (!mountedRef.current || epoch !== epochRef.current) return true;
       if (!found.payment) return false;
@@ -121,7 +137,7 @@ export function usePublicFormPayment(publicFormId: string,
       await action();
     }).catch((error: unknown) => report(error, epoch));
   };
-  const refresh = () => run(check);
+  const refresh = () => run(async () => {await check();});
   const resetMutation = mutation.reset;
   const resetSession = useCallback(() => {
     epochRef.current++;

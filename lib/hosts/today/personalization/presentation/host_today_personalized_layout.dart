@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
@@ -222,7 +222,7 @@ class _HostTodayPersonalizedLayoutState
         queryParameters: {'organizerId': widget.scope.organizerId},
       );
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       _focusRouteOpen = false;
     }
@@ -276,7 +276,7 @@ class _HostTodayPersonalizedLayoutState
           );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 }

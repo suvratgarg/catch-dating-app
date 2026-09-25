@@ -24,6 +24,8 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {requireScheduledEvent,
+  type ScheduledEventDocument} from "../events/configuredEvent";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,
@@ -69,6 +71,12 @@ import {
   rotationPolicyForStructureConfig,
 } from "./assignmentPrimitiveControls";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
+import {loadAuthorizedAssignmentFeatures,
+  recheckAssignmentFeatureSnapshots} from "./assignmentFeatureConsent";
+import type {AssignmentFeatureRule,
+  EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+import {buildAssignmentFeatureAudit,
+  type AssignmentFeatureAudit} from "./assignmentFeatureAudit";
 import {
   eventSuccessPresencePolicy,
   loadLikelyDepartedEventSuccessUids,
@@ -104,6 +112,9 @@ interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
+  assignmentFeatureRules?: AssignmentFeatureRule[];
+  assignmentFeatureRevision?: number;
+  assignmentFeatureConfigHash?: string;
   compatibilityAffectsRanking?: unknown;
   liveControlRevision?: unknown;
   assignmentDraftRevision?: unknown;
@@ -229,6 +240,7 @@ interface GeneratedAssignment {
   rotationSlots: GeneratedRotationSlot[];
   sitOutSlots?: GeneratedSitOutSlot[];
   source: string;
+  assignmentFeatureAudit?: AssignmentFeatureAudit;
   createdAt: FirebaseFirestore.FieldValue;
   updatedAt: FirebaseFirestore.FieldValue;
 }
@@ -300,6 +312,7 @@ export async function prepareEventSuccessRotationDraft(
   if (liveControlRevision !== input.expectedRevision) {
     throw staleLiveControlError();
   }
+  const featureRules = plan.assignmentFeatureRules ?? [];
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
@@ -307,8 +320,14 @@ export async function prepareEventSuccessRotationDraft(
       input.eventId,
       questionnaireMode !== "icebreaker",
       deps.nowMillis?.() ?? Date.now(),
-      eventSuccessPresencePolicy(deps.environment ?? process.env)
+      eventSuccessPresencePolicy(deps.environment ?? process.env),
+      featureRules.length ? 1000 : undefined
     );
+  const featureSnapshots = await loadAuthorizedAssignmentFeatures({db,
+    eventId: input.eventId,
+    organizerId: event.organizerId ?? event.clubId,
+    eligibleUids: participants.map((person) => person.uid),
+    rules: featureRules});
   const topology = {
     ...resolveAssignmentTopology(plan, participants.length, {
       defaultUnitKind: "pairs",
@@ -317,6 +336,10 @@ export async function prepareEventSuccessRotationDraft(
     rotationIntervalMinutes,
     rotationsEnabled: true,
   };
+  if (featureRules.length && topology.topology === "sequence") {
+    throw new HttpsError("failed-precondition",
+      "Structured matching is unavailable for sequence assignments.");
+  }
   const assignmentResolution = eventSuccessVariableResolutionFor({
     assignmentAlgorithm: primitives.assignmentAlgorithm,
     compatibilityPolicy: primitives.compatibilityPolicy,
@@ -345,6 +368,9 @@ export async function prepareEventSuccessRotationDraft(
     rotationPolicy,
     topology,
     layout,
+    softFeatures: {eventId: input.eventId,
+      organizerId: event.organizerId ?? event.clubId,
+      rules: featureRules, snapshots: featureSnapshots},
   });
   const publishedRoundIndex = integerOr(
     plan.publishedRotationRoundIndex,
@@ -372,6 +398,15 @@ export async function prepareEventSuccessRotationDraft(
     plan,
     targetRoundIndex
   );
+  if (featureRules.length) {
+    const audit = buildAssignmentFeatureAudit({eventId: input.eventId,
+      organizerId: event.organizerId ?? event.clubId,
+      configHash: plan.assignmentFeatureConfigHash ?? "",
+      snapshots: featureSnapshots});
+    for (const assignment of assignments.values()) {
+      assignment.assignmentFeatureAudit = audit;
+    }
+  }
   await writeAssignmentDrafts({
     db,
     eventId: input.eventId,
@@ -380,6 +415,12 @@ export async function prepareEventSuccessRotationDraft(
     targetRoundIndex,
     assignments,
     now: deps.serverTimestamp(),
+    featureGuard: featureRules.length ? {
+      organizerId: event.organizerId ?? event.clubId,
+      rules: featureRules, snapshots: featureSnapshots,
+      revision: plan.assignmentFeatureRevision ?? 0,
+      configHash: plan.assignmentFeatureConfigHash ?? "",
+    } : undefined,
   });
 
   return {
@@ -531,7 +572,7 @@ async function loadRotationEventContext(
   eventId: string,
   uid?: string
 ): Promise<{
-  event: EventDocument;
+  event: ScheduledEventDocument;
   plan: EventSuccessPlanDocument;
   rotationIntervalMinutes: number;
   questionnaireMode: QuestionnaireScoringMode;
@@ -553,13 +594,13 @@ async function loadRotationEventContext(
       "Event-success setup has not been saved.");
   }
 
-  const event = requireDoc<EventDocument>(
+  const event = requireScheduledEvent(requireDoc<EventDocument>(
 
     eventSnap,
 
     "EventDocument"
 
-  );
+  ));
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition",
       "This event has been cancelled.");
@@ -624,13 +665,14 @@ async function loadEligibleRotationParticipants(
   eventId: string,
   compatibilityAffectsRanking: boolean,
   nowMillis: number,
-  presencePolicy: ReturnType<typeof eventSuccessPresencePolicy>
+  presencePolicy: ReturnType<typeof eventSuccessPresencePolicy>,
+  maxEntries?: number
 ): Promise<{
   participants: RotationParticipant[];
   blockedPairs: Set<string>;
 }> {
   const [roster, optedOutUids] = await Promise.all([
-    loadEventSuccessRoster(db, eventId),
+    loadEventSuccessRoster(db, eventId, maxEntries),
     fetchGuidedRotationOptOutUids(db, eventId),
   ]);
   const activeEdges = roster
@@ -878,6 +920,9 @@ function buildRotationRounds(params: {
   rotationPolicy?: AssignmentRotationPolicy;
   topology: AssignmentTopology;
   layout: OrganizerEventSuccessLayoutDocument | null;
+  softFeatures?: {eventId: string; organizerId: string;
+    rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[]};
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
   const requestedRounds = rotationRoundCountForDuration({
@@ -961,6 +1006,7 @@ function buildRotationRounds(params: {
     allowOrientationFallback: true,
     constraints: params.constraints,
     rotationPolicy: params.rotationPolicy,
+    softFeatures: params.softFeatures,
   }).rotationRounds.map((round) => ({
     roundIndex: round.roundIndex,
     pairs: round.pairs.map(toRotationPair),
@@ -1377,21 +1423,53 @@ async function writeAssignmentDrafts(params: {
   targetRoundIndex: number;
   assignments: Map<string, GeneratedAssignment>;
   now: FirebaseFirestore.FieldValue;
+  featureGuard?: {organizerId: string; rules: AssignmentFeatureRule[];
+    snapshots: EventAssignmentFeatureSnapshot[];
+    revision: number; configHash: string};
 }): Promise<{revision: number; assignmentRevision: number}> {
   const planRef = params.db.collection("eventSuccessPlans").doc(params.eventId);
   const draftQuery = params.db.collection("eventSuccessAssignmentDrafts")
     .where("eventId", "==", params.eventId)
     .where("moduleId", "==", GUIDED_ROTATIONS_MODULE_ID);
+  if (params.featureGuard &&
+      (params.assignments.size > 400 ||
+        !params.featureGuard.configHash)) {
+    throw new HttpsError("failed-precondition",
+      "Structured matching exceeds the supported draft size.");
+  }
   return params.db.runTransaction(async (transaction) => {
     const [planSnap, existingSnap] = await Promise.all([
       transaction.get(planRef),
-      transaction.get(draftQuery),
+      transaction.get(params.featureGuard ? draftQuery.limit(401) :
+        draftQuery),
     ]);
+    const staleDrafts = existingSnap.docs.filter((doc) =>
+      !params.assignments.has(doc.id));
+    if (params.featureGuard &&
+        (existingSnap.size > 400 ||
+          staleDrafts.length + params.assignments.size > 400)) {
+      throw new HttpsError("failed-precondition",
+        "Structured matching exceeds the supported draft size.");
+    }
     if (!planSnap.exists) {
       throw new HttpsError("failed-precondition",
         "Event-success setup has not been saved.");
     }
     const plan = planSnap.data() as EventSuccessPlanDocument;
+    if (params.featureGuard) {
+      if (!params.featureGuard.configHash ||
+          plan.assignmentFeatureRevision !==
+            params.featureGuard.revision ||
+          plan.assignmentFeatureConfigHash !==
+            params.featureGuard.configHash) {
+        throw new HttpsError("aborted", "Assignment feature setup changed.");
+      }
+      await recheckAssignmentFeatureSnapshots({tx: transaction,
+        db: params.db, eventId: params.eventId,
+        organizerId: params.featureGuard.organizerId,
+        rules: params.featureGuard.rules,
+        snapshots: params.featureGuard.snapshots});
+    }
     const currentRevision = nonNegativeInteger(plan.liveControlRevision);
     const publishedRoundIndex = integerOr(
       plan.publishedRotationRoundIndex,
@@ -1407,7 +1485,7 @@ async function writeAssignmentDrafts(params: {
     const assignmentRevision = nextLiveControlRevision(
       nonNegativeInteger(plan.assignmentDraftRevision)
     );
-    for (const doc of existingSnap.docs) {
+    for (const doc of params.featureGuard ? staleDrafts : existingSnap.docs) {
       transaction.delete(doc.ref);
     }
     for (const [docId, assignment] of params.assignments.entries()) {
@@ -1422,6 +1500,12 @@ async function writeAssignmentDrafts(params: {
           roundIndex: params.targetRoundIndex,
           baseAssignmentRevision: assignmentRevision,
           assignment,
+          ...(params.featureGuard ? {assignmentFeatureGuard: {
+            revision: params.featureGuard.revision,
+            configHash: params.featureGuard.configHash,
+            snapshots: params.featureGuard.snapshots.filter((snapshot) =>
+              snapshot.uid === assignment.uid),
+          }} : {}),
           createdAt: params.now,
           updatedAt: params.now,
         }

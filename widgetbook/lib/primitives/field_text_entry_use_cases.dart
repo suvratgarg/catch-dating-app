@@ -62,6 +62,10 @@ Widget fieldTextEntryStates(BuildContext context) {
         builder: (context, controller) => CatchField.inputActions(
           copy: copy,
           title: 'Introduction',
+          contract: const CatchContractFieldConstraints(
+            path: 'preview.introduction',
+            maxLength: 300,
+          ),
           controller: controller,
           open: true,
           onOpenChanged: (_) {},

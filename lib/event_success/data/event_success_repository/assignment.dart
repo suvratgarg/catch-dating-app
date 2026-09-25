@@ -1,6 +1,68 @@
 part of '../event_success_repository.dart';
 
 mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
+  Future<EventSuccessAssignmentFeaturePreview> previewAssignmentFeatures({
+    required String eventId,
+    required List<EventSuccessAssignmentFeatureRule> rules,
+    List<String> sourceFormIds = const [],
+  }) => withBackendErrorContext(
+    () async {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      final result = await functions
+          .httpsCallable('previewEventAssignmentFeatures')
+          .call<Object?>(
+            PreviewEventAssignmentFeaturesCallableRequest(
+              eventId: eventId,
+              rules: rules.map((rule) => rule.toJson()).toList(),
+              sourceFormIds: sourceFormIds.isEmpty ? null : sourceFormIds,
+            ).toJson(),
+          );
+      return EventSuccessAssignmentFeaturePreview.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'preview event matching coverage',
+      resource: _plansPath,
+    ),
+  );
+
+  Future<EventSuccessAssignmentFeatureSaveResult> configureAssignmentFeatures({
+    required String eventId,
+    required int expectedRevision,
+    required String requestId,
+    required List<EventSuccessAssignmentFeatureRule> rules,
+  }) => withBackendErrorContext(
+    () async {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      final result = await functions
+          .httpsCallable('configureEventAssignmentFeatures')
+          .call<Object?>(
+            ConfigureEventAssignmentFeaturesCallableRequest(
+              eventId: eventId,
+              expectedRevision: expectedRevision,
+              requestId: requestId,
+              rules: rules.map((rule) => rule.toJson()).toList(),
+            ).toJson(),
+          );
+      return EventSuccessAssignmentFeatureSaveResult.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'save event matching preferences',
+      resource: _plansPath,
+    ),
+  );
+
   Stream<EventSuccessAssignment?> watchAssignmentForUser({
     required String eventId,
     required String uid,

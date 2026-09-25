@@ -1286,7 +1286,7 @@
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminEyebrow",
       "lexicon": true,
-      "lexiconId": "catch.ui_label",
+      "lexiconId": "catch.typography",
       "css": [
         "admin/src/styles.css"
       ],

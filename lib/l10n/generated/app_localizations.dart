@@ -1147,84 +1147,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Host setup flow'**
-  String get eventSuccessEventSuccessFeatureBlocksTitleHostSetupFlow;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Choose the format, event structure, assignment tools, and safety gates before an event goes live.'**
-  String get eventSuccessEventSuccessFeatureBlocksSubtitleChooseTheFormatEvent;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Format'**
-  String get eventSuccessEventSuccessFeatureBlocksTextFormat;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Event structure'**
-  String get eventSuccessEventSuccessFeatureBlocksTextEventStructure;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Experience architecture'**
-  String get eventSuccessEventSuccessFeatureBlocksTextExperienceArchitecture;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Live host mode'**
-  String get eventSuccessEventSuccessFeatureBlocksTitleLiveHostMode;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'A phone-friendly guide for check-in, welcome, the current instruction, and the next social cue.'**
-  String get eventSuccessEventSuccessFeatureBlocksSubtitleAPhoneFriendlyGuide;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Checked in'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelCheckedIn;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Run of show'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelRunOfShow;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendee companion'**
-  String get eventSuccessEventSuccessFeatureBlocksTitleAttendeeCompanion;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'The attendee sees only what helps them participate: check-in, assignment, prompt, and host help.'**
-  String get eventSuccessEventSuccessFeatureBlocksSubtitleTheAttendeeSeesOnly;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Check in'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelCheckIn;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Ask host for help'**
-  String get eventSuccessEventSuccessFeatureBlocksTextAskHostForHelp;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Post-event host report'**
   String get eventSuccessEventSuccessFeatureBlocksTitlePostEventHostReport;
 
@@ -1276,24 +1198,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Improve next time'**
   String get eventSuccessEventSuccessFeatureBlocksTextImproveNextTime;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Before launch'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelBeforeLaunch;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Requested'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelRequested;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host visible'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelHostVisible;
 
   /// Product copy used by lib/event_success/presentation/event_success_questionnaire_config_editor.dart (Text).
   ///
@@ -1746,36 +1650,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save events you want to revisit before booking.'**
   String get eventsSavedEventsScreenMessageSaveEventsYouWant;
-
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Booking time conflict'**
-  String get eventsBookingConflictSheetLabelBookingTimeConflict;
-
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'That\'\'s the same time slot'**
-  String get eventsBookingConflictSheetTextThatSTheSame;
-
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel existing & book this'**
-  String get eventsBookingConflictSheetLabelCancelExistingBookThis;
-
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Keep both'**
-  String get eventsBookingConflictSheetLabelKeepBoth;
-
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Keep existing only'**
-  String get eventsBookingConflictSheetLabelKeepExistingOnly;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
   ///
@@ -2388,36 +2262,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AREA'**
   String get exploreExploreFilterRailTextArea;
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No organizers match this search'**
-  String get exploreExploreListTitleNoClubsMatchThis;
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Clear the search or filters to bring nearby organizers back into view.'**
-  String get exploreExploreListMessageClearTheSearchOr;
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Try another organizer, neighborhood, host, or tag.'**
-  String get exploreExploreListMessageTryAnotherClubNeighborhood;
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No organizers match these filters'**
-  String get exploreExploreListTitleNoClubsMatchThese;
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Clear one or more filters to bring nearby organizers back into view.'**
-  String get exploreExploreListMessageClearOneOrMore;
 
   /// Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).
   ///
@@ -3938,65 +3782,11 @@ abstract class AppLocalizations {
   /// **'Decline request'**
   String get hostsCatchRosterBoardLabelDeclineRequest;
 
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Manage this organizer, publish events, and track upcoming demand.'**
-  String get hostsHostClubToolsTextManageThisClubPublish;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Booked'**
-  String get hostsHostClubToolsLabelBooked;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Waitlist'**
-  String get hostsHostClubToolsLabelWaitlist;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Base est.'**
-  String get hostsHostClubToolsLabelBaseEst;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Revenue'**
-  String get hostsHostClubToolsLabelRevenue;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Base estimate uses starting prices; demand-priced bookings may settle higher.'**
-  String get hostsHostClubToolsTextBaseEstimateUsesStarting;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Add event'**
-  String get hostsHostClubToolsLabelAddEvent;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Post quota used'**
-  String get hostsHostClubToolsLabelPostQuotaUsed;
-
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Post update'**
   String get hostsHostClubToolsLabelPostUpdate;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Edit organizer'**
-  String get hostsHostClubToolsLabelEditClub;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (title).
   ///
@@ -5489,72 +5279,6 @@ abstract class AppLocalizations {
   /// **'Apply filters'**
   String get swipesFiltersScreenLabelApplyFilters;
 
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Open catch windows'**
-  String get swipesSwipeHubScreenTitleOpenCatchWindows;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'After the event'**
-  String get swipesSwipeHubScreenTextAfterTheEvent;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Start catching'**
-  String get swipesSwipeHubScreenLabelStartCatching;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'24H WINDOW OPEN'**
-  String get swipesSwipeHubScreenText24hWindowOpen;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'You ran together. Now you can catch.'**
-  String get swipesSwipeHubScreenTextYouRanTogetherNow;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Closes in'**
-  String get swipesSwipeHubScreenLabelClosesIn;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Roster'**
-  String get swipesSwipeHubScreenLabelRoster;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No active catches'**
-  String get swipesSwipeHubScreenTitleNoActiveCatches;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Book a group event, show up, and your 24-hour catch window opens here after check-in.'**
-  String get swipesSwipeHubScreenMessageBookAGroupEvent;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Find an event'**
-  String get swipesSwipeHubScreenLabelFindAnEvent;
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Dating stays locked until you actually run together. No cold stranger browsing.'**
-  String get swipesSwipeHubScreenTextDatingStaysLockedUntil;
-
   /// Product copy used by lib/swipes/presentation/swipe_screen.dart (tooltip).
   ///
   /// In en, this message translates to:
@@ -5566,18 +5290,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filters'**
   String get swipesSwipeScreenTooltipFilters;
-
-  /// Product copy used by lib/swipes/presentation/widgets/attended_event_tile.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'OPEN CATCH WINDOW'**
-  String get swipesAttendedEventTileTextOpenCatchWindow;
-
-  /// Product copy used by lib/swipes/presentation/widgets/attended_event_tile.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Recap'**
-  String get swipesAttendedEventTileLabelRecap;
 
   /// Product copy used by lib/swipes/presentation/widgets/catches_pass_button.dart (message).
   ///
@@ -5758,18 +5470,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Review pending'**
   String get dashboardEventFocusRailLabelReviewPending;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host only'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelHostOnly;
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendee'**
-  String get eventSuccessEventSuccessFeatureBlocksLabelAttendee;
 
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).
   ///
@@ -6341,18 +6041,6 @@ abstract class AppLocalizations {
   /// **'Payouts'**
   String get hostsHostPaymentAccountCardTitlePayouts;
 
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host tools'**
-  String get hostsHostClubToolsLabelHostTools;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Organizer'**
-  String get hostsHostClubToolsLabelClub;
-
   /// Product copy used by lib/hosts/presentation/widgets/host_event_tools.dart (label).
   ///
   /// In en, this message translates to:
@@ -6444,81 +6132,11 @@ abstract class AppLocalizations {
     required Object capacityLimit,
   });
 
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'{checkedInCount}/{bookedCount}'**
-  String eventSuccessEventSuccessFeatureBlocksDetailCheckedincountBookedcount({
-    required Object checkedInCount,
-    required Object bookedCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (detail).
-  ///
-  /// In en, this message translates to:
-  /// **'{value1}/{length}'**
-  String eventSuccessEventSuccessFeatureBlocksDetailValue1Length({
-    required Object value1,
-    required Object length,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendee experience: {attendeeExperience}'**
-  String
-  eventSuccessEventSuccessFeatureBlocksTextAttendeeExperienceAttendeeexperience({
-    required Object attendeeExperience,
-  });
-
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{round}%'**
   String eventSuccessEventSuccessFeatureBlocksLabelRound({
-    required Object round,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{targetAttendeeCount} target attendees'**
-  String
-  eventSuccessEventSuccessFeatureBlocksLabelTargetattendeecountTargetAttendees({
-    required Object targetAttendeeCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} live phone tools'**
-  String eventSuccessEventSuccessFeatureBlocksLabelLengthLivePhoneTools({
-    required Object length,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{title} tool'**
-  String eventSuccessEventSuccessFeatureBlocksLabelTitleTool({
-    required Object title,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{durationMinutes} min · {label}'**
-  String eventSuccessEventSuccessFeatureBlocksTextDurationminutesMinLabel({
-    required Object durationMinutes,
-    required Object label,
-  });
-
-  /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{label} {round}%'**
-  String eventSuccessEventSuccessFeatureBlocksTextLabelRound({
-    required Object label,
     required Object round,
   });
 
@@ -6666,12 +6284,6 @@ abstract class AppLocalizations {
   String exploreExploreEventTypeBrowseGridLabelShowRemainingcountMoreActivity({
     required Object remainingCount,
   });
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No organizers in {cityLabel} yet'**
-  String exploreExploreListTitleNoClubsInCitylabel({required Object cityLabel});
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
   ///
@@ -7275,18 +6887,6 @@ abstract class AppLocalizations {
   /// **'This event is no longer available.'**
   String get swipesEventRecapScreenMessageThisEventIsNo;
 
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{length}'**
-  String swipesSwipeHubScreenTextLength({required Object length});
-
-  /// Product copy used by lib/swipes/presentation/swipe_hub_screen.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Catches'**
-  String get swipesSwipeHubScreenTitleCatches;
-
   /// Product copy used by lib/swipes/presentation/swipe_screen.dart (Text).
   ///
   /// In en, this message translates to:
@@ -7294,12 +6894,6 @@ abstract class AppLocalizations {
   String swipesSwipeScreenTextCatchesRemainingcountLeft({
     required Object remainingCount,
   });
-
-  /// Product copy used by lib/swipes/presentation/widgets/attended_event_tile.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Catch'**
-  String get swipesAttendedEventTileLabelCatch;
 
   /// Product copy used by lib/swipes/shared/profile_surface/catch_profile_view.dart (Text).
   ///
@@ -7376,24 +6970,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add another prompt'**
   String get userProfileInlineEditorPromptLabelAddAnotherPrompt;
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_text.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'+ {displayValue}'**
-  String userProfileInlineEditorTextTextDisplayvalue({
-    required Object displayValue,
-  });
-
-  /// Product copy used by lib/user_profile/presentation/widgets/inline_editor_text.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'profile-inline-display-{label}-{displayValue}-{isAddAffordance}'**
-  String userProfileInlineEditorTextTextProfileInlineDisplayLabel({
-    required Object label,
-    required Object displayValue,
-    required Object isAddAffordance,
-  });
 
   /// Product copy used by lib/user_profile/presentation/widgets/profile_sliver_header.dart (label).
   ///
@@ -9996,12 +9572,6 @@ abstract class AppLocalizations {
   /// **'Create event'**
   String get hostsHostEventsListLabelNewEvent;
 
-  /// CTA to create an external companion event from an existing booking-platform guest list.
-  ///
-  /// In en, this message translates to:
-  /// **'Use guest list'**
-  String get hostsHostEventsListLabelUseGuestList;
-
   /// Section label for resuming existing event work.
   ///
   /// In en, this message translates to:
@@ -10026,12 +9596,6 @@ abstract class AppLocalizations {
   /// **'Repeat last event'**
   String get hostsHostEventEntrySheetTitleRepeatLastEvent;
 
-  /// Action title for creating an event that uses Catch bookings.
-  ///
-  /// In en, this message translates to:
-  /// **'Sell tickets with Catch'**
-  String get hostsHostEventEntrySheetTitleSellTicketsWithCatch;
-
   /// Supporting copy showing how many event drafts are available.
   ///
   /// In en, this message translates to:
@@ -10045,18 +9609,6 @@ abstract class AppLocalizations {
   String hostsHostEventEntrySheetBodyReuseEventSetup({
     required String eventTitle,
   });
-
-  /// Supporting copy for the Catch-bookings event path.
-  ///
-  /// In en, this message translates to:
-  /// **'Tickets, waitlist, and payments in one place.'**
-  String get hostsHostEventEntrySheetBodyTicketsWaitlistAndPayments;
-
-  /// Supporting copy for creating an event from an external guest list.
-  ///
-  /// In en, this message translates to:
-  /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
-  String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
   /// Peer view containing live and upcoming events.
   ///
@@ -10557,23 +10109,11 @@ abstract class AppLocalizations {
   /// **'s'**
   String get eventSuccessEventSuccessHostReportTitleS;
 
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'You\'\'re already booked for something then. Keep both if you can make it work, or swap one out.'**
-  String get eventsBookingConflictSheetTextYouReAlreadyBooked;
-
   /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Try another city from the location control, or create the first organizer when you are ready to host.'**
   String get exploreExploreScreenMessageTryAnotherCityFrom;
-
-  /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Try another city from the location control, or create the first organizer when you are ready to host.'**
-  String get exploreExploreListMessageTryAnotherCityFrom;
 
   /// Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).
   ///
@@ -14373,18 +13913,6 @@ abstract class AppLocalizations {
   /// **'Searching...'**
   String get eventsLocationPickerScreenVisiblecopySearching;
 
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Already booked'**
-  String get eventsBookingConflictSheetVisiblecopyAlreadyBooked;
-
-  /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'New'**
-  String get eventsBookingConflictSheetVisiblecopyNew;
-
   /// Product copy used by lib/events/presentation/widgets/event_detail_cta.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -15428,22 +14956,6 @@ abstract class AppLocalizations {
   /// **'HostPaymentAccountControllerCard.refresh failed'**
   String
   get hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed;
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{totalBooked}'**
-  String hostsHostClubToolsVisiblecopyTotalbooked({
-    required Object totalBooked,
-  });
-
-  /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{totalWaitlist}'**
-  String hostsHostClubToolsVisiblecopyTotalwaitlist({
-    required Object totalWaitlist,
-  });
 
   /// Product copy used by lib/hosts/presentation/widgets/host_event_attendance_panel.dart (visibleCopy).
   ///
@@ -16577,54 +16089,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report'**
   String get eventSuccessEventSuccessHostSharedLabelReport;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'km'**
-  String get eventsEventStatsGridVisiblecopyKm;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Distance'**
-  String get eventsEventStatsGridLabelDistance;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Activity'**
-  String get eventsEventStatsGridLabelActivity;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Spots taken'**
-  String get eventsEventStatsGridLabelSpotsTaken;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Pace level'**
-  String get eventsEventStatsGridVisiblecopyPaceLevel;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Skill level'**
-  String get eventsEventStatsGridVisiblecopySkillLevel;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Intensity'**
-  String get eventsEventStatsGridVisiblecopyIntensity;
-
-  /// Product copy used by lib/events/presentation/widgets/event_stats_grid.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Energy'**
-  String get eventsEventStatsGridVisiblecopyEnergy;
 
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
   ///
@@ -32699,6 +32163,138 @@ abstract class AppLocalizations {
   /// **'Close event chat'**
   String get eventChatClose;
 
+  /// Host room schedule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule room hours'**
+  String get eventChatSchedule;
+
+  /// Host room posting pause action.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause posting'**
+  String get eventChatPause;
+
+  /// Host announcement-only room action.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements only'**
+  String get eventChatAnnouncementsOnly;
+
+  /// Host room posting resume action.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume posting'**
+  String get eventChatResume;
+
+  /// Host permanent room archive action.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive room'**
+  String get eventChatArchive;
+
+  /// Destructive room archive confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Archiving permanently closes this room. Members will no longer read or post messages, and you cannot reopen it.'**
+  String get eventChatArchiveDisclosure;
+
+  /// Participant notification mute action.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute room notifications'**
+  String get eventChatMute;
+
+  /// Participant notification unmute action.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute room notifications'**
+  String get eventChatUnmute;
+
+  /// Manager announcement message label.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get eventChatAnnouncement;
+
+  /// Invalid room time window.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future opening and a later closing time.'**
+  String get eventChatInvalidSchedule;
+
+  /// Readable room with posting paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting is paused. You can still read messages.'**
+  String get eventChatReadOnly;
+
+  /// Participant read-only announcement room state.
+  ///
+  /// In en, this message translates to:
+  /// **'Only hosts can post announcements right now. You can still read messages.'**
+  String get eventChatAnnouncementsReadOnly;
+
+  /// Event room message safety action copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message removed.'**
+  String get eventChatRemoved;
+
+  /// Manager member removal action.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from room'**
+  String get eventChatRemoveMember;
+
+  /// Manager member ban action.
+  ///
+  /// In en, this message translates to:
+  /// **'Ban from room'**
+  String get eventChatBanMember;
+
+  /// Manager allows a removed member to rejoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow rejoin'**
+  String get eventChatReinstateMember;
+
+  /// Removed member status.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from room'**
+  String get eventChatMemberRemoved;
+
+  /// Banned member status.
+  ///
+  /// In en, this message translates to:
+  /// **'Banned from room'**
+  String get eventChatMemberBanned;
+
+  /// Manager room member action menu tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Member actions'**
+  String get eventChatMemberActions;
+
+  /// Manager room removal confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'They will lose access to this room until a host allows them to rejoin. Their event booking is unchanged.'**
+  String get eventChatRemoveMemberDisclosure;
+
+  /// Manager room ban confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'They cannot access or rejoin this room until a host allows them to rejoin. Their event booking is unchanged.'**
+  String get eventChatBanMemberDisclosure;
+
+  /// Manager room reinstatement confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'They can choose to join again if they still have event admission. This does not join them automatically.'**
+  String get eventChatReinstateMemberDisclosure;
+
   /// Event conversation interface copy.
   ///
   /// In en, this message translates to:
@@ -33263,11 +32859,11 @@ abstract class AppLocalizations {
   /// **'Sender blocked.'**
   String get eventChatBlocked;
 
-  /// Event room message safety action copy.
+  /// Removed or banned room access state.
   ///
   /// In en, this message translates to:
-  /// **'Message removed.'**
-  String get eventChatRemoved;
+  /// **'Your room membership is unavailable. Contact the host if you need help.'**
+  String get eventChatMembershipRemoved;
 
   /// Program operations copy: programsWorkShellTitle.
   ///
@@ -34184,6 +33780,1770 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose up to {count} options per question.'**
   String hostResponseFilterSelectionLimit({required int count});
+
+  /// Participant choice heading for separate event-local answer use.
+  ///
+  /// In en, this message translates to:
+  /// **'Use form answers for event matching'**
+  String get eventMatchingTitle;
+
+  /// Participant matching consent boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether Catch may use each reviewed answer as a soft matching preference for this event. This does not change admission or safety rules.'**
+  String get eventMatchingDisclosure;
+
+  /// Participant-reviewed answer choice label.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer to use'**
+  String get eventMatchingAnswerLabel;
+
+  /// Participant grants one answer's use for matching.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow for this event'**
+  String get eventMatchingAllow;
+
+  /// Participant withdraws matching answer use.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop using this answer'**
+  String get eventMatchingWithdraw;
+
+  /// Matching answer source or permission is unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This answer is no longer available for event matching.'**
+  String get eventMatchingUnavailable;
+
+  /// Empty participant matching choice state.
+  ///
+  /// In en, this message translates to:
+  /// **'The Host has not chosen any form questions for this event.'**
+  String get eventMatchingNoChoices;
+
+  /// Participant matching permission save confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice is saved for this event.'**
+  String get eventMatchingSaved;
+
+  /// Participant reminder about event-local answer permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Only answers you allow for this event can be used. You can withdraw permission later.'**
+  String get eventMatchingCoverageNote;
+
+  /// Host matching setup section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form answer matching'**
+  String get eventMatchingHostTitle;
+
+  /// Host matching setup explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose published custom questions as soft preferences. Guest permission is separate, and safety and admission rules always apply.'**
+  String get eventMatchingHostDescription;
+
+  /// Unsupported assignment topology message.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured answer matching is not available for sequence layouts.'**
+  String get eventMatchingHostUnsupported;
+
+  /// Select source form for matching editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a published form'**
+  String get eventMatchingHostSelectForm;
+
+  /// Empty source form chooser.
+  ///
+  /// In en, this message translates to:
+  /// **'No published forms are available for this organizer.'**
+  String get eventMatchingHostNoForms;
+
+  /// No eligible published question source.
+  ///
+  /// In en, this message translates to:
+  /// **'This published version has no custom choice or number questions.'**
+  String get eventMatchingHostNoQuestions;
+
+  /// Pagination action for source forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more forms'**
+  String get eventMatchingHostLoadMore;
+
+  /// Add a published question as a soft feature.
+  ///
+  /// In en, this message translates to:
+  /// **'Add matching question'**
+  String get eventMatchingHostAddQuestion;
+
+  /// Current event-local feature rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching preferences'**
+  String get eventMatchingHostSavedRules;
+
+  /// Categorical transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choice category'**
+  String get eventMatchingHostCategory;
+
+  /// Multiple-choice transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Choice set'**
+  String get eventMatchingHostSet;
+
+  /// Numeric transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get eventMatchingHostNumber;
+
+  /// Ordinal transform label.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered choices'**
+  String get eventMatchingHostOrdinal;
+
+  /// Soft similarity preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer similar answers'**
+  String get eventMatchingHostSimilar;
+
+  /// Soft difference preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer different answers'**
+  String get eventMatchingHostDifferent;
+
+  /// Group-level balancing preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance answers across groups'**
+  String get eventMatchingHostBalance;
+
+  /// Soft feature weight control.
+  ///
+  /// In en, this message translates to:
+  /// **'Preference strength'**
+  String get eventMatchingHostWeight;
+
+  /// Numeric matching lower bound.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum answer'**
+  String get eventMatchingHostMinimum;
+
+  /// Numeric matching upper bound.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum answer'**
+  String get eventMatchingHostMaximum;
+
+  /// Numeric source validation bound warning.
+  ///
+  /// In en, this message translates to:
+  /// **'This form did not publish a number range. Set a finite minimum and maximum before using this question.'**
+  String get eventMatchingHostMissingBounds;
+
+  /// Aggregate coverage preview action.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview roster coverage'**
+  String get eventMatchingHostPreview;
+
+  /// Aggregate current-roster usable matching coverage, not final eligibility.
+  ///
+  /// In en, this message translates to:
+  /// **'{usable} of {roster} current roster members have usable permitted answers'**
+  String eventMatchingHostCoverage({required int usable, required int roster});
+
+  /// Host aggregate preview basis and live-eligibility caveat.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage uses the current event roster; live assignment eligibility may differ.'**
+  String get eventMatchingHostCoverageNote;
+
+  /// Revision-fenced Host feature configuration save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save matching preferences'**
+  String get eventMatchingHostSave;
+
+  /// Remove one soft feature mapping.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove question'**
+  String get eventMatchingHostRemove;
+
+  /// Reload latest revision and published source catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh matching setup'**
+  String get eventMatchingHostRefresh;
+
+  /// Revision conflict without silent overwrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching setup changed elsewhere. Review the latest version before saving again.'**
+  String get eventMatchingHostConflict;
+
+  /// Invalid Host matching transform or numeric bounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the question mapping before previewing or saving.'**
+  String get eventMatchingHostValidation;
+
+  /// Source form version label.
+  ///
+  /// In en, this message translates to:
+  /// **'Active published version'**
+  String get eventMatchingHostActiveVersion;
+
+  /// Maximum feature rule count.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to eight matching questions for this event.'**
+  String get eventMatchingHostLimit;
+
+  /// Host question transform selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer type'**
+  String get eventMatchingHostTransform;
+
+  /// Host soft-mode selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching preference'**
+  String get eventMatchingHostPreference;
+
+  /// Ordinal score order action.
+  ///
+  /// In en, this message translates to:
+  /// **'Move this choice earlier'**
+  String get eventMatchingHostMoveEarlier;
+
+  /// Weight stepper decrease accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease preference strength'**
+  String get eventMatchingHostDecreaseWeight;
+
+  /// Weight stepper increase accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase preference strength'**
+  String get eventMatchingHostIncreaseWeight;
+
+  /// Optional Host roster import city mapping field.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get hostsOperationalRosterFieldCity;
+
+  /// Unsupported imported city is shown as a row-specific issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: choose a supported city or leave it blank.'**
+  String hostsOperationalRosterIssueInvalidCity({required int row});
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the basics, then add guests, registration and payments as needed.'**
+  String get hostsPrivateEventEntryBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the basics'**
+  String get hostsPrivateEventBasicsHeading;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get hostsPrivateEventCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city'**
+  String get hostsPrivateEventChooseCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get hostsPrivateEventTimezone;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Asia/Kolkata'**
+  String get hostsPrivateEventTimezoneHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested by city. Review before saving.'**
+  String get hostsPrivateEventTimezoneSuggestion;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'From organizer'**
+  String get hostsPrivateEventFromOrganizer;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer city'**
+  String get hostsPrivateEventUseOrganizerCity;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer timezone'**
+  String get hostsPrivateEventUseOrganizerTimezone;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'More basics'**
+  String get hostsPrivateEventMoreBasics;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue and end time can be added later'**
+  String get hostsPrivateEventMoreBasicsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'After saving'**
+  String get hostsPrivateEventAfterSave;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a venue and end time when you are ready to set up registration or a public listing.'**
+  String get hostsPrivateEventAfterSaveBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'The event is saved privately. You can link a form after saving.'**
+  String get hostsPrivateEventSaveHint;
+
+  /// Host response query Loading label.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading responses…'**
+  String get hostResponseQueryLoading;
+
+  /// Host response query Empty label.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses match this query.'**
+  String get hostResponseQueryEmpty;
+
+  /// Host response query Stale label.
+  ///
+  /// In en, this message translates to:
+  /// **'The response result changed. Refresh and review your selection.'**
+  String get hostResponseQueryStale;
+
+  /// Host response query BudgetExceeded label.
+  ///
+  /// In en, this message translates to:
+  /// **'This form exceeds the size or time limit for interactive filtering.'**
+  String get hostResponseQueryBudgetExceeded;
+
+  /// Host response query PermissionLost label.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have access to these responses.'**
+  String get hostResponseQueryPermissionLost;
+
+  /// Host response query Failed label.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load responses. Try again.'**
+  String get hostResponseQueryFailed;
+
+  /// Host response query ReviewSelection label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review selected responses'**
+  String get hostResponseQueryReviewSelection;
+
+  /// Host response query Select label.
+  ///
+  /// In en, this message translates to:
+  /// **'Select response'**
+  String get hostResponseQuerySelect;
+
+  /// Host response query Deselect label.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect response'**
+  String get hostResponseQueryDeselect;
+
+  /// Host response query EditorTitle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter responses'**
+  String get hostResponseQueryEditorTitle;
+
+  /// Host response query MatchAll label.
+  ///
+  /// In en, this message translates to:
+  /// **'Match all conditions'**
+  String get hostResponseQueryMatchAll;
+
+  /// Host response query MatchAny label.
+  ///
+  /// In en, this message translates to:
+  /// **'Match any condition'**
+  String get hostResponseQueryMatchAny;
+
+  /// Host response query Field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get hostResponseQueryField;
+
+  /// Host response query Value label.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get hostResponseQueryValue;
+
+  /// Host response query Minimum label.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum'**
+  String get hostResponseQueryMinimum;
+
+  /// Host response query Maximum label.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum'**
+  String get hostResponseQueryMaximum;
+
+  /// Host response query AddCondition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Add condition'**
+  String get hostResponseQueryAddCondition;
+
+  /// Host response query AddGroup label.
+  ///
+  /// In en, this message translates to:
+  /// **'Add group'**
+  String get hostResponseQueryAddGroup;
+
+  /// Host response query Remove label.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostResponseQueryRemove;
+
+  /// Host response query Apply label.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get hostResponseQueryApply;
+
+  /// Host response query InvalidCondition label.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this condition.'**
+  String get hostResponseQueryInvalidCondition;
+
+  /// Host response query OperatorPresent label.
+  ///
+  /// In en, this message translates to:
+  /// **'is answered'**
+  String get hostResponseQueryOperatorPresent;
+
+  /// Host response query OperatorMissing label.
+  ///
+  /// In en, this message translates to:
+  /// **'is not answered'**
+  String get hostResponseQueryOperatorMissing;
+
+  /// Host response query OperatorChoiceAny label.
+  ///
+  /// In en, this message translates to:
+  /// **'includes any of'**
+  String get hostResponseQueryOperatorChoiceAny;
+
+  /// Host response query OperatorChoiceAll label.
+  ///
+  /// In en, this message translates to:
+  /// **'includes all of'**
+  String get hostResponseQueryOperatorChoiceAll;
+
+  /// Host response query OperatorChoiceNone label.
+  ///
+  /// In en, this message translates to:
+  /// **'includes none of'**
+  String get hostResponseQueryOperatorChoiceNone;
+
+  /// Host response query OperatorTextEquals label.
+  ///
+  /// In en, this message translates to:
+  /// **'equals'**
+  String get hostResponseQueryOperatorTextEquals;
+
+  /// Host response query OperatorTextContains label.
+  ///
+  /// In en, this message translates to:
+  /// **'contains'**
+  String get hostResponseQueryOperatorTextContains;
+
+  /// Host response query OperatorTextStartsWith label.
+  ///
+  /// In en, this message translates to:
+  /// **'starts with'**
+  String get hostResponseQueryOperatorTextStartsWith;
+
+  /// Host response query OperatorNumberEq label.
+  ///
+  /// In en, this message translates to:
+  /// **'equals'**
+  String get hostResponseQueryOperatorNumberEq;
+
+  /// Host response query OperatorNumberGt label.
+  ///
+  /// In en, this message translates to:
+  /// **'is greater than'**
+  String get hostResponseQueryOperatorNumberGt;
+
+  /// Host response query OperatorNumberGte label.
+  ///
+  /// In en, this message translates to:
+  /// **'is at least'**
+  String get hostResponseQueryOperatorNumberGte;
+
+  /// Host response query OperatorNumberLt label.
+  ///
+  /// In en, this message translates to:
+  /// **'is less than'**
+  String get hostResponseQueryOperatorNumberLt;
+
+  /// Host response query OperatorNumberLte label.
+  ///
+  /// In en, this message translates to:
+  /// **'is at most'**
+  String get hostResponseQueryOperatorNumberLte;
+
+  /// Host response query OperatorNumberBetween label.
+  ///
+  /// In en, this message translates to:
+  /// **'is between'**
+  String get hostResponseQueryOperatorNumberBetween;
+
+  /// Host response query OperatorDateOn label.
+  ///
+  /// In en, this message translates to:
+  /// **'is on'**
+  String get hostResponseQueryOperatorDateOn;
+
+  /// Host response query OperatorDateBefore label.
+  ///
+  /// In en, this message translates to:
+  /// **'is before'**
+  String get hostResponseQueryOperatorDateBefore;
+
+  /// Host response query OperatorDateAfter label.
+  ///
+  /// In en, this message translates to:
+  /// **'is after'**
+  String get hostResponseQueryOperatorDateAfter;
+
+  /// Host response query OperatorDateBetween label.
+  ///
+  /// In en, this message translates to:
+  /// **'is between'**
+  String get hostResponseQueryOperatorDateBetween;
+
+  /// Host response query OperatorBooleanIs label.
+  ///
+  /// In en, this message translates to:
+  /// **'is'**
+  String get hostResponseQueryOperatorBooleanIs;
+
+  /// Host response query ClearSelection label.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get hostResponseQueryClearSelection;
+
+  /// Host response query Selected label.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected response} other{{count} selected responses}}'**
+  String hostResponseQuerySelected({required int count});
+
+  /// Saves a private event and returns to the form response selection that opened the event editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & return to responses'**
+  String get hostsPrivateEventSaveReturnResponses;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & continue'**
+  String get hostsPrivateEventSaveContinue;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer defaults changed. Review the city and timezone before saving.'**
+  String get hostsPrivateEventDefaultsChanged;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Review current defaults'**
+  String get hostsPrivateEventReviewDefaults;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved event'**
+  String get hostsPrivateEventSavedTitle;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get hostsPrivateEventPrivateTitle;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to link to forms. Registration and public listing are off.'**
+  String get hostsPrivateEventPrivateBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue setup when you need it'**
+  String get hostsPrivateEventSetupHeading;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to selected responses'**
+  String get hostsPrivateEventReturnResponses;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selection stays in Responses.'**
+  String get hostsPrivateEventReturnResponsesBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Link a registration form'**
+  String get hostsPrivateEventLinkForm;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect responses and offer places for this event.'**
+  String get hostsPrivateEventLinkFormBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event-bound form setup is not available yet.'**
+  String get hostsPrivateEventLinkFormUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event details'**
+  String get hostsPrivateEventDetails;
+
+  /// Opens the saved private event basics editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event basics'**
+  String get hostsPrivateEventEditBasics;
+
+  /// Describes the saved private event basics editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the name, city, date, start time or timezone.'**
+  String get hostsPrivateEventEditBasicsBody;
+
+  /// Explains why basics cannot be edited for a cancelled private event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled events cannot be edited.'**
+  String get hostsPrivateEventEditBasicsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a venue and end time when needed.'**
+  String get hostsPrivateEventDetailsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue and end-time editing is not available yet.'**
+  String get hostsPrivateEventDetailsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a guest list'**
+  String get hostsPrivateEventImportGuests;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add existing registrations to the roster.'**
+  String get hostsPrivateEventImportGuestsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Private-event roster import is not available yet.'**
+  String get hostsPrivateEventImportGuestsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept registrations with Catch'**
+  String get hostsPrivateEventCatchRegistration;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the admission policy and check payment readiness.'**
+  String get hostsPrivateEventCatchRegistrationBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration requires an admission policy and booking setup.'**
+  String get hostsPrivateEventCatchRegistrationUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get hostsPrivateEventPayments;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add external collection instructions.'**
+  String get hostsPrivateEventPaymentsBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Event payment settings are not available yet.'**
+  String get hostsPrivateEventPaymentsUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Public listing'**
+  String get hostsPrivateEventPublicListing;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published.'**
+  String get hostsPrivateEventPublicListingBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not published. Add public details before listing.'**
+  String get hostsPrivateEventPublicListingUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Live event guide'**
+  String get hostsPrivateEventGuide;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional.'**
+  String get hostsPrivateEventGuideBody;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional guide setup is not available yet.'**
+  String get hostsPrivateEventGuideUnavailable;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests from imports and Catch registration can share one roster. Offers do not confirm attendance.'**
+  String get hostsPrivateEventRosterNote;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Basics'**
+  String get hostsEventDefaultsBasics;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for new events. Existing events keep their saved timezone.'**
+  String get hostsEventDefaultsTimezoneHint;
+
+  /// Copy for the progressive private event setup flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose on each event'**
+  String get hostsEventDefaultsChooseEachEvent;
+
+  /// Explains an unresolved idempotent event save.
+  ///
+  /// In en, this message translates to:
+  /// **'This save may already have reached Catch. Retry the same request before changing details so it cannot create another event.'**
+  String get hostsPrivateEventPendingRequest;
+
+  /// Explains an unresolved idempotent event basics update.
+  ///
+  /// In en, this message translates to:
+  /// **'This edit may already have reached Catch. Retry the same save before changing the basics.'**
+  String get hostsPrivateEventPendingUpdate;
+
+  /// Retries an unresolved private event save with its original request identity.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry the same save'**
+  String get hostsPrivateEventRetrySave;
+
+  /// Shows a retained import plan after the canonical event is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list ready to import'**
+  String get hostsPrivateEventPendingRoster;
+
+  /// Explains the retained import file and why it is not yet applied.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} can be imported after event roster setup is available.'**
+  String hostsPrivateEventPendingRosterBody({required String fileName});
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual duration'**
+  String get hostsEventDefaultsUsualDuration;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String hostsEventDefaultsMinutes({required int minutes});
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose duration on each event'**
+  String get hostsEventDefaultsClearDuration;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred venue'**
+  String get hostsEventDefaultsPreferredVenue;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue suggestions need an organizer venue picker.'**
+  String get hostsEventDefaultsVenueUnavailable;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved venue suggestion. Review access before using it for an event.'**
+  String get hostsEventDefaultsVenueSaved;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear preferred venue'**
+  String get hostsEventDefaultsClearVenue;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get hostsEventDefaultsOffersHeading;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual offer validity'**
+  String get hostsEventDefaultsOfferValidity;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose offer validity on each event'**
+  String get hostsEventDefaultsClearValidity;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer message template'**
+  String get hostsEventDefaultsMessageTemplate;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested text for an individual handoff'**
+  String get hostsEventDefaultsMessageTemplateHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment suggestions'**
+  String get hostsEventDefaultsPaymentHeading;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred collection method'**
+  String get hostsEventDefaultsCollectionPreference;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual instructions'**
+  String get hostsEventDefaultsManualInstructions;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable payment page'**
+  String get hostsEventDefaultsReusablePage;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal payment request'**
+  String get hostsEventDefaultsPersonalRequest;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch checkout'**
+  String get hostsEventDefaultsCatchCheckout;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'A preference only. Event payment and provider readiness are reviewed separately.'**
+  String get hostsEventDefaultsCollectionSuggestionHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose collection method on each event'**
+  String get hostsEventDefaultsClearCollection;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get hostsEventDefaultsCurrency;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a three-letter currency code.'**
+  String get hostsEventDefaultsInvalidCurrency;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment instructions'**
+  String get hostsEventDefaultsPaymentInstructions;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested instructions for future events'**
+  String get hostsEventDefaultsPaymentInstructionsHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable organizer payment page'**
+  String get hostsEventDefaultsReusablePaymentPage;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/pay'**
+  String get hostsEventDefaultsReusablePageHint;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a reusable public organizer page belongs here. Personal links stay with one offer.'**
+  String get hostsEventDefaultsReusablePagePrivacyNote;
+
+  /// Manager-only organizer event setup preference; requires authorized revision-fenced read and save.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a secure https payment-page URL.'**
+  String get hostsEventDefaultsInvalidReusablePage;
+
+  /// Manager-only organizer event setup text length validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this to 1,000 characters or fewer.'**
+  String get hostsEventDefaultsTextTooLong;
+
+  /// Manager attestation before retaining a reusable payment URL.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reusable payment page'**
+  String get hostsEventDefaultsReusableConfirmTitle;
+
+  /// Manager attestation before retaining a reusable payment URL.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm this page can be shared with different guests for different events. It is not a personal payment request or invoice.'**
+  String get hostsEventDefaultsReusableConfirmBody;
+
+  /// Cancel reusable payment page attestation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get hostsEventDefaultsReusableConfirmCancel;
+
+  /// Explicitly attest that a payment page is reusable.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reusable page'**
+  String get hostsEventDefaultsReusableConfirmAccept;
+
+  /// Explains why private organizer preferences are not shown without an authorized read.
+  ///
+  /// In en, this message translates to:
+  /// **'Private organizer preferences unavailable'**
+  String get hostsEventDefaultsManagerUnavailable;
+
+  /// Explains why private organizer preferences are not shown without an authorized read.
+  ///
+  /// In en, this message translates to:
+  /// **'A manager-authorized preferences read is required before these suggestions can be shown or edited.'**
+  String get hostsEventDefaultsManagerUnavailableBody;
+
+  /// Explains the source of inherited event city.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events use the organizer city. Change that city in the organizer profile.'**
+  String get hostsEventDefaultsCitySource;
+
+  /// Explains the private timezone suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events can use this private timezone suggestion, or choose a timezone for each event.'**
+  String get hostsEventDefaultsTimezoneSource;
+
+  /// Pending manager defaults update label.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous defaults save unresolved'**
+  String get hostsEventDefaultsPendingUpdate;
+
+  /// Explains frozen manager defaults update after uncertain response.
+  ///
+  /// In en, this message translates to:
+  /// **'The previous save may have reached Catch. Retry the same request before changing suggestions.'**
+  String get hostsEventDefaultsPendingUpdateBody;
+
+  /// Replays the same manager defaults update.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry previous defaults save'**
+  String get hostsEventDefaultsRetryUpdate;
+
+  /// Retries the manager-authorized defaults read before private event inheritance.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry organizer defaults read'**
+  String get hostsPrivateEventRetryDefaultsRead;
+
+  /// Retries the manager-authorized read of a saved private event.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry event read'**
+  String get hostsPrivateEventRetrySavedRead;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save still unresolved'**
+  String get hostsPrivateEventPendingExitTitle;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved this event. The request is kept on this device. Leave and retry the same save later to resolve it without creating another event.'**
+  String get hostsPrivateEventPendingExitBody;
+
+  /// Explains leaving an unresolved private event basics update.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved this edit. The request is kept on this device. Leave and retry the same save later before changing the basics.'**
+  String get hostsPrivateEventPendingUpdateExitBody;
+
+  /// Shown when a saved private event is opened before the guarded rollout.
+  ///
+  /// In en, this message translates to:
+  /// **'Private event setup is not available yet.'**
+  String get hostsPrivateEventSetupUnavailable;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay and retry'**
+  String get hostsPrivateEventPendingStay;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave; retry later'**
+  String get hostsPrivateEventPendingLeave;
+
+  /// Private event idempotent save and saved-event continuation copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue saved event'**
+  String get hostsPrivateEventContinueSaved;
+
+  /// Private event-specific setup settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Event settings and payments'**
+  String get hostsEventPreferenceTitle;
+
+  /// Distinguishes stored private preferences from payment activation.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings belong to this private event. Collection preferences do not activate a provider or send a request.'**
+  String get hostsEventPreferencePrivateHint;
+
+  /// Event preference inheritance option.
+  ///
+  /// In en, this message translates to:
+  /// **'Use organizer suggestion'**
+  String get hostsEventPreferenceInherit;
+
+  /// Event preference override option.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event value'**
+  String get hostsEventPreferenceOverride;
+
+  /// Event preference explicit clear option.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unset'**
+  String get hostsEventPreferenceClear;
+
+  /// Event-specific expected amount stored in minor currency units.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected amount in the smallest currency unit'**
+  String get hostsEventPreferenceExpectedAmountMinor;
+
+  /// Explains amount entry in currency minor units without assuming an active payment provider.
+  ///
+  /// In en, this message translates to:
+  /// **'For INR, 120000 means ₹1,200.00'**
+  String get hostsEventPreferenceExpectedAmountHint;
+
+  /// Event-local admission preference, not registration activation.
+  ///
+  /// In en, this message translates to:
+  /// **'Admission suggestion'**
+  String get hostsEventPreferenceAdmission;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Open capacity'**
+  String get hostsEventPreferenceAdmissionOpen;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite only'**
+  String get hostsEventPreferenceAdmissionInvite;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced singles'**
+  String get hostsEventPreferenceAdmissionBalanced;
+
+  /// Event admission preference choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed cohort caps'**
+  String get hostsEventPreferenceAdmissionFixed;
+
+  /// Pending private event preferences save.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous settings save unresolved'**
+  String get hostsEventPreferencePending;
+
+  /// Explains idempotent private event preferences retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch may already have saved these settings. Retry the same request before changing them.'**
+  String get hostsEventPreferencePendingBody;
+
+  /// Replays the exact event preferences command.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry previous settings save'**
+  String get hostsEventPreferenceRetry;
+
+  /// Manager-only event settings read or save error.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings unavailable'**
+  String get hostsEventPreferenceError;
+
+  /// Prevents event preference settings from implying active payment capability.
+  ///
+  /// In en, this message translates to:
+  /// **'A saved collection preference is only a plan. Review provider readiness, guest consent and payment terms before sending an offer.'**
+  String get hostsEventPreferenceProviderHint;
+
+  /// Invalid event-local setting value.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value for this setting.'**
+  String get hostsEventPreferenceInvalidValue;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Create event offers'**
+  String get hostEventOfferCreate;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostEventOfferSelectEvent;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible upcoming events are available.'**
+  String get hostEventOfferSelectEventEmpty;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert this response to a CRM contact before offering an event.'**
+  String get hostEventOfferNeedsContact;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Create CRM contact'**
+  String get hostEventOfferConvertContact;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected responses changed. Review them again.'**
+  String get hostEventOfferSelectionChanged;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load event offers. Try again.'**
+  String get hostEventOfferLoadFailed;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers recorded. Sending and admission are separate steps.'**
+  String get hostEventOfferIssued;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh offers'**
+  String get hostEventOfferRefresh;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing offers'**
+  String get hostEventOfferExisting;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No offers recorded for this event.'**
+  String get hostEventOfferNoOffers;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled event'**
+  String get hostEventOfferUntitledEvent;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more events'**
+  String get hostEventOfferLoadMoreEvents;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure event payment terms before creating offers.'**
+  String get hostEventOfferConfigurePayment;
+
+  /// Host forms to event offer action or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Open event settings'**
+  String get hostEventOfferOpenSettings;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostEventOfferStatusDraft;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered'**
+  String get hostEventOfferStatusOffered;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get hostEventOfferStatusWithdrawn;
+
+  /// Host event offer status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get hostEventOfferStatusExpired;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'These choices update this event. Organizer defaults are suggestions until you apply them.'**
+  String get hostsPrivateEventDetailActualHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Current end time'**
+  String get hostsPrivateEventDetailCurrentDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get hostsPrivateEventDetailNotSet;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes'**
+  String hostsPrivateEventDetailMinutes({required int minutes});
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration in minutes'**
+  String get hostsPrivateEventDetailDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'15–240 minutes'**
+  String get hostsPrivateEventDetailDurationHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Use suggested duration'**
+  String get hostsPrivateEventDetailUseDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No duration suggestion is saved.'**
+  String get hostsPrivateEventDetailNoDurationSuggestion;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove end time'**
+  String get hostsPrivateEventDetailClearDuration;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Current place'**
+  String get hostsPrivateEventDetailCurrentVenue;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Place name'**
+  String get hostsPrivateEventDetailVenueName;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a venue name'**
+  String get hostsPrivateEventDetailVenueHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Use saved place'**
+  String get hostsPrivateEventDetailUseSavedPlace;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved place is selected.'**
+  String get hostsPrivateEventDetailNoSavedPlace;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy the saved place after availability is checked.'**
+  String get hostsPrivateEventDetailSavedPlaceHint;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove place'**
+  String get hostsPrivateEventDetailClearVenue;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity format'**
+  String get hostsPrivateEventDetailFormat;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Current activity'**
+  String get hostsPrivateEventDetailCurrentFormat;
+
+  /// Private event details control or state.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove activity format'**
+  String get hostsPrivateEventDetailClearFormat;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Event offer'**
+  String get hostEventOfferReviewTitle;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview offers'**
+  String get hostEventOfferPreview;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking current eligibility…'**
+  String get hostEventOfferPreviewing;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review offer details'**
+  String get hostEventOfferReview;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String hostEventOfferExpires({required String date});
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Record offers'**
+  String get hostEventOfferCommit;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording offers…'**
+  String get hostEventOfferCommitting;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers recorded'**
+  String get hostEventOfferCommitted;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete this offer action.'**
+  String get hostEventOfferFailed;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No seat or admission is created.'**
+  String get hostEventOfferNoReservation;
+
+  /// Host forms event offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal payment link for {name}'**
+  String hostEventOfferPersonalPaymentLink({required String name});
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reference'**
+  String get hostEventOfferPaymentReference;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Record reference'**
+  String get hostEventOfferRecordReference;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence submitted'**
+  String get hostEventOfferEvidenceSubmitted;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'I checked the bank receipt'**
+  String get hostEventOfferBankReceiptChecked;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review note'**
+  String get hostEventOfferReviewNote;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attest received'**
+  String get hostEventOfferAttestReceived;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject reference'**
+  String get hostEventOfferRejectReference;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Host attested'**
+  String get hostEventOfferHostAttested;
+
+  /// Host forms manual payment review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get hostEventOfferRejected;
+
+  /// Host forms existing offer review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review offer'**
+  String get hostEventOfferOpenExisting;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare personal handoff'**
+  String get hostEventOfferHandoffPrepare;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff unavailable. Review the current offer and contact permissions.'**
+  String get hostEventOfferHandoffBlocked;
+
+  /// Host forms existing offer handoff disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens WhatsApp with editable text. You review and press Send; Catch cannot track delivery or replies.'**
+  String get hostEventOfferHandoffDisclosure;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WhatsApp'**
+  String get hostEventOfferOpenWhatsapp;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy message'**
+  String get hostEventOfferCopyMessage;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message copied. Sending is still your choice.'**
+  String get hostEventOfferMessageCopied;
+
+  /// Host forms existing offer handoff copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp on this device.'**
+  String get hostEventOfferHandoffOpenFailed;
+
+  /// Published event offer preferences context.
+  ///
+  /// In en, this message translates to:
+  /// **'Published event offers'**
+  String get hostsEventPreferencePublishedTitle;
+
+  /// Published event offer preferences context.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings apply to future offers. Existing offers keep their recorded terms.'**
+  String get hostsEventPreferencePublishedHint;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Private event setups'**
+  String get hostsPrivateEventInventoryTitle;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading private events…'**
+  String get hostsPrivateEventInventoryLoading;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming private event setups.'**
+  String get hostsPrivateEventInventoryEmpty;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more private events'**
+  String get hostsPrivateEventInventoryLoadMore;
+
+  /// Manager private event inventory copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load private events.'**
+  String get hostsPrivateEventInventoryError;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is this form for?'**
+  String get hostFormTargetTitle;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Reusable organizer form'**
+  String get hostFormTargetReusable;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'For an event'**
+  String get hostFormTargetEvent;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an event'**
+  String get hostFormTargetSelectEvent;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible upcoming events are available.'**
+  String get hostFormTargetNoUpcomingEvents;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'This linked event is no longer available. Choose another event or make the form reusable.'**
+  String get hostFormTargetUnavailable;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes to a published form take effect when you publish the draft updates.'**
+  String get hostFormTargetPublishedNotice;
+
+  /// Host form event binding settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your events. Try again.'**
+  String get hostFormTargetLoadFailed;
 }
 
 class _AppLocalizationsDelegate

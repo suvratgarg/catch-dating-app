@@ -12,7 +12,7 @@ import type {ListEventChatParticipantsCallableResponse as Result} from
 import {validateListEventChatParticipantsCallablePayload} from
   "../shared/generated/validators/listEventChatParticipantsInput";
 import {eventChatMembershipId, requireEventChatActor,
-  requireEventChatMember} from "./eventChatAccess";
+  requireEventChatMember, readEventChatAccess} from "./eventChatAccess";
 import {messageDefaults, type EventChatMessageDeps} from
   "./eventChatMessageShared";
 
@@ -33,7 +33,8 @@ export async function listEventChatParticipantsHandler(
   const db = deps.db();
   await deps.rateLimit(db, uid, "listEventChatParticipants");
   return db.runTransaction(async (tx) => {
-    const viewer = await requireEventChatMember(db, tx, data.eventId, uid);
+    const viewer = await requireEventChatMember(db, tx, data.eventId, uid,
+      deps.now().toMillis());
     let query = db.collection("eventChatMemberships")
       .where("eventId", "==", data.eventId)
       .orderBy(FieldPath.documentId()).limit(data.limit + 1);
@@ -43,18 +44,28 @@ export async function listEventChatParticipantsHandler(
     const items: Result["items"] = [];
     for (const row of rows) {
       const member = requireDoc<Membership>(row, "EventChatMembershipDocument");
+      if (member.status === "left") continue;
       if (member.eventId !== data.eventId ||
           member.organizerId !== viewer.view.organizerId ||
-          member.status !== "joined" ||
+          (member.status !== "joined" &&
+            (!viewer.view.canManage || !["removed", "banned"].includes(
+              member.status))) ||
           row.id !== eventChatMembershipId(data.eventId, member.uid)) continue;
       try {
-        const target = await requireEventChatMember(db, tx,
-          data.eventId, member.uid);
+        const target = await readEventChatAccess(db, tx,
+          data.eventId, member.uid, deps.now().toMillis());
+        if (!target.user?.displayName?.trim() ||
+            target.view.profileClaimRequired ||
+            target.member?.revision !== member.revision ||
+            target.member?.status !== member.status ||
+            (member.status === "joined" &&
+              !target.view.canReadMessages)) continue;
         if (await hasBlockingRelationshipInTransaction(tx, db,
           uid, [member.uid])) continue;
         items.push({uid: member.uid,
           displayName: target.user!.displayName!.trim().slice(0, 120),
-          role: target.view.role});
+          role: target.view.role, membershipStatus: member.status,
+          membershipRevision: member.revision});
       } catch (error) {
         // Revoked, deleted, left or unclaimed people are absent. Operational
         // failures must not masquerade as an empty participant list.

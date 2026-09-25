@@ -88,11 +88,19 @@ void main() {
           id: 'event-earlier',
           startTime: DateTime(2026, 1, 2, 7),
         );
-        await firestore.collection('events').doc(later.id).set(later.toJson());
+        await firestore.collection('events').doc(later.id).set({
+          ...later.toJson(),
+          'publicationState': 'published',
+        });
         await firestore
             .collection('events')
             .doc(earlier.id)
-            .set(earlier.toJson());
+            .set(earlier.toJson()); // Legacy public event before backfill.
+        await firestore.collection('events').doc('private-basics').set({
+          'organizerId': 'club-1',
+          'publicationState': 'private',
+          'status': 'active',
+        });
         await firestore
             .collection('savedEvents')
             .doc(savedEventId(uid: 'runner-1', eventId: later.id))
@@ -115,6 +123,14 @@ void main() {
             .set({
               'uid': 'runner-1',
               'eventId': 'deleted-event',
+              'savedAt': DateTime(2026),
+            });
+        await firestore
+            .collection('savedEvents')
+            .doc(savedEventId(uid: 'runner-1', eventId: 'private-basics'))
+            .set({
+              'uid': 'runner-1',
+              'eventId': 'private-basics',
               'savedAt': DateTime(2026),
             });
 

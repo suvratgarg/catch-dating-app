@@ -17,6 +17,7 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart'
     show AutofillHints, IconData, TextCapitalization, TextInputType, ValueKey;
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 
 class SelfProfileEditTabState {
   const SelfProfileEditTabState({
@@ -286,7 +287,6 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       autofillHints: const [AutofillHints.nickname],
       validator: validateRequiredDisplayName,
       toFieldValue: (value) => value.trim(),
-      showClearButton: true,
     ),
     CatchFormReadRow<UpdateUserProfilePatch>(
       id: 'dateOfBirth',
@@ -341,8 +341,9 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       keyboardType: TextInputType.text,
       textCapitalization: TextCapitalization.none,
       validator: validateOptionalInstagramHandle,
-      leadingUnit: '@',
-      showClearButton: true,
+      normalizeInput: normalizeInstagramHandle,
+      // Remove the optional prefix before the contract length limiter runs.
+      inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'^@'))],
       toFieldValue: (value) {
         final handle = normalizeInstagramHandle(value);
         return handle.isEmpty ? null : handle;
@@ -404,6 +405,8 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       icon: CatchIcons.workOutline,
       label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
       currentValue: user.occupation ?? '',
+      currentFieldValue: user.occupation,
+      toFieldValue: (value) => value.trim().isEmpty ? null : value.trim(),
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyOccupation,
       patchForValue: patchFactory.occupation,
       contract: CatchContractConstraints.updateUserProfilePatchOccupation,
@@ -418,6 +421,8 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       icon: CatchIcons.businessOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
       currentValue: user.company ?? '',
+      currentFieldValue: user.company,
+      toFieldValue: (value) => value.trim().isEmpty ? null : value.trim(),
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyCompanyfd8aec,
       patchForValue: patchFactory.company,

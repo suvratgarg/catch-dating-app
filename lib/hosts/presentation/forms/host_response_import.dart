@@ -71,7 +71,7 @@ extension _HostResponseImport on _HostFormsScreenState {
       ref.invalidate(hostFormResponsesControllerProvider);
       if (mounted) {
         _completeResponseImport();
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostApplicationsImportComplete(
             created: imported.createdCount,
@@ -81,15 +81,15 @@ extension _HostResponseImport on _HostFormsScreenState {
       }
     } on HostApplicationImportException catch (error) {
       if (mounted) {
-        showCatchSnackBar(context, _applicationImportIssue(context, error));
+        showCatchNotice(context, _applicationImportIssue(context, error));
       }
     } on HostRosterImportException catch (error) {
       if (mounted) {
-        showCatchSnackBar(context, _rosterImportIssue(context, error.issue));
+        showCatchNotice(context, _rosterImportIssue(context, error.issue));
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.applications,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' as club_test;
@@ -17,24 +18,27 @@ void main() {
     var requestSequence = 0;
     final club = club_test.buildClub(id: 'organizer-1');
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: TextButton(
-              onPressed: () => unawaited(
-                showHostFollowerUpdateComposer(
-                  context: context,
-                  club: club,
-                  remainingQuota: 2,
-                  requestIdFactory: () => 'request-${requestSequence++}',
-                  onSubmitPost: ({required requestId, required text}) async {
-                    submittedRequestId = requestId;
-                    submitted = text;
-                  },
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => unawaited(
+                  showHostFollowerUpdateComposer(
+                    context: context,
+                    club: club,
+                    remainingQuota: 2,
+                    requestIdFactory: () => 'request-${requestSequence++}',
+                    onSubmitPost: ({required requestId, required text}) async {
+                      submittedRequestId = requestId;
+                      submitted = text;
+                    },
+                  ),
                 ),
+                child: const Text('Open composer'),
               ),
-              child: const Text('Open composer'),
             ),
           ),
         ),
@@ -69,25 +73,30 @@ void main() {
     var attempts = 0;
     final club = club_test.buildClub(id: 'organizer-1');
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: TextButton(
-              onPressed: () => unawaited(
-                showHostFollowerUpdateComposer(
-                  context: context,
-                  club: club,
-                  remainingQuota: 2,
-                  requestIdFactory: () => 'request-${requestSequence++}',
-                  onSubmitPost: ({required requestId, required text}) async {
-                    requestIds.add(requestId);
-                    attempts += 1;
-                    if (attempts == 1) throw StateError('temporary failure');
-                  },
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => unawaited(
+                  showHostFollowerUpdateComposer(
+                    context: context,
+                    club: club,
+                    remainingQuota: 2,
+                    requestIdFactory: () => 'request-${requestSequence++}',
+                    onSubmitPost: ({required requestId, required text}) async {
+                      requestIds.add(requestId);
+                      attempts += 1;
+                      if (attempts == 1) {
+                        throw StateError('temporary failure');
+                      }
+                    },
+                  ),
                 ),
+                child: const Text('Open composer'),
               ),
-              child: const Text('Open composer'),
             ),
           ),
         ),

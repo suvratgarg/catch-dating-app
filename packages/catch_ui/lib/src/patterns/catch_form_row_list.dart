@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,17 @@ class CatchFormRowList<P> extends StatefulWidget {
 
 class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
   CatchAccordionController? _ownedAccordion;
+  bool _saving = false;
+
+  Future<bool> _save(P patch) async {
+    if (_saving) return false;
+    setState(() => _saving = true);
+    try {
+      return await widget.onSave(patch);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   CatchAccordionController get _accordion =>
       widget.accordion ?? (_ownedAccordion ??= CatchAccordionController());
@@ -129,14 +141,16 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
             );
           },
           range: (descriptor) {
+            final maximumContract =
+                descriptor.maximumContract ?? descriptor.contract;
             assert(
               descriptor.contract?.minimum == null ||
                   descriptor.sliderMin >= descriptor.contract!.minimum!,
               'The slider minimum cannot undercut the schema contract.',
             );
             assert(
-              descriptor.contract?.maximum == null ||
-                  descriptor.sliderMax <= descriptor.contract!.maximum!,
+              maximumContract?.maximum == null ||
+                  descriptor.sliderMax <= maximumContract!.maximum!,
               'The slider maximum cannot exceed the schema contract.',
             );
             return CatchFormRangeField<P>(
@@ -154,7 +168,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        section,
+        AbsorbPointer(absorbing: _saving, child: section),
         if (widget.footer case final footer?) CatchPageBody(child: footer),
       ],
     );
@@ -165,9 +179,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
     return CatchFormRowScope<P>(
       fieldCopy: widget.fieldCopy,
       isExpanded: _accordion.isExpanded(key),
-      toggle: () => _accordion.toggle(key),
+      toggle: () {
+        if (!_saving) _accordion.toggle(key);
+      },
       collapse: _accordion.collapse,
-      save: widget.onSave,
+      save: _save,
       textCommitMode: widget.textCommitMode,
     );
   }
@@ -175,17 +191,55 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
 
 /// Internal save feedback owned and disposed by the form list's row editors.
 @internal
-class CatchFormSaveState {
+class CatchFormSaveState extends ChangeNotifier {
   Object? error;
-  bool saving = false;
   CatchFieldStatus status = CatchFieldStatus.idle;
-  Timer? savedTimer;
+  Timer? _savedTimer;
+  bool _disposed = false;
+
+  bool get saving => status == CatchFieldStatus.saving;
+
+  /// One pending/error/success lifecycle for every typed editor. A rejected
+  /// save keeps its draft open; only an accepted save earns success feedback.
+  Future<bool> submit(Future<bool> Function() save) async {
+    if (_disposed || saving) return false;
+    _savedTimer?.cancel();
+    error = null;
+    status = CatchFieldStatus.saving;
+    notifyListeners();
+    try {
+      final accepted = await save();
+      if (_disposed) return false;
+      status = accepted ? CatchFieldStatus.saved : CatchFieldStatus.idle;
+      if (accepted) {
+        _savedTimer = Timer(CatchFieldTokens.savedStatusHold, () {
+          if (_disposed) return;
+          status = CatchFieldStatus.idle;
+          notifyListeners();
+        });
+      }
+      notifyListeners();
+      return accepted;
+    } catch (failure) {
+      if (_disposed) return false;
+      error = failure;
+      status = CatchFieldStatus.idle;
+      notifyListeners();
+      return false;
+    }
+  }
 
   void reset() {
-    savedTimer?.cancel();
+    if (_disposed || saving) return;
+    _savedTimer?.cancel();
     error = null;
     status = CatchFieldStatus.idle;
   }
 
-  void dispose() => savedTimer?.cancel();
+  @override
+  void dispose() {
+    _disposed = true;
+    _savedTimer?.cancel();
+    super.dispose();
+  }
 }

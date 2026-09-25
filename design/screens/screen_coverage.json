@@ -166,7 +166,7 @@
       "status": "alias",
       "priority": "P1",
       "canonicalRouteId": "dashboardScreen",
-      "reason": "The runtime /catches GoRoute is redirect-only and resolves to Dashboard Home; screen.catches.hub remains historical design evidence."
+      "reason": "Legacy /catches links redirect to Dashboard Home; the unused hub implementation and its preview contract are retired."
     },
     {
       "routeId": "swipeEventScreen",

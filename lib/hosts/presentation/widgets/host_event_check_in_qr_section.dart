@@ -36,13 +36,13 @@ class _HostEventCheckInQrSectionState
             ),
           );
       if (mounted) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostsHostEventAttendancePanelRuntimeShareReady,
         );
       }
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) setState(() => _sharing = false);
     }
