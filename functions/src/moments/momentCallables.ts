@@ -32,6 +32,7 @@ import {
   type MomentDefinition,
   type MomentScope,
 } from "./momentModel";
+import {runManualMoment, type MomentRunnerDeps} from "./momentRunner";
 
 /**
  * Organizer-facing moment management, kept as deps-injected handlers so the
@@ -241,6 +242,41 @@ async function lifecycleWrite(
     momentToDocument(result.moment, deps.nowMillis(), false),
     {merge: true});
   return {moment: result.moment};
+}
+
+/** Fires a manual moment once per caller-supplied request key. The
+ *  callable supplies the key (client-generated id per tap); retries and
+ *  double-submits resolve to the same run. */
+export async function runOrganizerMoment(
+  deps: MomentCallablesDeps,
+  runner: MomentRunnerDeps,
+  params: MomentRefParams & {requestKey: string},
+): Promise<{runId: string}> {
+  const db = deps.firestore();
+  if (typeof params.requestKey !== "string" ||
+      params.requestKey.trim().length === 0) {
+    throw new HttpsError(
+      "invalid-argument", "requestKey is required for manual moments.");
+  }
+  await deps.authorizeManage(db, params.scope, params.actorUid);
+  const snap = await db.collection(MOMENTS_COLLECTION)
+    .doc(params.momentId).get();
+  const current = snap.exists ?
+    momentFromDocument(snap.data() as Record<string, unknown>) : null;
+  if (current === null || !sameScope(current.scope, params.scope)) {
+    throw new HttpsError("not-found", "Moment not found.");
+  }
+  if (current.status !== "armed") {
+    throw new HttpsError(
+      "failed-precondition", "Only armed moments can be run manually.");
+  }
+  const result = await runManualMoment(
+    {...runner, firestore: deps.firestore},
+    params.momentId, params.requestKey);
+  if ("rejected" in result) {
+    throw new HttpsError("failed-precondition", result.rejected);
+  }
+  return result;
 }
 
 /** Lists moments for one scope; the caller already holds manage access. */

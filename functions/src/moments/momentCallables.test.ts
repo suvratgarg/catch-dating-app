@@ -8,6 +8,7 @@ import {
   pauseOrganizerMoment,
   requireMomentManageAuthority,
   resumeOrganizerMoment,
+  runOrganizerMoment,
   upsertOrganizerMoment,
   type MomentCallablesDeps,
 } from "./momentCallables";
@@ -157,6 +158,63 @@ test("scope is immutable and pause/resume preserve approval", async () => {
   assert.equal(resumed.moment.status, "armed");
   assert.equal(resumed.moment.approval?.approvedByUid, "mgr");
 });
+
+test("runOrganizerMoment requires armed + requestKey, fires once",
+  async () => {
+    const db = new FakeFirestore({});
+    db.setDoc("organizerPrograms/prog", {
+      organizerId: "org-1", status: "active", capabilities: ["messaging"],
+      startsAt: ts(0), endsAt: ts(9_000_000),
+    });
+    const {deps} = makeDeps(db);
+    const created = await upsertOrganizerMoment(deps, {
+      actorUid: "mgr",
+      payload: {
+        scope: programScope, name: "Send now",
+        initiation: {kind: "manual"}, sense: "audience",
+        audience: {kind: "households", rsvpPendingOnly: false},
+        action: {kind: "sendTemplate", connectionId: "conn1",
+          templateId: "tpl", variables: {}},
+      },
+    });
+    const runner = {
+      firestore: () => db as never,
+      nowMillis: () => NOW,
+      quietEndMillis: () => null,
+      localDayKey: () => "d", localMinuteOfDay: () => 720,
+      quietHoursFor: () => null, dailyCapFor: () => 0,
+      pushCopyFor: async () => ({title: "t", body: "b"}),
+      sendTemplateToPhone: async () => {},
+      sendPushToUid: async () => {}, writeStaffAttention: async () => {},
+      loadConsentFacts: async () => ({}),
+    };
+    await assert.rejects(
+      runOrganizerMoment(deps, runner, {
+        actorUid: "mgr", scope: programScope,
+        momentId: created.moment.momentId, requestKey: "r1",
+      }),
+      /armed/);
+    await armOrganizerMoment(deps, {
+      actorUid: "mgr", scope: programScope,
+      momentId: created.moment.momentId,
+    });
+    const run = await runOrganizerMoment(deps, runner, {
+      actorUid: "mgr", scope: programScope,
+      momentId: created.moment.momentId, requestKey: "r1",
+    });
+    assert.ok(run.runId.length > 0);
+    const retry = await runOrganizerMoment(deps, runner, {
+      actorUid: "mgr", scope: programScope,
+      momentId: created.moment.momentId, requestKey: "r1",
+    });
+    assert.equal(retry.runId, run.runId);
+    await assert.rejects(
+      runOrganizerMoment(deps, runner, {
+        actorUid: "mgr", scope: programScope,
+        momentId: created.moment.momentId, requestKey: "",
+      }),
+      /requestKey/);
+  });
 
 test("default authority: manager, communications staff; others denied",
   async () => {
