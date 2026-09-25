@@ -653,6 +653,18 @@ export {
   listProgramHouseholds,
 } from "./programs/programGuests";
 export {
+  upsertOrganizerMoment,
+  armOrganizerMoment,
+  pauseOrganizerMoment,
+  resumeOrganizerMoment,
+  runOrganizerMoment,
+  listOrganizerMoments,
+} from "./moments/momentCallables";
+export {
+  organizerMomentSweep,
+  programTravelLegMoments,
+} from "./moments/momentSchedule";
+export {
   applyProgramFunctionInvitations,
   recordProgramFunctionRsvp,
 } from "./programRsvp/programRsvpCallables";

@@ -3,13 +3,13 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {
-  armOrganizerMoment,
-  listOrganizerMoments,
-  pauseOrganizerMoment,
+  armOrganizerMomentHandler,
+  listOrganizerMomentsHandler,
+  pauseOrganizerMomentHandler,
   requireMomentManageAuthority,
-  resumeOrganizerMoment,
-  runOrganizerMoment,
-  upsertOrganizerMoment,
+  resumeOrganizerMomentHandler,
+  runOrganizerMomentHandler,
+  upsertOrganizerMomentHandler,
   type MomentCallablesDeps,
 } from "./momentCallables";
 import {MOMENTS_COLLECTION} from "./momentDocuments";
@@ -55,7 +55,7 @@ function makeDeps(db: FakeFirestore, authorized = true) {
 test("upsert creates a draft; list returns it scoped", async () => {
   const db = new FakeFirestore({});
   const {deps, calls} = makeDeps(db);
-  const created = await upsertOrganizerMoment(deps, {
+  const created = await upsertOrganizerMomentHandler(deps, {
     actorUid: "mgr", payload: {...validPayload},
   });
   assert.equal(created.moment.status, "draft");
@@ -64,11 +64,11 @@ test("upsert creates a draft; list returns it scoped", async () => {
   const doc = await db.doc(
     `${MOMENTS_COLLECTION}/${created.moment.momentId}`).get();
   assert.equal((doc.data() as Record<string, unknown>).scopeId, "prog");
-  const list = await listOrganizerMoments(deps, {
+  const list = await listOrganizerMomentsHandler(deps, {
     actorUid: "mgr", scope: programScope,
   });
   assert.equal(list.moments.length, 1);
-  const other = await listOrganizerMoments(deps, {
+  const other = await listOrganizerMomentsHandler(deps, {
     actorUid: "mgr", scope: {kind: "program", programId: "other"},
   });
   assert.equal(other.moments.length, 0);
@@ -78,7 +78,7 @@ test("invalid axis combination is rejected at upsert", async () => {
   const db = new FakeFirestore({});
   const {deps} = makeDeps(db);
   await assert.rejects(
-    upsertOrganizerMoment(deps, {
+    upsertOrganizerMomentHandler(deps, {
       actorUid: "mgr",
       payload: {...validPayload, initiation: {kind: "manual"},
         sense: "individual"},
@@ -89,10 +89,10 @@ test("invalid axis combination is rejected at upsert", async () => {
 test("arm records approval once; re-arm is rejected", async () => {
   const db = new FakeFirestore({});
   const {deps} = makeDeps(db);
-  const created = await upsertOrganizerMoment(deps, {
+  const created = await upsertOrganizerMomentHandler(deps, {
     actorUid: "mgr", payload: {...validPayload},
   });
-  const armed = await armOrganizerMoment(deps, {
+  const armed = await armOrganizerMomentHandler(deps, {
     actorUid: "mgr", scope: programScope,
     momentId: created.moment.momentId,
   });
@@ -101,7 +101,7 @@ test("arm records approval once; re-arm is rejected", async () => {
     approvedByUid: "mgr", approvedAtMillis: NOW,
   });
   await assert.rejects(
-    armOrganizerMoment(deps, {
+    armOrganizerMomentHandler(deps, {
       actorUid: "mgr", scope: programScope,
       momentId: created.moment.momentId,
     }),
@@ -111,14 +111,14 @@ test("arm records approval once; re-arm is rejected", async () => {
 test("editing an armed moment drops it back to draft", async () => {
   const db = new FakeFirestore({});
   const {deps} = makeDeps(db);
-  const created = await upsertOrganizerMoment(deps, {
+  const created = await upsertOrganizerMomentHandler(deps, {
     actorUid: "mgr", payload: {...validPayload},
   });
-  const armed = await armOrganizerMoment(deps, {
+  const armed = await armOrganizerMomentHandler(deps, {
     actorUid: "mgr", scope: programScope,
     momentId: created.moment.momentId,
   });
-  const revised = await upsertOrganizerMoment(deps, {
+  const revised = await upsertOrganizerMomentHandler(deps, {
     actorUid: "mgr",
     payload: {...validPayload, momentId: armed.moment.momentId,
       name: "Renamed"},
@@ -132,26 +132,26 @@ test("editing an armed moment drops it back to draft", async () => {
 test("scope is immutable and pause/resume preserve approval", async () => {
   const db = new FakeFirestore({});
   const {deps} = makeDeps(db);
-  const created = await upsertOrganizerMoment(deps, {
+  const created = await upsertOrganizerMomentHandler(deps, {
     actorUid: "mgr", payload: {...validPayload},
   });
   await assert.rejects(
-    upsertOrganizerMoment(deps, {
+    upsertOrganizerMomentHandler(deps, {
       actorUid: "mgr",
       payload: {...validPayload, momentId: created.moment.momentId,
         scope: {kind: "program", programId: "other"}},
     }),
     /scope cannot change/);
-  await armOrganizerMoment(deps, {
+  await armOrganizerMomentHandler(deps, {
     actorUid: "mgr", scope: programScope,
     momentId: created.moment.momentId,
   });
-  const paused = await pauseOrganizerMoment(deps, {
+  const paused = await pauseOrganizerMomentHandler(deps, {
     actorUid: "mgr", scope: programScope,
     momentId: created.moment.momentId,
   });
   assert.equal(paused.moment.status, "paused");
-  const resumed = await resumeOrganizerMoment(deps, {
+  const resumed = await resumeOrganizerMomentHandler(deps, {
     actorUid: "mgr", scope: programScope,
     momentId: created.moment.momentId,
   });
@@ -159,7 +159,7 @@ test("scope is immutable and pause/resume preserve approval", async () => {
   assert.equal(resumed.moment.approval?.approvedByUid, "mgr");
 });
 
-test("runOrganizerMoment requires armed + requestKey, fires once",
+test("runOrganizerMomentHandler requires armed + requestKey, fires once",
   async () => {
     const db = new FakeFirestore({});
     db.setDoc("organizerPrograms/prog", {
@@ -167,7 +167,7 @@ test("runOrganizerMoment requires armed + requestKey, fires once",
       startsAt: ts(0), endsAt: ts(9_000_000),
     });
     const {deps} = makeDeps(db);
-    const created = await upsertOrganizerMoment(deps, {
+    const created = await upsertOrganizerMomentHandler(deps, {
       actorUid: "mgr",
       payload: {
         scope: programScope, name: "Send now",
@@ -189,27 +189,27 @@ test("runOrganizerMoment requires armed + requestKey, fires once",
       loadConsentFacts: async () => ({}),
     };
     await assert.rejects(
-      runOrganizerMoment(deps, runner, {
+      runOrganizerMomentHandler(deps, runner, {
         actorUid: "mgr", scope: programScope,
         momentId: created.moment.momentId, requestKey: "r1",
       }),
       /armed/);
-    await armOrganizerMoment(deps, {
+    await armOrganizerMomentHandler(deps, {
       actorUid: "mgr", scope: programScope,
       momentId: created.moment.momentId,
     });
-    const run = await runOrganizerMoment(deps, runner, {
+    const run = await runOrganizerMomentHandler(deps, runner, {
       actorUid: "mgr", scope: programScope,
       momentId: created.moment.momentId, requestKey: "r1",
     });
     assert.ok(run.runId.length > 0);
-    const retry = await runOrganizerMoment(deps, runner, {
+    const retry = await runOrganizerMomentHandler(deps, runner, {
       actorUid: "mgr", scope: programScope,
       momentId: created.moment.momentId, requestKey: "r1",
     });
     assert.equal(retry.runId, run.runId);
     await assert.rejects(
-      runOrganizerMoment(deps, runner, {
+      runOrganizerMomentHandler(deps, runner, {
         actorUid: "mgr", scope: programScope,
         momentId: created.moment.momentId, requestKey: "",
       }),

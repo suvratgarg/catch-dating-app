@@ -1,6 +1,11 @@
 import * as admin from "firebase-admin";
-import {HttpsError} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError, onCall} from
+  "firebase-functions/v2/https";
 import type {Firestore} from "firebase-admin/firestore";
+import {requireAuth} from "../shared/auth";
+import {appCheckCallableOptionsWithLimits} from
+  "../shared/callableOptions";
+import {checkRateLimit} from "../shared/rateLimit";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,
@@ -10,7 +15,34 @@ import {
   requireProgramAccess,
   requireProgramDuty,
 } from "../shared/programAuthority";
-import {requireDoc} from "../shared/validation";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {
+  validateListOrganizerMomentsCallablePayload,
+  validateOrganizerMomentActionCallablePayload,
+  validateRunOrganizerMomentCallablePayload,
+  validateUpsertOrganizerMomentCallablePayload,
+} from "../shared/generated/schemaValidators";
+import type {
+  ListOrganizerMomentsCallablePayload,
+} from "../shared/generated/listOrganizerMomentsCallablePayload";
+import type {
+  ListOrganizerMomentsCallableResponse,
+} from "../shared/generated/listOrganizerMomentsCallableResponse";
+import type {
+  OrganizerMomentActionCallablePayload,
+} from "../shared/generated/organizerMomentActionCallablePayload";
+import type {
+  OrganizerMomentCallableResponse,
+} from "../shared/generated/organizerMomentCallableResponse";
+import type {
+  RunOrganizerMomentCallablePayload,
+} from "../shared/generated/runOrganizerMomentCallablePayload";
+import type {
+  RunOrganizerMomentCallableResponse,
+} from "../shared/generated/runOrganizerMomentCallableResponse";
+import type {
+  UpsertOrganizerMomentCallablePayload,
+} from "../shared/generated/upsertOrganizerMomentCallablePayload";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {
   MOMENTS_COLLECTION,
@@ -33,6 +65,7 @@ import {
   type MomentScope,
 } from "./momentModel";
 import {runManualMoment, type MomentRunnerDeps} from "./momentRunner";
+import {buildMomentRunnerDeps} from "./momentWiring";
 
 /**
  * Organizer-facing moment management, kept as deps-injected handlers so the
@@ -103,7 +136,7 @@ export interface UpsertMomentParams extends ActorParams {
 }
 
 /** Creates a draft moment or revises an existing one back to draft. */
-export async function upsertOrganizerMoment(
+export async function upsertOrganizerMomentHandler(
   deps: MomentCallablesDeps,
   params: UpsertMomentParams,
 ): Promise<{moment: MomentDefinition}> {
@@ -172,7 +205,7 @@ interface MomentRefParams extends ActorParams {
 }
 
 /** Approve-the-rule-once: arms the moment under the actor's approval. */
-export async function armOrganizerMoment(
+export async function armOrganizerMomentHandler(
   deps: MomentCallablesDeps,
   params: MomentRefParams,
 ): Promise<{moment: MomentDefinition}> {
@@ -183,7 +216,7 @@ export async function armOrganizerMoment(
     }));
 }
 
-export async function pauseOrganizerMoment(
+export async function pauseOrganizerMomentHandler(
   deps: MomentCallablesDeps,
   params: MomentRefParams,
 ): Promise<{moment: MomentDefinition}> {
@@ -191,7 +224,7 @@ export async function pauseOrganizerMoment(
 }
 
 /** Resuming reuses the standing approval — the rule did not change. */
-export async function resumeOrganizerMoment(
+export async function resumeOrganizerMomentHandler(
   deps: MomentCallablesDeps,
   params: MomentRefParams,
 ): Promise<{moment: MomentDefinition}> {
@@ -247,7 +280,7 @@ async function lifecycleWrite(
 /** Fires a manual moment once per caller-supplied request key. The
  *  callable supplies the key (client-generated id per tap); retries and
  *  double-submits resolve to the same run. */
-export async function runOrganizerMoment(
+export async function runOrganizerMomentHandler(
   deps: MomentCallablesDeps,
   runner: MomentRunnerDeps,
   params: MomentRefParams & {requestKey: string},
@@ -280,7 +313,7 @@ export async function runOrganizerMoment(
 }
 
 /** Lists moments for one scope; the caller already holds manage access. */
-export async function listOrganizerMoments(
+export async function listOrganizerMomentsHandler(
   deps: MomentCallablesDeps,
   params: ActorParams & {scope: MomentScope},
 ): Promise<{moments: MomentDefinition[]}> {
@@ -302,6 +335,220 @@ export async function listOrganizerMoments(
 function readSense(raw: unknown): MomentDefinition["sense"] {
   return raw === "individual" ? "individual" : "audience";
 }
+
+function scopeToWire(
+  scope: MomentScope,
+): OrganizerMomentCallableResponse["moment"]["scope"] {
+  return scope.kind === "event" ?
+    {kind: "event", eventId: scope.eventId, programId: null} :
+    {kind: "program", eventId: null, programId: scope.programId};
+}
+
+function momentToWire(
+  moment: MomentDefinition,
+): OrganizerMomentCallableResponse["moment"] {
+  const initiation = moment.initiation;
+  return {
+    momentId: moment.momentId,
+    scope: scopeToWire(moment.scope),
+    name: moment.name,
+    initiation: {
+      kind: initiation.kind,
+      atMillis: initiation.kind === "scheduled" ? initiation.atMillis : null,
+      anchorKind: initiation.kind === "anchored" ?
+        initiation.anchorKind : null,
+      anchorId: initiation.kind === "anchored" ? initiation.anchorId : null,
+      offsetMinutes: initiation.kind === "anchored" ?
+        initiation.offsetMinutes : null,
+      triggerKind: initiation.kind === "triggered" ?
+        initiation.triggerKind : null,
+      functionId: initiation.kind === "triggered" ?
+        initiation.functionId : null,
+    },
+    sense: moment.sense,
+    audience: momentAudienceToWire(moment.audience),
+    action: momentActionToWire(moment.action),
+    status: moment.status,
+    approval: moment.approval,
+    origin: moment.origin,
+    revision: moment.revision,
+  };
+}
+
+function momentAudienceToWire(
+  audience: MomentDefinition["audience"],
+): OrganizerMomentCallableResponse["moment"]["audience"] {
+  switch (audience.kind) {
+  case "subject":
+    return {kind: "subject"};
+  case "eventParticipants":
+    return {kind: "eventParticipants", statuses: [...audience.statuses]};
+  case "functionGuests":
+    return {
+      kind: "functionGuests",
+      functionId: audience.functionId,
+      rsvp: [...audience.rsvp],
+      householdDedupe: audience.householdDedupe,
+    };
+  case "households":
+    return {kind: "households", rsvpPendingOnly: audience.rsvpPendingOnly};
+  case "staffDuty":
+    return {
+      kind: "staffDuty",
+      duty: audience.duty,
+      scopeIds: audience.scopeIds === null ? null : [...audience.scopeIds],
+    };
+  }
+}
+
+function momentActionToWire(
+  action: MomentDefinition["action"],
+): OrganizerMomentCallableResponse["moment"]["action"] {
+  switch (action.kind) {
+  case "sendTemplate":
+    return {
+      kind: "sendTemplate",
+      connectionId: action.connectionId,
+      templateId: action.templateId,
+      variables: {...action.variables},
+    };
+  case "push":
+    return {
+      kind: "push",
+      notificationType: action.notificationType,
+      preferenceKey: action.preferenceKey,
+    };
+  case "staffAttention":
+    return {
+      kind: "staffAttention",
+      duty: action.duty,
+      severity: action.severity,
+      titleTemplate: action.titleTemplate,
+    };
+  }
+}
+
+function scopeFromWire(
+  scope: OrganizerMomentActionCallablePayload["scope"],
+): MomentScope {
+  if (scope.kind === "event") {
+    if (typeof scope.eventId !== "string" || scope.eventId.length === 0) {
+      throw new HttpsError(
+        "invalid-argument", "scope.eventId is required for event moments.");
+    }
+    return {kind: "event", eventId: scope.eventId};
+  }
+  if (typeof scope.programId !== "string" || scope.programId.length === 0) {
+    throw new HttpsError(
+      "invalid-argument", "scope.programId is required for program moments.");
+  }
+  return {kind: "program", programId: scope.programId};
+}
+
+const momentCallableLimits = {timeoutSeconds: 60, maxInstances: 20};
+
+function fullDeps(): MomentCallablesDeps {
+  return {
+    ...defaultMomentCallablesDeps,
+    authorizeManage: requireMomentManageAuthority,
+  };
+}
+
+async function upsertHandler(
+  request: CallableRequest<unknown>,
+): Promise<OrganizerMomentCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<UpsertOrganizerMomentCallablePayload>(
+    request, validateUpsertOrganizerMomentCallablePayload);
+  const deps = fullDeps();
+  await checkRateLimit(
+    deps.firestore(), actorUid, "upsertOrganizerMoment");
+  const result = await upsertOrganizerMomentHandler(deps, {
+    actorUid,
+    payload: data as unknown as Record<string, unknown>,
+  });
+  return {moment: momentToWire(result.moment)};
+}
+
+async function actionHandler(
+  request: CallableRequest<unknown>,
+  apply: (
+    deps: MomentCallablesDeps,
+    params: {actorUid: string; scope: MomentScope; momentId: string},
+  ) => Promise<{moment: MomentDefinition}>,
+  actionName: string,
+): Promise<OrganizerMomentCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<OrganizerMomentActionCallablePayload>(
+    request, validateOrganizerMomentActionCallablePayload);
+  const deps = fullDeps();
+  await checkRateLimit(deps.firestore(), actorUid, actionName);
+  const result = await apply(deps, {
+    actorUid,
+    scope: scopeFromWire(data.scope),
+    momentId: data.momentId,
+  });
+  return {moment: momentToWire(result.moment)};
+}
+
+async function runHandler(
+  request: CallableRequest<unknown>,
+): Promise<RunOrganizerMomentCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<RunOrganizerMomentCallablePayload>(
+    request, validateRunOrganizerMomentCallablePayload);
+  const deps = fullDeps();
+  await checkRateLimit(deps.firestore(), actorUid, "runOrganizerMoment");
+  return runOrganizerMomentHandler(deps, buildMomentRunnerDeps(), {
+    actorUid,
+    scope: scopeFromWire(data.scope),
+    momentId: data.momentId,
+    requestKey: data.requestKey,
+  });
+}
+
+async function listHandler(
+  request: CallableRequest<unknown>,
+): Promise<ListOrganizerMomentsCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<ListOrganizerMomentsCallablePayload>(
+    request, validateListOrganizerMomentsCallablePayload);
+  const deps = fullDeps();
+  await checkRateLimit(deps.firestore(), actorUid, "listOrganizerMoments");
+  const result = await listOrganizerMomentsHandler(deps, {
+    actorUid,
+    scope: scopeFromWire(data.scope),
+  });
+  return {moments: result.moments.map(momentToWire)};
+}
+
+export const upsertOrganizerMoment = onCall(
+  appCheckCallableOptionsWithLimits(momentCallableLimits),
+  (request) => upsertHandler(request)
+);
+export const armOrganizerMoment = onCall(
+  appCheckCallableOptionsWithLimits(momentCallableLimits),
+  (request) => actionHandler(request, armOrganizerMomentHandler,
+    "armOrganizerMoment")
+);
+export const pauseOrganizerMoment = onCall(
+  appCheckCallableOptionsWithLimits(momentCallableLimits),
+  (request) => actionHandler(request, pauseOrganizerMomentHandler,
+    "pauseOrganizerMoment")
+);
+export const resumeOrganizerMoment = onCall(
+  appCheckCallableOptionsWithLimits(momentCallableLimits),
+  (request) => actionHandler(request, resumeOrganizerMomentHandler,
+    "resumeOrganizerMoment")
+);
+export const runOrganizerMoment = onCall(
+  appCheckCallableOptionsWithLimits(momentCallableLimits),
+  (request) => runHandler(request)
+);
+export const listOrganizerMoments = onCall(
+  appCheckCallableOptionsWithLimits(momentCallableLimits),
+  (request) => listHandler(request)
+);
 
 /** Serializes a definition for storage; scopeKind/scopeId are denormalized
  *  for list queries. */

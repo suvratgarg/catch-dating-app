@@ -1389,6 +1389,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Moments are authored, armed, and fired only through manager/duty-
+    // authorized callables and the scheduled sweep; run and send records are
+    // engine-internal execution journals.
+    match /organizerMoments/{momentId} {
+      allow read, write: if false;
+    }
+
+    match /organizerMomentRuns/{runId} {
+      allow read, write: if false;
+    }
+
+    match /organizerMomentSends/{sendId} {
+      allow read, write: if false;
+    }
+
     match /organizerBroadcastSummaries/{broadcastId} {
       allow read, write: if false;
     }
