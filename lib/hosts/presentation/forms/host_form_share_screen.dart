@@ -3,8 +3,8 @@ import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
@@ -295,9 +295,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
     try {
       await ref.read(clipboardControllerProvider).copyText(value);
       if (!mounted) return;
-      showCatchSnackBar(context, confirmation);
+      showCatchNotice(context, confirmation, tone: CatchNoticeTone.success);
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -311,7 +311,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
             origin: _shareOrigin(originContext),
           );
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -334,11 +334,15 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
         _trackedLink = link;
         _creatingLink = false;
       });
-      showCatchSnackBar(context, context.l10n.hostFormTrackedLinkReady);
+      showCatchNotice(
+        context,
+        context.l10n.hostFormTrackedLinkReady,
+        tone: CatchNoticeTone.success,
+      );
     } on Object catch (error) {
       if (!mounted) return;
       setState(() => _creatingLink = false);
-      showCatchErrorSnackBar(context, error);
+      showCatchNoticeError(context, error);
     }
   }
 }

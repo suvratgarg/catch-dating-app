@@ -5,8 +5,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart'
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
@@ -264,7 +264,7 @@ class _InvitationDetailBody extends ConsumerWidget {
       }
     } catch (error) {
       if (context.mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.explore,
@@ -286,7 +286,7 @@ class _InvitationDetailBody extends ConsumerWidget {
       );
     } catch (error) {
       if (context.mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.explore,
@@ -508,14 +508,14 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
             user: profile,
           );
       if (mounted) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.crossPathsPairInventoryBookingStarted,
         );
       }
     } catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.explore,

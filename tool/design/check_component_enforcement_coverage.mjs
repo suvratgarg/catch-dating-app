@@ -141,6 +141,7 @@ function runCli() {
   const registry = readJson("design/components/catch.components.json");
   const pluginSource = [
     read("packages/catch_ui_lints/lib/src/catch_ui_rules.dart"),
+    read("packages/catch_ui_lints/lib/src/catch_ui_feedback_rules.dart"),
     read("packages/catch_ui_lints/lib/src/catch_row_ownership_rules.dart"),
   ].join("\n");
   const checkerSource = read("tool/architecture/check_ui_composition_contracts.dart");

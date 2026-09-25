@@ -49,6 +49,7 @@ export function groupProgressSource(params: {
   planGeneration: unknown; now: number;
 }): GroupProgressSource {
   const {context, groupId, event, plan, now} = params;
+  if (!event.eventFormat) throw invalidSource();
   const route = event.eventFormat.activityDetails?.routePlan ?? null;
   const itinerary = event.itinerary ?? [];
   if (new Set(itinerary.map((s) => s.id)).size !== itinerary.length ||

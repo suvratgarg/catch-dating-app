@@ -1421,6 +1421,19 @@
         }
       ],
       "reason": "New message is a pushed person directory with a full-width Section/Field collection and explicit communication route selection."
+    },
+    "HostEventOfferPreferencesScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart",
+          "symbol": "_HostEventOfferPreferencesScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The response offer workspace opens manager event payment settings as an imperative step-flow page, with the shared private preferences editor using the same layout family."
     }
   },
   "screens": [
@@ -10337,7 +10350,7 @@
             "symbol": "HostClubEditTab"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+            "file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
             "symbol": "HostClubEventDefaultsScreen"
           },
           {
@@ -11600,7 +11613,7 @@
               "HostEventDefaultsEditor"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+              "file": "lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart",
               "symbol": "HostClubEventDefaultsScreen"
             },
             "currentOwner": "HostClubEventDefaultsScreen",
@@ -13882,14 +13895,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CreateEventStepHeader"
+              "HostWizardStepHeader"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/event_management/widgets/create_event_step_header.dart",
-              "symbol": "CreateEventStepHeader"
+              "file": "lib/hosts/presentation/widgets/host_wizard_step_header.dart",
+              "symbol": "HostWizardStepHeader"
             },
             "currentOwner": "CreateEventScreen",
-            "targetOwner": "provider-free create event step header",
+            "targetOwner": "shared provider-free Host wizard step header",
             "dependencies": [
               "catch.top_bar"
             ],

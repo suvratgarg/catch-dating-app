@@ -13,8 +13,8 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -734,7 +734,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           .loadNext();
     } catch (error) {
       if (!mounted) return;
-      showCatchErrorSnackBar(
+      showCatchNoticeError(
         context,
         error,
         errorContext: AppErrorContext.explore,
@@ -756,20 +756,20 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             .exploreExploreMapScreenMessageLocationPermissionDeniedForever,
       _ => context.l10n.exploreExploreMapScreenMessageLocationUnavailable,
     };
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       message,
-      action: canOpenSettings
-          ? SnackBarAction(
-              label: context.l10n.exploreExploreMapScreenActionOpenSettings,
-              onPressed: () {
-                unawaited(
-                  ref
-                      .read(deviceLocationProvider.notifier)
-                      .openRecoverySettings(),
-                );
-              },
-            )
+      actionLabel: canOpenSettings
+          ? context.l10n.exploreExploreMapScreenActionOpenSettings
+          : null,
+      onAction: canOpenSettings
+          ? () {
+              unawaited(
+                ref
+                    .read(deviceLocationProvider.notifier)
+                    .openRecoverySettings(),
+              );
+            }
           : null,
     );
   }

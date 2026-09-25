@@ -341,7 +341,13 @@ function hasHttpsCode(error: unknown, code: string) {
 
 test("sendEventBroadcast sends booked Activity and preference-gated push",
   async () => {
-    const h = harness();
+    const h = harness(baseDocs({
+      "events/event-1": {
+        ...baseDocs()["events/event-1"],
+        publicationState: "private",
+        setupRevision: 1,
+      },
+    }));
     const result = await sendEventBroadcastHandler(
       request("host-1", payload()),
       h.deps
@@ -565,6 +571,21 @@ test("authorization, moderation, and lifecycle failures write nothing",
       (error) => hasHttpsCode(error, "failed-precondition")
     );
     assert.equal(past.activities.length, 0);
+
+    const incomplete = harness(baseDocs({
+      "events/event-1": {
+        organizerId: "club-1",
+        status: "active",
+        publicationState: "private",
+        setupRevision: 1,
+      },
+    }));
+    await assert.rejects(
+      sendEventBroadcastHandler(request("host-1", payload()),
+        incomplete.deps),
+      (error) => hasHttpsCode(error, "failed-precondition")
+    );
+    assert.equal(incomplete.activities.length, 0);
   });
 
 test("raw audience cap rejects 501 before sender filtering or fanout",

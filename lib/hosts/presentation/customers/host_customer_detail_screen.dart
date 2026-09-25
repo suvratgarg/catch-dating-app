@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
@@ -349,7 +349,7 @@ class _HostCustomerDetailScreenState
       _refreshDetail();
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -405,7 +405,7 @@ class _HostCustomerDetailScreenState
       _refreshDetail();
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -443,7 +443,7 @@ class _HostCustomerDetailScreenState
       context.pop();
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -497,13 +497,13 @@ class _HostCustomerDetailScreenState
     try {
       final opened = await ref.read(externalLinkControllerProvider).open(uri);
       if (!opened && mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           StateError('Customer contact method could not be opened.'),
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -557,7 +557,7 @@ class _HostCustomerDetailScreenState
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.chat,
@@ -689,7 +689,7 @@ class _HostWhatsappHandoffSheetState
         await controller.recordManualHandoffOpened(task);
       } on Object {
         if (!mounted) return;
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           ExternalActionException(
             context.l10n.hostCustomersWhatsappRecordFailed,
@@ -701,7 +701,7 @@ class _HostWhatsappHandoffSheetState
       if (mounted) Navigator.of(context).pop();
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customer,

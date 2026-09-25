@@ -22,17 +22,24 @@ import {
 import {
   validateUnmergeOrganizerContactsCallablePayload,
 } from "../shared/generated/validators/unmergeOrganizerContactsInput";
+import {validateOrganizerContactMergeReceiptDocument} from
+  "../shared/generated/validators/organizerContactMergeReceiptDocument";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {AudienceProjectionDeps, rebuildOrganizerContact} from
   "./organizerAudienceProjection";
+import {assertContactMergeReceiptBudget, MergeOrigin,
+  MergeSeatEvidence, prepareContactMergeSeats,
+  prepareContactUnmergeSeats} from "./organizerContactMergeSeats";
 
 const maxAtomicMergeDocuments = 400;
 
 interface OrganizerContactMergeDeps extends AudienceProjectionDeps {
   checkRateLimit: typeof checkRateLimit;
+  rebuildAfterMerge?: (receipt: OrganizerContactMergeReceiptDocument,
+    receiptId: string) => Promise<void>;
 }
 
 const defaultDeps: OrganizerContactMergeDeps = {
@@ -49,292 +56,271 @@ export async function mergeOrganizerContactsHandler(
 ): Promise<MutateOrganizerContactMergeCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<MergeOrganizerContactsCallablePayload>(
-    request,
-    validateMergeOrganizerContactsCallablePayload,
-    normalizeMergePayload
-  );
+    request, validateMergeOrganizerContactsCallablePayload,
+    normalizeMergePayload);
   if (data.survivorContactId === data.sourceContactId) {
     throw new HttpsError("invalid-argument", "A contact cannot merge itself.");
   }
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "mergeOrganizerContacts");
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const receiptId = mergeReceiptId(
-    data.organizerId,
-    "merge",
-    data.idempotencyKey
-  );
+  const receiptId = mergeReceiptId(data.organizerId, "merge",
+    data.idempotencyKey);
   const receiptRef = db.collection("organizerContactMergeReceipts")
     .doc(receiptId);
-  const existingReceipt = await receiptRef.get();
-  if (existingReceipt.exists) {
-    const receipt = receiptDocument(existingReceipt);
-    assertReceiptReplay(receipt, data, "merge");
-    await rebuildMergedContacts(receipt, receiptId, deps);
-    return receiptResponse(receiptId, receipt, true);
-  }
-
   const survivorRef = db.collection("organizerContacts")
     .doc(data.survivorContactId);
   const sourceRef = db.collection("organizerContacts")
     .doc(data.sourceContactId);
-  const [
-    survivorSnap,
-    sourceSnap,
-    edgeSnap,
-    evidenceSnap,
-    claimSnap,
-    originSnap,
-  ] = await Promise.all([
-    survivorRef.get(),
-    sourceRef.get(),
-    db.collection("organizerContactEventEdges")
-      .where("contactId", "==", data.sourceContactId)
-      .limit(maxAtomicMergeDocuments + 1).get(),
-    db.collection("organizerContactIdentityLinks")
-      .where("contactId", "==", data.sourceContactId)
-      .limit(maxAtomicMergeDocuments + 1).get(),
-    db.collection("organizerContactIdentityClaims")
-      .where("verifiedContactId", "==", data.sourceContactId)
-      .limit(maxAtomicMergeDocuments + 1).get(),
-    db.collection("organizerContactOrigins")
-      .where("currentContactId", "==", data.sourceContactId)
-      .limit(maxAtomicMergeDocuments + 1).get(),
-  ]);
-  const survivor = activeContact(survivorSnap, data.organizerId);
-  const source = activeContact(sourceSnap, data.organizerId);
-  if (survivor.revision !== data.survivorRevision ||
-      source.revision !== data.sourceRevision) {
-    throw new HttpsError(
-      "aborted",
-      "Contact data changed. Refresh before merging."
-    );
-  }
-  const totalMoved = edgeSnap.size + evidenceSnap.size + claimSnap.size +
-    originSnap.size;
-  if (totalMoved > maxAtomicMergeDocuments) {
-    throw new HttpsError(
-      "resource-exhausted",
-      "This contact is too large for an in-app merge. Contact support."
-    );
-  }
-  const conflicts = mergeConflicts(survivor, source);
-  if (conflicts.length > 0 && !data.confirmConflicts) {
-    throw new HttpsError(
-      "failed-precondition",
-      `Confirm these identity conflicts: ${conflicts.join(", ")}.`
-    );
-  }
-  const evidence = mergeEvidence(survivor, source);
   const now = deps.timestamp();
-  const receipt: OrganizerContactMergeReceiptDocument = {
-    organizerId: data.organizerId,
-    operation: "merge",
-    survivorContactId: data.survivorContactId,
-    sourceContactId: data.sourceContactId,
-    evidence,
-    conflicts,
-    actorUid,
-    survivorRevision: survivor.revision,
-    sourceRevision: source.revision,
-    movedEdgeIds: edgeSnap.docs.map((doc) => doc.id),
-    movedIdentityEvidenceIds: evidenceSnap.docs.map((doc) => doc.id),
-    movedClaimIds: claimSnap.docs.map((doc) => doc.id),
-    movedOriginIds: originSnap.docs.map((doc) => doc.id),
-    movedEdgeCount: edgeSnap.size,
-    movedIdentityEvidenceCount: evidenceSnap.size,
-    movedClaimCount: claimSnap.size,
-    movedOriginCount: originSnap.size,
-    idempotencyKey: data.idempotencyKey,
-    reversalOfReceiptId: null,
-    createdAt: now,
-  };
-  const moveDocuments = [
-    ...edgeSnap.docs.map((doc) => ({kind: "edge" as const, doc})),
-    ...evidenceSnap.docs.map((doc) => ({kind: "evidence" as const, doc})),
-    ...claimSnap.docs.map((doc) => ({kind: "claim" as const, doc})),
-    ...originSnap.docs.map((doc) => ({kind: "origin" as const, doc})),
-  ];
-  await db.runTransaction(async (tx) => {
-    const [liveReceipt, liveSurvivor, liveSource, ...liveMoves] =
-      await Promise.all([
-        tx.get(receiptRef),
-        tx.get(survivorRef),
-        tx.get(sourceRef),
-        ...moveDocuments.map((item) => tx.get(item.doc.ref)),
-      ]);
-    if (liveReceipt.exists) {
-      assertReceiptReplay(receiptDocument(liveReceipt), data, "merge");
-      return;
+  const result = await db.runTransaction(async (tx) => {
+    await requireOrganizerManager({db, organizerId: data.organizerId,
+      actorUid, transaction: tx});
+    const [deleted, receiptSnap, survivorSnap, sourceSnap,
+      edgeSnap, evidenceSnap, claimSnap, originSnap,
+      survivorOriginSnap] = await Promise.all([
+      tx.get(db.collection("deletedUsers").doc(actorUid)),
+      tx.get(receiptRef), tx.get(survivorRef), tx.get(sourceRef),
+      tx.get(db.collection("organizerContactEventEdges")
+        .where("contactId", "==", data.sourceContactId)
+        .limit(maxAtomicMergeDocuments + 1)),
+      tx.get(db.collection("organizerContactIdentityLinks")
+        .where("contactId", "==", data.sourceContactId)
+        .limit(maxAtomicMergeDocuments + 1)),
+      tx.get(db.collection("organizerContactIdentityClaims")
+        .where("verifiedContactId", "==", data.sourceContactId)
+        .limit(maxAtomicMergeDocuments + 1)),
+      tx.get(db.collection("organizerContactOrigins")
+        .where("currentContactId", "==", data.sourceContactId)
+        .limit(maxAtomicMergeDocuments + 1)),
+      tx.get(db.collection("organizerContactOrigins")
+        .where("currentContactId", "==", data.survivorContactId)
+        .limit(maxAtomicMergeDocuments + 1)),
+    ]);
+    if (deleted.exists) {
+      throw new HttpsError("permission-denied", "Account is unavailable.");
     }
-    const currentSurvivor = activeContact(liveSurvivor, data.organizerId);
-    const currentSource = activeContact(liveSource, data.organizerId);
-    if (currentSurvivor.revision !== data.survivorRevision ||
-        currentSource.revision !== data.sourceRevision) {
-      throw new HttpsError(
-        "aborted",
-        "Contact data changed. Refresh before merging."
-      );
+    if (receiptSnap.exists) {
+      const receipt = receiptDocument(receiptSnap);
+      assertReceiptReplay(receipt, data, "merge");
+      return {receipt, replayed: true};
     }
-    for (let index = 0; index < moveDocuments.length; index += 1) {
-      assertMergeMoveUnchanged(
-        moveDocuments[index].kind,
-        moveDocuments[index].doc,
-        liveMoves[index],
-        data.sourceContactId
-      );
+    const survivor = activeContact(survivorSnap, data.organizerId);
+    const source = activeContact(sourceSnap, data.organizerId);
+    if (survivor.revision !== data.survivorRevision ||
+        source.revision !== data.sourceRevision) {
+      throw new HttpsError("aborted",
+        "Contact data changed. Refresh before merging.");
+    }
+    const totalMoved = edgeSnap.size + evidenceSnap.size + claimSnap.size +
+      originSnap.size;
+    if (totalMoved > maxAtomicMergeDocuments ||
+        survivorOriginSnap.size > maxAtomicMergeDocuments) {
+      throw new HttpsError("resource-exhausted",
+        "This contact is too large for an in-app merge. Contact support.");
+    }
+    const conflicts = mergeConflicts(survivor, source);
+    if (survivor.linkedUid && source.linkedUid &&
+        survivor.linkedUid !== source.linkedUid) {
+      throw new HttpsError("failed-precondition",
+        "Distinct verified accounts require identity reconciliation.");
+    }
+    if (conflicts.length > 0 && !data.confirmConflicts) {
+      throw new HttpsError("failed-precondition",
+        `Confirm these identity conflicts: ${conflicts.join(", ")}.`);
+    }
+    const sourceOrigins = originSnap.docs.map((doc) => ({id: doc.id,
+      ...doc.data()} as MergeOrigin));
+    const survivorOrigins = survivorOriginSnap.docs.map((doc) => ({id: doc.id,
+      ...doc.data()} as MergeOrigin));
+    for (const origin of sourceOrigins) {
+      if (origin.organizerId !== data.organizerId ||
+          origin.currentContactId !== data.sourceContactId ||
+          origin.originContactId !== data.sourceContactId) {
+        throw new HttpsError("failed-precondition",
+          "Contact origin provenance needs reconciliation.");
+      }
+    }
+    for (const origin of survivorOrigins) {
+      if (origin.organizerId !== data.organizerId ||
+          origin.currentContactId !== data.survivorContactId) {
+        throw new HttpsError("failed-precondition",
+          "Survivor origin provenance needs reconciliation.");
+      }
+    }
+    const seats = await prepareContactMergeSeats({db, tx,
+      organizerId: data.organizerId,
+      sourceContactId: data.sourceContactId,
+      survivorContactId: data.survivorContactId,
+      sourceLinkedUid: source.linkedUid,
+      survivorLinkedUid: survivor.linkedUid,
+      sourceOrigins, survivorOrigins});
+    const receipt = {
+      organizerId: data.organizerId, operation: "merge" as const,
+      survivorContactId: data.survivorContactId,
+      sourceContactId: data.sourceContactId,
+      evidence: mergeEvidence(survivor, source), conflicts, actorUid,
+      survivorRevision: survivor.revision, sourceRevision: source.revision,
+      movedEdgeIds: edgeSnap.docs.map((doc) => doc.id),
+      movedIdentityEvidenceIds: evidenceSnap.docs.map((doc) => doc.id),
+      movedClaimIds: claimSnap.docs.map((doc) => doc.id),
+      movedOriginIds: originSnap.docs.map((doc) => doc.id),
+      movedEdgeCount: edgeSnap.size,
+      movedIdentityEvidenceCount: evidenceSnap.size,
+      movedClaimCount: claimSnap.size,
+      movedOriginCount: originSnap.size,
+      idempotencyKey: data.idempotencyKey,
+      reversalOfReceiptId: null, createdAt: now,
+      ...seats.evidence,
+    } as OrganizerContactMergeReceiptDocument & MergeSeatEvidence;
+    assertContactMergeReceiptBudget(receipt, totalMoved,
+      seats.evidence.seatMoves.length);
+    if (!validateOrganizerContactMergeReceiptDocument(receipt)) {
+      throw new HttpsError("failed-precondition",
+        "Merge receipt violates the canonical storage contract.");
     }
     for (const document of edgeSnap.docs) {
-      tx.update(document.ref, {
-        contactId: data.survivorContactId,
-        updatedAt: now,
-      });
+      if (document.data().organizerId !== data.organizerId) {
+        throw new HttpsError("failed-precondition", "Foreign edge in merge.");
+      }
+      tx.update(document.ref, {contactId: data.survivorContactId,
+        updatedAt: now});
     }
     for (const document of evidenceSnap.docs) {
-      tx.update(document.ref, {
-        contactId: data.survivorContactId,
-        updatedAt: now,
-      });
+      if (document.data().organizerId !== data.organizerId) {
+        throw new HttpsError("failed-precondition",
+          "Foreign identity in merge.");
+      }
+      tx.update(document.ref, {contactId: data.survivorContactId,
+        updatedAt: now});
     }
     for (const document of claimSnap.docs) {
       const claim = document.data() as OrganizerContactIdentityClaimDocument;
-      tx.update(document.ref, {
-        verifiedContactId: data.survivorContactId,
+      if (claim.organizerId !== data.organizerId) {
+        throw new HttpsError("failed-precondition", "Foreign claim in merge.");
+      }
+      tx.update(document.ref, {verifiedContactId: data.survivorContactId,
         revision: Math.max(claim.revision + 1, now.toMillis()),
-        updatedAt: now,
-      });
+        updatedAt: now});
     }
     for (const document of originSnap.docs) {
       tx.update(document.ref, {currentContactId: data.survivorContactId});
     }
-    tx.update(survivorRef, {
-      ambiguousCandidateContactIds: [],
-      revision: Math.max(currentSurvivor.revision + 1, now.toMillis()),
-      updatedAt: now,
-    });
-    tx.update(sourceRef, {
-      identityState: "merged",
+    seats.apply();
+    tx.update(survivorRef, {ambiguousCandidateContactIds: [],
+      revision: Math.max(survivor.revision + 1, now.toMillis()),
+      updatedAt: now});
+    tx.update(sourceRef, {identityState: "merged",
       mergedIntoContactId: data.survivorContactId,
-      revision: Math.max(currentSource.revision + 1, now.toMillis()),
-      updatedAt: now,
-      deletedAt: now,
-    });
+      revision: Math.max(source.revision + 1, now.toMillis()),
+      updatedAt: now, deletedAt: now});
     tx.create(receiptRef, receipt);
+    return {receipt, replayed: false};
   });
-  await rebuildMergedContacts(receipt, receiptId, deps);
-  return receiptResponse(receiptId, receipt, false);
+  await rebuildMergedContacts(result.receipt, receiptId, deps);
+  return receiptResponse(receiptId, result.receipt, result.replayed);
 }
 
-function assertMergeMoveUnchanged(
-  kind: "edge" | "evidence" | "claim" | "origin",
-  planned: FirebaseFirestore.QueryDocumentSnapshot,
-  live: FirebaseFirestore.DocumentSnapshot,
-  sourceContactId: string
-): void {
-  if (!live.exists) {
-    throw new HttpsError("aborted", "A contact fact changed. Refresh first.");
-  }
-  const liveData = live.data() as Record<string, unknown>;
-  const contactField = kind === "claim" ? "verifiedContactId" :
-    kind === "origin" ? "currentContactId" : "contactId";
-  const plannedVersion = planned.updateTime?.toMillis();
-  const liveVersion = live.updateTime?.toMillis();
-  if (liveData[contactField] !== sourceContactId ||
-      plannedVersion === undefined || liveVersion !== plannedVersion) {
-    throw new HttpsError("aborted", "A contact fact changed. Refresh first.");
-  }
-}
-
-/** Reverses exactly the source-origin rows named by a prior merge receipt. */
+/** Reverses only source facts and seat aliases proved by the merge receipt. */
 export async function unmergeOrganizerContactsHandler(
   request: CallableRequest<unknown>,
   deps: OrganizerContactMergeDeps = defaultDeps
 ): Promise<MutateOrganizerContactMergeCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<UnmergeOrganizerContactsCallablePayload>(
-    request,
-    validateUnmergeOrganizerContactsCallablePayload,
-    normalizeUnmergePayload
-  );
+    request, validateUnmergeOrganizerContactsCallablePayload,
+    normalizeUnmergePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "unmergeOrganizerContacts");
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const mergeReceiptRef = db.collection("organizerContactMergeReceipts")
     .doc(data.mergeReceiptId);
-  const reversalId = mergeReversalReceiptId(
-    data.organizerId,
-    data.mergeReceiptId
-  );
+  const reversalId = mergeReversalReceiptId(data.organizerId,
+    data.mergeReceiptId);
   const reversalRef = db.collection("organizerContactMergeReceipts")
     .doc(reversalId);
-  const [mergeReceiptSnap, existingReversal] = await Promise.all([
-    mergeReceiptRef.get(),
-    reversalRef.get(),
-  ]);
-  const mergeReceipt = receiptDocument(mergeReceiptSnap);
-  if (mergeReceipt.organizerId !== data.organizerId ||
-      mergeReceipt.operation !== "merge") {
-    throw new HttpsError("not-found", "Merge receipt not found.");
-  }
-  if (existingReversal.exists) {
-    const receipt = receiptDocument(existingReversal);
-    assertUnmergeReplay(receipt, data, mergeReceipt);
-    await rebuildMergedContacts(receipt, reversalId, deps);
-    return receiptResponse(reversalId, receipt, true);
-  }
   const now = deps.timestamp();
-  const reversal: OrganizerContactMergeReceiptDocument = {
-    ...mergeReceipt,
-    movedOriginIds: mergeReceipt.movedOriginIds ?? [],
-    movedOriginCount: mergeReceipt.movedOriginCount ?? 0,
-    operation: "unmerge",
-    actorUid,
-    idempotencyKey: data.idempotencyKey,
-    reversalOfReceiptId: data.mergeReceiptId,
-    createdAt: now,
-  };
-  const refs = mergeMoveReferences(db, mergeReceipt);
-  await db.runTransaction(async (tx) => {
-    const [liveReversal, sourceSnap, ...moveSnaps] = await Promise.all([
-      tx.get(reversalRef),
+  const result = await db.runTransaction(async (tx) => {
+    await requireOrganizerManager({db, organizerId: data.organizerId,
+      actorUid, transaction: tx});
+    const [deleted, mergeReceiptSnap, reversalSnap] = await Promise.all([
+      tx.get(db.collection("deletedUsers").doc(actorUid)),
+      tx.get(mergeReceiptRef), tx.get(reversalRef),
+    ]);
+    if (deleted.exists) {
+      throw new HttpsError("permission-denied", "Account is unavailable.");
+    }
+    const mergeReceipt = receiptDocument(mergeReceiptSnap) as
+      OrganizerContactMergeReceiptDocument & Partial<MergeSeatEvidence>;
+    if (mergeReceipt.organizerId !== data.organizerId ||
+        mergeReceipt.operation !== "merge") {
+      throw new HttpsError("not-found", "Merge receipt not found.");
+    }
+    if (reversalSnap.exists) {
+      const receipt = receiptDocument(reversalSnap);
+      assertUnmergeReplay(receipt, data, mergeReceipt);
+      return {receipt, replayed: true};
+    }
+    const refs = mergeMoveReferences(db, mergeReceipt);
+    const [sourceSnap, survivorSnap, ...moveSnaps] = await Promise.all([
       tx.get(db.collection("organizerContacts")
         .doc(mergeReceipt.sourceContactId)),
+      tx.get(db.collection("organizerContacts")
+        .doc(mergeReceipt.survivorContactId)),
       ...refs.map((item) => tx.get(item.ref)),
     ]);
-    if (liveReversal.exists) {
-      assertUnmergeReplay(
-        receiptDocument(liveReversal),
-        data,
-        mergeReceipt
-      );
-      return;
-    }
     const source = sourceSnap.data() as OrganizerContactDocument | undefined;
-    if (!source || source.identityState !== "merged" ||
-        source.mergedIntoContactId !== mergeReceipt.survivorContactId) {
-      throw new HttpsError(
-        "failed-precondition",
-        "The source contact changed after this merge."
-      );
+    const survivor = activeContact(survivorSnap, data.organizerId);
+    if (!source || source.organizerId !== data.organizerId ||
+        source.identityState !== "merged" ||
+        source.mergedIntoContactId !== mergeReceipt.survivorContactId ||
+        source.deletedAt === null) {
+      throw new HttpsError("failed-precondition",
+        "The source contact changed after this merge.");
+    }
+    if (source.linkedUid && survivor.linkedUid &&
+        source.linkedUid !== survivor.linkedUid) {
+      throw new HttpsError("failed-precondition",
+        "Distinct verified accounts cannot be unmerged as one seat.");
     }
     for (let index = 0; index < refs.length; index += 1) {
-      const item = refs[index];
-      const snap = moveSnaps[index];
-      assertReversibleMove(item.kind, snap, mergeReceipt);
-      tx.update(item.ref, restoredMovePatch(item.kind, snap, now));
+      assertReversibleMove(refs[index].kind, moveSnaps[index], mergeReceipt);
     }
+    const seatEvidence = mergeReceipt.seatMoves &&
+      mergeReceipt.seatEventGuards &&
+      mergeReceipt.seatAdmissionGuards &&
+      mergeReceipt.survivorOriginIdsBefore &&
+      mergeReceipt.sourceOriginAliasIdsBefore ?
+      mergeReceipt as OrganizerContactMergeReceiptDocument &
+        MergeSeatEvidence : null;
+    const restoreSeats = await prepareContactUnmergeSeats({db, tx,
+      organizerId: data.organizerId,
+      sourceContactId: mergeReceipt.sourceContactId,
+      survivorContactId: mergeReceipt.survivorContactId,
+      movedOriginIds: mergeReceipt.movedOriginIds ?? [],
+      evidence: seatEvidence});
+    const reversal = {...mergeReceipt,
+      movedOriginIds: mergeReceipt.movedOriginIds ?? [],
+      movedOriginCount: mergeReceipt.movedOriginCount ?? 0,
+      operation: "unmerge" as const, actorUid,
+      idempotencyKey: data.idempotencyKey,
+      reversalOfReceiptId: data.mergeReceiptId,
+      createdAt: now} as OrganizerContactMergeReceiptDocument;
+    for (let index = 0; index < refs.length; index += 1) {
+      tx.update(refs[index].ref,
+        restoredMovePatch(refs[index].kind, moveSnaps[index], now));
+    }
+    restoreSeats();
     tx.update(db.collection("organizerContacts")
       .doc(mergeReceipt.sourceContactId), {
-      identityState: "unlinked",
-      mergedIntoContactId: null,
+      identityState: "unlinked", mergedIntoContactId: null,
       deletedAt: null,
       revision: Math.max(source.revision + 1, now.toMillis()),
       updatedAt: now,
     });
     tx.create(reversalRef, reversal);
+    return {receipt: reversal, replayed: false};
   });
-  await rebuildMergedContacts(reversal, reversalId, deps);
-  return receiptResponse(reversalId, reversal, false);
+  await rebuildMergedContacts(result.receipt, reversalId, deps);
+  return receiptResponse(reversalId, result.receipt, result.replayed);
 }
 
 function mergeMoveReferences(
@@ -378,7 +364,8 @@ function assertReversibleMove(
     kind === "origin" ? data.currentContactId : data.contactId;
   const origin = kind === "claim" ? data.originVerifiedContactId :
     data.originContactId;
-  if (current !== receipt.survivorContactId ||
+  if (data.organizerId !== receipt.organizerId ||
+      current !== receipt.survivorContactId ||
       origin !== receipt.sourceContactId) {
     throw new HttpsError(
       "failed-precondition",
@@ -457,6 +444,10 @@ async function rebuildMergedContacts(
   receiptId: string,
   deps: OrganizerContactMergeDeps
 ): Promise<void> {
+  if (deps.rebuildAfterMerge) {
+    await deps.rebuildAfterMerge(receipt, receiptId);
+    return;
+  }
   await rebuildOrganizerContact(
     receipt.survivorContactId,
     `${receiptId}|survivor`,
@@ -475,7 +466,12 @@ function receiptDocument(
   if (!snap.exists) {
     throw new HttpsError("not-found", "Merge receipt not found.");
   }
-  return snap.data() as OrganizerContactMergeReceiptDocument;
+  const receipt = snap.data();
+  if (!validateOrganizerContactMergeReceiptDocument(receipt)) {
+    throw new HttpsError("failed-precondition",
+      "Stored contact merge receipt is malformed.");
+  }
+  return receipt as unknown as OrganizerContactMergeReceiptDocument;
 }
 
 function assertReceiptReplay(

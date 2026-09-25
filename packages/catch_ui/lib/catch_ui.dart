@@ -133,7 +133,6 @@ export 'src/components/catch_share_card_sheet.dart';
 export 'src/components/catch_sheet.dart';
 export 'src/components/catch_sheet_header.dart';
 export 'src/components/catch_sheet_header_variant.dart';
-export 'src/components/catch_snack_bar.dart';
 export 'src/components/catch_status_row.dart';
 export 'src/components/catch_step_header.dart';
 export 'src/components/catch_step_row_data.dart';

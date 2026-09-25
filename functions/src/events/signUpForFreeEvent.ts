@@ -17,6 +17,7 @@ import {
 } from "../shared/generated/validators/eventBookingInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
+import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -100,7 +101,7 @@ export async function signUpForFreeEventHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = eventSnap.data() as EventDocument;
+  const event = requirePublicConfiguredEvent(eventSnap.data() as EventDocument);
   const user = userSnap.data() as UserProfileDocument;
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);

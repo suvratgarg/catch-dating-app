@@ -78,14 +78,12 @@ class EventRepository with EventRepositoryActions {
         toJson: (link) => link.toJson(),
       );
 
-  DocumentReference<Event> _eventRef(String id) => _eventsRef.doc(id);
-
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Future<Event?> fetchEvent(String id) => withBackendErrorContext(
     () async {
-      final doc = await _eventRef(id).get();
-      return doc.exists ? doc.data() : null;
+      final doc = await _db.collection(_collectionPath).doc(id).get();
+      return publishedRichEvent(doc);
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
@@ -95,8 +93,9 @@ class EventRepository with EventRepositoryActions {
   );
 
   Stream<Event?> watchEvent(String id) => withBackendErrorStream(
-    () =>
-        _eventRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    () => _db.collection(_collectionPath).doc(id).snapshots().map(
+      publishedRichEvent,
+    ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch event',
@@ -136,7 +135,7 @@ class EventRepository with EventRepositoryActions {
 
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
       withBackendErrorStream(
-        // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
+        // firestore-index: events (organizerId:ASCENDING,startTime:ASCENDING)
         () => _eventsRef
             .where('organizerId', isEqualTo: clubId)
             .orderBy('startTime')
@@ -316,7 +315,7 @@ class EventRepository with EventRepositoryActions {
     List<String> clubIds,
   ) => withBackendErrorContext(
     () async {
-      // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
+      // firestore-index: events (organizerId:ASCENDING,startTime:ASCENDING)
       final uniqueClubIds = clubIds.toSet().toList()..sort();
       if (uniqueClubIds.isEmpty) return [];
       final nowDateTime = DateTime.now();

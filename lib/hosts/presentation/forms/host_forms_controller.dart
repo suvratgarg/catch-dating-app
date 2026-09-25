@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
@@ -21,44 +25,50 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_forms_controller.g.dart';
+part 'host_form_target_controller.dart';
+part 'host_forms_directory_state.dart';
 
-@immutable
-class HostFormsDirectoryState {
-  const HostFormsDirectoryState({
-    required this.forms,
-    required this.nextCursor,
-    this.loadingMore = false,
-    this.loadMoreError,
-  });
+typedef HostFormAccountDirectoryScope = ({
+  String uid,
+  int accountGeneration,
+  HostFormListRequest request,
+});
 
-  final List<HostFormSummary> forms;
-  final String? nextCursor;
-  final bool loadingMore;
-  final Object? loadMoreError;
-
-  bool get canLoadMore => nextCursor != null && !loadingMore;
-
-  HostFormsDirectoryState copyWith({
-    List<HostFormSummary>? forms,
-    String? nextCursor,
-    bool? loadingMore,
-    Object? loadMoreError,
-    bool clearLoadMoreError = false,
-  }) => HostFormsDirectoryState(
-    forms: forms ?? this.forms,
-    nextCursor: nextCursor ?? this.nextCursor,
-    loadingMore: loadingMore ?? this.loadingMore,
-    loadMoreError: clearLoadMoreError
-        ? null
-        : loadMoreError ?? this.loadMoreError,
+/// The actor is part of this generated family's identity. It forces a fresh
+/// manager read before a newly signed-in account can see directory rows.
+@riverpod
+Future<HostFormsDirectoryState> hostFormsAccountDirectory(
+  Ref ref,
+  HostFormAccountDirectoryScope scope,
+) {
+  final fresh = ref.refresh(
+    hostFormsDirectoryControllerProvider(scope.request).future,
   );
+  // Keep the source family alive until its fresh read settles.
+  ref.listen(hostFormsDirectoryControllerProvider(scope.request), (_, _) {});
+  return fresh;
 }
 
 @riverpod
 class HostFormsDirectoryController extends _$HostFormsDirectoryController {
+  int _readGeneration = 0;
+
+  bool _matchesAccount(HostFormListRequest request) =>
+      request.accountUid == null ||
+      ref.read(firebaseAuthProvider).currentUser?.uid == request.accountUid;
+
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
+    final generation = ++_readGeneration;
+    if (!_matchesAccount(request)) {
+      throw StateError('The Host account changed while loading forms.');
+    }
     final page = await ref.read(hostFormsRepositoryProvider).listForms(request);
+    if (!ref.mounted ||
+        generation != _readGeneration ||
+        !_matchesAccount(request)) {
+      throw StateError('The Host account changed while loading forms.');
+    }
     return HostFormsDirectoryState(
       forms: page.items,
       nextCursor: page.nextCursor,
@@ -67,7 +77,12 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
 
   Future<void> loadMore() async {
     final current = state.asData?.value;
-    if (current == null || !current.canLoadMore) return;
+    if (current == null ||
+        !current.canLoadMore ||
+        !_matchesAccount(request)) {
+      return;
+    }
+    final generation = _readGeneration;
     state = AsyncData(
       current.copyWith(loadingMore: true, clearLoadMoreError: true),
     );
@@ -75,6 +90,11 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
       final page = await ref
           .read(hostFormsRepositoryProvider)
           .listForms(request.copyWith(cursor: current.nextCursor));
+      if (!ref.mounted ||
+          generation != _readGeneration ||
+          !_matchesAccount(request)) {
+        return;
+      }
       final byId = <String, HostFormSummary>{
         for (final form in current.forms) form.formId: form,
         for (final form in page.items) form.formId: form,
@@ -86,6 +106,11 @@ class HostFormsDirectoryController extends _$HostFormsDirectoryController {
         ),
       );
     } on Object catch (error) {
+      if (!ref.mounted ||
+          generation != _readGeneration ||
+          !_matchesAccount(request)) {
+        return;
+      }
       state = AsyncData(
         current.copyWith(loadingMore: false, loadMoreError: error),
       );
@@ -136,22 +161,41 @@ class HostFormEditorState {
 }
 
 @riverpod
-class HostFormEditorController extends _$HostFormEditorController {
-  Timer? _saveTimer;
+class HostFormEditorController extends _$HostFormEditorController
+    with _HostFormEditorTargetMixin {
+  @override
   int _generation = 0;
   int _idCounter = 0;
-  bool _saveRunning = false;
+  @override
   final List<HostFormDefinition> _undoStack = [];
+  @override
   final List<HostFormDefinition> _redoStack = [];
 
   @override
   Future<HostFormEditorState> build(String organizerId, String formId) async {
     ref.onDispose(() => _saveTimer?.cancel());
+    _saveTimer?.cancel();
+    final buildSerial = ++_reloadSerial;
+    _generation++;
+    _targetMutationAccountId = null;
+    _editorAccountId = null;
     _undoStack.clear();
     _redoStack.clear();
+    // Watching the UID rebuilds the editor when the signed-in account changes.
+    final accountId = _watchedAccountId();
+    if (accountId == null) throw StateError('The Host account is not ready.');
+    if (!await _awaitSaveIdle(buildSerial) ||
+        _settledAccountId() != accountId) {
+      throw StateError('The Host account changed while loading the form.');
+    }
     final editor = await ref
         .read(hostFormsRepositoryProvider)
         .getEditor(organizerId: organizerId, formId: formId);
+    if (!ref.mounted || buildSerial != _reloadSerial ||
+        _settledAccountId() != accountId) {
+      throw StateError('The Host account changed while loading the form.');
+    }
+    _editorAccountId = accountId;
     return HostFormEditorState(editor: editor);
   }
 
@@ -428,86 +472,10 @@ class HostFormEditorController extends _$HostFormEditorController {
   void removeLogicRule(int index) =>
       _mutate((definition) => definition.removeLogicRule(index));
 
-  Future<bool> saveNow() async {
-    _saveTimer?.cancel();
-    if (_saveRunning) {
-      while (_saveRunning) {
-        await Future<void>.delayed(CatchMotion.fast);
-      }
-      return state.asData?.value.saveState == HostFormSaveState.saved;
-    }
-    final current = state.asData?.value;
-    if (current == null) return false;
-    if (current.saveState == HostFormSaveState.saved) return true;
-    _saveRunning = true;
-    final generation = _generation;
-    final definition = current.editor.definition;
-    final expectedRevision = current.editor.form.draftRevision;
-    state = AsyncData(
-      current.copyWith(saveState: HostFormSaveState.saving, clearError: true),
-    );
-    try {
-      final saved = await ref
-          .read(hostFormsRepositoryProvider)
-          .updateDraft(
-            organizerId: organizerId,
-            formId: formId,
-            expectedRevision: expectedRevision,
-            definition: definition,
-          );
-      final latest = state.asData?.value;
-      if (latest == null) return false;
-      if (generation == _generation) {
-        state = AsyncData(
-          latest.copyWith(
-            editor: saved,
-            saveState: HostFormSaveState.saved,
-            clearError: true,
-          ),
-        );
-      } else {
-        state = AsyncData(
-          latest.copyWith(
-            editor: latest.editor.copyWith(form: saved.form),
-            saveState: HostFormSaveState.dirty,
-            clearError: true,
-          ),
-        );
-        _scheduleSave();
-      }
-      return generation == _generation;
-    } on Object catch (error) {
-      final latest = state.asData?.value ?? current;
-      final conflict = error is AppException && error.code == 'aborted';
-      state = AsyncData(
-        latest.copyWith(
-          saveState: conflict
-              ? HostFormSaveState.conflict
-              : HostFormSaveState.failed,
-          error: error,
-        ),
-      );
-      return false;
-    } finally {
-      _saveRunning = false;
-    }
-  }
-
-  Future<void> reload() async {
-    _saveTimer?.cancel();
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final editor = await ref
-          .read(hostFormsRepositoryProvider)
-          .getEditor(organizerId: organizerId, formId: formId);
-      _generation = 0;
-      _undoStack.clear();
-      _redoStack.clear();
-      return HostFormEditorState(editor: editor);
-    });
-  }
-
   Future<bool> validate() async {
+    final actor = _editorAccountId;
+    if (!editorBoundTo(actor)) return false;
+    final serial = _reloadSerial;
     final current = state.asData?.value;
     if (current == null) return false;
     state = AsyncData(
@@ -521,6 +489,9 @@ class HostFormEditorController extends _$HostFormEditorController {
             formId: formId,
             definition: current.editor.definition,
           );
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       final latest = state.asData?.value ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -531,6 +502,9 @@ class HostFormEditorController extends _$HostFormEditorController {
       );
       return result.valid;
     } on Object catch (error) {
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       state = AsyncData(
         current.copyWith(operationInProgress: false, error: error),
       );
@@ -539,8 +513,13 @@ class HostFormEditorController extends _$HostFormEditorController {
   }
 
   Future<bool> publish() async {
+    final actor = _editorAccountId;
+    if (!editorBoundTo(actor)) return false;
     if (!await saveNow()) return false;
+    if (!ref.mounted || !editorBoundTo(actor)) return false;
     if (!await validate()) return false;
+    if (!ref.mounted || !editorBoundTo(actor)) return false;
+    final serial = _reloadSerial;
     final current = state.asData?.value;
     if (current == null) return false;
     state = AsyncData(
@@ -554,6 +533,9 @@ class HostFormEditorController extends _$HostFormEditorController {
             formId: formId,
             expectedRevision: current.editor.form.draftRevision,
           );
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       final latest = state.asData?.value ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -564,6 +546,9 @@ class HostFormEditorController extends _$HostFormEditorController {
       );
       return true;
     } on Object catch (error) {
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       state = AsyncData(
         current.copyWith(operationInProgress: false, error: error),
       );
@@ -572,6 +557,9 @@ class HostFormEditorController extends _$HostFormEditorController {
   }
 
   Future<bool> setLifecycle(HostFormLifecycleAction action) async {
+    final actor = _editorAccountId;
+    if (!editorBoundTo(actor)) return false;
+    final serial = _reloadSerial;
     final current = state.asData?.value;
     if (current == null) return false;
     state = AsyncData(
@@ -586,6 +574,9 @@ class HostFormEditorController extends _$HostFormEditorController {
             expectedStatus: current.editor.form.status,
             action: action,
           );
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       final latest = state.asData?.value ?? current;
       state = AsyncData(
         latest.copyWith(
@@ -596,6 +587,9 @@ class HostFormEditorController extends _$HostFormEditorController {
       );
       return true;
     } on Object catch (error) {
+      if (!ref.mounted || serial != _reloadSerial || !editorBoundTo(actor)) {
+        return false;
+      }
       state = AsyncData(
         current.copyWith(operationInProgress: false, error: error),
       );
@@ -603,9 +597,14 @@ class HostFormEditorController extends _$HostFormEditorController {
     }
   }
 
+  @override
   void _mutate(
     HostFormDefinition Function(HostFormDefinition definition) transform,
   ) {
+    if (!editorBoundTo(_editorAccountId)) {
+      unawaited(reload());
+      return;
+    }
     final current = state.asData?.value;
     if (current == null || current.operationInProgress) return;
     final definition = transform(current.editor.definition);
@@ -617,6 +616,10 @@ class HostFormEditorController extends _$HostFormEditorController {
   }
 
   void undo() {
+    if (!editorBoundTo(_editorAccountId)) {
+      unawaited(reload());
+      return;
+    }
     final current = state.asData?.value;
     if (current == null || current.operationInProgress || _undoStack.isEmpty) {
       return;
@@ -627,6 +630,10 @@ class HostFormEditorController extends _$HostFormEditorController {
   }
 
   void redo() {
+    if (!editorBoundTo(_editorAccountId)) {
+      unawaited(reload());
+      return;
+    }
     final current = state.asData?.value;
     if (current == null || current.operationInProgress || _redoStack.isEmpty) {
       return;
@@ -651,11 +658,6 @@ class HostFormEditorController extends _$HostFormEditorController {
       ),
     );
     _scheduleSave();
-  }
-
-  void _scheduleSave() {
-    _saveTimer?.cancel();
-    _saveTimer = Timer(CatchMotion.searchDebounce, () => unawaited(saveNow()));
   }
 
   String _newId(String prefix) {

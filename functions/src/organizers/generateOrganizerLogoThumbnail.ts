@@ -1,7 +1,6 @@
 import {onObjectFinalized} from "firebase-functions/v2/storage";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import sharp from "sharp";
 import {randomUUID} from "crypto";
 import {
   profilePhotoPolicy,
@@ -34,6 +33,7 @@ export const generateOrganizerLogoThumbnail = onObjectFinalized(
 
     try {
       const [sourceBuffer] = await file.download();
+      const sharp = (await import("sharp")).default;
       const thumbnailBuffer = await sharp(sourceBuffer)
         .rotate()
         .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, {

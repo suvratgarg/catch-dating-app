@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -202,11 +202,7 @@ class _HostFormResponseDetailScreenState
             final canLoadMore = queueState?.value?.canLoadMore ?? false;
             final previous = entries == null || queue == null
                 ? -1
-                : queue.targetIndex(
-                    entries,
-                    -1,
-                    hasMore: canLoadMore,
-                  );
+                : queue.targetIndex(entries, -1, hasMore: canLoadMore);
             final next = entries == null || queue == null
                 ? -1
                 : queue.targetIndex(entries, 1);
@@ -230,7 +226,8 @@ class _HostFormResponseDetailScreenState
                         child: CatchButton(
                           label: context.l10n.hostsStepperFooterLabelNext,
                           variant: CatchButtonVariant.secondary,
-                          onPressed: !_busy &&
+                          onPressed:
+                              !_busy &&
                                   !_navigating &&
                                   next >= 0 &&
                                   (entries != null &&
@@ -290,11 +287,13 @@ class _HostFormResponseDetailScreenState
         direction,
         hasMore: current.canLoadMore,
       );
-      for (var pages = 0;
-          target >= current.inboxEntries.length &&
-              current.canLoadMore &&
-              pages < 10;
-          pages++) {
+      for (
+        var pages = 0;
+        target >= current.inboxEntries.length &&
+            current.canLoadMore &&
+            pages < 10;
+        pages++
+      ) {
         await ref.read(provider.notifier).loadMore();
         final refreshed = catchAsyncStateFromAsyncValue(
           ref.read(provider),
@@ -334,7 +333,7 @@ class _HostFormResponseDetailScreenState
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.formResponses,
@@ -369,11 +368,11 @@ class _HostFormResponseDetailScreenState
           );
       _reload();
       if (mounted) {
-        showCatchSnackBar(context, context.l10n.hostApplicationReviewUpdated);
+        showCatchNotice(context, context.l10n.hostApplicationReviewUpdated);
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.applications,
@@ -388,13 +387,13 @@ class _HostFormResponseDetailScreenState
     try {
       final opened = await ref.read(externalLinkControllerProvider).open(uri);
       if (!opened && mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           StateError(context.l10n.hostFormResponseNotProvided),
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -404,7 +403,7 @@ class _HostFormResponseDetailScreenState
           .read(externalLinkControllerProvider)
           .open(Uri.parse(asset.downloadUrl));
       if (!opened && mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           StateError(
             context.l10n.hostFormResponseDownloadFile(fileName: asset.fileName),
@@ -412,7 +411,7 @@ class _HostFormResponseDetailScreenState
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -452,9 +451,9 @@ class _HostFormResponseDetailScreenState
       );
       if (!mounted) return;
       _reload();
-      showCatchSnackBar(context, context.l10n.hostFormConversionComplete);
+      showCatchNotice(context, context.l10n.hostFormConversionComplete);
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) setState(() => _converting = null);
     }
@@ -588,7 +587,7 @@ class _HostFormResponseDetailScreenState
         ),
       );
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
       return null;
     }
   }

@@ -254,6 +254,16 @@ export type BeginOrganizerFormResponseCallableResponse = {
         actionUrl: string | null;
       };
     };
+    /**
+     * @maxItems 100
+     */
+    cityOptions?: {
+      marketId: string;
+      cityId: string;
+      label: string;
+      regionName: string;
+      countryIsoCode: string;
+    }[];
     messagingOffer?: {
       termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
       organizerWhatsapp: string | null;
@@ -265,6 +275,12 @@ export type BeginOrganizerFormResponseCallableResponse = {
   };
   revision: number;
   answers: {
+    [k: string]: string | number | boolean | null | string[];
+  };
+  /**
+   * Private values offered only to the verified respondent for review; never written to draft answers until accepted.
+   */
+  prefillSuggestions?: {
     [k: string]: string | number | boolean | null | string[];
   };
   consentAccepted: boolean;

@@ -48,12 +48,16 @@ class DraftCard extends StatelessWidget {
     required this.isDeleting,
     required this.onSelect,
     required this.onDelete,
+    this.titleOverride,
+    this.bodyOverride,
   });
 
   final EventDraft draft;
   final bool isDeleting;
   final VoidCallback onSelect;
   final VoidCallback? onDelete;
+  final String? titleOverride;
+  final String? bodyOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +67,8 @@ class DraftCard extends StatelessWidget {
       child: CatchField.content(
         emphasis: CatchFieldEmphasis.title,
         copy: catchFieldCopy(context.l10n),
-        title: draft.summary,
-        body: context.l10n.hostDraftSavedAt(
+        title: titleOverride ?? draft.summary,
+        body: bodyOverride ?? context.l10n.hostDraftSavedAt(
           time: _formatRelative(draft.savedAt),
         ),
         icon: CatchIcons.descriptionOutlined,

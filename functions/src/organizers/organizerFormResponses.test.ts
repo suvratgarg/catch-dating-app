@@ -61,6 +61,20 @@ test("respondent validation enforces typed option and numeric bounds", () => {
   );
 });
 
+test("Catch city answers must reference a canonical Indian market", () => {
+  const city = question("city", "City", "shortText", true);
+  city.canonicalFieldId = "city";
+  city.answerDestination = "catchProfile";
+  const value = definition([city]);
+  assert.doesNotThrow(() => validateAnswerShape(value, {
+    city: "in-ka-bengaluru",
+  }, true));
+  for (const answer of ["Bangalore", "au-nsw-sydney", "unknown"]) {
+    assertHttpsCode(() => validateAnswerShape(value, {city: answer}, true),
+      "invalid-argument");
+  }
+});
+
 test("respondent validation checks contact and consent shapes", () => {
   const value = definition([
     question("email", "Email", "email", false),
