@@ -176,12 +176,15 @@ class _Controller extends EventChatController {
   Future<bool> updateAccess(
     EventChatAction action, {
     required String reviewedUid,
+    DateTime? opensAt,
+    DateTime? closesAt,
   }) async => false;
   @override
   Future<bool> send(
     String text, {
     required String reviewedUid,
     String? replyToMessageId,
+    bool announcement = false,
   }) async => false;
   @override
   Future<bool> react(

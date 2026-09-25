@@ -53,6 +53,9 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
+import {readSeatMigrationWriterFence} from
+  "../events/seatMigrationPaged";
+import {prepareProviderSeatChanges} from "./organizerProviderSeats";
 import {organizerProviderCatalog} from "./organizerProviderCatalog";
 import {
   LumaCalendar,
@@ -310,7 +313,7 @@ export async function syncOrganizerProviderEventHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "syncOrganizerProviderEvent");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const event = await requireScopedEvent(db, data.organizerId, data.eventId);
+  await requireScopedEvent(db, data.organizerId, data.eventId);
   const mappingId = externalEventMappingId(data.eventId);
   const mappingRef = db.collection("externalEventMappings").doc(mappingId);
   const mappingSnap = await mappingRef.get();
@@ -422,40 +425,20 @@ export async function syncOrganizerProviderEventHandler(
     const completedAt = deps.now();
     const result = await reconcileLumaGuests({
       db,
-      event,
+      actorUid,
       connectionId: mapping.connectionId,
       mappingId,
+      expectedMappingRevision: mapping.revision,
+      expectedConnectionRevision: connection.revision,
+      expectedSecretVersionResource: connection.secretVersionResource,
+      expectedExternalEventId: mapping.externalEventId,
       guests: fetched.guests,
       pageCount: fetched.pageCount,
       truncated: fetched.truncated,
       now: completedAt,
       run: running,
     });
-    const completed: ProviderSyncRunDocument = {
-      ...running,
-      ...result,
-      status: fetched.truncated || result.skippedCount > 0 ?
-        "partial" : "completed",
-      completedAt,
-    };
-    const batch = db.batch();
-    batch.set(runRef, completed);
-    batch.update(mappingRef, {
-      lastSyncAt: completedAt,
-      lastSuccessfulSyncAt: completedAt,
-      lastSyncStatus: completed.status,
-      lastSyncRunId: runId,
-      updatedAt: completedAt,
-    });
-    batch.update(connectionRef, {
-      status: "active",
-      lastHealthSyncAt: completedAt,
-      lastSuccessfulSyncAt: completedAt,
-      lastErrorCode: null,
-      updatedAt: completedAt,
-    });
-    await batch.commit();
-    return syncResponse(completed, false);
+    return syncResponse(result, false);
   } catch (error) {
     const failedAt = deps.now();
     const errorCode = providerErrorCode(error);
@@ -465,22 +448,46 @@ export async function syncOrganizerProviderEventHandler(
       errorCode,
       completedAt: failedAt,
     };
-    const batch = db.batch();
-    batch.set(runRef, failed);
-    batch.update(mappingRef, {
-      lastSyncAt: failedAt,
-      lastSyncStatus: "failed",
-      lastSyncRunId: runId,
-      updatedAt: failedAt,
+    const settled = await db.runTransaction(async (tx) => {
+      const [runSnap, mappingSnap, connectionSnap] = await Promise.all([
+        tx.get(runRef), tx.get(mappingRef), tx.get(connectionRef),
+      ]);
+      const currentRun = runSnap.data() as ProviderSyncRunDocument |
+        undefined;
+      if (!currentRun || currentRun.inputHash !== inputHash) {
+        throw new HttpsError("failed-precondition",
+          "Provider sync receipt changed during reconciliation.");
+      }
+      if (currentRun.status !== "running") return currentRun;
+      const currentMapping = mappingSnap.data() as
+        ExternalEventMappingDocument | undefined;
+      const currentConnection = connectionSnap.data() as
+        OrganizerProviderConnectionDocument | undefined;
+      tx.set(runRef, failed);
+      if (currentMapping?.lastSyncRunId === runId &&
+          currentMapping.status === "active" &&
+          currentMapping.revision === mapping.revision &&
+          currentMapping.connectionId === mapping.connectionId) {
+        tx.update(mappingRef, {lastSyncAt: failedAt,
+          lastSyncStatus: "failed", lastSyncRunId: runId,
+          updatedAt: failedAt});
+      }
+      if (error instanceof LumaProviderError &&
+          currentConnection?.status === "active" &&
+          currentConnection.organizerId === data.organizerId &&
+          currentConnection.revision === connection.revision &&
+          currentConnection.secretVersionResource ===
+            connection.secretVersionResource) {
+        tx.update(connectionRef, {status: errorCode ===
+          "providerCredentialRejected" ? "credentialRevoked" : "degraded",
+        lastHealthSyncAt: failedAt, lastErrorCode: errorCode,
+        updatedAt: failedAt});
+      }
+      return failed;
     });
-    batch.update(connectionRef, {
-      status: errorCode === "providerCredentialRejected" ?
-        "credentialRevoked" : "degraded",
-      lastHealthSyncAt: failedAt,
-      lastErrorCode: errorCode,
-      updatedAt: failedAt,
-    });
-    await batch.commit();
+    if (settled.status === "completed" || settled.status === "partial") {
+      return syncResponse(settled, true);
+    }
     throw providerHttpsError(error);
   }
 }
@@ -584,91 +591,176 @@ async function fetchLumaGuests(params: {
 
 export async function reconcileLumaGuests(params: {
   db: FirebaseFirestore.Firestore;
-  event: EventDocument;
+  actorUid: string;
   connectionId: string;
   mappingId: string;
+  expectedMappingRevision: number;
+  expectedConnectionRevision: number;
+  expectedSecretVersionResource: string;
+  expectedExternalEventId: string;
   guests: LumaGuest[];
   pageCount: number;
   truncated: boolean;
   now: FirebaseFirestore.Timestamp;
   run: ProviderSyncRunDocument;
-}): Promise<Pick<ProviderSyncRunDocument,
-"pageCount" | "receivedCount" | "createdCount" | "updatedCount" |
-"skippedCount" | "truncated">> {
+}): Promise<ProviderSyncRunDocument> {
   const eventId = params.run.eventId;
-  const existingSnap = await params.db.collection("eventAttendees")
-    .where("eventId", "==", eventId).limit(500).get();
-  const existing = existingSnap.docs.map((doc) => ({
-    id: doc.id,
-    data: doc.data() as EventAttendeeDocument,
-  }));
-  const byGuestId = new Map(existing.filter((row) =>
-    row.data.provider === "luma" && row.data.providerGuestId
-  ).map((row) => [row.data.providerGuestId as string, row]));
-  const byPhone = uniqueIndex(existing, (row) => row.data.phoneE164);
-  const byEmail = uniqueIndex(existing, (row) => row.data.email?.toLowerCase());
-  const usedIds = new Set<string>();
-  const writes: Array<{
+  return params.db.runTransaction(async (tx) => {
+    await requireOrganizerManager({db: params.db,
+      organizerId: params.run.organizerId, actorUid: params.actorUid,
+      transaction: tx});
+    const eventSnap = await tx.get(params.db.collection("events").doc(eventId));
+    const event = eventSnap.data() as EventDocument | undefined;
+    if (!event || (event.organizerId ?? event.clubId) !==
+        params.run.organizerId || event.status === "cancelled" ||
+        event.eventOrigin?.mode !== "externalCompanion" ||
+        event.eventOrigin.provider !== "luma") {
+      throw new HttpsError("failed-precondition",
+        "The event is no longer available for provider sync.");
+    }
+    const mappingRef = params.db.collection("externalEventMappings")
+      .doc(params.mappingId);
+    const connectionRef = params.db.collection("organizerProviderConnections")
+      .doc(params.connectionId);
+    const runRef = params.db.collection("providerSyncRuns").doc(
+      providerSyncRunId(eventId, params.actorUid,
+        params.run.clientOperationId));
+    const [mappingSnap, connectionSnap, runSnap] = await Promise.all([
+      tx.get(mappingRef), tx.get(connectionRef), tx.get(runRef),
+    ]);
+    const mapping = mappingSnap.data() as ExternalEventMappingDocument |
+    undefined;
+    const connection = connectionSnap.data() as
+    OrganizerProviderConnectionDocument | undefined;
+    const run = runSnap.data() as ProviderSyncRunDocument | undefined;
+    if (!mapping || mapping.organizerId !== params.run.organizerId ||
+      mapping.eventId !== eventId || mapping.status !== "active" ||
+      mapping.connectionId !== params.connectionId ||
+      mapping.revision !== params.expectedMappingRevision ||
+      mapping.externalEventId !== params.expectedExternalEventId ||
+      connection?.organizerId !== params.run.organizerId ||
+      connection.status !== "active" ||
+      connection.revision !== params.expectedConnectionRevision ||
+      connection.secretVersionResource !==
+        params.expectedSecretVersionResource ||
+      run?.inputHash !== params.run.inputHash ||
+      run.status !== "running") {
+      throw new HttpsError("failed-precondition",
+        "The current provider sync authority changed.");
+    }
+    const seatMode = await readSeatMigrationWriterFence({db: params.db,
+      tx, eventId});
+    const existingSnap = await tx.get(params.db.collection("eventAttendees")
+      .where("eventId", "==", eventId).limit(501));
+    if (existingSnap.docs.length > 500) {
+      throw new HttpsError("resource-exhausted",
+        "This event roster exceeds provider sync review limits.");
+    }
+    const existing = existingSnap.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data() as EventAttendeeDocument,
+    }));
+    if (existing.some((row) => row.data.eventId !== eventId ||
+        row.data.organizerId !== params.run.organizerId ||
+        row.data.clubId !== event.clubId)) {
+      throw new HttpsError("failed-precondition",
+        "Provider roster contains an attendee from another tenant.");
+    }
+    const byGuestId = new Map(existing.filter((row) =>
+      row.data.provider === "luma" && row.data.providerGuestId
+    ).map((row) => [row.data.providerGuestId as string, row]));
+    if (byGuestId.size !== existing.filter((row) =>
+      row.data.provider === "luma" && row.data.providerGuestId).length) {
+      throw new HttpsError("failed-precondition",
+        "Provider guest identity needs reconciliation.");
+    }
+    const byPhone = uniqueIndex(existing, (row) => row.data.phoneE164);
+    const byEmail = uniqueIndex(existing,
+      (row) => row.data.email?.toLowerCase());
+    const usedIds = new Set<string>();
+    const writes: Array<{
     id: string;
+    old: EventAttendeeDocument | undefined;
     document: EventAttendeeDocument;
     existed: boolean;
     wasCheckedIn: boolean;
   }> = [];
-  let skippedCount = 0;
+    let skippedCount = 0;
 
-  for (const guest of params.guests) {
-    const phoneResult = normalizeRosterPhone(guest.phone);
-    const phone = phoneResult.issue ? null : phoneResult.value;
-    const email = guest.email?.toLowerCase() ?? null;
-    const matched = byGuestId.get(guest.id) ??
+    for (const guest of params.guests) {
+      const phoneResult = normalizeRosterPhone(guest.phone);
+      const phone = phoneResult.issue ? null : phoneResult.value;
+      const email = guest.email?.toLowerCase() ?? null;
+      const matched = byGuestId.get(guest.id) ??
       (phone ? byPhone.get(phone) : undefined) ??
-      (email ? byEmail.get(email) : undefined);
-    const id = matched?.id ?? eventAttendeeId(eventId, `luma:${guest.id}`);
-    if (usedIds.has(id)) {
-      skippedCount += 1;
-      continue;
+      (seatMode === "legacy" && email ? byEmail.get(email) : undefined);
+      const id = matched?.id ?? eventAttendeeId(eventId, `luma:${guest.id}`);
+      if (usedIds.has(id)) {
+        skippedCount += 1;
+        continue;
+      }
+      usedIds.add(id);
+      const old = matched?.data;
+      const document = lumaAttendeeDocument({
+        eventId,
+        clubId: event.clubId,
+        organizerId: params.run.organizerId,
+        connectionId: params.connectionId,
+        guest,
+        old,
+        normalizedPhone: phone,
+        normalizedEmail: email,
+        now: params.now,
+      });
+      writes.push({
+        id, old, document, existed: old !== undefined,
+        wasCheckedIn: old?.status === "checkedIn",
+      });
     }
-    usedIds.add(id);
-    const old = matched?.data;
-    const document = lumaAttendeeDocument({
-      eventId,
-      clubId: params.event.clubId,
-      organizerId: params.run.organizerId,
-      connectionId: params.connectionId,
-      guest,
-      old,
-      normalizedPhone: phone,
-      normalizedEmail: email,
-      now: params.now,
-    });
-    writes.push({
-      id, document, existed: old !== undefined,
-      wasCheckedIn: old?.status === "checkedIn",
-    });
-  }
 
-  const batch = params.db.batch();
-  for (const write of writes) {
-    batch.set(params.db.collection("eventAttendees").doc(write.id),
-      write.document);
-  }
-  const checkedInDelta = writes.reduce((sum, write) =>
-    sum + (!write.wasCheckedIn && write.document.status === "checkedIn" ?
-      1 : 0), 0);
-  if (checkedInDelta > 0) {
-    batch.update(params.db.collection("events").doc(eventId), {
-      checkedInCount: admin.firestore.FieldValue.increment(checkedInDelta),
-    });
-  }
-  await batch.commit();
-  return {
-    pageCount: params.pageCount,
-    receivedCount: params.guests.length,
-    createdCount: writes.filter((write) => !write.existed).length,
-    updatedCount: writes.filter((write) => write.existed).length,
-    skippedCount,
-    truncated: params.truncated,
-  };
+    const seatResult = seatMode === "ready" ?
+      await prepareProviderSeatChanges({db: params.db, tx, event,
+        eventId, organizerId: params.run.organizerId,
+        runId: runRef.id, nowMillis: params.now.toMillis(), writes}) : null;
+    for (const write of writes) {
+      tx.set(params.db.collection("eventAttendees").doc(write.id),
+        write.document);
+    }
+    const checkedInDelta = writes.reduce((sum, write) =>
+      sum + (!write.wasCheckedIn && write.document.status === "checkedIn" ?
+        1 : 0), 0);
+    if (checkedInDelta > 0 || seatResult !== null &&
+      seatResult.seatDelta !== 0) {
+      const eventPatch: Record<string, unknown> = {};
+      if (checkedInDelta > 0) {
+        eventPatch.checkedInCount = admin.firestore.FieldValue.increment(
+          checkedInDelta);
+      }
+      if (seatResult) {
+        eventPatch.bookedCount = seatResult.occupiedAfter;
+      }
+      tx.update(params.db.collection("events").doc(eventId), eventPatch);
+    }
+    const counts = {
+      pageCount: params.pageCount,
+      receivedCount: params.guests.length,
+      createdCount: writes.filter((write) => !write.existed).length,
+      updatedCount: writes.filter((write) => write.existed).length,
+      skippedCount,
+      truncated: params.truncated,
+    };
+    const completed: ProviderSyncRunDocument = {...params.run, ...counts,
+      status: params.truncated || skippedCount > 0 ? "partial" : "completed",
+      completedAt: params.now};
+    tx.set(runRef, completed);
+    tx.update(mappingRef, {lastSyncAt: params.now,
+      lastSuccessfulSyncAt: params.now, lastSyncStatus: completed.status,
+      lastSyncRunId: runRef.id, updatedAt: params.now});
+    tx.update(connectionRef, {status: "active", lastHealthSyncAt: params.now,
+      lastSuccessfulSyncAt: params.now, lastErrorCode: null,
+      updatedAt: params.now});
+    return completed;
+  });
 }
 
 export function lumaAttendeeDocument(params: {

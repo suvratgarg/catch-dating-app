@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -222,6 +223,9 @@ Future<void> pumpOnboardingPage(
       container: container,
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: (context, child) => CatchNoticeOverlay(
+          child: child ?? const SizedBox.shrink(),
+        ),
         home: Scaffold(body: child),
       ),
     ),

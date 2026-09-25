@@ -7,9 +7,9 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -43,32 +43,6 @@ part 'host_event_participants_section_list.dart';
 part 'host_roster_filter_header.dart';
 
 enum HostEventParticipantsMode { setup, live, report }
-
-class HostEventAttendancePanel extends StatelessWidget {
-  const HostEventAttendancePanel({
-    super.key,
-    required this.eventId,
-    this.scrollable = false,
-    this.showSummaryHeader = true,
-    this.initialSearchQuery = '',
-  });
-
-  final String eventId;
-  final bool scrollable;
-  final bool showSummaryHeader;
-  final String initialSearchQuery;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostEventParticipantsPanel(
-      eventId: eventId,
-      mode: HostEventParticipantsMode.live,
-      scrollable: scrollable,
-      showSummaryHeader: showSummaryHeader,
-      initialSearchQuery: initialSearchQuery,
-    );
-  }
-}
 
 class HostEventParticipantsPanel extends ConsumerStatefulWidget {
   const HostEventParticipantsPanel({
@@ -369,7 +343,7 @@ class _HostEventParticipantsPanelState
             ),
       );
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsHostEventAttendancePanelVisiblecopyRevenueCsvReady,
       );
@@ -403,7 +377,7 @@ class _HostEventParticipantsPanelState
             ),
       );
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsHostEventAttendancePanelVisiblecopyOpsCsvReady,
       );

@@ -172,7 +172,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
       if (mounted) context.pop(customer);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customer,

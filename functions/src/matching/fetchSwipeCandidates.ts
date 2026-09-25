@@ -162,7 +162,10 @@ function validatedResponse(
 
 function hasOpenSwipeWindow(event: EventDocument, nowMillis: number): boolean {
   if (event.status === "cancelled") return false;
-  const endMillis = event.endTime.toMillis();
+  const endMillis = event.endTime?.toMillis();
+  if (typeof endMillis !== "number" || !Number.isFinite(endMillis)) {
+    return false;
+  }
   return nowMillis >= endMillis &&
     nowMillis <= endMillis + swipeWindowDurationMs;
 }

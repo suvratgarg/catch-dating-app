@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 
@@ -37,6 +38,7 @@ enum HostRosterField {
   displayName,
   phone,
   email,
+  city,
   externalReference,
   arrivalGroup,
   ticketType,
@@ -73,6 +75,7 @@ enum HostRosterRowIssueType {
   missingStableIdentity,
   invalidPhone,
   invalidEmail,
+  invalidCity,
   invalidRevenueAmount,
   missingRevenueCurrency,
   duplicateIdentity,
@@ -159,6 +162,17 @@ class HostRosterTable {
       }
       final phone = _nullableValueAt(source, mapping[HostRosterField.phone]);
       final email = _nullableValueAt(source, mapping[HostRosterField.email]);
+      final rawCity = _nullableValueAt(source, mapping[HostRosterField.city]);
+      final city = rawCity == null ? null : cityOptionByName(rawCity);
+      if (rawCity != null && city == null) {
+        issues.add(HostRosterRowIssue(
+          HostRosterRowIssueType.invalidCity,
+          rowNumber: index + 2,
+          value: rawCity,
+        ));
+        needsReviewCount += 1;
+        continue;
+      }
       final externalReference = _nullableValueAt(
         source,
         mapping[HostRosterField.externalReference],
@@ -286,6 +300,7 @@ class HostRosterTable {
           displayName: displayName,
           phone: phone,
           email: email,
+          cityMarketId: city?.effectiveMarketId,
           externalReference: externalReference,
           arrivalGroup: arrivalGroup,
           ticketType: _nullableValueAt(
@@ -439,6 +454,12 @@ Map<HostRosterField, int?> suggestHostRosterMapping(
       'emailaddress',
       'guestemail',
       'attendeeemail',
+    }),
+    HostRosterField.city: firstAlias({
+      'city',
+      'guestcity',
+      'attendeecity',
+      'residencecity',
     }),
     HostRosterField.externalReference: firstAlias(
       _externalReferenceAliases(adapterId),

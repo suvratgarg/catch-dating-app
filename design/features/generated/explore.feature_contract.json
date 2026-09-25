@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:9011accb3d68c6bd9bf2f966ce7c724406e0db1e059555487fc9159db9d9dc93",
+  "resolvedDigest": "sha256:c1c4e4ea45011c007085788e64725e9eee2898db6b163a9311ac0543d95b198c",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -475,7 +475,7 @@
               "explore_feed_error"
             ],
             "previewIds": [
-              "ExploreEventsSection/Feed states"
+              "ExploreFeedContentSliver/Feed states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -590,7 +590,7 @@
             ],
             "previewIds": [
               "CatchEmptyState/Empty states",
-              "ExploreEventsSection/Feed states",
+              "ExploreFeedContentSliver/Feed states",
               "ExploreScreen/Screen states"
             ],
             "tests": [
@@ -705,7 +705,7 @@
             ],
             "previewIds": [
               "ExploreScreen/Screen states",
-              "ExploreEventsSection/Feed states",
+              "ExploreFeedContentSliver/Feed states",
               "ExploreEventTypeBrowseGrid/Activity states",
               "CatchButton/Map launcher states"
             ],
@@ -906,7 +906,7 @@
               "explore_search_query"
             ],
             "previewIds": [
-              "ExploreBrowseHeaderContent/Chrome states",
+              "ExploreDiscoveryCoverHeader/Cover header states",
               "ExploreScreen/Screen states",
               "CatchEmptyState/Empty states"
             ],
@@ -1083,7 +1083,7 @@
               "explore_unclaimed_host_projection"
             ],
             "previewIds": [
-              "ExploreEventsSection/Feed states",
+              "ExploreFeedContentSliver/Feed states",
               "ExploreScreen/Screen states"
             ],
             "tests": [
@@ -1883,9 +1883,9 @@
           "CatchEmptyState/Empty states",
           "CrossPathsExploreCard/Cross Paths person card",
           "CrossPathsProfilePreviewSheet/Cross Paths profile preview",
-          "ExploreBrowseHeaderContent/Chrome states",
+          "ExploreDiscoveryCoverHeader/Cover header states",
           "ExploreEventTypeBrowseGrid/Activity states",
-          "ExploreEventsSection/Feed states",
+          "ExploreFeedContentSliver/Feed states",
           "ExploreFilterRail/Filter states",
           "ExploreMapScreen/Map route states",
           "ExploreScreen/Screen states"

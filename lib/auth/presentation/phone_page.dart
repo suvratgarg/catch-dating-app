@@ -341,7 +341,7 @@ class CountryCodeSelector extends StatelessWidget {
       ),
       searchDecoration: InputDecoration(
         hintText: context.l10n.authSearchCountryHint,
-        hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
+        hintStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
         filled: true,
         fillColor: t.raised,
         border: OutlineInputBorder(

@@ -207,10 +207,6 @@ class CatchFieldInput extends StatelessWidget {
           context,
           color: _enabled ? t.ink : t.ink3,
         ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
-        final multilineHintStyle = CatchTextStyles.fieldRowValue(
-          context,
-          color: t.ink2,
-        ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
         final inputStyle = valueEmphasis
             ? multiline
                   ? multilineValueStyle
@@ -219,13 +215,9 @@ class CatchFieldInput extends StatelessWidget {
                       color: _enabled ? t.ink : t.ink3,
                     )
             : _textStyle(context, color: _enabled ? t.ink : t.ink3);
-        final hintStyle = valueEmphasis
-            ? multiline
-                  ? multilineHintStyle
-                  : CatchTextStyles.fieldRowValue(context, color: t.ink2)
-            : configuration.size == CatchFieldSize.floating
-            ? CatchTextStyles.bodyL(context, color: t.ink2)
-            : _textStyle(context, color: t.ink2);
+        // Hints inherit every typography attribute from the value. Only their
+        // semantic color differs, including floating and phone configurations.
+        final hintStyle = inputStyle.copyWith(color: t.ink2);
         final resolvedHintText = effectiveHintWidget == null
             ? effectiveInputHint ?? inputHintText
             : null;

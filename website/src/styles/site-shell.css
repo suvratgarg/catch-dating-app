@@ -143,21 +143,26 @@
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   color: inherit;
-  font-family: var(--catch-font-voice), system-ui, sans-serif;
-  font-size: 20px;
-  font-stretch: var(--catch-voice-stretch);
-  font-weight: 650;
-  letter-spacing: 0.01em;
 }
 
-.brand__mark {
+.brand__logo {
+  display: block;
+  width: 128px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.brand__logo--on-dark {
   display: none;
 }
 
-.brand__word {
-  color: inherit;
+.site-header--over-dark:not(.is-scrolled) .brand__logo--on-light {
+  display: none;
+}
+
+.site-header--over-dark:not(.is-scrolled) .brand__logo--on-dark {
+  display: block;
 }
 
 .site-nav {

@@ -1,0 +1,7 @@
+{
+  "currency": "INR",
+  "reusablePaymentPage": {
+    "url": "https://example.com/pay",
+    "reusableForEvents": true
+  }
+}

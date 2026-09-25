@@ -76,6 +76,20 @@ describe("usePublicFormController", () => {
       sourceToken: null,
     });
   });
+
+  it("starts the public form fetch before loading the Auth observer", async () => {
+    let finishFetch!: (value: typeof form) => void;
+    getPublicOrganizerForm.mockImplementation(() => new Promise((resolve) => {
+      finishFetch = resolve;
+    }));
+    const view = renderHook(() => usePublicFormController(
+      "public-form-1"), {wrapper: wrapper()});
+    expect(getPublicOrganizerForm).toHaveBeenCalledOnce();
+    expect(watchPublicFormAuthState).not.toHaveBeenCalled();
+    await act(async () => finishFetch(form));
+    await waitFor(() => expect(view.result.current.stage).toBe("form"));
+    expect(watchPublicFormAuthState).toHaveBeenCalledOnce();
+  });
 });
 
 const form = {
@@ -104,6 +118,29 @@ describe("form consent and authenticated draft ownership", () => {
     saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2, expiresAtMillis: 200000});
     submitOrganizerFormResponse.mockResolvedValue({responseId: "response-1", formId: "form-1",
       status: "submitted", completion: {title: "Received"}});
+  });
+
+  it("shows a field error when focus leaves it and clears it while editing", async () => {
+    const emailQuestion = {questionId: "email", label: "Email address",
+      kind: "email", required: true, options: [], validation: {
+        minLength: null, maxLength: null, patternPreset: null,
+        customError: null}};
+    const emailForm = {...form, definition: {...form.definition,
+      sections: [{sectionId: "details", title: "Details",
+        questions: [emailQuestion]}]}};
+    getPublicOrganizerForm.mockResolvedValue(emailForm);
+    beginOrganizerFormResponse.mockResolvedValue({...draft, form: emailForm});
+    const {result} = renderHook(() => usePublicFormController(
+      "public-form-1"), {wrapper: wrapper()});
+    await waitFor(() => expect(result.current.stage).toBe("form"));
+    act(() => result.current.updateAnswer("email", "wrong"));
+    expect(result.current.errors).toEqual({});
+    act(() => result.current.blurQuestion("email"));
+    expect(result.current.errors.email).toBe("Email address is invalid.");
+    act(() => result.current.updateAnswer("email", "person@example.com"));
+    expect(result.current.errors).toEqual({});
+    act(() => result.current.blurQuestion("email"));
+    expect(result.current.errors).toEqual({});
   });
 
   it("recovers a paid response even when the current form is full and republished", async () => {
@@ -285,6 +322,122 @@ describe("form consent and authenticated draft ownership", () => {
     expect(result.current.answers).toEqual({});
     expect(result.current.messagingChoices.organizerWhatsapp).toBe(false);
     expect(result.current.messagingChoices.catchWhatsapp).toBe(false);
+  });
+
+  it("waits for fresh auth before beginning a draft after the form route changes", async () => {
+    const nextForm = {...form, publicFormId: "public-form-2",
+      formId: "form-2", versionId: "version-2"};
+    const listeners: Array<(user: {uid: string} | null) => void> = [];
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      listeners.push(listener);
+      if (listeners.length === 1) listener({uid: "person-1"});
+      return vi.fn();
+    });
+    getPublicOrganizerForm.mockImplementation(({publicFormId}) =>
+      Promise.resolve(publicFormId === "public-form-2" ? nextForm : form));
+    beginOrganizerFormResponse.mockImplementation(({publicFormId}) =>
+      Promise.resolve({...draft, form: publicFormId === "public-form-2" ?
+        nextForm : form}));
+    const {rerender} = renderHook(({id}) => usePublicFormController(id), {
+      initialProps: {id: "public-form-1"}, wrapper: wrapper(),
+    });
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1));
+    rerender({id: "public-form-2"});
+    await waitFor(() => expect(watchPublicFormAuthState).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+    act(() => listeners[1](null));
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+    act(() => listeners[1]({uid: "person-2"}));
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenLastCalledWith(
+      expect.objectContaining({publicFormId: "public-form-2"}));
+  });
+
+  it("does not reuse the previous viewer for an anonymous form route", async () => {
+    const nextForm = {...form, publicFormId: "public-form-2",
+      formId: "form-2", versionId: "version-2", definition: {
+        ...form.definition, identityPolicy: "anonymous"}};
+    const listeners: Array<(user: {uid: string} | null) => void> = [];
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      listeners.push(listener);
+      if (listeners.length === 1) listener({uid: "person-1"});
+      return vi.fn();
+    });
+    getPublicOrganizerForm.mockImplementation(({publicFormId}) =>
+      Promise.resolve(publicFormId === "public-form-2" ? nextForm : form));
+    const {rerender} = renderHook(({id}) => usePublicFormController(id), {
+      initialProps: {id: "public-form-1"}, wrapper: wrapper(),
+    });
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1));
+    rerender({id: "public-form-2"});
+    await waitFor(() => expect(watchPublicFormAuthState).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(1);
+    act(() => listeners[1](null));
+    await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(2));
+    expect(beginOrganizerFormResponse).toHaveBeenLastCalledWith(
+      expect.objectContaining({publicFormId: "public-form-2"}));
+  });
+});
+
+describe("early non-blocking phone verification", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  it("keeps answers entered while OTP arrives and binds them to the verified draft", async () => {
+    let authChanged!: (user: {uid: string; phoneNumber: string} | null) => void;
+    watchPublicFormAuthState.mockImplementation((listener) => {
+      authChanged = listener;
+      listener(null);
+      return vi.fn();
+    });
+    const phoneQuestion = {questionId: "mobile", key: "mobile",
+      label: "Mobile number", kind: "phone", required: true,
+      canonicalFieldId: "phoneNumber", options: [], validation: {
+        minLength: null, maxLength: null, patternPreset: null}};
+    const verifiedForm = {...form, definition: {...form.definition,
+      sections: [{sectionId: "details", title: "Details",
+        questions: [phoneQuestion]}]}};
+    getPublicOrganizerForm.mockResolvedValue(verifiedForm);
+    beginOrganizerFormResponse.mockResolvedValue({...draft, form: verifiedForm,
+      prefillSuggestions: {name: "Saved name", city: "in-mh-mumbai"}});
+    saveOrganizerFormResponseDraft.mockResolvedValue({revision: 2,
+      expiresAtMillis: 200000});
+    const confirmed = {uid: "person-1", phoneNumber: "+919876543210"};
+    beginPublicEventPhoneVerification.mockResolvedValue({
+      clear: vi.fn(),
+      confirm: vi.fn(async () => {
+        authChanged(confirmed);
+        return confirmed;
+      }),
+    });
+    const {result} = renderHook(() => usePublicFormController(
+      "public-form-1"), {wrapper: wrapper()});
+    await waitFor(() => expect(result.current.stage).toBe("form"));
+    expect(beginOrganizerFormResponse).not.toHaveBeenCalled();
+    act(() => {
+      result.current.updateAnswer("name", "Maya");
+      result.current.updateAnswer("mobile", "+919876543210");
+      result.current.setPhoneNumber("+919876543210");
+    });
+    await act(async () => {
+      await result.current.handlePhoneSubmit({preventDefault: vi.fn()} as never);
+    });
+    expect(result.current.stage).toBe("form");
+    expect(result.current.verificationStep).toBe("code");
+    await act(async () => {
+      await result.current.handleCodeSubmit({preventDefault: vi.fn()} as never);
+    });
+    await waitFor(() => expect(result.current.answers).toEqual({
+      name: "Maya", mobile: "+919876543210", city: "in-mh-mumbai",
+    }));
+    expect(result.current.verifiedPhone).toBe("+919876543210");
+    await waitFor(() => expect(saveOrganizerFormResponseDraft)
+      .toHaveBeenCalledWith(expect.objectContaining({answers: {
+        name: "Maya", mobile: "+919876543210", city: "in-mh-mumbai",
+      }})));
   });
 });
 

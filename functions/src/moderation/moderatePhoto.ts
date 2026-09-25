@@ -37,15 +37,17 @@
  *
  * ## Cold-start behaviour
  *
- * The ImageAnnotatorClient is instantiated at module scope so it is reused
- * across warm invocations. Application Default Credentials are auto-
- * discovered via the admin SDK's service account — no explicit key needed.
+ * The ImageAnnotatorClient is instantiated on first use so the Vision
+ * dependency stays out of the shared cold-start module graph, and the same
+ * client is reused across warm invocations. Application Default Credentials
+ * are auto-discovered via the admin SDK's service account — no explicit key
+ * needed.
  */
 
 import {onObjectFinalized} from "firebase-functions/v2/storage";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import * as vision from "@google-cloud/vision";
+import type {ImageAnnotatorClient} from "@google-cloud/vision";
 import type {
   ModerationFlagDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -53,7 +55,15 @@ import {isModeratedPhotoPath} from "./moderatedPhotoPath";
 
 // ── Client ─────────────────────────────────────────────────────────────────
 
-const visionClient = new vision.ImageAnnotatorClient();
+let visionClient: ImageAnnotatorClient | null = null;
+
+async function getVisionClient(): Promise<ImageAnnotatorClient> {
+  if (!visionClient) {
+    const vision = await import("@google-cloud/vision");
+    visionClient = new vision.ImageAnnotatorClient();
+  }
+  return visionClient;
+}
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -234,7 +244,7 @@ export const moderatePhotoOnUpload = onObjectFinalized(
       // accepts up to 20 MB; Storage limit is 8 MB for our rules).
       const [buffer] = await file.download();
 
-      const [result] = await visionClient.safeSearchDetection({
+      const [result] = await (await getVisionClient()).safeSearchDetection({
         image: {content: buffer},
       });
 

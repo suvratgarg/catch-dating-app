@@ -3,6 +3,8 @@ import * as admin from "firebase-admin";
 import {FieldPath, Timestamp} from "firebase-admin/firestore";
 import {HttpsError, onCall, type CallableRequest} from
   "firebase-functions/v2/https";
+import {runAssistanceTransaction as transact} from
+  "../eventSuccess/operations/transactionCallback";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -133,7 +135,7 @@ export async function listParticipantMessagingPreferencesHandler(
     validateListParticipantMessagingPreferencesCallablePayload);
   const db = deps.db();
   await deps.rateLimit(db, uid, "listParticipantMessagingPreferences");
-  const catchPreference = await db.runTransaction(async (tx) => {
+  const catchPreference = await transact(db, async (tx) => {
     await assertActiveAccount(db, tx, uid);
     const value = readPreference(await tx.get(db.collection(
       "catchCommunicationPreferences").doc(uid)), uid, "catch", null);
@@ -147,7 +149,7 @@ export async function listParticipantMessagingPreferencesHandler(
   const page = result.docs.slice(0, data.limit);
   const organizers: Page["organizers"] = [];
   for (const row of page) {
-    const projected = await db.runTransaction(async (tx) => {
+    const projected = await transact(db, async (tx) => {
       await assertActiveAccount(db, tx, uid);
       const snap = await tx.get(row.ref);
       if (!snap.exists) return null;
@@ -200,7 +202,7 @@ export async function withdrawParticipantMessagingPermissionHandler(
   const receiptRef = db.collection(scope === "catch" ?
     "catchCommunicationPermissionReceipts" :
     "organizerCommunicationPermissionReceipts").doc(receiptId);
-  return db.runTransaction(async (tx) => {
+  return transact(db, async (tx) => {
     await assertActiveAccount(db, tx, uid);
     const [snap, replay] = await Promise.all([
       tx.get(preferenceRef), tx.get(receiptRef),

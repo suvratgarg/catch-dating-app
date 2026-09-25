@@ -2679,6 +2679,21 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-event-publication",
+      "category": "data",
+      "path": "tool/data/backfill_event_publication.mjs",
+      "command": "node tool/data/backfill_event_publication.mjs",
+      "safety": "remote-write-apply-guarded",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Annotates validated legacy public events before published-only queries; dry-run, bounded scan, reviewed target digest and transactional source-version checks.",
+      "checks": [
+        "node --check tool/data/backfill_event_publication.mjs",
+        "node --test tool/data/backfill_event_publication.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-event-discovery",
       "category": "data",
       "path": "tool/data/backfill_event_discovery_fields.mjs",

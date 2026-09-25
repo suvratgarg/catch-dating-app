@@ -14,6 +14,14 @@
   font-size: 14px;
 }
 
+.catch-dark .site-footer .brand__logo--on-light {
+  display: none;
+}
+
+.catch-dark .site-footer .brand__logo--on-dark {
+  display: block;
+}
+
 .consent-banner {
   position: fixed;
   right: var(--website-gutter);

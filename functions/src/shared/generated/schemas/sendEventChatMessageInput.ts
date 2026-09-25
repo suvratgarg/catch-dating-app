@@ -47,6 +47,13 @@ export const sendEventChatMessageCallablePayloadSchema: Record<string, unknown> 
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement"
+      ]
     }
   }
 } as const;

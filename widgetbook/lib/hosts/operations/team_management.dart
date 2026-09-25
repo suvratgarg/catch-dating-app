@@ -4,7 +4,6 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -138,12 +137,12 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host action confirmation dialogs',
-  type: HostTeamHostActionDialog,
+  type: CatchDialog,
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostTeamHostActionDialogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostTeamHostActionDialog',
+    title: 'Host action confirmations',
     contractId: 'section.host.clubs_host_team',
     children: const [
       WidgetbookPageStateCard(
@@ -239,14 +238,17 @@ class _HostTeamHostActionDialogPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final host = HostOperationsFixtures.primaryClub.hostProfiles[1];
+    final confirmation = HostTeamHostActionConfirmation(
+      action: action,
+      host: host,
+    );
 
     return Scaffold(
       body: Center(
-        child: HostTeamHostActionDialog(
-          confirmation: HostTeamHostActionConfirmation(
-            action: action,
-            host: host,
-          ),
+        child: CatchDialog<bool>.confirmation(
+          title: confirmation.title(context.l10n),
+          message: confirmation.message(context.l10n),
+          actions: confirmation.actions(context.l10n),
         ),
       ),
     );

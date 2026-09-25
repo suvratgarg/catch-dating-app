@@ -7,6 +7,7 @@ CatchFieldCopy catchFieldCopy(AppLocalizations l10n) => CatchFieldCopy(
   validation: catchFormValidationCopy(l10n),
   cancelLabel: l10n.coreCatchFieldLabelCancel,
   doneLabel: l10n.coreCatchFieldLabelDone,
+  clearLabel: l10n.exploreExploreScreenLabelClear,
   savingLabel: l10n.coreCatchFieldLabelSaving,
   savingSemanticLabel: l10n.coreCatchFieldSemanticSaving,
   savedSemanticLabel: l10n.coreCatchFieldSemanticSaved,

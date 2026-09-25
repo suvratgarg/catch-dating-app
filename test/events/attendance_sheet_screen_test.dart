@@ -27,7 +27,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          mode: HostEventParticipantsMode.live,
+          eventId: event.id,
+        ),
+      ),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(
@@ -208,6 +213,8 @@ void main() {
     expect(revenueCsv, contains('Asha,runner-1,attended,checked_in'));
     expect(revenueCsv, contains('Meera,runner-3,cancelled,cancelled'));
     expect(find.text('Revenue CSV ready.'), findsOneWidget);
+    await tester.tap(find.byTooltip('Dismiss'));
+    await _settleAttendanceSheet(tester);
 
     await tester.tap(find.byTooltip('Export report'));
     await _settleAttendanceSheet(tester);
@@ -233,7 +240,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          mode: HostEventParticipantsMode.live,
+          eventId: event.id,
+        ),
+      ),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(
@@ -251,7 +263,12 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          mode: HostEventParticipantsMode.live,
+          eventId: event.id,
+        ),
+      ),
       overrides: [
         attendanceSheetViewModelProvider(
           event.id,
@@ -281,7 +298,10 @@ void main() {
       Scaffold(
         body: SingleChildScrollView(
           // The panel is embedded in the event workspace's scroll owner.
-          child: HostEventAttendancePanel(eventId: event.id),
+          child: HostEventParticipantsPanel(
+            mode: HostEventParticipantsMode.live,
+            eventId: event.id,
+          ),
         ),
       ),
       overrides: [

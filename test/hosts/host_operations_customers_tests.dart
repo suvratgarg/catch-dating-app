@@ -103,8 +103,15 @@ void _registerHostOperationsCustomersTests() {
         resetProviderScope: true,
       );
       _expectAudienceStateOwner(tester, selected: view);
-      expect(find.byType(HostCustomersNoOrganizer), findsOneWidget);
+      expect(find.byType(HostAudienceNoOrganizerEmptyState), findsOneWidget);
       expect(find.byType(CatchSliverEmptyState), findsOneWidget);
+      final createButton = tester.widget<CatchButton>(
+        find.descendant(
+          of: find.byType(CatchSliverEmptyState),
+          matching: find.byType(CatchButton),
+        ),
+      );
+      expect(createButton.size, CatchButtonSize.md);
     }
   });
 

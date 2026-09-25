@@ -84,7 +84,7 @@
       "status": "implemented",
       "targetContract": "catch.badge",
       "qualityReference": "CatchBadge",
-      "decisionSource": "user-approved:2026-07-13",
+      "decisionSource": "user-approved:2026-07-13; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Functional status uses mono uppercase typography; ordinary metadata uses sentence case.",
         "Badges on dark or media surfaces use EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
@@ -177,9 +177,9 @@
         },
         {
           "symbol": "ClubHostRoleBadge",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Keep this as the intended feature-adapter boundary: it maps owner/host domain state into CatchBadge without inventing chrome."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "CatchStatusIndicator",
@@ -256,10 +256,9 @@
         },
         {
           "symbol": "EventSuccessMetricPill",
-          "disposition": "repair",
-          "target": "CatchBadge",
-          "preview": "required",
-          "rationale": "Keep its value-formatting adapter while routing the resulting short factual label through shared badge chrome."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "UnsavedChangesPill",
@@ -447,7 +446,7 @@
       "status": "implemented",
       "targetContract": "EventSuccessProgressStatus",
       "qualityReference": "EventSuccessCountdownStepper",
-      "decisionSource": "user-approved:2026-07-13",
+      "decisionSource": "user-approved:2026-07-13; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Reusable progress sequences accept ordered display items plus currentIndex while Event Success retains percentage-threshold adaptation.",
         "Completed items use an explicit success check; only the current item uses the gold active treatment and future items remain muted.",
@@ -503,9 +502,9 @@
         },
         {
           "symbol": "LiveStepRow",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Keep this expanded sibling, but make it consume the same future/current/complete state model and explicit completion treatment as the compact rail."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         }
       ]
     },
@@ -824,11 +823,12 @@
       "status": "approved",
       "targetContract": "catch.typography",
       "qualityReference": "CatchKickerText",
-      "decisionSource": "owner-delegated:2026-09-08 source and rendered Phase 4 naming review",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered Phase 4 naming review; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Preserve editorial, metadata and section-heading text appearance at light/dark and text scales 1.0/2.0 against pre-refactor text_roles goldens.",
         "Preserve heading semantics only on the section-heading API. Kicker and metadata styles continue to resolve through CatchTextStyles.",
-        "Widgetbook headings use the canonical API names and the canonical section-title preview gains the previously member-declared multi-line example."
+        "Widgetbook headings use the canonical API names and the canonical section-title preview gains the previously member-declared multi-line example.",
+        "Retire the unused Flutter section-heading API; keep the live web eyebrow components mapped to catch.typography with no rendering change."
       ],
       "members": [
         {
@@ -859,9 +859,9 @@
         },
         {
           "symbol": "CatchSectionHeaderTitle",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Its existing Semantics(header: true) makes this structural heading anatomy, not ordinary metadata text. Keep catch.ui_label as the single contract and attach it to the section concept."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "CatchSectionLabel",
@@ -1850,12 +1850,12 @@
     {
       "id": "quantitative-bar-indicators",
       "title": "One quantitative bar renderer",
-      "intent": "Use one bounded fractional bar for standalone observations and compact series, with names that distinguish quantitative display from loading or selected-page feedback.",
+      "intent": "Retain the actively used bounded fractional bar. Retire the unused series composition and promote its existing bar renderer to primary contract ownership.",
       "priority": "P1",
       "status": "approved",
       "targetContract": "catch.mini_bar_chart",
-      "qualityReference": "CatchBarSeriesIndicator",
-      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "qualityReference": "CatchBarIndicator",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Series observations now paint their allocated width. Previously the childless ColoredBox chose zero width under loose constraints, leaving populated series blank.",
         "Standalone rounded bars, series square corners, scale calculations, empty stubs, custom colors, spacing and frame geometry are preserved."
@@ -1863,15 +1863,15 @@
       "members": [
         {
           "symbol": "CatchBarSeriesIndicator",
-          "disposition": "canonical",
-          "preview": "required",
-          "rationale": "Displays several known numerical observations against one scale. LoadingIndicator communicates indeterminate work, while PageIndicator identifies one active position in a finite set; neither renders measured magnitudes. The series delegates every column to its Bar member, so it cannot keep a competing fill calculation or zero-width painter."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "CatchBarIndicator",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "The parent series owns the shared maximum, frame, gaps and accessible description. This member paints one observation at a bounded fractional height. Rounded and square variants preserve the established standalone and series shapes while using the same ratio and width calculation."
+          "rationale": "The existing renderer is used by live analytics. Its API and rendering are unchanged; it now owns the quantitative bar contract directly."
         },
         {
           "symbol": "CatchMiniBarChart",
@@ -3928,6 +3928,133 @@
           "disposition": "discard",
           "preview": "not-applicable",
           "rationale": "The complete caller census finds zero production consumers: only the isolated Widgetbook contract and its two tests mount this simulated clock/signal/battery row. The operating system owns those indicators. Retire the unused shared Widget, standalone contract, preview and corresponding baselines; application top bars keep their separate navigation responsibility."
+        }
+      ]
+    },
+    {
+      "id": "route-shell-construction-ownership",
+      "title": "One route-shell construction owner per async screen",
+      "intent": "Remove repeated route chrome while preserving typed loading and section bodies and boundary retry and timeout ownership.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "catch.screen_body.route_scaffold",
+      "qualityReference": "ProgramArrivalsScreen",
+      "decisionSource": "owner-approved:2026-09-24 beyond-fields audit; preserve existing rendering and behavior",
+      "acceptedVisualDelta": [
+        "None. Preserve all current state-specific titles, subtitles, navigation, scrolling and body specifications. A shared per-screen construction function retains the existing async boundary; it does not introduce a new screen API."
+      ],
+      "members": [
+        {
+          "symbol": "ProgramArrivalsScreen",
+          "disposition": "repair",
+          "target": "ProgramArrivalsScreen",
+          "preview": "source-only",
+          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+        },
+        {
+          "symbol": "ProgramDispatchScreen",
+          "disposition": "repair",
+          "target": "ProgramDispatchScreen",
+          "preview": "source-only",
+          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+        },
+        {
+          "symbol": "ProgramHotelDeskScreen",
+          "disposition": "repair",
+          "target": "ProgramHotelDeskScreen",
+          "preview": "source-only",
+          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+        },
+        {
+          "symbol": "ProgramWorkScreen",
+          "disposition": "repair",
+          "target": "ProgramWorkScreen",
+          "preview": "source-only",
+          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+        },
+        {
+          "symbol": "ProgramTripsScreen",
+          "disposition": "repair",
+          "target": "ProgramTripsScreen",
+          "preview": "source-only",
+          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+        },
+        {
+          "symbol": "HostEventOperatorScreen",
+          "disposition": "repair",
+          "target": "HostEventOperatorScreen",
+          "preview": "source-only",
+          "rationale": "Consolidate duplicate CatchRouteScaffold construction into one feature-owned function; preserve state selection and domain operations."
+        }
+      ]
+    },
+    {
+      "id": "host-wizard-header-adapters",
+      "title": "One Host wizard step-header adapter",
+      "intent": "Share localized step numbering and review-mode mapping across Club and Event creation.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "catch.step_header",
+      "qualityReference": "HostWizardStepHeader",
+      "decisionSource": "owner-approved:2026-09-24 beyond-fields audit; preserve existing rendering and behavior",
+      "acceptedVisualDelta": [
+        "None. Preserve CatchStepHeader rendering, zero-based input conversion, nullable subtitle, close action, overview action and review-mode semantics."
+      ],
+      "members": [
+        {
+          "symbol": "HostWizardStepHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One feature adapter over the existing CatchStepHeader; no new primitive concept."
+        },
+        {
+          "symbol": "CreateClubStepHeader",
+          "disposition": "unify",
+          "target": "HostWizardStepHeader",
+          "preview": "not-applicable",
+          "rationale": "The two domain adapters duplicate the same localized mapping; callers now supply subtitle directly."
+        },
+        {
+          "symbol": "CreateEventStepHeader",
+          "disposition": "unify",
+          "target": "HostWizardStepHeader",
+          "preview": "not-applicable",
+          "rationale": "The two domain adapters duplicate the same localized mapping; callers now supply subtitle directly."
+        }
+      ]
+    },
+    {
+      "id": "host-audience-no-organizer",
+      "title": "One Audience no-organizer composition",
+      "intent": "Share the empty Audience destination while preserving the existing People and Forms copy and interaction.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "host.audience-state",
+      "qualityReference": "HostAudienceNoOrganizerEmptyState",
+      "decisionSource": "owner-approved:2026-09-24 beyond-fields audit; preserve existing rendering and behavior",
+      "acceptedVisualDelta": [
+        "None. Retain each tab family’s copy, icon, CTA size, page-storage key and Create Club destination."
+      ],
+      "members": [
+        {
+          "symbol": "HostAudienceNoOrganizerEmptyState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The existing audience view determines no-organizer content while HostAudienceStateScaffold retains route chrome."
+        },
+        {
+          "symbol": "HostCustomersNoOrganizer",
+          "disposition": "unify",
+          "target": "HostAudienceNoOrganizerEmptyState",
+          "preview": "not-applicable",
+          "rationale": "Retire repeated empty-state composition after caller migration."
+        },
+        {
+          "symbol": "HostFormsNoOrganizer",
+          "disposition": "unify",
+          "target": "HostAudienceNoOrganizerEmptyState",
+          "preview": "not-applicable",
+          "rationale": "Retire repeated empty-state composition after caller migration."
         }
       ]
     }

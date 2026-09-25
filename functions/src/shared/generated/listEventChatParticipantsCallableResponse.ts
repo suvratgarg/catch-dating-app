@@ -10,6 +10,8 @@ export interface ListEventChatParticipantsCallableResponse {
     uid: string;
     displayName: string;
     role: "host" | "attendee";
+    membershipStatus: "joined" | "removed" | "banned";
+    membershipRevision: number;
   }[];
   nextCursor: {
     eventId: string;

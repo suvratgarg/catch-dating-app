@@ -44,7 +44,7 @@ test("owned renderers require exact source, library, owner, method and return ty
 });
 
 
-test("Section, Banner and TopBar renderer recognition stays bound to real owner methods", () => {
+test("composition renderer recognition stays bound to real owner methods", () => {
   const ui = "packages/catch_ui/lib/src/components/";
   const entries = [
     {file: `${ui}catch_action_module.dart`, library: `${ui}catch_section.dart`,
@@ -56,12 +56,14 @@ test("Section, Banner and TopBar renderer recognition stays bound to real owner 
       owner: "_CatchTopBarState", name, returnType: "Widget",
     })),
   ];
+  const routeDeclarations = collectClassDeclarations(fs.readFileSync(path.join(
+    repoRoot, "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart"), "utf8"));
   for (const entry of entries) {
     const source = fs.readFileSync(path.join(repoRoot, entry.file), "utf8");
     const starts = buildLineStarts(source);
     const helpers = collectWidgetHelpers(source, starts,
       collectClassRanges(source, starts),
-      resolveWidgetTypeNames(collectClassDeclarations(source, starts)));
+      resolveWidgetTypeNames([...collectClassDeclarations(source, starts), ...routeDeclarations]));
     assert.equal(helpers.filter(({owner, name, returnType}) =>
       owner === entry.owner && name === entry.name && returnType === entry.returnType).length,
     1, `${entry.file}:${entry.owner ?? "library"}.${entry.name} must still exist`);

@@ -46,9 +46,6 @@ DateTime? nullableDateTimeFromFirestoreValue(Object? value) {
 Object firestoreTimestampFromDateTime(DateTime value) =>
     Timestamp.fromDate(value);
 
-Object? nullableFirestoreTimestampFromDateTime(DateTime? value) =>
-    value == null ? null : firestoreTimestampFromDateTime(value);
-
 Object? firestoreCallableJsonValue(Object? value) {
   if (value is Timestamp) {
     return {'_seconds': value.seconds, '_nanoseconds': value.nanoseconds};

@@ -1568,7 +1568,7 @@
       "source": "website/src/shared/ui/primitives/layout.tsx",
       "exportName": "UiLabel",
       "lexicon": true,
-      "lexiconId": "catch.ui_label",
+      "lexiconId": "catch.typography",
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/host.css",

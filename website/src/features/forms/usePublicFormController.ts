@@ -77,6 +77,8 @@ export function usePublicFormController(publicFormId: string) {
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
+  const [verificationStep, setVerificationStep] = useState<"phone" | "code" | "verified">("phone");
+  const [verifiedPhone, setVerifiedPhone] = useState<string | null>(null);
   const [email, setEmail] = useState(() =>
     readFormStorage("local", emailStorageKey(publicFormId)) ?? "");
   const [recoveringPayment, setRecoveringPayment] = useState(false);
@@ -168,15 +170,31 @@ export function usePublicFormController(publicFormId: string) {
           requestId: stableStartRequestId(publicFormId, startRequestIdRef.current),
         });
         if (generation !== authGenerationRef.current) return;
+        const localAnswers = answersRef.current;
+        const mergedAnswers = {...started.prefillSuggestions,
+          ...started.answers, ...localAnswers};
+        const canonicalPhoneQuestion = nextForm.definition.sections.flatMap(
+          (section) => section.questions).find((question) =>
+          question.canonicalFieldId === "phoneNumber" &&
+          question.kind === "phone");
+        if (canonicalPhoneQuestion && userRef.current?.phoneNumber) {
+          mergedAnswers[canonicalPhoneQuestion.questionId] =
+            userRef.current.phoneNumber;
+        }
+        const mergedConsent = started.consentAccepted || consentRef.current;
         draftRef.current = started;
-        answersRef.current = {...started.answers};
-        consentRef.current = started.consentAccepted;
+        answersRef.current = mergedAnswers;
+        consentRef.current = mergedConsent;
         setDraft(started);
-        setAnswers({...started.answers});
-        setConsentAccepted(started.consentAccepted);
+        setAnswers(mergedAnswers);
+        setConsentAccepted(mergedConsent);
         messagingRef.current = started.messagingChoices ??
           uncheckedMessagingFor(nextForm);
         setMessagingChoices(messagingRef.current);
+        if (Object.keys(localAnswers).length > 0 ||
+            mergedConsent !== started.consentAccepted) {
+          setDirtyRevision((value) => value + 1);
+        }
         setStatus({message: "", tone: ""});
         setStage("form");
       } catch (error) {
@@ -184,7 +202,7 @@ export function usePublicFormController(publicFormId: string) {
         setStatus({message: publicFormError(error), tone: "is-error"});
         const policy = nextForm.definition.identityPolicy;
         setStage((checkingPayment && userRef.current) || policy === "anonymous" ?
-          "unavailable" : "identity");
+          "unavailable" : policy === "phoneVerified" ? "form" : "identity");
       }
     })();
     startPromiseRef.current = operation;
@@ -197,79 +215,104 @@ export function usePublicFormController(publicFormId: string) {
 
   useEffect(() => {
     let cancelled = false;
+    authGenerationRef.current++;
+    startPromiseRef.current = null;
+    userRef.current = null;
     formRef.current = null;
     draftRef.current = null;
     answersRef.current = {};
+    consentRef.current = false;
+    messagingRef.current = uncheckedMessaging;
     recoveringPaymentRef.current = false;
     setRecoveringPayment(false);
     setForm(null);
     setDraft(null);
     setAnswers({});
+    setConsentAccepted(false);
+    setMessagingChoices(uncheckedMessaging);
+    setErrors({});
+    setSectionIndex(0);
     setUploads({});
     setReceipt(null);
     receiptRef.current = null;
     setConsentActivationResponseId(null);
     promotingConsentRef.current = false;
     setVerifyingConsent(false);
+    setVerificationStep("phone");
+    setVerifiedPhone(null);
     setStage("loading");
     setStatus({message: "", tone: ""});
-    const unsubscribe = watchPublicFormAuthState((user) => {
-      if (cancelled) return;
-      if (promotingConsentRef.current && receiptRef.current) {
+    let unsubscribe: () => void = () => undefined;
+    const subscribeAuth = () => {
+      unsubscribe = watchPublicFormAuthState((user) => {
+        if (cancelled) return;
+        if (promotingConsentRef.current && receiptRef.current) {
+          userRef.current = user;
+          return;
+        }
+        const loaded = formRef.current;
+        const keepUnverifiedAnswers = userRef.current === null && user !== null &&
+          draftRef.current === null &&
+          loaded?.definition.identityPolicy === "phoneVerified";
+        if (userRef.current?.uid !== user?.uid) {
+          authGenerationRef.current++;
+          startPromiseRef.current = null;
+          if (!keepUnverifiedAnswers) {
+            consentRef.current = false;
+            setConsentAccepted(false);
+            messagingRef.current = uncheckedMessaging;
+            setMessagingChoices(uncheckedMessaging);
+          }
+          resetPaymentSession();
+          draftRef.current = null;
+          setDraft(null);
+          setReceipt(null);
+          receiptRef.current = null;
+          setConsentActivationResponseId(null);
+          if (!keepUnverifiedAnswers) setAnswers({});
+          setUploads({});
+          if (!keepUnverifiedAnswers) answersRef.current = {};
+        }
         userRef.current = user;
-        return;
-      }
-      if (userRef.current?.uid !== user?.uid) {
-        authGenerationRef.current++;
-        startPromiseRef.current = null;
-        consentRef.current = false;
-        setConsentAccepted(false);
-        messagingRef.current = uncheckedMessaging;
-        setMessagingChoices(uncheckedMessaging);
-        resetPaymentSession();
-        draftRef.current = null;
-        setDraft(null);
-        setReceipt(null);
-        receiptRef.current = null;
-        setConsentActivationResponseId(null);
-        setAnswers({});
-        setUploads({});
-        answersRef.current = {};
-      }
-      userRef.current = user;
-      const loaded = formRef.current;
-      if (!user && loaded?.definition.identityPolicy !== "anonymous" && loaded) {
-        setStage("identity");
-      }
-      if (user && loaded) {
-        void startDraft(loaded);
-      }
-    });
+        setVerifiedPhone(user?.phoneNumber ?? null);
+        if (!user && loaded) {
+          const savedReceipt = storedReceipt(publicFormId, null);
+          if (!loaded.definition.payment &&
+              savedReceipt?.formId === loaded.formId &&
+              savedReceipt.status === "submitted") {
+            setReceipt(savedReceipt);
+            receiptRef.current = savedReceipt;
+            setConsentActivationResponseId(isPendingConsentResponse(
+              publicFormId, savedReceipt) ? savedReceipt.responseId : null);
+            setStage("complete");
+            return;
+          }
+          if (loaded.availabilityStatus !== "active") {
+            setStage("unavailable");
+            return;
+          }
+          if (loaded.definition.identityPolicy === "anonymous") {
+            void startDraft(loaded);
+            return;
+          }
+          setVerificationStep("phone");
+          setStage(loaded.definition.identityPolicy === "phoneVerified" &&
+            !recoveringPaymentRef.current ? "form" : "identity");
+        }
+        if (user && loaded) {
+          void startDraft(loaded);
+        }
+      });
+    };
     void getPublicOrganizerForm({publicFormId, sourceToken})
       .then(async (loaded) => {
         if (cancelled) return;
         formRef.current = loaded;
         setForm(loaded);
-        const savedReceipt = storedReceipt(publicFormId, userRef.current?.uid ?? null);
-        if (!userRef.current && !loaded.definition.payment &&
-            savedReceipt?.formId === loaded.formId &&
-            savedReceipt.status === "submitted") {
-          setReceipt(savedReceipt);
-          receiptRef.current = savedReceipt;
-          setConsentActivationResponseId(isPendingConsentResponse(
-            publicFormId, savedReceipt) ? savedReceipt.responseId : null);
-          setStage("complete");
-          return;
-        }
-        if (loaded.availabilityStatus !== "active" && !userRef.current) {
-          setStage("unavailable");
-          return;
-        }
-        if (loaded.definition.identityPolicy === "anonymous" || userRef.current) {
-          await startDraft(loaded);
-        } else {
-          setStage("identity");
-        }
+        setStage(loaded.availabilityStatus !== "active" ? "unavailable" :
+          loaded.definition.identityPolicy === "emailVerified" ?
+            "identity" : "form");
+        subscribeAuth();
       })
       .catch((error) => {
         if (cancelled) return;
@@ -348,6 +391,19 @@ export function usePublicFormController(publicFormId: string) {
     setDirtyRevision((value) => value + 1);
   }
 
+  function blurQuestion(questionId: string) {
+    const question = visibleSections.flatMap((section) => section.questions)
+      .find((candidate) => candidate.questionId === questionId);
+    if (!question) return;
+    const error = validatePublicFormAnswers([question], answersRef.current)[questionId];
+    setErrors((current) => {
+      const updated = {...current};
+      if (error) updated[questionId] = error;
+      else delete updated[questionId];
+      return updated;
+    });
+  }
+
   function updateConsent(value: boolean) {
     consentRef.current = value;
     setConsentAccepted(value);
@@ -376,7 +432,11 @@ export function usePublicFormController(publicFormId: string) {
         normalizePhone(phoneNumber),
         recaptchaContainerId
       );
-      setStage("phoneCode");
+      if (stage === "form" || stage === "review") {
+        setVerificationStep("code");
+      } else {
+        setStage("phoneCode");
+      }
     }).catch(() => undefined);
   }
 
@@ -388,6 +448,8 @@ export function usePublicFormController(publicFormId: string) {
       const verifiedUser = await verification.confirm(code);
       verification.clear();
       verificationRef.current = null;
+      setVerifiedPhone(verifiedUser.phoneNumber ?? normalizePhone(phoneNumber));
+      setVerificationStep("verified");
       if (promotingConsentRef.current && receiptRef.current) {
         try {
           await promoteSelectedConsent(verifiedUser);
@@ -404,6 +466,13 @@ export function usePublicFormController(publicFormId: string) {
       }
       if (formRef.current) await startDraft(formRef.current);
     }).catch(() => undefined);
+  }
+
+  function resetPhoneVerification() {
+    verificationRef.current?.clear();
+    verificationRef.current = null;
+    setCode("");
+    setVerificationStep("phone");
   }
 
   async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
@@ -541,6 +610,14 @@ export function usePublicFormController(publicFormId: string) {
         publicFormsCopy.genericError, tone: "is-error"});
       return;
     }
+    if (!draftRef.current && formRef.current?.definition.identityPolicy ===
+        "phoneVerified") {
+      setStatus({message: publicFormsCopy.phoneVerificationRequired,
+        tone: "is-error"});
+      setSectionIndex(0);
+      setStage("form");
+      return;
+    }
     if (formRef.current?.messagingOffer?.termsVersion === "form-whatsapp-v2" &&
         hasSelectedPurpose(messagingRef.current) &&
         !hasMessagingEndpoint(formRef.current, answersRef.current,
@@ -667,6 +744,7 @@ export function usePublicFormController(publicFormId: string) {
   return {
     activeSection,
     answers,
+    blurQuestion,
     code,
     consentAccepted,
     messagingChoices,
@@ -684,12 +762,15 @@ export function usePublicFormController(publicFormId: string) {
     payments,
     pendingConsentResponseId: consentActivationResponseId,
     phoneNumber,
+    verificationStep,
+    verifiedPhone,
     previousSection,
     receipt,
     restartAfterPayment,
     recoverPayment,
     recoveringPayment,
     recaptchaContainerId,
+    resetPhoneVerification,
     saveState,
     sectionIndex,
     setCode,

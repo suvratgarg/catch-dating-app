@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_assignment_feature_consent_payload.schema.json",
+  "title": "SetEventAssignmentFeatureConsentCallablePayload",
+  "description": "Verified participant grants or withdraws assignment-only use of one exact submitted answer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "featureId", "responseId", "decision", "expectedRevision", "requestId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "featureId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decision": {"enum": ["grant", "withdraw"]},
+    "expectedRevision": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_step_header.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ Widget clubEventSuccessDefaultsStepCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Header states',
-  type: CreateClubStepHeader,
+  type: HostWizardStepHeader,
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubStepHeaderCatalogStates(BuildContext context) {
@@ -80,7 +80,7 @@ Widget createClubStepHeaderCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'step 1',
         child: WidgetbookHostDeviceFrame(
-          child: CreateClubStepHeader(
+          child: HostWizardStepHeader(
             title: 'Club basics',
             subtitle: 'Add your club identity and media',
             currentStep: 0,

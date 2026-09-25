@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -87,7 +87,7 @@ class PublicProfileScreen extends ConsumerWidget {
     ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
         if (profile != null) {
-          showCatchSnackBar(
+          showCatchNotice(
             context,
             context.l10n
                 .publicProfilePublicProfileScreenVisiblecopyNameHasBeenBlocked(
@@ -101,7 +101,7 @@ class PublicProfileScreen extends ConsumerWidget {
 
     ref.listen(PublicProfileController.reportUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context
               .l10n

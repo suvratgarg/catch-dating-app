@@ -2,6 +2,7 @@ import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {
   EventRuntimeArrivalRing,
+  EventRuntimeFrame,
   EventRuntimeRoomMap,
   EventRuntimeStageMarquee,
 } from "./eventRuntime";
@@ -17,6 +18,18 @@ vi.mock("@catch/web-ui", async (importOriginal) => {
 });
 
 afterEach(cleanup);
+
+describe("EventRuntimeFrame", () => {
+  it("uses the canonical Catch_ mark for companion pages", () => {
+    render(<EventRuntimeFrame brandLabel="Catch events" brandWord="Catch">
+      <main>Event</main>
+    </EventRuntimeFrame>);
+    const brand = screen.getByRole("link", {name: "Catch events"});
+    expect(brand.querySelector("img")?.getAttribute("src"))
+      .toBe("/assets/branding/catch_splash_mark_light.png");
+    expect(brand.textContent).toBe("");
+  });
+});
 
 const units = [
   {id: "round", label: "1", shape: "round" as const},

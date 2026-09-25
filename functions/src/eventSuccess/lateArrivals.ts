@@ -632,6 +632,14 @@ function lateDraft(params: {
       ...params.template.data,
       uid: params.lateUid,
       assignment: params.assignmentValue,
+      ...(params.template.data.assignmentFeatureGuard ? {
+        assignmentFeatureGuard: {
+          ...(params.template.data.assignmentFeatureGuard as
+            Record<string, unknown>),
+          // Host placement did not consume the late attendee's form answer.
+          snapshots: [],
+        },
+      } : {}),
       createdAt: params.now,
       updatedAt: params.now,
     },

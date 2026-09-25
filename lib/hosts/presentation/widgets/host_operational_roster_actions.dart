@@ -61,7 +61,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
           );
       if (!mounted) return;
       _setLocalState(() => _providerSetup = AsyncData(setup));
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsOperationalRosterProviderConnected,
       );
@@ -93,7 +93,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       await _loadProviderSetup(force: true);
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         context.l10n.hostsOperationalRosterProviderSyncSuccess(
           created: result.createdCount,
@@ -164,13 +164,13 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       );
     } on HostRosterImportException catch (error) {
       if (mounted) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           hostRosterImportIssueCopy(context, error.issue),
         );
       }
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) _setLocalState(() => _importing = false);
     }
@@ -193,7 +193,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         rows: [row],
       );
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) _setLocalState(() => _importing = false);
     }
@@ -218,7 +218,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         ),
       );
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) _setLocalState(() => _creatingHandoff = false);
     }
@@ -246,7 +246,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
       ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         decision == EventRuntimeClaimDecision.approve
             ? context.l10n.hostsOperationalRosterClaimApproved
@@ -281,7 +281,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
       if (!mounted) return;
       if (result.errors.isEmpty) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostsOperationalRosterImportSuccess(
             created: result.createdCount,

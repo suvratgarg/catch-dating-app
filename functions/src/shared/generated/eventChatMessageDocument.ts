@@ -13,6 +13,10 @@ export interface EventChatMessageDocument {
   text: string | null;
   replyToMessageId: string | null;
   status: "visible" | "removed";
+  /**
+   * Legacy omission means text.
+   */
+  kind?: "text" | "announcement";
   payloadHash: string;
   reactionCounts: {
     like: number;

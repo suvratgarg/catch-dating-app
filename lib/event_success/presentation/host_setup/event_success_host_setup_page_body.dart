@@ -36,6 +36,7 @@ class EventSuccessHostSetupPageBody extends StatefulWidget {
     required this.embedded,
     this.referenceNow,
     this.assistanceSettingsSection,
+    this.assignmentFeaturesSection,
   });
 
   final Event event;
@@ -52,6 +53,7 @@ class EventSuccessHostSetupPageBody extends StatefulWidget {
   final bool embedded;
   final DateTime? referenceNow;
   final Widget? assistanceSettingsSection;
+  final Widget? assignmentFeaturesSection;
 
   @override
   State<EventSuccessHostSetupPageBody> createState() =>
@@ -338,6 +340,7 @@ class _EventSuccessHostSetupPageBodyState
           ),
         ],
         ?widget.assistanceSettingsSection,
+        ?widget.assignmentFeaturesSection,
       ],
     );
   }

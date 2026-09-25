@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_help_controller.dart';
@@ -42,7 +42,7 @@ class EventRehearsalHelpSheet extends ConsumerWidget {
         try {
           await action();
         } on Object catch (error) {
-          if (context.mounted) showCatchErrorSnackBar(context, error);
+          if (context.mounted) showCatchNoticeError(context, error);
         }
       }());
     }

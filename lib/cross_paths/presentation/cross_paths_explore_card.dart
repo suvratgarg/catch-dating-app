@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
@@ -467,14 +467,11 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
         },
       );
       if (context.mounted) {
-        showCatchSnackBar(
-          context,
-          context.l10n.crossPathsInvitationSentMessage,
-        );
+        showCatchNotice(context, context.l10n.crossPathsInvitationSentMessage);
       }
     } catch (error) {
       if (context.mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.explore,
@@ -500,7 +497,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
       );
     } catch (error) {
       if (context.mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.explore,

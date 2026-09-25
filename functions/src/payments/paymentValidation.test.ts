@@ -13,8 +13,8 @@ import {
 function buildEventDoc(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
     clubId: "club-1",
-    startTime: {} as FirebaseFirestore.Timestamp,
-    endTime: {} as FirebaseFirestore.Timestamp,
+    startTime: {toMillis: () => 1_000} as FirebaseFirestore.Timestamp,
+    endTime: {toMillis: () => 2_000} as FirebaseFirestore.Timestamp,
     meetingPoint: "Carter Road",
     meetingLocation: {
       name: "Carter Road",

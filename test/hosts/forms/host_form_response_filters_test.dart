@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
@@ -8,13 +10,76 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_pa
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../support/catch_test_fonts.dart';
 import '../../test_pump_helpers.dart';
 import 'support/response_filter_fixtures.dart';
 
 void main() {
+  if (Platform.environment.containsKey('CATCH_HOST_RESPONSE_REVIEW_DIR')) {
+    setUpAll(loadCatchTestFonts);
+  }
+
+  testWidgets('published version is selected and switching clears answer filters', (
+    tester,
+  ) async {
+    final requests = <HostFormResponseListRequest>[];
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _VersionedResponses(requests),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                HostFormResponsesPanel(
+                  organizerId: 'org',
+                  formId: 'form',
+                  showFormContext: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v2');
+    expect(find.text('Published version 2'), findsWidgets);
+    await tester.tap(find.text('Filters'));
+    await pumpFeatureUi(tester);
+    final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
+    await tester.ensureVisible(city);
+    await tester.tap(city);
+    await pumpFeatureUi(tester);
+    expect(requests.last.answerFilters['city'], {'Mumbai'});
+    final firstVersion =
+        find.byKey(const ValueKey('response-version-form_v1'));
+    await tester.ensureVisible(firstVersion);
+    await tester.tap(firstVersion);
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v1');
+    expect(requests.last.answerFilters, isEmpty);
+    await tester.tap(find.text('Reset all'));
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v2');
+    final allVersions = find.byKey(const ValueKey('response-version-'));
+    await tester.ensureVisible(allVersions);
+    await tester.tap(allVersions);
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, isNull);
+    expect(requests.last.answerFilters, isEmpty);
+    await tester.tap(find.text('Reset all'));
+    await pumpFeatureUi(tester);
+    expect(requests.last.versionId, 'form_v2');
+  });
   testWidgets(
     'city filters remain available during loading and empty scan pages',
     (tester) async {
@@ -33,6 +98,10 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
+            builder: (context, child) => RepaintBoundary(
+              key: const ValueKey('response-filters-capture'),
+              child: child!,
+            ),
             home: const Scaffold(
               body: CustomScrollView(
                 slivers: [
@@ -69,7 +138,14 @@ void main() {
       pending.complete(_page);
       await pumpFeatureUi(tester);
       expect(find.text('Load more responses'), findsOneWidget);
+      expect(
+        tester.widget<CatchButton>(
+          find.widgetWithText(CatchButton, 'Load more responses'),
+        ).onPressed,
+        isNotNull,
+      );
       expect(find.text('No matching responses'), findsNothing);
+      await _captureFilters(tester, 'responses-zero-matches-continuation');
       await tester.tap(find.text('Sort: Newest first'));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Oldest first'));
@@ -81,6 +157,55 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('filtered response queue shows real review rows', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+    final requests = <HostFormResponseListRequest>[];
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _PopulatedResponses(requests),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          builder: (context, child) => RepaintBoundary(
+            key: const ValueKey('response-filters-capture'),
+            child: child!,
+          ),
+          home: const Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                HostFormResponsesPanel(
+                  organizerId: 'org',
+                  formId: 'form',
+                  showFormContext: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Filters'));
+    await pumpFeatureUi(tester);
+    final city = find.byKey(const ValueKey('response-filter-city-Mumbai'));
+    await tester.ensureVisible(city);
+    await tester.tap(city);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Close'));
+    await pumpFeatureUi(tester);
+    expect(requests.last.answerFilters['city'], {'Mumbai'});
+    expect(find.text('Maya Test Guest'), findsOneWidget);
+    expect(find.text('Rohan Test Guest'), findsOneWidget);
+    expect(find.byKey(const ValueKey('host-response-entry-response:maya')),
+        findsOneWidget);
+    await _captureFilters(tester, 'responses-populated-queue');
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'all promoted questions are available with at most five active filters',
     (tester) async {
@@ -159,7 +284,10 @@ void main() {
                 data: MediaQuery.of(
                   context,
                 ).copyWith(textScaler: TextScaler.linear(scale)),
-                child: child!,
+                child: RepaintBoundary(
+                  key: const ValueKey('response-filters-capture'),
+                  child: child!,
+                ),
               ),
               home: StatefulBuilder(
                 builder: (context, update) => Scaffold(
@@ -194,6 +322,7 @@ void main() {
           'city': {'Mumbai', 'Delhi'},
           'diet': {'vegetarian'},
         });
+        await _captureFilters(tester, 'filters-selected-$scale');
         final dinner = find.widgetWithText(CatchChip, 'Community dinner');
         await tester.ensureVisible(dinner);
         await tester.tap(dinner);
@@ -225,6 +354,22 @@ void main() {
   }
 }
 
+Future<void> _captureFilters(WidgetTester tester, String name) async {
+  final directory = Platform.environment['CATCH_HOST_RESPONSE_REVIEW_DIR'];
+  if (directory == null) return;
+  final boundary = tester.renderObject<RenderRepaintBoundary>(
+    find.byKey(const ValueKey('response-filters-capture')),
+  );
+  await tester.runAsync(() async {
+    final image = await boundary.toImage(pixelRatio: 2);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
+    final file = File('$directory/$name.png');
+    await file.parent.create(recursive: true);
+    await file.writeAsBytes(bytes!.buffer.asUint8List());
+  });
+}
+
 const _page = HostFormResponsesState(
   responses: [],
   nextCursor: 'continue-scan',
@@ -236,6 +381,52 @@ const _page = HostFormResponsesState(
     ),
   ],
 );
+
+HostFormResponseSummary _response(String id, String name) =>
+    HostFormResponseSummary(
+      responseId: id,
+      formId: 'form',
+      formTitle: 'Sunday run RSVP',
+      versionId: 'form_v2',
+      version: 2,
+      status: HostFormResponseStatus.submitted,
+      identityKind: HostFormResponseIdentityKind.catchAccount,
+      identity: HostFormResponseIdentity(
+        displayName: name,
+        email: null,
+        phoneE164: null,
+        origin: HostFormDataOrigin.respondentGranted,
+      ),
+      sourceLinkId: null,
+      sourceLabel: 'Public RSVP',
+      submittedAt: DateTime.utc(2026, 9, 23, 10),
+      withdrawnAt: null,
+      highlights: const [],
+      conversionKinds: const {},
+    );
+
+class _PopulatedResponses extends HostFormResponsesController {
+  _PopulatedResponses(this.requests);
+  final List<HostFormResponseListRequest> requests;
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async {
+    requests.add(request);
+    return HostFormResponsesState(
+      responses: [
+        _response('maya', 'Maya Test Guest'),
+        _response('rohan', 'Rohan Test Guest'),
+      ],
+      nextCursor: 'next-page',
+      versionScope: const HostFormResponseVersionScope(
+        activeVersionId: 'form_v2',
+        publishedVersion: 2,
+      ),
+      answerFilterOptions: responseFilterQuestions,
+    );
+  }
+}
 
 class _Responses extends HostFormResponsesController {
   _Responses(this.requests, this.pending);
@@ -293,6 +484,32 @@ class _ScopedResponses extends HostFormResponsesController {
       answerFilterOptions: request.formId == null
           ? const []
           : responseFilterQuestions,
+    );
+  }
+}
+
+class _VersionedResponses extends HostFormResponsesController {
+  _VersionedResponses(this.requests);
+  final List<HostFormResponseListRequest> requests;
+  @override
+  Future<HostFormResponsesState> build(
+    HostFormResponseListRequest request,
+  ) async {
+    requests.add(request);
+    return const HostFormResponsesState(
+      responses: [],
+      nextCursor: null,
+      versionScope: HostFormResponseVersionScope(
+        activeVersionId: 'form_v2',
+        publishedVersion: 2,
+      ),
+      answerFilterOptions: [
+        HostFormResponseFilterOption(
+          questionId: 'city',
+          label: 'City',
+          options: {'Mumbai': 'Mumbai'},
+        ),
+      ],
     );
   }
 }

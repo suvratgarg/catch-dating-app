@@ -149,7 +149,11 @@ function hasCode(expected: string) {
 
 test("manager can publish and explicitly clear a live position", async () => {
   const firestore = new FakeFirestore();
-  firestore.docs.set("events/event-1", event());
+  firestore.docs.set("events/event-1", {
+    ...event(),
+    publicationState: "private",
+    setupRevision: 1,
+  });
   firestore.docs.set("organizers/organizer-1", organizer());
   const limits: string[] = [];
   const deps = {
@@ -208,6 +212,28 @@ test("manager can publish and explicitly clear a live position", async () => {
     "host-1:publishEventLivePosition",
   ]);
 });
+
+test("private setup without an end time cannot publish a live position",
+  async () => {
+    const firestore = new FakeFirestore();
+    const incomplete = event();
+    delete incomplete.endTime;
+    firestore.docs.set("events/event-1", {
+      ...incomplete,
+      publicationState: "private",
+      setupRevision: 1,
+    });
+    firestore.docs.set("organizers/organizer-1", organizer());
+    await assert.rejects(
+      publishEventLivePositionHandler(
+        publishRequest(), dependencies(firestore)
+      ),
+      hasCode("failed-precondition")
+    );
+    assert.equal(firestore.docs.has(
+      `eventLivePositions/${eventLivePositionId("event-1", "host-1")}`
+    ), false);
+  });
 
 test("operator sharing requires the explicit live-location grant", async () => {
   const firestore = new FakeFirestore();

@@ -25,6 +25,22 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
     widget.descriptor.currentMax.toDouble(),
   );
   final _saveState = CatchFormSaveState();
+  RangeValues? _committed;
+
+  RangeValues get _savedRange =>
+      _committed ??
+      RangeValues(
+        widget.descriptor.currentMin.toDouble(),
+        widget.descriptor.currentMax.toDouble(),
+      );
+
+  @override
+  void initState() {
+    super.initState();
+    _saveState.addListener(_saveChanged);
+  }
+
+  void _saveChanged() => setState(() {});
 
   @override
   void didUpdateWidget(CatchFormRangeField<P> oldWidget) {
@@ -34,6 +50,7 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
     if (old.id != current.id ||
         old.currentMin != current.currentMin ||
         old.currentMax != current.currentMax) {
+      _committed = null;
       _range = RangeValues(
         current.currentMin.toDouble(),
         current.currentMax.toDouble(),
@@ -49,10 +66,7 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
 
   void _cancel() {
     setState(() {
-      _range = RangeValues(
-        widget.descriptor.currentMin.toDouble(),
-        widget.descriptor.currentMax.toDouble(),
-      );
+      _range = _savedRange;
       _saveState.reset();
     });
     widget.scope.collapse();
@@ -62,31 +76,17 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
     if (_saveState.saving) return;
     final min = _range.start.round();
     final max = _range.end.round();
-    if (min == widget.descriptor.currentMin &&
-        max == widget.descriptor.currentMax) {
+    if (min == _savedRange.start && max == _savedRange.end) {
       _cancel();
       return;
     }
-    setState(() {
-      _saveState
-        ..saving = true
-        ..error = null;
-    });
-    try {
-      final saved = await widget.scope.save(
-        widget.descriptor.patchForRange(min, max),
-      );
-      if (!mounted) return;
-      setState(() => _saveState.saving = false);
-      if (saved) widget.scope.collapse();
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _saveState
-          ..saving = false
-          ..error = error;
-      });
-    }
+    final range = _range;
+    final saved = await _saveState.submit(
+      () => widget.scope.save(widget.descriptor.patchForRange(min, max)),
+    );
+    if (!saved || !mounted) return;
+    _committed = range;
+    widget.scope.collapse();
   }
 
   @override
@@ -99,23 +99,21 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
       icon: descriptor.icon,
       title: descriptor.label,
       contract: descriptor.contract,
-      body: widget.scope.isExpanded
-          ? '${descriptor.labelText(_range.start)} - ${descriptor.labelText(_range.end)}'
+      body: widget.scope.isExpanded || _committed != null
+          ? descriptor.formatRange(_range.start, _range.end)
           : descriptor.value,
       disclosureMode: widget.scope.isExpanded
           ? CatchFieldMode.controlledExpanded
           : CatchFieldMode.controlledCollapsed,
       onOpenChanged: (_) => widget.scope.toggle(),
-      status: _saveState.saving
-          ? CatchFieldStatus.saving
-          : CatchFieldStatus.idle,
+      status: _saveState.status,
       error: error == null ? null : widget.errorTextBuilder(context, error),
 
       onCancel: _cancel,
       onSubmit: _submit,
       child: CatchRangeInput(
         minimumContract: descriptor.contract,
-        maximumContract: descriptor.contract,
+        maximumContract: descriptor.maximumContract ?? descriptor.contract,
         min: descriptor.sliderMin,
         max: descriptor.sliderMax,
         divisions: descriptor.divisions,

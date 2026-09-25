@@ -21,6 +21,10 @@ ledgers as the source of truth when counts differ:
 
 ## Current Snapshot
 
+The unused Catches Hub UI was retired on 2026-09-23. Its legacy `/catches`
+URL continues redirecting to Dashboard; it no longer needs a screen export
+or an independent feature contract. Its domain state and route intents remain tested.
+
 - Route inventory: 56 app routes.
 - Route coverage decisions: 50 contracted, 4 alias, 0 planned, 2 excluded.
 - Screen contracts: 36 contracted screens.
@@ -28,8 +32,8 @@ ledgers as the source of truth when counts differ:
   contracts, 32 contracted Flutter screens, 6 contracted marketing routes, 14
   contracted Admin routes, and 1 planned Flutter authority. Four static/fallback marketing
   routes remain deliberately excluded and the legacy organizer-listing route
-  remains a grouped static-output projection. The social-journey batch compiles all 99
-  registered states and 23 explicit actions across Catches Hub, Catches Event,
+  remains a grouped static-output projection. The social-journey batch compiles all 87
+  registered states and 20 explicit actions across Catches Event,
   Matches List, Member Chat, Self Profile, and Public Profile; missing focused
   capture/test evidence remains named migration debt. Organizer Detail adds one
   three-surface identity spanning 13 consumer, 19 host, and 5 marketing states
@@ -99,14 +103,14 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 27 P1, 10 P2, and 5 P3 contracted screens.
 - Contracted screen states: 712.
 - Contracted screen sections: 249.
-- Screen registry migration gaps: 24 open, 25 blocked, and 113 closed. One of
+- Screen registry migration gaps: 24 open, 24 blocked, and 110 closed. One of
   the 24 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,143.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 13 feature groups, 43 screens, 734 matrix states, and
-  60 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  59 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 562 captured, 71 implemented, 4 planned, and
   77 tested.
@@ -347,10 +351,9 @@ design-system migration goal is complete.
 
 ### P1. Reference Export And Pixel Baselines
 
-- [ ] Resolve the 9 screens with no canonical reference:
+- [ ] Resolve the 8 screens with no canonical reference:
   export `screen.host.settings` from the found `HostAccount.dc.html` source,
-  and unblock/obtain canonical screen sources for `screen.catches.hub`,
-  `screen.calendar.home`, `screen.saved_events.list`, `screen.event.recap`,
+  and unblock/obtain canonical screen sources for `screen.calendar.home`, `screen.saved_events.list`, `screen.event.recap`,
   `screen.host.profile`, `screen.event.location_map`,
   `screen.reviews.history`, and `screen.payments.history`.
 - [ ] Add missing P1 variant references after each first baseline:
@@ -492,10 +495,8 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
      exception; tests prove the behavior and the screen/state metadata no
      longer describes stale spinner behavior.
 2. [ ] `TODO-NEXT-REF-P1-001` Finish the P1 design-reference export baseline.
-   - Export and wire Catches Hub and remaining Host Event Manage variants.
-     Catches Hub is blocked on a canonical design source/export: the local
-     Claude bundle contains the Catches Event Deck/post-run catch-window asset
-     but no distinct Catches Hub template. Catches Event Deck now has a first
+   - Export and wire remaining Host Event Manage variants.
+     Catches Event Deck now has a first
      active-profile baseline, Event Success
      Companion now has a default live-guide baseline, and Host Chat now has a
      shared Messaging-thread baseline; dedicated variants remain for all three.
@@ -632,14 +633,14 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
 
 ### Reference Export Queue
 
-- [ ] P1 references: Catches Hub plus remaining Host Create Event and Host
+- [ ] P1 references: remaining Host Create Event and Host
   Event Manage variants. Catches Event Deck now has a first active-profile
   baseline from the Claude website app screenshot asset; Event Success
   Companion now has a default live-guide baseline; Host Chat now has a first
   shared Messaging-thread baseline. Host Create Event basics/location/schedule/
   policy/guide and Host Event Manage setup/guests/live/report now have scoped
   design-phone advisory comparison proof. Remaining P1 reference work is
-  Catches Hub design-source handoff, dedicated Catches/Event Success/Host Chat
+  dedicated Catches/Event Success/Host Chat
   variants, Host Create Event draft/validation/submit/success variants, Host
   Event Manage private-access edge variants, and any future Host Club Detail
   hosted-schedule/share/contact/review or host-control variants that design
@@ -735,7 +736,6 @@ from those ledgers rather than hand-editing counts.
 | Priority | Screen | States | Sections | Exported refs | Reference gap | Open registry gaps | Next todo |
 |---|---|---:|---:|---:|---|---|---|
 | P1 | `screen.catches.event` | 19 | 6 | 1 | None | `DS-CATCHES-EVENT-002` blocked, `DS-CATCHES-EVENT-004` blocked | Local Catches Event states, cached-offline deck capture, pass/reaction pending captures, duplicate-pending disabled-control proof, comment-sheet empty/filled captures, and write-failure snackbar feedback are source-backed. Remaining work is blocked on keyboard-open capture automation and external reference exports for keyboard/comment sheet, empty/offline, accessibility, theme, and optional mutation variants. |
-| P1 | `screen.catches.hub` | 12 | 4 | 0 | Blocked: missing canonical design source | `DS-CATCHES-HUB-004` blocked | Hub route adapter and section Widgetbook coverage are closed; local Claude bundle has no distinct hub source, so export waits on design source handoff. |
 | P1 | `screen.club.detail` | 13 | 9 | 1 | None | None | Body policy, direct host/contact/photo section previews, loading captures, initial-fallback capture, empty-schedule capture, and consumer-only dock decisioning are closed. Reopen only if a new host/member dock contract is designed. |
 | P1 | `screen.dashboard.home` | 19 | 9 | 2 | None | `DS-DASHBOARD-005` | `feature.dashboard_home` now compiles all 19 states and 12 route/event-focus actions. Six captured and previewed error/offline/accessibility/theme states still need focused test registration; full-body display-data cleanup remains separate architecture work. |
 | P1 | `screen.event_success.companion` | 26 | 11 | 1 | Stage variants blocked on missing canonical exports | `DS-EVENT-SUCCESS-COMPANION-004` blocked, `DS-EVENT-SUCCESS-COMPANION-005` | `feature.event_success` now compiles all 26 states and 12 attendee actions. The contract exposes the unwired compatibility-save callback as a known gap instead of enabling it; nine captured/previewed states still need focused test registration, while auto-launch remains policy tested without synthetic visual evidence. |
@@ -786,7 +786,7 @@ from those ledgers rather than hand-editing counts.
   until repeated local/CI runs prove masks, thresholds, fixture clocks, image
   sources, and dynamic regions are stable enough to block merges.
 - [ ] `TODO-BLOCKED-DESIGN-SOURCE-002` Canonical reference export is blocked
-  for Catches Hub, Calendar Home, Saved Events, Event Recap, Host Profile,
+  for Calendar Home, Saved Events, Event Recap, Host Profile,
   Event Location Map, Reviews History, and Payment History until design
   provides standalone screen sources. The local Claude bundle currently only
   has related primitives or adjacent flows for those surfaces.
@@ -1517,9 +1517,6 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P1 catches
 
-- [ ] `catches.hub` (12 state follow-ups, 1 open gap)
-  - captured: `uid_loading`, `uid_error`, `signed_out_hidden`, `attended_events_loading`, `attended_events_error`, `active_windows`, `no_active_windows`, `dark_intro_cta`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
-  - DP-CATCHES-HUB-004: Blocked on a canonical Catches Hub design source/export. The local Claude bundle only contains the already-registered Catches Event Deck/post-run catch-window asset; once design provides a hub reference, export the PNG and add masks for dynamic countdown and attendee-count regions.
 - [ ] `catches.event` (19 state follow-ups, 2 open gaps)
   - tested: None
   - captured: `queue_loading`, `queue_error`, `active_profile`, `empty_queue`, `event_missing`, `sign_in_required`, `event_in_progress`, `did_not_attend`, `window_closed`, `pass_mutation`, `reaction_mutation`, `duplicate_pending`, `write_failure`, `cached_offline`, `comment_sheet_empty_filled`, `offline`, `filters_action`, `text_scale_2`, `reduced_motion`, `light_dark`

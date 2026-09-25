@@ -25,6 +25,8 @@ const schemaListEventChatParticipantsCallableResponseSchema = <String, Object?>{
           'uid',
           'displayName',
           'role',
+          'membershipStatus',
+          'membershipRevision',
         ],
         'properties': <String, Object?>{
           'uid': <String, Object?>{
@@ -43,6 +45,18 @@ const schemaListEventChatParticipantsCallableResponseSchema = <String, Object?>{
               'host',
               'attendee',
             ],
+          },
+          'membershipStatus': <String, Object?>{
+            'enum': <Object?>[
+              'joined',
+              'removed',
+              'banned',
+            ],
+          },
+          'membershipRevision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 9007199254740991,
           },
         },
       },

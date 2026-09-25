@@ -376,7 +376,9 @@ function requireActiveWingmanEvent(
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition", "This event is cancelled.");
   }
-  if (event.endTime.toMillis() <= nowMillis) {
+  const endAtMillis = event.endTime?.toMillis();
+  if (typeof endAtMillis !== "number" ||
+      !Number.isFinite(endAtMillis) || endAtMillis <= nowMillis) {
     throw new HttpsError(
       "failed-precondition",
       "Host help is only available while the event is live."

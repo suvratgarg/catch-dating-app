@@ -20,6 +20,7 @@ const schemaGetEventChatAccessCallableResponseSchema = <String, Object?>{
     'canManage',
     'canJoin',
     'canReadMessages',
+    'canPostMessages',
     'profileClaimRequired',
     'termsVersion',
   ],
@@ -57,14 +58,32 @@ const schemaGetEventChatAccessCallableResponseSchema = <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
             'notCreated',
+            'scheduled',
             'open',
+            'announcementsOnly',
+            'paused',
             'closed',
+            'archived',
           ],
         },
         'revision': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
           'maximum': 9007199254740991,
+        },
+        'opensAtMillis': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+        },
+        'closesAtMillis': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
         },
       },
     },
@@ -82,12 +101,17 @@ const schemaGetEventChatAccessCallableResponseSchema = <String, Object?>{
             'notJoined',
             'joined',
             'left',
+            'removed',
+            'banned',
           ],
         },
         'revision': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
           'maximum': 9007199254740991,
+        },
+        'notificationsMuted': <String, Object?>{
+          'type': 'boolean',
         },
       },
     },
@@ -98,6 +122,9 @@ const schemaGetEventChatAccessCallableResponseSchema = <String, Object?>{
       'type': 'boolean',
     },
     'canReadMessages': <String, Object?>{
+      'type': 'boolean',
+    },
+    'canPostMessages': <String, Object?>{
       'type': 'boolean',
     },
     'profileClaimRequired': <String, Object?>{

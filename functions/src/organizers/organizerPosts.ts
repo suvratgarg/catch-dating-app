@@ -25,6 +25,8 @@ import {
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
+import {isEventPubliclyAccessible} from
+  "../events/eventPublicationAccess";
 
 export {buildOrganizerFollowerDelivery} from "./organizerPostDelivery";
 
@@ -158,6 +160,11 @@ export async function createOrganizerPostHandler(
     if (data.eventId) {
       if (!eventSnap?.exists) {
         throw new HttpsError("not-found", "Linked event not found.");
+      }
+      const rawEvent = eventSnap.data();
+      if (!rawEvent || !isEventPubliclyAccessible(rawEvent)) {
+        throw new HttpsError("failed-precondition",
+          "Publish the event before linking a follower update.");
       }
       const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
       if ((event.organizerId ?? event.clubId) !== data.organizerId) {

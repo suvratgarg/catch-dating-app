@@ -270,27 +270,6 @@ class MoreActivityTypesRow extends StatelessWidget {
   }
 }
 
-class EventTypeBrowseSkeleton extends StatelessWidget {
-  const EventTypeBrowseSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.eventTypeBrowseSkeleton,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.eventTypeSkeletonTextWidth),
-          gapH16,
-          CatchSkeleton.card(height: CatchLayout.eventTypeIndexRowHeight),
-          gapH12,
-          CatchSkeleton.card(height: CatchLayout.eventTypeIndexRowHeight),
-        ],
-      ),
-    );
-  }
-}
-
 List<ActivityEntry> _rankedActivityEntries(List<ExploreEventItem> items) {
   final counts = <ActivityKind, int>{};
   final firstSeen = <ActivityKind, int>{};

@@ -91,7 +91,7 @@ void _registerExploreClubDetailTests() {
                   bottomHeight: const CatchTopBar.primaryRail(
                     title: 'Explore',
                   ).contentHeightFor(context),
-                  bottom: const ExploreBrowseHeaderContent(),
+                  bottom: _exploreCoverHeader(),
                 ).buildSlivers(context),
               ),
             ),
@@ -281,27 +281,12 @@ void _registerExploreClubDetailTests() {
     expect(fakeRepository.leftClubId, 'club-leave');
   });
 
-  testWidgets('HostClubManagementPanel and metric strip show computed values', (
-    tester,
-  ) async {
+  testWidgets('metric strip shows its provided values', (tester) async {
     await pumpTestApp(
       tester,
-      Column(
+      const Column(
         children: [
-          HostClubManagementPanel(
-            club: buildClub(name: 'Host Club'),
-            events: [
-              buildEvent(
-                priceInPaise: 1500,
-                bookedCount: 2,
-                waitlistedCount: 1,
-              ),
-              buildEvent(bookedCount: 1),
-            ],
-            onEditClub: () {},
-            onCreateEvent: () {},
-          ),
-          const CatchMetricSection(
+          CatchMetricSection(
             items: [
               CatchMetricValue(value: '24', label: 'followers'),
               CatchMetricValue(value: '4.7', label: 'rating'),
@@ -313,10 +298,6 @@ void _registerExploreClubDetailTests() {
       ),
     );
 
-    expect(find.text('Booked'), findsOneWidget);
-    expect(find.text('3'), findsOneWidget);
-    expect(find.text('1'), findsOneWidget);
-    expect(find.text('₹30'), findsOneWidget);
     expect(find.byType(CatchMetricSection), findsOneWidget);
     expect(find.text('followers'), findsOneWidget);
     expect(find.text('reviews'), findsOneWidget);
@@ -710,6 +691,7 @@ void _registerExploreClubDetailTests() {
         container: container,
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: Scaffold(
             body: Center(
               child: ClubIndexRow(
@@ -788,10 +770,12 @@ void _registerExploreClubDetailTests() {
       find.byType(CatchMetricSection),
     );
     expect(metrics.variant, CatchMetricSectionVariant.grid);
-    expect(
-      metrics.items.map((item) => item.label),
-      ['Followers', 'Rating', 'Reviews', 'Established'],
-    );
+    expect(metrics.items.map((item) => item.label), [
+      'Followers',
+      'Rating',
+      'Reviews',
+      'Established',
+    ]);
     expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
     expect(find.text('Share'), findsNothing);
     expect(find.text('Asha Host'), findsOneWidget);

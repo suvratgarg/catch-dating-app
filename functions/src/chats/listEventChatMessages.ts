@@ -50,7 +50,8 @@ export async function listEventChatMessagesHandler(
       const view: Result["messages"][number] = {
         messageId: row.id, sequence: message.sequence,
         sentAtMillis: message.createdAt.toMillis(), senderUid: null,
-        senderName: null, available: false, text: null, reply: null,
+        senderName: null, available: false,
+        kind: "text", text: null, reply: null,
         reactionCounts: emptyReactionCounts(), myReaction: null,
         myReactionRevision: 0,
       };
@@ -58,6 +59,7 @@ export async function listEventChatMessagesHandler(
         view.senderUid = message.uid;
         view.senderName = readable.name;
         view.available = true;
+        view.kind = message.kind ?? "text";
         view.text = message.text;
         view.reactionCounts = message.reactionCounts;
         const reactionSnap = await tx.get(db.collection("eventChatReactions")

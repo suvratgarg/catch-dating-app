@@ -62,7 +62,7 @@ void main() {
     }
   });
 
-  test('const input configuration preserves caller bounds and defaults', () {
+  test('const input uses contract bounds when the caller omits them', () {
     const field = CatchField.input(
       copy: copy,
       key: key,
@@ -71,7 +71,7 @@ void main() {
       initialValue: 'Draft',
     );
     expect(field.initialValue, 'Draft');
-    expect(field.maxLength, isNull);
+    expect(field.maxLength, 12);
     expect(field.inputFormatters, isNull);
     expect(field.maxLines, 1);
     expect(field.enabled, isTrue);
