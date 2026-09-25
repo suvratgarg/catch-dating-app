@@ -306,21 +306,21 @@ test("verification accepts a legacy dormant target set but returns the reduced e
   t.after(() => fs.rmSync(work.root, {recursive: true, force: true}));
   fs.writeFileSync(
     path.join(work.source, "functions/src/index.ts"),
-    'export { alpha, beta, sendEventReminders } from "./fixture";\n',
+    'export { alpha, beta, expireEventWaitlistOffers } from "./fixture";\n',
   );
   fs.writeFileSync(
     path.join(work.functionsLibDir, "index.js"),
-    "exports.alpha = true; exports.beta = true; exports.sendEventReminders = true;\n",
+    "exports.alpha = true; exports.beta = true; exports.expireEventWaitlistOffers = true;\n",
   );
   const legacyFunctionTargets = [
     "functions:alpha",
     "functions:beta",
-    "functions:sendEventReminders",
+    "functions:expireEventWaitlistOffers",
   ];
   const {plan, provenanceManifestPath} = prepare(work, {
     functionTargets: legacyFunctionTargets,
   });
-  assert.match(plan.targets[0], /functions:sendEventReminders/u);
+  assert.match(plan.targets[0], /functions:expireEventWaitlistOffers/u);
 
   const effectivePlan = verifyFirebaseDelivery({
     sourceRoot: work.source,

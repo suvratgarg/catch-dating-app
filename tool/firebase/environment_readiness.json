@@ -475,6 +475,31 @@
         "tool/firebase/form_upload_identity.mjs"
       ],
       "purpose": "review"
+    },
+    {
+      "id": "functions.secret.program-household-rsvp-secret",
+      "kind": "secret-version",
+      "name": "PROGRAM_HOUSEHOLD_RSVP_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:issueProgramHouseholdRsvpLink",
+          "functions:getProgramHouseholdRsvpView",
+          "functions:submitProgramHouseholdRsvp",
+          "functions:programHouseholdItineraryIcs"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "program-rsvp",
+      "sourcePaths": [
+        "functions/src/programRsvp/householdRsvp.ts"
+      ]
     }
   ]
 }
