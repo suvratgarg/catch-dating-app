@@ -397,8 +397,10 @@ async function staffGrantsFor(
 }
 
 // --- Readers -----------------------------------------------------------------
+// Exported so callable handlers parse payloads through the same lenient
+// readers as stored documents — one shape, one grammar.
 
-function readScope(raw: unknown): MomentScope | null {
+export function readScope(raw: unknown): MomentScope | null {
   if (typeof raw !== "object" || raw === null) return null;
   const data = raw as Record<string, unknown>;
   if (data.kind === "event" && typeof data.eventId === "string") {
@@ -410,7 +412,7 @@ function readScope(raw: unknown): MomentScope | null {
   return null;
 }
 
-function readInitiation(
+export function readInitiation(
   raw: unknown,
 ): MomentDefinition["initiation"] | null {
   if (typeof raw !== "object" || raw === null) return null;
@@ -439,7 +441,9 @@ function readInitiation(
   }
 }
 
-function readAudience(raw: unknown): MomentDefinition["audience"] | null {
+export function readAudience(
+  raw: unknown,
+): MomentDefinition["audience"] | null {
   if (typeof raw !== "object" || raw === null) return null;
   const data = raw as Record<string, unknown>;
   switch (data.kind) {
@@ -472,7 +476,9 @@ function readAudience(raw: unknown): MomentDefinition["audience"] | null {
   }
 }
 
-function readAction(raw: unknown): MomentDefinition["action"] | null {
+export function readAction(
+  raw: unknown,
+): MomentDefinition["action"] | null {
   if (typeof raw !== "object" || raw === null) return null;
   const data = raw as Record<string, unknown>;
   switch (data.kind) {
