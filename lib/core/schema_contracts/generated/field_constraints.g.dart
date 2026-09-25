@@ -103384,6 +103384,116 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const programDoorJournalDocumentAction = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['checkIn', 'undoCheckIn', 'markNoShow', 'walkInCreate', 'partySizeAdjust'],
+  );
+
+  static const programDoorJournalDocumentActorUid = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programDoorJournalDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programDoorJournalDocumentDeviceId = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.deviceId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentFunctionId = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentGuestId = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentNote = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.note',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const programDoorJournalDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentPartySize = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const programDoorJournalDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDoorJournalDocumentRevision = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programDoorJournalDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programDoorJournalDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programDoorJournalDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programFunctionDocumentCheckedInCount = CatchContractFieldConstraints(
     path: 'programFunctionDocument.checkedInCount',
     valueTypes: <String>['integer'],
@@ -108461,6 +108571,151 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallableResponse.accepted',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const recordProgramDoorJournalCallablePayloadFunctionId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperations = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 50,
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperationsItemsAction = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['checkIn', 'undoCheckIn', 'markNoShow', 'walkInCreate', 'partySizeAdjust'],
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperationsItemsDeviceId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations.items.deviceId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperationsItemsGuestId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperationsItemsNote = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations.items.note',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperationsItemsOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations.items.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const recordProgramDoorJournalCallablePayloadOperationsItemsPartySize = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.operations.items.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const recordProgramDoorJournalCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseAppendedCount = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.appendedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const recordProgramDoorJournalCallableResponseDuplicateCount = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.duplicateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const recordProgramDoorJournalCallableResponseEntityId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.entityId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseRejectedCount = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.rejectedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const recordProgramDoorJournalCallableResponseResults = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.results',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseResultsItemsAction = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.results.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['checkIn', 'undoCheckIn', 'markNoShow', 'walkInCreate', 'partySizeAdjust'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseResultsItemsGuestId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.results.items.guestId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseResultsItemsJournalId = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.results.items.journalId',
+    valueTypes: <String>['string'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseResultsItemsOutcome = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.results.items.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['appended', 'duplicate', 'rejected'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseResultsItemsReason = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.results.items.reason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['alreadyCheckedIn', 'notCheckedIn', 'functionCheckInDisabled', 'duplicateJournalId', 'invalidTransition'],
+  );
+
+  static const recordProgramDoorJournalCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'recordProgramDoorJournalCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
   );
 
   static const recordProgramFunctionRsvpCallablePayloadAllowUninvited = CatchContractFieldConstraints(
@@ -139149,6 +139404,21 @@ abstract final class CatchContractConstraints {
     'programArrivalsRosterCallableResponse.vehicleClasses.items.luggageCapacity': programArrivalsRosterCallableResponseVehicleClassesItemsLuggageCapacity,
     'programArrivalsRosterCallableResponse.vehicleClasses.items.passengerCapacity': programArrivalsRosterCallableResponseVehicleClassesItemsPassengerCapacity,
     'programArrivalsRosterCallableResponse.vehicleClasses.items.sortOrder': programArrivalsRosterCallableResponseVehicleClassesItemsSortOrder,
+    'programDoorJournalDocument.action': programDoorJournalDocumentAction,
+    'programDoorJournalDocument.actorUid': programDoorJournalDocumentActorUid,
+    'programDoorJournalDocument.createdAt._nanoseconds': programDoorJournalDocumentCreatedAtNanoseconds,
+    'programDoorJournalDocument.createdAt._seconds': programDoorJournalDocumentCreatedAtSeconds,
+    'programDoorJournalDocument.deviceId': programDoorJournalDocumentDeviceId,
+    'programDoorJournalDocument.functionId': programDoorJournalDocumentFunctionId,
+    'programDoorJournalDocument.guestId': programDoorJournalDocumentGuestId,
+    'programDoorJournalDocument.note': programDoorJournalDocumentNote,
+    'programDoorJournalDocument.occurredAtMillis': programDoorJournalDocumentOccurredAtMillis,
+    'programDoorJournalDocument.organizerId': programDoorJournalDocumentOrganizerId,
+    'programDoorJournalDocument.partySize': programDoorJournalDocumentPartySize,
+    'programDoorJournalDocument.programId': programDoorJournalDocumentProgramId,
+    'programDoorJournalDocument.revision': programDoorJournalDocumentRevision,
+    'programDoorJournalDocument.updatedAt._nanoseconds': programDoorJournalDocumentUpdatedAtNanoseconds,
+    'programDoorJournalDocument.updatedAt._seconds': programDoorJournalDocumentUpdatedAtSeconds,
     'programFunctionDocument.checkedInCount': programFunctionDocumentCheckedInCount,
     'programFunctionDocument.checkInEnabled': programFunctionDocumentCheckInEnabled,
     'programFunctionDocument.createdAt._nanoseconds': programFunctionDocumentCreatedAtNanoseconds,
@@ -139844,6 +140114,27 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallablePayload.sessionId': recordOrganizerAnalyticsEventCallablePayloadSessionId,
     'recordOrganizerAnalyticsEventCallablePayload.source': recordOrganizerAnalyticsEventCallablePayloadSource,
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
+    'recordProgramDoorJournalCallablePayload.functionId': recordProgramDoorJournalCallablePayloadFunctionId,
+    'recordProgramDoorJournalCallablePayload.operations': recordProgramDoorJournalCallablePayloadOperations,
+    'recordProgramDoorJournalCallablePayload.operations.items.action': recordProgramDoorJournalCallablePayloadOperationsItemsAction,
+    'recordProgramDoorJournalCallablePayload.operations.items.deviceId': recordProgramDoorJournalCallablePayloadOperationsItemsDeviceId,
+    'recordProgramDoorJournalCallablePayload.operations.items.guestId': recordProgramDoorJournalCallablePayloadOperationsItemsGuestId,
+    'recordProgramDoorJournalCallablePayload.operations.items.note': recordProgramDoorJournalCallablePayloadOperationsItemsNote,
+    'recordProgramDoorJournalCallablePayload.operations.items.occurredAtMillis': recordProgramDoorJournalCallablePayloadOperationsItemsOccurredAtMillis,
+    'recordProgramDoorJournalCallablePayload.operations.items.partySize': recordProgramDoorJournalCallablePayloadOperationsItemsPartySize,
+    'recordProgramDoorJournalCallablePayload.programId': recordProgramDoorJournalCallablePayloadProgramId,
+    'recordProgramDoorJournalCallableResponse.alreadyApplied': recordProgramDoorJournalCallableResponseAlreadyApplied,
+    'recordProgramDoorJournalCallableResponse.appendedCount': recordProgramDoorJournalCallableResponseAppendedCount,
+    'recordProgramDoorJournalCallableResponse.duplicateCount': recordProgramDoorJournalCallableResponseDuplicateCount,
+    'recordProgramDoorJournalCallableResponse.entityId': recordProgramDoorJournalCallableResponseEntityId,
+    'recordProgramDoorJournalCallableResponse.rejectedCount': recordProgramDoorJournalCallableResponseRejectedCount,
+    'recordProgramDoorJournalCallableResponse.results': recordProgramDoorJournalCallableResponseResults,
+    'recordProgramDoorJournalCallableResponse.results.items.action': recordProgramDoorJournalCallableResponseResultsItemsAction,
+    'recordProgramDoorJournalCallableResponse.results.items.guestId': recordProgramDoorJournalCallableResponseResultsItemsGuestId,
+    'recordProgramDoorJournalCallableResponse.results.items.journalId': recordProgramDoorJournalCallableResponseResultsItemsJournalId,
+    'recordProgramDoorJournalCallableResponse.results.items.outcome': recordProgramDoorJournalCallableResponseResultsItemsOutcome,
+    'recordProgramDoorJournalCallableResponse.results.items.reason': recordProgramDoorJournalCallableResponseResultsItemsReason,
+    'recordProgramDoorJournalCallableResponse.revision': recordProgramDoorJournalCallableResponseRevision,
     'recordProgramFunctionRsvpCallablePayload.allowUninvited': recordProgramFunctionRsvpCallablePayloadAllowUninvited,
     'recordProgramFunctionRsvpCallablePayload.functionId': recordProgramFunctionRsvpCallablePayloadFunctionId,
     'recordProgramFunctionRsvpCallablePayload.guestId': recordProgramFunctionRsvpCallablePayloadGuestId,

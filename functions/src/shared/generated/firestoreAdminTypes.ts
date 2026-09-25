@@ -9320,6 +9320,48 @@ export interface ProgramFunctionGuestDocument {
 }
 
 /**
+ * Server-owned append-only door journal entry for one program function. The document id is the deterministic journalId derived from (scope, functionId, guestId, action, occurredAtMillis, actorUid), so device retries and offline outbox replays collapse to one entry. Attendance truth projects from this journal onto programFunctionGuests.attendanceStatus; clients never write either surface directly.
+ */
+export interface ProgramDoorJournalDocument {
+  programId: string;
+  organizerId: string;
+  functionId: string;
+  /**
+   * programGuests member the entry acts on; walkInCreate entries may name a guest the function never invited.
+   */
+  guestId: string;
+  /**
+   * Staff uid who recorded the action at the door.
+   */
+  actorUid: string;
+  action:
+    | "checkIn"
+    | "undoCheckIn"
+    | "markNoShow"
+    | "walkInCreate"
+    | "partySizeAdjust";
+  /**
+   * Client-declared action time folded into the idempotency key and journal ordering.
+   */
+  occurredAtMillis: number;
+  /**
+   * Door device identifier for audit; null when the device supplies none.
+   */
+  deviceId: string | null;
+  /**
+   * Attending party size set by walkInCreate or partySizeAdjust; null on every other action.
+   */
+  partySize: number | null;
+  /**
+   * Optional door note such as a late-arrival explanation.
+   */
+  note: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
  * Server-owned person-level wedding/corporate guest record. One document per invited person; household membership and optional CRM contact links are explicit. A shared phone number never merges two guests.
  */
 export interface ProgramGuestDocument {

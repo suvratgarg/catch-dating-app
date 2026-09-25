@@ -707,6 +707,8 @@ export {
   refreshProgramFlightStatuses,
 } from "./transport/programFlightRefresh";
 export {flightAlertWebhook} from "./transport/flightAlerts";
+export {recordProgramDoorJournal} from
+  "./doorJournal/recordProgramDoorJournal";
 
 export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,

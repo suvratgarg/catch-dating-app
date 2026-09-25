@@ -1,0 +1,19 @@
+{
+  "programId": "program-1",
+  "functionId": "function-sangeet",
+  "operations": [
+    {
+      "guestId": "guest-1",
+      "action": "checkIn",
+      "occurredAtMillis": 1786625400000,
+      "deviceId": "door-tablet-3",
+      "note": "Arrived with driver"
+    },
+    {
+      "guestId": "guest-9",
+      "action": "walkInCreate",
+      "occurredAtMillis": 1786625401000,
+      "partySize": 3
+    }
+  ]
+}
