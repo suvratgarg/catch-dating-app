@@ -119,6 +119,8 @@ export async function loadAnchorFacts(
         revision: readInt(data.revision, 0),
         messagingEnabled: true,
         cancelled: data.status !== "active",
+        organizerId: readString(data.organizerId) ??
+          readString(data.clubId),
       },
       functions: {},
       travelLegs: {},
@@ -146,6 +148,7 @@ export async function loadAnchorFacts(
       revision: readInt(pdata.revision, 0),
       messagingEnabled: capabilities.includes("messaging"),
       cancelled: pdata.status !== "active",
+      organizerId: readString(pdata.organizerId),
     },
     functions: Object.fromEntries(functions.docs.map((doc) => {
       const fn = doc.data() as Record<string, unknown>;

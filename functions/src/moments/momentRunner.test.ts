@@ -254,3 +254,47 @@ test("manual moments fire once per request key", async () => {
   assert.notEqual(
     "runId" in first && first.runId, "runId" in second && second.runId);
 });
+
+test("staffAttention sends journal the attention-projection fields",
+  async () => {
+    const db = new FakeFirestore({});
+    seedProgram(db);
+    db.setDoc("programStaffGrants/gr1", {
+      programId: "prog", organizerId: "org-1", uid: "staff-1",
+      status: "active",
+      duties: [{duty: "door", functionIds: ["sangeet"]}],
+      revision: 1,
+    });
+    writeMoment(db, {
+      ...sangeetReminder,
+      momentId: "m_attention",
+      audience: {kind: "staffDuty", duty: "door", scopeIds: ["sangeet"]},
+      action: {
+        kind: "staffAttention", duty: "door", severity: "urgent",
+        titleTemplate: "Door staffing gap",
+      },
+    });
+    const base = makeDeps(db, 1_100_000);
+    const notified: string[] = [];
+    const deps: MomentRunnerDeps = {...base.deps,
+      writeStaffAttention: async (p) => {
+        notified.push(p.uid);
+      }};
+    const summary = await runMomentSweep(deps);
+    assert.equal(summary.runsFired, 1);
+    assert.deepEqual(notified, ["staff-1"]);
+    const sends = await (deps.firestore() as never as FakeFirestore)
+      .collection(MOMENT_SENDS_COLLECTION).get();
+    const rows = sends.docs.map((d) =>
+      (d as {data(): Record<string, unknown>}).data());
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].decision, "sent");
+    assert.equal(rows[0].actionKind, "staffAttention");
+    assert.equal(rows[0].organizerId, "org-1");
+    assert.equal(rows[0].scopeKind, "program");
+    assert.equal(rows[0].scopeId, "prog");
+    assert.equal(rows[0].runId, "m_attention_7_1100000");
+    assert.equal(rows[0].duty, "door");
+    assert.equal(rows[0].severity, "urgent");
+    assert.equal(rows[0].title, "Door staffing gap");
+  });

@@ -24,13 +24,21 @@
         "eventStaffing",
         "formResponseReview",
         "inboxReply",
-        "postEventReconciliation"
+        "postEventReconciliation",
+        "momentStaffAttention"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json"
     },
     "scope": {
       "type": "string",
-      "enum": ["organizer", "event", "application", "form", "thread", "account"]
+      "enum": [
+        "organizer",
+        "event",
+        "application",
+        "form",
+        "thread",
+        "account"
+      ]
     },
     "sourceOwner": {
       "type": "string",
@@ -49,16 +57,26 @@
         "eventStaffGrants",
         "organizerFormResponses",
         "organizerWhatsappThreads",
-        "eventAttendees"
+        "eventAttendees",
+        "organizerMomentSends"
       ]
     },
     "status": {
       "type": "string",
-      "enum": ["open", "resolved", "expired", "superseded"]
+      "enum": [
+        "open",
+        "resolved",
+        "expired",
+        "superseded"
+      ]
     },
     "urgency": {
       "type": "string",
-      "enum": ["immediate", "soon", "upcoming"]
+      "enum": [
+        "immediate",
+        "soon",
+        "upcoming"
+      ]
     },
     "consequence": {
       "type": "string",
@@ -82,37 +100,119 @@
         "hostAudienceForms",
         "hostInbox",
         "hostDressRehearsal",
-        "hostEvents"
+        "hostEvents",
+        "hostProgramWork"
       ]
     },
     "destination": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["route", "section", "eventId", "applicationId", "formId", "threadId"],
+      "required": [
+        "route",
+        "section",
+        "eventId",
+        "applicationId",
+        "formId",
+        "threadId"
+      ],
       "properties": {
-        "route": {"$ref": "#/definitions/destinationRoute"},
-        "section": {"type": ["string", "null"], "maxLength": 80},
-        "eventId": {"type": ["string", "null"], "maxLength": 180},
-        "applicationId": {"type": ["string", "null"], "maxLength": 180},
-        "formId": {"type": ["string", "null"], "maxLength": 180},
-        "threadId": {"type": ["string", "null"], "maxLength": 180}
+        "route": {
+          "$ref": "#/definitions/destinationRoute"
+        },
+        "section": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "applicationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "formId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "threadId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        }
       }
     },
     "context": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["eventName", "subjectLabel", "count", "provider", "errorCode"],
+      "required": [
+        "eventName",
+        "subjectLabel",
+        "count",
+        "provider",
+        "errorCode"
+      ],
       "properties": {
-        "eventName": {"type": ["string", "null"], "maxLength": 160},
-        "subjectLabel": {"type": ["string", "null"], "maxLength": 160},
-        "count": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000000},
-        "provider": {"type": ["string", "null"], "maxLength": 80},
-        "errorCode": {"type": ["string", "null"], "maxLength": 120}
+        "eventName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "subjectLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "errorCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        }
       }
     },
     "coverageState": {
       "type": "string",
-      "enum": ["complete", "clientMergeRequired", "shortcutOnly", "blockedMissingTruth"]
+      "enum": [
+        "complete",
+        "clientMergeRequired",
+        "shortcutOnly",
+        "blockedMissingTruth"
+      ]
     }
   }
 }

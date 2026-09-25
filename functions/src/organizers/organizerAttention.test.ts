@@ -70,6 +70,65 @@ test("derives independent source-ready server attention kinds", () => {
   );
 });
 
+test("projects staffAttention sends as one item per run", () => {
+  const sources = emptySources();
+  sources.momentAttentionSends = [
+    row("send-1", {
+      runId: "run-a",
+      momentId: "moment-1",
+      scopeKind: "event",
+      scopeId: "event-1",
+      duty: "door",
+      severity: "urgent",
+      title: "Door staffing gap",
+      createdAtMillis: nowMillis - hourMillis,
+    }, nowMillis - hourMillis),
+    row("send-2", {
+      runId: "run-a",
+      momentId: "moment-1",
+      scopeKind: "event",
+      scopeId: "event-1",
+      duty: "door",
+      severity: "urgent",
+      title: "Door staffing gap",
+      createdAtMillis: nowMillis - hourMillis,
+    }, nowMillis - hourMillis),
+    row("send-3", {
+      runId: "run-b",
+      momentId: "moment-2",
+      scopeKind: "program",
+      scopeId: "program-1",
+      duty: "communications",
+      severity: "info",
+      title: "Manifest ready",
+      createdAtMillis: nowMillis - 2 * hourMillis,
+    }, nowMillis - 2 * hourMillis),
+  ];
+  const items = deriveOrganizerAttentionItems({
+    organizerId: "organizer-1",
+    nowMillis,
+    sources,
+  }).filter((item) => item.kind === "momentStaffAttention");
+
+  assert.equal(items.length, 2);
+  const urgent = items.find((item) => item.scope === "event");
+  assert.ok(urgent);
+  assert.equal(urgent.eventId, "event-1");
+  assert.equal(urgent.consequence, "risksGuestExperience");
+  assert.equal(urgent.blocking, true);
+  assert.equal(urgent.context.count, 2);
+  assert.equal(urgent.context.subjectLabel, "Door staffing gap");
+  assert.equal(urgent.dedupeKey, "momentStaffAttention:run-a");
+  assert.equal(urgent.expiresAtMillis,
+    nowMillis - hourMillis + 24 * hourMillis);
+  const program = items.find((item) => item.scope === "organizer");
+  assert.ok(program);
+  assert.equal(program.consequence, "informational");
+  assert.equal(program.blocking, false);
+  assert.equal(program.destination.route, "hostProgramWork");
+  assert.equal(program.destination.section, "moments");
+});
+
 test("latest terminal outcomes resolve failures without weak proxies", () => {
   const base = sourceFixture();
   base.events[0].data = event({manualApprovalRequired: true});
@@ -268,8 +327,8 @@ test("applies the seven-day horizon and exposes all policy gaps", () => {
   assert.deepEqual(items, []);
 
   const coverage = hostAttentionCoverage();
-  assert.equal(coverage.length, 17);
-  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 17);
+  assert.equal(coverage.length, 18);
+  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 18);
   assert.equal(coverage.find((entry) =>
     entry.kind === "attendanceSync")?.state, "clientMergeRequired");
   assert.equal(coverage.find((entry) =>
@@ -404,7 +463,7 @@ test(
     });
     assert.deepEqual(actions, ["listOrganizerAttentionItems"]);
     assert.equal(result.generatedAtMillis, nowMillis);
-    assert.equal(result.coverage.length, 17);
+    assert.equal(result.coverage.length, 18);
     assert.equal(result.items.length, 6);
   }
 );
@@ -473,6 +532,7 @@ function emptySources(): OrganizerAttentionSources {
     automationRules: [],
     automationRuns: [],
     paymentAccounts: {},
+    momentAttentionSends: [],
   };
 }
 

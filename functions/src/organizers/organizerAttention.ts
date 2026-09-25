@@ -55,6 +55,8 @@ import {
   HostAttentionItem,
   hostAttentionCoverage,
   hostAttentionHorizonMillis,
+  momentAttentionWindowMillis,
+  MomentAttentionSendSource,
   OrganizerAttentionSources,
 } from "./organizerAttentionPolicy";
 
@@ -150,6 +152,7 @@ export async function loadOrganizerAttentionSources(
     providerRuns,
     automationRules,
     automationRuns,
+    momentAttentionSendDocs,
   ] = await Promise.all([
     db.collection("organizers").doc(organizerId).get(),
     events.where("organizerId", "==", organizerId)
@@ -208,6 +211,17 @@ export async function loadOrganizerAttentionSources(
     db.collection("organizerFormAutomationRuns")
       .where("organizerId", "==", organizerId)
       .limit(maxAttentionSourceRows + 1).get(),
+    db.collection("organizerMomentSends")
+      .where("organizerId", "==", organizerId)
+      .where("actionKind", "==", "staffAttention")
+      .where(
+        "createdAtMillis",
+        ">",
+        now.toMillis() - momentAttentionWindowMillis
+      )
+      .orderBy("createdAtMillis")
+      .orderBy(admin.firestore.FieldPath.documentId())
+      .limit(maxAttentionSourceRows + 1).get(),
   ]);
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
@@ -229,6 +243,10 @@ export async function loadOrganizerAttentionSources(
   assertBoundedSnapshot(providerRuns, "unexpired provider sync runs");
   assertBoundedSnapshot(automationRules, "form automation rules");
   assertBoundedSnapshot(automationRuns, "form automation runs");
+  assertBoundedSnapshot(
+    momentAttentionSendDocs,
+    "moment staff attention sends"
+  );
 
   const eventRows = new Map<string, AttentionSourceRow<EventDocument>>();
   for (const snapshot of [canonicalEvents, compatibilityEvents]) {
@@ -297,7 +315,47 @@ export async function loadOrganizerAttentionSources(
     automationRuns: automationRuns.docs.map((doc) =>
       sourceRow<OrganizerFormAutomationRunDocument>(doc)),
     paymentAccounts,
+    momentAttentionSends: momentAttentionSendDocs.docs
+      .map((doc) => momentAttentionSendRow(doc))
+      .filter((row): row is
+        AttentionSourceRow<MomentAttentionSendSource> => row !== null),
   };
+}
+
+/** Lenient journal parse: staffAttention sends missing projection fields
+ *  (e.g. written before the contract added them) drop out of the source
+ *  set rather than failing the whole projection. */
+function momentAttentionSendRow(
+  snapshot: FirebaseFirestore.DocumentSnapshot
+): AttentionSourceRow<MomentAttentionSendSource> | null {
+  const data = snapshot.data() as Record<string, unknown> | undefined;
+  if (!data) return null;
+  const runId = data.runId;
+  const momentId = data.momentId;
+  const scopeKind = data.scopeKind;
+  const scopeId = data.scopeId;
+  const duty = data.duty;
+  const severity = data.severity;
+  const title = data.title;
+  const createdAtMillis = data.createdAtMillis;
+  if (typeof runId !== "string" || typeof momentId !== "string" ||
+      (scopeKind !== "event" && scopeKind !== "program") ||
+      typeof scopeId !== "string" || typeof duty !== "string" ||
+      (severity !== "info" && severity !== "warning" &&
+        severity !== "urgent") ||
+      typeof title !== "string" || typeof createdAtMillis !== "number") {
+    return null;
+  }
+  return sourceRowFromSnapshot(snapshot, {
+    runId,
+    momentId,
+    scopeKind,
+    scopeId,
+    duty,
+    severity,
+    title,
+    createdAtMillis,
+  });
 }
 
 function deliveryReviewSourceRow(

@@ -81,6 +81,7 @@ const schemaOrganizerAttentionItemDocumentSchema = <String, Object?>{
         'formResponseReview',
         'inboxReply',
         'postEventReconciliation',
+        'momentStaffAttention',
       ],
       'x-catch-catalog': '../catalogs/host_attention_policies.json',
       'x-catch-ownership': 'server-only',
@@ -115,6 +116,7 @@ const schemaOrganizerAttentionItemDocumentSchema = <String, Object?>{
         'organizerFormResponses',
         'organizerWhatsappThreads',
         'eventAttendees',
+        'organizerMomentSends',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -197,6 +199,7 @@ const schemaOrganizerAttentionItemDocumentSchema = <String, Object?>{
             'hostInbox',
             'hostDressRehearsal',
             'hostEvents',
+            'hostProgramWork',
           ],
         },
         'section': <String, Object?>{

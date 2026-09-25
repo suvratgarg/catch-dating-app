@@ -18,10 +18,20 @@ import {
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   validateListOrganizerMomentsCallablePayload,
+} from
+  "../shared/generated/validators/listOrganizerMomentsInput";
+import {
   validateOrganizerMomentActionCallablePayload,
+} from
+  "../shared/generated/validators/organizerMomentActionInput";
+import {
   validateRunOrganizerMomentCallablePayload,
+} from
+  "../shared/generated/validators/runOrganizerMomentInput";
+import {
   validateUpsertOrganizerMomentCallablePayload,
-} from "../shared/generated/schemaValidators";
+} from
+  "../shared/generated/validators/upsertOrganizerMomentInput";
 import type {
   ListOrganizerMomentsCallablePayload,
 } from "../shared/generated/listOrganizerMomentsCallablePayload";

@@ -18,7 +18,10 @@
       "consequence": "blocksLiveOperation",
       "dueAtPolicy": "Event startTime.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "live"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "live"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -36,7 +39,10 @@
       "consequence": "risksGuestExperience",
       "dueAtPolicy": "Earliest open practical case receivedAt.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "live"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "live"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -54,7 +60,10 @@
       "consequence": "risksGuestExperience",
       "dueAtPolicy": "Earliest review checkpoint dueAt, bounded by the event endTime.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "live"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "live"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -72,7 +81,10 @@
       "consequence": "risksGuestExperience",
       "dueAtPolicy": "Event startTime minus 24 hours. A newly discovered overdue item retains this original deadline.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "guests"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -90,7 +102,10 @@
       "consequence": "delaysResponse",
       "dueAtPolicy": "Earliest pending request time plus 24 hours.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "guests"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -108,7 +123,10 @@
       "consequence": "delaysResponse",
       "dueAtPolicy": "submittedAt plus 24 hours.",
       "expiresAtPolicy": "No action expiry while the canonical review status remains open.",
-      "destination": {"route": "hostApplications", "section": null},
+      "destination": {
+        "route": "hostApplications",
+        "section": null
+      },
       "dedupePolicy": "kind + applicationId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -126,7 +144,10 @@
       "consequence": "requiresReconciliation",
       "dueAtPolicy": "Latest failed or partial run completion time, otherwise start time.",
       "expiresAtPolicy": "Source run TTL expiry.",
-      "destination": {"route": "hostEventManage", "section": "guests"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -144,7 +165,10 @@
       "consequence": "degradesAutomation",
       "dueAtPolicy": "Latest failed run updatedAt.",
       "expiresAtPolicy": "No action expiry while it remains the latest run for an active rule.",
-      "destination": {"route": "hostAudienceForms", "section": "automations"},
+      "destination": {
+        "route": "hostAudienceForms",
+        "section": "automations"
+      },
       "dedupePolicy": "kind + formId + ruleId",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -162,7 +186,10 @@
       "consequence": "risksRevenue",
       "dueAtPolicy": "Earliest paid event startTime minus 72 hours. A newly discovered overdue item retains this original deadline.",
       "expiresAtPolicy": "Latest affected paid event endTime.",
-      "destination": {"route": "hostOrganizerPayments", "section": null},
+      "destination": {
+        "route": "hostOrganizerPayments",
+        "section": null
+      },
       "dedupePolicy": "kind + organizerId + provider",
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
@@ -180,7 +207,10 @@
       "consequence": "requiresReconciliation",
       "dueAtPolicy": "Immediate for conflict, otherwise the local retry or seven-day review threshold.",
       "expiresAtPolicy": "Local outbox expiry at 30 days.",
-      "destination": {"route": "hostEventManage", "section": "guests"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
       "dedupePolicy": "kind + clientOperationId",
       "deliveryMode": "clientMerged",
       "readiness": "sourceReady",
@@ -198,7 +228,10 @@
       "consequence": "informational",
       "dueAtPolicy": "No implicit due date.",
       "expiresAtPolicy": "Rehearsal session expiry is independent of the shortcut.",
-      "destination": {"route": "hostDressRehearsal", "section": null},
+      "destination": {
+        "route": "hostDressRehearsal",
+        "section": null
+      },
       "dedupePolicy": "Not persisted as an attention item.",
       "deliveryMode": "shortcutOnly",
       "readiness": "sourceReady",
@@ -216,7 +249,10 @@
       "consequence": "preparationIncomplete",
       "dueAtPolicy": "Future policy derived from event start.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "setup"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "setup"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
@@ -234,7 +270,10 @@
       "consequence": "preparationIncomplete",
       "dueAtPolicy": "Future policy derived from event start.",
       "expiresAtPolicy": "Event startTime.",
-      "destination": {"route": "hostEventManage", "section": "setup"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "setup"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
@@ -252,7 +291,10 @@
       "consequence": "blocksLiveOperation",
       "dueAtPolicy": "Future policy derived from event start.",
       "expiresAtPolicy": "Event endTime.",
-      "destination": {"route": "hostEventManage", "section": "setup"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "setup"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
@@ -270,7 +312,10 @@
       "consequence": "delaysResponse",
       "dueAtPolicy": "Future form workflow SLA from submittedAt.",
       "expiresAtPolicy": "Withdrawal or configured workflow expiry.",
-      "destination": {"route": "hostAudienceForms", "section": "responses"},
+      "destination": {
+        "route": "hostAudienceForms",
+        "section": "responses"
+      },
       "dedupePolicy": "kind + responseId",
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
@@ -288,7 +333,10 @@
       "consequence": "delaysResponse",
       "dueAtPolicy": "Future inbox SLA from explicit attention opening.",
       "expiresAtPolicy": "Thread retention expiry or explicit resolution.",
-      "destination": {"route": "hostInbox", "section": null},
+      "destination": {
+        "route": "hostInbox",
+        "section": null
+      },
       "dedupePolicy": "kind + threadId",
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
@@ -306,11 +354,35 @@
       "consequence": "requiresReconciliation",
       "dueAtPolicy": "Future policy after event end.",
       "expiresAtPolicy": "Future retention policy.",
-      "destination": {"route": "hostEventManage", "section": "report"},
+      "destination": {
+        "route": "hostEventManage",
+        "section": "report"
+      },
       "dedupePolicy": "kind + eventId",
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
       "readinessReason": "Counts alone cannot prove whether attendance, refunds, provider imports, and reporting are reconciled."
+    },
+    {
+      "kind": "momentStaffAttention",
+      "scope": "organizer",
+      "sourceOwner": "organizerMomentSends",
+      "sourceIdPolicy": "organizerMomentSends document id for a fired staffAttention send.",
+      "sourceRevisionPolicy": "Run id plus duty, severity, and send creation time.",
+      "triggerPredicate": "A staffAttention moment run dispatched within the rolling source window.",
+      "resolutionPredicate": "The send ages out of the source window or the organizer resolves the item.",
+      "permissionPredicate": "Caller is a canonical manager of the moment scope's organizer.",
+      "consequence": "informational",
+      "dueAtPolicy": "Moment send creation time.",
+      "expiresAtPolicy": "24 hours after the send was created.",
+      "destination": {
+        "route": "hostProgramWork",
+        "section": "moments"
+      },
+      "dedupePolicy": "kind + runId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "organizerMomentSends is a durable engine journal written at fire time."
     }
   ]
 }

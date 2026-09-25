@@ -70463,15 +70463,15 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    minItems: 17,
-    maxItems: 17,
+    minItems: 18,
+    maxItems: 18,
   );
 
   static const listOrganizerAttentionItemsCallableResponseCoverageItemsKind = CatchContractFieldConstraints(
     path: 'listOrganizerAttentionItemsCallableResponse.coverage.items.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation'],
+    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseCoverageItemsReason = CatchContractFieldConstraints(
@@ -70601,7 +70601,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerAttentionItemsCallableResponse.items.items.destination.route',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['hostEventManage', 'hostApplications', 'hostOrganizerPayments', 'hostAudienceForms', 'hostInbox', 'hostDressRehearsal', 'hostEvents'],
+    enumValues: <String>['hostEventManage', 'hostApplications', 'hostOrganizerPayments', 'hostAudienceForms', 'hostInbox', 'hostDressRehearsal', 'hostEvents', 'hostProgramWork'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseItemsItemsDestinationSection = CatchContractFieldConstraints(
@@ -70641,7 +70641,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerAttentionItemsCallableResponse.items.items.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation'],
+    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseItemsItemsOpenedAtMillis = CatchContractFieldConstraints(
@@ -70687,7 +70687,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerAttentionItemsCallableResponse.items.items.sourceOwner',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees'],
+    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees', 'organizerMomentSends'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseItemsItemsSourceRevision = CatchContractFieldConstraints(
@@ -78001,7 +78001,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerAttentionItemDocument.destination.route',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['hostEventManage', 'hostApplications', 'hostOrganizerPayments', 'hostAudienceForms', 'hostInbox', 'hostDressRehearsal', 'hostEvents'],
+    enumValues: <String>['hostEventManage', 'hostApplications', 'hostOrganizerPayments', 'hostAudienceForms', 'hostInbox', 'hostDressRehearsal', 'hostEvents', 'hostProgramWork'],
   );
 
   static const organizerAttentionItemDocumentDestinationSection = CatchContractFieldConstraints(
@@ -78040,7 +78040,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerAttentionItemDocument.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation'],
+    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention'],
   );
 
   static const organizerAttentionItemDocumentOpenedAtNanoseconds = CatchContractFieldConstraints(
@@ -78133,7 +78133,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerAttentionItemDocument.sourceOwner',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees'],
+    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees', 'organizerMomentSends'],
   );
 
   static const organizerAttentionItemDocumentSourceRevision = CatchContractFieldConstraints(
@@ -90757,6 +90757,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMomentSendDocumentActionKind = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.actionKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['sendTemplate', 'push', 'staffAttention'],
+  );
+
   static const organizerMomentSendDocumentCreatedAtMillis = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.createdAtMillis',
     required: true,
@@ -90780,11 +90786,23 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['sent', 'suppressed'],
   );
 
+  static const organizerMomentSendDocumentDuty = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.duty',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMomentSendDocumentMomentId = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.momentId',
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.organizerId',
+    maxLength: 200,
     valueTypes: <String>['string'],
   );
 
@@ -90799,6 +90817,36 @@ abstract final class CatchContractConstraints {
     maxLength: 220,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentRunId = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.runId',
+    maxLength: 260,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentScopeId = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.scopeId',
+    maxLength: 200,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMomentSendDocumentScopeKind = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.scopeKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'program'],
+  );
+
+  static const organizerMomentSendDocumentSeverity = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.severity',
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
+  static const organizerMomentSendDocumentTitle = CatchContractFieldConstraints(
+    path: 'organizerMomentSendDocument.title',
+    maxLength: 240,
     valueTypes: <String>['string'],
   );
 
@@ -129836,12 +129884,20 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.suppressed': organizerMomentRunDocumentSuppressed,
     'organizerMomentRunDocument.suppressedNoEndpoint': organizerMomentRunDocumentSuppressedNoEndpoint,
     'organizerMomentRunDocument.targetFunctionId': organizerMomentRunDocumentTargetFunctionId,
+    'organizerMomentSendDocument.actionKind': organizerMomentSendDocumentActionKind,
     'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,
     'organizerMomentSendDocument.dayKey': organizerMomentSendDocumentDayKey,
     'organizerMomentSendDocument.decision': organizerMomentSendDocumentDecision,
+    'organizerMomentSendDocument.duty': organizerMomentSendDocumentDuty,
     'organizerMomentSendDocument.momentId': organizerMomentSendDocumentMomentId,
+    'organizerMomentSendDocument.organizerId': organizerMomentSendDocumentOrganizerId,
     'organizerMomentSendDocument.reason': organizerMomentSendDocumentReason,
     'organizerMomentSendDocument.recipientKey': organizerMomentSendDocumentRecipientKey,
+    'organizerMomentSendDocument.runId': organizerMomentSendDocumentRunId,
+    'organizerMomentSendDocument.scopeId': organizerMomentSendDocumentScopeId,
+    'organizerMomentSendDocument.scopeKind': organizerMomentSendDocumentScopeKind,
+    'organizerMomentSendDocument.severity': organizerMomentSendDocumentSeverity,
+    'organizerMomentSendDocument.title': organizerMomentSendDocumentTitle,
     'organizerPaymentConnectionDocument.accountId': organizerPaymentConnectionDocumentAccountId,
     'organizerPaymentConnectionDocument.connectedByUid': organizerPaymentConnectionDocumentConnectedByUid,
     'organizerPaymentConnectionDocument.createdAt._nanoseconds': organizerPaymentConnectionDocumentCreatedAtNanoseconds,

@@ -124,6 +124,10 @@ export interface AnchorFacts {
     revision: number;
     messagingEnabled: boolean;
     cancelled: boolean;
+    /** Owning organizer; staffAttention sends stamp it for the
+     *  attention-projection source query. Optional so program docs that
+     *  predate the field still load. */
+    organizerId?: string | null;
   };
   functions: Readonly<Record<string, {
     startsAtMillis: number;

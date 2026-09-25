@@ -65,6 +65,82 @@ export const organizerMomentSendDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 260,
+      "description": "Run that produced this send; set on staffAttention sends so the attention projection can group recipients per run."
+    },
+    "actionKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "sendTemplate",
+        "push",
+        "staffAttention",
+        null
+      ],
+      "description": "Moment action kind; staffAttention rows feed the organizer attention projection."
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200,
+      "description": "Owning organizer for attention projection queries."
+    },
+    "scopeKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "event",
+        "program",
+        null
+      ]
+    },
+    "scopeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "duty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "description": "staffAttention: duty the alert targeted."
+    },
+    "severity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "info",
+        "warning",
+        "urgent",
+        null
+      ],
+      "description": "staffAttention: alert severity."
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "description": "staffAttention: rendered alert title."
     }
   }
 } as const;

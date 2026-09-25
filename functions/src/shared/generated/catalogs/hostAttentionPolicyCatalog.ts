@@ -366,6 +366,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
       "readinessReason": "Counts alone cannot prove whether attendance, refunds, provider imports, and reporting are reconciled."
+    },
+    {
+      "kind": "momentStaffAttention",
+      "scope": "organizer",
+      "sourceOwner": "organizerMomentSends",
+      "sourceIdPolicy": "organizerMomentSends document id for a fired staffAttention send.",
+      "sourceRevisionPolicy": "Run id plus duty, severity, and send creation time.",
+      "triggerPredicate": "A staffAttention moment run dispatched within the rolling source window.",
+      "resolutionPredicate": "The send ages out of the source window or the organizer resolves the item.",
+      "permissionPredicate": "Caller is a canonical manager of the moment scope's organizer.",
+      "consequence": "informational",
+      "dueAtPolicy": "Moment send creation time.",
+      "expiresAtPolicy": "24 hours after the send was created.",
+      "destination": {
+        "route": "hostProgramWork",
+        "section": "moments"
+      },
+      "dedupePolicy": "kind + runId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "organizerMomentSends is a durable engine journal written at fire time."
     }
   ]
 } as const;

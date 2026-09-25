@@ -106189,7 +106189,8 @@ export const organizerAttentionItemDocumentSchema = {
         "eventStaffing",
         "formResponseReview",
         "inboxReply",
-        "postEventReconciliation"
+        "postEventReconciliation",
+        "momentStaffAttention"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json",
       "x-catch-ownership": "server-only"
@@ -106223,7 +106224,8 @@ export const organizerAttentionItemDocumentSchema = {
         "eventStaffGrants",
         "organizerFormResponses",
         "organizerWhatsappThreads",
-        "eventAttendees"
+        "eventAttendees",
+        "organizerMomentSends"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -106305,7 +106307,8 @@ export const organizerAttentionItemDocumentSchema = {
             "hostAudienceForms",
             "hostInbox",
             "hostDressRehearsal",
-            "hostEvents"
+            "hostEvents",
+            "hostProgramWork"
           ]
         },
         "section": {
@@ -129094,6 +129097,82 @@ export const organizerMomentSendDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 260,
+      "description": "Run that produced this send; set on staffAttention sends so the attention projection can group recipients per run."
+    },
+    "actionKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "sendTemplate",
+        "push",
+        "staffAttention",
+        null
+      ],
+      "description": "Moment action kind; staffAttention rows feed the organizer attention projection."
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200,
+      "description": "Owning organizer for attention projection queries."
+    },
+    "scopeKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "event",
+        "program",
+        null
+      ]
+    },
+    "scopeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "duty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "description": "staffAttention: duty the alert targeted."
+    },
+    "severity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "info",
+        "warning",
+        "urgent",
+        null
+      ],
+      "description": "staffAttention: alert severity."
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "description": "staffAttention: rendered alert title."
     }
   }
 };
@@ -226514,7 +226593,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "eventStaffing",
               "formResponseReview",
               "inboxReply",
-              "postEventReconciliation"
+              "postEventReconciliation",
+              "momentStaffAttention"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -226546,7 +226626,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "eventStaffGrants",
               "organizerFormResponses",
               "organizerWhatsappThreads",
-              "eventAttendees"
+              "eventAttendees",
+              "organizerMomentSends"
             ]
           },
           "sourceId": {
@@ -226614,7 +226695,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
                   "hostAudienceForms",
                   "hostInbox",
                   "hostDressRehearsal",
-                  "hostEvents"
+                  "hostEvents",
+                  "hostProgramWork"
                 ]
               },
               "section": {
@@ -226748,8 +226830,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
     },
     "coverage": {
       "type": "array",
-      "minItems": 17,
-      "maxItems": 17,
+      "minItems": 18,
+      "maxItems": 18,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -226778,7 +226860,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "eventStaffing",
               "formResponseReview",
               "inboxReply",
-              "postEventReconciliation"
+              "postEventReconciliation",
+              "momentStaffAttention"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -246365,6 +246448,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
       "readinessReason": "Counts alone cannot prove whether attendance, refunds, provider imports, and reporting are reconciled."
+    },
+    {
+      "kind": "momentStaffAttention",
+      "scope": "organizer",
+      "sourceOwner": "organizerMomentSends",
+      "sourceIdPolicy": "organizerMomentSends document id for a fired staffAttention send.",
+      "sourceRevisionPolicy": "Run id plus duty, severity, and send creation time.",
+      "triggerPredicate": "A staffAttention moment run dispatched within the rolling source window.",
+      "resolutionPredicate": "The send ages out of the source window or the organizer resolves the item.",
+      "permissionPredicate": "Caller is a canonical manager of the moment scope's organizer.",
+      "consequence": "informational",
+      "dueAtPolicy": "Moment send creation time.",
+      "expiresAtPolicy": "24 hours after the send was created.",
+      "destination": {
+        "route": "hostProgramWork",
+        "section": "moments"
+      },
+      "dedupePolicy": "kind + runId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "organizerMomentSends is a durable engine journal written at fire time."
     }
   ]
 };

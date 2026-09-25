@@ -28,4 +28,30 @@ export interface OrganizerMomentSendDocument {
    */
   dayKey: string;
   createdAtMillis: number;
+  /**
+   * Run that produced this send; set on staffAttention sends so the attention projection can group recipients per run.
+   */
+  runId?: string | null;
+  /**
+   * Moment action kind; staffAttention rows feed the organizer attention projection.
+   */
+  actionKind?: "sendTemplate" | "push" | "staffAttention" | null;
+  /**
+   * Owning organizer for attention projection queries.
+   */
+  organizerId?: string | null;
+  scopeKind?: "event" | "program" | null;
+  scopeId?: string | null;
+  /**
+   * staffAttention: duty the alert targeted.
+   */
+  duty?: string | null;
+  /**
+   * staffAttention: alert severity.
+   */
+  severity?: "info" | "warning" | "urgent" | null;
+  /**
+   * staffAttention: rendered alert title.
+   */
+  title?: string | null;
 }

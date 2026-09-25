@@ -45,6 +45,19 @@ export interface DeliveryReviewAttentionSource {
   };
 }
 
+/** Facts a fired staffAttention moment send contributes to the Today
+ *  projection, reduced from the organizerMomentSends journal row. */
+export interface MomentAttentionSendSource {
+  runId: string;
+  momentId: string;
+  scopeKind: "event" | "program";
+  scopeId: string;
+  duty: string;
+  severity: "info" | "warning" | "urgent";
+  title: string;
+  createdAtMillis: number;
+}
+
 export interface OrganizerAttentionSources {
   organizer: AttentionSourceRow<OrganizerDocument>;
   events: Array<AttentionSourceRow<EventDocument>>;
@@ -67,6 +80,9 @@ export interface OrganizerAttentionSources {
     HostPaymentProvider,
     AttentionSourceRow<HostPaymentAccountDocument>
   >>;
+  momentAttentionSends: Array<
+    AttentionSourceRow<MomentAttentionSendSource>
+  >;
 }
 
 export type DesiredHostAttentionItem = HostAttentionItem & {
@@ -78,6 +94,7 @@ const immediateMillis = hostAttentionPolicyCatalog.immediateHours * hourMillis;
 const soonMillis = hostAttentionPolicyCatalog.soonHours * hourMillis;
 export const hostAttentionHorizonMillis =
   hostAttentionPolicyCatalog.horizonHours * hourMillis;
+export const momentAttentionWindowMillis = 24 * hourMillis;
 
 /**
  * Derives every source-backed server item from one complete bounded snapshot.
@@ -493,6 +510,59 @@ export function deriveOrganizerAttentionItems(params: {
         row.sourceUpdatedAtMillis,
         rule.sourceUpdatedAtMillis
       ),
+      nowMillis: params.nowMillis,
+    }));
+  }
+
+  // Moment staffAttention sends: one item per fired run, sourced from the
+  // engine's own send journal rather than a parallel collection.
+  const sendsByRun = new Map<
+    string, Array<AttentionSourceRow<MomentAttentionSendSource>>
+  >();
+  for (const row of params.sources.momentAttentionSends) {
+    const group = sendsByRun.get(row.data.runId) ?? [];
+    group.push(row);
+    sendsByRun.set(row.data.runId, group);
+  }
+  for (const [runId, rows] of sendsByRun) {
+    const send = rows.reduce((a, b) =>
+      a.data.createdAtMillis >= b.data.createdAtMillis ? a : b).data;
+    const eventScope = send.scopeKind === "event";
+    const consequence: HostAttentionItem["consequence"] =
+      send.severity === "urgent" ? "risksGuestExperience" :
+        send.severity === "warning" ? "delaysResponse" : "informational";
+    items.push(buildItem({
+      kind: "momentStaffAttention",
+      scope: eventScope ? "event" : "organizer",
+      sourceOwner: "organizerMomentSends",
+      sourceId: `${send.scopeId}:${runId}`,
+      sourceRevision: revisionOf({
+        runId,
+        duty: send.duty,
+        severity: send.severity,
+        createdAtMillis: send.createdAtMillis,
+      }),
+      eventId: eventScope ? send.scopeId : null,
+      consequence,
+      blocking: send.severity === "urgent",
+      dueAtMillis: send.createdAtMillis,
+      expiresAtMillis:
+        send.createdAtMillis + momentAttentionWindowMillis,
+      destination: eventScope ?
+        destination({
+          route: "hostEventManage",
+          section: "live",
+          eventId: send.scopeId,
+        }) :
+        destination({route: "hostProgramWork", section: "moments"}),
+      context: context({
+        subjectLabel: send.title,
+        count: rows.length,
+      }),
+      dedupeKey: `momentStaffAttention:${runId}`,
+      assignedHostUid: null,
+      sourceUpdatedAtMillis: Math.max(
+        ...rows.map((row) => row.sourceUpdatedAtMillis)),
       nowMillis: params.nowMillis,
     }));
   }

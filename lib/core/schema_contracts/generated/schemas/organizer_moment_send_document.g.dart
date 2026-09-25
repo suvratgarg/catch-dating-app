@@ -68,5 +68,81 @@ const schemaOrganizerMomentSendDocumentSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 9007199254740991,
     },
+    'runId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 260,
+      'description': 'Run that produced this send; set on staffAttention sends so the attention projection can group recipients per run.',
+    },
+    'actionKind': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'sendTemplate',
+        'push',
+        'staffAttention',
+        null,
+      ],
+      'description': 'Moment action kind; staffAttention rows feed the organizer attention projection.',
+    },
+    'organizerId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 200,
+      'description': 'Owning organizer for attention projection queries.',
+    },
+    'scopeKind': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'event',
+        'program',
+        null,
+      ],
+    },
+    'scopeId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 200,
+    },
+    'duty': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 80,
+      'description': 'staffAttention: duty the alert targeted.',
+    },
+    'severity': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'info',
+        'warning',
+        'urgent',
+        null,
+      ],
+      'description': 'staffAttention: alert severity.',
+    },
+    'title': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 240,
+      'description': 'staffAttention: rendered alert title.',
+    },
   },
 };

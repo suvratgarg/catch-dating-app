@@ -33,6 +33,7 @@ import type {
   MomentScope,
   RunRecord,
 } from "./momentModel";
+import {scopeId} from "./momentModel";
 
 /**
  * Server runner for the unified moments engine. Three entry points:
@@ -368,6 +369,19 @@ async function dispatchRun(
       decision: "sent",
       dayKey,
       createdAtMillis: now,
+      // staffAttention sends double as the attention-projection source:
+      // the durable journal carries every field the organizer Today list
+      // needs without a second write path.
+      ...(moment.action.kind === "staffAttention" ? {
+        runId: run.runId,
+        actionKind: "staffAttention",
+        organizerId: facts.scope.organizerId ?? null,
+        scopeKind: moment.scope.kind,
+        scopeId: scopeId(moment.scope),
+        duty: moment.action.duty,
+        severity: moment.action.severity,
+        title: moment.action.titleTemplate,
+      } : {}),
     });
   }
   if (decisions.some((d) => d.kind === "defer")) {
