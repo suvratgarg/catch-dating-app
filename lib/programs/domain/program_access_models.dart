@@ -8,10 +8,15 @@ enum ProgramActorRole { manager, staff }
 
 enum ProgramStaffDuty {
   programCoordinator,
+  guestRelations,
+  communications,
+  functionCheckIn,
+  functionLead,
   airportGreeter,
   hotelDesk,
   transportDispatcher,
   reconciliationViewer,
+  stakeholderViewer,
 }
 
 enum ProgramVehicleCapability { wheelchairAccessible, extraLuggage, childSeat }
