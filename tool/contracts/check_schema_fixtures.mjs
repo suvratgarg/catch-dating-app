@@ -15,6 +15,13 @@ const Ajv = requireFromRepo("ajv");
 const addFormats = requireFromRepo("ajv-formats");
 
 export const fixtureSchemaCases = Object.freeze([
+  ["valid/organizer_setup_preferences_sparse.json", "organizerEventSetupPreferencesSchema"],
+  ["invalid/organizer_setup_preferences_null.json", "organizerEventSetupPreferencesSchema"],
+  ["invalid/organizer_setup_preferences_secret.json", "organizerEventSetupPreferencesSchema"],
+  ["invalid/organizer_setup_preferences_unattested.json", "organizerEventSetupPreferencesSchema"],
+  ["valid/update_organizer_setup_defaults_clear.json", "updateOrganizerEventSetupDefaultsCallablePayloadSchema"],
+  ["invalid/update_organizer_setup_defaults_clear_value.json", "updateOrganizerEventSetupDefaultsCallablePayloadSchema"],
+
   ["valid/activity_notification_doc.json", "activityNotificationDocumentSchema"],
   ["valid/activity_preferences.json", "activityPreferencesSchema"],
   ["valid/archive_club_payload.json", "archiveClubCallablePayloadSchema"],

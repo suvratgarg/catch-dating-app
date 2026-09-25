@@ -1,7 +1,11 @@
 import {setGlobalOptions} from "firebase-functions";
 import * as admin from "firebase-admin";
 
-setGlobalOptions({region: "asia-south1", maxInstances: 50});
+setGlobalOptions({
+  region: "asia-south1",
+  maxInstances: 50,
+  memory: "512MiB",
+});
 
 admin.initializeApp();
 
@@ -683,3 +687,21 @@ export {
 export {flightAlertWebhook} from "./transport/flightAlerts";
 export {recordProgramDoorJournal} from
   "./doorJournal/recordProgramDoorJournal";
+
+export {
+  createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
+  updatePrivateEventPreferences, listPrivateEventSetups,
+  updatePrivateEventDetails, listOfferEventTargets,
+} from "./events/progressiveSetup/callables";
+
+export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";
+
+export {getOrganizerEventSetupDefaults, updateOrganizerEventSetupDefaults}
+  from "./organizers/eventSetupDefaults/callables";
+
+export {
+  previewEventOffers, commitEventOffers, mutateEventOffer,
+  getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  getEventOfferConfiguration,
+  configureEventOfferPreferences,
+} from "./organizerEventOffers/callables";

@@ -1,0 +1,55 @@
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+/// The no-organizer state for all four Audience destinations.
+class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
+  const HostAudienceNoOrganizerEmptyState({
+    super.key,
+    required this.selected,
+    this.onChanged,
+  });
+
+  final HostAudienceView selected;
+  final ValueChanged<HostAudienceView>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final forms =
+        selected == HostAudienceView.forms ||
+        selected == HostAudienceView.responses;
+    return HostAudienceStateScaffold(
+      selected: selected,
+      scrollKey: forms
+          ? const PageStorageKey<String>('host-forms-no-organizer')
+          : const PageStorageKey<String>('host-customers-no-organizer'),
+      onChanged: onChanged,
+      slivers: [
+        CatchSliverEmptyState(
+          icon: forms
+              ? CatchIcons.descriptionOutlined
+              : CatchIcons.groupsOutlined,
+          title: forms
+              ? context.l10n.hostFormsNoOrganizerTitle
+              : context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+          message: forms
+              ? context.l10n.hostFormsNoOrganizerBody
+              : context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+          actions: [
+            CatchButton(
+              label: forms
+                  ? context.l10n.hostFormsCreateOrganizer
+                  : context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              size: forms ? CatchButtonSize.sm : CatchButtonSize.md,
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateClubScreen.name),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

@@ -1022,6 +1022,12 @@
           "role": "provider-free setup/live/report participant row policy, waitlist offer signals, attendance affordances, payment display and localized metadata",
           "providerFree": true,
           "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_forms_directory_state.dart",
+          "role": "provider-free forms directory page and pagination display state extracted from the account-scoped controller; no provider reads or mutations",
+          "providerFree": true,
+          "status": "aligned"
         }
       ],
       "variantPatterns": [],
@@ -1527,6 +1533,11 @@
         {
           "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
           "role": "pushed-route adopter using shared platform compact route-title typography while delegating section rhythm and responsive columns to CatchSectionList.page",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_audience_no_organizer_empty_state.dart",
+          "role": "shared Audience no-organizer route composition for People, Audiences, Forms and Responses; preserves tab-specific copy, scroll keys, button sizing and the Create Club navigation callback; render widget rather than a display-state model",
           "status": "aligned"
         }
       ],

@@ -659,7 +659,6 @@ void main() {
 
     final notice = find.byKey(const ValueKey('app_notice.message'));
     expect(notice, findsOneWidget);
-    expect(find.byType(MaterialBanner), findsNothing);
     expect(tester.getTopLeft(notice).dy, greaterThanOrEqualTo(59 + 12));
     await tester.pumpWidget(const SizedBox.shrink());
   });

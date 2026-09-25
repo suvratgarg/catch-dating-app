@@ -8,6 +8,7 @@ import {
   deleteEventHandler,
   updateEventHandler,
 } from "./mutateEvent";
+import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import type {FcmParams} from "../shared/notifications";
 import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
   "./planChangeRecords";
@@ -177,6 +178,7 @@ class FakeTransaction {
   async get(
     ref: FakeDocRef | FakeCollectionRef
   ): Promise<FakeSnapshot | {docs: FakeSnapshot[]; empty: boolean}> {
+    assert.equal(this.writes.length, 0, "Transaction read after write");
     if (ref instanceof FakeCollectionRef) {
       return ref.get();
     }
@@ -376,6 +378,7 @@ test("createEventHandler creates a server-owned event for the club host",
       clubId: "club-1",
       organizerId: "club-1",
       name: "Sunrise Social 5K",
+      publicationState: "published",
       eventOrigin: {
         mode: "catchNative",
         bookingAuthority: "catch",
@@ -1127,6 +1130,28 @@ test("createEventHandler rejects club schedule conflicts", async () => {
   );
 });
 
+test("private basics have no interval but malformed public schedules fail",
+  async () => {
+    const privateSetup = harness({
+      "organizers/club-1": club(),
+      "events/private-basics": event({endTime: undefined,
+        publicationState: "private", setupRevision: 1}),
+    });
+    await createEventHandler(request("host-1", payload()), privateSetup.deps);
+    assert.ok(privateSetup.firestore.get("events/event-1"));
+
+    const malformedPublic = harness({
+      "organizers/club-1": club(),
+      "events/malformed-public": event({endTime: undefined,
+        publicationState: "published"}),
+    });
+    await assert.rejects(
+      createEventHandler(request("host-1", payload()), malformedPublic.deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+    assert.equal(malformedPublic.firestore.get("events/event-1"), undefined);
+  });
+
 test("createEventHandler allows adjacent club schedules", async () => {
   const h = harness({
     "organizers/club-1": club(),
@@ -1153,6 +1178,29 @@ test("createEventHandler rejects events over the shared max duration", async (
     (error) => assertHttpsCode(error, "invalid-argument")
   );
 });
+
+test("legacy rich mutations cannot edit progressive private basics",
+  async () => {
+    const h = harness({
+      "organizers/club-1": club(),
+      "events/event-1": {organizerId: "club-1", clubId: "club-1",
+        name: "Private basics", status: "active", publicationState: "private",
+        setupRevision: 1, startTime: ts("2026-05-02T01:30:00.000Z")},
+    });
+    const changes = [
+      updateEventHandler(request("host-1", {eventId: "event-1",
+        fields: {name: "Public by accident"}}), h.deps),
+      cancelEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
+      deleteEventHandler(request("host-1", {eventId: "event-1"}), h.deps),
+    ];
+    for (const change of changes) {
+      await assert.rejects(change,
+        (error) => assertHttpsCode(error, "failed-precondition"));
+    }
+    assert.equal(h.firestore.get("events/event-1")?.publicationState,
+      "private");
+    assert.equal(h.notifications.length, 0);
+  });
 
 test("updateEventHandler updates only host-editable event fields", async () => {
   const h = harness({
@@ -1578,3 +1626,176 @@ test("updateEventHandler rejects cancelled events", async () => {
     (error) => assertHttpsCode(error, "failed-precondition")
   );
 });
+
+function readySeatDocs(occupied = 0): Record<string, FakeData> {
+  const policy = deriveEventSeatPolicy(event());
+  return {
+    "eventSeatMigrationFences/event-1": {eventId: "event-1",
+      migrationRevision: 1, state: "ready"},
+    "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 20,
+      occupied, revision: 3, capacityRevision: 1, migrationRevision: 1,
+      policyHash: policy.policyHash, policyVersion: policy.policyVersion,
+      state: "ready"},
+  };
+}
+
+test("Host roster and event offers prevent legacy policy or schedule edits",
+  async () => {
+    for (const collection of ["eventAttendees", "organizerEventOffers"]) {
+      for (const fields of [{capacityLimit: 25},
+        {startTimeMillis: Date.parse("2026-05-02T01:45:00Z")}]) {
+        const h = harness({"organizers/club-1": club(),
+          "events/event-1": event(),
+          [`${collection}/guest-1`]: {eventId: "event-1",
+            organizerId: "club-1", status: "registered"}});
+        await assert.rejects(updateEventHandler(request("host-1",
+          {eventId: "event-1", fields}), h.deps),
+        (error) => assertHttpsCode(error, "failed-precondition"));
+        assert.deepEqual(h.firestore.get("events/event-1"), event());
+        assert.deepEqual(h.notifications, []);
+      }
+    }
+  });
+
+test("migration fence stops update, cancel and delete before any effects",
+  async () => {
+    for (const state of ["locked", "missing-ledger"]) {
+      for (const handler of [updateEventHandler, cancelEventHandler,
+        deleteEventHandler]) {
+        const h = harness({"organizers/club-1": club(),
+          "events/event-1": event(),
+          "eventSeatMigrationFences/event-1": {eventId: "event-1",
+            migrationRevision: 1, state}});
+        await assert.rejects(handler(request("host-1", {
+          eventId: "event-1",
+          ...(handler === updateEventHandler ?
+            {fields: {description: "Changed"}} : {}),
+        }), h.deps), (error) => assertHttpsCode(error,
+          "failed-precondition"));
+        assert.deepEqual(h.firestore.get("events/event-1"), event());
+        assert.deepEqual(h.notifications, []);
+        assert.deepEqual(h.deletedStoragePaths, []);
+      }
+    }
+  });
+
+test("unused ready event capacity edits advance ledger atomically and replay",
+  async () => {
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": event(), ...readySeatDocs()});
+    const edit = request("host-1", {eventId: "event-1",
+      fields: {capacityLimit: 25}});
+    await updateEventHandler(edit, h.deps);
+    const updated = h.firestore.get("events/event-1")!;
+    const ledger = h.firestore.get("eventSeatLedgers/event-1")!;
+    assert.equal(updated.capacityLimit, 25);
+    assert.equal(ledger.capacity, 25);
+    assert.equal(ledger.occupied, 0);
+    assert.equal(ledger.revision, 4);
+    assert.equal(ledger.capacityRevision, 2);
+    assert.equal(ledger.policyHash, deriveEventSeatPolicy(updated).policyHash);
+    await updateEventHandler(edit, h.deps);
+    assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"), ledger);
+  });
+
+test("ready ledger occupancy or stale policy prevents unsafe capacity edit",
+  async () => {
+    for (const patch of [{occupied: 1}, {policyHash: "f".repeat(64)},
+      {revision: Number.MAX_SAFE_INTEGER}, {capacityRevision: 0}]) {
+      const docs = readySeatDocs();
+      docs["eventSeatLedgers/event-1"] =
+        {...docs["eventSeatLedgers/event-1"], ...patch};
+      const h = harness({"organizers/club-1": club(),
+        "events/event-1": event(), ...docs});
+      await assert.rejects(updateEventHandler(request("host-1", {
+        eventId: "event-1", fields: {capacityLimit: 25},
+      }), h.deps), (error) => assertHttpsCode(error, "failed-precondition"));
+      assert.deepEqual(h.firestore.get("events/event-1"), event());
+      assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"),
+        docs["eventSeatLedgers/event-1"]);
+    }
+  });
+
+test("copy edits and cancellation preserve ready seats and roster history",
+  async () => {
+    const docs = readySeatDocs(1);
+    const attendee = {eventId: "event-1", organizerId: "club-1",
+      source: "import", status: "registered"};
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": event(), ...docs,
+      "eventAttendees/guest-1": attendee});
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      fields: {description: "New description"}}), h.deps);
+    await cancelEventHandler(request("host-1", {eventId: "event-1"}), h.deps);
+    assert.equal(h.firestore.get("events/event-1")?.status, "cancelled");
+    assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"),
+      docs["eventSeatLedgers/event-1"]);
+    assert.deepEqual(h.firestore.get("eventAttendees/guest-1"), attendee);
+  });
+
+test("delete preserves imported, offer, admission and migrated seat history",
+  async () => {
+    for (const history of [
+      {"eventAttendees/guest": {eventId: "event-1", status: "cancelled"}},
+      {"organizerEventOffers/offer": {eventId: "event-1"}},
+      {"organizerFormAdmissions/admission": {eventId: "event-1"}},
+      readySeatDocs(),
+    ]) {
+      const h = harness({"organizers/club-1": club(),
+        "events/event-1": event(), ...history});
+      await assert.rejects(deleteEventHandler(request("host-1",
+        {eventId: "event-1"}), h.deps),
+      (error) => assertHttpsCode(error, "failed-precondition"));
+      assert.deepEqual(h.firestore.get("events/event-1"), event());
+      assert.deepEqual(h.deletedStoragePaths, []);
+    }
+  });
+
+test("schedule edit finishes conflict reads before plan-change writes",
+  async () => {
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": event(), ...readySeatDocs()});
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      fields: {startTimeMillis: Date.parse("2026-05-02T01:45:00Z")},
+    }), h.deps);
+    assert.equal(h.firestore.get("events/event-1")?.planChangeRevision, 1);
+    assert.ok(h.firestore.get(`${EVENT_PLAN_CHANGES}/` +
+      eventPlanChangeSourceId("event-1", 1)));
+  });
+
+
+test("ledger occupancy fences schedule and price without roster projection",
+  async () => {
+    for (const fields of [{priceInPaise: 1000},
+      {startTimeMillis: Date.parse("2026-05-02T01:45:00Z")}]) {
+      const h = harness({"organizers/club-1": club(),
+        "events/event-1": event(), ...readySeatDocs(1)});
+      await assert.rejects(updateEventHandler(request("host-1",
+        {eventId: "event-1", fields}), h.deps),
+      (error) => assertHttpsCode(error, "failed-precondition"));
+      assert.deepEqual(h.firestore.get("events/event-1"), event());
+    }
+  });
+
+test("capacity edit keeps explicit event policy and ready ledger consistent",
+  async () => {
+    const h = harness({"organizers/club-1": club()});
+    await createEventHandler(request("host-1", payload()), h.deps);
+    const original = h.firestore.get("events/event-1")!;
+    const docs = readySeatDocs();
+    const policy = deriveEventSeatPolicy(original);
+    docs["eventSeatLedgers/event-1"] = {
+      ...docs["eventSeatLedgers/event-1"], policyHash: policy.policyHash,
+      policyVersion: policy.policyVersion};
+    for (const [path, value] of Object.entries(docs)) {
+      h.firestore.set(path, value);
+    }
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      fields: {capacityLimit: 25}}), h.deps);
+    const updated = h.firestore.get("events/event-1")!;
+    assert.equal(updated.capacityLimit, 25);
+    assert.equal(((updated.eventPolicy as FakeData).admission as FakeData)
+      .capacityLimit, 25);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.policyHash,
+      deriveEventSeatPolicy(updated).policyHash);
+  });

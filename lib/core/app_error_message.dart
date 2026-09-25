@@ -66,14 +66,6 @@ String appErrorMessage(
   return appErrorDescriptor(error, l10n: l10n, context: context).message;
 }
 
-String appErrorTitle(
-  Object error, {
-  required AppLocalizations l10n,
-  AppErrorContext context = AppErrorContext.generic,
-}) {
-  return appErrorDescriptor(error, l10n: l10n, context: context).title;
-}
-
 AppException? _normalizeForPresentation(Object error) {
   if (error is AppException) return error;
   if (error is FirebaseException) {

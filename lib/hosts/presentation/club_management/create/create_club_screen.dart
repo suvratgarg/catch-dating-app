@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -17,8 +18,8 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_wizard_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -278,7 +279,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         backgroundColor: t.bg,
         body: Column(
           children: [
-            CreateClubStepHeader(
+            HostWizardStepHeader(
               title: _isReviewing
                   ? context.l10n.hostsCreateClubReviewTitle
                   : screenState.title,

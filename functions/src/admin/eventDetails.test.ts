@@ -29,7 +29,19 @@ class FakeSnapshot {
   }
 
   data(): FakeData | undefined {
-    return this.value === undefined ? undefined : structuredClone(this.value);
+    if (this.value === undefined) return undefined;
+    const data = structuredClone(this.value);
+    // Firestore returns Timestamp objects; this fake stores Date for queries.
+    for (const field of ["startTime", "endTime"]) {
+      const date = data[field];
+      if (date instanceof Date) {
+        data[field] = {
+          toDate: () => date,
+          toMillis: () => date.getTime(),
+        };
+      }
+    }
+    return data;
   }
 }
 
@@ -351,11 +363,13 @@ function clubDoc(overrides: FakeData = {}): FakeData {
 }
 
 function eventDoc(overrides: FakeData = {}): FakeData {
+  const startTime = overrides.startTime instanceof Date ?
+    overrides.startTime : new Date("2026-07-04T01:30:00.000Z");
   return {
     organizerId: "afterfly",
     clubId: "afterfly",
-    startTime: new Date("2026-07-04T01:30:00.000Z"),
-    endTime: new Date("2026-07-04T03:30:00.000Z"),
+    startTime,
+    endTime: new Date(startTime.getTime() + 2 * 60 * 60 * 1000),
     meetingPoint: "Nehru Park gate",
     meetingLocation: {
       name: "Nehru Park",
@@ -593,6 +607,28 @@ test("adminGetEventDetailsHandler returns editable event details", async () => {
   assert.equal(result.event.eventFormat.activityKind, "socialRun");
   assert.equal(result.event.discovery.citySlug, "in-mp-indore");
   assert.equal(result.event.crossPathsDiscoveryEnabled, false);
+});
+
+test("rich admin details skip incomplete private basics", async () => {
+  const h = harness({
+    "organizers/afterfly": clubDoc(),
+    "events/private-1": eventDoc({
+      name: "September meetup",
+      publicationState: "private",
+      setupRevision: 1,
+      endTime: undefined,
+      capacityLimit: undefined,
+      priceInPaise: undefined,
+    }),
+  });
+  const listed = await adminListEventDetailsHandler(
+    callableRequest("admin-1", {limit: 10}, {support: true}), h.deps
+  );
+  assert.deepEqual(listed.rows, []);
+  await assert.rejects(adminGetEventDetailsHandler(
+    callableRequest("admin-1", {eventId: "private-1"},
+      {support: true}), h.deps
+  ), (error) => assertHttpsCode(error, "failed-precondition"));
 });
 
 test(

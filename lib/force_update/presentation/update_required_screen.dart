@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
@@ -33,7 +33,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
             return;
           }
           if (!opened) {
-            showCatchErrorSnackBar(
+            showCatchNoticeError(
               context,
               const ExternalActionException(
                 'Could not open the app store. Please update Catch '
@@ -43,7 +43,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
           }
         } catch (error) {
           if (context.mounted) {
-            showCatchErrorSnackBar(context, error);
+            showCatchNoticeError(context, error);
           }
         }
       },

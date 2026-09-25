@@ -105,13 +105,95 @@ test("syncOrganizerNextEventHandler refreshes moved organizers", async () => {
   assert.deepEqual(refreshed.sort(), ["organizer-1", "organizer-2"]);
 });
 
+test("next-event projection includes legacy public rows with tied start times",
+  async () => {
+    const start = timestamp("2026-05-13T10:00:00.000Z");
+    const initial: Record<string, Record<string, unknown>> = {
+      "organizers/organizer-1": {},
+      "events/z-public": event("organizer-1", start, "Public gate"),
+    };
+    initial["events/a-legacy"] = legacyEvent(
+      "organizer-1", start, "Legacy gate");
+    const firestore = fakeFirestore(initial);
+    await refreshOrganizerNextEvent("organizer-1", {
+      firestore: () => firestore as never,
+      nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+    });
+    assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
+      "Legacy gate");
+  });
+
+test("private-only events clear the old public projection", async () => {
+  const start = timestamp("2026-05-13T10:00:00.000Z");
+  const firestore = fakeFirestore({
+    "organizers/organizer-1": {nextEventAt: start,
+      nextEventLabel: "Previously public"},
+    "events/now-private": {...event("organizer-1", start, "Private"),
+      publicationState: "private", setupRevision: 2},
+  });
+  await refreshOrganizerNextEvent("organizer-1", {
+    firestore: () => firestore as never,
+    nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+  });
+  assert.deepEqual(firestore.get("organizers/organizer-1"), {
+    nextEventAt: null, nextEventLabel: null,
+  });
+});
+
+test("legacy next-event read remains a single bounded query", async () => {
+  const start = timestamp("2026-05-13T10:00:00.000Z");
+  const initial: Record<string, Record<string, unknown>> = {
+    "organizers/organizer-1": {nextEventLabel: "Old label"},
+    "events/z-public": event("organizer-1", start, "Public gate"),
+  };
+  initial["events/a-legacy"] = legacyEvent(
+    "organizer-1", start, "Legacy gate");
+  const firestore = fakeFirestore(initial);
+  await refreshOrganizerNextEvent("organizer-1", {
+    firestore: () => firestore as never,
+    nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+  });
+  assert.equal(firestore.queryReads(), 1);
+  assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
+    "Legacy gate");
+});
+
+test("unbackfilled legacy records remain in organizer projection",
+  async () => {
+    const start = timestamp("2026-05-13T10:00:00.000Z");
+    const firestore = fakeFirestore({
+      "organizers/organizer-1": {nextEventLabel: "Old label"},
+      "events/legacy": {organizerId: "organizer-1", status: "active",
+        startTime: start, meetingPoint: "Legacy gate"},
+    });
+    await refreshOrganizerNextEvent("organizer-1", {
+      firestore: () => firestore as never,
+      nowTimestamp: () => timestamp("2026-05-12T10:00:00.000Z"),
+    });
+    assert.equal(firestore.queryReads(), 1);
+    assert.equal(firestore.get("organizers/organizer-1").nextEventLabel,
+      "Legacy gate");
+  });
+
 function event(
   organizerId: string,
   startTime: FirebaseFirestore.Timestamp,
   meetingPoint: string,
   status = "active"
 ) {
-  return {organizerId, startTime, meetingPoint, status};
+  return {organizerId, publicationState: "published", startTime,
+    meetingPoint, status};
+}
+
+function legacyEvent(
+  organizerId: string,
+  startTime: FirebaseFirestore.Timestamp,
+  meetingPoint: string
+): Record<string, unknown> {
+  const legacy: Record<string, unknown> =
+    event(organizerId, startTime, meetingPoint);
+  delete legacy.publicationState;
+  return legacy;
 }
 
 function timestamp(iso: string): FirebaseFirestore.Timestamp {
@@ -119,13 +201,29 @@ function timestamp(iso: string): FirebaseFirestore.Timestamp {
 }
 
 function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
+  let queryReads = 0;
   const docs = Object.fromEntries(
     Object.entries(initialDocs).map(([path, data]) => [path, {...data}])
   );
   return {
+    queryReads: () => queryReads,
     get: (path: string) => docs[path],
     collection: (collectionPath: string) =>
       queryRef(collectionPath, []),
+    runTransaction: async (callback: (tx: object) => Promise<unknown>) => {
+      let writing = false;
+      return callback({
+        get: (ref: {get: () => Promise<unknown>}) => {
+          assert.equal(writing, false, "transaction reads precede writes");
+          return ref.get();
+        },
+        set: (ref: ReturnType<typeof docRef>,
+          patch: Record<string, unknown>, options: {merge: boolean}) => {
+          writing = true;
+          return ref.set(patch, options);
+        },
+      });
+    },
     batch: () => {
       const writes: Array<{
         ref: ReturnType<typeof docRef>;
@@ -170,7 +268,8 @@ function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
       value: unknown;
     }>,
     order?: {field: string; direction: "asc" | "desc"},
-    count?: number
+    count?: number,
+    afterPath?: string
   ) {
     return {
       doc: (docId: string) => docRef(`${collectionPath}/${docId}`),
@@ -178,12 +277,16 @@ function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
         queryRef(collectionPath, [
           ...filters,
           {field, operator, value},
-        ], order, count),
+        ], order, count, afterPath),
       orderBy: (field: string, direction: "asc" | "desc") =>
-        queryRef(collectionPath, filters, {field, direction}, count),
+        queryRef(collectionPath, filters, order ?? {field, direction},
+          count, afterPath),
       limit: (limitCount: number) =>
-        queryRef(collectionPath, filters, order, limitCount),
+        queryRef(collectionPath, filters, order, limitCount, afterPath),
+      startAfter: (last: {path: string}) =>
+        queryRef(collectionPath, filters, order, count, last.path),
       get: async () => {
+        queryReads++;
         let results = Object.entries(docs)
           .filter(([path]) => path.startsWith(`${collectionPath}/`))
           .filter(([, data]) =>
@@ -195,12 +298,18 @@ function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
               a[1][order.field],
               b[1][order.field],
               order.direction
-            )
+            ) || a[0].localeCompare(b[0])
           );
+        }
+        if (afterPath) {
+          results = results.slice(
+            results.findIndex(([path]) => path === afterPath) + 1);
         }
         const limited = count === undefined ? results : results.slice(0, count);
         return {
-          docs: limited.map(([, data]) => ({data: () => ({...data})})),
+          size: limited.length,
+          docs: limited.map(([path, data]) => ({path,
+            data: () => ({...data})})),
         };
       },
     };

@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 
 interface SyncOrganizerNextEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -26,29 +27,36 @@ export async function refreshOrganizerNextEvent(
 ): Promise<void> {
   const db = deps.firestore();
   const organizerRef = db.collection("organizers").doc(organizerId);
-  const organizerSnap = await organizerRef.get();
-
-  if (!organizerSnap.exists) {
-    return;
-  }
-
-  const nextEventSnap = await db
-    .collection("events")
-    .where("organizerId", "==", organizerId)
-    .where("status", "==", "active")
-    .where("startTime", ">=", deps.nowTimestamp())
-    .orderBy("startTime", "asc")
-    .limit(1)
-    .get();
-
-  const nextEvent = nextEventSnap.docs[0]?.data() as EventDocument | undefined;
-  const projection = {
-    nextEventAt: nextEvent?.startTime ?? null,
-    nextEventLabel: nextEvent ?
-      nextEvent.meetingLocation?.name ?? nextEvent.meetingPoint :
-      null,
-  };
-  await organizerRef.set(projection, {merge: true});
+  const now = deps.nowTimestamp();
+  await db.runTransaction(async (tx) => {
+    const organizerSnap = await tx.get(organizerRef);
+    if (!organizerSnap.exists) return;
+    // Compatibility stage: legacy public events may lack publicationState.
+    // Private event creation remains disabled until public-reader cutover.
+    /* firestore-index: events (
+      organizerId:ASCENDING, status:ASCENDING,
+      startTime:ASCENDING, __name__:ASCENDING
+    ) */
+    const query = db.collection("events")
+      .where("organizerId", "==", organizerId)
+      .where("status", "==", "active")
+      .where("startTime", ">=", now)
+      .orderBy("startTime", "asc")
+      .orderBy(admin.firestore.FieldPath.documentId(), "asc")
+      .limit(1);
+    const page = await tx.get(query);
+    const nextEvent = page.docs[0]?.data() as EventDocument | undefined;
+    // Query results are current event documents in this transaction snapshot.
+    // A contradictory row must not project a public label.
+    const visible = nextEvent && isEventPubliclyAccessible(nextEvent) &&
+      nextEvent.organizerId === organizerId &&
+      nextEvent.status === "active" ? nextEvent : undefined;
+    tx.set(organizerRef, {
+      nextEventAt: visible?.startTime ?? null,
+      nextEventLabel: visible ?
+        visible.meetingLocation?.name ?? visible.meetingPoint ?? null : null,
+    }, {merge: true});
+  });
 }
 
 /**

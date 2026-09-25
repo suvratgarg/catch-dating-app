@@ -7,6 +7,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -18,11 +19,17 @@ class HostFormSettingsSectionList extends StatelessWidget {
     required this.organizerId,
     required this.definition,
     required this.notifier,
+    this.accountId,
+    this.enableEventTargetSettings = false,
+    this.hasPublishedVersion = false,
   });
 
   final String organizerId;
   final HostFormDefinition definition;
   final HostFormEditorController notifier;
+  final String? accountId;
+  final bool enableEventTargetSettings;
+  final bool hasPublishedVersion;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -69,6 +76,15 @@ class HostFormSettingsSectionList extends StatelessWidget {
         ],
       ),
       gapH24,
+      if (enableEventTargetSettings && accountId != null)
+        HostFormTargetSection(
+          organizerId: organizerId,
+          definition: definition,
+          notifier: notifier,
+          accountId: accountId!,
+          enableEventTargetSettings: enableEventTargetSettings,
+          hasPublishedVersion: hasPublishedVersion,
+        ),
       CatchSection.fieldRows(
         title: context.l10n.hostAudienceFormAccess,
         children: [

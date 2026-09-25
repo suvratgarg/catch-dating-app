@@ -79,8 +79,10 @@ export function SiteHeader({
         }`}
       >
         <PlainLink className="brand" href={brandHref} aria-label={"Catch home"}>
-          <span className="brand__mark" aria-hidden="true">{"C"}</span>
-          <span className="brand__word">{"Catch"}</span>
+          <img alt="" aria-hidden="true" className="brand__logo brand__logo--on-light"
+            src="/assets/branding/catch_splash_mark_light.png" />
+          <img alt="" aria-hidden="true" className="brand__logo brand__logo--on-dark"
+            src="/assets/branding/catch_splash_mark_dark.png" />
         </PlainLink>
 
         <nav className="site-nav" aria-label={"Primary"}>

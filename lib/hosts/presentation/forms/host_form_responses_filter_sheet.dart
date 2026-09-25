@@ -1,6 +1,13 @@
 part of 'host_form_responses_panel.dart';
 
 extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
+  String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
+      widget.formId == null
+      ? context.l10n.hostAudienceAllForms
+      : widget.formTitle ??
+            loaded?.responses.firstOrNull?.formTitle ??
+            context.l10n.hostAudienceSelectedForm;
+
   Future<void> _openFilters() {
     var formId = widget.formId;
     var options = _filterOptions;
@@ -14,9 +21,11 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
             );
             final loaded = catchAsyncStateFromAsyncValue(responseState).value;
             if (loaded != null) options = loaded.answerFilterOptions;
-            final scope = loaded?.versionScope ??
+            final scope =
+                loaded?.versionScope ??
                 (formId == widget.formId ? _versionScope : null);
-            final hasVersionOverride = formId == widget.formId &&
+            final hasVersionOverride =
+                formId == widget.formId &&
                 scope != null &&
                 _versionResolved &&
                 _versionId != scope.activeVersionId;
@@ -152,10 +161,12 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                           CatchChoiceInput<String>(
                             values: [
                               '',
-                              for (var number = scope.publishedVersion;
-                                  number >= 1 &&
-                                      number > scope.publishedVersion - 50;
-                                  number--)
+                              for (
+                                var number = scope.publishedVersion;
+                                number >= 1 &&
+                                    number > scope.publishedVersion - 50;
+                                number--
+                              )
                                 '${formId}_v$number',
                               if (_versionId != null &&
                                   _versionNumber(_versionId!) <=
@@ -204,51 +215,52 @@ extension _HostFormResponsesFilters on _HostFormResponsesPanelState {
                     ),
                   for (final filter in options)
                     if (scope == null || _versionId != null)
-                    CatchSection.choiceGroup(
-                      first: true,
-                      title: filter.label,
-                      child: CatchChoiceInput<String>(
-                        values: filter.options.keys.toList(),
-                        selected: _answerFilters[filter.questionId] ?? const {},
-                        itemLabelBuilder: (value) => filter.options[value]!,
-                        itemKeyBuilder: (value) => ValueKey(
-                          'response-filter-${filter.questionId}-$value',
-                        ),
-                        mode: CatchChipMode.multiple,
-                        allowEmptySelection: true,
-                        onChanged:
-                            _answerFilters.containsKey(filter.questionId) ||
-                                _answerFilters.length <
-                                    CatchContractConstraints
-                                        .listOrganizerFormResponsesCallablePayloadAnswerFilters
-                                        .maxItems!
-                            ? (values) {
-                                final maximum = CatchContractConstraints
-                                    .listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValues
-                                    .maxItems!;
-                                if (values.length > maximum) {
-                                  showCatchSnackBar(
-                                    context,
-                                    context.l10n
-                                        .hostResponseFilterSelectionLimit(
-                                          count: maximum,
-                                        ),
-                                  );
-                                  return;
-                                }
-                                _updateFilters(() {
-                                  if (values.isEmpty) {
-                                    _answerFilters.remove(filter.questionId);
-                                  } else {
-                                    _answerFilters[filter.questionId] =
-                                        Set.unmodifiable(values);
+                      CatchSection.choiceGroup(
+                        first: true,
+                        title: filter.label,
+                        child: CatchChoiceInput<String>(
+                          values: filter.options.keys.toList(),
+                          selected:
+                              _answerFilters[filter.questionId] ?? const {},
+                          itemLabelBuilder: (value) => filter.options[value]!,
+                          itemKeyBuilder: (value) => ValueKey(
+                            'response-filter-${filter.questionId}-$value',
+                          ),
+                          mode: CatchChipMode.multiple,
+                          allowEmptySelection: true,
+                          onChanged:
+                              _answerFilters.containsKey(filter.questionId) ||
+                                  _answerFilters.length <
+                                      CatchContractConstraints
+                                          .listOrganizerFormResponsesCallablePayloadAnswerFilters
+                                          .maxItems!
+                              ? (values) {
+                                  final maximum = CatchContractConstraints
+                                      .listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValues
+                                      .maxItems!;
+                                  if (values.length > maximum) {
+                                    showCatchNotice(
+                                      context,
+                                      context.l10n
+                                          .hostResponseFilterSelectionLimit(
+                                            count: maximum,
+                                          ),
+                                    );
+                                    return;
                                   }
-                                });
-                                updateSheet(() {});
-                              }
-                            : null,
+                                  _updateFilters(() {
+                                    if (values.isEmpty) {
+                                      _answerFilters.remove(filter.questionId);
+                                    } else {
+                                      _answerFilters[filter.questionId] =
+                                          Set.unmodifiable(values);
+                                    }
+                                  });
+                                  updateSheet(() {});
+                                }
+                              : null,
+                        ),
                       ),
-                    ),
                 ],
               ),
             );

@@ -15,6 +15,64 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "OrganizerFormAdmissionDocument", "source": "firestore/organizer_form_admissions.schema.json", "typeOutput": "functions/src/shared/generated/organizerFormAdmissionDocument.ts"},
+  {"name": "CommitOrganizerFormAdmissionCallablePayload", "source": "callables/commit_organizer_form_admission_payload.schema.json", "typeOutput": "functions/src/shared/generated/commitOrganizerFormAdmissionCallablePayload.ts"},
+  {"name": "CommitOrganizerFormAdmissionCallableResponse", "source": "callable_responses/commit_organizer_form_admission_response.schema.json", "typeOutput": "functions/src/shared/generated/commitOrganizerFormAdmissionCallableResponse.ts"},
+  {"name": "OrganizerFormAdmissionReceiptDocument", "source": "firestore/organizer_form_admission_receipts.schema.json", "typeOutput": "functions/src/shared/generated/organizerFormAdmissionReceiptDocument.ts"},
+  {"name": "ConfigureEventOfferPreferencesCallablePayload", "source": "callables/configure_event_offer_preferences_payload.schema.json", "typeOutput": "functions/src/shared/generated/configureEventOfferPreferencesCallablePayload.ts"},
+  {"name": "ConfigureEventOfferPreferencesCallableResponse", "source": "callable_responses/configure_event_offer_preferences_response.schema.json", "typeOutput": "functions/src/shared/generated/configureEventOfferPreferencesCallableResponse.ts"},
+  {"name": "EventOfferConfigurationReceiptDocument", "source": "firestore/event_offer_configuration_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventOfferConfigurationReceiptDocument.ts"},
+  {"name": "ListOfferEventTargetsCallablePayload", "source": "callables/list_offer_event_targets_payload.schema.json", "typeOutput": "functions/src/shared/generated/listOfferEventTargetsCallablePayload.ts"},
+  {"name": "OfferEventTargetListCallableResponse", "source": "callable_responses/offer_event_target_list_response.schema.json", "typeOutput": "functions/src/shared/generated/offerEventTargetListCallableResponse.ts"},
+  {"name": "GetEventOfferConfigurationCallablePayload", "source": "callables/get_event_offer_configuration_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventOfferConfigurationCallablePayload.ts"},
+  {"name": "EventOfferConfigurationCallableResponse", "source": "callable_responses/event_offer_configuration_response.schema.json", "typeOutput": "functions/src/shared/generated/eventOfferConfigurationCallableResponse.ts"},
+  {"name": "UpdatePrivateEventDetailsCallablePayload", "source": "callables/update_private_event_details_payload.schema.json", "typeOutput": "functions/src/shared/generated/updatePrivateEventDetailsCallablePayload.ts"},
+  {"name": "PrepareEventOfferHandoffCallablePayload", "source": "callables/prepare_event_offer_handoff_payload.schema.json", "typeOutput": "functions/src/shared/generated/prepareEventOfferHandoffCallablePayload.ts"},
+  {"name": "EventOfferHandoffCallableResponse", "source": "callable_responses/event_offer_handoff_response.schema.json", "typeOutput": "functions/src/shared/generated/eventOfferHandoffCallableResponse.ts"},
+  {"name": "ListPrivateEventSetupsCallablePayload", "source": "callables/list_private_event_setups_payload.schema.json", "typeOutput": "functions/src/shared/generated/listPrivateEventSetupsCallablePayload.ts"},
+  {"name": "PrivateEventSetupListCallableResponse", "source": "callable_responses/private_event_setup_list_response.schema.json", "typeOutput": "functions/src/shared/generated/privateEventSetupListCallableResponse.ts"},
+  {"name": "EventPreferenceIntents", "source": "embedded/event_preference_intents.schema.json", "typeOutput": "functions/src/shared/generated/eventPreferenceIntents.ts"},
+  {"name": "ResolvedEventPreferences", "source": "embedded/resolved_event_preferences.schema.json", "typeOutput": "functions/src/shared/generated/resolvedEventPreferences.ts"},
+  {"name": "EventPaymentTerms", "source": "embedded/event_payment_terms.schema.json", "typeOutput": "functions/src/shared/generated/eventPaymentTerms.ts"},
+  {"name": "EventSetupPreferencesDocument", "source": "firestore/event_setup_preferences.schema.json", "typeOutput": "functions/src/shared/generated/eventSetupPreferencesDocument.ts"},
+  {"name": "UpdatePrivateEventPreferencesCallablePayload", "source": "callables/update_private_event_preferences_payload.schema.json", "typeOutput": "functions/src/shared/generated/updatePrivateEventPreferencesCallablePayload.ts"},
+
+  {name: "EventSetupReceiptDocument", source: "firestore/event_setup_receipts.schema.json", typeOutput: "functions/src/shared/generated/eventSetupReceiptDocument.ts"},
+{
+    "name": "OrganizerEventSetupPreferences",
+    "source": "embedded/organizer_event_setup_preferences.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupPreferences.ts"
+},
+{
+    "name": "GetOrganizerEventSetupDefaultsCallablePayload",
+    "source": "callables/get_organizer_event_setup_defaults_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getOrganizerEventSetupDefaultsCallablePayload.ts"
+},
+{
+    "name": "UpdateOrganizerEventSetupDefaultsCallablePayload",
+    "source": "callables/update_organizer_event_setup_defaults_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallablePayload.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultsCallableResponse",
+    "source": "callable_responses/organizer_event_setup_defaults_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultsCallableResponse.ts"
+},
+{
+    "name": "UpdateOrganizerEventSetupDefaultsCallableResponse",
+    "source": "callable_responses/update_organizer_event_setup_defaults_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/updateOrganizerEventSetupDefaultsCallableResponse.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultsDocument",
+    "source": "firestore/organizer_event_setup_defaults.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultsDocument.ts"
+},
+{
+    "name": "OrganizerEventSetupDefaultReceiptDocument",
+    "source": "firestore/organizer_event_setup_default_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/organizerEventSetupDefaultReceiptDocument.ts"
+},
   {
     "name": "EventRehearsalMilestoneDocument",
     "source": "firestore/event_rehearsal_milestones.schema.json",
@@ -2946,6 +3004,141 @@ const schemaSpecs = [
     source: "callables/set_club_notification_preference_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts",
+  },
+  {
+    name: "EventOfferAuthorityRow",
+    source: "embedded/event_offer_authority_row.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferAuthorityRow.ts",
+  },
+  {
+    name: "EventOfferRow",
+    source: "embedded/event_offer_row.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferRow.ts",
+  },
+  {
+    name: "EventOfferPaymentSnapshot",
+    source: "embedded/event_offer_payment_snapshot.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferPaymentSnapshot.ts",
+  },
+  {
+    name: "EventOfferManualPayment",
+    source: "embedded/event_offer_manual_payment.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferManualPayment.ts",
+  },
+  {
+    name: "OrganizerEventOfferDocument",
+    source: "firestore/organizer_event_offers.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferDocument.ts",
+  },
+  {
+    name: "EventOfferAction",
+    source: "embedded/event_offer_action.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferAction.ts",
+  },
+  {
+    name: "OrganizerEventOfferActionReceiptDocument",
+    source: "firestore/organizer_event_offer_action_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferActionReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerEventOfferBatchReceiptDocument",
+    source: "firestore/organizer_event_offer_batch_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferBatchReceiptDocument.ts",
+  },
+  {
+    name: "OrganizerEventOfferAuditDocument",
+    source: "firestore/organizer_event_offer_audits.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerEventOfferAuditDocument.ts",
+  },
+  {
+    name: "PreviewEventOffersCallablePayload",
+    source: "callables/preview_event_offers_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/previewEventOffersCallablePayload.ts",
+  },
+  {
+    name: "CommitEventOffersCallablePayload",
+    source: "callables/commit_event_offers_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/commitEventOffersCallablePayload.ts",
+  },
+  {
+    name: "MutateEventOfferCallablePayload",
+    source: "callables/mutate_event_offer_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/mutateEventOfferCallablePayload.ts",
+  },
+  {
+    name: "GetEventOfferCallablePayload",
+    source: "callables/get_event_offer_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventOfferCallablePayload.ts",
+  },
+  {
+    name: "ListEventOffersCallablePayload",
+    source: "callables/list_event_offers_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listEventOffersCallablePayload.ts",
+  },
+  {
+    name: "EventOfferPreviewCallableResponse",
+    source: "callable_responses/event_offer_preview_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferPreviewCallableResponse.ts",
+  },
+  {
+    name: "EventOfferCommitCallableResponse",
+    source: "callable_responses/event_offer_commit_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferCommitCallableResponse.ts",
+  },
+  {
+    name: "EventOfferDetailCallableResponse",
+    source: "callable_responses/event_offer_detail_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferDetailCallableResponse.ts",
+  },
+  {
+    name: "EventOfferMutationCallableResponse",
+    source: "callable_responses/event_offer_mutation_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferMutationCallableResponse.ts",
+  },
+  {
+    name: "EventOfferListCallableResponse",
+    source: "callable_responses/event_offer_list_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventOfferListCallableResponse.ts",
+  },
+  {
+    name: "EventSetupDefaults",
+    source: "embedded/event_setup_defaults.schema.json",
+    typeOutput: "functions/src/shared/generated/eventSetupDefaults.ts",
+  },
+  {
+    name: "CreatePrivateEventSetupCallablePayload",
+    source: "callables/create_private_event_setup_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/createPrivateEventSetupCallablePayload.ts",
+  },
+  {
+    name: "UpdatePrivateEventBasicsCallablePayload",
+    source: "callables/update_private_event_basics_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updatePrivateEventBasicsCallablePayload.ts",
+  },
+  {
+    name: "GetPrivateEventSetupCallablePayload",
+    source: "callables/get_private_event_setup_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getPrivateEventSetupCallablePayload.ts",
+  },
+  {
+    name: "PrivateEventSetupMutationCallableResponse",
+    source: "callable_responses/private_event_setup_mutation_response.schema.json",
+    typeOutput: "functions/src/shared/generated/privateEventSetupMutationCallableResponse.ts",
+  },
+  {
+    name: "PrivateEventSetupCallableResponse",
+    source: "callable_responses/private_event_setup_response.schema.json",
+    typeOutput: "functions/src/shared/generated/privateEventSetupCallableResponse.ts",
+  },
+  {
+    name: "QueryOrganizerFormResponsesCallablePayload",
+    source: "callables/query_organizer_form_responses_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/queryOrganizerFormResponsesCallablePayload.ts",
+  },
+  {
+    name: "QueryOrganizerFormResponsesCallableResponse",
+    source: "callable_responses/query_organizer_form_responses_response.schema.json",
+    typeOutput: "functions/src/shared/generated/queryOrganizerFormResponsesCallableResponse.ts",
   },
   {
     name: "CreateEventCallablePayload",

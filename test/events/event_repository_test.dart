@@ -6,6 +6,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -138,6 +139,29 @@ void main() {
       await expectLater(repository.watchEvent('event-missing'), emits(null));
     });
 
+    test('direct public reads reject private and incomplete events', () async {
+      await firestore.collection('events').doc('private-basics').set({
+        'organizerId': 'club-1',
+        'publicationState': 'private',
+        'status': 'active',
+        'startTime': Timestamp.fromDate(DateTime(2026, 10)),
+      });
+      await firestore.collection('events').doc('incomplete-public').set({
+        'organizerId': 'club-1',
+        'publicationState': 'published',
+        'status': 'active',
+        'startTime': Timestamp.fromDate(DateTime(2026, 10, 2)),
+      });
+
+      expect(await repository.fetchEvent('private-basics'), isNull);
+      expect(await repository.fetchEvent('incomplete-public'), isNull);
+      await expectLater(repository.watchEvent('private-basics'), emits(null));
+      await expectLater(
+        repository.watchEvent('incomplete-public'),
+        emits(null),
+      );
+    });
+
     test(
       'watchEventsForClub filters by club id and orders by start time',
       () async {
@@ -184,6 +208,48 @@ void main() {
         repository.watchEventsForClub(clubId: 'club-2'),
         emits([real]),
       );
+    });
+
+    test('public organizer streams include legacy events before backfill', () async {
+      final published = buildEvent(id: 'public', clubId: 'club-2');
+      final legacy = buildEvent(id: 'legacy', clubId: 'club-2');
+      await _seedEvent(firestore, published);
+      await firestore.collection('events').doc(legacy.id).set(legacy.toJson());
+
+      await expectLater(
+        repository.watchEventsForClub(clubId: 'club-2'),
+        emits(containsAll([published, legacy])),
+      );
+      await expectLater(
+        repository.watchEventsForClubs(clubIds: const ['club-2']),
+        emits(containsAll([published, legacy])),
+      );
+      expect(
+        await repository.fetchUpcomingEventsForClubs(const ['club-2']),
+        containsAll([published, legacy]),
+      );
+    });
+
+    test('legacy rows retain organizer page position before backfill', () async {
+      final boundary = DateTime(2026, 8, 18, 12);
+      final legacy = buildEvent(
+        id: 'legacy-first', clubId: 'club-2',
+        startTime: boundary.add(const Duration(hours: 1)),
+        endTime: boundary.add(const Duration(hours: 2)),
+      );
+      final published = buildEvent(
+        id: 'published-second', clubId: 'club-2',
+        startTime: boundary.add(const Duration(hours: 3)),
+        endTime: boundary.add(const Duration(hours: 4)),
+      );
+      await firestore.collection('events').doc(legacy.id).set(legacy.toJson());
+      await _seedEvent(firestore, published);
+
+      final page = await repository.fetchActiveEventsPage(
+        organizerId: 'club-2', sessionBoundary: boundary, limit: 1,
+      );
+      expect(page.items, [legacy]);
+      expect(page.hasMore, isTrue);
     });
 
     test(
@@ -1072,7 +1138,10 @@ void main() {
 }
 
 Future<void> _seedEvent(FakeFirebaseFirestore firestore, Event event) {
-  return firestore.collection('events').doc(event.id).set(event.toJson());
+  return firestore.collection('events').doc(event.id).set({
+    ...event.toJson(),
+    'publicationState': 'published',
+  });
 }
 
 Future<void> _seedParticipation(

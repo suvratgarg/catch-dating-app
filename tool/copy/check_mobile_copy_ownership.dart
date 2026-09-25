@@ -95,7 +95,7 @@ const _copyConstructors = <String>{
   'SnackBar',
   'Text',
   'TextSpan',
-  'showCatchSnackBar',
+  'showCatchNotice',
   'showConfirmDangerDialog',
 };
 
@@ -153,6 +153,7 @@ const _technicalArgumentNames = <String>{
   'analyticsSource',
   'assetName',
   'collection',
+  'dedupeKey',
   'fileName',
   'fontFamily',
   'heroTag',
@@ -663,6 +664,20 @@ const route = '/events';
       findings.length != 2) {
     throw StateError('Mobile copy scanner self-test failed: $findings');
   }
+  const noticeSource = '''
+void report(BuildContext context) {
+  showCatchNotice(context, 'Upload failed', dedupeKey: 'upload.failure');
+  CatchNoticeData(title: 'Saved', dedupeKey: 'form.saved');
+}
+''';
+  final noticeTexts = scanDartSource(
+    'lib/example_notice.dart',
+    noticeSource,
+  ).map((finding) => finding.text).toSet();
+  if (noticeTexts.length != 2 ||
+      !noticeTexts.containsAll({'Upload failed', 'Saved'})) {
+    throw StateError('Notice copy scanner confused keys with copy.');
+  }
   // Shared geometry data is referenced, never granted a subtree copy waiver.
   const loadingSource = '''
 Widget build() => CatchSkeleton.content(
@@ -728,7 +743,7 @@ Widget buildForm(BuildContext context) => Column(children: [
   ),
   Builder(
     builder: (_) {
-      showCatchSnackBar(context, 'Account unblocked.');
+      showCatchNotice(context, 'Account unblocked.');
       return const SizedBox.shrink();
     },
   ),

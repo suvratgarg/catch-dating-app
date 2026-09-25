@@ -2967,7 +2967,7 @@
               "tests": [
                 "test/swipes/swipe_screen_test.dart"
               ],
-              "notes": "SwipeScreen catches write failures, surfaces showCatchErrorSnackBar, and keeps the current profile. swipe_event_write_failure_snackbar captures the deck with the branded failure snackbar after a failing SwipeQueueNotifier write.",
+              "notes": "SwipeScreen catches write failures, publishes a CatchNotice through the app-level CatchNoticeOverlay, and keeps the current profile. The retained swipe_event_write_failure_snackbar capture shows the retired snackbar presentation and needs recapture before it represents current UI.",
               "previewIds": [
                 "SwipeScreen/Event deck route states"
               ],

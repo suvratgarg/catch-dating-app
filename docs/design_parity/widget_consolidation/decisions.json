@@ -8484,6 +8484,87 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-14",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:route-shell-construction-ownership",
+      "patternFamilyId": "route-shell-construction-ownership",
+      "decision": "consolidate-construction",
+      "members": [
+        {
+          "name": "ProgramArrivalsScreen",
+          "action": "refactor"
+        },
+        {
+          "name": "ProgramDispatchScreen",
+          "action": "refactor"
+        },
+        {
+          "name": "ProgramHotelDeskScreen",
+          "action": "refactor"
+        },
+        {
+          "name": "ProgramWorkScreen",
+          "action": "refactor"
+        },
+        {
+          "name": "ProgramTripsScreen",
+          "action": "refactor"
+        },
+        {
+          "name": "HostEventOperatorScreen",
+          "action": "refactor"
+        }
+      ],
+      "rationale": "One typed CatchRouteScaffold factory per screen removes duplicate chrome without changing async boundary ownership or state-specific CatchRouteBody specifications. Titles, subtitles, retry, timeout, access and domain operations remain unchanged.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-09-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:host-wizard-header-adapters",
+      "patternFamilyId": "host-wizard-header-adapters",
+      "decision": "unify-feature-adapters",
+      "members": [
+        {
+          "name": "CreateClubStepHeader",
+          "action": "replace"
+        },
+        {
+          "name": "CreateEventStepHeader",
+          "action": "replace"
+        },
+        {
+          "name": "HostWizardStepHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Both prior adapters implement the same localized step numbering and review-mode mapping. Retain it once in HostWizardStepHeader over CatchStepHeader, with nullable subtitle and the existing close/overview behavior. This supersedes the earlier isolated CreateEventStepHeader keep decision; the duplicate Club adapter now shares its owner.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-09-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:host-audience-no-organizer",
+      "patternFamilyId": "host-audience-no-organizer",
+      "decision": "unify-feature-composition",
+      "members": [
+        {
+          "name": "HostCustomersNoOrganizer",
+          "action": "replace"
+        },
+        {
+          "name": "HostFormsNoOrganizer",
+          "action": "replace"
+        },
+        {
+          "name": "HostAudienceNoOrganizerEmptyState",
+          "action": "keep"
+        }
+      ],
+      "rationale": "One Audience empty-state composition chooses copy and presentation by the existing tab enum. Preserve each tab family’s scroll key, icon, Create Club route and original medium/small CTA size.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-09-24",
+      "status": "implemented"
     }
   ]
 }

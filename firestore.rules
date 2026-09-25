@@ -1047,6 +1047,42 @@ service cloud.firestore {
     // Canonical organizer authority. All mutations remain callable-owned so
     // type audits, relationship projections, and compatibility shadows stay
     // atomic during the released-client migration window.
+    // Private configuration is exposed only through current-manager callables.
+    // Immutable admission/payment evidence has no direct client access.
+    match /organizerFormAdmissions/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerFormAdmissionReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOffers/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferActionReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferBatchReceipts/{documentId} {
+      allow read, write: if false;
+    }
+    match /organizerEventOfferAudits/{documentId} {
+      allow read, write: if false;
+    }
+    match /eventOfferConfigurationReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+    match /eventSetupPreferences/{eventId} {
+      allow read, write: if false;
+    }
+    match /eventSetupReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+    match /organizerEventSetupDefaults/{organizerId} {
+      allow read, write: if false;
+    }
+    match /organizerEventSetupDefaultReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizers/{organizerId} {
       allow read: if true;
       allow create, update, delete: if false;
@@ -1815,13 +1851,42 @@ service cloud.firestore {
         && request.resource.data.eventId is string
         && request.resource.data.savedAt is timestamp
         && exists(/databases/$(database)/documents/events/$(request.resource.data.eventId))
+        && isPublicEventData(get(/databases/$(database)/documents/events/$(
+          request.resource.data.eventId
+        )).data)
         && savedEventId == savedEventDocId(request.auth.uid, request.resource.data.eventId);
       allow delete: if isAuthed() && resource.data.uid == request.auth.uid;
       allow update: if false;
     }
 
+    // Legacy documents predate progressive setup. A record carrying any new
+    // setup marker must explicitly be published before public reads work.
+    function isPublicEventData(data) {
+      return data.get('publicationState', '') == 'published'
+        || !data.keys().hasAny(['publicationState', 'setupRevision']);
+    }
+
+    function canReadPrivateEvent(eventId, data) {
+      return isAuthed()
+        && !isDeletedUser(request.auth.uid)
+        && data.get('publicationState', '') == 'private'
+        && data.get('organizerId', '') is string
+        && data.get('organizerId', '') == data.get('clubId', '')
+        && (
+          isClubHostForEvent(eventId)
+          || hasActiveEventOperatorGrant(eventId, 'viewRoster')
+        );
+    }
+
     match /events/{eventId} {
-      allow read: if true;
+      allow get: if isPublicEventData(resource.data)
+        || canReadPrivateEvent(eventId, resource.data);
+      // Compatibility stage only: installed clients still issue unrestricted
+      // event lists. Private event persistence and its Host route stay disabled
+      // until the publication backfill and client cutover are complete. This
+      // rule MUST become publication-constrained before any private event is
+      // stored in this collection.
+      allow list: if true;
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.

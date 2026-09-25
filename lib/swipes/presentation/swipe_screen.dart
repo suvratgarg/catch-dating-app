@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -70,7 +70,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       // The deck only advances after the write succeeds, so on failure we keep
       // the current profile and surface the error instead of silently stalling.
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.swipes,
