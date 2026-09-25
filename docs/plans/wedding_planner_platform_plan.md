@@ -298,7 +298,12 @@ pause/resume preserves it. Scope is immutable.
    provider (same token store as the campaign dispatcher), FCM + activity
    item, or staff-attention delivery.
 4. Every decision writes an `organizerMomentSends` record — retries, sweep
-   overlap, and replan races are all idempotent.
+   overlap, and replan races are all idempotent. `staffAttention` sends
+   additionally journal the fields (`runId`, `organizerId`, scope, duty,
+   severity, title) the organizer Today projection consumes, so the send
+   log is the durable attention source — no parallel collection. One
+   `momentStaffAttention` item per run, deduped by `runId`, resolved when
+   the send ages out of the 24h source window.
 
 ### 4.5 Guard rails
 - WhatsApp template sends require explicit consent not-declined: an
@@ -581,12 +586,16 @@ branch (which carries the moments-core merge at `ba37fe1b3`):
 | `cc371726e` | `momentDocuments` + `momentRunner`: lenient doc boundary, scope-facts loader (events / programs+functions+travel legs), fire-time audience resolution (subject, functionGuests w/ household dedupe, households, staffDuty, eventParticipants), sweep replan + due-run fire, travel-leg trigger ingestion, keyed manual runs, idempotent `organizerMomentSends` records. 60 tests |
 | `9406e2367` | `momentCallables`: deps-injected upsert/arm/pause/resume/list handlers — program scope needs manager or `communications` duty (coordinator satisfies), event scope is organizer-manager only; edits reset approval; scope immutable. 66 tests |
 | `0da69118f` | `momentWiring`: production seams — Meta provider send (same token store as campaign dispatcher), FCM + activity items, household/pref consent loader, scope-tz quiet hours + daily cap, staff-attention delivery to staff uids. 71 tests |
+| `b7b108951` | `organizerMomentSweep` onSchedule + `programTravelLegMoments` onDocumentWritten (leg diffs → trigger facts) + `runOrganizerMoment` manual fire keyed by `requestKey`. 75 tests |
+| `627c250df` | Contract surface: schemas for `organizerMoments`/`organizerMomentRuns`/`organizerMomentSends` + six callable payload/response pairs; generated TS/Dart/validators; 167 fixtures pass |
+| `dfbf55fc3` | Registration layer: clean `index.ts` exports (`upsertOrganizerMoment`, `armOrganizerMoment`, `pauseOrganizerMoment`, `resumeOrganizerMoment`, `runOrganizerMoment`, `listOrganizerMoments`), App Check + rate-limit wiring, Firestore deny rules for the three collections, composite indexes |
+| `1a9f5b874` | **M4**: `sendEventReminders` deleted → `momentDefaults` provisions an armed `systemDefault` event-scope anchored moment (T-15m push) per upcoming active event; deterministic run ids preserve send-once; replan never resurrects completed runs; negative-offset anchors skip once the anchor passes; push preference gates the FCM leg only (activity item always written, matching legacy). 80 tests |
+| `3a801d8fc` | `staffAttention` → `organizerAttentionItems`: send journal rows carry `runId`/`organizerId`/`scope`/`duty`/`severity`/`title` (the durable source — no parallel collection); `AnchorFacts.scope.organizerId` loaded from the scope doc; new `momentStaffAttention` kind + `organizerMomentSends` source owner + catalog def; bounded 24h source query; one item per run (dedupe `runId`), severity → consequence. 92 tests |
 
-**Not yet wired (needs the shared-surface window):** `index.ts` exports for
-the callables + the `onSchedule` sweep, generated payload validators and
-contract schemas for `organizerMoments`/`organizerMomentRuns`/
-`organizerMomentSends`, and the `sendEventReminders` → system-default
-moment migration (M4). The `staffAttention` action currently delivers
-`organizerUpdate` activity + push to resolved staff uids; projecting into
-`organizerAttentionItems` needs a new source in the (Codex-claimed)
-attention projection.
+**Status:** the unified Moments engine is complete end-to-end on
+`codex/w3-program-rsvp-callables` — model, policy, runner, wiring,
+callables, contracts, indexes/rules, event-reminder migration, and the
+attention projection all landed and verified (`check_data_contract.sh`
+green; one unrelated emulator flake in `groupStaffStore.test.js` recovered
+on standalone re-run). Remaining: Flutter client surfaces for the moment
+callables, and PR integration.
