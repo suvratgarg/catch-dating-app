@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/organizer_moment_action_payload.schema.json",
+  "title": "OrganizerMomentActionCallablePayload",
+  "description": "Lifecycle transition on one moment: arm (approve the rule once), pause, or resume. Scope must match the stored moment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scope", "momentId"],
+  "properties": {
+    "scope": {"$ref": "../shared/moment_common.schema.json#/definitions/momentScope"},
+    "momentId": {"type": "string", "minLength": 1, "maxLength": 180}
+  }
+}

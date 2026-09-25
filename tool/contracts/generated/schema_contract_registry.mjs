@@ -112365,7 +112365,8 @@ export const organizerAttentionItemDocumentSchema = {
         "eventStaffing",
         "formResponseReview",
         "inboxReply",
-        "postEventReconciliation"
+        "postEventReconciliation",
+        "momentStaffAttention"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json",
       "x-catch-ownership": "server-only"
@@ -112399,7 +112400,8 @@ export const organizerAttentionItemDocumentSchema = {
         "eventStaffGrants",
         "organizerFormResponses",
         "organizerWhatsappThreads",
-        "eventAttendees"
+        "eventAttendees",
+        "organizerMomentSends"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -112481,7 +112483,8 @@ export const organizerAttentionItemDocumentSchema = {
             "hostAudienceForms",
             "hostInbox",
             "hostDressRehearsal",
-            "hostEvents"
+            "hostEvents",
+            "hostProgramWork"
           ]
         },
         "section": {
@@ -124819,9 +124822,134 @@ export const organizerCampaignRecipientDocumentSchema = {
       "maxLength": 180
     },
     "contactId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "CRM contact for saved-audience recipients; null on programSelection rows — program identity lives in programRecipient."
+    },
+    "programRecipient": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "programId",
+        "recipientKey",
+        "guestIds",
+        "householdId",
+        "endpointGuestId",
+        "messagingConsent"
+      ],
+      "description": "Program-native recipient identity for recipientSource=programSelection campaigns. One doc per resolved recipientKey (guest:{id} or household:{id}); contactId is null on these rows.",
+      "properties": {
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "recipientKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220,
+          "description": "guest:{guestId} or household:{householdId}; hashed into the document id in place of contactId."
+        },
+        "guestIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Program guests covered by this recipient; one for guest recipients, household members for deduped rows."
+        },
+        "householdId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Household carrying messaging consent for this recipient — the dedupe household for household:{id} rows or the guest's household otherwise."
+        },
+        "endpointGuestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "messagingConsent": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "granted",
+            "grantedAt",
+            "source"
+          ],
+          "properties": {
+            "granted": {
+              "type": "boolean"
+            },
+            "grantedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "householdRsvpLink",
+                "staff",
+                "import",
+                "whatsappStop",
+                null
+              ]
+            }
+          },
+          "description": "Snapshot of the household's explicit messaging consent at approve time; grant decisions re-read live at dispatch."
+        }
+      }
     },
     "channel": {
       "const": "whatsapp"
@@ -133495,6 +133623,32 @@ export const programFunctionGuestDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "responseSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "staff",
+        "householdLink",
+        "import",
+        null
+      ],
+      "description": "Which channel recorded the current response: staff entry, the signed household RSVP link, or a manifest import. Null while pending."
+    },
+    "recordedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Staff uid who recorded a staff-sourced response; null for household-link and imported responses."
     }
   }
 };
@@ -133942,6 +134096,65 @@ export const programHouseholdDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "messagingConsent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "granted",
+        "grantedAt",
+        "source"
+      ],
+      "properties": {
+        "granted": {
+          "type": "boolean"
+        },
+        "grantedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "householdRsvpLink",
+            "staff",
+            "import",
+            "whatsappStop",
+            null
+          ],
+          "description": "Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook."
+        }
+      },
+      "description": "Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent."
     }
   }
 };
@@ -135426,6 +135639,2000 @@ export const programTravelPartyDocumentSchema = {
         "maxLength": 180
       },
       "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
+    }
+  }
+};
+
+export const organizerMomentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moments.schema.json",
+  "title": "OrganizerMomentDocument",
+  "description": "Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMoments",
+  "x-firestore-path": "organizerMoments/{momentId}",
+  "x-document-id-field": "momentId",
+  "x-owner": "organizer moment callables + moment sweep",
+  "required": [
+    "momentId",
+    "scope",
+    "scopeKind",
+    "scopeId",
+    "name",
+    "initiation",
+    "sense",
+    "audience",
+    "action",
+    "status",
+    "approval",
+    "origin",
+    "revision",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "scopeKind": {
+      "type": "string",
+      "enum": [
+        "event",
+        "program"
+      ],
+      "description": "Denormalized scope.kind for list queries."
+    },
+    "scopeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Denormalized scope id (eventId or programId) for list queries."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "initiation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "scheduled",
+            "anchored",
+            "triggered"
+          ]
+        },
+        "atMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Scheduled fire time; required when kind=scheduled."
+        },
+        "anchorKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "scopeStart",
+                "scopeEnd",
+                "functionStart",
+                "functionEnd",
+                "rsvpDeadline",
+                "travelLegTime"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=anchored."
+        },
+        "anchorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+        },
+        "offsetMinutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -43200,
+          "maximum": 43200,
+          "description": "Minutes relative to the anchor; negative is before."
+        },
+        "triggerKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "lateArrivalAtHotel",
+                "flightDisrupted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=triggered."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Optional function scope for triggered moments."
+        }
+      }
+    },
+    "sense": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "audience"
+      ]
+    },
+    "audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "subject",
+            "eventParticipants",
+            "functionGuests",
+            "households",
+            "staffDuty"
+          ]
+        },
+        "statuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "signedUp"
+            ]
+          },
+          "description": "eventParticipants: participation statuses included."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "functionGuests: the function whose guests resolve."
+        },
+        "rsvp": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "attending",
+              "maybe"
+            ]
+          },
+          "description": "functionGuests: RSVP states included."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: one send per household when true (default)."
+        },
+        "rsvpPendingOnly": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "households: restrict to households with a pending member."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffDuty: duty whose grant holders resolve."
+        },
+        "scopeIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sendTemplate",
+            "push",
+            "staffAttention"
+          ]
+        },
+        "connectionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerSenderConnections doc id."
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerMessageTemplates doc id."
+        },
+        "variables": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "description": "sendTemplate: template variable substitutions."
+        },
+        "notificationType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: activity/push type written to the feed."
+        },
+        "preferenceKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: user notification preference gating FCM."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffAttention: duty the attention item targets."
+        },
+        "severity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "info",
+            "warning",
+            "urgent",
+            null
+          ],
+          "description": "staffAttention: attention severity."
+        },
+        "titleTemplate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200,
+          "description": "staffAttention: rendered attention title."
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "armed",
+        "paused",
+        "done"
+      ]
+    },
+    "approval": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "approvedByUid",
+        "approvedAtMillis"
+      ],
+      "properties": {
+        "approvedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "approvedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Approve-the-rule-once record; required while armed."
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "organizer",
+        "systemDefault"
+      ],
+      "description": "systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const organizerMomentRunDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_runs.schema.json",
+  "title": "OrganizerMomentRunDocument",
+  "description": "Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentRuns",
+  "x-firestore-path": "organizerMomentRuns/{runId}",
+  "x-document-id-field": "runId",
+  "x-owner": "moment runner",
+  "required": [
+    "runId",
+    "momentId",
+    "dueAtMillis",
+    "anchorRevision",
+    "status"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "dueAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "anchorRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "resolving",
+        "dispatched",
+        "skipped",
+        "superseded",
+        "failed"
+      ]
+    },
+    "targetFunctionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "subjectId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "description": "Triggered runs: the fact's subject (e.g. travel leg id)."
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Skip/failure reason written at run transition."
+    },
+    "recipients": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "sent": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "suppressed": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Suppression reason -> recipient count rollup."
+    },
+    "suppressedNoEndpoint": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  }
+};
+
+export const organizerMomentSendDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_sends.schema.json",
+  "title": "OrganizerMomentSendDocument",
+  "description": "Per-recipient send decision for a moment run; document id is {runId}_{recipientKey} so retries never double-send and every suppression carries its audited reason.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentSends",
+  "x-firestore-path": "organizerMomentSends/{sendId}",
+  "x-document-id-field": "sendId",
+  "x-owner": "moment runner",
+  "required": [
+    "momentId",
+    "recipientKey",
+    "decision",
+    "dayKey",
+    "createdAtMillis"
+  ],
+  "properties": {
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "recipientKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220,
+      "description": "Stable recipient idempotency key: household:|guest:|uid:|contact: prefixed."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "suppressed"
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "noEndpoint",
+        "preferenceOff",
+        "noConsent",
+        "optedOut",
+        "endpointSuppressed",
+        "dailyCap",
+        null
+      ],
+      "description": "Suppression reason; null on sent."
+    },
+    "dayKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "description": "Scope-local calendar day (YYYY-MM-DD) for per-endpoint daily caps."
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 260,
+      "description": "Run that produced this send; set on staffAttention sends so the attention projection can group recipients per run."
+    },
+    "actionKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "sendTemplate",
+        "push",
+        "staffAttention",
+        null
+      ],
+      "description": "Moment action kind; staffAttention rows feed the organizer attention projection."
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200,
+      "description": "Owning organizer for attention projection queries."
+    },
+    "scopeKind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "event",
+        "program",
+        null
+      ]
+    },
+    "scopeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "duty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "description": "staffAttention: duty the alert targeted."
+    },
+    "severity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "info",
+        "warning",
+        "urgent",
+        null
+      ],
+      "description": "staffAttention: alert severity."
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "description": "staffAttention: rendered alert title."
+    }
+  }
+};
+
+export const upsertOrganizerMomentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_moment_payload.schema.json",
+  "title": "UpsertOrganizerMomentCallablePayload",
+  "description": "Create or revise an organizer moment. New moments land as drafts; revising an existing moment keeps its scope (immutable) and drops it back to draft with approval cleared, requiring re-arm.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "name",
+    "initiation",
+    "sense",
+    "audience",
+    "action"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "momentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Existing moment to revise; null/omitted creates a new moment."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "initiation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "scheduled",
+            "anchored",
+            "triggered"
+          ]
+        },
+        "atMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Scheduled fire time; required when kind=scheduled."
+        },
+        "anchorKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "scopeStart",
+                "scopeEnd",
+                "functionStart",
+                "functionEnd",
+                "rsvpDeadline",
+                "travelLegTime"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=anchored."
+        },
+        "anchorId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+        },
+        "offsetMinutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": -43200,
+          "maximum": 43200,
+          "description": "Minutes relative to the anchor; negative is before."
+        },
+        "triggerKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "lateArrivalAtHotel",
+                "flightDisrupted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required when kind=triggered."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "Optional function scope for triggered moments."
+        }
+      }
+    },
+    "sense": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "audience"
+      ]
+    },
+    "audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "subject",
+            "eventParticipants",
+            "functionGuests",
+            "households",
+            "staffDuty"
+          ]
+        },
+        "statuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "signedUp"
+            ]
+          },
+          "description": "eventParticipants: participation statuses included."
+        },
+        "functionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "functionGuests: the function whose guests resolve."
+        },
+        "rsvp": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "attending",
+              "maybe"
+            ]
+          },
+          "description": "functionGuests: RSVP states included."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "functionGuests: one send per household when true (default)."
+        },
+        "rsvpPendingOnly": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "households: restrict to households with a pending member."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffDuty: duty whose grant holders resolve."
+        },
+        "scopeIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 180
+          },
+          "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sendTemplate",
+            "push",
+            "staffAttention"
+          ]
+        },
+        "connectionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerSenderConnections doc id."
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180,
+          "description": "sendTemplate: organizerMessageTemplates doc id."
+        },
+        "variables": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "description": "sendTemplate: template variable substitutions."
+        },
+        "notificationType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: activity/push type written to the feed."
+        },
+        "preferenceKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "push: user notification preference gating FCM."
+        },
+        "duty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80,
+          "description": "staffAttention: duty the attention item targets."
+        },
+        "severity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "info",
+            "warning",
+            "urgent",
+            null
+          ],
+          "description": "staffAttention: attention severity."
+        },
+        "titleTemplate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200,
+          "description": "staffAttention: rendered attention title."
+        }
+      }
+    }
+  }
+};
+
+export const organizerMomentActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/organizer_moment_action_payload.schema.json",
+  "title": "OrganizerMomentActionCallablePayload",
+  "description": "Lifecycle transition on one moment: arm (approve the rule once), pause, or resume. Scope must match the stored moment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "momentId"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const runOrganizerMomentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/run_organizer_moment_payload.schema.json",
+  "title": "RunOrganizerMomentCallablePayload",
+  "description": "Fire a manual moment immediately. The caller-supplied requestKey scopes idempotency: retries and double-submits with the same key resolve to the same run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "momentId",
+    "requestKey"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    },
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listOrganizerMomentsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_moments_payload.schema.json",
+  "title": "ListOrganizerMomentsCallablePayload",
+  "description": "List all moments for one event or program scope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "event",
+            "program"
+          ]
+        },
+        "eventId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=event; must be null otherwise."
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=program; must be null otherwise."
+        }
+      }
+    }
+  }
+};
+
+export const organizerMomentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_moment_response.schema.json",
+  "title": "OrganizerMomentCallableResponse",
+  "description": "Single-moment response for upsert/arm/pause/resume.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "moment"
+  ],
+  "properties": {
+    "moment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "momentId",
+        "scope",
+        "name",
+        "initiation",
+        "sense",
+        "audience",
+        "action",
+        "status",
+        "approval",
+        "origin",
+        "revision"
+      ],
+      "properties": {
+        "momentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "event",
+                "program"
+              ]
+            },
+            "eventId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180,
+              "description": "Required when kind=event; must be null otherwise."
+            },
+            "programId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 180,
+              "description": "Required when kind=program; must be null otherwise."
+            }
+          }
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "initiation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "manual",
+                "scheduled",
+                "anchored",
+                "triggered"
+              ]
+            },
+            "atMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Scheduled fire time; required when kind=scheduled."
+            },
+            "anchorKind": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "scopeStart",
+                    "scopeEnd",
+                    "functionStart",
+                    "functionEnd",
+                    "rsvpDeadline",
+                    "travelLegTime"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required when kind=anchored."
+            },
+            "anchorId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+            },
+            "offsetMinutes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": -43200,
+              "maximum": 43200,
+              "description": "Minutes relative to the anchor; negative is before."
+            },
+            "triggerKind": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "lateArrivalAtHotel",
+                    "flightDisrupted"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required when kind=triggered."
+            },
+            "functionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "Optional function scope for triggered moments."
+            }
+          }
+        },
+        "sense": {
+          "type": "string",
+          "enum": [
+            "individual",
+            "audience"
+          ]
+        },
+        "audience": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "subject",
+                "eventParticipants",
+                "functionGuests",
+                "households",
+                "staffDuty"
+              ]
+            },
+            "statuses": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "signedUp"
+                ]
+              },
+              "description": "eventParticipants: participation statuses included."
+            },
+            "functionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "functionGuests: the function whose guests resolve."
+            },
+            "rsvp": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "attending",
+                  "maybe"
+                ]
+              },
+              "description": "functionGuests: RSVP states included."
+            },
+            "householdDedupe": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "functionGuests: one send per household when true (default)."
+            },
+            "rsvpPendingOnly": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "households: restrict to households with a pending member."
+            },
+            "duty": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "staffDuty: duty whose grant holders resolve."
+            },
+            "scopeIds": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "maxItems": 50,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 180
+              },
+              "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+            }
+          }
+        },
+        "action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "sendTemplate",
+                "push",
+                "staffAttention"
+              ]
+            },
+            "connectionId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "sendTemplate: organizerSenderConnections doc id."
+            },
+            "templateId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180,
+              "description": "sendTemplate: organizerMessageTemplates doc id."
+            },
+            "variables": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "description": "sendTemplate: template variable substitutions."
+            },
+            "notificationType": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "push: activity/push type written to the feed."
+            },
+            "preferenceKey": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "push: user notification preference gating FCM."
+            },
+            "duty": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80,
+              "description": "staffAttention: duty the attention item targets."
+            },
+            "severity": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "info",
+                "warning",
+                "urgent",
+                null
+              ],
+              "description": "staffAttention: attention severity."
+            },
+            "titleTemplate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200,
+              "description": "staffAttention: rendered attention title."
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "armed",
+            "paused",
+            "done"
+          ]
+        },
+        "approval": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "approvedByUid",
+            "approvedAtMillis"
+          ],
+          "properties": {
+            "approvedByUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "approvedAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "description": "Approve-the-rule-once record; required while armed."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "organizer",
+            "systemDefault"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "The full moment definition returned by moment callables."
+    }
+  }
+};
+
+export const listOrganizerMomentsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_moments_response.schema.json",
+  "title": "ListOrganizerMomentsCallableResponse",
+  "description": "All moments for one scope, sorted by momentId.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "moments"
+  ],
+  "properties": {
+    "moments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "momentId",
+          "scope",
+          "name",
+          "initiation",
+          "sense",
+          "audience",
+          "action",
+          "status",
+          "approval",
+          "origin",
+          "revision"
+        ],
+        "properties": {
+          "momentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "event",
+                  "program"
+                ]
+              },
+              "eventId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180,
+                "description": "Required when kind=event; must be null otherwise."
+              },
+              "programId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180,
+                "description": "Required when kind=program; must be null otherwise."
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "initiation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "scheduled",
+                  "anchored",
+                  "triggered"
+                ]
+              },
+              "atMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991,
+                "description": "Scheduled fire time; required when kind=scheduled."
+              },
+              "anchorKind": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "scopeStart",
+                      "scopeEnd",
+                      "functionStart",
+                      "functionEnd",
+                      "rsvpDeadline",
+                      "travelLegTime"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Required when kind=anchored."
+              },
+              "anchorId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "Function/leg id for scoped anchors; null anchors to the scope itself."
+              },
+              "offsetMinutes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": -43200,
+                "maximum": 43200,
+                "description": "Minutes relative to the anchor; negative is before."
+              },
+              "triggerKind": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "lateArrivalAtHotel",
+                      "flightDisrupted"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Required when kind=triggered."
+              },
+              "functionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "Optional function scope for triggered moments."
+              }
+            }
+          },
+          "sense": {
+            "type": "string",
+            "enum": [
+              "individual",
+              "audience"
+            ]
+          },
+          "audience": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "subject",
+                  "eventParticipants",
+                  "functionGuests",
+                  "households",
+                  "staffDuty"
+                ]
+              },
+              "statuses": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "signedUp"
+                  ]
+                },
+                "description": "eventParticipants: participation statuses included."
+              },
+              "functionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "functionGuests: the function whose guests resolve."
+              },
+              "rsvp": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "attending",
+                    "maybe"
+                  ]
+                },
+                "description": "functionGuests: RSVP states included."
+              },
+              "householdDedupe": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "functionGuests: one send per household when true (default)."
+              },
+              "rsvpPendingOnly": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "households: restrict to households with a pending member."
+              },
+              "duty": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "staffDuty: duty whose grant holders resolve."
+              },
+              "scopeIds": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "maxItems": 50,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 180
+                },
+                "description": "staffDuty: optional function/pickupPoint/hotel ids; null means all."
+              }
+            }
+          },
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "sendTemplate",
+                  "push",
+                  "staffAttention"
+                ]
+              },
+              "connectionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "sendTemplate: organizerSenderConnections doc id."
+              },
+              "templateId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 180,
+                "description": "sendTemplate: organizerMessageTemplates doc id."
+              },
+              "variables": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "description": "sendTemplate: template variable substitutions."
+              },
+              "notificationType": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "push: activity/push type written to the feed."
+              },
+              "preferenceKey": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "push: user notification preference gating FCM."
+              },
+              "duty": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "staffAttention: duty the attention item targets."
+              },
+              "severity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "info",
+                  "warning",
+                  "urgent",
+                  null
+                ],
+                "description": "staffAttention: attention severity."
+              },
+              "titleTemplate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 200,
+                "description": "staffAttention: rendered attention title."
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "armed",
+              "paused",
+              "done"
+            ]
+          },
+          "approval": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "approvedByUid",
+              "approvedAtMillis"
+            ],
+            "properties": {
+              "approvedByUid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "approvedAtMillis": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "description": "Approve-the-rule-once record; required while armed."
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "organizer",
+              "systemDefault"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "description": "The full moment definition returned by moment callables."
+      }
+    }
+  }
+};
+
+export const runOrganizerMomentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/run_organizer_moment_response.schema.json",
+  "title": "RunOrganizerMomentCallableResponse",
+  "description": "Result of a manual moment fire: the deterministic run id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
     }
   }
 };
@@ -137105,6 +139312,243 @@ export const upsertProgramGuestCallablePayloadSchema = {
   }
 };
 
+export const applyProgramFunctionInvitationsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/apply_program_function_invitations_payload.schema.json",
+  "title": "ApplyProgramFunctionInvitationsCallablePayload",
+  "description": "Set one program function's invitation mode and, for selectedGuests functions, the explicit invited guest list. The callable diffs the desired list against current programFunctionGuests rows; unknown guest ids are ignored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "functionId",
+    "invitationMode",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "invitationMode": {
+      "type": "string",
+      "enum": [
+        "allGuests",
+        "selectedGuests"
+      ],
+      "description": "Whether the function invites every program guest or only the programFunctionGuests rows marked invited."
+    },
+    "selectedGuestIds": {
+      "type": "array",
+      "maxItems": 2000,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Desired invited guests for selectedGuests mode; ignored when invitationMode is allGuests."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Fences the function document read-modify-write."
+    }
+  }
+};
+
+export const recordProgramFunctionRsvpCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_program_function_rsvp_payload.schema.json",
+  "title": "RecordProgramFunctionRsvpCallablePayload",
+  "description": "Staff-recorded RSVP for one guest on one program function. The server derives the program-level guest rollup and function counters; last response wins per join key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "functionId",
+    "guestId",
+    "rsvpStatus"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Attending party size; null reads as 1."
+    },
+    "responseNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "allowUninvited": {
+      "type": "boolean",
+      "description": "Record a response for a selectedGuests function the guest was not invited to; the row lands invited:true."
+    }
+  }
+};
+
+export const issueProgramHouseholdRsvpLinkCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/issue_program_household_rsvp_link_payload.schema.json",
+  "title": "IssueProgramHouseholdRsvpLinkCallablePayload",
+  "description": "Mint a signed RSVP link token for one household. The token carries only ids and an exclusive expiry; default expiry is the program end.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "householdId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive token expiry in epoch milliseconds; defaults to the program's endsAt."
+    }
+  }
+};
+
+export const getProgramHouseholdRsvpViewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_household_rsvp_view_payload.schema.json",
+  "title": "GetProgramHouseholdRsvpViewCallablePayload",
+  "description": "Token-authenticated read of one household's RSVP surface. The signed token is the credential; no session is required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    }
+  }
+};
+
+export const submitProgramHouseholdRsvpCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_program_household_rsvp_payload.schema.json",
+  "title": "SubmitProgramHouseholdRsvpCallablePayload",
+  "description": "Token-authenticated household RSVP submit. Responses are limited to guests in the token's household and apply atomically. messagingConsent records the explicit checkbox state; it is never implied by submitting.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token",
+    "responses",
+    "messagingConsent"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    },
+    "responses": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "functionId",
+          "rsvpStatus"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "responseNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "messagingConsent": {
+      "type": "boolean",
+      "description": "The explicit household messaging-consent checkbox; recorded exactly as ticked."
+    }
+  }
+};
+
 export const listProgramStaffCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_program_staff_payload.schema.json",
@@ -138554,6 +140998,340 @@ export const programMutationCallableResponseSchema = {
     "alreadyApplied": {
       "type": "boolean",
       "description": "True when an exact clientOperationId replay returned the original result."
+    }
+  }
+};
+
+export const programFunctionInvitationsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_function_invitations_response.schema.json",
+  "title": "ProgramFunctionInvitationsCallableResponse",
+  "description": "Acknowledgement for an invitation-list apply: the committed function revision plus the row diff that landed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "applyProgramFunctionInvitations"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "createdCount",
+    "revokedCount",
+    "keptCount",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The function document id."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revokedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "keptCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact replay returned the original result."
+    }
+  }
+};
+
+export const recordProgramFunctionRsvpCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/record_program_function_rsvp_response.schema.json",
+  "title": "RecordProgramFunctionRsvpCallableResponse",
+  "description": "Acknowledgement for a recorded function RSVP: the join-key row id, its revision, and the guest's derived program-level RSVP rollup.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "recordProgramFunctionRsvp"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "guestRsvpStatus",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The programFunctionGuests join-key document id."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "guestRsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ],
+      "description": "Derived programGuests.rsvpStatus rollup after this response."
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact replay returned the original result."
+    }
+  }
+};
+
+export const programHouseholdRsvpLinkCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_household_rsvp_link_response.schema.json",
+  "title": "ProgramHouseholdRsvpLinkCallableResponse",
+  "description": "A freshly minted household RSVP token with its exclusive expiry. The client composes the share URL.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "issueProgramHouseholdRsvpLink"
+  ],
+  "required": [
+    "entityId",
+    "token",
+    "expiresAtMillis",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The household document id."
+    },
+    "token": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 1024
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const programHouseholdRsvpViewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_household_rsvp_view_response.schema.json",
+  "title": "ProgramHouseholdRsvpViewCallableResponse",
+  "description": "The household's RSVP page model: program display facts, consent state, and each member's invited functions with current responses. Contains no data outside the token's household.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramHouseholdRsvpView"
+  ],
+  "required": [
+    "programId",
+    "programTitle",
+    "timezone",
+    "householdId",
+    "householdLabel",
+    "messagingConsentGranted",
+    "members"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programTitle": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdLabel": {
+      "type": "string",
+      "maxLength": 140
+    },
+    "messagingConsentGranted": {
+      "type": "boolean",
+      "description": "Current consent state so the page can pre-tick."
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "functions"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "functions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "functionId",
+                "name",
+                "startsAtMillis",
+                "endsAtMillis",
+                "rsvpStatus",
+                "partySize",
+                "responseNote"
+              ],
+              "properties": {
+                "functionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "startsAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "endsAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "venueName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "dressCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 140
+                },
+                "instructions": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 1000
+                },
+                "rsvpStatus": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "attending",
+                    "declined",
+                    "maybe"
+                  ]
+                },
+                "partySize": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 20
+                },
+                "responseNote": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const submitProgramHouseholdRsvpCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_program_household_rsvp_response.schema.json",
+  "title": "SubmitProgramHouseholdRsvpCallableResponse",
+  "description": "Acknowledgement for a household RSVP submit: the household id, its committed revision, and how many function responses landed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "submitProgramHouseholdRsvp"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "appliedCount",
+    "messagingConsentGranted",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The household document id."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "appliedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "messagingConsentGranted": {
+      "type": "boolean",
+      "description": "The consent state now recorded on the household."
+    },
+    "alreadyApplied": {
+      "type": "boolean"
     }
   }
 };
@@ -187623,9 +190401,17 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
       ]
     },
     "savedAudienceId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Active CRM saved audience. Required for recipientSource.kind=savedAudience (the default); must be null for programSelection."
     },
     "connectionId": {
       "type": "string",
@@ -187677,6 +190463,74 @@ export const upsertOrganizerCampaignCallablePayloadSchema = {
       ],
       "minimum": 0,
       "maximum": 4102444800000
+    },
+    "recipientSource": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "description": "Recipient resolution. Absent reads as savedAudience backed by savedAudienceId. programSelection resolves program guests/households instead of CRM contacts.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "savedAudience",
+            "programSelection"
+          ]
+        },
+        "programId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Required when kind=programSelection; ignored otherwise."
+        },
+        "functionIds": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Restricts to guests invited to these functions; null or empty means every function in the program."
+        },
+        "rsvpStatuses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "description": "Restricts to matching per-function RSVP statuses; null or empty means every effective status."
+        },
+        "householdDedupe": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "When true, guests sharing a household collapse into one recipient. Default true."
+        }
+      }
     }
   }
 };
@@ -236752,7 +239606,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "eventStaffing",
               "formResponseReview",
               "inboxReply",
-              "postEventReconciliation"
+              "postEventReconciliation",
+              "momentStaffAttention"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -236784,7 +239639,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "eventStaffGrants",
               "organizerFormResponses",
               "organizerWhatsappThreads",
-              "eventAttendees"
+              "eventAttendees",
+              "organizerMomentSends"
             ]
           },
           "sourceId": {
@@ -236852,7 +239708,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
                   "hostAudienceForms",
                   "hostInbox",
                   "hostDressRehearsal",
-                  "hostEvents"
+                  "hostEvents",
+                  "hostProgramWork"
                 ]
               },
               "section": {
@@ -236986,8 +239843,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
     },
     "coverage": {
       "type": "array",
-      "minItems": 17,
-      "maxItems": 17,
+      "minItems": 18,
+      "maxItems": 18,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -237016,7 +239873,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "eventStaffing",
               "formResponseReview",
               "inboxReply",
-              "postEventReconciliation"
+              "postEventReconciliation",
+              "momentStaffAttention"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -256603,6 +259461,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "blockedMissingTruth",
       "readiness": "blocked",
       "readinessReason": "Counts alone cannot prove whether attendance, refunds, provider imports, and reporting are reconciled."
+    },
+    {
+      "kind": "momentStaffAttention",
+      "scope": "organizer",
+      "sourceOwner": "organizerMomentSends",
+      "sourceIdPolicy": "organizerMomentSends document id for a fired staffAttention send.",
+      "sourceRevisionPolicy": "Run id plus duty, severity, and send creation time.",
+      "triggerPredicate": "A staffAttention moment run dispatched within the rolling source window.",
+      "resolutionPredicate": "The send ages out of the source window or the organizer resolves the item.",
+      "permissionPredicate": "Caller is a canonical manager of the moment scope's organizer.",
+      "consequence": "informational",
+      "dueAtPolicy": "Moment send creation time.",
+      "expiresAtPolicy": "24 hours after the send was created.",
+      "destination": {
+        "route": "hostProgramWork",
+        "section": "moments"
+      },
+      "dedupePolicy": "kind + runId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "organizerMomentSends is a durable engine journal written at fire time."
     }
   ]
 };

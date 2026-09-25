@@ -1,0 +1,12 @@
+{
+  "token": "eyJ2IjoxLCJwcm9ncmFtSWQiOiJwLTEiLCJob3VzZWhvbGRJZCI6ImhoLTEifQ.c2lnbmF0dXJl",
+  "responses": [
+    {
+      "guestId": "guest-1",
+      "functionId": "function-sangeet",
+      "rsvpStatus": "attending",
+      "partySize": 2
+    }
+  ],
+  "messagingConsent": true
+}

@@ -1,0 +1,17 @@
+{
+  "moment": {
+    "momentId": "moment-1",
+    "scope": {"kind": "event", "eventId": "event-1"},
+    "name": "Event starts soon",
+    "initiation": {"kind": "anchored", "anchorKind": "scopeStart",
+      "anchorId": null, "offsetMinutes": -15},
+    "sense": "individual",
+    "audience": {"kind": "eventParticipants", "statuses": ["signedUp"]},
+    "action": {"kind": "push", "notificationType": "eventReminder",
+      "preferenceKey": "eventReminders"},
+    "status": "armed",
+    "approval": {"approvedByUid": "system", "approvedAtMillis": 1700000000000},
+    "origin": "systemDefault",
+    "revision": 1
+  }
+}

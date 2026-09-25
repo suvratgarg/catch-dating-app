@@ -5836,7 +5836,8 @@ export interface OrganizerAttentionItemDocument {
     | "eventStaffing"
     | "formResponseReview"
     | "inboxReply"
-    | "postEventReconciliation";
+    | "postEventReconciliation"
+    | "momentStaffAttention";
   scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
   sourceOwner:
     | "events"
@@ -5853,7 +5854,8 @@ export interface OrganizerAttentionItemDocument {
     | "eventStaffGrants"
     | "organizerFormResponses"
     | "organizerWhatsappThreads"
-    | "eventAttendees";
+    | "eventAttendees"
+    | "organizerMomentSends";
   sourceId: string;
   sourceRevision: string;
   eventId: string | null;
@@ -5877,7 +5879,8 @@ export interface OrganizerAttentionItemDocument {
       | "hostAudienceForms"
       | "hostInbox"
       | "hostDressRehearsal"
-      | "hostEvents";
+      | "hostEvents"
+      | "hostProgramWork";
     section: string | null;
     eventId: string | null;
     applicationId: string | null;
@@ -8072,7 +8075,40 @@ export interface OrganizerBroadcastSummaryDocument {
 export interface OrganizerCampaignRecipientDocument {
   organizerId: string;
   campaignId: string;
-  contactId: string;
+  /**
+   * CRM contact for saved-audience recipients; null on programSelection rows — program identity lives in programRecipient.
+   */
+  contactId: string | null;
+  /**
+   * Program-native recipient identity for recipientSource=programSelection campaigns. One doc per resolved recipientKey (guest:{id} or household:{id}); contactId is null on these rows.
+   */
+  programRecipient?: {
+    programId: string;
+    /**
+     * guest:{guestId} or household:{householdId}; hashed into the document id in place of contactId.
+     */
+    recipientKey: string;
+    /**
+     * Program guests covered by this recipient; one for guest recipients, household members for deduped rows.
+     *
+     * @minItems 1
+     * @maxItems 50
+     */
+    guestIds: string[];
+    /**
+     * Household carrying messaging consent for this recipient — the dedupe household for household:{id} rows or the guest's household otherwise.
+     */
+    householdId: string | null;
+    endpointGuestId: string;
+    /**
+     * Snapshot of the household's explicit messaging consent at approve time; grant decisions re-read live at dispatch.
+     */
+    messagingConsent: {
+      granted: boolean;
+      grantedAt: FirebaseFirestore.Timestamp | null;
+      source: "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
+    } | null;
+  } | null;
   channel: "whatsapp";
   eligibility: "eligible" | "excluded";
   exclusionReason:
@@ -9273,6 +9309,14 @@ export interface ProgramFunctionGuestDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Which channel recorded the current response: staff entry, the signed household RSVP link, or a manifest import. Null while pending.
+   */
+  responseSource?: "staff" | "householdLink" | "import" | null;
+  /**
+   * Staff uid who recorded a staff-sourced response; null for household-link and imported responses.
+   */
+  recordedByUid?: string | null;
 }
 
 /**
@@ -9378,6 +9422,17 @@ export interface ProgramHouseholdDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Explicit household messaging consent. Absent means never asked; granted:true only ever follows an explicit tick — RSVP acceptance alone is not consent.
+   */
+  messagingConsent?: {
+    granted: boolean;
+    grantedAt: FirebaseFirestore.Timestamp | null;
+    /**
+     * Channel that recorded the consent decision; whatsappStop is an inbound STOP reply captured by the messaging webhook.
+     */
+    source: "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
+  } | null;
 }
 
 /**
@@ -9676,6 +9731,253 @@ export interface ProgramTravelPartyDocument {
    * @maxItems 50
    */
   legIds: string[];
+}
+
+/**
+ * Unified send definition: initiation x sense x action over an event or program scope. Server-owned; managed through the organizer moment callables. Edits reset status to draft and clear approval (approve-the-rule-once).
+ */
+export interface OrganizerMomentDocument {
+  momentId: string;
+  scope: {
+    kind: "event" | "program";
+    /**
+     * Required when kind=event; must be null otherwise.
+     */
+    eventId?: string | null;
+    /**
+     * Required when kind=program; must be null otherwise.
+     */
+    programId?: string | null;
+  };
+  /**
+   * Denormalized scope.kind for list queries.
+   */
+  scopeKind: "event" | "program";
+  /**
+   * Denormalized scope id (eventId or programId) for list queries.
+   */
+  scopeId: string;
+  name: string;
+  initiation: {
+    kind: "manual" | "scheduled" | "anchored" | "triggered";
+    /**
+     * Scheduled fire time; required when kind=scheduled.
+     */
+    atMillis?: number | null;
+    /**
+     * Required when kind=anchored.
+     */
+    anchorKind?:
+      | (
+          | "scopeStart"
+          | "scopeEnd"
+          | "functionStart"
+          | "functionEnd"
+          | "rsvpDeadline"
+          | "travelLegTime"
+        )
+      | null;
+    /**
+     * Function/leg id for scoped anchors; null anchors to the scope itself.
+     */
+    anchorId?: string | null;
+    /**
+     * Minutes relative to the anchor; negative is before.
+     */
+    offsetMinutes?: number | null;
+    /**
+     * Required when kind=triggered.
+     */
+    triggerKind?: ("lateArrivalAtHotel" | "flightDisrupted") | null;
+    /**
+     * Optional function scope for triggered moments.
+     */
+    functionId?: string | null;
+  };
+  sense: "individual" | "audience";
+  audience: {
+    kind:
+      | "subject"
+      | "eventParticipants"
+      | "functionGuests"
+      | "households"
+      | "staffDuty";
+    /**
+     * eventParticipants: participation statuses included.
+     *
+     * @maxItems 4
+     */
+    statuses?: "signedUp"[] | null;
+    /**
+     * functionGuests: the function whose guests resolve.
+     */
+    functionId?: string | null;
+    /**
+     * functionGuests: RSVP states included.
+     *
+     * @maxItems 4
+     */
+    rsvp?: ("attending" | "maybe")[] | null;
+    /**
+     * functionGuests: one send per household when true (default).
+     */
+    householdDedupe?: boolean | null;
+    /**
+     * households: restrict to households with a pending member.
+     */
+    rsvpPendingOnly?: boolean | null;
+    /**
+     * staffDuty: duty whose grant holders resolve.
+     */
+    duty?: string | null;
+    /**
+     * staffDuty: optional function/pickupPoint/hotel ids; null means all.
+     *
+     * @maxItems 50
+     */
+    scopeIds?: string[] | null;
+  };
+  action: {
+    kind: "sendTemplate" | "push" | "staffAttention";
+    /**
+     * sendTemplate: organizerSenderConnections doc id.
+     */
+    connectionId?: string | null;
+    /**
+     * sendTemplate: organizerMessageTemplates doc id.
+     */
+    templateId?: string | null;
+    /**
+     * sendTemplate: template variable substitutions.
+     */
+    variables?: {
+      [k: string]: string;
+    } | null;
+    /**
+     * push: activity/push type written to the feed.
+     */
+    notificationType?: string | null;
+    /**
+     * push: user notification preference gating FCM.
+     */
+    preferenceKey?: string | null;
+    /**
+     * staffAttention: duty the attention item targets.
+     */
+    duty?: string | null;
+    /**
+     * staffAttention: attention severity.
+     */
+    severity?: "info" | "warning" | "urgent" | null;
+    /**
+     * staffAttention: rendered attention title.
+     */
+    titleTemplate?: string | null;
+  };
+  status: "draft" | "armed" | "paused" | "done";
+  /**
+   * Approve-the-rule-once record; required while armed.
+   */
+  approval: {
+    approvedByUid: string;
+    approvedAtMillis: number;
+  } | null;
+  /**
+   * systemDefault moments (e.g. the T-15m event reminder) are seeded by the server and cannot be deleted.
+   */
+  origin: "organizer" | "systemDefault";
+  revision: number;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+}
+
+/**
+ * Server-owned planned/fired run for a moment. Deterministic runId encodes moment + anchor revision + due time (or subject/requestKey for triggered/manual), making replans, retries, and sweep overlap idempotent.
+ */
+export interface OrganizerMomentRunDocument {
+  runId: string;
+  momentId: string;
+  dueAtMillis: number;
+  anchorRevision: number;
+  status:
+    | "planned"
+    | "resolving"
+    | "dispatched"
+    | "skipped"
+    | "superseded"
+    | "failed";
+  targetFunctionId?: string | null;
+  /**
+   * Triggered runs: the fact's subject (e.g. travel leg id).
+   */
+  subjectId?: string | null;
+  /**
+   * Skip/failure reason written at run transition.
+   */
+  reason?: string | null;
+  recipients?: number | null;
+  sent?: number | null;
+  /**
+   * Suppression reason -> recipient count rollup.
+   */
+  suppressed?: {
+    [k: string]: number;
+  } | null;
+  suppressedNoEndpoint?: number | null;
+}
+
+/**
+ * Per-recipient send decision for a moment run; document id is {runId}_{recipientKey} so retries never double-send and every suppression carries its audited reason.
+ */
+export interface OrganizerMomentSendDocument {
+  momentId: string;
+  /**
+   * Stable recipient idempotency key: household:|guest:|uid:|contact: prefixed.
+   */
+  recipientKey: string;
+  decision: "sent" | "suppressed";
+  /**
+   * Suppression reason; null on sent.
+   */
+  reason?:
+    | "noEndpoint"
+    | "preferenceOff"
+    | "noConsent"
+    | "optedOut"
+    | "endpointSuppressed"
+    | "dailyCap"
+    | null;
+  /**
+   * Scope-local calendar day (YYYY-MM-DD) for per-endpoint daily caps.
+   */
+  dayKey: string;
+  createdAtMillis: number;
+  /**
+   * Run that produced this send; set on staffAttention sends so the attention projection can group recipients per run.
+   */
+  runId?: string | null;
+  /**
+   * Moment action kind; staffAttention rows feed the organizer attention projection.
+   */
+  actionKind?: "sendTemplate" | "push" | "staffAttention" | null;
+  /**
+   * Owning organizer for attention projection queries.
+   */
+  organizerId?: string | null;
+  scopeKind?: "event" | "program" | null;
+  scopeId?: string | null;
+  /**
+   * staffAttention: duty the alert targeted.
+   */
+  duty?: string | null;
+  /**
+   * staffAttention: alert severity.
+   */
+  severity?: "info" | "warning" | "urgent" | null;
+  /**
+   * staffAttention: rendered alert title.
+   */
+  title?: string | null;
 }
 
 /**

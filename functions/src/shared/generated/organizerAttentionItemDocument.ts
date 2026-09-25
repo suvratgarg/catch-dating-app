@@ -26,7 +26,8 @@ export interface OrganizerAttentionItemDocument {
     | "eventStaffing"
     | "formResponseReview"
     | "inboxReply"
-    | "postEventReconciliation";
+    | "postEventReconciliation"
+    | "momentStaffAttention";
   scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
   sourceOwner:
     | "events"
@@ -43,7 +44,8 @@ export interface OrganizerAttentionItemDocument {
     | "eventStaffGrants"
     | "organizerFormResponses"
     | "organizerWhatsappThreads"
-    | "eventAttendees";
+    | "eventAttendees"
+    | "organizerMomentSends";
   sourceId: string;
   sourceRevision: string;
   eventId: string | null;
@@ -67,7 +69,8 @@ export interface OrganizerAttentionItemDocument {
       | "hostAudienceForms"
       | "hostInbox"
       | "hostDressRehearsal"
-      | "hostEvents";
+      | "hostEvents"
+      | "hostProgramWork";
     section: string | null;
     eventId: string | null;
     applicationId: string | null;

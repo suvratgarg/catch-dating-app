@@ -1,0 +1,8 @@
+{
+  "scope": {"kind": "program", "programId": "program-1"},
+  "name": "Bad initiation",
+  "initiation": {"kind": "cron"},
+  "sense": "audience",
+  "audience": {"kind": "households"},
+  "action": {"kind": "push", "notificationType": "x", "preferenceKey": "y"}
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_organizer_moment_payload.schema.json",
+  "title": "UpsertOrganizerMomentCallablePayload",
+  "description": "Create or revise an organizer moment. New moments land as drafts; revising an existing moment keeps its scope (immutable) and drops it back to draft with approval cleared, requiring re-arm.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scope", "name", "initiation", "sense", "audience", "action"],
+  "properties": {
+    "scope": {"$ref": "../shared/moment_common.schema.json#/definitions/momentScope"},
+    "momentId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Existing moment to revise; null/omitted creates a new moment."
+    },
+    "name": {"type": "string", "minLength": 1, "maxLength": 140},
+    "initiation": {"$ref": "../shared/moment_common.schema.json#/definitions/momentInitiation"},
+    "sense": {"$ref": "../shared/moment_common.schema.json#/definitions/momentSense"},
+    "audience": {"$ref": "../shared/moment_common.schema.json#/definitions/momentAudience"},
+    "action": {"$ref": "../shared/moment_common.schema.json#/definitions/momentAction"}
+  }
+}

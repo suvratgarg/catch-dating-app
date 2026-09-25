@@ -3254,6 +3254,56 @@
       "notes": "Uses existing runtime primitives for a scoped event update. Stories are deterministic; promotion requires reviewed visual baselines."
     },
     {
+      "id": "route_household_rsvp",
+      "kind": "route",
+      "routeIds": [
+        "household_rsvp"
+      ],
+      "owner": "features/householdRsvp",
+      "source": "website/src/features/householdRsvp/HouseholdRsvpPage.tsx",
+      "exportName": "HouseholdRsvpPage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/HouseholdRsvp.stories.tsx",
+        "exportName": "HouseholdRsvp",
+        "states": [
+          "loading",
+          "ready",
+          "saved",
+          "unavailable"
+        ]
+      },
+      "notes": "Uses existing runtime primitives for the private household RSVP page. Stories are deterministic; promotion requires reviewed visual baselines."
+    },
+    {
+      "id": "household_rsvp_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "household_rsvp"
+      ],
+      "owner": "features/householdRsvp",
+      "source": "website/src/features/householdRsvp/HouseholdRsvpPage.tsx",
+      "exportName": "HouseholdRsvpView",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/HouseholdRsvp.stories.tsx",
+        "exportName": "HouseholdInvitation",
+        "states": [
+          "loading",
+          "ready",
+          "saved",
+          "unavailable"
+        ]
+      },
+      "notes": "Uses existing runtime primitives for the private household RSVP page. Stories are deterministic; promotion requires reviewed visual baselines."
+    },
+    {
       "id": "event_sms_preference_panel",
       "kind": "supporting-component",
       "routeIds": [

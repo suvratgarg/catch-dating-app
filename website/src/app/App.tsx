@@ -19,6 +19,7 @@ import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
 import {publishedLegalContent} from "../content/legal";
 import {assistanceCredential} from "../features/eventAssistance/eventAssistanceModel";
+import {householdRsvpCredential} from "../features/householdRsvp/householdRsvpModel";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
   getEventDetailForPath,
@@ -53,6 +54,10 @@ const EventRehearsalPage = lazy(async () => ({
 }));
 const EventInvitePage = lazy(async () => ({
   default: (await import("../features/events/EventInvitePage")).EventInvitePage,
+}));
+const HouseholdRsvpPage = lazy(async () => ({
+  default: (await import("../features/householdRsvp/HouseholdRsvpPage"))
+    .HouseholdRsvpPage,
 }));
 const PublicFormPage = lazy(async () => ({
   default: (await import("../features/forms/PublicFormPage")).PublicFormPage,
@@ -101,7 +106,8 @@ function MarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
-  const routeKey = page === "event_assistance" ? "event_assistance" :
+  const routeKey = page === "event_assistance" ||
+      page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
   const meta = event
     ? pageMetaForEvent(event)
@@ -120,7 +126,8 @@ function MarketingRouteShell() {
         <RouteLifecycleEffects
           page={page}
           routeKey={routeKey}
-          hash={page === "event_assistance" ? "" : location.hash}
+          hash={page === "event_assistance" || page === "household_rsvp" ?
+            "" : location.hash}
         />
         <Routes>
           <Route
@@ -166,6 +173,10 @@ function MarketingRouteShell() {
           <Route
             path={marketingRoutePaths.event_invite}
             element={<EventInvitePage />}
+          />
+          <Route
+            path={marketingRoutePaths.household_rsvp}
+            element={<HouseholdRsvpRoute />}
           />
           <Route
             path={marketingRoutePaths.public_form}
@@ -215,6 +226,7 @@ function MarketingRouteShell() {
       {page === "event_runtime" || page === "event_rehearsal" ||
        page === "event_assistance" ||
        page === "event_invite" ||
+       page === "household_rsvp" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>
@@ -240,6 +252,13 @@ function EventAssistanceRoute() {
   const {linkId = ""} = useParams<{linkId: string}>();
   return <EventAssistancePage key={location.key}
     credential={assistanceCredential(linkId, location.hash)} />;
+}
+
+function HouseholdRsvpRoute() {
+  const location = useLocation();
+  const {householdToken = ""} = useParams<{householdToken: string}>();
+  return <HouseholdRsvpPage key={location.key}
+    credential={householdRsvpCredential(householdToken)} />;
 }
 
 function ClaimRoute() {

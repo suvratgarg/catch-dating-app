@@ -1834,6 +1834,56 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programTravelPartyDocument.ts",
   },
   {
+    name: "OrganizerMomentDocument",
+    source: "firestore/organizer_moments.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentDocument.ts",
+  },
+  {
+    name: "OrganizerMomentRunDocument",
+    source: "firestore/organizer_moment_runs.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentRunDocument.ts",
+  },
+  {
+    name: "OrganizerMomentSendDocument",
+    source: "firestore/organizer_moment_sends.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentSendDocument.ts",
+  },
+  {
+    name: "UpsertOrganizerMomentCallablePayload",
+    source: "callables/upsert_organizer_moment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/upsertOrganizerMomentCallablePayload.ts",
+  },
+  {
+    name: "OrganizerMomentActionCallablePayload",
+    source: "callables/organizer_moment_action_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentActionCallablePayload.ts",
+  },
+  {
+    name: "RunOrganizerMomentCallablePayload",
+    source: "callables/run_organizer_moment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/runOrganizerMomentCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerMomentsCallablePayload",
+    source: "callables/list_organizer_moments_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listOrganizerMomentsCallablePayload.ts",
+  },
+  {
+    name: "OrganizerMomentCallableResponse",
+    source: "callable_responses/organizer_moment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerMomentCallableResponse.ts",
+  },
+  {
+    name: "ListOrganizerMomentsCallableResponse",
+    source: "callable_responses/list_organizer_moments_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listOrganizerMomentsCallableResponse.ts",
+  },
+  {
+    name: "RunOrganizerMomentCallableResponse",
+    source: "callable_responses/run_organizer_moment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/runOrganizerMomentCallableResponse.ts",
+  },
+  {
     name: "TransportVendorDocument",
     source: "firestore/transport_vendors.schema.json",
     typeOutput: "functions/src/shared/generated/transportVendorDocument.ts",
@@ -1933,6 +1983,52 @@ const schemaSpecs = [
     source: "callables/upsert_program_guest_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/upsertProgramGuestCallablePayload.ts",
+  },
+  {
+    name: "ApplyProgramFunctionInvitationsCallablePayload",
+    source:
+      "callables/apply_program_function_invitations_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "applyProgramFunctionInvitationsCallablePayload.ts",
+  },
+  {
+    name: "RecordProgramFunctionRsvpCallablePayload",
+    source: "callables/record_program_function_rsvp_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordProgramFunctionRsvpCallablePayload.ts",
+  },
+  {
+    name: "IssueProgramHouseholdRsvpLinkCallablePayload",
+    source:
+      "callables/issue_program_household_rsvp_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "issueProgramHouseholdRsvpLinkCallablePayload.ts",
+  },
+  {
+    name: "GetProgramHouseholdRsvpViewCallablePayload",
+    source:
+      "callables/get_program_household_rsvp_view_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getProgramHouseholdRsvpViewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "getProgramHouseholdRsvpViewCallablePayload.ts",
+    ],
+  },
+  {
+    name: "SubmitProgramHouseholdRsvpCallablePayload",
+    source: "callables/submit_program_household_rsvp_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitProgramHouseholdRsvpCallablePayload.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "submitProgramHouseholdRsvpCallablePayload.ts",
+    ],
   },
   {
     name: "ListProgramStaffCallablePayload",
@@ -2067,6 +2163,59 @@ const schemaSpecs = [
     source: "callable_responses/program_mutation_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/programMutationCallableResponse.ts",
+  },
+  {
+    name: "ProgramFunctionInvitationsCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_function_invitations_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programFunctionInvitationsCallableResponse.ts",
+  },
+  {
+    name: "RecordProgramFunctionRsvpCallableResponse",
+    source:
+      "callable_responses/" +
+      "record_program_function_rsvp_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordProgramFunctionRsvpCallableResponse.ts",
+  },
+  {
+    name: "ProgramHouseholdRsvpLinkCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_household_rsvp_link_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programHouseholdRsvpLinkCallableResponse.ts",
+  },
+  {
+    name: "ProgramHouseholdRsvpViewCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_household_rsvp_view_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programHouseholdRsvpViewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "programHouseholdRsvpViewCallableResponse.ts",
+    ],
+  },
+  {
+    name: "SubmitProgramHouseholdRsvpCallableResponse",
+    source:
+      "callable_responses/" +
+      "submit_program_household_rsvp_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitProgramHouseholdRsvpCallableResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/" +
+        "submitProgramHouseholdRsvpCallableResponse.ts",
+    ],
   },
   {
     name: "OrganizerProgramListCallableResponse",

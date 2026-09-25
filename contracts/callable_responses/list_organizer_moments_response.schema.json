@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_moments_response.schema.json",
+  "title": "ListOrganizerMomentsCallableResponse",
+  "description": "All moments for one scope, sorted by momentId.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["moments"],
+  "properties": {
+    "moments": {
+      "type": "array",
+      "items": {"$ref": "../shared/moment_common.schema.json#/definitions/momentDefinition"}
+    }
+  }
+}

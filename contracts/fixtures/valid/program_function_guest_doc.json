@@ -7,9 +7,20 @@
   "rsvpStatus": "attending",
   "attendanceStatus": "expected",
   "partySize": 3,
-  "respondedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "respondedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
   "responseNote": "Two kids; vegetarian meals.",
-  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "revision": 1
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "responseSource": "staff",
+  "recordedByUid": "staff-1"
 }

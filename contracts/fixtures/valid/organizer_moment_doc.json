@@ -1,0 +1,32 @@
+{
+  "momentId": "moment-1",
+  "scope": {"kind": "program", "programId": "program-1"},
+  "scopeKind": "program",
+  "scopeId": "program-1",
+  "name": "Sangeet starts soon",
+  "initiation": {
+    "kind": "anchored",
+    "anchorKind": "functionStart",
+    "anchorId": "function-sangeet",
+    "offsetMinutes": -15
+  },
+  "sense": "audience",
+  "audience": {
+    "kind": "functionGuests",
+    "functionId": "function-sangeet",
+    "rsvp": ["attending"],
+    "householdDedupe": true
+  },
+  "action": {
+    "kind": "sendTemplate",
+    "connectionId": "conn-1",
+    "templateId": "tpl-1",
+    "variables": {"functionName": "Sangeet"}
+  },
+  "status": "armed",
+  "approval": {"approvedByUid": "uid-mgr", "approvedAtMillis": 1700000000000},
+  "origin": "organizer",
+  "revision": 2,
+  "createdAtMillis": 1700000000000,
+  "updatedAtMillis": 1700000001000
+}

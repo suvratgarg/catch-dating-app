@@ -160,5 +160,31 @@ const schemaProgramFunctionGuestDocumentSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 9007199254740991,
     },
+    'responseSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'staff',
+        'householdLink',
+        'import',
+        null,
+      ],
+      'description': 'Which channel recorded the current response: staff entry, the signed household RSVP link, or a manifest import. Null while pending.',
+    },
+    'recordedByUid': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Staff uid who recorded a staff-sourced response; null for household-link and imported responses.',
+    },
   },
 };

@@ -178,7 +178,6 @@ export {
   deleteEvent,
 } from "./events/mutateEvent";
 export {publishEventLivePosition} from "./events/eventLivePositions";
-export {sendEventReminders} from "./events/sendEventReminders";
 export {sendEventBroadcast} from "./events/sendEventBroadcast";
 export {
   placeDetails,
@@ -657,6 +656,28 @@ export {
   upsertProgramHousehold,
   listProgramHouseholds,
 } from "./programs/programGuests";
+export {
+  upsertOrganizerMoment,
+  armOrganizerMoment,
+  pauseOrganizerMoment,
+  resumeOrganizerMoment,
+  runOrganizerMoment,
+  listOrganizerMoments,
+} from "./moments/momentCallables";
+export {
+  organizerMomentSweep,
+  programTravelLegMoments,
+} from "./moments/momentSchedule";
+export {
+  applyProgramFunctionInvitations,
+  recordProgramFunctionRsvp,
+} from "./programRsvp/programRsvpCallables";
+export {
+  issueProgramHouseholdRsvpLink,
+  getProgramHouseholdRsvpView,
+  submitProgramHouseholdRsvp,
+  programHouseholdItineraryIcs,
+} from "./programRsvp/householdRsvp";
 export {
   upsertProgramFunction,
   upsertProgramPickupPoint,

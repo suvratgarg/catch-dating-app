@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 14);
-  assert.equal(execution.report.requirementCount, 18);
+  assert.equal(execution.report.secretCount, 15);
+  assert.equal(execution.report.requirementCount, 19);
   assert.equal(commandCalls, 0);
 });
 
@@ -151,9 +151,9 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    14,
+    15,
   );
-  assert.equal(selected("dev", ["functions"]).length, 18);
+  assert.equal(selected("dev", ["functions"]).length, 19);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", []],

@@ -97,6 +97,10 @@ import type {SubmitOrganizerFormResponseCallableResponse} from "../../functions/
 import type {PromoteFormCommunicationIntentCallablePayload} from "../../functions/src/shared/generated/promoteFormCommunicationIntentCallablePayload";
 import type {PromoteFormCommunicationIntentCallableResponse} from "../../functions/src/shared/generated/promoteFormCommunicationIntentCallableResponse";
 import type {PrepareOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload";
+import type {GetProgramHouseholdRsvpViewCallablePayload} from "../../functions/src/shared/generated/getProgramHouseholdRsvpViewCallablePayload";
+import type {ProgramHouseholdRsvpViewCallableResponse} from "../../functions/src/shared/generated/programHouseholdRsvpViewCallableResponse";
+import type {SubmitProgramHouseholdRsvpCallablePayload} from "../../functions/src/shared/generated/submitProgramHouseholdRsvpCallablePayload";
+import type {SubmitProgramHouseholdRsvpCallableResponse} from "../../functions/src/shared/generated/submitProgramHouseholdRsvpCallableResponse";
 import type {GetOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallablePayload";
 import type {FindOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallablePayload";
 import type {FindOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallableResponse";
@@ -1153,4 +1157,31 @@ export async function getEventWhatsappPreference(payload: GetEventWhatsappPrefer
 export async function setEventWhatsappPreference(payload: SetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
   return invokeWebsiteCallable("setEventWhatsappPreference", payload,
     eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
+}
+
+export async function getProgramHouseholdRsvpView(
+  payload: GetProgramHouseholdRsvpViewCallablePayload
+): Promise<ProgramHouseholdRsvpViewCallableResponse> {
+  return invokeWebsiteCallable("getProgramHouseholdRsvpView", payload,
+    eventRuntimeFirebaseConfigured, "Household RSVP");
+}
+
+export async function submitProgramHouseholdRsvp(
+  payload: SubmitProgramHouseholdRsvpCallablePayload
+): Promise<SubmitProgramHouseholdRsvpCallableResponse> {
+  return invokeWebsiteCallable("submitProgramHouseholdRsvp", payload,
+    eventRuntimeFirebaseConfigured, "Household RSVP");
+}
+
+/**
+ * Absolute URL for the server-generated household itinerary feed. The token
+ * rides in the query string of a plain navigation/download, matching how
+ * calendar clients fetch webcal URLs; it is never embedded in page state or
+ * analytics.
+ */
+export function programHouseholdItineraryIcsUrl(token: string): string | null {
+  const projectId = config?.projectId;
+  if (!projectId) return null;
+  return `https://asia-south1-${projectId}.cloudfunctions.net/` +
+    `programHouseholdItineraryIcs?token=${encodeURIComponent(token)}`;
 }

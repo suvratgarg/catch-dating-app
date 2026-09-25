@@ -101,7 +101,7 @@ test("dormant Functions cannot enter logical or exact deploy plans", () => {
   const enabledTargets = listFirebaseFunctionTargets();
   const enabledTargetSet = new Set(enabledTargets);
 
-  assert.equal(dormantFirebaseFunctionTargets.length, 33);
+  assert.equal(dormantFirebaseFunctionTargets.length, 32);
   for (const target of dormantFirebaseFunctionTargets) {
     assert.equal(
       sourceExports.has(target), true, `${target} must remain implemented`,
@@ -130,7 +130,7 @@ test("historical delivery may remove only known dormant exact targets", () => {
   const enabledTargets = ["functions:createEvent", "functions:updateEvent"];
   const [plan] = planFirebaseDeployTargets([
     "functions:createEvent",
-    "functions:sendEventReminders",
+    "functions:expireEventWaitlistOffers",
     "functions:updateEvent",
   ].join(","), {
     filterDormantExactTargets: true,

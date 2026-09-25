@@ -11,6 +11,7 @@ import type {
   OrganizerContactDocument,
   OrganizerMessagingWebhookEventDocument,
   OrganizerSenderConnectionDocument,
+  ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   inboundStopPermissionReceipt,
@@ -372,14 +373,42 @@ async function processInbound(
       event.isStop ? "optedOut" : "replied",
       now
     );
+    const recipient = recipientDoc.data() as
+      OrganizerCampaignRecipientDocument;
+    // An inbound STOP on a program recipient is the household's
+    // explicit decline — record it on the consent authority so future
+    // sends suppress at claim time.
+    const householdId = recipient.programRecipient?.householdId ?? null;
+    if (event.isStop && householdId) {
+      const householdRef = db.collection("programHouseholds")
+        .doc(householdId);
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(householdRef);
+        const household = snap.data() as ProgramHouseholdDocument |
+          undefined;
+        if (!household) return;
+        tx.update(householdRef, {
+          messagingConsent: {
+            granted: false,
+            grantedAt: now,
+            source: "whatsappStop",
+          },
+          updatedAt: now,
+          revision: (household.revision ?? 0) + 1,
+        });
+      });
+    }
   }
   const stateDocs = recipientDoc ? [] : event.endpointHash ?
     (await db.collection("organizerContactChannelStates")
       .where("organizerId", "==", event.organizerId)
       .where("endpointHash", "==", event.endpointHash)
       .limit(10).get()).docs : [];
+  // Program recipients carry no CRM contactId; they skip channel-state
+  // and contact writes entirely.
   const contactIds = recipientDoc ?
-    [(recipientDoc.data() as OrganizerCampaignRecipientDocument).contactId] :
+    [(recipientDoc.data() as OrganizerCampaignRecipientDocument).contactId]
+      .filter((id): id is string => id !== null) :
     stateDocs.map((doc) =>
       (doc.data() as OrganizerContactChannelStateDocument).contactId);
   const uniqueContactIds = [...new Set(contactIds)];

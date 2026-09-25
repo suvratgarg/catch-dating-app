@@ -8,6 +8,7 @@ export type MarketingRouteId =
   | "event_assistance"
   | "event_rehearsal"
   | "event_invite"
+  | "household_rsvp"
   | "public_form"
   | "claim"
   | "claim_lookup"
@@ -31,6 +32,7 @@ export const marketingRouteDefinitions = [
   {id: "event_assistance", path: "/event-update/:linkId"},
   {id: "event_rehearsal", path: "/rehearse/:publicRehearsalId"},
   {id: "event_invite", path: "/invite/:inviteToken"},
+  {id: "household_rsvp", path: "/rsvp/:householdToken"},
   {id: "public_form", path: "/f/:publicFormId"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},

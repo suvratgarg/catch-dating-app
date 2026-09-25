@@ -157,6 +157,32 @@ export const programFunctionGuestDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "responseSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "staff",
+        "householdLink",
+        "import",
+        null
+      ],
+      "description": "Which channel recorded the current response: staff entry, the signed household RSVP link, or a manifest import. Null while pending."
+    },
+    "recordedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Staff uid who recorded a staff-sourced response; null for household-link and imported responses."
     }
   }
 } as const;

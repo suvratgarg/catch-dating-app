@@ -2983,6 +2983,7 @@ operations report per-operation reasons (`alreadyCheckedIn`,
 `notCheckedIn`, `functionCheckInDisabled`, `duplicateJournalId`,
 `invalidTransition`) without blocking the batch's valid writes.
 
+
 `programStaffDuty` covers `programCoordinator`, `guestRelations`,
 `communications`, `functionCheckIn`, `functionLead`, `airportGreeter`,
 `transportDispatcher`, `hotelDesk`, `reconciliationViewer`, and

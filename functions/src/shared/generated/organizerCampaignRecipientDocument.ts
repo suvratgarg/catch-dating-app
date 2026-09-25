@@ -8,7 +8,43 @@
 export interface OrganizerCampaignRecipientDocument {
   organizerId: string;
   campaignId: string;
-  contactId: string;
+  /**
+   * CRM contact for saved-audience recipients; null on programSelection rows — program identity lives in programRecipient.
+   */
+  contactId: string | null;
+  /**
+   * Program-native recipient identity for recipientSource=programSelection campaigns. One doc per resolved recipientKey (guest:{id} or household:{id}); contactId is null on these rows.
+   */
+  programRecipient?: {
+    programId: string;
+    /**
+     * guest:{guestId} or household:{householdId}; hashed into the document id in place of contactId.
+     */
+    recipientKey: string;
+    /**
+     * Program guests covered by this recipient; one for guest recipients, household members for deduped rows.
+     *
+     * @minItems 1
+     * @maxItems 50
+     */
+    guestIds: string[];
+    /**
+     * Household carrying messaging consent for this recipient — the dedupe household for household:{id} rows or the guest's household otherwise.
+     */
+    householdId: string | null;
+    endpointGuestId: string;
+    /**
+     * Snapshot of the household's explicit messaging consent at approve time; grant decisions re-read live at dispatch.
+     */
+    messagingConsent: {
+      granted: boolean;
+      grantedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+      } | null;
+      source: "householdRsvpLink" | "staff" | "import" | "whatsappStop" | null;
+    } | null;
+  } | null;
   channel: "whatsapp";
   eligibility: "eligible" | "excluded";
   exclusionReason:

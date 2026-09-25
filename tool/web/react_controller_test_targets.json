@@ -188,6 +188,11 @@
       "source": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.ts",
       "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/householdRsvp/useHouseholdRsvpController.ts",
+      "test": "website/src/features/householdRsvp/useHouseholdRsvpController.test.tsx",
+      "status": "required"
     }
   ]
 }

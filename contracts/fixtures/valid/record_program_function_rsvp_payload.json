@@ -1,0 +1,9 @@
+{
+  "programId": "program-1",
+  "functionId": "function-sangeet",
+  "guestId": "guest-1",
+  "rsvpStatus": "attending",
+  "partySize": 3,
+  "responseNote": "Two kids; vegetarian meals.",
+  "allowUninvited": false
+}

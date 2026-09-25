@@ -176,7 +176,7 @@ test("repository parity excludes source-exported dormant scheduled Functions", (
     path.join(repoRoot, "functions/src/index.ts"),
     [
       'export {callable} from "./callable";',
-      'export {sendEventReminders} from "./sendEventReminders";',
+      'export {expireEventWaitlistOffers} from "./expireEventWaitlistOffers";',
       "",
     ].join("\n"),
   );
@@ -185,8 +185,8 @@ test("repository parity excludes source-exported dormant scheduled Functions", (
     "export const callable = true;\n",
   );
   fs.writeFileSync(
-    path.join(repoRoot, "functions/src/sendEventReminders.ts"),
-    "export const sendEventReminders = true;\n",
+    path.join(repoRoot, "functions/src/expireEventWaitlistOffers.ts"),
+    "export const expireEventWaitlistOffers = true;\n",
   );
 
   const inventory = loadRepositoryInventory(repoRoot);

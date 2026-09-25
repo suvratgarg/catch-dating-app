@@ -49,4 +49,12 @@ export interface ProgramFunctionGuestDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Which channel recorded the current response: staff entry, the signed household RSVP link, or a manifest import. Null while pending.
+   */
+  responseSource?: "staff" | "householdLink" | "import" | null;
+  /**
+   * Staff uid who recorded a staff-sourced response; null for household-link and imported responses.
+   */
+  recordedByUid?: string | null;
 }

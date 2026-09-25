@@ -5,10 +5,28 @@
   "primaryContactName": "Rohan Sharma",
   "primaryPhoneE164": "+919800001234",
   "primaryEmail": "rohan@example.com",
-  "memberGuestIds": ["guest-1", "guest-2", "guest-3"],
+  "memberGuestIds": [
+    "guest-1",
+    "guest-2",
+    "guest-3"
+  ],
   "deliveryPreference": "whatsapp",
   "side": "partnerA",
-  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "revision": 1
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "messagingConsent": {
+    "granted": true,
+    "grantedAt": {
+      "_seconds": 1786625400,
+      "_nanoseconds": 0
+    },
+    "source": "householdRsvpLink"
+  }
 }
