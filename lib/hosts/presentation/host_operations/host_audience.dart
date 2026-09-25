@@ -165,7 +165,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
           throw ExternalActionException(openFailedMessage);
         }
         if (mounted) {
-          showCatchSnackBar(
+          showCatchNotice(
             context,
             context.l10n.hostsHostAudienceWebSignupOpened,
           );
@@ -229,7 +229,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
         );
     ref.invalidate(hostMessagingSetupProvider(widget.club.id));
     if (mounted) {
-      showCatchSnackBar(context, context.l10n.hostsHostAudienceTestPending);
+      showCatchNotice(context, context.l10n.hostsHostAudienceTestPending);
     }
   });
 
@@ -241,7 +241,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
       await action();
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,

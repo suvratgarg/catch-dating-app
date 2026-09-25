@@ -556,6 +556,7 @@ void _registerProfileShellLayoutTests() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: const _ProfileUploadFailureSeeder(),
         ),
       ),

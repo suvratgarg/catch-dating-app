@@ -132,6 +132,7 @@ Future<void> _pumpClubsSlivers(
       ],
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
         home: Scaffold(
           body: CustomScrollView(
             key: const ValueKey('explore-test-scroll-view'),

@@ -509,8 +509,9 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   record badge rather than an action's resting fill.
 - Persistent control docking routes through `CatchDockSurface`. `pageAction`
   is the borderless page-background recipe for one detail action. The scaffold
-  reserves its measured height and positions snackbars above it. It owns the
-  page gutter and safe area; features do not wrap it in a card.
+  reserves its measured height. The app-level `CatchNoticeOverlay` places
+  transient notices in the top safe area without changing the route layout. The
+  dock owns the page gutter and safe area; features do not wrap it in a card.
 - Other persistent control docking routes through `CatchDockSurface`. Its default
   constructor hosts utility content; `primary` owns floating Cupertino or
   anchored Material action chrome. `primaryContent` reuses the same action body

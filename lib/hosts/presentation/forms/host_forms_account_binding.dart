@@ -115,7 +115,7 @@ extension _HostFormsAccountBinding on _HostFormsScreenState {
     } on Object catch (error) {
       if (!_directoryRequestCurrent(request)) return;
       if (!actionContext.mounted) return;
-      showCatchErrorSnackBar(actionContext, error);
+      showCatchNoticeError(actionContext, error);
     }
   }
 

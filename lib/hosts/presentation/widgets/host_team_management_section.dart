@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -81,7 +82,7 @@ class HostTeamManagementSection extends ConsumerWidget {
         ),
       );
       if (added == true && context.mounted) {
-        showCatchSnackBar(
+        showCatchNotice(
           context,
           context.l10n.hostsHostTeamManagementSectionVisiblecopyHostAdded,
         );
@@ -129,7 +130,7 @@ class HostTeamManagementSection extends ConsumerWidget {
         return;
       }
       if (!context.mounted) return;
-      showCatchSnackBar(context, confirmation.successMessage(context.l10n));
+      showCatchNotice(context, confirmation.successMessage(context.l10n));
     }
 
     return CatchSection.fieldRows(

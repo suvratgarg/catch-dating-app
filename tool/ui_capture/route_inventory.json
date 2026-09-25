@@ -1461,7 +1461,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_panel.dart:1",
       "sourcePath": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
-      "line": 264,
+      "line": 265,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(key:ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
       "presentationTarget": "HostEventOfferPreferencesScreen",

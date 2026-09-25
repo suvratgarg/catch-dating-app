@@ -8,8 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 int _feedbackSequence = 0;
 
-/// Publishes brief action feedback through the app's bounded, priority notice
-/// queue. Lower priority keeps arrivals visible ahead of ordinary actions.
+/// Publishes brief action feedback through the app's bounded notice queue.
+/// Stable keys replace repeated queued copies and retain FIFO priority order.
 void showCatchNotice(
   BuildContext context,
   String message, {
@@ -32,7 +32,6 @@ void showCatchNotice(
           actionLabel: actionLabel,
           onAction: onAction,
           dedupeKey: stableDedupeKey,
-          priority: -1,
         ),
       );
 }
@@ -63,7 +62,6 @@ void showCatchNoticeError(
           actionLabel: onRetry == null ? null : descriptor.retryLabel,
           onAction: onRetry,
           dedupeKey: errorDedupeKey,
-          priority: -1,
         ),
       );
 }

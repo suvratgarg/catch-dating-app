@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
@@ -228,7 +228,7 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
       if (mounted) Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,
@@ -427,7 +427,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
       if (mounted) Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.club,

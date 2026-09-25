@@ -3,8 +3,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
@@ -537,7 +537,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final published = await notifier.publish();
     if (!mounted) return;
     if (published) {
-      showCatchSnackBar(context, context.l10n.hostFormPublished);
+      showCatchNotice(context, context.l10n.hostFormPublished);
     } else if (ref
             .read(
               hostFormEditorControllerProvider(
@@ -549,7 +549,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ?.value
             .error
         case final error?) {
-      showCatchErrorSnackBar(context, error);
+      showCatchNoticeError(context, error);
     }
   }
 
@@ -574,7 +574,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         .asData
         ?.value
         .error;
-    if (error != null) showCatchErrorSnackBar(context, error);
+    if (error != null) showCatchNoticeError(context, error);
   }
 }
 

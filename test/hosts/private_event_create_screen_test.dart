@@ -376,9 +376,6 @@ void main() {
     expect(stillPending.eventCreateRequestId, firstRequestId);
     expect(jsonDecode(stillPending.eventCreatePayloadJson!), firstPayload);
     expect(stillPending.eventCreateReceiptEventId, isNull);
-    ScaffoldMessenger.of(
-      tester.element(find.byType(PrivateEventCreateScreen)),
-    ).removeCurrentSnackBar();
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('private-event-save')));
     await pumpFeatureUi(tester);
@@ -510,9 +507,6 @@ void main() {
     await pumpFeatureUi(tester);
     expect(updateCalls, 2);
     expect(attempted.last.toJson(), firstBody);
-    ScaffoldMessenger.of(
-      tester.element(find.byType(PrivateEventCreateScreen)),
-    ).removeCurrentSnackBar();
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('private-event-save')));
     await pumpFeatureUi(tester);

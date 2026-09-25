@@ -122,7 +122,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       });
       unawaited(controller.load());
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -235,7 +235,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       }
       _mutateScreenState(() => _restorePickedDraft(draft));
     } catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -502,7 +502,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           context: AppErrorContext.event,
         ),
       );
-      showCatchErrorSnackBar(context, error);
+      showCatchNoticeError(context, error);
     } finally {
       if (mounted) _mutateScreenState(() => _saving = false);
     }
@@ -597,7 +597,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         l10n: context.l10n,
         context: AppErrorContext.event,
       ));
-      showCatchErrorSnackBar(context, error);
+      showCatchNoticeError(context, error);
     } finally {
       if (mounted) _mutateScreenState(() => _saving = false);
     }
@@ -669,7 +669,7 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
             Navigator.of(context).pop();
           }
         } catch (error) {
-          if (mounted) showCatchErrorSnackBar(context, error);
+          if (mounted) showCatchNoticeError(context, error);
         }
     }
   }
