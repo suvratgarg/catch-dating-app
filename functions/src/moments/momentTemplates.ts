@@ -32,7 +32,7 @@ export interface ProgramTemplateInput {
 /** A scheduled transport departure (travel party) a moment can target. */
 export interface DepartureTemplateInput {
   programId: string;
-  transportPlanId: string;
+  legId: string;
   name?: string;
   /**
    * Function this departure serves. When set, the moment audience is that
@@ -192,27 +192,27 @@ export function transportReadyNotice(
 ): MomentDefinition | null {
   if (departure.functionCancelled) return null;
   requireId(departure.programId, "programId");
-  requireId(departure.transportPlanId, "transportPlanId");
+  requireId(departure.legId, "legId");
   requireId(opts.connectionId, "connectionId");
   if (departure.functionId !== undefined) {
     requireId(departure.functionId, "functionId");
   }
   const offsetMinutes = opts.offsetMinutes ?? 0;
   requireOffset(offsetMinutes);
-  const display = departure.name ?? departure.transportPlanId;
+  const display = departure.name ?? departure.legId;
   const audience: MomentAudience = opts.audience ??
     (departure.functionId === undefined ?
       {kind: "households", rsvpPendingOnly: false} :
       functionGuestAudience(departure.functionId, {}));
   return {
     momentId:
-      `${departure.programId}_${departure.transportPlanId}_transport_ready`,
+      `${departure.programId}_${departure.legId}_transport_ready`,
     scope: {kind: "program", programId: departure.programId},
     name: opts.name ?? `${display} transport ready`,
     initiation: {
       kind: "anchored",
-      anchorKind: "transportPlanDeparture",
-      anchorId: departure.transportPlanId,
+      anchorKind: "travelLegTime",
+      anchorId: departure.legId,
       offsetMinutes,
     },
     audience,
@@ -374,10 +374,10 @@ function departureVariables(
 ): Record<string, string> {
   const variables: Record<string, string> = {
     programId: departure.programId,
-    transportPlanId: departure.transportPlanId,
+    legId: departure.legId,
   };
   if (departure.name !== undefined) {
-    variables.transportPlanName = departure.name;
+    variables.legName = departure.name;
   }
   if (departure.functionId !== undefined) {
     variables.functionId = departure.functionId;

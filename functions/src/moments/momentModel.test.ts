@@ -62,7 +62,7 @@ const facts: AnchorFacts = {
     cancelled: false,
   },
   functions: {},
-  transportPlans: {},
+  travelLegs: {},
 };
 
 const approval = {approvedByUid: "mgr", approvedAtMillis: 42};

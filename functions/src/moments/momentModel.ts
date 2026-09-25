@@ -26,7 +26,7 @@ export type MomentScopeKind = MomentScope["kind"];
 
 export type MomentAnchorKind =
   "scopeStart" | "scopeEnd" | "functionStart" | "functionEnd" |
-    "rsvpDeadline" | "transportPlanDeparture";
+    "rsvpDeadline" | "travelLegTime";
 
 export type MomentTriggerKind = "lateArrivalAtHotel" | "flightDisrupted";
 
@@ -131,8 +131,8 @@ export interface AnchorFacts {
     revision: number;
     cancelled: boolean;
   }>>;
-  transportPlans: Readonly<Record<string, {
-    departureAtMillis: number;
+  travelLegs: Readonly<Record<string, {
+    atMillis: number;
     revision: number;
   }>>;
 }
@@ -168,7 +168,7 @@ export function sameScope(a: MomentScope, b: MomentScope): boolean {
 }
 
 const PROGRAM_ONLY_ANCHORS: ReadonlySet<MomentAnchorKind> = new Set([
-  "functionStart", "functionEnd", "rsvpDeadline", "transportPlanDeparture",
+  "functionStart", "functionEnd", "rsvpDeadline", "travelLegTime",
 ]);
 
 const AUDIENCE_SCOPES: Readonly<Record<MomentAudienceKind,

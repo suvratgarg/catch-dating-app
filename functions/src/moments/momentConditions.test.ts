@@ -35,7 +35,7 @@ const facts: AnchorFacts = {
       cancelled: true,
     },
   },
-  transportPlans: {},
+  travelLegs: {},
 };
 
 const lateArrival: MomentDefinition = {

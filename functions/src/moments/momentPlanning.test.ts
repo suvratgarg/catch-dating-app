@@ -36,8 +36,8 @@ const facts: AnchorFacts = {
       cancelled: true,
     },
   },
-  transportPlans: {
-    udrT1: {departureAtMillis: 1_700_000, revision: 4},
+  travelLegs: {
+    udrT1: {atMillis: 1_700_000, revision: 4},
   },
 };
 
@@ -90,7 +90,7 @@ test("functionEnd, programStart, rsvpDeadline and departure anchors", () => {
       offsetMinutes: 0}, 1_000_000, 3],
     [{kind: "anchored", anchorKind: "rsvpDeadline", anchorId: null,
       offsetMinutes: 0}, 500_000, 3],
-    [{kind: "anchored", anchorKind: "transportPlanDeparture",
+    [{kind: "anchored", anchorKind: "travelLegTime",
       anchorId: "udrT1", offsetMinutes: -10}, 1_100_000, 4],
   ];
   for (const [initiation, dueAtMillis, revision] of cases) {

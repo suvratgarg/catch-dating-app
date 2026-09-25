@@ -116,14 +116,14 @@ export function resolveAnchor(
       anchorRevision: facts.scope.revision,
     };
   }
-  case "transportPlanDeparture": {
+  case "travelLegTime": {
     const plan = initiation.anchorId === null ?
-      undefined : facts.transportPlans[initiation.anchorId];
+      undefined : facts.travelLegs[initiation.anchorId];
     if (!plan) return {kind: "unresolved", reason: "missingAnchor"};
-    requireMillis(plan.departureAtMillis);
+    requireMillis(plan.atMillis);
     return {
       kind: "resolved",
-      atMillis: plan.departureAtMillis,
+      atMillis: plan.atMillis,
       anchorRevision: plan.revision,
     };
   }
@@ -306,8 +306,8 @@ function currentAnchorRevision(
   case "scopeEnd":
   case "rsvpDeadline":
     return facts.scope.revision;
-  case "transportPlanDeparture":
+  case "travelLegTime":
     return initiation.anchorId === null ?
-      null : facts.transportPlans[initiation.anchorId]?.revision ?? null;
+      null : facts.travelLegs[initiation.anchorId]?.revision ?? null;
   }
 }

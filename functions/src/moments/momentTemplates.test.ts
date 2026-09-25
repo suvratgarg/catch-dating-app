@@ -38,8 +38,8 @@ const facts: AnchorFacts = {
       cancelled: true,
     },
   },
-  transportPlans: {
-    udrT1: {departureAtMillis: 1_700_000, revision: 4},
+  travelLegs: {
+    udrT1: {atMillis: 1_700_000, revision: 4},
   },
 };
 
@@ -134,7 +134,7 @@ test("function-scoped factories omit cancelled functions", () => {
   assert.equal(dressReminder(haldi, {connectionId: "conn1"}), null);
   assert.equal(lateArrivalGateAlert(haldi), null);
   assert.equal(transportReadyNotice({
-    programId: "prog", transportPlanId: "udrT1", functionId: "haldi",
+    programId: "prog", legId: "udrT1", functionId: "haldi",
     functionCancelled: true,
   }, {connectionId: "conn1"}), null);
   assert.equal(flightDisruptionAlert({
@@ -145,14 +145,14 @@ test("function-scoped factories omit cancelled functions", () => {
 
 test("transportReadyNotice anchors the departure and its guests", () => {
   const moment = transportReadyNotice({
-    programId: "prog", transportPlanId: "udrT1", name: "Airport shuttle",
+    programId: "prog", legId: "udrT1", name: "Airport shuttle",
     functionId: "sangeet",
   }, {connectionId: "conn1", armedBy});
   assert.ok(moment);
   assert.equal(moment.momentId, "prog_udrT1_transport_ready");
   assert.equal(moment.name, "Airport shuttle transport ready");
   assert.deepEqual(moment.initiation, {
-    kind: "anchored", anchorKind: "transportPlanDeparture",
+    kind: "anchored", anchorKind: "travelLegTime",
     anchorId: "udrT1", offsetMinutes: 0,
   });
   assert.deepEqual(moment.audience, {
@@ -163,8 +163,8 @@ test("transportReadyNotice anchors the departure and its guests", () => {
     kind: "sendTemplate", connectionId: "conn1",
     templateId: "program_transport_ready",
     variables: {
-      programId: "prog", transportPlanId: "udrT1",
-      transportPlanName: "Airport shuttle", functionId: "sangeet",
+      programId: "prog", legId: "udrT1",
+      legName: "Airport shuttle", functionId: "sangeet",
     },
   });
   const result = planRun(moment, facts, 0);
@@ -179,13 +179,13 @@ test("transportReadyNotice anchors the departure and its guests", () => {
 
 test("transportReadyNotice without a function falls back to households", () => {
   const moment = transportReadyNotice(
-    {programId: "prog", transportPlanId: "udrT1"},
+    {programId: "prog", legId: "udrT1"},
     {connectionId: "conn1"});
   assert.ok(moment);
   assert.deepEqual(moment.audience,
     {kind: "households", rsvpPendingOnly: false});
   const scoped = transportReadyNotice({
-    programId: "prog", transportPlanId: "udrT1", functionId: "sangeet",
+    programId: "prog", legId: "udrT1", functionId: "sangeet",
   }, {
     connectionId: "conn1", armedBy, offsetMinutes: -10,
     audience: {kind: "staffDuty", duty: "driverDesk", scopeIds: ["udrT1"]},
@@ -396,10 +396,10 @@ test("factories reject blank ids and fractional offsets", () => {
   assert.throws(() => dressReminder(sangeet,
     {connectionId: "conn1", offsetMinutes: NaN}), RangeError);
   assert.throws(() => transportReadyNotice(
-    {programId: "prog", transportPlanId: ""}, {connectionId: "conn1"}),
+    {programId: "prog", legId: ""}, {connectionId: "conn1"}),
   RangeError);
   assert.throws(() => transportReadyNotice(
-    {programId: "prog", transportPlanId: "udrT1", functionId: " "},
+    {programId: "prog", legId: "udrT1", functionId: " "},
     {connectionId: "conn1"}), RangeError);
   assert.throws(() => rsvpDeadlineChase({programId: ""},
     {connectionId: "conn1"}), RangeError);
