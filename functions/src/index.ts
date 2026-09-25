@@ -1,7 +1,11 @@
 import {setGlobalOptions} from "firebase-functions";
 import * as admin from "firebase-admin";
 
-setGlobalOptions({region: "asia-south1", maxInstances: 50});
+setGlobalOptions({
+  region: "asia-south1",
+  maxInstances: 50,
+  memory: "512MiB",
+});
 
 admin.initializeApp();
 
