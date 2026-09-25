@@ -56,18 +56,22 @@ export interface MomentRunnerDeps {
   nowMillis: () => number;
   /** Quiet-hours deferral: returns the local ms when sends may resume, or
    *  null when the scope is inside sendable time (or has no quiet hours). */
-  quietEndMillis: (scope: MomentScope, nowMillis: number) => number | null;
+  quietEndMillis: (scope: MomentScope, nowMillis: number) =>
+    number | null | Promise<number | null>;
   /** Local-time inputs for the per-endpoint daily cap and quiet hours. */
-  localDayKey: (scope: MomentScope, nowMillis: number) => string;
-  localMinuteOfDay: (scope: MomentScope, nowMillis: number) => number;
-  quietHoursFor: (scope: MomentScope) => QuietHours | null;
+  localDayKey: (scope: MomentScope, nowMillis: number) =>
+    string | Promise<string>;
+  localMinuteOfDay: (scope: MomentScope, nowMillis: number) =>
+    number | Promise<number>;
+  quietHoursFor: (scope: MomentScope) =>
+    QuietHours | null | Promise<QuietHours | null>;
   /** Maximum sends per recipient endpoint per local day; 0 disables. */
-  dailyCapFor: (scope: MomentScope) => number;
+  dailyCapFor: (scope: MomentScope) => number | Promise<number>;
   /** Push copy is scope-shaped at fire time, not a stored template. */
   pushCopyFor: (
     moment: MomentDefinition,
     facts: AnchorFacts,
-  ) => {title: string; body: string};
+  ) => Promise<{title: string; body: string}>;
   sendTemplateToPhone: (params: {
     e164: string;
     connectionId: string;
@@ -86,6 +90,8 @@ export interface MomentRunnerDeps {
     recipientKey: string;
   }) => Promise<void>;
   writeStaffAttention: (params: {
+    /** The resolved staff member being notified. */
+    uid: string;
     duty: string;
     scopeIds: ReadonlyArray<string> | null;
     severity: "info" | "warning" | "urgent";
@@ -93,9 +99,10 @@ export interface MomentRunnerDeps {
     scope: MomentScope;
     runId: string;
   }) => Promise<void>;
-  /** Live consent facts for a resolved recipient. */
-  loadConsentFacts: (recipient: ResolvedRecipient) =>
-    Promise<ConsentFacts>;
+  /** Live consent facts for a resolved recipient; the moment carries the
+   *  preference key for uid endpoints. */
+  loadConsentFacts: (recipient: ResolvedRecipient,
+    moment: MomentDefinition) => Promise<ConsentFacts>;
 }
 
 export interface SweepSummary {
@@ -294,16 +301,16 @@ async function dispatchRun(
     await markRun(db, run, "skipped", {reason: disposition});
     return "skipped";
   }
-  const quietEnd = deps.quietEndMillis(moment.scope, now);
+  const quietEnd = await deps.quietEndMillis(moment.scope, now);
   if (quietEnd !== null) {
     await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
       .update({dueAtMillis: quietEnd});
     return "deferred";
   }
-  const dailyCap = deps.dailyCapFor(moment.scope);
-  const quietHours = deps.quietHoursFor(moment.scope);
-  const localMinute = deps.localMinuteOfDay(moment.scope, now);
-  const dayKey = deps.localDayKey(moment.scope, now);
+  const dailyCap = await deps.dailyCapFor(moment.scope);
+  const quietHours = await deps.quietHoursFor(moment.scope);
+  const localMinute = await deps.localMinuteOfDay(moment.scope, now);
+  const dayKey = await deps.localDayKey(moment.scope, now);
 
   const resolution = await resolveMomentRecipients(db, moment, run);
   const decisions: PolicyDecision[] = [];
@@ -312,7 +319,7 @@ async function dispatchRun(
     byRecipient.set(recipient.recipientKey, recipient);
   }
   for (const recipient of resolution.recipients) {
-    const consent = await deps.loadConsentFacts(recipient);
+    const consent = await deps.loadConsentFacts(recipient, moment);
     const sendRef = db.collection(MOMENT_SENDS_COLLECTION)
       .doc(`${run.runId}_${recipient.recipientKey}`);
     const prior = await sendRef.get();
@@ -355,7 +362,8 @@ async function dispatchRun(
     });
   }
   if (decisions.some((d) => d.kind === "defer")) {
-    const retry = deps.quietEndMillis(moment.scope, now) ?? now + 60_000;
+    const retry = await deps.quietEndMillis(moment.scope, now) ??
+      now + 60_000;
     await db.collection(MOMENT_RUNS_COLLECTION).doc(run.runId)
       .update({dueAtMillis: retry});
     return "deferred";
@@ -392,7 +400,7 @@ async function deliver(
   }
   if (action.kind === "push" && recipient.endpoint.kind === "uid") {
     // Copy is resolved from the scope at fire time by the wiring layer.
-    const copy = deps.pushCopyFor(moment, facts);
+    const copy = await deps.pushCopyFor(moment, facts);
     await deps.sendPushToUid({
       uid: recipient.endpoint.uid,
       title: copy.title,
@@ -405,8 +413,10 @@ async function deliver(
     return;
   }
   if (action.kind === "staffAttention" &&
-      moment.audience.kind === "staffDuty") {
+      moment.audience.kind === "staffDuty" &&
+      recipient.endpoint.kind === "uid") {
     await deps.writeStaffAttention({
+      uid: recipient.endpoint.uid,
       duty: action.duty,
       scopeIds: moment.audience.scopeIds,
       severity: action.severity,

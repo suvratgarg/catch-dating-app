@@ -264,7 +264,7 @@ export async function resolveMomentRecipients(
         householdId: null,
       });
     }
-    return {recipients, suppressedNoEndpoint: 0};
+    return hydrateFcmTokens(db, {recipients, suppressedNoEndpoint: 0});
   }
   case "eventParticipants": {
     if (scope.kind !== "event") {
@@ -286,9 +286,31 @@ export async function resolveMomentRecipients(
         householdId: null,
       });
     }
-    return {recipients, suppressedNoEndpoint: 0};
+    return hydrateFcmTokens(db, {recipients, suppressedNoEndpoint: 0});
   }
   }
+}
+
+/** Reads users/{uid}.fcmToken so the policy layer can suppress recipients
+ *  with no push endpoint and the sender does not re-read the user doc. */
+async function hydrateFcmTokens(
+  db: Firestore,
+  resolution: RecipientResolution,
+): Promise<RecipientResolution> {
+  const uidEndpoints = resolution.recipients
+    .filter((r) => r.endpoint.kind === "uid");
+  if (uidEndpoints.length === 0) return resolution;
+  const snaps = await Promise.all(uidEndpoints.map((r) =>
+    db.collection("users")
+      .doc((r.endpoint as {uid: string}).uid).get()));
+  snaps.forEach((snap, index) => {
+    const data = snap.data() as Record<string, unknown> | undefined;
+    const token = typeof data?.fcmToken === "string" &&
+      data.fcmToken.length > 0 ? data.fcmToken : null;
+    (uidEndpoints[index].endpoint as {fcmToken: string | null})
+      .fcmToken = token;
+  });
+  return resolution;
 }
 
 interface GuestRow {

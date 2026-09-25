@@ -92,7 +92,7 @@ function makeDeps(db: FakeFirestore, now: number) {
     localMinuteOfDay: () => 720,
     quietHoursFor: () => null,
     dailyCapFor: () => 0,
-    pushCopyFor: () => ({title: "Soon", body: "Soon"}),
+    pushCopyFor: async () => ({title: "Soon", body: "Soon"}),
     sendTemplateToPhone: async (p) => {
       sent.push({e164: p.e164, runId: p.runId,
         recipientKey: p.recipientKey});
