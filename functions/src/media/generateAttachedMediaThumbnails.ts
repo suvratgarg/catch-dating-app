@@ -2,7 +2,6 @@ import {randomUUID} from "crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
-import sharp from "sharp";
 import {
   profilePhotoPolicy,
 } from "../shared/generated/catalogs/profilePhotoPolicy";
@@ -158,7 +157,7 @@ async function generateAndAttachThumbnail({
     const [source] = await bucket.file(item.sourcePath).download();
     const size = item.kind === "logo" ?
       LOGO_THUMBNAIL_SIZE : GALLERY_THUMBNAIL_SIZE;
-    const image = sharp(source).rotate();
+    const image = (await import("sharp")).default(source).rotate();
     const resized = item.kind === "logo" ?
       image.resize(size, size, {fit: "cover", position: "attention"}) :
       image.resize(size, size, {fit: "inside", withoutEnlargement: true});

@@ -2,7 +2,6 @@ import {exportFirestoreResponseQuery} from
   "../organizerResponseQuery/firestoreAdapter";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
-import ExcelJS from "exceljs";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -443,6 +442,7 @@ async function xlsxFor(
   columns: Map<string, string>,
   rows: ExportRow[]
 ): Promise<Buffer> {
+  const ExcelJS = (await import("exceljs")).default;
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Catch Host Forms";
   workbook.created = new Date();
