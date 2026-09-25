@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import type {Firestore} from "firebase-admin/firestore";
+import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
 import {MOMENTS_COLLECTION, momentToDocument} from "./momentDocuments";
 import {eventStartReminder} from "./momentTemplates";
 
@@ -55,6 +56,8 @@ export async function ensureEventDefaultMoments(
     .get();
   const summary: ProvisionSummary = {scanned: snap.size, created: 0};
   for (const doc of snap.docs) {
+    const data = doc.data() as Record<string, unknown>;
+    if (!reminderEligible(data)) continue;
     const ref = db.collection(MOMENTS_COLLECTION)
       .doc(`${doc.id}_event_start_reminder`);
     const existing = await ref.get();
@@ -68,6 +71,17 @@ export async function ensureEventDefaultMoments(
     summary.created += 1;
   }
   return summary;
+}
+
+/**
+ * Mirrors the legacy sendEventReminders eligibility: publicly accessible
+ * events only, and progressive-setup events need public registration
+ * explicitly enabled. Private programs never get the broadcast reminder.
+ */
+function reminderEligible(event: Record<string, unknown>): boolean {
+  return isEventPubliclyAccessible(event) &&
+    (!Object.prototype.hasOwnProperty.call(event, "setupRevision") ||
+      event.publicRegistrationEnabled === true);
 }
 
 function readEventName(data: Record<string, unknown>): string | undefined {

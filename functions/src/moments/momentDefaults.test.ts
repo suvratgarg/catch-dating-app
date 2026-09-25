@@ -184,3 +184,27 @@ test("an at-anchor run inside the grace window skips once the anchor " +
     db.getDoc(`organizerMomentRuns/${runId}`)!.status,
     "skipped");
 });
+
+test("private and unconfigured events are never provisioned", async () => {
+  const db = new FakeFirestore({
+    "events/priv": {...activeEvent(NOW + 60 * 60 * 1000),
+      publicationState: "private", publicRegistrationEnabled: true},
+    "events/unconf": {...activeEvent(NOW + 60 * 60 * 1000),
+      publicationState: "published", setupRevision: 1,
+      publicRegistrationEnabled: false},
+    "events/reg": {...activeEvent(NOW + 60 * 60 * 1000),
+      publicationState: "published", setupRevision: 1,
+      publicRegistrationEnabled: true},
+    "events/legacy": activeEvent(NOW + 60 * 60 * 1000),
+  });
+  const summary = await ensureEventDefaultMoments(deps(db));
+  assert.equal(summary.created, 2);
+  assert.equal(db.getDoc(
+    "organizerMoments/priv_event_start_reminder"), undefined);
+  assert.equal(db.getDoc(
+    "organizerMoments/unconf_event_start_reminder"), undefined);
+  assert.ok(db.getDoc(
+    "organizerMoments/reg_event_start_reminder") !== undefined);
+  assert.ok(db.getDoc(
+    "organizerMoments/legacy_event_start_reminder") !== undefined);
+});
