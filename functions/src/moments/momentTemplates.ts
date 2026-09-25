@@ -1,8 +1,8 @@
 import type {
   MomentAction,
+  MomentApproval,
   MomentAudience,
   MomentDefinition,
-  MomentStatus,
 } from "./momentModel";
 
 /**
@@ -66,8 +66,11 @@ export interface MessageTemplateOptions {
   variables?: Readonly<Record<string, string>>;
   /** Moment display name override. */
   name?: string;
-  /** Lifecycle status; defaults to "armed". */
-  status?: MomentStatus;
+  /**
+   * Approve-the-rule-once: when present the moment is created armed with
+   * this approval; otherwise it is a draft awaiting arming.
+   */
+  armedBy?: MomentApproval;
 }
 
 /** Options for guest-message moments anchored on a function start. */
@@ -107,7 +110,7 @@ export interface StaffAlertOptions {
    */
   scopeIds?: ReadonlyArray<string> | null;
   name?: string;
-  status?: MomentStatus;
+  armedBy?: MomentApproval;
 }
 
 type GuestRsvp =
@@ -126,10 +129,10 @@ export function functionStartReminder(
   const display = fn.name ?? fn.functionId;
   return {
     momentId: `${fn.programId}_${fn.functionId}_function_start_reminder`,
-    programId: fn.programId,
+    scope: {kind: "program", programId: fn.programId},
     name: opts.name ?? `${display} starts soon`,
-    trigger: {
-      kind: "timeAnchor",
+    initiation: {
+      kind: "anchored",
       anchorKind: "functionStart",
       anchorId: fn.functionId,
       offsetMinutes,
@@ -141,7 +144,9 @@ export function functionStartReminder(
       templateId: opts.templateId ?? "program_function_starting",
       variables: {...functionVariables(fn), ...opts.variables},
     },
-    status: opts.status ?? "armed",
+    sense: "audience",
+    ...lifecycle(opts.armedBy),
+    origin: "organizer",
     revision: 1,
   };
 }
@@ -159,10 +164,10 @@ export function dressReminder(
   const display = fn.name ?? fn.functionId;
   return {
     momentId: `${fn.programId}_${fn.functionId}_dress_reminder`,
-    programId: fn.programId,
+    scope: {kind: "program", programId: fn.programId},
     name: opts.name ?? `Get ready for ${display}`,
-    trigger: {
-      kind: "timeAnchor",
+    initiation: {
+      kind: "anchored",
       anchorKind: "functionStart",
       anchorId: fn.functionId,
       offsetMinutes,
@@ -174,7 +179,9 @@ export function dressReminder(
       templateId: opts.templateId ?? "program_get_ready",
       variables: {...functionVariables(fn), ...opts.variables},
     },
-    status: opts.status ?? "armed",
+    sense: "audience",
+    ...lifecycle(opts.armedBy),
+    origin: "organizer",
     revision: 1,
   };
 }
@@ -200,10 +207,10 @@ export function transportReadyNotice(
   return {
     momentId:
       `${departure.programId}_${departure.transportPlanId}_transport_ready`,
-    programId: departure.programId,
+    scope: {kind: "program", programId: departure.programId},
     name: opts.name ?? `${display} transport ready`,
-    trigger: {
-      kind: "timeAnchor",
+    initiation: {
+      kind: "anchored",
       anchorKind: "transportPlanDeparture",
       anchorId: departure.transportPlanId,
       offsetMinutes,
@@ -215,7 +222,9 @@ export function transportReadyNotice(
       templateId: opts.templateId ?? "program_transport_ready",
       variables: {...departureVariables(departure), ...opts.variables},
     },
-    status: opts.status ?? "armed",
+    sense: "audience",
+    ...lifecycle(opts.armedBy),
+    origin: "organizer",
     revision: 1,
   };
 }
@@ -231,10 +240,10 @@ export function rsvpDeadlineChase(
   const display = program.name ?? "Program";
   return {
     momentId: `${program.programId}_rsvp_deadline_chase`,
-    programId: program.programId,
+    scope: {kind: "program", programId: program.programId},
     name: opts.name ?? `${display} RSVP deadline reminder`,
-    trigger: {
-      kind: "timeAnchor",
+    initiation: {
+      kind: "anchored",
       anchorKind: "rsvpDeadline",
       anchorId: null,
       offsetMinutes,
@@ -246,7 +255,9 @@ export function rsvpDeadlineChase(
       templateId: opts.templateId ?? "program_rsvp_deadline_reminder",
       variables: {...programVariables(program), ...opts.variables},
     },
-    status: opts.status ?? "armed",
+    sense: "audience",
+    ...lifecycle(opts.armedBy),
+    origin: "organizer",
     revision: 1,
   };
 }
@@ -263,11 +274,11 @@ export function lateArrivalGateAlert(
   requireId(duty, "duty");
   return {
     momentId: `${fn.programId}_${fn.functionId}_late_arrival_gate_alert`,
-    programId: fn.programId,
+    scope: {kind: "program", programId: fn.programId},
     name: opts.name ?? `${display} late arrival gate alert`,
-    trigger: {
-      kind: "conditionAnchor",
-      conditionKind: "lateArrivalAtHotel",
+    initiation: {
+      kind: "triggered",
+      triggerKind: "lateArrivalAtHotel",
       functionId: fn.functionId,
     },
     audience: {
@@ -282,7 +293,9 @@ export function lateArrivalGateAlert(
       titleTemplate: opts.titleTemplate ??
         `Late arrival at hotel — escort to ${display}`,
     },
-    status: opts.status ?? "armed",
+    sense: "audience",
+    ...lifecycle(opts.armedBy),
+    origin: "organizer",
     revision: 1,
   };
 }
@@ -299,11 +312,11 @@ export function flightDisruptionAlert(
   requireId(duty, "duty");
   return {
     momentId: `${leg.programId}_${leg.legId}_flight_disruption_alert`,
-    programId: leg.programId,
+    scope: {kind: "program", programId: leg.programId},
     name: opts.name ?? `${display} flight disruption alert`,
-    trigger: {
-      kind: "conditionAnchor",
-      conditionKind: "flightDisrupted",
+    initiation: {
+      kind: "triggered",
+      triggerKind: "flightDisrupted",
       functionId: leg.functionId ?? null,
     },
     audience: {
@@ -318,7 +331,9 @@ export function flightDisruptionAlert(
       titleTemplate: opts.titleTemplate ??
         `Flight disruption on ${display} — rework transport`,
     },
-    status: opts.status ?? "armed",
+    sense: "audience",
+    ...lifecycle(opts.armedBy),
+    origin: "organizer",
     revision: 1,
   };
 }
@@ -368,6 +383,96 @@ function departureVariables(
     variables.functionId = departure.functionId;
   }
   return variables;
+}
+
+// --- Event-scope system defaults ------------------------------------------
+// These replace the bespoke sendEventReminders cron: a Catch event gets a
+// T-15m push reminder (and an optional post-event feedback prompt) as an
+// armed system default. Booked participants are the audience; push actions
+// gate on the user's own notification preferences at send time.
+
+/** Event descriptor for system-default moments. */
+export interface EventTemplateInput {
+  eventId: string;
+  name?: string;
+}
+
+/** Options for event system defaults; arming is implied. */
+export interface EventDefaultOptions {
+  /** Minutes relative to the anchor; reminder defaults to -15. */
+  offsetMinutes?: number;
+  name?: string;
+  armedBy?: MomentApproval;
+}
+
+export function eventStartReminder(
+  event: EventTemplateInput,
+  opts: EventDefaultOptions = {},
+): MomentDefinition {
+  requireId(event.eventId, "eventId");
+  const offsetMinutes = opts.offsetMinutes ?? -15;
+  requireOffset(offsetMinutes);
+  const display = event.name ?? "your event";
+  return {
+    momentId: `${event.eventId}_event_start_reminder`,
+    scope: {kind: "event", eventId: event.eventId},
+    name: opts.name ?? `${display} starts soon`,
+    initiation: {
+      kind: "anchored",
+      anchorKind: "scopeStart",
+      anchorId: null,
+      offsetMinutes,
+    },
+    sense: "individual",
+    audience: {kind: "eventParticipants", statuses: ["signedUp"]},
+    action: {
+      kind: "push",
+      notificationType: "eventReminder",
+      preferenceKey: "eventReminders",
+    },
+    ...lifecycle(opts.armedBy),
+    origin: "systemDefault",
+    revision: 1,
+  };
+}
+
+export function eventFeedbackPrompt(
+  event: EventTemplateInput,
+  opts: EventDefaultOptions = {},
+): MomentDefinition {
+  requireId(event.eventId, "eventId");
+  const offsetMinutes = opts.offsetMinutes ?? 2 * 60;
+  requireOffset(offsetMinutes);
+  const display = event.name ?? "your event";
+  return {
+    momentId: `${event.eventId}_event_feedback_prompt`,
+    scope: {kind: "event", eventId: event.eventId},
+    name: opts.name ?? `How was ${display}?`,
+    initiation: {
+      kind: "anchored",
+      anchorKind: "scopeEnd",
+      anchorId: null,
+      offsetMinutes,
+    },
+    sense: "individual",
+    audience: {kind: "eventParticipants", statuses: ["signedUp"]},
+    action: {
+      kind: "push",
+      notificationType: "eventFeedback",
+      preferenceKey: "eventReminders",
+    },
+    ...lifecycle(opts.armedBy),
+    origin: "systemDefault",
+    revision: 1,
+  };
+}
+
+function lifecycle(
+  armedBy: MomentApproval | undefined,
+): Pick<MomentDefinition, "status" | "approval"> {
+  return armedBy === undefined ?
+    {status: "draft", approval: null} :
+    {status: "armed", approval: armedBy};
 }
 
 function requireId(value: string, field: string): void {

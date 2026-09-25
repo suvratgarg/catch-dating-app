@@ -16,8 +16,10 @@ import {
 import type {AnchorFacts} from "./momentModel";
 
 const facts: AnchorFacts = {
-  program: {
+  scope: {
     startsAtMillis: 1_000_000,
+    endsAtMillis: null,
+    cancelled: false,
     rsvpDeadlineAtMillis: 100_000_000,
     revision: 3,
     messagingEnabled: true,
@@ -41,6 +43,8 @@ const facts: AnchorFacts = {
   },
 };
 
+const armedBy = {approvedByUid: "mgr", approvedAtMillis: 1} as const;
+
 const sangeet = {
   programId: "prog",
   functionId: "sangeet",
@@ -53,14 +57,15 @@ const haldi = {
 };
 
 test("functionStartReminder defaults to T-15m for attending guests", () => {
-  const moment = functionStartReminder(sangeet, {connectionId: "conn1"});
+  const moment = functionStartReminder(
+    sangeet, {connectionId: "conn1", armedBy});
   assert.ok(moment);
   assert.deepEqual(moment, {
     momentId: "prog_sangeet_function_start_reminder",
-    programId: "prog",
+    scope: {kind: "program", programId: "prog"},
     name: "Sangeet starts soon",
-    trigger: {
-      kind: "timeAnchor",
+    initiation: {
+      kind: "anchored",
       anchorKind: "functionStart",
       anchorId: "sangeet",
       offsetMinutes: -15,
@@ -81,7 +86,10 @@ test("functionStartReminder defaults to T-15m for attending guests", () => {
         functionName: "Sangeet",
       },
     },
+    sense: "audience",
     status: "armed",
+    approval: armedBy,
+    origin: "organizer",
     revision: 1,
   });
   const result = planRun(moment, facts, 0);
@@ -95,12 +103,12 @@ test("functionStartReminder defaults to T-15m for attending guests", () => {
 });
 
 test("dressReminder defaults to T-60m with the get-ready template", () => {
-  const moment = dressReminder(sangeet, {connectionId: "conn1"});
+  const moment = dressReminder(sangeet, {connectionId: "conn1", armedBy});
   assert.ok(moment);
   assert.equal(moment.momentId, "prog_sangeet_dress_reminder");
   assert.equal(moment.name, "Get ready for Sangeet");
-  assert.deepEqual(moment.trigger, {
-    kind: "timeAnchor", anchorKind: "functionStart", anchorId: "sangeet",
+  assert.deepEqual(moment.initiation, {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
     offsetMinutes: -60,
   });
   assert.deepEqual(moment.audience, {
@@ -139,12 +147,12 @@ test("transportReadyNotice anchors the departure and its guests", () => {
   const moment = transportReadyNotice({
     programId: "prog", transportPlanId: "udrT1", name: "Airport shuttle",
     functionId: "sangeet",
-  }, {connectionId: "conn1"});
+  }, {connectionId: "conn1", armedBy});
   assert.ok(moment);
   assert.equal(moment.momentId, "prog_udrT1_transport_ready");
   assert.equal(moment.name, "Airport shuttle transport ready");
-  assert.deepEqual(moment.trigger, {
-    kind: "timeAnchor", anchorKind: "transportPlanDeparture",
+  assert.deepEqual(moment.initiation, {
+    kind: "anchored", anchorKind: "transportPlanDeparture",
     anchorId: "udrT1", offsetMinutes: 0,
   });
   assert.deepEqual(moment.audience, {
@@ -179,7 +187,7 @@ test("transportReadyNotice without a function falls back to households", () => {
   const scoped = transportReadyNotice({
     programId: "prog", transportPlanId: "udrT1", functionId: "sangeet",
   }, {
-    connectionId: "conn1", offsetMinutes: -10,
+    connectionId: "conn1", armedBy, offsetMinutes: -10,
     audience: {kind: "staffDuty", duty: "driverDesk", scopeIds: ["udrT1"]},
   });
   assert.ok(scoped);
@@ -195,11 +203,11 @@ test("transportReadyNotice without a function falls back to households", () => {
 test("rsvpDeadlineChase chases pending households 24h early", () => {
   const moment = rsvpDeadlineChase(
     {programId: "prog", name: "Meera & Arjun"},
-    {connectionId: "conn1"});
+    {connectionId: "conn1", armedBy});
   assert.equal(moment.momentId, "prog_rsvp_deadline_chase");
   assert.equal(moment.name, "Meera & Arjun RSVP deadline reminder");
-  assert.deepEqual(moment.trigger, {
-    kind: "timeAnchor", anchorKind: "rsvpDeadline", anchorId: null,
+  assert.deepEqual(moment.initiation, {
+    kind: "anchored", anchorKind: "rsvpDeadline", anchorId: null,
     offsetMinutes: -1_440,
   });
   assert.deepEqual(moment.audience,
@@ -218,11 +226,11 @@ test("rsvpDeadlineChase chases pending households 24h early", () => {
 });
 
 test("lateArrivalGateAlert routes staffAttention to the gate duty", () => {
-  const moment = lateArrivalGateAlert(sangeet);
+  const moment = lateArrivalGateAlert(sangeet, {armedBy});
   assert.ok(moment);
   assert.equal(moment.momentId, "prog_sangeet_late_arrival_gate_alert");
-  assert.deepEqual(moment.trigger, {
-    kind: "conditionAnchor", conditionKind: "lateArrivalAtHotel",
+  assert.deepEqual(moment.initiation, {
+    kind: "triggered", triggerKind: "lateArrivalAtHotel",
     functionId: "sangeet",
   });
   assert.deepEqual(moment.audience, {
@@ -245,16 +253,17 @@ test("lateArrivalGateAlert routes staffAttention to the gate duty", () => {
     anchorRevision: 7,
     status: "planned",
     targetFunctionId: "sangeet",
+    subjectId: "leg1",
   });
 });
 
 test("flightDisruptionAlert escalates to the dispatcher as urgent", () => {
   const moment = flightDisruptionAlert(
-    {programId: "prog", legId: "leg9", name: "DEL-UDR leg"});
+    {programId: "prog", legId: "leg9", name: "DEL-UDR leg"}, {armedBy});
   assert.ok(moment);
   assert.equal(moment.momentId, "prog_leg9_flight_disruption_alert");
-  assert.deepEqual(moment.trigger, {
-    kind: "conditionAnchor", conditionKind: "flightDisrupted",
+  assert.deepEqual(moment.initiation, {
+    kind: "triggered", triggerKind: "flightDisrupted",
     functionId: null,
   });
   assert.deepEqual(moment.audience, {
@@ -282,10 +291,10 @@ test("flightDisruptionAlert escalates to the dispatcher as urgent", () => {
 
 test("flightDisruptionAlert carries function context when supplied", () => {
   const moment = flightDisruptionAlert(
-    {programId: "prog", legId: "leg9", functionId: "sangeet"});
+    {programId: "prog", legId: "leg9", functionId: "sangeet"}, {armedBy});
   assert.ok(moment);
-  assert.deepEqual(moment.trigger, {
-    kind: "conditionAnchor", conditionKind: "flightDisrupted",
+  assert.deepEqual(moment.initiation, {
+    kind: "triggered", triggerKind: "flightDisrupted",
     functionId: "sangeet",
   });
   const disrupted: TravelLegEvent = {
@@ -310,10 +319,10 @@ test("options override offsets, audience, templates and status", () => {
     rsvp: ["attending", "maybe"],
     householdDedupe: false,
     name: "Custom reminder",
-    status: "draft",
   });
   assert.ok(moment);
   assert.equal(moment.status, "draft");
+  assert.equal(moment.approval, null);
   assert.equal(moment.name, "Custom reminder");
   assert.deepEqual(moment.action, {
     kind: "sendTemplate", connectionId: "conn2", templateId: "tpl_custom",
@@ -343,20 +352,21 @@ test("options override offsets, audience, templates and status", () => {
 });
 
 test("produced moments pass the fire-time disposition checks", () => {
-  const reminder = functionStartReminder(sangeet, {connectionId: "conn1"});
+  const reminder = functionStartReminder(
+    sangeet, {connectionId: "conn1", armedBy});
   assert.ok(reminder);
   const planned = planRun(reminder, facts, 0);
   assert.equal(planned.kind, "planned");
   if (planned.kind !== "planned") return;
   assert.equal(
     resolveFireDisposition(planned.run, reminder, facts), "dispatch");
-  const silent: AnchorFacts = {...facts, program: {...facts.program,
+  const silent: AnchorFacts = {...facts, scope: {...facts.scope,
     messagingEnabled: false}};
   assert.equal(
     resolveFireDisposition(planned.run, reminder, silent),
     "skip:messagingDisabled");
   // staffAttention alerts still dispatch while messaging is disabled.
-  const gate = lateArrivalGateAlert(sangeet);
+  const gate = lateArrivalGateAlert(sangeet, {armedBy});
   assert.ok(gate);
   assert.equal(
     resolveFireDisposition(planned.run, gate, silent), "dispatch");

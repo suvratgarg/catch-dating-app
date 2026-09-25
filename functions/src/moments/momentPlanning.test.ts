@@ -14,8 +14,10 @@ import type {
 } from "./momentModel";
 
 const facts: AnchorFacts = {
-  program: {
+  scope: {
     startsAtMillis: 1_000_000,
+    endsAtMillis: 2_500_000,
+    cancelled: false,
     rsvpDeadlineAtMillis: 500_000,
     revision: 3,
     messagingEnabled: true,
@@ -41,10 +43,11 @@ const facts: AnchorFacts = {
 
 const baseMoment: MomentDefinition = {
   momentId: "m1",
-  programId: "prog",
+  scope: {kind: "program", programId: "prog"},
   name: "Sangeet starts soon",
-  trigger: {
-    kind: "timeAnchor",
+  sense: "audience",
+  initiation: {
+    kind: "anchored",
     anchorKind: "functionStart",
     anchorId: "sangeet",
     offsetMinutes: -15,
@@ -62,6 +65,8 @@ const baseMoment: MomentDefinition = {
     variables: {},
   },
   status: "armed",
+  approval: {approvedByUid: "mgr", approvedAtMillis: 1},
+  origin: "organizer",
   revision: 1,
 };
 
@@ -78,18 +83,18 @@ test("functionStart minus 15 minutes plans a deterministic run", () => {
 });
 
 test("functionEnd, programStart, rsvpDeadline and departure anchors", () => {
-  const cases: Array<[MomentDefinition["trigger"], number, number]> = [
-    [{kind: "timeAnchor", anchorKind: "functionEnd", anchorId: "sangeet",
+  const cases: Array<[MomentDefinition["initiation"], number, number]> = [
+    [{kind: "anchored", anchorKind: "functionEnd", anchorId: "sangeet",
       offsetMinutes: 30}, 4_200_000, 7],
-    [{kind: "timeAnchor", anchorKind: "programStart", anchorId: null,
+    [{kind: "anchored", anchorKind: "scopeStart", anchorId: null,
       offsetMinutes: 0}, 1_000_000, 3],
-    [{kind: "timeAnchor", anchorKind: "rsvpDeadline", anchorId: null,
+    [{kind: "anchored", anchorKind: "rsvpDeadline", anchorId: null,
       offsetMinutes: 0}, 500_000, 3],
-    [{kind: "timeAnchor", anchorKind: "transportPlanDeparture",
+    [{kind: "anchored", anchorKind: "transportPlanDeparture",
       anchorId: "udrT1", offsetMinutes: -10}, 1_100_000, 4],
   ];
-  for (const [trigger, dueAtMillis, revision] of cases) {
-    const result = planRun({...baseMoment, trigger}, facts, 0);
+  for (const [initiation, dueAtMillis, revision] of cases) {
+    const result = planRun({...baseMoment, initiation}, facts, 0);
     assert.equal(result.kind, "planned");
     if (result.kind === "planned") {
       assert.equal(result.run.dueAtMillis, dueAtMillis);
@@ -99,24 +104,24 @@ test("functionEnd, programStart, rsvpDeadline and departure anchors", () => {
 });
 
 test("missing anchors resolve explicitly", () => {
-  assert.deepEqual(resolveAnchor({kind: "timeAnchor",
+  assert.deepEqual(resolveAnchor({kind: "anchored",
     anchorKind: "functionStart", anchorId: "nope", offsetMinutes: 0}, facts), {
     kind: "unresolved", reason: "missingAnchor",
   });
-  const noDeadline: AnchorFacts = {...facts, program: {
-    ...facts.program, rsvpDeadlineAtMillis: null,
+  const noDeadline: AnchorFacts = {...facts, scope: {
+    ...facts.scope, rsvpDeadlineAtMillis: null,
   }};
-  assert.deepEqual(resolveAnchor({kind: "timeAnchor",
+  assert.deepEqual(resolveAnchor({kind: "anchored",
     anchorKind: "rsvpDeadline", anchorId: null, offsetMinutes: 0},
   noDeadline), {kind: "unresolved", reason: "missingAnchor"});
-  assert.deepEqual(planRun({...baseMoment, trigger: {
-    kind: "timeAnchor", anchorKind: "functionStart", anchorId: "haldi",
+  assert.deepEqual(planRun({...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "haldi",
     offsetMinutes: 0,
   }}, facts, 0), {kind: "unplannable", reason: "anchorCancelled"});
-  assert.deepEqual(planRun({...baseMoment, trigger: {
-    kind: "conditionAnchor", conditionKind: "lateArrivalAtHotel",
+  assert.deepEqual(planRun({...baseMoment, initiation: {
+    kind: "triggered", triggerKind: "lateArrivalAtHotel",
     functionId: null,
-  }}, facts, 0), {kind: "unplannable", reason: "conditionTrigger"});
+  }}, facts, 0), {kind: "unplannable", reason: "triggeredInitiation"});
 });
 
 test("draft and paused moments never plan", () => {
@@ -141,8 +146,8 @@ test("invalid millis and overflowing due times fail", () => {
     assert.throws(() => planRun(baseMoment, facts, 0,
       {graceMillis: invalid}), RangeError);
   }
-  assert.throws(() => planRun({...baseMoment, trigger: {
-    kind: "timeAnchor", anchorKind: "functionStart", anchorId: "sangeet",
+  assert.throws(() => planRun({...baseMoment, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
     offsetMinutes: -34_000_000_000,
   }}, facts, 0), RangeError);
 });
@@ -216,7 +221,7 @@ test("resolveFireDisposition checks each guard in order", () => {
   assert.equal(resolveFireDisposition(good, baseMoment, facts), "dispatch");
   assert.equal(resolveFireDisposition(good, {...baseMoment,
     status: "paused"}, facts), "skip:momentNotArmed");
-  const silent: AnchorFacts = {...facts, program: {...facts.program,
+  const silent: AnchorFacts = {...facts, scope: {...facts.scope,
     messagingEnabled: false}};
   assert.equal(resolveFireDisposition(good, baseMoment, silent),
     "skip:messagingDisabled");
@@ -227,8 +232,8 @@ test("resolveFireDisposition checks each guard in order", () => {
   }};
   assert.equal(resolveFireDisposition(good, attention, silent), "dispatch");
   // Cancelled audience function skips even when armed.
-  const cancelledFn = {...baseMoment, trigger: {
-    kind: "timeAnchor" as const, anchorKind: "programStart" as const,
+  const cancelledFn = {...baseMoment, initiation: {
+    kind: "anchored" as const, anchorKind: "scopeStart" as const,
     anchorId: null, offsetMinutes: 0,
   }, audience: {...baseMoment.audience, functionId: "haldi"}};
   const haldiRun = run({anchorRevision: 3});
@@ -242,8 +247,8 @@ test("resolveFireDisposition checks each guard in order", () => {
 });
 
 test("condition runs ignore the stale-anchor fence", () => {
-  const condition: MomentDefinition = {...baseMoment, trigger: {
-    kind: "conditionAnchor", conditionKind: "lateArrivalAtHotel",
+  const condition: MomentDefinition = {...baseMoment, initiation: {
+    kind: "triggered", triggerKind: "lateArrivalAtHotel",
     functionId: null,
   }, audience: {kind: "staffDuty", duty: "functionCheckIn",
     scopeIds: null}, action: {kind: "staffAttention",
@@ -259,7 +264,7 @@ test("condition runs ignore the stale-anchor fence", () => {
   }};
   assert.equal(resolveFireDisposition(eventRun, cancelledAudience, facts),
     "skip:functionCancelled");
-  const silent: AnchorFacts = {...facts, program: {...facts.program,
+  const silent: AnchorFacts = {...facts, scope: {...facts.scope,
     messagingEnabled: false}};
   assert.equal(resolveFireDisposition(eventRun, condition, silent),
     "dispatch"); // staffAttention is not a message

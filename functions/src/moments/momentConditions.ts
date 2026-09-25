@@ -1,5 +1,6 @@
 import {
   requireMillis,
+  sameScope,
   type AnchorFacts,
   type MomentDefinition,
   type RunRecord,
@@ -26,7 +27,7 @@ export type ConditionResult = {
   run: RunRecord;
 } | {
   kind: "noFire";
-  reason: "notConditionTrigger" | "notArmed" | "programMismatch" |
+  reason: "notTriggered" | "notArmed" | "scopeMismatch" |
     "eventNotMatching" | "noCurrentFunction" | "functionNotStarted" |
       "functionCancelled";
 };
@@ -41,16 +42,17 @@ export function evaluateCondition(
 ): ConditionResult {
   requireMillis(nowMillis);
   requireMillis(event.observedAtMillis);
-  if (moment.trigger.kind !== "conditionAnchor") {
-    return {kind: "noFire", reason: "notConditionTrigger"};
+  if (moment.initiation.kind !== "triggered") {
+    return {kind: "noFire", reason: "notTriggered"};
   }
   if (moment.status !== "armed") {
     return {kind: "noFire", reason: "notArmed"};
   }
-  if (event.programId !== moment.programId) {
-    return {kind: "noFire", reason: "programMismatch"};
+  if (!sameScope(moment.scope,
+    {kind: "program", programId: event.programId})) {
+    return {kind: "noFire", reason: "scopeMismatch"};
   }
-  if (moment.trigger.conditionKind === "lateArrivalAtHotel") {
+  if (moment.initiation.triggerKind === "lateArrivalAtHotel") {
     return evaluateLateArrival(moment, event, facts, nowMillis);
   }
   return evaluateFlightDisruption(moment, event, facts, nowMillis);
@@ -67,7 +69,7 @@ function evaluateLateArrival(
       event.previousReadiness === "arrived") {
     return {kind: "noFire", reason: "eventNotMatching"};
   }
-  const trigger = moment.trigger as {functionId: string | null};
+  const trigger = moment.initiation as {functionId: string | null};
   const target = trigger.functionId !== null ?
     (facts.functions[trigger.functionId] === undefined ? null : {
       functionId: trigger.functionId,
@@ -91,6 +93,7 @@ function evaluateLateArrival(
       anchorRevision: target.revision,
       status: "planned",
       targetFunctionId: target.functionId,
+      subjectId: event.legId,
     },
   };
 }
@@ -106,7 +109,7 @@ function evaluateFlightDisruption(
       DISRUPTED_FLIGHT_STATUSES.has(event.previousFlightStatus)) {
     return {kind: "noFire", reason: "eventNotMatching"};
   }
-  const trigger = moment.trigger as {functionId: string | null};
+  const trigger = moment.initiation as {functionId: string | null};
   const revision = trigger.functionId === null ?
     0 : facts.functions[trigger.functionId]?.revision ?? 0;
   return {
@@ -117,6 +120,7 @@ function evaluateFlightDisruption(
       dueAtMillis: nowMillis,
       anchorRevision: revision,
       status: "planned",
+      subjectId: event.legId,
       ...(trigger.functionId === null ?
         {} : {targetFunctionId: trigger.functionId}),
     },

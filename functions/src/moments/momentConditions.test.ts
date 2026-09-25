@@ -7,8 +7,10 @@ import {
 import type {AnchorFacts, MomentDefinition} from "./momentModel";
 
 const facts: AnchorFacts = {
-  program: {
+  scope: {
     startsAtMillis: 1_000_000,
+    endsAtMillis: null,
+    cancelled: false,
     rsvpDeadlineAtMillis: null,
     revision: 1,
     messagingEnabled: true,
@@ -38,11 +40,12 @@ const facts: AnchorFacts = {
 
 const lateArrival: MomentDefinition = {
   momentId: "mLate",
-  programId: "prog",
+  scope: {kind: "program", programId: "prog"},
   name: "Late arrival alert",
-  trigger: {
-    kind: "conditionAnchor",
-    conditionKind: "lateArrivalAtHotel",
+  sense: "individual",
+  initiation: {
+    kind: "triggered",
+    triggerKind: "lateArrivalAtHotel",
     functionId: "sangeet",
   },
   audience: {kind: "staffDuty", duty: "functionCheckIn", scopeIds: null},
@@ -53,6 +56,8 @@ const lateArrival: MomentDefinition = {
     titleTemplate: "Meet at gate",
   },
   status: "armed",
+  approval: {approvedByUid: "mgr", approvedAtMillis: 1},
+  origin: "organizer",
   revision: 1,
 };
 
@@ -75,13 +80,14 @@ test("late arrival fires inside the targeted function window", () => {
     anchorRevision: 7,
     status: "planned",
     targetFunctionId: "sangeet",
+    subjectId: "leg1",
   });
 });
 
 test("null functionId resolves the current function", () => {
-  const floating = {...lateArrival, trigger: {
-    kind: "conditionAnchor" as const,
-    conditionKind: "lateArrivalAtHotel" as const,
+  const floating = {...lateArrival, initiation: {
+    kind: "triggered" as const,
+    triggerKind: "lateArrivalAtHotel" as const,
     functionId: null,
   }};
   const result = evaluateCondition(floating, arrived, facts, 2_100_000);
@@ -96,16 +102,16 @@ test("null functionId resolves the current function", () => {
 test("arrival before start, with no live function, or cancelled", () => {
   assert.deepEqual(evaluateCondition(lateArrival, arrived, facts,
     1_950_000), {kind: "noFire", reason: "functionNotStarted"});
-  const floating = {...lateArrival, trigger: {
-    kind: "conditionAnchor" as const,
-    conditionKind: "lateArrivalAtHotel" as const,
+  const floating = {...lateArrival, initiation: {
+    kind: "triggered" as const,
+    triggerKind: "lateArrivalAtHotel" as const,
     functionId: null,
   }};
   assert.deepEqual(evaluateCondition(floating, arrived, facts, 900_000),
     {kind: "noFire", reason: "noCurrentFunction"});
-  const deadFn = {...lateArrival, trigger: {
-    kind: "conditionAnchor" as const,
-    conditionKind: "lateArrivalAtHotel" as const,
+  const deadFn = {...lateArrival, initiation: {
+    kind: "triggered" as const,
+    triggerKind: "lateArrivalAtHotel" as const,
     functionId: "mehendi",
   }};
   assert.deepEqual(evaluateCondition(deadFn, arrived, facts, 2_000_000),
@@ -118,7 +124,7 @@ test("arrived to arrived and wrong program never fire", () => {
   {kind: "noFire", reason: "eventNotMatching"});
   assert.deepEqual(evaluateCondition(lateArrival, {...arrived,
     programId: "other"}, facts, 2_100_000),
-  {kind: "noFire", reason: "programMismatch"});
+  {kind: "noFire", reason: "scopeMismatch"});
   assert.deepEqual(evaluateCondition(lateArrival, {...arrived,
     kind: "travelLegFlightStatusChanged", previousFlightStatus: "x",
     flightStatus: "y"} as TravelLegEvent, facts, 2_100_000),
@@ -126,8 +132,9 @@ test("arrived to arrived and wrong program never fire", () => {
 });
 
 test("flight disruption fires only on transition into the bad set", () => {
-  const flightMoment: MomentDefinition = {...lateArrival, trigger: {
-    kind: "conditionAnchor", conditionKind: "flightDisrupted",
+  const flightMoment: MomentDefinition = {...lateArrival, initiation: {
+    kind: "triggered",
+    triggerKind: "flightDisrupted",
     functionId: null,
   }};
   for (const flightStatus of ["cancelled", "diverted"] as const) {
@@ -158,12 +165,12 @@ test("flight disruption fires only on transition into the bad set", () => {
 });
 
 test("time-anchored and unarmed moments never fire on events", () => {
-  const timed: MomentDefinition = {...lateArrival, trigger: {
-    kind: "timeAnchor", anchorKind: "functionStart", anchorId: "sangeet",
+  const timed: MomentDefinition = {...lateArrival, initiation: {
+    kind: "anchored", anchorKind: "functionStart", anchorId: "sangeet",
     offsetMinutes: 0,
   }};
   assert.deepEqual(evaluateCondition(timed, arrived, facts, 2_100_000),
-    {kind: "noFire", reason: "notConditionTrigger"});
+    {kind: "noFire", reason: "notTriggered"});
   assert.deepEqual(evaluateCondition({...lateArrival, status: "draft"},
     arrived, facts, 2_100_000), {kind: "noFire", reason: "notArmed"});
 });

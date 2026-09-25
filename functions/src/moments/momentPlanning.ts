@@ -2,7 +2,7 @@ import {
   requireMillis,
   type AnchorFacts,
   type MomentDefinition,
-  type MomentTrigger,
+  type MomentInitiation,
   type RunRecord,
 } from "./momentModel";
 
@@ -12,12 +12,12 @@ export type ResolvedAnchor = {
   anchorRevision: number;
 } | {
   kind: "unresolved";
-  reason: "missingAnchor" | "anchorCancelled" | "conditionTrigger";
+  reason: "missingAnchor" | "anchorCancelled" | "notTimeBased";
 };
 
 export type UnplannableReason =
-  "notArmed" | "missingAnchor" | "anchorCancelled" | "conditionTrigger" |
-    "dueInPast";
+  "notArmed" | "missingAnchor" | "anchorCancelled" | "manualInitiation" |
+    "triggeredInitiation" | "dueInPast";
 
 export type PlanResult = {
   kind: "planned";
@@ -36,22 +36,37 @@ export interface ReplanResult {
 
 export type FireDisposition =
   "dispatch" | "skip:momentNotArmed" | "skip:messagingDisabled" |
-    "skip:functionCancelled" | "skip:staleAnchor";
+    "skip:scopeCancelled" | "skip:functionCancelled" | "skip:staleAnchor";
 
 const DEFAULT_GRACE_MILLIS = 5 * 60_000;
 
+/** Scheduled runs do not depend on a mutable anchor; revision is fixed. */
+const SCHEDULED_ANCHOR_REVISION = 0;
+
+/**
+ * Resolves the absolute time an initiation refers to (before offset).
+ * Manual and triggered initiations are not time-based.
+ */
 export function resolveAnchor(
-  trigger: MomentTrigger,
+  initiation: MomentInitiation,
   facts: AnchorFacts,
 ): ResolvedAnchor {
-  if (trigger.kind !== "timeAnchor") {
-    return {kind: "unresolved", reason: "conditionTrigger"};
+  if (initiation.kind === "scheduled") {
+    requireMillis(initiation.atMillis);
+    return {
+      kind: "resolved",
+      atMillis: initiation.atMillis,
+      anchorRevision: SCHEDULED_ANCHOR_REVISION,
+    };
   }
-  switch (trigger.anchorKind) {
+  if (initiation.kind !== "anchored") {
+    return {kind: "unresolved", reason: "notTimeBased"};
+  }
+  switch (initiation.anchorKind) {
   case "functionStart":
   case "functionEnd": {
-    const fn = trigger.anchorId === null ?
-      undefined : facts.functions[trigger.anchorId];
+    const fn = initiation.anchorId === null ?
+      undefined : facts.functions[initiation.anchorId];
     if (!fn) return {kind: "unresolved", reason: "missingAnchor"};
     requireMillis(fn.startsAtMillis);
     requireMillis(fn.endsAtMillis);
@@ -60,21 +75,37 @@ export function resolveAnchor(
     }
     return {
       kind: "resolved",
-      atMillis: trigger.anchorKind === "functionStart" ?
+      atMillis: initiation.anchorKind === "functionStart" ?
         fn.startsAtMillis : fn.endsAtMillis,
       anchorRevision: fn.revision,
     };
   }
-  case "programStart": {
-    requireMillis(facts.program.startsAtMillis);
+  case "scopeStart": {
+    requireMillis(facts.scope.startsAtMillis);
+    if (facts.scope.cancelled) {
+      return {kind: "unresolved", reason: "anchorCancelled"};
+    }
     return {
       kind: "resolved",
-      atMillis: facts.program.startsAtMillis,
-      anchorRevision: facts.program.revision,
+      atMillis: facts.scope.startsAtMillis,
+      anchorRevision: facts.scope.revision,
+    };
+  }
+  case "scopeEnd": {
+    const end = facts.scope.endsAtMillis;
+    if (end === null) return {kind: "unresolved", reason: "missingAnchor"};
+    requireMillis(end);
+    if (facts.scope.cancelled) {
+      return {kind: "unresolved", reason: "anchorCancelled"};
+    }
+    return {
+      kind: "resolved",
+      atMillis: end,
+      anchorRevision: facts.scope.revision,
     };
   }
   case "rsvpDeadline": {
-    const deadline = facts.program.rsvpDeadlineAtMillis;
+    const deadline = facts.scope.rsvpDeadlineAtMillis;
     if (deadline === null) {
       return {kind: "unresolved", reason: "missingAnchor"};
     }
@@ -82,12 +113,12 @@ export function resolveAnchor(
     return {
       kind: "resolved",
       atMillis: deadline,
-      anchorRevision: facts.program.revision,
+      anchorRevision: facts.scope.revision,
     };
   }
   case "transportPlanDeparture": {
-    const plan = trigger.anchorId === null ?
-      undefined : facts.transportPlans[trigger.anchorId];
+    const plan = initiation.anchorId === null ?
+      undefined : facts.transportPlans[initiation.anchorId];
     if (!plan) return {kind: "unresolved", reason: "missingAnchor"};
     requireMillis(plan.departureAtMillis);
     return {
@@ -111,14 +142,24 @@ export function planRun(
   if (moment.status !== "armed") {
     return {kind: "unplannable", reason: "notArmed"};
   }
-  const anchor = resolveAnchor(moment.trigger, facts);
-  if (anchor.kind !== "resolved" ||
-      moment.trigger.kind !== "timeAnchor") {
-    return {kind: "unplannable", reason: anchor.kind === "resolved" ?
-      "conditionTrigger" : anchor.reason};
+  const {initiation} = moment;
+  if (initiation.kind === "manual") {
+    return {kind: "unplannable", reason: "manualInitiation"};
   }
-  const dueAtMillis =
-    anchor.atMillis + moment.trigger.offsetMinutes * 60_000;
+  if (initiation.kind === "triggered") {
+    return {kind: "unplannable", reason: "triggeredInitiation"};
+  }
+  const anchor = resolveAnchor(initiation, facts);
+  if (anchor.kind !== "resolved") {
+    return {
+      kind: "unplannable",
+      reason: anchor.reason === "notTimeBased" ?
+        "manualInitiation" : anchor.reason,
+    };
+  }
+  const offsetMillis = initiation.kind === "anchored" ?
+    initiation.offsetMinutes * 60_000 : 0;
+  const dueAtMillis = anchor.atMillis + offsetMillis;
   requireMillis(dueAtMillis);
   if (dueAtMillis < nowMillis - graceMillis) {
     return {kind: "unplannable", reason: "dueInPast"};
@@ -161,6 +202,38 @@ export function replan(
   return {supersede, create: keep.length > 0 ? null : result.run, keep};
 }
 
+/**
+ * A manual moment fires exactly when the organizer says so. The run id is
+ * keyed on the request's idempotency token so a retried "send now" cannot
+ * double-send.
+ */
+export function planManualRun(
+  moment: MomentDefinition,
+  requestKey: string,
+  nowMillis: number,
+): PlanResult {
+  requireMillis(nowMillis);
+  if (moment.status !== "armed") {
+    return {kind: "unplannable", reason: "notArmed"};
+  }
+  if (moment.initiation.kind !== "manual") {
+    return {kind: "unplannable", reason: "triggeredInitiation"};
+  }
+  if (typeof requestKey !== "string" || requestKey.trim().length === 0) {
+    throw new RangeError("Manual run request key must be non-empty.");
+  }
+  return {
+    kind: "planned",
+    run: {
+      runId: `${moment.momentId}_manual_${requestKey}`,
+      momentId: moment.momentId,
+      dueAtMillis: nowMillis,
+      anchorRevision: SCHEDULED_ANCHOR_REVISION,
+      status: "planned",
+    },
+  };
+}
+
 export function selectDueRuns(
   runs: ReadonlyArray<RunRecord>,
   nowMillis: number,
@@ -183,33 +256,37 @@ export function resolveFireDisposition(
   facts: AnchorFacts,
 ): FireDisposition {
   if (moment.status !== "armed") return "skip:momentNotArmed";
+  if (facts.scope.cancelled) return "skip:scopeCancelled";
   if (moment.action.kind === "sendTemplate" &&
-      !facts.program.messagingEnabled) {
+      !facts.scope.messagingEnabled) {
     return "skip:messagingDisabled";
   }
   const functionIds = new Set<string>();
-  if (moment.trigger.kind === "timeAnchor" &&
-      (moment.trigger.anchorKind === "functionStart" ||
-       moment.trigger.anchorKind === "functionEnd") &&
-      moment.trigger.anchorId !== null) {
-    functionIds.add(moment.trigger.anchorId);
+  const {initiation} = moment;
+  if (initiation.kind === "anchored" &&
+      (initiation.anchorKind === "functionStart" ||
+       initiation.anchorKind === "functionEnd") &&
+      initiation.anchorId !== null) {
+    functionIds.add(initiation.anchorId);
   }
-  if (moment.trigger.kind === "conditionAnchor" &&
-      moment.trigger.functionId !== null) {
-    functionIds.add(moment.trigger.functionId);
+  if (initiation.kind === "triggered" && initiation.functionId !== null) {
+    functionIds.add(initiation.functionId);
   }
   if (moment.audience.kind === "functionGuests") {
     functionIds.add(moment.audience.functionId);
+  }
+  if (run.targetFunctionId !== undefined) {
+    functionIds.add(run.targetFunctionId);
   }
   for (const functionId of functionIds) {
     if (facts.functions[functionId]?.cancelled) {
       return "skip:functionCancelled";
     }
   }
-  if (moment.trigger.kind === "conditionAnchor") {
+  if (initiation.kind !== "anchored") {
     return "dispatch";
   }
-  const currentRevision = currentAnchorRevision(moment.trigger, facts);
+  const currentRevision = currentAnchorRevision(initiation, facts);
   if (currentRevision === null || currentRevision !== run.anchorRevision) {
     return "skip:staleAnchor";
   }
@@ -217,19 +294,20 @@ export function resolveFireDisposition(
 }
 
 function currentAnchorRevision(
-  trigger: Extract<MomentTrigger, {kind: "timeAnchor"}>,
+  initiation: Extract<MomentInitiation, {kind: "anchored"}>,
   facts: AnchorFacts,
 ): number | null {
-  switch (trigger.anchorKind) {
+  switch (initiation.anchorKind) {
   case "functionStart":
   case "functionEnd":
-    return trigger.anchorId === null ?
-      null : facts.functions[trigger.anchorId]?.revision ?? null;
-  case "programStart":
+    return initiation.anchorId === null ?
+      null : facts.functions[initiation.anchorId]?.revision ?? null;
+  case "scopeStart":
+  case "scopeEnd":
   case "rsvpDeadline":
-    return facts.program.revision;
+    return facts.scope.revision;
   case "transportPlanDeparture":
-    return trigger.anchorId === null ?
-      null : facts.transportPlans[trigger.anchorId]?.revision ?? null;
+    return initiation.anchorId === null ?
+      null : facts.transportPlans[initiation.anchorId]?.revision ?? null;
   }
 }
