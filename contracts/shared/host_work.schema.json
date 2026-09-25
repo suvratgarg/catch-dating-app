@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/host_work.schema.json",
+  "title": "Host work shell shared definitions",
+  "description": "Shared vocabulary for the unified host work shell: canonical duties across program and event scopes, shell destinations, and shell modes. Program-side duty names mirror programStaffDuty; eventLead is the canonical name for event operator authority.",
+  "definitions": {
+    "hostWorkScopeKind": {
+      "type": "string",
+      "enum": [
+        "event",
+        "program"
+      ]
+    },
+    "hostWorkDuty": {
+      "type": "string",
+      "enum": [
+        "programCoordinator",
+        "guestRelations",
+        "communications",
+        "functionCheckIn",
+        "functionLead",
+        "airportGreeter",
+        "transportDispatcher",
+        "hotelDesk",
+        "reconciliationViewer",
+        "stakeholderViewer",
+        "eventLead"
+      ],
+      "description": "Canonical duty across event and program scopes. checkInOperator event grants map to functionCheckIn; eventOperator grants map to eventLead."
+    },
+    "hostWorkDestination": {
+      "type": "string",
+      "enum": [
+        "arrivals",
+        "dispatch",
+        "inbound",
+        "rooms",
+        "nowNext",
+        "door",
+        "walkIns",
+        "attention",
+        "guests",
+        "rsvpInbox",
+        "imports",
+        "inbox",
+        "moments",
+        "trips",
+        "exceptions",
+        "export",
+        "overview"
+      ],
+      "description": "A restricted work-shell destination in canonical bottom-bar order. The server resolves the set from granted duties."
+    },
+    "hostWorkShellMode": {
+      "type": "string",
+      "enum": [
+        "task",
+        "tabs",
+        "programWorkspace",
+        "none"
+      ],
+      "description": "task = single destination, no bar; tabs = two or three destinations in the bar; programWorkspace = program-locked coordinator workspace; none = no reachable destination."
+    },
+    "hostWorkGrantedDuty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duty"
+      ],
+      "properties": {
+        "duty": {
+          "$ref": "#/definitions/hostWorkDuty"
+        },
+        "pickupPointIds": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Station scope for airportGreeter/transportDispatcher duties."
+        },
+        "hotelIds": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Hotel scope for hotelDesk duties."
+        },
+        "functionIds": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "description": "Function scope for functionCheckIn/functionLead duties."
+        }
+      }
+    },
+    "hostWorkAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "scopeId",
+        "organizerId",
+        "title",
+        "subtitle",
+        "organizerName",
+        "duties",
+        "destinations",
+        "overflowDestinations",
+        "shellMode",
+        "grantExpiresAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/hostWorkScopeKind"
+        },
+        "scopeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "The eventId or programId this assignment scopes to."
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "subtitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 140
+        },
+        "organizerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "duties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hostWorkGrantedDuty"
+          }
+        },
+        "destinations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hostWorkDestination"
+          },
+          "description": "Resolved destinations in canonical order; the shell renders the first three plus an overflow entry."
+        },
+        "overflowDestinations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hostWorkDestination"
+          },
+          "description": "Destinations beyond the first three, for the overflow menu."
+        },
+        "shellMode": {
+          "$ref": "#/definitions/hostWorkShellMode"
+        },
+        "grantExpiresAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "description": "One staff assignment resolved server-side: the grant's canonical duties plus the derived shell destination set. Only live, unexpired grants are returned."
+    }
+  }
+}
