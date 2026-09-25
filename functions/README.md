@@ -134,6 +134,7 @@ options when specific functions need higher or lower limits.
 | `getEventOperatorAccess` / `listEventStaff` / `grantEventStaff` / `revokeEventStaff` | `src/events/eventStaff.ts` | Grant and inspect time-bounded event staff access |
 | `createOrganizerProgram` / `updateOrganizerProgram` / `listOrganizerPrograms` / `getOrganizerProgram` | `src/programs/programs.ts` | Manager-owned private program (wedding/offsite) lifecycle and setup overview |
 | `getProgramWorkAccess` / `listProgramStaff` / `grantProgramStaff` / `revokeProgramStaff` | `src/programs/programStaff.ts` | Duty- and station-scoped program staff grants and work-shell bootstrap |
+| `listMyHostAssignments` | `src/hostWork/listMyHostAssignments.ts` | Actor-scoped program staff duty list for the host-work shell |
 | `inviteProgramStaff` / `claimProgramStaffInvite` / `revokeProgramStaffInvite` | `src/programs/programStaffInvites.ts` | Single-use phone-bound staff invites that redeem into station-scoped grants on verified-phone claim |
 | `upsertProgramGuest` / `listProgramGuests` / `upsertProgramHousehold` / `listProgramHouseholds` | `src/programs/programGuests.ts` | Person-level program guests and household groupings (no phone-based merging) |
 | `upsertProgramFunction` / `upsertProgramPickupPoint` / `upsertProgramHotel` / `upsertTransportVendor` / `listTransportVendors` | `src/programs/programResources.ts` | Program functions, pickup stations, hotels, and organizer transport vendors |
