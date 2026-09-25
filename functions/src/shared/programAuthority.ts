@@ -15,21 +15,36 @@ export type ProgramStaffDuty =
 export type ProgramDutyAssignment =
   ProgramStaffGrantDocument["duties"][number];
 
+const FUNCTION_SCOPED_DUTIES: ReadonlySet<ProgramStaffDuty> = new Set([
+  "functionCheckIn",
+  "functionLead",
+]);
+
 /** Named duties have fixed resource dimensions, not arbitrary expressions. */
 export function supportsProgramDutyScope(assignment: Pick<ProgramDutyAssignment,
-  "duty" | "pickupPointIds" | "hotelIds">): boolean {
+  "duty" | "pickupPointIds" | "hotelIds"> &
+  {functionIds?: string[]}): boolean {
+  const functionIds = assignment.functionIds ?? [];
   return (assignment.duty !== "programCoordinator" ||
     (assignment.pickupPointIds.length === 0 &&
-      assignment.hotelIds.length === 0)) &&
-    (assignment.duty !== "hotelDesk" || assignment.pickupPointIds.length === 0);
+      assignment.hotelIds.length === 0 &&
+      functionIds.length === 0)) &&
+    (assignment.duty !== "hotelDesk" ||
+      assignment.pickupPointIds.length === 0) &&
+    (functionIds.length === 0 || FUNCTION_SCOPED_DUTIES.has(assignment.duty));
 }
 
 export const programStaffDuties: ProgramStaffDuty[] = [
   "programCoordinator",
+  "guestRelations",
+  "communications",
+  "functionCheckIn",
+  "functionLead",
   "airportGreeter",
   "hotelDesk",
   "transportDispatcher",
   "reconciliationViewer",
+  "stakeholderViewer",
 ];
 
 export function programStaffGrantId(programId: string, uid: string): string {
@@ -116,6 +131,8 @@ export function activeProgramDuties(grant: ProgramStaffGrantDocument,
     assignment.expiresAtMillis <= staffTimestampMillis(grant.expiresAt) &&
     Array.isArray(assignment.pickupPointIds) &&
     Array.isArray(assignment.hotelIds) &&
+    (assignment.functionIds === undefined ||
+      Array.isArray(assignment.functionIds)) &&
     supportsProgramDutyScope(assignment));
 }
 
@@ -184,6 +201,27 @@ export function allowedHotelIds(access: ProgramAccess,
   for (const assignment of dutyAssignments(access, duty)) {
     if (assignment.hotelIds.length === 0) unrestricted = true;
     for (const id of assignment.hotelIds) scoped.add(id);
+  }
+  return unrestricted ? null : scoped;
+}
+
+/** Empty functionIds means the duty covers every program function. */
+export function dutyCoversFunction(assignments: ProgramDutyAssignment[],
+  functionId: string): boolean {
+  return assignments.some((assignment) =>
+    (assignment.functionIds ?? []).length === 0 ||
+    assignment.functionIds!.includes(functionId));
+}
+
+export function allowedFunctionIds(access: ProgramAccess,
+  duty: ProgramStaffDuty): Set<string> | null {
+  if (access.role === "manager") return null;
+  const scoped = new Set<string>();
+  let unrestricted = false;
+  for (const assignment of dutyAssignments(access, duty)) {
+    const ids = assignment.functionIds ?? [];
+    if (ids.length === 0) unrestricted = true;
+    for (const id of ids) scoped.add(id);
   }
   return unrestricted ? null : scoped;
 }

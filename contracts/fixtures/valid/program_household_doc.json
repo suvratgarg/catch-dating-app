@@ -1,0 +1,14 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "label": "The Sharma family",
+  "primaryContactName": "Rohan Sharma",
+  "primaryPhoneE164": "+919800001234",
+  "primaryEmail": "rohan@example.com",
+  "memberGuestIds": ["guest-1", "guest-2", "guest-3"],
+  "deliveryPreference": "whatsapp",
+  "side": "partnerA",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}

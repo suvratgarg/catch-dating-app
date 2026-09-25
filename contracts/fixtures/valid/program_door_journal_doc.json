@@ -1,0 +1,15 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "functionId": "function-sangeet",
+  "guestId": "guest-1",
+  "actorUid": "door-staff-1",
+  "action": "checkIn",
+  "occurredAtMillis": 1786625400000,
+  "deviceId": "door-tablet-3",
+  "partySize": null,
+  "note": null,
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}

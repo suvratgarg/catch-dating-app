@@ -7954,6 +7954,32 @@ export interface OrganizerCampaignDocument {
   savedAudienceId?: string | null;
   savedAudienceRevision?: number | null;
   savedAudienceDefinitionHash?: string | null;
+  /**
+   * Where recipients resolve from. Absent reads as savedAudience backed by savedAudienceId. kind=programSelection draws recipients from programFunctionGuests/programGuests instead of CRM audiences.
+   */
+  recipientSource?: {
+    kind: "savedAudience" | "programSelection";
+    /**
+     * Required when kind=programSelection; ignored otherwise.
+     */
+    programId?: string | null;
+    /**
+     * Restricts to guests invited to these functions; null or empty means every function in the program.
+     *
+     * @maxItems 32
+     */
+    functionIds?: string[] | null;
+    /**
+     * Restricts to matching per-function RSVP states; null or empty means every status.
+     *
+     * @maxItems 4
+     */
+    rsvpStatuses?: ("pending" | "attending" | "declined" | "maybe")[] | null;
+    /**
+     * When true, one message is sent per household primary contact instead of per guest. Default false.
+     */
+    householdDedupe?: boolean | null;
+  } | null;
   connectionId: string;
   templateId: string;
   templateVariables: {
@@ -9085,6 +9111,44 @@ export interface OrganizerProgramDocument {
     | "forms"
     | "messaging"
   )[];
+  /**
+   * Immutable snapshot of the organizer entitlement terms captured at program creation. Absent on programs predating entitlements; owning callables treat absence as the unpaid default ceiling.
+   */
+  entitlement?: {
+    /**
+     * Catalog key from contracts/catalogs/organizer_entitlement_skus.json at grant time.
+     */
+    sku: string;
+    limits: {
+      guests: number;
+      functions: number;
+      staffAssignments: number;
+      momentsPerFunction: number;
+    };
+    /**
+     * Ceiling on organizerPrograms.capabilities; an enabled capability must also appear here.
+     *
+     * @maxItems 8
+     */
+    capabilitiesAllowed: (
+      | "arrivalsTransport"
+      | "accommodation"
+      | "forms"
+      | "messaging"
+    )[];
+    grantedAtMillis: number;
+    /**
+     * Manual invoice or checkout reference recorded by the granting admin.
+     */
+    receiptRef: string | null;
+  } | null;
+  /**
+   * Optional display labels for programHouseholds.side (such as bride/groom or two family names); defaults to generic partner labels.
+   */
+  householdSideLabels?: {
+    partnerA?: string;
+    partnerB?: string;
+  } | null;
   transportSettings: {
     /**
      * Anchored curb-time window used by grouping suggestions. Default 30 minutes.
@@ -9136,7 +9200,118 @@ export interface ProgramFunctionDocument {
   endsAt: FirebaseFirestore.Timestamp;
   venueName: string;
   venueNotes?: string | null;
+  /**
+   * Optional precise venue pin selected from Places or dropped manually; venueName remains the display string.
+   */
+  venueLocation?: {
+    name: string;
+    address?: string | null;
+    placeId?: string | null;
+    latitude: number;
+    longitude: number;
+    notes?: string | null;
+  } | null;
+  /**
+   * Short wardrobe guidance shown on invitations and reminders, such as 'Pastel formal' or 'Poolside casual'.
+   */
+  dressCode?: string | null;
+  /**
+   * Guest-facing instructions for this function (entry gate, shuttle note, what to bring). Never carries staff-only detail.
+   */
+  instructions?: string | null;
+  /**
+   * Absent on functions written before per-function invitations; reads as allGuests.
+   */
+  invitationMode?: "allGuests" | "selectedGuests";
+  /**
+   * When true, functionCheckIn/functionLead duties may mark programFunctionGuests attendanceStatus at the door.
+   */
+  checkInEnabled?: boolean;
+  /**
+   * Server-maintained rollup of attending party sizes for catering and venue counts.
+   */
+  expectedCount?: number | null;
+  /**
+   * Server-maintained rollup of programFunctionGuests attendanceStatus=checkedIn.
+   */
+  checkedInCount?: number | null;
   status: "scheduled" | "completed" | "cancelled";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned per-function invitation, RSVP and door-attendance join record. One document per (functionId, guestId) pair; the document id is the deterministic `${functionId}_${guestId}` join key so invites and responses upsert idempotently. Per-function truth lives here; programGuests.rsvpStatus is only a derived rollup.
+ */
+export interface ProgramFunctionGuestDocument {
+  programId: string;
+  organizerId: string;
+  functionId: string;
+  guestId: string;
+  /**
+   * Whether this guest is on the function's invitation list. Rows exist only for functions with invitationMode=selectedGuests when invited=false; allGuests functions may omit rows entirely.
+   */
+  invited: boolean;
+  rsvpStatus: "pending" | "attending" | "declined" | "maybe";
+  /**
+   * Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends.
+   */
+  attendanceStatus: "expected" | "checkedIn" | "noShow";
+  /**
+   * Attending party size including children when the guest RSVPs for more than themselves; null reads as 1.
+   */
+  partySize?: number | null;
+  /**
+   * When the guest's current RSVP response was recorded; null while still pending.
+   */
+  respondedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Optional guest note captured with the response, such as dietary or plus-one detail.
+   */
+  responseNote?: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned append-only door journal entry for one program function. The document id is the deterministic journalId derived from (scope, functionId, guestId, action, occurredAtMillis, actorUid), so device retries and offline outbox replays collapse to one entry. Attendance truth projects from this journal onto programFunctionGuests.attendanceStatus; clients never write either surface directly.
+ */
+export interface ProgramDoorJournalDocument {
+  programId: string;
+  organizerId: string;
+  functionId: string;
+  /**
+   * programGuests member the entry acts on; walkInCreate entries may name a guest the function never invited.
+   */
+  guestId: string;
+  /**
+   * Staff uid who recorded the action at the door.
+   */
+  actorUid: string;
+  action:
+    | "checkIn"
+    | "undoCheckIn"
+    | "markNoShow"
+    | "walkInCreate"
+    | "partySizeAdjust";
+  /**
+   * Client-declared action time folded into the idempotency key and journal ordering.
+   */
+  occurredAtMillis: number;
+  /**
+   * Door device identifier for audit; null when the device supplies none.
+   */
+  deviceId: string | null;
+  /**
+   * Attending party size set by walkInCreate or partySizeAdjust; null on every other action.
+   */
+  partySize: number | null;
+  /**
+   * Optional door note such as a late-arrival explanation.
+   */
+  note: string | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
@@ -9164,6 +9339,9 @@ export interface ProgramGuestDocument {
    */
   externalReference: string | null;
   invitationStatus: "notInvited" | "invited" | "delivered" | "responded";
+  /**
+   * Derived program-wide rollup maintained by the server from programFunctionGuests rows (any attending -> attending, else strongest other response). Per-function truth lives only on programFunctionGuests; writers never set this directly.
+   */
   rsvpStatus: "pending" | "attending" | "declined" | "maybe";
   source: "manual" | "import" | "formResponse";
   createdAt: FirebaseFirestore.Timestamp;
@@ -9193,6 +9371,10 @@ export interface ProgramHouseholdDocument {
    * Invitation delivery preference; does not grant messaging consent by itself.
    */
   deliveryPreference: "whatsapp" | "sms" | "email" | "none";
+  /**
+   * Optional side assignment used for per-side counts and seating; labels are configured on the program.
+   */
+  side?: ("partnerA" | "partnerB" | "mutual") | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
@@ -9216,10 +9398,15 @@ export interface ProgramStaffGrantDocument {
   duties: {
     duty:
       | "programCoordinator"
+      | "guestRelations"
+      | "communications"
+      | "functionCheckIn"
+      | "functionLead"
       | "airportGreeter"
       | "hotelDesk"
       | "transportDispatcher"
-      | "reconciliationViewer";
+      | "reconciliationViewer"
+      | "stakeholderViewer";
     /**
      * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
      *
@@ -9232,6 +9419,12 @@ export interface ProgramStaffGrantDocument {
      * @maxItems 64
      */
     hotelIds: string[];
+    /**
+     * Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed.
+     *
+     * @maxItems 64
+     */
+    functionIds?: string[];
     /**
      * Exclusive expiry of this exact duty and resource scope. Independent of other assignments.
      */
@@ -9265,10 +9458,15 @@ export interface ProgramStaffInviteDocument {
   duties: {
     duty:
       | "programCoordinator"
+      | "guestRelations"
+      | "communications"
+      | "functionCheckIn"
+      | "functionLead"
       | "airportGreeter"
       | "hotelDesk"
       | "transportDispatcher"
-      | "reconciliationViewer";
+      | "reconciliationViewer"
+      | "stakeholderViewer";
     /**
      * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
      *
@@ -9281,6 +9479,12 @@ export interface ProgramStaffInviteDocument {
      * @maxItems 64
      */
     hotelIds: string[];
+    /**
+     * Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed.
+     *
+     * @maxItems 64
+     */
+    functionIds?: string[];
   }[];
   status: "pending" | "claimed" | "revoked";
   createdBy: string;

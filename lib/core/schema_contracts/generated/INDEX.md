@@ -360,6 +360,8 @@ Do not edit it by hand.
 | EventStaffGrantDocument | `firestore/event_staff_grants.schema.json` | `functions/src/shared/generated/eventStaffGrantDocument.ts` |
 | OrganizerProgramDocument | `firestore/organizer_programs.schema.json` | `functions/src/shared/generated/organizerProgramDocument.ts` |
 | ProgramFunctionDocument | `firestore/program_functions.schema.json` | `functions/src/shared/generated/programFunctionDocument.ts` |
+| ProgramFunctionGuestDocument | `firestore/program_function_guests.schema.json` | `functions/src/shared/generated/programFunctionGuestDocument.ts` |
+| ProgramDoorJournalDocument | `firestore/program_door_journal.schema.json` | `functions/src/shared/generated/programDoorJournalDocument.ts` |
 | ProgramGuestDocument | `firestore/program_guests.schema.json` | `functions/src/shared/generated/programGuestDocument.ts` |
 | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `functions/src/shared/generated/programHouseholdDocument.ts` |
 | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `functions/src/shared/generated/programStaffGrantDocument.ts` |
@@ -388,6 +390,7 @@ Do not edit it by hand.
 | ListProgramTripsCallablePayload | `callables/list_program_trips_payload.schema.json` | `functions/src/shared/generated/listProgramTripsCallablePayload.ts` |
 | ListProgramGuestsCallablePayload | `callables/list_program_guests_payload.schema.json` | `functions/src/shared/generated/listProgramGuestsCallablePayload.ts` |
 | UpsertProgramHouseholdCallablePayload | `callables/upsert_program_household_payload.schema.json` | `functions/src/shared/generated/upsertProgramHouseholdCallablePayload.ts` |
+| RecordProgramDoorJournalCallablePayload | `callables/record_program_door_journal_payload.schema.json` | `functions/src/shared/generated/recordProgramDoorJournalCallablePayload.ts` |
 | UpsertProgramFunctionCallablePayload | `callables/upsert_program_function_payload.schema.json` | `functions/src/shared/generated/upsertProgramFunctionCallablePayload.ts` |
 | UpsertProgramPickupPointCallablePayload | `callables/upsert_program_pickup_point_payload.schema.json` | `functions/src/shared/generated/upsertProgramPickupPointCallablePayload.ts` |
 | UpsertProgramHotelCallablePayload | `callables/upsert_program_hotel_payload.schema.json` | `functions/src/shared/generated/upsertProgramHotelCallablePayload.ts` |
@@ -413,6 +416,7 @@ Do not edit it by hand.
 | ProgramArrivalsRosterCallableResponse | `callable_responses/program_arrivals_roster_response.schema.json` | `functions/src/shared/generated/programArrivalsRosterCallableResponse.ts` |
 | ProgramTransportPlanCallableResponse | `callable_responses/program_transport_plan_response.schema.json` | `functions/src/shared/generated/programTransportPlanCallableResponse.ts` |
 | ProgramHotelInboundCallableResponse | `callable_responses/program_hotel_inbound_response.schema.json` | `functions/src/shared/generated/programHotelInboundCallableResponse.ts` |
+| RecordProgramDoorJournalCallableResponse | `callable_responses/record_program_door_journal_response.schema.json` | `functions/src/shared/generated/recordProgramDoorJournalCallableResponse.ts` |
 | ProgramManifestImportCallableResponse | `callable_responses/program_manifest_import_response.schema.json` | `functions/src/shared/generated/programManifestImportCallableResponse.ts` |
 | DispatchProgramTripCallableResponse | `callable_responses/dispatch_program_trip_response.schema.json` | `functions/src/shared/generated/dispatchProgramTripCallableResponse.ts` |
 | TransportVendorListCallableResponse | `callable_responses/transport_vendor_list_response.schema.json` | `functions/src/shared/generated/transportVendorListCallableResponse.ts` |
@@ -1250,6 +1254,8 @@ Do not edit it by hand.
 | `schemaEventStaffGrantDocumentSchema` | EventStaffGrantDocument | `firestore/event_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_staff_grant_document.g.dart` |
 | `schemaOrganizerProgramDocumentSchema` | OrganizerProgramDocument | `firestore/organizer_programs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_program_document.g.dart` |
 | `schemaProgramFunctionDocumentSchema` | ProgramFunctionDocument | `firestore/program_functions.schema.json` | `lib/core/schema_contracts/generated/schemas/program_function_document.g.dart` |
+| `schemaProgramFunctionGuestDocumentSchema` | ProgramFunctionGuestDocument | `firestore/program_function_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_function_guest_document.g.dart` |
+| `schemaProgramDoorJournalDocumentSchema` | ProgramDoorJournalDocument | `firestore/program_door_journal.schema.json` | `lib/core/schema_contracts/generated/schemas/program_door_journal_document.g.dart` |
 | `schemaProgramGuestDocumentSchema` | ProgramGuestDocument | `firestore/program_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_document.g.dart` |
 | `schemaProgramHouseholdDocumentSchema` | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `lib/core/schema_contracts/generated/schemas/program_household_document.g.dart` |
 | `schemaProgramStaffGrantDocumentSchema` | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_grant_document.g.dart` |
@@ -1278,6 +1284,7 @@ Do not edit it by hand.
 | `schemaListProgramTripsCallablePayloadSchema` | ListProgramTripsCallablePayload | `callables/list_program_trips_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_program_trips_callable_payload.g.dart` |
 | `schemaListProgramGuestsCallablePayloadSchema` | ListProgramGuestsCallablePayload | `callables/list_program_guests_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_program_guests_callable_payload.g.dart` |
 | `schemaUpsertProgramHouseholdCallablePayloadSchema` | UpsertProgramHouseholdCallablePayload | `callables/upsert_program_household_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_program_household_callable_payload.g.dart` |
+| `schemaRecordProgramDoorJournalCallablePayloadSchema` | RecordProgramDoorJournalCallablePayload | `callables/record_program_door_journal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_program_door_journal_callable_payload.g.dart` |
 | `schemaUpsertProgramFunctionCallablePayloadSchema` | UpsertProgramFunctionCallablePayload | `callables/upsert_program_function_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_program_function_callable_payload.g.dart` |
 | `schemaUpsertProgramPickupPointCallablePayloadSchema` | UpsertProgramPickupPointCallablePayload | `callables/upsert_program_pickup_point_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_program_pickup_point_callable_payload.g.dart` |
 | `schemaUpsertProgramHotelCallablePayloadSchema` | UpsertProgramHotelCallablePayload | `callables/upsert_program_hotel_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/upsert_program_hotel_callable_payload.g.dart` |
@@ -1303,6 +1310,7 @@ Do not edit it by hand.
 | `schemaProgramArrivalsRosterCallableResponseSchema` | ProgramArrivalsRosterCallableResponse | `callable_responses/program_arrivals_roster_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_arrivals_roster_callable_response.g.dart` |
 | `schemaProgramTransportPlanCallableResponseSchema` | ProgramTransportPlanCallableResponse | `callable_responses/program_transport_plan_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_transport_plan_callable_response.g.dart` |
 | `schemaProgramHotelInboundCallableResponseSchema` | ProgramHotelInboundCallableResponse | `callable_responses/program_hotel_inbound_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_hotel_inbound_callable_response.g.dart` |
+| `schemaRecordProgramDoorJournalCallableResponseSchema` | RecordProgramDoorJournalCallableResponse | `callable_responses/record_program_door_journal_response.schema.json` | `lib/core/schema_contracts/generated/schemas/record_program_door_journal_callable_response.g.dart` |
 | `schemaProgramManifestImportCallableResponseSchema` | ProgramManifestImportCallableResponse | `callable_responses/program_manifest_import_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_manifest_import_callable_response.g.dart` |
 | `schemaDispatchProgramTripCallableResponseSchema` | DispatchProgramTripCallableResponse | `callable_responses/dispatch_program_trip_response.schema.json` | `lib/core/schema_contracts/generated/schemas/dispatch_program_trip_callable_response.g.dart` |
 | `schemaTransportVendorListCallableResponseSchema` | TransportVendorListCallableResponse | `callable_responses/transport_vendor_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_vendor_list_callable_response.g.dart` |
@@ -1883,6 +1891,7 @@ Do not edit it by hand.
 | ListProgramTripsCallableRequest | ListProgramTripsCallablePayload | `callables/list_program_trips_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_program_trips_callable_request.g.dart` |
 | ListProgramGuestsCallableRequest | ListProgramGuestsCallablePayload | `callables/list_program_guests_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_program_guests_callable_request.g.dart` |
 | UpsertProgramHouseholdCallableRequest | UpsertProgramHouseholdCallablePayload | `callables/upsert_program_household_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_program_household_callable_request.g.dart` |
+| RecordProgramDoorJournalCallableRequest | RecordProgramDoorJournalCallablePayload | `callables/record_program_door_journal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_program_door_journal_callable_request.g.dart` |
 | UpsertProgramFunctionCallableRequest | UpsertProgramFunctionCallablePayload | `callables/upsert_program_function_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_program_function_callable_request.g.dart` |
 | UpsertProgramPickupPointCallableRequest | UpsertProgramPickupPointCallablePayload | `callables/upsert_program_pickup_point_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_program_pickup_point_callable_request.g.dart` |
 | UpsertProgramHotelCallableRequest | UpsertProgramHotelCallablePayload | `callables/upsert_program_hotel_payload.schema.json` | `lib/core/schema_contracts/generated/callables/upsert_program_hotel_callable_request.g.dart` |

@@ -1782,6 +1782,18 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programFunctionDocument.ts",
   },
   {
+    name: "ProgramFunctionGuestDocument",
+    source: "firestore/program_function_guests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programFunctionGuestDocument.ts",
+  },
+  {
+    name: "ProgramDoorJournalDocument",
+    source: "firestore/program_door_journal.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programDoorJournalDocument.ts",
+  },
+  {
     name: "ProgramGuestDocument",
     source: "firestore/program_guests.schema.json",
     typeOutput: "functions/src/shared/generated/programGuestDocument.ts",
@@ -1946,6 +1958,13 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "upsertProgramHouseholdCallablePayload.ts",
+  },
+  {
+    name: "RecordProgramDoorJournalCallablePayload",
+    source: "callables/record_program_door_journal_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordProgramDoorJournalCallablePayload.ts",
   },
   {
     name: "UpsertProgramFunctionCallablePayload",
@@ -2120,6 +2139,14 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "programHotelInboundCallableResponse.ts",
+  },
+  {
+    name: "RecordProgramDoorJournalCallableResponse",
+    source:
+      "callable_responses/record_program_door_journal_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordProgramDoorJournalCallableResponse.ts",
   },
   {
     name: "ProgramManifestImportCallableResponse",

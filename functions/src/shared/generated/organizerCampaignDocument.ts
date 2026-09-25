@@ -43,6 +43,32 @@ export interface OrganizerCampaignDocument {
   savedAudienceId?: string | null;
   savedAudienceRevision?: number | null;
   savedAudienceDefinitionHash?: string | null;
+  /**
+   * Where recipients resolve from. Absent reads as savedAudience backed by savedAudienceId. kind=programSelection draws recipients from programFunctionGuests/programGuests instead of CRM audiences.
+   */
+  recipientSource?: {
+    kind: "savedAudience" | "programSelection";
+    /**
+     * Required when kind=programSelection; ignored otherwise.
+     */
+    programId?: string | null;
+    /**
+     * Restricts to guests invited to these functions; null or empty means every function in the program.
+     *
+     * @maxItems 32
+     */
+    functionIds?: string[] | null;
+    /**
+     * Restricts to matching per-function RSVP states; null or empty means every status.
+     *
+     * @maxItems 4
+     */
+    rsvpStatuses?: ("pending" | "attending" | "declined" | "maybe")[] | null;
+    /**
+     * When true, one message is sent per household primary contact instead of per guest. Default false.
+     */
+    householdDedupe?: boolean | null;
+  } | null;
   connectionId: string;
   templateId: string;
   templateVariables: {
