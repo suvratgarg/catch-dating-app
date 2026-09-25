@@ -84,6 +84,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   updatePrivateEventBasics: {maxRequests: 30, windowMs: 60 * 1000},
   listOfferEventTargets: {maxRequests: 30, windowMs: 60 * 1000},
   listPrivateEventSetups: {maxRequests: 30, windowMs: 60 * 1000},
+  listMyHostAssignments: {maxRequests: 30, windowMs: 60 * 1000},
   updatePrivateEventDetails: {maxRequests: 30, windowMs: 60 * 1000},
   getPrivateEventSetup: {maxRequests: 60, windowMs: 60 * 1000},
   getOrganizerEventSetupDefaults: {maxRequests: 60, windowMs: 60 * 1000},

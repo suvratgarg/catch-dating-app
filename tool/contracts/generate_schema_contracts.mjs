@@ -1864,6 +1864,13 @@ const schemaSpecs = [
       "listOrganizerProgramsCallablePayload.ts",
   },
   {
+    name: "ListMyHostAssignmentsCallablePayload",
+    source: "callables/list_my_host_assignments_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listMyHostAssignmentsCallablePayload.ts",
+  },
+  {
     name: "CreateOrganizerProgramCallablePayload",
     source: "callables/create_organizer_program_payload.schema.json",
     typeOutput:
@@ -2054,6 +2061,15 @@ const schemaSpecs = [
     source: "callable_responses/program_access_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/programAccessCallableResponse.ts",
+  },
+  {
+    name: "ListMyHostAssignmentsCallableResponse",
+    source:
+      "callable_responses/" +
+      "list_my_host_assignments_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listMyHostAssignmentsCallableResponse.ts",
   },
   {
     name: "OrganizerProgramCallableResponse",

@@ -368,6 +368,7 @@ export {transportVehicleAssignmentDocumentSchema} from "./schemas/transportVehic
 export {transportOperationReceiptDocumentSchema} from "./schemas/transportOperationReceiptDocument";
 export {programIdCallablePayloadSchema} from "./schemas/programIdInput";
 export {listOrganizerProgramsCallablePayloadSchema} from "./schemas/listOrganizerProgramsInput";
+export {listMyHostAssignmentsCallablePayloadSchema} from "./schemas/listMyHostAssignmentsInput";
 export {createOrganizerProgramCallablePayloadSchema} from "./schemas/createOrganizerProgramInput";
 export {updateOrganizerProgramCallablePayloadSchema} from "./schemas/updateOrganizerProgramInput";
 export {grantProgramStaffCallablePayloadSchema} from "./schemas/grantProgramStaffInput";
@@ -397,6 +398,7 @@ export {listTransportVendorsCallablePayloadSchema} from "./schemas/listTransport
 export {programMutationCallableResponseSchema} from "./schemas/programMutationOutput";
 export {organizerProgramListCallableResponseSchema} from "./schemas/organizerProgramListOutput";
 export {programAccessCallableResponseSchema} from "./schemas/programAccessOutput";
+export {listMyHostAssignmentsCallableResponseSchema} from "./schemas/listMyHostAssignmentsOutput";
 export {organizerProgramCallableResponseSchema} from "./schemas/organizerProgramOutput";
 export {programInviteClaimCallableResponseSchema} from "./schemas/programInviteClaimOutput";
 export {programStaffListCallableResponseSchema} from "./schemas/programStaffListOutput";

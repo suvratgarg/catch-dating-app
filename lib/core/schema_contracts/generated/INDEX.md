@@ -375,6 +375,7 @@ Do not edit it by hand.
 | TransportOperationReceiptDocument | `firestore/transport_operation_receipts.schema.json` | `functions/src/shared/generated/transportOperationReceiptDocument.ts` |
 | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `functions/src/shared/generated/programIdCallablePayload.ts` |
 | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `functions/src/shared/generated/listOrganizerProgramsCallablePayload.ts` |
+| ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallablePayload.ts` |
 | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `functions/src/shared/generated/createOrganizerProgramCallablePayload.ts` |
 | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `functions/src/shared/generated/updateOrganizerProgramCallablePayload.ts` |
 | GrantProgramStaffCallablePayload | `callables/grant_program_staff_payload.schema.json` | `functions/src/shared/generated/grantProgramStaffCallablePayload.ts` |
@@ -404,6 +405,7 @@ Do not edit it by hand.
 | ProgramMutationCallableResponse | `callable_responses/program_mutation_response.schema.json` | `functions/src/shared/generated/programMutationCallableResponse.ts` |
 | OrganizerProgramListCallableResponse | `callable_responses/organizer_program_list_response.schema.json` | `functions/src/shared/generated/organizerProgramListCallableResponse.ts` |
 | ProgramAccessCallableResponse | `callable_responses/program_access_response.schema.json` | `functions/src/shared/generated/programAccessCallableResponse.ts` |
+| ListMyHostAssignmentsCallableResponse | `callable_responses/list_my_host_assignments_response.schema.json` | `functions/src/shared/generated/listMyHostAssignmentsCallableResponse.ts` |
 | OrganizerProgramCallableResponse | `callable_responses/organizer_program_response.schema.json` | `functions/src/shared/generated/organizerProgramCallableResponse.ts` |
 | ProgramInviteClaimCallableResponse | `callable_responses/program_invite_claim_response.schema.json` | `functions/src/shared/generated/programInviteClaimCallableResponse.ts` |
 | ProgramStaffListCallableResponse | `callable_responses/program_staff_list_response.schema.json` | `functions/src/shared/generated/programStaffListCallableResponse.ts` |
@@ -1263,6 +1265,7 @@ Do not edit it by hand.
 | `schemaTransportOperationReceiptDocumentSchema` | TransportOperationReceiptDocument | `firestore/transport_operation_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_operation_receipt_document.g.dart` |
 | `schemaProgramIdCallablePayloadSchema` | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/program_id_callable_payload.g.dart` |
 | `schemaListOrganizerProgramsCallablePayloadSchema` | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_programs_callable_payload.g.dart` |
+| `schemaListMyHostAssignmentsCallablePayloadSchema` | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_my_host_assignments_callable_payload.g.dart` |
 | `schemaCreateOrganizerProgramCallablePayloadSchema` | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_organizer_program_callable_payload.g.dart` |
 | `schemaUpdateOrganizerProgramCallablePayloadSchema` | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_organizer_program_callable_payload.g.dart` |
 | `schemaGrantProgramStaffCallablePayloadSchema` | GrantProgramStaffCallablePayload | `callables/grant_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/grant_program_staff_callable_payload.g.dart` |
@@ -1292,6 +1295,7 @@ Do not edit it by hand.
 | `schemaProgramMutationCallableResponseSchema` | ProgramMutationCallableResponse | `callable_responses/program_mutation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_mutation_callable_response.g.dart` |
 | `schemaOrganizerProgramListCallableResponseSchema` | OrganizerProgramListCallableResponse | `callable_responses/organizer_program_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_program_list_callable_response.g.dart` |
 | `schemaProgramAccessCallableResponseSchema` | ProgramAccessCallableResponse | `callable_responses/program_access_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_access_callable_response.g.dart` |
+| `schemaListMyHostAssignmentsCallableResponseSchema` | ListMyHostAssignmentsCallableResponse | `callable_responses/list_my_host_assignments_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_my_host_assignments_callable_response.g.dart` |
 | `schemaOrganizerProgramCallableResponseSchema` | OrganizerProgramCallableResponse | `callable_responses/organizer_program_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_program_callable_response.g.dart` |
 | `schemaProgramInviteClaimCallableResponseSchema` | ProgramInviteClaimCallableResponse | `callable_responses/program_invite_claim_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_invite_claim_callable_response.g.dart` |
 | `schemaProgramStaffListCallableResponseSchema` | ProgramStaffListCallableResponse | `callable_responses/program_staff_list_response.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_list_callable_response.g.dart` |
@@ -1866,6 +1870,7 @@ Do not edit it by hand.
 | PromoteFormCommunicationIntentCallableRequest | PromoteFormCommunicationIntentCallablePayload | `callables/promote_form_communication_intent_payload.schema.json` | `lib/core/schema_contracts/generated/callables/promote_form_communication_intent_callable_request.g.dart` |
 | ProgramIdCallableRequest | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `lib/core/schema_contracts/generated/callables/program_id_callable_request.g.dart` |
 | ListOrganizerProgramsCallableRequest | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_organizer_programs_callable_request.g.dart` |
+| ListMyHostAssignmentsCallableRequest | ListMyHostAssignmentsCallablePayload | `callables/list_my_host_assignments_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_my_host_assignments_callable_request.g.dart` |
 | CreateOrganizerProgramCallableRequest | CreateOrganizerProgramCallablePayload | `callables/create_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_program_callable_request.g.dart` |
 | UpdateOrganizerProgramCallableRequest | UpdateOrganizerProgramCallablePayload | `callables/update_organizer_program_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_organizer_program_callable_request.g.dart` |
 | GrantProgramStaffCallableRequest | GrantProgramStaffCallablePayload | `callables/grant_program_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/grant_program_staff_callable_request.g.dart` |
