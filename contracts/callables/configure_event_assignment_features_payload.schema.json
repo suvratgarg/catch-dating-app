@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/configure_event_assignment_features_payload.schema.json",
+  "title": "ConfigureEventAssignmentFeaturesCallablePayload",
+  "description": "Organizer maps reviewed versioned form questions to bounded soft assignment features; it does not grant answer use.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "expectedRevision", "requestId", "rules"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedRevision": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "rules": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/assignment_feature_common.schema.json#/definitions/featureRule"}}
+  }
+}

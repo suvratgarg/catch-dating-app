@@ -178,12 +178,25 @@ export function PublicFormPrivacy({
       <div className="public-form__powered-by">
         <span>{poweredByLabel}</span>
         <PlainLink aria-label={brandLabel} href="/">
-          {brandWord}<span aria-hidden="true">●</span>
+          <img alt={brandWord} className="public-form__catch-mark"
+            src="/assets/branding/catch_splash_mark_light.png" />
         </PlainLink>
       </div>
       <p>{children}</p>
     </footer>
   );
+}
+
+export function PublicFormVerification({children}: {children: ReactNode}) {
+  return <div className="public-form__verification">{children}</div>;
+}
+
+export function PublicFormFieldError({children}: {children: ReactNode}) {
+  return <p className="public-form__error" role="alert">{children}</p>;
+}
+
+export function PublicFormPhoneFields({children}: {children: ReactNode}) {
+  return <div className="public-form__phone-row">{children}</div>;
 }
 
 export function PublicFormForm(

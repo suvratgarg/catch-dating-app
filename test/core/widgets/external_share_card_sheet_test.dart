@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -115,19 +117,24 @@ void main() {
 Widget _subject({
   required ExternalShareController share,
   Future<void> Function()? onShareIntent,
-}) => MaterialApp(
-  theme: AppTheme.light,
-  home: Scaffold(
-    body: CatchExternalShareSheet(
-      share: share,
-      fileName: 'preview.png',
-      buttonLabel: 'Share preview',
-      footnote: 'Preview only',
-      pixelRatio: 1,
-      onShareIntent: onShareIntent,
-      media: const SizedBox.square(
-        dimension: 120,
-        child: ColoredBox(color: Colors.blue),
+}) => ProviderScope(
+  child: MaterialApp(
+    theme: AppTheme.light,
+    builder: (context, child) => CatchNoticeOverlay(
+      child: child ?? const SizedBox.shrink(),
+    ),
+    home: Scaffold(
+      body: CatchExternalShareSheet(
+        share: share,
+        fileName: 'preview.png',
+        buttonLabel: 'Share preview',
+        footnote: 'Preview only',
+        pixelRatio: 1,
+        onShareIntent: onShareIntent,
+        media: const SizedBox.square(
+          dimension: 120,
+          child: ColoredBox(color: Colors.blue),
+        ),
       ),
     ),
   ),

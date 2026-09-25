@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -32,21 +32,51 @@ import 'package:go_router/go_router.dart';
 part 'host_response_answer_section.dart';
 part 'host_response_detail_section.dart';
 
+/// Ephemeral route context for continuing through one filtered response queue.
+class HostResponseReviewQueue {
+  const HostResponseReviewQueue({
+    required this.request,
+    required this.entryId,
+    required this.index,
+  });
+
+  final HostFormResponseListRequest request;
+  final String entryId;
+  final int index;
+
+  int targetIndex(
+    List<HostFormInboxEntry> entries,
+    int direction, {
+    bool hasMore = true,
+  }) {
+    final current = entries.indexWhere((entry) => entry.entryId == entryId);
+    if (current >= 0) return current + direction;
+    final target = index + (direction > 0 ? 0 : -1);
+    if (direction < 0 && !hasMore && target >= entries.length) {
+      return entries.length - 1;
+    }
+    return target;
+  }
+}
+
 /// One detail surface for submitted forms and imported application records.
 class HostFormResponseDetailScreen extends ConsumerStatefulWidget {
   const HostFormResponseDetailScreen({
     super.key,
     required this.organizerId,
     required String this.responseId,
+    this.queue,
   }) : applicationId = null;
   const HostFormResponseDetailScreen.application({
     super.key,
     required this.organizerId,
     required String this.applicationId,
+    this.queue,
   }) : responseId = null;
   final String organizerId;
   final String? responseId;
   final String? applicationId;
+  final HostResponseReviewQueue? queue;
   @override
   ConsumerState<HostFormResponseDetailScreen> createState() =>
       _HostFormResponseDetailScreenState();
@@ -57,8 +87,9 @@ class _HostFormResponseDetailScreenState
   final _note = TextEditingController();
   HostFormConversionKind? _converting;
   bool _saving = false;
+  bool _navigating = false;
   int? _noteRevision;
-  bool get _busy => _saving || _converting != null;
+  bool get _busy => _saving || _converting != null || _navigating;
   HostResponseReviewKey get _key => (
     organizerId: widget.organizerId,
     responseId: widget.responseId,
@@ -160,18 +191,77 @@ class _HostFormResponseDetailScreenState
               _noteRevision = application.revision;
               _note.text = application.reviewNote ?? '';
             }
-            return HostResponseDetailSection(
-              value: value,
-              organizerId: widget.organizerId,
-              note: _note,
-              busy: _busy,
-              saving: _saving,
-              onReview: _review,
-              onOpenPerson: _openPerson,
-              onConvert: _reviewConversion,
-              onOpenAsset: _openAsset,
-              onContact: _openContact,
-              onOpenPayment: _openPayment,
+            final queue = widget.queue;
+            final queued = queue == null
+                ? null
+                : ref.watch(hostFormResponsesControllerProvider(queue.request));
+            final queueState = queued == null
+                ? null
+                : catchAsyncStateFromAsyncValue(queued);
+            final entries = queueState?.value?.inboxEntries;
+            final canLoadMore = queueState?.value?.canLoadMore ?? false;
+            final previous = entries == null || queue == null
+                ? -1
+                : queue.targetIndex(entries, -1, hasMore: canLoadMore);
+            final next = entries == null || queue == null
+                ? -1
+                : queue.targetIndex(entries, 1);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (queue != null) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CatchButton(
+                          label: context.l10n.hostsWizardPrevious,
+                          variant: CatchButtonVariant.secondary,
+                          onPressed: !_busy && !_navigating && previous >= 0
+                              ? () => _navigateQueue(-1)
+                              : null,
+                        ),
+                      ),
+                      gapW12,
+                      Expanded(
+                        child: CatchButton(
+                          label: context.l10n.hostsStepperFooterLabelNext,
+                          variant: CatchButtonVariant.secondary,
+                          onPressed:
+                              !_busy &&
+                                  !_navigating &&
+                                  next >= 0 &&
+                                  (entries != null &&
+                                      (next < entries.length || canLoadMore))
+                              ? () => _navigateQueue(1)
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (queueState?.error != null ||
+                      queueState?.value?.loadMoreError != null)
+                    CatchButton.command(
+                      label: context.l10n.sharedActionTryAgain,
+                      onPressed: () => ref.invalidate(
+                        hostFormResponsesControllerProvider(queue.request),
+                      ),
+                    ),
+                  gapH16,
+                ],
+                HostResponseDetailSection(
+                  value: value,
+                  organizerId: widget.organizerId,
+                  note: _note,
+                  busy: _busy,
+                  saving: _saving,
+                  onReview: _review,
+                  onOpenPerson: _openPerson,
+                  onConvert: _reviewConversion,
+                  onOpenAsset: _openAsset,
+                  onContact: _openContact,
+                  onOpenPayment: _openPayment,
+                ),
+              ],
             );
           },
         ),
@@ -184,6 +274,75 @@ class _HostFormResponseDetailScreenState
     pathParameters: {'contactId': id},
     queryParameters: {'organizerId': widget.organizerId},
   );
+
+  Future<void> _navigateQueue(int direction) async {
+    final queue = widget.queue;
+    if (queue == null || _busy || _navigating) return;
+    setState(() => _navigating = true);
+    try {
+      final provider = hostFormResponsesControllerProvider(queue.request);
+      var current = await ref.read(provider.future);
+      var target = queue.targetIndex(
+        current.inboxEntries,
+        direction,
+        hasMore: current.canLoadMore,
+      );
+      for (
+        var pages = 0;
+        target >= current.inboxEntries.length &&
+            current.canLoadMore &&
+            pages < 10;
+        pages++
+      ) {
+        await ref.read(provider.notifier).loadMore();
+        final refreshed = catchAsyncStateFromAsyncValue(
+          ref.read(provider),
+        ).value;
+        if (refreshed == null) break;
+        current = refreshed;
+        if (current.loadMoreError != null) break;
+        target = queue.targetIndex(
+          current.inboxEntries,
+          direction,
+          hasMore: current.canLoadMore,
+        );
+      }
+      if (!mounted || target < 0 || target >= current.inboxEntries.length) {
+        return;
+      }
+      final entry = current.inboxEntries[target];
+      final nextQueue = HostResponseReviewQueue(
+        request: queue.request,
+        entryId: entry.entryId,
+        index: target,
+      );
+      if (entry.application case final application?) {
+        context.pushReplacementNamed(
+          Routes.hostApplicationDetailScreen.name,
+          pathParameters: {'applicationId': application.applicationId},
+          queryParameters: {'organizerId': widget.organizerId},
+          extra: nextQueue,
+        );
+      } else if (entry.response case final response?) {
+        context.pushReplacementNamed(
+          Routes.hostFormResponseDetailScreen.name,
+          pathParameters: {'responseId': response.responseId},
+          queryParameters: {'organizerId': widget.organizerId},
+          extra: nextQueue,
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.formResponses,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _navigating = false);
+    }
+  }
 
   Future<void> _openPayment(HostFormPaymentRecord payment) =>
       showCatchBottomSheet<void>(
@@ -209,11 +368,11 @@ class _HostFormResponseDetailScreenState
           );
       _reload();
       if (mounted) {
-        showCatchSnackBar(context, context.l10n.hostApplicationReviewUpdated);
+        showCatchNotice(context, context.l10n.hostApplicationReviewUpdated);
       }
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.applications,
@@ -228,13 +387,13 @@ class _HostFormResponseDetailScreenState
     try {
       final opened = await ref.read(externalLinkControllerProvider).open(uri);
       if (!opened && mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           StateError(context.l10n.hostFormResponseNotProvided),
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -244,7 +403,7 @@ class _HostFormResponseDetailScreenState
           .read(externalLinkControllerProvider)
           .open(Uri.parse(asset.downloadUrl));
       if (!opened && mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           StateError(
             context.l10n.hostFormResponseDownloadFile(fileName: asset.fileName),
@@ -252,7 +411,7 @@ class _HostFormResponseDetailScreenState
         );
       }
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     }
   }
 
@@ -292,9 +451,9 @@ class _HostFormResponseDetailScreenState
       );
       if (!mounted) return;
       _reload();
-      showCatchSnackBar(context, context.l10n.hostFormConversionComplete);
+      showCatchNotice(context, context.l10n.hostFormConversionComplete);
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
     } finally {
       if (mounted) setState(() => _converting = null);
     }
@@ -428,7 +587,7 @@ class _HostFormResponseDetailScreenState
         ),
       );
     } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+      if (mounted) showCatchNoticeError(context, error);
       return null;
     }
   }

@@ -1,6 +1,7 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
+import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import type {
   EventDocument,
   EventParticipationDocument,
@@ -56,12 +57,12 @@ export async function sendEventRemindersHandler(
   if (eventsSnap.empty) return;
 
   const results = await Promise.allSettled(
-    eventsSnap.docs.map((eventSnap) =>
+    eventsSnap.docs.filter((eventSnap) =>
+      reminderEligible(eventSnap.data() as EventDocument)).map((eventSnap) =>
       fanOutEventReminder({
         db,
         deps,
         eventId: eventSnap.id,
-        event: eventSnap.data() as EventDocument,
       })
     )
   );
@@ -83,14 +84,17 @@ export async function sendEventRemindersHandler(
  * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
  * @param {EventReminderDeps} params.deps Injectable dependencies.
  * @param {string} params.eventId Event id.
- * @param {EventDocument} params.event Event document.
  */
 async function fanOutEventReminder(params: {
   db: FirebaseFirestore.Firestore;
   deps: EventReminderDeps;
   eventId: string;
-  event: EventDocument;
 }) {
+  const currentSnap = await params.db.collection("events")
+    .doc(params.eventId).get();
+  const currentEvent = currentSnap.data() as EventDocument | undefined;
+  if (!currentEvent || currentEvent.status !== "active" ||
+      !reminderEligible(currentEvent)) return;
   const participationsSnap = await params.db
     .collection("eventParticipations")
     .where("eventId", "==", params.eventId)
@@ -103,7 +107,7 @@ async function fanOutEventReminder(params: {
     .filter((uid): uid is string => typeof uid === "string")));
   if (uidList.length === 0) return;
 
-  const copy = eventActivityNotificationCopy("eventReminder", params.event);
+  const copy = eventActivityNotificationCopy("eventReminder", currentEvent);
   const userSnaps = await Promise.all(
     uidList.map((uid) => params.db.collection("users").doc(uid).get())
   );
@@ -121,7 +125,7 @@ async function fanOutEventReminder(params: {
       body: copy.body,
       createdAt: params.deps.serverTimestamp(),
       eventId: params.eventId,
-      clubId: params.event.clubId,
+      clubId: currentEvent.clubId,
     });
 
     if (!created || !user.fcmToken ||
@@ -135,9 +139,18 @@ async function fanOutEventReminder(params: {
       body: copy.body,
       type: "eventReminder",
       eventId: params.eventId,
-      clubId: params.event.clubId,
+      clubId: currentEvent.clubId,
     });
   }));
+}
+
+function reminderEligible(event: EventDocument): boolean {
+  const progressive = event as EventDocument & {setupRevision?: unknown};
+  // Existing rich events predate setup revisions. Progressive events need an
+  // explicit public registration capability before attendee reminders.
+  return isEventPubliclyAccessible(event) &&
+    (!Object.prototype.hasOwnProperty.call(progressive, "setupRevision") ||
+      event.publicRegistrationEnabled === true);
 }
 
 export const sendEventReminders = onSchedule(

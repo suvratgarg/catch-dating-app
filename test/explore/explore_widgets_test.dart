@@ -50,10 +50,8 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -134,6 +132,7 @@ Future<void> _pumpClubsSlivers(
       ],
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
         home: Scaffold(
           body: CustomScrollView(
             key: const ValueKey('explore-test-scroll-view'),
@@ -197,7 +196,7 @@ Widget _exploreBodySliverGroup({
   );
 }
 
-ExploreEventsSection _exploreEventsSection({
+Widget _exploreEventsSection({
   AsyncValue<ExploreFeedViewModel> feedAsync = const AsyncData(
     ExploreFeedViewModel(items: []),
   ),
@@ -211,16 +210,20 @@ ExploreEventsSection _exploreEventsSection({
   ValueChanged<ExploreExternalEventItem> onExternalEventOpened =
       _noopExternalEventOpened,
 }) {
-  return ExploreEventsSection(
-    feedAsync: feedAsync,
-    filters: filters,
-    searchQuery: searchQuery,
-    onRetry: onRetry,
-    onClearSearch: onClearSearch,
-    onClearFilters: onClearFilters,
-    onSetTimeFilter: onSetTimeFilter,
-    onEventSelected: onEventSelected,
-    onExternalEventOpened: onExternalEventOpened,
+  return SliverMainAxisGroup(
+    slivers: buildExploreEventsSlivers(
+      feedAsync,
+      l10n: _l10n,
+      pinnedDayHeaders: false,
+      filters: filters,
+      searchQuery: searchQuery,
+      onRetry: onRetry,
+      onClearSearch: onClearSearch,
+      onClearFilters: onClearFilters,
+      onSetTimeFilter: onSetTimeFilter,
+      onEventSelected: onEventSelected,
+      onExternalEventOpened: onExternalEventOpened,
+    ),
   );
 }
 

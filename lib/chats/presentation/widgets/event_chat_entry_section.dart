@@ -33,7 +33,7 @@ class EventChatEntrySection extends ConsumerWidget {
       onRetry: () => ref.invalidate(provider),
       builder: (context, access) => CatchSection.fieldRows(
         children: [
-          CatchField.action(
+          CatchField.nav(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventChatTitle,
             body: access.isRoomOpen

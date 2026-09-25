@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_edit_section.dart';
@@ -62,7 +62,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
           );
         }
       } on Object catch (error) {
-        showCatchErrorSnackBar(context, error);
+        showCatchNoticeError(context, error);
       }
     }
 

@@ -1,7 +1,5 @@
 import {createHash, randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
-import {ImageAnnotatorClient} from "@google-cloud/vision";
-import sharp from "sharp";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerFormAssetDocument as Asset,
   OrganizerFormResponseDocument as Response, ProfilePhoto} from
@@ -30,9 +28,11 @@ export async function copyFormProfilePhoto(input: FormProfilePhotoInput):
   assertClaimPhotoAsset({uid, questionId, assetId, response, asset, now});
   const bucket = admin.storage().bucket();
   const bytes = await readFormPhotoBytes(asset);
-  const [checked] = await new ImageAnnotatorClient().safeSearchDetection({
-    image: {content: bytes},
-  });
+  const vision = await import("@google-cloud/vision");
+  const [checked] = await new vision.ImageAnnotatorClient()
+    .safeSearchDetection({
+      image: {content: bytes},
+    });
   // Use the same categories as normal uploads before writing profile media.
   const moderationStatus = assertFormPhotoSafety(checked.safeSearchAnnotation);
   const normalized = await normalizeFormProfilePhoto(bytes);
@@ -99,6 +99,7 @@ export async function readFormPhotoBytes(asset: Asset): Promise<Buffer> {
 }
 
 export async function normalizeFormPhotoPreview(bytes: Buffer) {
+  const sharp = (await import("sharp")).default;
   const {data, info} = await sharp(bytes, {limitInputPixels: 40_000_000})
     .rotate().resize(640, 640, {fit: "inside", withoutEnlargement: true})
     .jpeg({quality: 72}).toBuffer({resolveWithObject: true});
@@ -171,6 +172,7 @@ export function assertClaimPhotoAsset(input: {
 }
 
 export async function normalizeFormProfilePhoto(bytes: Buffer) {
+  const sharp = (await import("sharp")).default;
   const source = sharp(bytes, {limitInputPixels: 40_000_000}).rotate();
   const [full, thumbnail] = await Promise.all([
     source.clone().resize(1600, 2000, {fit: "inside", withoutEnlargement: true})

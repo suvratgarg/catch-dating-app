@@ -46,7 +46,15 @@ void main() {
             builder: (_, _) => Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  ClubDiscoverList(clubs: [club], joinedClubIds: const {}),
+                  Builder(
+                    builder: (context) => SliverMainAxisGroup(
+                      slivers: buildClubDirectorySlivers(
+                        context: context,
+                        clubs: [club],
+                        joinedClubIds: const {},
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

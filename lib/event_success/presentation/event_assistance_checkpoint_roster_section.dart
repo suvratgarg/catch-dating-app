@@ -132,44 +132,6 @@ class _EventAssistanceCheckpointRosterSectionState
   }
 }
 
-class EventAssistanceCheckpointGuestRow extends StatelessWidget {
-  const EventAssistanceCheckpointGuestRow({
-    super.key,
-    required this.member,
-    required this.name,
-    required this.selected,
-    required this.enabled,
-    required this.onTap,
-  });
-  final AssistanceCheckpointMember member;
-  final String? name;
-  final bool selected, enabled;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return CatchSection.containedRows(
-      children: [
-        CatchField.action(
-          copy: catchFieldCopy(l10n),
-          title: name ?? l10n.eventAssistanceCheckpointUnknownGuest,
-          body: _checkpointGuestDetail(
-            l10n,
-            member,
-            name: name,
-            selected: selected,
-          ),
-          bodyMaxLines: 3,
-          states: selected ? const {WidgetState.selected} : const {},
-          leading: Icon(selected ? CatchIcons.checkCircle : CatchIcons.circle),
-          leadingExtent: CatchSpacing.s10,
-          onTap: enabled ? onTap : null,
-        ),
-      ],
-    );
-  }
-}
-
 String _checkpointGuestDetail(
   AppLocalizations l10n,
   AssistanceCheckpointMember member, {

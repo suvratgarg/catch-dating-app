@@ -7,6 +7,15 @@ import '../events/events_test_helpers.dart';
 void main() {
   const factory = SelfProfileInlineEditPatchFactory();
 
+  test('optional profile text patches carry an explicit null clear', () {
+    expect(factory.instagramHandle(null).toFieldsJson(), {
+      'instagramHandle': null,
+    });
+    expect(factory.occupation(null).toFieldsJson(), {'occupation': null});
+    expect(factory.company(null).toFieldsJson(), {'company': null});
+    expect(factory.email('').toFieldsJson(), {'email': ''});
+  });
+
   test('SelfProfileInlineEditPatchFactory maps direct identity fields', () {
     expect(factory.displayName('S.').toFieldsJson(), {'displayName': 'S.'});
     expect(factory.email('suvrat@example.com').toFieldsJson(), {

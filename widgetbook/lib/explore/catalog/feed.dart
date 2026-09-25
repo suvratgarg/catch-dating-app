@@ -30,12 +30,12 @@ final _externalFeedItem = ExploreExternalEventItem(
 
 @widgetbook.UseCase(
   name: 'Feed states',
-  type: ExploreEventsSection,
+  type: ExploreFeedContentSliver,
   path: '[Explore]/Sections',
 )
 Widget exploreEventsSectionStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreEventsSection',
+    title: 'Explore feed slivers',
     catalogId: 'section.explore.feed',
     children: [
       WidgetbookPageStateCard(

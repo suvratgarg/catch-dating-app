@@ -62,7 +62,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     this.placeholder,
     this.inputHint,
     this.leadingUnit,
-    this.showClearButton = false,
+    this.showClearButton = true,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.autofillHints,
@@ -159,9 +159,9 @@ final class CatchFormSingleChoiceRow<P, T> extends CatchFormChoiceRow<P, T> {
     this.itemAccent,
     this.contractValue,
     this.allowEmptySelection = true,
-    this.showOptionalLabel = false,
+    bool? showOptionalLabel,
     this.contract,
-  });
+  }) : showOptionalLabel = showOptionalLabel ?? allowEmptySelection;
 
   @override
   final List<T> values;
@@ -219,9 +219,9 @@ final class CatchFormMultiChoiceRow<P, T> extends CatchFormChoiceRow<P, T> {
     this.contractValue,
     this.isAddAffordanceWhenEmpty = true,
     this.allowEmptySelection = true,
-    this.showOptionalLabel = false,
+    bool? showOptionalLabel,
     this.contract,
-  });
+  }) : showOptionalLabel = showOptionalLabel ?? allowEmptySelection;
 
   @override
   final List<T> values;
@@ -277,6 +277,8 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
     required this.labelText,
     required this.patchForRange,
     this.contract,
+    this.maximumContract,
+    this.rangeLabel,
   });
 
   final String value;
@@ -287,7 +289,16 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
   final int divisions;
   final String Function(double value) labelText;
   final CatchContractFieldConstraints? contract;
+
+  /// A distinct schema constraint for the upper endpoint, when present.
+  final CatchContractFieldConstraints? maximumContract;
+
+  /// Localized summary for the pair; individual thumb labels use [labelText].
+  final String Function(double min, double max)? rangeLabel;
   final P Function(int min, int max) patchForRange;
+
+  String formatRange(double min, double max) =>
+      rangeLabel?.call(min, max) ?? '${labelText(min)} - ${labelText(max)}';
 
   @override
   R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.range(this);

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
@@ -22,6 +24,8 @@ class _EventChatParticipantsScreenState
     extends ConsumerState<EventChatParticipantsScreen>
     with WidgetsBindingObserver {
   bool _resumed = true;
+  bool _ownedDialog = false;
+  bool _dialogBackgrounded = false;
   bool? _active;
   @override
   void initState() {
@@ -40,14 +44,21 @@ class _EventChatParticipantsScreenState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed && _ownedDialog) {
+      _dialogBackgrounded = true;
+    }
     setState(() => _resumed = state == AppLifecycleState.resumed);
   }
 
   void _syncActive(bool active) {
-    if (_active == active) return;
+    if (_active == active) {
+      return;
+    }
     _active = active;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _active != active) return;
+      if (!mounted || _active != active) {
+        return;
+      }
       ref
           .read(
             eventChatParticipantsControllerProvider(widget.eventId).notifier,
@@ -56,12 +67,72 @@ class _EventChatParticipantsScreenState
     });
   }
 
+  Future<void> _manageMember(
+    EventChatParticipantsState reviewed,
+    EventChatParticipant person,
+    String action,
+  ) async {
+    if (ref.read(uidProvider).asData?.value != reviewed.uid ||
+        reviewed.access?.canManage != true) {
+      return;
+    }
+    final l = context.l10n;
+    final label = switch (action) {
+      'remove' => l.eventChatRemoveMember,
+      'ban' => l.eventChatBanMember,
+      _ => l.eventChatReinstateMember,
+    };
+    final message = switch (action) {
+      'remove' => l.eventChatRemoveMemberDisclosure,
+      'ban' => l.eventChatBanMemberDisclosure,
+      _ => l.eventChatReinstateMemberDisclosure,
+    };
+    _ownedDialog = true;
+    _dialogBackgrounded = false;
+    try {
+      final confirmed = await showCatchConfirmDialog(
+        context: context,
+        copy: catchDialogCopy(l),
+        title: label,
+        message: message,
+        confirmLabel: label,
+        danger: action != 'reinstate',
+      );
+      if (confirmed != true ||
+          !mounted ||
+          _dialogBackgrounded ||
+          !_resumed ||
+          ref.read(uidProvider).asData?.value != reviewed.uid) {
+        return;
+      }
+      final latest = ref.read(
+        eventChatParticipantsControllerProvider(widget.eventId),
+      ).asData?.value;
+      if (latest?.access?.canManage != true ||
+          !latest!.page.items.any(
+            (row) => row.uid == person.uid &&
+                row.membershipRevision == person.membershipRevision,
+          )) {
+        return;
+      }
+      await ref
+          .read(eventChatParticipantsControllerProvider(widget.eventId).notifier)
+          .manageMember(person, action);
+    } finally {
+      _ownedDialog = false;
+      if (mounted) {
+        _syncActive(_resumed && (ModalRoute.isCurrentOf(context) ?? true));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = eventChatParticipantsControllerProvider(widget.eventId);
     final value = ref.watch(provider);
     final presented = catchAsyncStateFromAsyncValue(value);
-    final active = _resumed && (ModalRoute.isCurrentOf(context) ?? true);
+    final active = _resumed &&
+        ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog);
     _syncActive(active);
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
@@ -100,6 +171,8 @@ class _EventChatParticipantsScreenState
                   ),
                   onLoadMore: () =>
                       unawaited(ref.read(provider.notifier).loadMore()),
+                  onManage: (person, action) =>
+                      unawaited(_manageMember(state, person, action)),
                 ),
               ),
       ),
@@ -113,10 +186,12 @@ class EventChatParticipantsRowList extends StatelessWidget {
     required this.state,
     required this.onOpen,
     required this.onLoadMore,
+    this.onManage,
   });
   final EventChatParticipantsState state;
   final ValueChanged<String> onOpen;
   final VoidCallback onLoadMore;
+  final void Function(EventChatParticipant, String)? onManage;
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -140,20 +215,57 @@ class EventChatParticipantsRowList extends StatelessWidget {
             first: true,
             children: [
               for (final person in state.page.items)
-                CatchField.nav(
+                Row(
                   key: ValueKey('event-participant-${person.uid}'),
-                  copy: catchFieldCopy(l),
-                  title: person.displayName,
-                  body: [
-                    if (person.uid == state.uid) l.eventChatYou,
-                    person.isHost
-                        ? l.eventChatParticipantHost
-                        : l.eventChatParticipantAttendee,
-                  ].join(' · '),
-                  emphasis: CatchFieldEmphasis.title,
-                  titleMaxLines: 3,
-                  bodyMaxLines: 3,
-                  onTap: () => onOpen(person.uid),
+                  children: [
+                    Expanded(
+                      child: CatchField.nav(
+                        copy: catchFieldCopy(l),
+                        title: person.displayName,
+                        body: [
+                          if (person.uid == state.uid) l.eventChatYou,
+                          person.isRemoved
+                              ? l.eventChatMemberRemoved
+                              : person.isBanned
+                                  ? l.eventChatMemberBanned
+                                  : person.isHost
+                                      ? l.eventChatParticipantHost
+                                      : l.eventChatParticipantAttendee,
+                        ].join(' · '),
+                        emphasis: CatchFieldEmphasis.title,
+                        titleMaxLines: 3,
+                        bodyMaxLines: 3,
+                        onTap: person.isJoined
+                            ? () => onOpen(person.uid)
+                            : null,
+                      ),
+                    ),
+                    if (state.access?.canManage == true &&
+                        onManage != null &&
+                        person.uid != state.uid &&
+                        !person.isHost)
+                      CatchActionMenu<String>(
+                        tooltip: l.eventChatMemberActions,
+                        items: [
+                          if (person.isJoined)
+                            CatchActionMenuItem(
+                              value: 'remove',
+                              label: l.eventChatRemoveMember,
+                            ),
+                          if (!person.isBanned)
+                            CatchActionMenuItem(
+                              value: 'ban',
+                              label: l.eventChatBanMember,
+                            ),
+                          if (!person.isJoined)
+                            CatchActionMenuItem(
+                              value: 'reinstate',
+                              label: l.eventChatReinstateMember,
+                            ),
+                        ],
+                        onSelected: (action) => onManage!(person, action),
+                      ),
+                  ],
                 ),
             ],
           ),

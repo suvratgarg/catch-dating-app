@@ -54,7 +54,9 @@ export function buildEventAdminSearchProjection(
   const sourceText = eventSearchSourceText(eventId, event, club);
   return {
     tokens: buildSearchTokens(sourceText, true, maxAdminSearchTokens),
-    sortKey: firstSearchToken(eventTitleLabel(event)) ??
+    sortKey: firstSearchToken(event.name?.trim()) ??
+      firstSearchToken(event.eventFormat ?
+        eventTitleLabel(event) : null) ??
       firstSearchToken(eventId) ??
       eventId,
     updatedAt,
@@ -107,9 +109,9 @@ function eventSearchSourceText(
     club?.cityName,
     club?.location,
     club?.locationMarketId,
-    eventFormatLabel(event.eventFormat),
-    event.eventFormat.activityKind,
-    event.eventFormat.interactionModel,
+    event.eventFormat ? eventFormatLabel(event.eventFormat) : null,
+    event.eventFormat?.activityKind,
+    event.eventFormat?.interactionModel,
     event.meetingPoint,
     event.meetingLocation?.name,
     event.meetingLocation?.address,

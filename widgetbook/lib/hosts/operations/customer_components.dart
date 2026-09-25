@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memo
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -260,7 +261,7 @@ Widget hostCustomerTimelineStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'No-organizer state',
-  type: HostCustomersNoOrganizer,
+  type: HostAudienceNoOrganizerEmptyState,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomersNoOrganizerStates(BuildContext context) =>

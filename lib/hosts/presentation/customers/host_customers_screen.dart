@@ -10,9 +10,9 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
@@ -36,6 +36,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customers_con
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -208,7 +209,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     }
     final clubs = clubsState.value ?? const <Club>[];
     if (clubs.isEmpty) {
-      return HostCustomersNoOrganizer(selected: _view);
+      return HostAudienceNoOrganizerEmptyState(selected: _view);
     }
     final selectedOrganizerId = ref.watch(hostOrganizerSelectionProvider(uid));
     final selectedClub = resolveSelectedHostOrganizer(
@@ -732,7 +733,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           );
     } on Object catch (error) {
       if (mounted) {
-        showCatchErrorSnackBar(
+        showCatchNoticeError(
           context,
           error,
           errorContext: AppErrorContext.customer,

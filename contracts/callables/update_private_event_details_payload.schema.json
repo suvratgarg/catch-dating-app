@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_private_event_details_payload.schema.json",
+  "title": "UpdatePrivateEventDetailsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "requestId",
+    "expectedSetupRevision",
+    "reviewedDefaultsHash",
+    "details"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999999
+    },
+    "reviewedDefaultsHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "durationMinutes": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 15,
+                  "maximum": 240
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "venue": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "name"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "inherit",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "eventFormat": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "value"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "set",
+                  "type": "string"
+                },
+                "value": {
+                  "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "clear",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "minProperties": 1
+    }
+  }
+}

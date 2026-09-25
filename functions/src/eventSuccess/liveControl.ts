@@ -33,6 +33,13 @@ import {
   EventSuccessAccountability,
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
+import {recheckAssignmentFeatureSnapshots} from
+  "./assignmentFeatureConsent";
+import {buildAssignmentFeatureAudit} from "./assignmentFeatureAudit";
+import {validateAssignmentFeatureRules} from
+  "./assignmentFeatureScoring";
+import type {AssignmentFeatureRule, EventAssignmentFeatureSnapshot} from
+  "./assignmentFeatureScoring";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 
@@ -53,6 +60,9 @@ interface LivePlanDocument {
   activeStepIndex?: number;
   liveControlRevision?: number;
   assignmentDraftRevision?: number;
+  assignmentFeatureRules?: AssignmentFeatureRule[];
+  assignmentFeatureRevision?: number;
+  assignmentFeatureConfigHash?: string;
   publishedRotationRoundIndex?: number;
   publishedRevealRoundIndex?: number;
   status?: "setup" | "live" | "complete";
@@ -418,7 +428,7 @@ export async function publishEventSuccessRotationRoundHandler(
     uid,
     "publishEventSuccessRotationRound"
   );
-  await requireEventManager(db, payload.eventId, uid);
+  const event = await requireEventManager(db, payload.eventId, uid);
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);
   const draftQuery = db.collection("eventSuccessAssignmentDrafts")
     .where("eventId", "==", payload.eventId)
@@ -456,6 +466,62 @@ export async function publishEventSuccessRotationRoundHandler(
       throw new HttpsError("failed-precondition",
         "The next rotation round is not prepared yet.");
     }
+    const rules = validateAssignmentFeatureRules(
+      plan.assignmentFeatureRules ?? []);
+    const featureSnapshots: EventAssignmentFeatureSnapshot[] = [];
+    let guardedDrafts = 0;
+    for (const draft of drafts) {
+      const data = draft.data();
+      const guard = data.assignmentFeatureGuard;
+      if (guard === undefined) {
+        if (rules.length && data.assignment?.source !==
+            "host_override_v1") {
+          throw new HttpsError("aborted",
+            "Prepared assignments lack matching consent audit.");
+        }
+        continue;
+      }
+      if (!guard || typeof guard !== "object" ||
+          guard.revision !== plan.assignmentFeatureRevision ||
+          guard.configHash !== plan.assignmentFeatureConfigHash ||
+          !Array.isArray(guard.snapshots) ||
+          guard.snapshots.length > rules.length ||
+          data.uid !== data.assignment?.uid) {
+        throw new HttpsError("aborted",
+          "Assignment feature setup changed after preparation.");
+      }
+      guardedDrafts++;
+      for (const snapshot of guard.snapshots) {
+        if (!snapshot || typeof snapshot !== "object" ||
+            snapshot.uid !== data.uid ||
+            snapshot.eventId !== payload.eventId) {
+          throw new HttpsError("aborted",
+            "Prepared matching consent audit is invalid.");
+        }
+        featureSnapshots.push(snapshot as EventAssignmentFeatureSnapshot);
+      }
+    }
+    if (guardedDrafts && guardedDrafts !== drafts.length) {
+      throw new HttpsError("aborted",
+        "Prepared assignments have mixed matching consent audits.");
+    }
+    let expectedFeatureAudit: ReturnType<
+      typeof buildAssignmentFeatureAudit> | null = null;
+    if (guardedDrafts) {
+      const organizerId = event.organizerId;
+      if (!organizerId || drafts.some((draft) =>
+        draft.data().organizerId !== organizerId)) {
+        throw new HttpsError("aborted",
+          "Prepared assignments do not match this organizer.");
+      }
+      await recheckAssignmentFeatureSnapshots({tx: transaction, db,
+        eventId: payload.eventId, organizerId, rules,
+        snapshots: featureSnapshots});
+      expectedFeatureAudit = buildAssignmentFeatureAudit({
+        eventId: payload.eventId, organizerId,
+        configHash: plan.assignmentFeatureConfigHash ?? "",
+        snapshots: featureSnapshots});
+    }
     const now = deps.serverTimestamp();
     for (const draft of drafts) {
       const data = draft.data();
@@ -464,6 +530,18 @@ export async function publishEventSuccessRotationRoundHandler(
           "A prepared rotation assignment is invalid.");
       }
       const assignment = data.assignment as Record<string, unknown>;
+      if (expectedFeatureAudit && (
+        !assignment.assignmentFeatureAudit ||
+        typeof assignment.assignmentFeatureAudit !== "object" ||
+        (assignment.assignmentFeatureAudit as Record<string, unknown>)
+          .algorithmVersion !== expectedFeatureAudit.algorithmVersion ||
+        (assignment.assignmentFeatureAudit as Record<string, unknown>)
+          .configHash !== expectedFeatureAudit.configHash ||
+        (assignment.assignmentFeatureAudit as Record<string, unknown>)
+          .inputSnapshotId !== expectedFeatureAudit.inputSnapshotId)) {
+        throw new HttpsError("aborted",
+          "Prepared matching input audit changed.");
+      }
       if (
         assignment.eventId !== payload.eventId ||
         assignment.moduleId !== GUIDED_ROTATIONS_MODULE_ID ||

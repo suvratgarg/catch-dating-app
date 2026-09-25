@@ -8,12 +8,14 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         CompleteEventSuccessFirstHelloMissionCallableRequest,
+        ConfigureEventAssignmentFeaturesCallableRequest,
         EventIdCallableRequest,
         EventSuccessSpatialActionCallableRequest,
         GetEventSuccessSpatialLayoutCallableRequest,
         OverrideEventSuccessGroupsCallableRequest,
         OverrideEventSuccessRotationsCallableRequest,
         PrepareEventSuccessRotationDraftCallableRequest,
+        PreviewEventAssignmentFeaturesCallableRequest,
         PublishEventSuccessRotationRoundCallableRequest,
         EventSuccessLiveActionCallableRequest,
         HeartbeatEventSuccessPresenceCallableRequest,
@@ -25,6 +27,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/event_success/data/event_success_callable_responses.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';

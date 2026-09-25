@@ -98,6 +98,9 @@ export interface AssignmentConstraintPair<
 }
 
 export interface NormalizedAssignmentConstraints {
+  /** Already-authorized, event-local soft features; never a hard gate. */
+  softFeatures?: import("./assignmentFeatureScoring")
+    .AssignmentFeatureScoringContext;
   keepTogetherPairs: Set<string>;
   keepApartPairs: Set<string>;
   avoidRepeatPairs: Set<string>;

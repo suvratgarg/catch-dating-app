@@ -251,6 +251,7 @@ Future<void> _pumpPublicProfile(
       container: container,
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
         home: includePreviousRoute
             ? null
             : PublicProfileScreen(

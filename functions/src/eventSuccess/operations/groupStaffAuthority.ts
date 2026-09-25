@@ -28,6 +28,7 @@ export function groupDutySource(context: ProgressContext, groupId: string,
   requireDocumentId(context.eventId);
   requireDocumentId(context.organizerId);
   requireDocumentId(groupId);
+  if (!event.eventFormat) throw invalidSource();
   const route = event.eventFormat.activityDetails?.routePlan;
   const groups = route?.paceGroups ?? [];
   if (new Set(groups.map((g) => g.id)).size !== groups.length) {
@@ -40,7 +41,8 @@ export function groupDutySource(context: ProgressContext, groupId: string,
     paceGroup: group !== null && groupId !== "event:whole",
     hash: operationContentHash([
       context, groupId, timestampEvidence(generation),
-      event.eventFormat.activityKind, route?.groupStrategy ?? null, group])};
+      event.eventFormat.activityKind,
+      route?.groupStrategy ?? null, group])};
 }
 
 export function parseStaff(value: unknown, context: ProgressContext,

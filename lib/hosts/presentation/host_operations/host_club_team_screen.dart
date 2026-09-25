@@ -276,7 +276,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return false;
     }
     if (!mounted) return true;
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       context.l10n.hostsHostClubTeamScreenVisiblecopyHostProfileSaved,
     );
@@ -295,7 +295,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return;
     }
     if (!mounted) return;
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       context.l10n.hostsHostClubTeamScreenVisiblecopyHostProfileCreated,
     );

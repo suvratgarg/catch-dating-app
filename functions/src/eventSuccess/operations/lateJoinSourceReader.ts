@@ -58,6 +58,7 @@ export async function readLateJoinSource(db: Firestore, tx: Transaction,
       !validateEventAttendeeDocument(attendee) ||
       attendee.eventId !== context.eventId ||
       attendee.organizerId !== context.organizerId) throw invalidSource();
+  if (!event.eventFormat) throw invalidSource();
   const source = guestSourceFactsFromSnapshots(context, attendeeId,
     eventSnap, attendeeSnap);
   const held = (reason: Extract<LateJoinSourceResult,

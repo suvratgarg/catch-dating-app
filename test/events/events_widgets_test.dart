@@ -15,12 +15,9 @@ import 'package:catch_dating_app/events/presentation/event_location_map_state.da
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
-import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -43,7 +40,6 @@ void main() {
       tester,
     ) async {
       var pickerTapped = false;
-      var mapTapped = false;
       var decreased = false;
       var increased = false;
 
@@ -69,12 +65,6 @@ void main() {
                 placeholder: 'Unused',
                 onTap: () {},
               ),
-              MapPinTile(startingPoint: null, onTap: () => mapTapped = true),
-              MapPinTile(
-                startingPoint: const LocationCoordinate(19.076, 72.8777),
-                selectedLabel: 'Bandra Fort',
-                onTap: () {},
-              ),
               CatchStepper.actions(
                 value: 75,
                 onDecrease: () => decreased = true,
@@ -91,8 +81,6 @@ void main() {
       expect(find.text('Distance'), findsOneWidget);
       expect(find.text('Select a date'), findsOneWidget);
       expect(find.text('23/04/2026'), findsOneWidget);
-      expect(find.text('Choose on map'), findsOneWidget);
-      expect(find.text('Bandra Fort'), findsOneWidget);
       expect(find.text('75 min'), findsOneWidget);
       expect(
         tester
@@ -104,106 +92,82 @@ void main() {
         tester.getSize(find.widgetWithText(CatchStepper, '75 min')).height,
         CatchStepperRepeatButton.hitExtent,
       );
-      expect(
-        tester.getSize(find.widgetWithText(MapPinTile, 'Choose on map')).height,
-        CatchControlMetrics.mdMinHeight,
-      );
-      expect(
-        tester.getSize(find.widgetWithText(MapPinTile, 'Bandra Fort')).height,
-        CatchControlMetrics.mdMinHeight,
-      );
 
       await tester.tap(find.text('Select a date'));
-      await tester.tap(find.text('Choose on map'));
       await tester.tap(find.byTooltip('Decrease duration'));
       await tester.tap(find.byTooltip('Increase duration'));
       await tester.pump();
 
       expect(pickerTapped, isTrue);
-      expect(mapTapped, isTrue);
       expect(decreased, isTrue);
       expect(increased, isTrue);
     });
 
-    testWidgets(
-      'requirements, stats, date card, and photo header render event details',
-      (tester) async {
-        final event = buildEvent(
-          startTime: DateTime(2025, 4, 23, 6, 30),
-          endTime: DateTime(2025, 4, 23, 7, 45),
-          meetingPoint: 'Bandra Fort',
-          locationDetails: 'Meet by the parking lot',
-          itinerary: const [
-            EventItineraryItem(
-              id: 'gather',
-              kind: EventItineraryKind.gather,
-              offsetMinutes: 0,
-              title: 'Gather at Bandra Fort',
-            ),
-            EventItineraryItem(
-              id: 'run',
-              kind: EventItineraryKind.activity,
-              offsetMinutes: 15,
-              title: 'Social 5K',
-            ),
-            EventItineraryItem(
-              id: 'finish',
-              kind: EventItineraryKind.finish,
-              offsetMinutes: 75,
-              title: 'Coffee and cooldown',
-            ),
-          ],
-          distanceKm: 5.5,
-          bookedCount: 3,
-          constraints: const EventConstraints(
-            minAge: 21,
-            maxAge: 35,
-            maxMen: 8,
-            maxWomen: 10,
+    testWidgets('itinerary, map and photo header render event details', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        startTime: DateTime(2025, 4, 23, 6, 30),
+        endTime: DateTime(2025, 4, 23, 7, 45),
+        meetingPoint: 'Bandra Fort',
+        locationDetails: 'Meet by the parking lot',
+        itinerary: const [
+          EventItineraryItem(
+            id: 'gather',
+            kind: EventItineraryKind.gather,
+            offsetMinutes: 0,
+            title: 'Gather at Bandra Fort',
           ),
-        );
-
-        await pumpEventsTestApp(
-          tester,
-          Scaffold(
-            body: ListView(
-              children: [
-                RequirementsRow(event: event),
-                const SizedBox(height: 16),
-                EventStatsGrid(event: event),
-                const SizedBox(height: 16),
-                EventDetailItinerary(event: event),
-                const SizedBox(height: 16),
-                EventDetailMapCard(event: event, enableNetworkTiles: false),
-                const SizedBox(height: 16),
-                SizedBox(height: 320, child: EventPhotoHeader(event: event)),
-              ],
-            ),
+          EventItineraryItem(
+            id: 'run',
+            kind: EventItineraryKind.activity,
+            offsetMinutes: 15,
+            title: 'Social 5K',
           ),
-        );
+          EventItineraryItem(
+            id: 'finish',
+            kind: EventItineraryKind.finish,
+            offsetMinutes: 75,
+            title: 'Coffee and cooldown',
+          ),
+        ],
+        distanceKm: 5.5,
+        bookedCount: 3,
+        constraints: const EventConstraints(
+          minAge: 21,
+          maxAge: 35,
+          maxMen: 8,
+          maxWomen: 10,
+        ),
+      );
 
-        expect(find.text('Requirements'), findsOneWidget);
-        expect(find.byType(CatchBadge), findsNWidgets(3));
-        expect(find.text('AGE 21–35'), findsOneWidget);
-        expect(find.text('MAX 8 MEN'), findsOneWidget);
-        expect(find.text('MAX 10 WOMEN'), findsOneWidget);
-        expect(find.byType(CatchMetricSection), findsOneWidget);
-        expect(find.text('5.5'), findsOneWidget);
-        expect(find.text('Pace level'), findsOneWidget);
-        expect(find.text('3/20'), findsOneWidget);
-        expect(find.text('6:30 AM'), findsOneWidget);
-        expect(find.text('6:45 AM'), findsOneWidget);
-        expect(find.text('7:45 AM'), findsOneWidget);
-        expect(find.text('Gather at Bandra Fort'), findsOneWidget);
-        expect(find.text('Social 5K'), findsOneWidget);
-        expect(find.text('Coffee and cooldown'), findsOneWidget);
-        expect(find.text('Bandra Fort'), findsOneWidget);
-        expect(find.text('PIN DROPS MORNING-OF'), findsNothing);
-        expect(find.text('Wednesday Morning Run'), findsNothing);
-        expect(find.text('3/20 spots'), findsNothing);
-        expect(find.text('5.5km'), findsNothing);
-      },
-    );
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(
+          body: ListView(
+            children: [
+              EventDetailItinerary(event: event),
+              const SizedBox(height: 16),
+              EventDetailMapCard(event: event, enableNetworkTiles: false),
+              const SizedBox(height: 16),
+              SizedBox(height: 320, child: EventPhotoHeader(event: event)),
+            ],
+          ),
+        ),
+      );
+
+      expect(find.text('6:30 AM'), findsOneWidget);
+      expect(find.text('6:45 AM'), findsOneWidget);
+      expect(find.text('7:45 AM'), findsOneWidget);
+      expect(find.text('Gather at Bandra Fort'), findsOneWidget);
+      expect(find.text('Social 5K'), findsOneWidget);
+      expect(find.text('Coffee and cooldown'), findsOneWidget);
+      expect(find.text('Bandra Fort'), findsOneWidget);
+      expect(find.text('PIN DROPS MORNING-OF'), findsNothing);
+      expect(find.text('Wednesday Morning Run'), findsNothing);
+      expect(find.text('3/20 spots'), findsNothing);
+      expect(find.text('5.5km'), findsNothing);
+    });
 
     testWidgets('does not fabricate an itinerary for legacy event documents', (
       tester,
@@ -230,30 +194,6 @@ void main() {
       expect(find.text('Itinerary'), findsNothing);
       expect(find.textContaining('Gather at'), findsNothing);
       expect(find.text('Wrap up'), findsNothing);
-    });
-
-    testWidgets('stats strip adapts its labels for non-distance events', (
-      tester,
-    ) async {
-      final event = buildEvent(
-        eventFormat: EventFormatSnapshot.fromActivityKind(
-          ActivityKind.pickleball,
-        ),
-      );
-
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(body: EventStatsGrid(event: event)),
-      );
-
-      expect(find.text('Pickleball'), findsOneWidget);
-      expect(find.text('Activity'), findsOneWidget);
-      expect(find.text('Easy'), findsOneWidget);
-      expect(find.text('Skill level'), findsOneWidget);
-      expect(find.text('0/20'), findsOneWidget);
-      expect(find.text('Distance'), findsNothing);
-      expect(find.text('Pace level'), findsNothing);
-      expect(find.text('km'), findsNothing);
     });
 
     testWidgets('location card uses the event required exact coordinates', (
@@ -666,45 +606,6 @@ void main() {
       );
     });
 
-    testWidgets('requirements row hides itself when there are no constraints', (
-      tester,
-    ) async {
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(body: RequirementsRow(event: buildEvent())),
-      );
-
-      expect(find.text('Requirements'), findsNothing);
-    });
-
-    testWidgets('requirements row renders min-only and max-only age chips', (
-      tester,
-    ) async {
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(
-          body: Column(
-            children: [
-              RequirementsRow(
-                event: buildEvent(
-                  constraints: const EventConstraints(minAge: 21),
-                ),
-              ),
-              RequirementsRow(
-                event: buildEvent(
-                  constraints: const EventConstraints(maxAge: 35),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
-      expect(find.text('21+ YEARS'), findsOneWidget);
-      expect(find.text('UP TO 35 YEARS'), findsOneWidget);
-      expect(find.byType(CatchBadge), findsNWidgets(2));
-    });
-
     testWidgets('when step renders schedule validation text', (tester) async {
       final dateController = TextEditingController(text: '23/04/2026');
       final startTimeController = TextEditingController(text: '6:30 AM');
@@ -765,11 +666,16 @@ void main() {
               ),
               SizedBox(
                 height: 240,
-                child: EventAgendaList(
-                  events: [event],
-                  badgeLabel: 'VIEW',
-                  today: now,
-                  onEventSelected: (selected) => selectedEventId = selected.id,
+                child: CustomScrollView(
+                  slivers: [
+                    EventAgendaSliverList(
+                      events: [event],
+                      badgeLabel: 'VIEW',
+                      today: now,
+                      onEventSelected: (selected) =>
+                          selectedEventId = selected.id,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -904,10 +810,14 @@ void main() {
         Scaffold(
           body: SizedBox(
             height: 360,
-            child: EventAgendaList(
-              events: [laterRun, soonerRun],
-              today: now,
-              onEventSelected: (selected) => tappedEventId = selected.id,
+            child: CustomScrollView(
+              slivers: [
+                EventAgendaSliverList(
+                  events: [laterRun, soonerRun],
+                  today: now,
+                  onEventSelected: (selected) => tappedEventId = selected.id,
+                ),
+              ],
             ),
           ),
         ),
@@ -947,11 +857,15 @@ void main() {
         Scaffold(
           body: SizedBox(
             height: 300,
-            child: EventAgendaList(
-              events: [event],
-              today: now,
-              showClubName: true,
-              clubNameBuilder: (_) => 'Stride Social',
+            child: CustomScrollView(
+              slivers: [
+                EventAgendaSliverList(
+                  events: [event],
+                  today: now,
+                  showClubName: true,
+                  clubNameBuilder: (_) => 'Stride Social',
+                ),
+              ],
             ),
           ),
         ),

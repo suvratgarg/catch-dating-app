@@ -5,11 +5,14 @@
 import type {UploadedPhoto} from "./uploadedPhoto";
 import type {EventOrigin} from "./eventOrigin";
 import type {EventRuntimeAccess} from "./eventRuntimeAccess";
+import type {EventSetupDefaults} from "./eventSetupDefaults";
 
 /**
  * Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.
  */
-export interface EventDocument {
+export type EventDocument = {
+  [k: string]: unknown;
+} & {
   /**
    * Organizer-authored event name. Legacy documents may omit it and use the client-derived fallback title.
    */
@@ -32,15 +35,15 @@ export interface EventDocument {
   /**
    * Serialized Firestore Timestamp fixture shape.
    */
-  endTime: {
+  endTime?: {
     _seconds: number;
     _nanoseconds: number;
   };
-  meetingPoint: string;
+  meetingPoint?: string;
   /**
    * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
    */
-  meetingLocation: {
+  meetingLocation?: {
     name: string;
     address?: string | null;
     placeId?: string | null;
@@ -48,9 +51,9 @@ export interface EventDocument {
     longitude: number;
     notes?: string | null;
   };
-  startingPointLat: number;
-  startingPointLng: number;
-  locationDetails: string | null;
+  startingPointLat?: number;
+  startingPointLng?: number;
+  locationDetails?: string | null;
   /**
    * @maxItems 40
    */
@@ -73,8 +76,8 @@ export interface EventDocument {
   }[];
   photoUrl?: string | null;
   eventPhotos?: UploadedPhoto[];
-  distanceKm: number;
-  eventFormat: {
+  distanceKm?: number;
+  eventFormat?: {
     version: 1;
     activityKind:
       | "socialRun"
@@ -202,10 +205,10 @@ export interface EventDocument {
       [k: string]: unknown;
     };
   };
-  pace: "easy" | "moderate" | "fast" | "competitive";
-  capacityLimit: number;
-  description: string;
-  priceInPaise: number;
+  pace?: "easy" | "moderate" | "fast" | "competitive";
+  capacityLimit?: number;
+  description?: string;
+  priceInPaise?: number;
   currency?: string;
   bookedCount: number;
   checkedInCount: number;
@@ -220,7 +223,7 @@ export interface EventDocument {
    * When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.
    */
   publicRegistrationEnabled?: boolean;
-  constraints: {
+  constraints?: {
     minAge: number;
     maxAge: number;
     maxMen: number | null;
@@ -315,9 +318,9 @@ export interface EventDocument {
     [k: string]: number;
   };
   crossPathsDiscoveryEnabled?: boolean;
-  discoveryMarketId: string;
-  discoveryCityName: string;
-  discoveryActivityKind:
+  discoveryMarketId?: string;
+  discoveryCityName?: string;
+  discoveryActivityKind?:
     | "socialRun"
     | "running"
     | "walking"
@@ -334,13 +337,13 @@ export interface EventDocument {
     | "dinner"
     | "singlesMixer"
     | "openActivity";
-  discoveryGeoCell: string;
-  discoveryHasOpenSpots: boolean;
-  discoveryAvailability: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  discoveryGeoCell?: string;
+  discoveryHasOpenSpots?: boolean;
+  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
   /**
    * @maxItems 4
    */
-  discoveryOpenCohorts: (
+  discoveryOpenCohorts?: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
@@ -349,17 +352,17 @@ export interface EventDocument {
   /**
    * @maxItems 4
    */
-  discoveryWaitlistCohorts: (
+  discoveryWaitlistCohorts?: (
     | "menInterestedInWomen"
     | "womenInterestedInMen"
     | "queerOrOpen"
     | "nonBinaryOrOther"
   )[];
-  discoveryInviteRequired: boolean;
-  discoveryMembershipRequired: boolean;
-  discoveryManualApprovalRequired: boolean;
-  discoveryMinAge: number;
-  discoveryMaxAge: number;
+  discoveryInviteRequired?: boolean;
+  discoveryMembershipRequired?: boolean;
+  discoveryManualApprovalRequired?: boolean;
+  discoveryMinAge?: number;
+  discoveryMaxAge?: number;
   /**
    * Server-owned deterministic search projection used by admin event publishing. Rebuildable from canonical event and organizer fields; not consumed by the app.
    */
@@ -403,6 +406,13 @@ export interface EventDocument {
    */
   demoOpsCommand?: string;
   /**
+   * Server creation time of a progressively configured event.
+   */
+  createdAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  /**
    * Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it.
    */
   updatedAt?: {
@@ -413,4 +423,15 @@ export interface EventDocument {
    * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.
    */
   planChangeRevision?: number;
-}
+  /**
+   * Explicit publication boundary. Legacy absent values require full rich event data; new progressive events must declare their state.
+   */
+  publicationState?: "private" | "published";
+  setupRevision?: number;
+  eventCityId?: string;
+  eventMarketId?: string;
+  eventLocalDate?: string;
+  eventLocalStartTime?: string;
+  eventTimezone?: string;
+  setupDefaults?: EventSetupDefaults;
+};

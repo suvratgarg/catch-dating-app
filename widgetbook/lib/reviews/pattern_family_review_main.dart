@@ -1,15 +1,8 @@
-import 'package:catch_dating_app/clubs/domain/club.dart' show ClubHostRole;
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
-    show ClubHostRoleBadge;
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart'
-    show EventSuccessMetricPill, LiveStepRow;
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart'
     show EventSuccessCountdownStepper;
-import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
     show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -292,8 +285,6 @@ class _BadgeStatusFamily extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
-              ClubHostRoleBadge(role: ClubHostRole.owner),
-              EventSuccessMetricPill(label: 'Pacing', value: .78),
               CatchStatusRow(
                 label: 'Unsaved changes',
                 tone: CatchStatusRowTone.warning,
@@ -546,9 +537,6 @@ class _ProgressCueFamily extends StatelessWidget {
       (label: 'Watch', icon: CatchIcons.visibilityOutlined),
       (label: 'Move', icon: CatchIcons.boltRounded),
     ];
-    final steps = EventSuccessPlaybookLibrary.socialRun.runOfShow
-        .take(3)
-        .toList();
     return _FamilySection(
       id: 'progress-cues · P1–P3',
       title: 'Compact progress cues',
@@ -578,23 +566,6 @@ class _ProgressCueFamily extends StatelessWidget {
           child: SizedBox(
             width: WidgetbookPreviewLayout.standardContractWidth,
             child: EventSuccessCountdownStepper(items: items, currentIndex: 2),
-          ),
-        ),
-        _PreviewCard(
-          title: 'Expanded sibling',
-          note:
-              'Rows consume the same typed state without sharing rail layout.',
-          child: Column(
-            children: [
-              for (final entry in steps.indexed)
-                LiveStepRow(
-                  step: entry.$2,
-                  state: EventSuccessProgressStatus.fromPosition(
-                    index: entry.$1,
-                    currentIndex: 1,
-                  ),
-                ),
-            ],
           ),
         ),
       ],

@@ -36,6 +36,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
+          builder: catchNoticeOverlayBuilder,
           home: Scaffold(
             body: HostTeamManagementSection(
               club: club,
@@ -242,6 +243,7 @@ Future<void> _pumpHostTeamSection(
       ],
       child: MaterialApp(
         theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
         home: Scaffold(
           body: HostTeamManagementSection(
             club: club,

@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_form_admission_receipts.schema.json",
+  "title": "OrganizerFormAdmissionReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "responseId",
+    "contactId",
+    "offerId",
+    "expectedOfferRevision",
+    "expectedOfferGeneration",
+    "expectedLedgerRevision",
+    "requestId",
+    "receiptId",
+    "attendeeId",
+    "canonicalSeatKey",
+    "requestHash",
+    "resultingLedgerRevision",
+    "admittedAtMillis",
+    "seatAlreadyOccupied",
+    "actorUid",
+    "paymentSnapshot",
+    "manualPayment"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "offerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "expectedOfferRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedOfferGeneration": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedLedgerRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "canonicalSeatKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "resultingLedgerRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "admittedAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "seatAlreadyOccupied": {
+      "type": "boolean"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]{1,180}$"
+    },
+    "paymentSnapshot": {
+      "$ref": "../embedded/event_offer_payment_snapshot.schema.json"
+    },
+    "manualPayment": {
+      "$ref": "../embedded/event_offer_manual_payment.schema.json"
+    }
+  }
+}

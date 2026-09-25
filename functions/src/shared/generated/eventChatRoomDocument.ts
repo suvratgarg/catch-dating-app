@@ -8,7 +8,7 @@
 export interface EventChatRoomDocument {
   eventId: string;
   organizerId: string;
-  status: "open" | "closed";
+  status: "open" | "announcementsOnly" | "paused" | "closed" | "archived";
   revision: number;
   createdByUid: string;
   updatedByUid: string;
@@ -27,4 +27,6 @@ export interface EventChatRoomDocument {
     _nanoseconds: number;
   };
   lastMessageSequence?: number;
+  opensAtMillis?: number | null;
+  closesAtMillis?: number | null;
 }

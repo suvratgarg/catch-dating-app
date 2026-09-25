@@ -1,5 +1,25 @@
 part of 'host_form_response_detail_screen.dart';
 
+Uri? hostResponsePhoneUri(String? value) {
+  final phone = value?.trim();
+  if (phone == null || !RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(phone)) {
+    return null;
+  }
+  return Uri.parse('tel:$phone');
+}
+
+Uri? hostResponseSocialUri(String? value, String domain) {
+  final uri = Uri.tryParse(value?.trim() ?? '');
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      (uri.host != domain && uri.host != 'www.$domain') ||
+      uri.userInfo.isNotEmpty ||
+      uri.hasPort) {
+    return null;
+  }
+  return uri;
+}
+
 class HostResponseDetailSection extends ConsumerWidget {
   const HostResponseDetailSection({
     super.key,
@@ -392,11 +412,12 @@ class HostResponseContactSection extends StatelessWidget {
     final outreach = value.application?.outreach;
     final identity = value.response?.response.identity;
     final actions = <({String label, IconData icon, Uri uri})>[
-      if (outreach?.phoneE164 ?? identity?.phoneE164 case final String phone)
+      if (hostResponsePhoneUri(outreach?.phoneE164 ?? identity?.phoneE164)
+          case final Uri phone)
         (
           label: context.l10n.hostApplicationCall,
           icon: CatchIcons.phoneOutlined,
-          uri: Uri(scheme: 'tel', path: phone),
+          uri: phone,
         ),
       if (outreach?.email ?? identity?.email case final String email)
         (
@@ -404,17 +425,19 @@ class HostResponseContactSection extends StatelessWidget {
           icon: CatchIcons.emailOutlined,
           uri: Uri(scheme: 'mailto', path: email),
         ),
-      if (outreach?.instagramUrl case final String url)
+      if (hostResponseSocialUri(outreach?.instagramUrl, 'instagram.com')
+          case final Uri uri)
         (
           label: context.l10n.hostApplicationInstagram,
           icon: CatchIcons.openInNewRounded,
-          uri: Uri.parse(url),
+          uri: uri,
         ),
-      if (outreach?.linkedinUrl case final String url)
+      if (hostResponseSocialUri(outreach?.linkedinUrl, 'linkedin.com')
+          case final Uri uri)
         (
           label: context.l10n.hostApplicationLinkedin,
           icon: CatchIcons.openInNewRounded,
-          uri: Uri.parse(url),
+          uri: uri,
         ),
     ];
     final singleColumn = MediaQuery.textScalerOf(context).scale(16) > 24;

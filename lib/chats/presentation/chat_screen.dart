@@ -22,8 +22,8 @@ import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.da
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -174,7 +174,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return ChatThreadActionUi(
       showFeedback: (message) {
         if (!mounted) return;
-        showCatchSnackBar(context, message);
+        showCatchNotice(context, message);
       },
       showShareCard: (request) {
         if (!mounted) return;

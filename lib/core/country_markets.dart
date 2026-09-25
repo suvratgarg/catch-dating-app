@@ -121,14 +121,6 @@ CountryMarket marketForDialCode(String? dialCode) {
   return defaultCountryMarket;
 }
 
-CountryMarket marketForCurrencyCode(String? currencyCode) {
-  final normalized = currencyCode?.trim().toUpperCase();
-  for (final market in supportedCountryMarkets) {
-    if (market.currencyCode == normalized) return market;
-  }
-  return defaultCountryMarket;
-}
-
 CurrencyDefinition currencyDefinitionForCode(String? currencyCode) {
   final normalized = currencyCode?.trim().toUpperCase();
   for (final currency in supportedCurrencyDefinitions) {

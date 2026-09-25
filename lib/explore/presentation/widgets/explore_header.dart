@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -11,68 +10,6 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-/// Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a
-/// regular column. Uses [CatchTopBar] with built-in search support instead of
-/// a custom animated search morph.
-class ExploreBrowseHeaderContent extends StatelessWidget {
-  const ExploreBrowseHeaderContent({
-    super.key,
-    this.query = '',
-    this.onQueryChanged,
-    this.showSearchAction = true,
-    this.backgroundColor,
-    this.cityPickerState,
-    this.onCitySelected,
-    this.actions = const <Widget>[],
-  });
-
-  final String query;
-  final ValueChanged<String>? onQueryChanged;
-  final bool showSearchAction;
-  final Color? backgroundColor;
-  final ExploreCityPickerState? cityPickerState;
-  final ValueChanged<CityData>? onCitySelected;
-  final List<Widget> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final chrome = ExploreChromeState.browse(
-      query: query,
-      showSearchAction: showSearchAction,
-      l10n: context.l10n,
-    );
-    final t = CatchTokens.of(context);
-    final cityPicker = ExploreCityPicker(
-      state:
-          cityPickerState ??
-          ExploreCityPickerState.disabled(
-            selectedCity: defaultCityDataForMarket(),
-          ),
-      onSelected: onCitySelected,
-    );
-
-    if (!chrome.showSearchAction) {
-      return CatchTopBar.primaryRail(leading: cityPicker, title: chrome.title);
-    }
-
-    return CatchTopBar.primaryRail(
-      leading: cityPicker,
-      title: chrome.title,
-      backgroundColor: backgroundColor ?? t.bg,
-      search: CatchTopBarSearch(
-        copy: catchSearchFieldCopy(context.l10n),
-        contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
-        value: chrome.searchValue,
-        onChanged: onQueryChanged,
-        placeholder: chrome.searchPlaceholder,
-        tooltip: chrome.searchTooltip,
-        semanticLabel: chrome.searchSemanticLabel,
-      ),
-      actions: actions,
-    );
-  }
-}
 
 class ExploreDiscoveryCoverHeader extends StatefulWidget {
   const ExploreDiscoveryCoverHeader({

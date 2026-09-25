@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_offer_handoff_response.schema.json",
+  "title": "EventOfferHandoffCallableResponse",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "offerId",
+        "blockers"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "blocked"
+        },
+        "offerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "blockers": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 28,
+          "items": {
+            "type": "string",
+            "enum": [
+              "offerUnavailable",
+              "offerWithdrawn",
+              "offerExpired",
+              "eventMismatch",
+              "eventCanceled",
+              "eventArchived",
+              "eventUnavailable",
+              "contactMismatch",
+              "sourceRevoked",
+              "contactUnavailable",
+              "contactOptedOut",
+              "permissionUnavailable",
+              "termsChanged",
+              "nameMissing",
+              "eventMissing",
+              "eventStarted",
+              "timeMissing",
+              "timeZoneInvalid",
+              "paymentPolicyMissing",
+              "paymentModeUnsupported",
+              "currencyMissing",
+              "paymentLinkMissing",
+              "paymentLinkInvalid",
+              "paymentLinkMismatch",
+              "paymentInstructionsMissing",
+              "phoneMissing",
+              "phoneInvalid",
+              "templateInvalid"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "offerId",
+        "contactId",
+        "editableText",
+        "copyText",
+        "whatsappUrl"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "prepared"
+        },
+        "offerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "contactId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "editableText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "copyText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "whatsappUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 25000,
+          "pattern": "^https://wa\\.me/[1-9][0-9]{7,14}\\?text="
+        }
+      }
+    }
+  ]
+}

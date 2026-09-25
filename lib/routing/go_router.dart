@@ -90,16 +90,8 @@ export 'route_contract.dart';
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';
 part 'host_inbox_route.dart';
+part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
-
-HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
-  return switch (state.uri.queryParameters['section']) {
-    'guests' => HostEventManageSection.guests,
-    'live' => HostEventManageSection.live,
-    'report' => HostEventManageSection.report,
-    _ => HostEventManageSection.setup,
-  };
-}
 
 @visibleForTesting
 HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
@@ -131,22 +123,6 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialContactDisplayName: initialContactDisplayName,
     ),
   };
-}
-
-/// Navigator identity belongs to one [GoRouter] lifecycle. Keeping these keys
-/// beside the provider instance prevents disposed test/app containers from
-/// retaining navigators that block a fresh router from mounting.
-class _RouterNavigatorKeys {
-  final root = GlobalKey<NavigatorState>();
-  final dashboard = GlobalKey<NavigatorState>();
-  final explore = GlobalKey<NavigatorState>();
-  final chats = GlobalKey<NavigatorState>();
-  final profile = GlobalKey<NavigatorState>();
-  final hostToday = GlobalKey<NavigatorState>();
-  final hostEvents = GlobalKey<NavigatorState>();
-  final hostAudience = GlobalKey<NavigatorState>();
-  final hostInbox = GlobalKey<NavigatorState>();
-  final hostOrganizer = GlobalKey<NavigatorState>();
 }
 
 const _fromQueryParam = 'from';
@@ -663,11 +639,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialPrefill,
                     _ => null,
                   },
-                  initialDraft: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.initialDraft,
-                    _ => null,
-                  },
+                  initialDraft: extra is HostCreateEventRouteArguments
+                      ? extra.initialDraft : null,
+
+                  initialSavedEventId: extra is HostCreateEventRouteArguments
+                      ? extra.initialSavedEventId : null,
                   externalBookingMode: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.externalBookingMode,
@@ -678,11 +654,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                       arguments.initialRosterImportPlan,
                     _ => null,
                   },
-                  promptForDrafts: switch (extra) {
-                    final HostCreateEventRouteArguments arguments =>
-                      arguments.promptForDrafts,
-                    _ => true,
-                  },
+                  promptForDrafts: extra is HostCreateEventRouteArguments
+                      ? extra.promptForDrafts
+                      : true,
+                  returnToResponsesOnSave: extra is HostCreateEventRouteArguments
+                      ? extra.returnToResponsesOnSave : false,
                 );
               },
             ),
@@ -792,6 +768,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostApplicationDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           applicationId: state.pathParameters['applicationId']!,
+          queue: _responseReviewQueue(state.extra),
         ),
       ),
       GoRoute(
@@ -838,6 +815,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormResponseDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           responseId: state.pathParameters['responseId']!,
+          queue: _responseReviewQueue(state.extra),
         ),
       ),
       GoRoute(
@@ -1100,6 +1078,14 @@ StatefulShellRoute _hostShellRoute(
   );
 }
 
+// Minimal ChangeNotifier used as GoRouter's refreshListenable.
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
+// Keep these widget factories at their original source identity for inventory.
+// The GoRoute declarations above remain in their owning shell branches.
+// Detail page transitions are implemented in detail_route_pages.dart.
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
   return EventDetailScreen(
     clubId: state.pathParameters['clubId']!,
@@ -1120,9 +1106,4 @@ ClubDetailScreen _clubDetailScreen(GoRouterState state) {
     clubId: state.pathParameters['clubId']!,
     initialClub: _clubDetailInitialClub(state),
   );
-}
-
-// Minimal ChangeNotifier used as GoRouter's refreshListenable.
-class _RouterRefreshNotifier extends ChangeNotifier {
-  void notify() => notifyListeners();
 }

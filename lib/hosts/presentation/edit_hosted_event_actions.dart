@@ -155,7 +155,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
     );
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
-      showCatchSnackBar(
+      showCatchNotice(
         context,
         screenState.saveOutcome.missingStartingPointMessage,
       );
@@ -216,7 +216,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
         ref.invalidate(watchEventProvider(widget.event.id));
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
-        showCatchSnackBar(context, screenState.saveOutcome.successMessage);
+        showCatchNotice(context, screenState.saveOutcome.successMessage);
         if (screenState.saveOutcome.popRouteOnSuccess &&
             Navigator.of(context).canPop()) {
           Navigator.of(context).pop();

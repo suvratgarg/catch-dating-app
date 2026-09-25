@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_setup_receipts.schema.json",
+  "title": "EventSetupReceiptDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation",
+    "actorUid",
+    "organizerId",
+    "requestHash",
+    "eventId",
+    "appliedRevision",
+    "createdAt"
+  ],
+  "properties": {
+    "operation": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "preferences",
+        "details"
+      ]
+    },
+    "actorUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "appliedRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "x-firestore-collection": "eventSetupReceipts",
+  "x-firestore-path": "eventSetupReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "private event setup operations"
+}

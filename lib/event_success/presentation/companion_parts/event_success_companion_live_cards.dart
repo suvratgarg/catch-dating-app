@@ -684,7 +684,7 @@ class StageCueLine extends StatelessWidget {
   ) async {
     await Clipboard.setData(ClipboardData(text: cue.body));
     if (!context.mounted) return;
-    showCatchSnackBar(
+    showCatchNotice(
       context,
       cue.moment == EventSuccessConversationCueMoment.postEvent
           ? context

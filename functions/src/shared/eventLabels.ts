@@ -31,7 +31,9 @@ export function eventFormatLabel(format: EventFormatSnapshot): string {
 
 /** Returns a compact title derived from canonical event format data. */
 export function eventTitleLabel(event: EventDocument): string {
-  return eventFormatLabel(event.eventFormat);
+  const name = event.name?.trim();
+  if (name) return name;
+  return event.eventFormat ? eventFormatLabel(event.eventFormat) : "Event";
 }
 
 function humanizeToken(value: string): string {
