@@ -21,6 +21,7 @@ export interface ResolveOrganizerCommunicationPlanCallableResponse {
     recommendedRouteId:
       | (
           | "personalWhatsappHandoff"
+          | "personalEmailHandoff"
           | "organizerWhatsappCampaign"
           | "catchWhatsapp"
           | "catchChat"
@@ -29,12 +30,13 @@ export interface ResolveOrganizerCommunicationPlanCallableResponse {
         )
       | null;
     /**
-     * @minItems 2
-     * @maxItems 2
+     * @minItems 3
+     * @maxItems 3
      */
     routes: {
       routeId:
         | "personalWhatsappHandoff"
+        | "personalEmailHandoff"
         | "organizerWhatsappCampaign"
         | "catchWhatsapp"
         | "catchChat"
@@ -47,6 +49,7 @@ export interface ResolveOrganizerCommunicationPlanCallableResponse {
             | "catchAccountRequired"
             | "identityAmbiguous"
             | "missingPhone"
+            | "missingEmail"
             | "organizerSuppressed"
             | "contactOptedOut"
             | "permissionRequired"

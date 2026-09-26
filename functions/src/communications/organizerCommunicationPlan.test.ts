@@ -10,6 +10,7 @@ const baseContact = {
   identityState: "unlinked" as const,
   ambiguousCandidateCount: 0,
   phoneE164: "+919876543210",
+  email: "asha@example.com",
   whatsappStatus: "unknown" as const,
   whatsappAdminSuppressed: false,
 };
@@ -32,6 +33,12 @@ test("Catch chat is recommended while handoff remains available", () => {
     },
     {
       routeId: "personalWhatsappHandoff",
+      executionMode: "externalHandoff",
+      availability: "available",
+      blocker: null,
+    },
+    {
+      routeId: "personalEmailHandoff",
       executionMode: "externalHandoff",
       availability: "available",
       blocker: null,
@@ -68,11 +75,38 @@ test("manual handoff fails closed for every endpoint authority blocker", () => {
   ] as const) {
     const plan = resolveIndividualCommunicationPlan({
       ...baseContact,
+      email: null,
       ...facts,
     });
     assert.equal(plan.outcome, "unavailable");
     assert.equal(plan.recommendedRouteId, null);
     assert.equal(plan.routes[1].blocker, blocker);
+  }
+});
+
+test("email handoff is recommended when richer routes are unavailable", () => {
+  const plan = resolveIndividualCommunicationPlan({
+    ...baseContact,
+    phoneE164: null,
+  });
+
+  assert.equal(plan.outcome, "byHand");
+  assert.equal(plan.recommendedRouteId, "personalEmailHandoff");
+  assert.equal(plan.routes[2].routeId, "personalEmailHandoff");
+  assert.equal(plan.routes[2].availability, "available");
+  assert.equal(plan.routes[2].blocker, null);
+});
+
+test("a contact without an email cannot use the email handoff", () => {
+  for (const email of [null, "", "   "] as const) {
+    const plan = resolveIndividualCommunicationPlan({
+      ...baseContact,
+      phoneE164: null,
+      email,
+    });
+    assert.equal(plan.outcome, "unavailable");
+    assert.equal(plan.recommendedRouteId, null);
+    assert.equal(plan.routes[2].blocker, "missingEmail");
   }
 });
 

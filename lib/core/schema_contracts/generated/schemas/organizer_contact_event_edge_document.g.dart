@@ -325,6 +325,7 @@ const schemaOrganizerContactEventEdgeDocumentSchema = <String, Object?>{
         'hostImport',
         'hostEstimate',
         'providerOrder',
+        'hostAttested',
         null,
       ],
     },

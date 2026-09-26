@@ -1357,6 +1357,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerContactNoteDocument.ts",
   },
   {
+    name: "OrganizerContactOutreachDocument",
+    source: "firestore/organizer_contact_outreach.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerContactOutreachDocument.ts",
+  },
+  {
     name: "OrganizerContactTagVocabularyDocument",
     source: "firestore/organizer_contact_tag_vocabularies.schema.json",
     typeOutput:
@@ -4825,6 +4831,22 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerContactNoteCallableResponse.ts",
+  },
+  {
+    name: "RecordOrganizerContactOutreachCallablePayload",
+    source:
+      "callables/record_organizer_contact_outreach_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordOrganizerContactOutreachCallablePayload.ts",
+  },
+  {
+    name: "OrganizerContactOutreachCallableResponse",
+    source:
+      "callable_responses/organizer_contact_outreach_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerContactOutreachCallableResponse.ts",
   },
   {
     name: "ExportOrganizerContactsCallablePayload",

@@ -177,6 +177,25 @@ test("finalizer downloads and re-verifies exact package bytes before authority",
   assert.ok(packageDownload >= 0 && packageVerify > packageDownload && authority > packageVerify);
 });
 
+test("iOS export retries only the transient App Store Connect response and preserves diagnostics", () => {
+  const exportSection = source.slice(
+    source.indexOf("- name: Export prod IPA"),
+    source.indexOf("- name: Verify exported release identity"),
+  );
+  assert.match(exportSection, /xcodebuild \\[\s\S]*?-exportArchive/u);
+  assert.match(exportSection, /max_attempts=3/u);
+  assert.match(
+    exportSection,
+    /attempt" -lt "\$max_attempts" \]\] && grep -q "correct format" "\$export_log"/u,
+  );
+  assert.match(exportSection, /xcdistributionlogs/u);
+  assert.match(
+    exportSection,
+    /Upload iOS export diagnostics[\s\S]*?if: \$\{\{ failure\(\) \}\}/u,
+  );
+  assert.match(exportSection, /if-no-files-found: ignore/u);
+});
+
 test("publisher-capable and signing secrets are not job-wide", () => {
   const iosHeader = source.slice(
     source.indexOf("  prod-ios:"),

@@ -9825,6 +9825,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerEmailHandoffSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Email handoff draft',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerEmailHandoffSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerFilterSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9876,6 +9887,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerMemoryPreviewComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerOutreachSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Draft outreach log',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerOutreachSheetStates,
                   ),
                 ],
               ),

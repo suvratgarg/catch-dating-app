@@ -21,6 +21,8 @@ enum HostAttentionKind {
   formResponseReview,
   inboxReply,
   postEventReconciliation,
+  momentStaffAttention,
+  eventOfferPaymentFollowUp,
 }
 
 enum HostAttentionScope { organizer, event, application, form, thread, account }
@@ -41,6 +43,8 @@ enum HostAttentionSourceOwner {
   organizerFormResponses,
   organizerWhatsappThreads,
   eventAttendees,
+  organizerMomentSends,
+  organizerEventOffers,
 }
 
 enum HostAttentionConsequence {
@@ -66,6 +70,7 @@ enum HostAttentionDestinationRoute {
   hostInbox,
   hostDressRehearsal,
   hostEvents,
+  hostProgramWork,
 }
 
 enum HostAttentionCoverageState {

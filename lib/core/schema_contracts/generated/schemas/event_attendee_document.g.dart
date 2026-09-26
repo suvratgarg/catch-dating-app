@@ -184,6 +184,7 @@ const schemaEventAttendeeDocumentSchema = <String, Object?>{
         'hostImport',
         'hostEstimate',
         'providerOrder',
+        'hostAttested',
         null,
       ],
     },

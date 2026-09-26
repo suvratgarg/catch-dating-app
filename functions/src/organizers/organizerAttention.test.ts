@@ -34,6 +34,7 @@ import {
   deriveOrganizerAttentionItems,
   DesiredHostAttentionItem,
   hostAttentionCoverage,
+  OfferAttentionSource,
   OrganizerAttentionSources,
 } from "./organizerAttentionPolicy";
 
@@ -128,6 +129,84 @@ test("projects staffAttention sends as one item per run", () => {
   assert.equal(program.destination.route, "hostProgramWork");
   assert.equal(program.destination.section, "moments");
 });
+
+test("unpaid offered offers group into one follow-up item per event", () => {
+  const sources = emptySources();
+  sources.events = [row("event-1", event({
+    startMillis: nowMillis + 48 * hourMillis,
+    endMillis: nowMillis + 51 * hourMillis,
+  }), nowMillis - hourMillis)];
+  sources.eventOffers = [
+    row("offer-1", offer({
+      offeredAtMillis: nowMillis - 30 * hourMillis,
+    }), nowMillis - 2 * hourMillis),
+    row("offer-2", offer({
+      offerId: "offer-2",
+      manualPaymentStatus: "evidenceSubmitted",
+      expiresAtMillis: nowMillis + 40 * hourMillis,
+    }), nowMillis - hourMillis),
+    row("offer-3", offer({
+      offerId: "offer-3",
+      manualPaymentStatus: "hostAttestedReceived",
+    }), nowMillis),
+    row("offer-4", offer({offerId: "offer-4", expectedAmountMinor: 0}),
+      nowMillis),
+    row("offer-5", offer({
+      offerId: "offer-5",
+      expiresAtMillis: nowMillis - hourMillis,
+    }), nowMillis),
+    row("offer-6", offer({offerId: "offer-6", status: "withdrawn"}),
+      nowMillis),
+  ];
+  const items = deriveOrganizerAttentionItems({
+    organizerId: "organizer-1",
+    nowMillis,
+    sources,
+  }).filter((item) => item.kind === "eventOfferPaymentFollowUp");
+
+  assert.equal(items.length, 1);
+  const item = items[0];
+  assert.equal(item.eventId, "event-1");
+  assert.equal(item.scope, "event");
+  assert.equal(item.sourceOwner, "organizerEventOffers");
+  assert.equal(item.consequence, "risksRevenue");
+  assert.equal(item.blocking, false);
+  assert.equal(item.context.count, 2);
+  assert.equal(item.context.eventName, "Sunday Social Run");
+  assert.equal(item.dedupeKey, "eventOfferPaymentFollowUp:event-1");
+  assert.equal(item.destination.route, "hostEventManage");
+  assert.equal(item.destination.section, "guests");
+  assert.equal(item.dueAtMillis, nowMillis - 6 * hourMillis);
+  assert.equal(item.expiresAtMillis, nowMillis + 40 * hourMillis);
+});
+
+test("settled, free, expired and non-offered offers raise no follow-up",
+  () => {
+    const sources = emptySources();
+    sources.eventOffers = [
+      row("offer-1", offer({
+        manualPaymentStatus: "hostAttestedReceived",
+      }), nowMillis),
+      row("offer-2", offer({offerId: "offer-2", status: "withdrawn"}),
+        nowMillis),
+      row("offer-3", offer({offerId: "offer-3", status: "draft"}), nowMillis),
+      row("offer-4", offer({offerId: "offer-4", status: "expired"}),
+        nowMillis),
+      row("offer-5", offer({offerId: "offer-5", expectedAmountMinor: 0}),
+        nowMillis),
+      row("offer-6", offer({
+        offerId: "offer-6",
+        expiresAtMillis: nowMillis - 1000,
+      }), nowMillis),
+    ];
+    const items = deriveOrganizerAttentionItems({
+      organizerId: "organizer-1",
+      nowMillis,
+      sources,
+    });
+    assert.equal(items.some((item) =>
+      item.kind === "eventOfferPaymentFollowUp"), false);
+  });
 
 test("private basics do not create waitlist or payout obligations", () => {
   const sources = sourceFixture();
@@ -346,8 +425,8 @@ test("applies the seven-day horizon and exposes all policy gaps", () => {
   assert.deepEqual(items, []);
 
   const coverage = hostAttentionCoverage();
-  assert.equal(coverage.length, 18);
-  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 18);
+  assert.equal(coverage.length, 19);
+  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 19);
   assert.equal(coverage.find((entry) =>
     entry.kind === "attendanceSync")?.state, "clientMergeRequired");
   assert.equal(coverage.find((entry) =>
@@ -482,7 +561,7 @@ test(
     });
     assert.deepEqual(actions, ["listOrganizerAttentionItems"]);
     assert.equal(result.generatedAtMillis, nowMillis);
-    assert.equal(result.coverage.length, 18);
+    assert.equal(result.coverage.length, 19);
     assert.equal(result.items.length, 6);
   }
 );
@@ -552,6 +631,7 @@ function emptySources(): OrganizerAttentionSources {
     automationRuns: [],
     paymentAccounts: {},
     momentAttentionSends: [],
+    eventOffers: [],
   };
 }
 
@@ -805,6 +885,24 @@ function paymentAccount(params: {ready: boolean}): HostPaymentAccountDocument {
     requirementsPendingVerification: [],
     updatedAt: timestamp(nowMillis),
   } as unknown as HostPaymentAccountDocument;
+}
+
+function offer(overrides: Partial<OfferAttentionSource> = {}):
+  OfferAttentionSource {
+  return {
+    offerId: "offer-1",
+    eventId: "event-1",
+    status: "offered",
+    generation: 1,
+    revision: 1,
+    expiresAtMillis: nowMillis + 24 * hourMillis,
+    offeredAtMillis: nowMillis - 2 * hourMillis,
+    expectedAmountMinor: 150000,
+    currency: "INR",
+    manualPaymentStatus: "none",
+    updatedAtMillis: nowMillis - 2 * hourMillis,
+    ...overrides,
+  };
 }
 
 function row<T>(

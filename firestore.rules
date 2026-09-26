@@ -1188,6 +1188,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Manager-asserted outreach attempts are append-only facts written and
+    // read only through manager-authorized callables.
+    match /organizerContactOutreach/{outreachId} {
+      allow read, write: if false;
+    }
+
     match /organizerContactTagVocabularies/{organizerId} {
       allow read, write: if false;
     }

@@ -5615,6 +5615,28 @@ export interface OrganizerContactNoteDocument {
 }
 
 /**
+ * Manager-asserted outreach attempt on one organizer contact. Records are append-only through the manager-authorized record callable, appear on the contact timeline, and are excluded from contact exports.
+ */
+export interface OrganizerContactOutreachDocument {
+  organizerId: string;
+  contactId: string;
+  authorUid: string;
+  channel: "phoneCall" | "whatsapp" | "email" | "sms" | "inPerson" | "other";
+  outcome:
+    | "reached"
+    | "noAnswer"
+    | "leftMessage"
+    | "wrongContact"
+    | "attempted";
+  note?: string;
+  occurredAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+/**
  * Organizer-authored manual CRM tag vocabulary. Tag ids are structurally distinct from computed audience segment ids.
  */
 export interface OrganizerContactTagVocabularyDocument {
@@ -5837,7 +5859,8 @@ export interface OrganizerAttentionItemDocument {
     | "formResponseReview"
     | "inboxReply"
     | "postEventReconciliation"
-    | "momentStaffAttention";
+    | "momentStaffAttention"
+    | "eventOfferPaymentFollowUp";
   scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
   sourceOwner:
     | "events"
@@ -5855,7 +5878,8 @@ export interface OrganizerAttentionItemDocument {
     | "organizerFormResponses"
     | "organizerWhatsappThreads"
     | "eventAttendees"
-    | "organizerMomentSends";
+    | "organizerMomentSends"
+    | "organizerEventOffers";
   sourceId: string;
   sourceRevision: string;
   eventId: string | null;
@@ -5999,7 +6023,12 @@ export interface OrganizerContactEventEdgeDocument {
   checkedInAt: FirebaseFirestore.Timestamp | null;
   revenueAmountMinor?: number | null;
   revenueCurrency?: string | null;
-  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueSource?:
+    | "hostImport"
+    | "hostEstimate"
+    | "providerOrder"
+    | "hostAttested"
+    | null;
   revenueAllocation?: "perAttendee" | "sharedOrder" | null;
   revenueOrderReference?: string | null;
   inviteLinkId?: string | null;
@@ -9017,7 +9046,12 @@ export interface EventAttendeeDocument {
    */
   revenueAmountMinor?: number | null;
   revenueCurrency?: string | null;
-  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueSource?:
+    | "hostImport"
+    | "hostEstimate"
+    | "providerOrder"
+    | "hostAttested"
+    | null;
   revenueAllocation?: "perAttendee" | "sharedOrder" | null;
   revenueOrderReference?: string | null;
   /**

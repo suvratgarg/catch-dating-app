@@ -166,6 +166,8 @@ String _recommendedMessageTitle(
     context.l10n.hostsHostOrganizerCrmCatchApp,
   HostCommunicationRouteId.personalWhatsappHandoff =>
     context.l10n.hostCustomersWhatsappAppChannel,
+  HostCommunicationRouteId.personalEmailHandoff =>
+    context.l10n.hostCustomersEmailAppChannel,
   _ => context.l10n.hostCustomersMessageOptionsUnavailable,
 };
 
@@ -177,6 +179,8 @@ String _recommendedMessageBody(
     context.l10n.hostCustomersMessagePersonCatch,
   HostCommunicationRouteId.personalWhatsappHandoff =>
     context.l10n.hostCustomersMessagePersonHandoff,
+  HostCommunicationRouteId.personalEmailHandoff =>
+    context.l10n.hostCustomersMessagePersonEmail,
   _ => context.l10n.hostCustomersMessageOptionsUnavailable,
 };
 
@@ -207,6 +211,8 @@ String _communicationRouteBlockerLabel(
     context.l10n.hostCustomersConversationAmbiguous,
   HostCommunicationRouteBlocker.missingPhone =>
     context.l10n.hostCustomersWhatsappMissingPhone,
+  HostCommunicationRouteBlocker.missingEmail =>
+    context.l10n.hostCustomersEmailMissingEmail,
   HostCommunicationRouteBlocker.organizerSuppressed =>
     context.l10n.hostCustomersWhatsappOrganizerSuppressed,
   HostCommunicationRouteBlocker.contactOptedOut =>
@@ -337,7 +343,7 @@ String _originLabel(BuildContext context, HostCustomerOrigin origin) =>
         ),
     };
 
-enum HostCustomerHistoryKind { all, forms, events, messages }
+enum HostCustomerHistoryKind { all, forms, events, messages, outreach }
 
 class HostCustomerHistoryFilters extends StatefulWidget {
   const HostCustomerHistoryFilters({super.key, required this.builder});
@@ -384,6 +390,10 @@ class _HostCustomerHistoryFiltersState
                 value: HostCustomerHistoryKind.messages,
                 label: context.l10n.hostCustomersMessageHistory,
               ),
+              CatchSelectionMenuItem(
+                value: HostCustomerHistoryKind.outreach,
+                label: context.l10n.hostCustomersOutreach,
+              ),
             ],
           ),
         ),
@@ -425,6 +435,8 @@ class HostCustomerTimelineSection extends StatelessWidget {
             HostCustomerHistoryKind.messages =>
               entry is HostCustomerSendTimelineEntry ||
                   entry is HostCustomerReplyTimelineEntry,
+            HostCustomerHistoryKind.outreach =>
+              entry is HostCustomerOutreachTimelineEntry,
           },
         )
         .toList(growable: false);
@@ -435,10 +447,12 @@ class HostCustomerTimelineSection extends StatelessWidget {
         coverage.events,
         coverage.sends,
         coverage.replies,
+        coverage.outreach,
       ],
       HostCustomerHistoryKind.forms => [coverage.forms],
       HostCustomerHistoryKind.events => [coverage.events],
       HostCustomerHistoryKind.messages => [coverage.sends, coverage.replies],
+      HostCustomerHistoryKind.outreach => [coverage.outreach],
     };
     final hasGap =
         customer.timelineTruncated ||
@@ -613,6 +627,20 @@ CatchField hostCustomerTimelineField(
         description: entry.bodyPreview,
         icon: CatchIcons.tabChats,
         color: t.primary,
+      ),
+    ),
+    HostCustomerOutreachTimelineEntry() => CatchField.read(
+      key: key,
+      content: CatchRecordLayout(
+        title: context.l10n.hostCustomersOutreachChannel(
+          channel: entry.channel.name,
+        ),
+        metadata: context.l10n.hostCustomersOutreachOutcome(
+          outcome: entry.outcome.name,
+        ),
+        description: entry.notePreview,
+        icon: CatchIcons.callOutlined,
+        color: t.ink2,
       ),
     ),
   };

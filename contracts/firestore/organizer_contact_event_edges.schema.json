@@ -42,7 +42,7 @@
     "checkedInAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "revenueAmountMinor": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
     "revenueCurrency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
-    "revenueSource": {"type": ["string", "null"], "enum": ["hostImport", "hostEstimate", "providerOrder", null]},
+    "revenueSource": {"type": ["string", "null"], "enum": ["hostImport", "hostEstimate", "providerOrder", "hostAttested", null]},
     "revenueAllocation": {"type": ["string", "null"], "enum": ["perAttendee", "sharedOrder", null]},
     "revenueOrderReference": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
     "inviteLinkId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},

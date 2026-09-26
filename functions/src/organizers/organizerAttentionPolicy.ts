@@ -60,6 +60,22 @@ export interface MomentAttentionSendSource {
   createdAtMillis: number;
 }
 
+/** Facts an offered organizer event offer contributes to the unpaid-payment
+ *  follow-up item, reduced from the organizerEventOffers document. */
+export interface OfferAttentionSource {
+  offerId: string;
+  eventId: string;
+  status: string;
+  generation: number;
+  revision: number;
+  expiresAtMillis: number;
+  offeredAtMillis: number;
+  expectedAmountMinor: number;
+  currency: string | null;
+  manualPaymentStatus: string;
+  updatedAtMillis: number;
+}
+
 export interface OrganizerAttentionSources {
   organizer: AttentionSourceRow<OrganizerDocument>;
   events: Array<AttentionSourceRow<EventDocument>>;
@@ -85,6 +101,7 @@ export interface OrganizerAttentionSources {
   momentAttentionSends: Array<
     AttentionSourceRow<MomentAttentionSendSource>
   >;
+  eventOffers: Array<AttentionSourceRow<OfferAttentionSource>>;
 }
 
 export type DesiredHostAttentionItem = HostAttentionItem & {
@@ -372,6 +389,70 @@ export function deriveOrganizerAttentionItems(params: {
         event.sourceUpdatedAtMillis,
         ...ordered.map((row) => row.sourceUpdatedAtMillis)
       ),
+      nowMillis: params.nowMillis,
+    }));
+  }
+
+  const unpaidOffersByEvent = new Map<
+    string,
+    Array<AttentionSourceRow<OfferAttentionSource>>
+  >();
+  for (const row of params.sources.eventOffers) {
+    const offer = row.data;
+    if (offer.status !== "offered" ||
+        offer.expectedAmountMinor <= 0 ||
+        offer.manualPaymentStatus === "hostAttestedReceived" ||
+        offer.expiresAtMillis <= params.nowMillis) continue;
+    const rows = unpaidOffersByEvent.get(offer.eventId) ?? [];
+    rows.push(row);
+    unpaidOffersByEvent.set(offer.eventId, rows);
+  }
+  for (const [eventId, offers] of unpaidOffersByEvent) {
+    const ordered = [...offers].sort((left, right) =>
+      offerFollowUpDueAtMillis(left.data) -
+        offerFollowUpDueAtMillis(right.data) ||
+      left.id.localeCompare(right.id));
+    const event = activeEventsById.get(eventId);
+    items.push(buildItem({
+      kind: "eventOfferPaymentFollowUp",
+      scope: "event",
+      sourceOwner: "organizerEventOffers",
+      sourceId: eventId,
+      sourceRevision: revisionOf({
+        eventId,
+        startMillis: event?.data.startTime.toMillis() ?? null,
+        endMillis: event?.data.endTime.toMillis() ?? null,
+        offers: ordered.map((row) => ({
+          id: row.id,
+          generation: row.data.generation,
+          revision: row.data.revision,
+          manualPaymentStatus: row.data.manualPaymentStatus,
+          offeredAtMillis: row.data.offeredAtMillis,
+          expectedAmountMinor: row.data.expectedAmountMinor,
+          currency: row.data.currency,
+          expiresAtMillis: row.data.expiresAtMillis,
+          sourceUpdatedAtMillis: row.sourceUpdatedAtMillis,
+        })),
+      }),
+      eventId,
+      consequence: "risksRevenue",
+      blocking: false,
+      dueAtMillis: offerFollowUpDueAtMillis(ordered[0].data),
+      expiresAtMillis: Math.max(
+        ...ordered.map((row) => row.data.expiresAtMillis)),
+      destination: destination({
+        route: "hostEventManage",
+        section: "guests",
+        eventId,
+      }),
+      context: context({
+        eventName: event ? displayEventName(event.data) : null,
+        count: ordered.length,
+      }),
+      dedupeKey: `eventOfferPaymentFollowUp:${eventId}`,
+      assignedHostUid: null,
+      sourceUpdatedAtMillis: Math.max(
+        ...ordered.map((row) => row.sourceUpdatedAtMillis)),
       nowMillis: params.nowMillis,
     }));
   }
@@ -761,6 +842,15 @@ function requestOpenedAtMillis(
   row: AttentionSourceRow<EventParticipationDocument>
 ): number {
   return row.data.waitlistedAt?.toMillis() ?? row.data.createdAt.toMillis();
+}
+
+/** One payment-collection reminder due time per unpaid offer: a grace day
+ *  after issuance, never past the offer's own expiry. */
+function offerFollowUpDueAtMillis(offer: OfferAttentionSource): number {
+  return Math.min(
+    offer.offeredAtMillis + immediateMillis,
+    offer.expiresAtMillis
+  );
 }
 
 function automationRuleKey(

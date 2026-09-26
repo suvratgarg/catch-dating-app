@@ -12,6 +12,7 @@ test("the route registry covers every supported communication route", () => {
     "organizerEventWhatsapp",
     "organizerFollowerUpdate",
     "organizerWhatsappCampaign",
+    "personalEmailHandoff",
     "personalWhatsappHandoff",
   ]);
 });
@@ -28,19 +29,25 @@ test("organizer and Catch WhatsApp keep separate authority boundaries", () => {
 });
 
 test("personal handoff remains host-sent and unobservable by Catch", () => {
-  const handoff = communicationRoutes.personalWhatsappHandoff;
-
-  assert.equal(handoff.deliveryMode, "externalHandoff");
-  assert.equal(handoff.audienceScope, "singleContact");
-  assert.equal(handoff.observability, "none");
-  assert.equal(handoff.requiresHostFinalSend, true);
-  assert.equal(handoff.supportsScheduling, false);
+  for (const handoff of [communicationRoutes.personalWhatsappHandoff,
+    communicationRoutes.personalEmailHandoff]) {
+    assert.equal(handoff.deliveryMode, "externalHandoff");
+    assert.equal(handoff.audienceScope, "singleContact");
+    assert.equal(handoff.observability, "none");
+    assert.equal(handoff.requiresHostFinalSend, true);
+    assert.equal(handoff.supportsScheduling, false);
+  }
+  assert.equal(
+    communicationRoutes.personalEmailHandoff.transport,
+    "email"
+  );
 });
 
 test("every route declares audience, reply, and scheduling semantics", () => {
   assert.deepEqual(
     Object.values(communicationRoutes).map((route) => route.audienceScope),
     [
+      "singleContact",
       "singleContact",
       "organizerCrmSegment",
       "catchPermissionedAudience",

@@ -122,6 +122,7 @@ HostAudienceContactDetail hostCustomerSkeletonDetail({
       events: HostCustomerTimelineCoverageValue.exact,
       sends: HostCustomerTimelineCoverageValue.exact,
       replies: HostCustomerTimelineCoverageValue.partial,
+      outreach: HostCustomerTimelineCoverageValue.exact,
     ),
     revision: 1,
   );

@@ -57,6 +57,7 @@ import {
   hostAttentionHorizonMillis,
   momentAttentionWindowMillis,
   MomentAttentionSendSource,
+  OfferAttentionSource,
   OrganizerAttentionSources,
 } from "./organizerAttentionPolicy";
 
@@ -153,6 +154,7 @@ export async function loadOrganizerAttentionSources(
     automationRules,
     automationRuns,
     momentAttentionSendDocs,
+    offeredOffers,
   ] = await Promise.all([
     db.collection("organizers").doc(organizerId).get(),
     events.where("organizerId", "==", organizerId)
@@ -222,6 +224,16 @@ export async function loadOrganizerAttentionSources(
       .orderBy("createdAtMillis")
       .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1).get(),
+    /* firestore-index: organizerEventOffers (
+      organizerId:ASCENDING, status:ASCENDING,
+      expiresAtMillis:ASCENDING, __name__:ASCENDING
+    ) */
+    db.collection("organizerEventOffers")
+      .where("organizerId", "==", organizerId)
+      .where("status", "==", "offered")
+      .orderBy("expiresAtMillis")
+      .orderBy(admin.firestore.FieldPath.documentId())
+      .limit(maxAttentionSourceRows + 1).get(),
   ]);
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");
@@ -247,6 +259,7 @@ export async function loadOrganizerAttentionSources(
     momentAttentionSendDocs,
     "moment staff attention sends"
   );
+  assertBoundedSnapshot(offeredOffers, "offered event offers");
 
   const eventRows = new Map<string, AttentionSourceRow<EventDocument>>();
   for (const snapshot of [canonicalEvents, compatibilityEvents]) {
@@ -319,6 +332,10 @@ export async function loadOrganizerAttentionSources(
       .map((doc) => momentAttentionSendRow(doc))
       .filter((row): row is
         AttentionSourceRow<MomentAttentionSendSource> => row !== null),
+    eventOffers: offeredOffers.docs
+      .map((doc) => offerAttentionSourceRow(doc))
+      .filter((row): row is
+        AttentionSourceRow<OfferAttentionSource> => row !== null),
   };
 }
 
@@ -355,6 +372,55 @@ function momentAttentionSendRow(
     severity,
     title,
     createdAtMillis,
+  });
+}
+
+/** Lenient offer parse: malformed offer rows drop out of the source set
+ *  rather than failing the whole projection. */
+function offerAttentionSourceRow(
+  snapshot: FirebaseFirestore.DocumentSnapshot
+): AttentionSourceRow<OfferAttentionSource> | null {
+  const data = snapshot.data() as Record<string, unknown> | undefined;
+  if (!data) return null;
+  const eventId = data.eventId;
+  const status = data.status;
+  const generation = data.generation;
+  const revision = data.revision;
+  const expiresAtMillis = data.expiresAtMillis;
+  const offeredAtMillis = data.offeredAtMillis;
+  const updatedAtMillis = data.updatedAtMillis;
+  const manualPayment = data.manualPayment;
+  const manualPaymentStatus =
+    (manualPayment as Record<string, unknown> | undefined)?.status;
+  const paymentSnapshot = data.paymentSnapshot;
+  const expectedAmountMinor =
+    (paymentSnapshot as Record<string, unknown> | undefined)
+      ?.expectedAmountMinor;
+  const currency =
+    (paymentSnapshot as Record<string, unknown> | undefined)?.currency;
+  if (typeof eventId !== "string" || typeof status !== "string" ||
+      !Number.isSafeInteger(generation) ||
+      !Number.isSafeInteger(revision) ||
+      typeof expiresAtMillis !== "number" ||
+      typeof offeredAtMillis !== "number" ||
+      typeof updatedAtMillis !== "number" ||
+      typeof manualPaymentStatus !== "string" ||
+      typeof expectedAmountMinor !== "number" ||
+      (currency !== null && typeof currency !== "string")) {
+    return null;
+  }
+  return sourceRowFromSnapshot(snapshot, {
+    offerId: snapshot.id,
+    eventId,
+    status,
+    generation: generation as number,
+    revision: revision as number,
+    expiresAtMillis,
+    offeredAtMillis,
+    expectedAmountMinor,
+    currency: currency as string | null,
+    manualPaymentStatus,
+    updatedAtMillis,
   });
 }
 

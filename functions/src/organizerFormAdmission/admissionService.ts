@@ -42,7 +42,8 @@ import {applyFirestoreSeat, assertCurrentReadySeatSnapshot,
   "../events/seatAuthority/firestoreAdapter";
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
-import {eventOfferId} from "../organizerEventOffers/eventOfferDomain";
+import {eventOfferId, EventOffer} from
+  "../organizerEventOffers/eventOfferDomain";
 import {parseStoredEventOffer} from
   "../organizerEventOffers/eventOfferFirestoreRepository";
 import {AdmissionCommand, AdmissionFacts, AdmissionOwnership,
@@ -140,6 +141,29 @@ function catchAttendee(eventId: string, organizerId: string, uid: string,
     inviteCapturedAt: participation.inviteCapturedAt ?? null,
     attendanceRevision: 0,
     preCheckInStatus: checkedIn ? "registered" : null};
+}
+
+/**
+ * Revenue fact asserted by an offer's attested manual payment, when one is
+ * present. The fact lands on the operational attendee so the rebuildable
+ * contact-event edge projects it into customer revenue history.
+ */
+function attestedRevenueFields(offer: EventOffer):
+  Pick<EventAttendeeDocument, "revenueAmountMinor" | "revenueCurrency" |
+    "revenueSource" | "revenueAllocation" | "revenueOrderReference" |
+    "revenueOrderAmountMinor"> | null {
+  const manual = offer.manualPayment;
+  const amount = manual.attestedAmountMinor;
+  if (manual.status !== "hostAttestedReceived" || amount === null ||
+      !Number.isSafeInteger(amount) || amount <= 0 ||
+      manual.attestedCurrency === null ||
+      !/^[A-Z]{3}$/u.test(manual.attestedCurrency)) {
+    return null;
+  }
+  return {revenueAmountMinor: amount,
+    revenueCurrency: manual.attestedCurrency,
+    revenueSource: "hostAttested", revenueAllocation: "perAttendee",
+    revenueOrderReference: null, revenueOrderAmountMinor: null};
 }
 
 function newFormAttendee(eventId: string, organizerId: string,
@@ -514,6 +538,7 @@ export async function commitOrganizerFormAdmission(
           nowMillis: now},
         identityAuthority: {resolve: async () => identity.identity}}) : null;
     const timestamp = admin.firestore.Timestamp.fromMillis(now);
+    const attestedRevenue = attestedRevenueFields(offer);
     const operationalAttendee = decision.rosterAction === "create" ?
       newFormAttendee(payload.eventId, payload.organizerId,
         payload.responseId, contact, response, verifiedPhone, timestamp) :
@@ -521,6 +546,9 @@ export async function commitOrganizerFormAdmission(
         participation ? catchAttendee(payload.eventId, payload.organizerId,
           participation.uid, participation, publicProfile,
           timestamp) : null;
+    if (operationalAttendee && attestedRevenue) {
+      Object.assign(operationalAttendee, attestedRevenue);
+    }
     if (decision.rosterAction === "preserveCatch" && !attendeeRaw &&
         !operationalAttendee) {
       unavailable("Catch roster source is unavailable.");
@@ -601,6 +629,13 @@ export async function commitOrganizerFormAdmission(
       {bookedCount: ledger.occupied + (preparedSeat ? 1 : 0)});
     if (operationalAttendee) {
       tx.create(doc("eventAttendees", attendeeId), operationalAttendee);
+    }
+    // A linked roster row carries the attested manual revenue the same way a
+    // freshly created attendee does; the edge projection reads it verbatim.
+    if (decision.rosterAction === "linkExisting" && attendeeRaw &&
+        attestedRevenue) {
+      tx.update(doc("eventAttendees", attendeeId), {...attestedRevenue,
+        updatedAt: timestamp});
     }
     if (attendeeAliasRef && !attendeeAliasRaw) {
       tx.create(attendeeAliasRef, {...aliasBase, kind: "attendee",

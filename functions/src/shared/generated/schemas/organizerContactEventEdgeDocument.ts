@@ -323,6 +323,7 @@ export const organizerContactEventEdgeDocumentSchema: Record<string, unknown> = 
         "hostImport",
         "hostEstimate",
         "providerOrder",
+        "hostAttested",
         null
       ]
     },

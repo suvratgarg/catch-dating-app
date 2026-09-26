@@ -219,6 +219,7 @@ export {
   listOrganizerContacts,
   mutateOrganizerContact,
   mutateOrganizerContactNote,
+  recordOrganizerContactOutreach,
 } from "./organizers/organizerContacts";
 export {resolveOrganizerCommunicationPlan} from
   "./organizers/organizerCommunicationPlans";

@@ -997,12 +997,33 @@ describe("firestore.rules", () => {
         tags: [],
         updatedAt: createdAt,
       });
+      await seed(["organizerContactOutreach", "outreach-2"], {
+        organizerId: "organizer-2",
+        contactId: "contact-2",
+        authorUid: "owner-2",
+        channel: "phoneCall",
+        outcome: "noAnswer",
+        occurredAt: createdAt,
+        revision: 1,
+        createdAt,
+        updatedAt: createdAt,
+        updatedByUid: "owner-2",
+      });
 
       for (const uid of ["owner-2", "owner-1"]) {
         const db = authedDb(uid);
         await assertFails(getDoc(doc(db, "organizerContactNotes", "note-2")));
         await assertFails(getDocs(query(
           collection(db, "organizerContactNotes"),
+          where("organizerId", "==", "organizer-2"),
+        )));
+        await assertFails(getDoc(doc(
+          db,
+          "organizerContactOutreach",
+          "outreach-2",
+        )));
+        await assertFails(getDocs(query(
+          collection(db, "organizerContactOutreach"),
           where("organizerId", "==", "organizer-2"),
         )));
         await assertFails(getDoc(doc(
@@ -1019,6 +1040,16 @@ describe("firestore.rules", () => {
         organizerId: "organizer-2",
         contactId: "contact-2",
         body: "Client write",
+      }));
+      await assertFails(setDoc(doc(
+        authedDb("owner-2"),
+        "organizerContactOutreach",
+        "outreach-client",
+      ), {
+        organizerId: "organizer-2",
+        contactId: "contact-2",
+        channel: "phoneCall",
+        outcome: "reached",
       }));
       await assertFails(updateDoc(doc(
         authedDb("owner-2"),

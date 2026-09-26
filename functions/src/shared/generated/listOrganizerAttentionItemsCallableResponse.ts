@@ -33,7 +33,8 @@ export interface ListOrganizerAttentionItemsCallableResponse {
       | "formResponseReview"
       | "inboxReply"
       | "postEventReconciliation"
-      | "momentStaffAttention";
+      | "momentStaffAttention"
+      | "eventOfferPaymentFollowUp";
     scope:
       | "organizer"
       | "event"
@@ -57,7 +58,8 @@ export interface ListOrganizerAttentionItemsCallableResponse {
       | "organizerFormResponses"
       | "organizerWhatsappThreads"
       | "eventAttendees"
-      | "organizerMomentSends";
+      | "organizerMomentSends"
+      | "organizerEventOffers";
     sourceId: string;
     sourceRevision: string;
     eventId: string | null;
@@ -105,8 +107,8 @@ export interface ListOrganizerAttentionItemsCallableResponse {
     expiresAtMillis: number | null;
   }[];
   /**
-   * @minItems 18
-   * @maxItems 18
+   * @minItems 19
+   * @maxItems 19
    */
   coverage: {
     kind:
@@ -127,7 +129,8 @@ export interface ListOrganizerAttentionItemsCallableResponse {
       | "formResponseReview"
       | "inboxReply"
       | "postEventReconciliation"
-      | "momentStaffAttention";
+      | "momentStaffAttention"
+      | "eventOfferPaymentFollowUp";
     state:
       | "complete"
       | "clientMergeRequired"

@@ -336,6 +336,7 @@ export function savedAudienceReachSummary(
       ambiguousCandidateCount:
         row.contact.ambiguousCandidateContactIds.length,
       phoneE164: row.contact.phoneE164,
+      email: row.contact.email ?? null,
       whatsappStatus: row.contact.whatsappStatus,
       whatsappAdminSuppressed: row.channelState?.adminSuppressed === true,
     });

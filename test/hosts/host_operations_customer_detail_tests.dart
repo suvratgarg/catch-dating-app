@@ -554,6 +554,89 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byType(HostCustomerTimelineSection), findsNothing);
     expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
   });
+
+  testWidgets('customer record actions log an asserted outreach attempt', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 3600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final functions = _ManualHandoffTestFunctions(<String>[])
+      ..responses['recordOrganizerContactOutreach'] = <String, Object?>{
+        'organizerId': 'organizer-1',
+        'contactId': 'contact-1',
+        'outreachId': 'outreach-1',
+        'channel': 'phoneCall',
+        'outcome': 'noAnswer',
+        'note': 'Try again after 6pm',
+        'authorUid': _hostUid,
+        'occurredAtMillis': 1700000000000,
+        'createdAtMillis': 1700000000000,
+        'updatedAtMillis': 1700000000000,
+        'revision': 1,
+      };
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_customerDetail())),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        firebaseFunctionsProvider.overrideWithValue(functions),
+        hostContactsRepositoryProvider.overrideWithValue(
+          HostContactsRepository(functions),
+        ),
+      ],
+    );
+
+    final copy = AppLocalizationsEn();
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-record-actions')),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text(copy.hostCustomersLogOutreach));
+    await pumpFeatureUi(tester);
+    expect(find.byType(HostCustomerOutreachSheet), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-outreach-outcome')),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(
+      find.text(copy.hostCustomersOutreachOutcome(outcome: 'noAnswer')),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-outreach-note')),
+        matching: find.byType(TextField),
+      ),
+      'Try again after 6pm',
+    );
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-save-outreach')),
+    );
+    await pumpFeatureUi(tester);
+
+    final call = functions.calls['recordOrganizerContactOutreach']!.single;
+    expect(call['organizerId'], 'organizer-1');
+    expect(call['contactId'], 'contact-1');
+    expect(call['channel'], 'phoneCall');
+    expect(call['outcome'], 'noAnswer');
+    expect(call['note'], 'Try again after 6pm');
+    expect(tester.takeException(), isNull);
+  });
 }
 
 void _expectAudienceStateOwner(
@@ -626,6 +709,7 @@ HostAudienceContactDetail _customerDetailPresentationFixture({
       events: base.timelineCoverage.events,
       sends: base.timelineCoverage.sends,
       replies: base.timelineCoverage.replies,
+      outreach: base.timelineCoverage.outreach,
     ),
     revision: base.revision,
   );
