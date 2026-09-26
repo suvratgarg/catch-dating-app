@@ -304,6 +304,18 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 queryParameters: {'eventId': event.id},
               ),
             ),
+            CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostMomentsManageEntryTitle,
+              body: context.l10n.hostMomentsManageEntryBody,
+              icon: CatchIcons.autoAwesomeOutlined,
+              emphasis: CatchFieldEmphasis.title,
+              onTap: () => context.pushNamed(
+                Routes.hostAppEventMomentsScreen.name,
+                pathParameters: {'clubId': club.id, 'eventId': event.id},
+                extra: event,
+              ),
+            ),
           ],
         ),
         gapH20,

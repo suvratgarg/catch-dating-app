@@ -16622,6 +16622,270 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationOpenPerson => 'Open person';
 
   @override
+  String get hostMomentsTitle => 'Moments';
+
+  @override
+  String get hostMomentsNew => 'New moment';
+
+  @override
+  String get hostMomentsEmptyTitle => 'No moments yet';
+
+  @override
+  String get hostMomentsEmptyBody =>
+      'Create a moment to schedule messages and alerts for this scope.';
+
+  @override
+  String get hostMomentsManageEntryTitle => 'Moments';
+
+  @override
+  String get hostMomentsManageEntryBody => 'Schedule messages and alerts.';
+
+  @override
+  String get hostMomentActions => 'Moment actions';
+
+  @override
+  String get hostMomentArm => 'Arm';
+
+  @override
+  String get hostMomentPause => 'Pause';
+
+  @override
+  String get hostMomentResume => 'Resume';
+
+  @override
+  String get hostMomentRun => 'Run now';
+
+  @override
+  String get hostMomentEdit => 'Edit moment';
+
+  @override
+  String get hostMomentStatusDraft => 'Draft';
+
+  @override
+  String get hostMomentStatusArmed => 'Armed';
+
+  @override
+  String get hostMomentStatusPaused => 'Paused';
+
+  @override
+  String get hostMomentStatusDone => 'Done';
+
+  @override
+  String get hostMomentOriginDefault => 'Default';
+
+  @override
+  String get hostMomentKindManual => 'Manual';
+
+  @override
+  String get hostMomentKindScheduled => 'Scheduled';
+
+  @override
+  String get hostMomentKindAnchored => 'Anchored';
+
+  @override
+  String get hostMomentKindTriggered => 'Triggered';
+
+  @override
+  String get hostMomentInitiationManual => 'Runs manually';
+
+  @override
+  String hostMomentInitiationScheduled({required String time}) {
+    return 'Scheduled $time';
+  }
+
+  @override
+  String hostMomentInitiationTriggered({required String trigger}) {
+    return 'On $trigger';
+  }
+
+  @override
+  String hostMomentOffsetBefore({required int minutes}) {
+    return '$minutes min before';
+  }
+
+  @override
+  String hostMomentOffsetAfter({required int minutes}) {
+    return '$minutes min after';
+  }
+
+  @override
+  String get hostMomentOffsetAt => 'At';
+
+  @override
+  String get hostMomentAnchorScopeStart => 'event start';
+
+  @override
+  String get hostMomentAnchorScopeEnd => 'event end';
+
+  @override
+  String get hostMomentAnchorFunctionStart => 'function start';
+
+  @override
+  String get hostMomentAnchorFunctionEnd => 'function end';
+
+  @override
+  String get hostMomentAnchorRsvpDeadline => 'RSVP deadline';
+
+  @override
+  String get hostMomentAnchorTravelLeg => 'travel leg';
+
+  @override
+  String get hostMomentTriggerLateArrival => 'late hotel arrival';
+
+  @override
+  String get hostMomentTriggerFlightDisrupted => 'flight disruption';
+
+  @override
+  String get hostMomentSenseIndividual => 'Individual';
+
+  @override
+  String get hostMomentSenseAudience => 'Audience';
+
+  @override
+  String get hostMomentAudienceSubject => 'Subject';
+
+  @override
+  String get hostMomentAudienceParticipants => 'Participants';
+
+  @override
+  String get hostMomentAudienceFunctionGuests => 'Function guests';
+
+  @override
+  String get hostMomentAudienceHouseholds => 'Households';
+
+  @override
+  String get hostMomentAudienceStaffDuty => 'Staff';
+
+  @override
+  String get hostMomentActionTemplate => 'Message template';
+
+  @override
+  String get hostMomentActionPush => 'Push notification';
+
+  @override
+  String get hostMomentActionStaffAlert => 'Staff alert';
+
+  @override
+  String get hostMomentName => 'Name';
+
+  @override
+  String get hostMomentNameRequired => 'Name the moment.';
+
+  @override
+  String get hostMomentWhen => 'When it fires';
+
+  @override
+  String get hostMomentInitiation => 'Fire mode';
+
+  @override
+  String get hostMomentFireTime => 'Fire time';
+
+  @override
+  String get hostMomentFireTimeEmpty => 'Pick a date and time';
+
+  @override
+  String get hostMomentFireTimeRequired => 'Pick the fire time.';
+
+  @override
+  String get hostMomentAnchor => 'Anchor';
+
+  @override
+  String get hostMomentAnchorId => 'Anchor ID';
+
+  @override
+  String get hostMomentOffset => 'Offset (minutes)';
+
+  @override
+  String get hostMomentOffsetInvalid => 'Enter a minute offset.';
+
+  @override
+  String get hostMomentTrigger => 'Trigger';
+
+  @override
+  String get hostMomentFunctionId => 'Function ID';
+
+  @override
+  String get hostMomentFunctionIdRequired => 'Pick the function.';
+
+  @override
+  String get hostMomentSense => 'Send sense';
+
+  @override
+  String get hostMomentAudience => 'Audience';
+
+  @override
+  String get hostMomentAudienceSection => 'Who it reaches';
+
+  @override
+  String get hostMomentSignedUpOnly => 'Signed up only';
+
+  @override
+  String get hostMomentRsvp => 'RSVP states';
+
+  @override
+  String get hostMomentRsvpAttending => 'Attending';
+
+  @override
+  String get hostMomentRsvpMaybe => 'Maybe';
+
+  @override
+  String get hostMomentHouseholdDedupe => 'One message per household';
+
+  @override
+  String get hostMomentRsvpPendingOnly => 'Pending replies only';
+
+  @override
+  String get hostMomentDuty => 'Duty';
+
+  @override
+  String get hostMomentDutyRequired => 'Pick the duty.';
+
+  @override
+  String get hostMomentScopeIds => 'Scope IDs';
+
+  @override
+  String get hostMomentActionSection => 'What it does';
+
+  @override
+  String get hostMomentAction => 'Action';
+
+  @override
+  String get hostMomentConnectionId => 'Connection ID';
+
+  @override
+  String get hostMomentTemplateId => 'Template ID';
+
+  @override
+  String get hostMomentTemplateRequired => 'Pick the connection and template.';
+
+  @override
+  String get hostMomentVariables => 'Variables';
+
+  @override
+  String get hostMomentNotificationType => 'Notification type';
+
+  @override
+  String get hostMomentPreferenceKey => 'Preference key';
+
+  @override
+  String get hostMomentSeverity => 'Severity';
+
+  @override
+  String get hostMomentSeverityInfo => 'Info';
+
+  @override
+  String get hostMomentSeverityWarning => 'Warning';
+
+  @override
+  String get hostMomentSeverityUrgent => 'Urgent';
+
+  @override
+  String get hostMomentTitleTemplate => 'Title template';
+
+  @override
+  String get hostMomentSave => 'Save moment';
+
+  @override
   String get hostSavedAudienceEditRules => 'Edit rules';
 
   @override

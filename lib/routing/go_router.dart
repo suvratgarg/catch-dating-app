@@ -27,6 +27,8 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
+import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
+import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
@@ -735,6 +737,19 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                   _ => null,
                 },
                 initialSection: _hostManageSectionFromState(state),
+              ),
+            ),
+            GoRoute(
+              path: 'events/:eventId/moments',
+              name: Routes.hostAppEventMomentsScreen.name,
+              builder: (context, state) => OrganizerMomentsScreen(
+                scope: OrganizerMomentScope.event(
+                  state.pathParameters['eventId']!,
+                ),
+                scopeTitle: switch (state.extra) {
+                  final Event event => event.title,
+                  _ => null,
+                },
               ),
             ),
           ],

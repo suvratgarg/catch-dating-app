@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-23",
+  "updated": "2026-09-26",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -9561,6 +9561,101 @@
               "id": "DP-HOST-CHAT-006",
               "status": "open",
               "nextAction": "feature.member_chat now binds Host Chat as a second projection of the same ChatScreen implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions."
+            }
+          ]
+        },
+        {
+          "id": "host.event.moments",
+          "routeId": "hostAppEventMomentsScreen",
+          "implementationPaths": [
+            "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+            "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
+            "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
+            "lib/hosts/events/data/organizer_moments_repository.dart",
+            "lib/hosts/events/domain/organizer_moment.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.error_state",
+            "catch.field",
+            "catch.menu",
+            "catch.section",
+            "catch.skeleton",
+            "catch.surface",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.organizer-moments-tests",
+              "kind": "repo",
+              "status": "available",
+              "path": "test/hosts/organizer_moments_test.dart",
+              "notes": "Focused coverage keeps moment-definition parsing, lifecycle predicates, and scope serialization visible."
+            },
+            {
+              "id": "repo.organizer-moments-payload-contract",
+              "kind": "repo",
+              "status": "available",
+              "path": "contracts/callables/upsert_organizer_moment_payload.schema.json",
+              "notes": "Typed initiation, sense, audience, and action contract for the organizer moment upsert callable."
+            }
+          ],
+          "states": [
+            {
+              "id": "moments_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The route-owned loading viewport stays inside the Host shell while the moments list resolves."
+            },
+            {
+              "id": "moments_error",
+              "kind": "error",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Backend and authorization failures fail closed through the shared localized error state and scope-scoped retry."
+            },
+            {
+              "id": "moments_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Scopes without moments render the empty state with the create affordance."
+            },
+            {
+              "id": "moments_list",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The list renders lifecycle status plus initiation, audience, and action summaries for every definition the server returns."
+            },
+            {
+              "id": "moment_editor",
+              "kind": "populated",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "The inline editor covers manual, scheduled, anchored, and triggered initiation with audience and action fields bound to generated contract constraints."
+            },
+            {
+              "id": "moment_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "tests": [
+                "test/hosts/organizer_moments_test.dart"
+              ],
+              "notes": "Arm, pause, resume, manual run, and save mark the affected moment busy and surface localized failures."
             }
           ]
         }

@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "06540062c45f6d95b41126eeca7ee1abfc56006a09144b234eec287fa04ad239",
-    "routeContractSha256": "1395560c7cd7d72c195fdf5f11d3e822f2818b5cb6f6f5ec9a37bef99c2d47dd",
-    "goRouteCount": 99,
+    "normalizedFileSha256": "95de28760fac146348d06b0261ef3d00e413bd14547b1d095adac1cab92fad54",
+    "routeContractSha256": "992e55bb1b098e3dad2d14555c3ed9446daf59e979d9c507ea11a75d664baad8",
+    "goRouteCount": 100,
     "shellBranchCount": 9,
-    "enumRouteCount": 84,
-    "referencedRouteCount": 84,
-    "runtimeRouteCount": 84,
+    "enumRouteCount": 85,
+    "referencedRouteCount": 85,
+    "runtimeRouteCount": 85,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1353,6 +1353,24 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostAppEventMomentsScreen",
+      "path": "/host/organizers/:clubId/events/:eventId/moments",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/moments",
+      "runtimeParentId": "hostClubDetailScreen",
+      "runtimePathExpression": "'events/:eventId/moments'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:OrganizerMomentScope.event(state.pathParameters['eventId']!),scopeTitle:switch(state.extra){final Event event=>event.title,_=>null})",
+      "presentationTarget": "OrganizerMomentsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostInboxScreen",
       "path": "/host/inbox",
       "pathParameters": [],
@@ -1531,6 +1549,7 @@
     "hostAppEditEventScreen",
     "hostAppEventDetailScreen",
     "hostAppEventManageScreen",
+    "hostAppEventMomentsScreen",
     "hostAppEventSuccessScreen",
     "hostApplicationDetailScreen",
     "hostApplicationsScreen",

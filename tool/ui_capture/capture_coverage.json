@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-23",
+  "updated": "2026-09-26",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -1189,6 +1189,12 @@
       "priority": "P2",
       "canonicalRouteId": "hostAppEventManageScreen",
       "reason": "Host app Event Success route enters the canonical host event management surface."
+    },
+    {
+      "routeId": "hostAppEventMomentsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The organizer moments workspace is implemented with scope loading/error/empty/list/editor/mutation states; captures remain planned until an authenticated organizer fixture is admitted to the canonical capture catalog."
     },
     {
       "routeId": "hostInboxScreen",
