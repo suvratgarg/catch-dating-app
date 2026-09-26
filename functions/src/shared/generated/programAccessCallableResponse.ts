@@ -76,6 +76,22 @@ export interface ProgramAccessCallableResponse {
     name: string;
   }[];
   /**
+   * Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment's functionIds. Empty for other duties.
+   *
+   * @maxItems 40
+   */
+  functions: {
+    functionId: string;
+    name: string;
+    venueName: string | null;
+    startsAtMillis: number;
+    endsAtMillis: number;
+    checkInEnabled: boolean;
+    status: "scheduled" | "completed" | "cancelled";
+    expectedCount: number;
+    checkedInCount: number;
+  }[];
+  /**
    * @maxItems 16
    */
   vehicleClasses: {

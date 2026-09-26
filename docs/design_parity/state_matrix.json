@@ -12738,6 +12738,73 @@
           ]
         },
         {
+          "id": "programs.door",
+          "routeId": "hostWorkDoorScreen",
+          "implementationPaths": [
+            "lib/programs/presentation/program_door_screen.dart",
+            "lib/programs/data/program_work_repository.dart",
+            "lib/programs/data/program_operations_outbox.dart",
+            "lib/programs/domain/program_models.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.banner",
+            "catch.field",
+            "catch.menu",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.programs-prd",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/airport_arrivals_prd.md",
+              "notes": "Program workspace authority and composition decisions are recorded in the airport arrivals PRD."
+            }
+          ],
+          "states": [
+            {
+              "id": "roster_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while the door view resolves."
+            },
+            {
+              "id": "roster_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "CatchLocalizedErrorState inside the route scaffold with retry."
+            },
+            {
+              "id": "roster_populated",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Roster rows carry RSVP, attendance, party size and household labels with check-in actions."
+            },
+            {
+              "id": "offline_queue",
+              "kind": "offline",
+              "status": "implemented",
+              "notes": "Door actions and walk-ins enqueue through the program operations outbox and surface queued badges."
+            },
+            {
+              "id": "door_mutation",
+              "kind": "mutation",
+              "status": "implemented",
+              "notes": "Check-in, undo, no-show, party-size and walk-in writes batch through recordProgramDoorJournal and createProgramWalkIn."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-PROGRAMS-DOOR-001",
+              "status": "open",
+              "nextAction": "Route captures land with the program golden pass; the surface currently carries widgetbook previews only."
+            }
+          ]
+        },
+        {
           "id": "programs.trips",
           "routeId": "hostWorkTripsScreen",
           "implementationPaths": [

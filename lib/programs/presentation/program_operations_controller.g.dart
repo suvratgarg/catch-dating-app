@@ -152,7 +152,7 @@ final class ProgramOperationsControllerProvider
 }
 
 String _$programOperationsControllerHash() =>
-    r'ce736cb228f3a4166c49d438dac46232ffb90cbb';
+    r'fb717b23c45e007cfdc614ec3f670d5b13e1b091';
 
 final class ProgramOperationsControllerFamily extends $Family
     with

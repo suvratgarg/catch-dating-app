@@ -36,6 +36,39 @@ bool canReadProgramStation(
   return false;
 }
 
+/// Door roster access follows the same scoping rule as stations: function
+/// check-in and function lead duties may open their assigned functions.
+bool canReadProgramFunction(
+  ProgramWorkAccess access,
+  String functionId, {
+  required DateTime now,
+  bool forSnapshot = false,
+}) {
+  const duties = [
+    ProgramStaffDuty.functionCheckIn,
+    ProgramStaffDuty.functionLead,
+  ];
+  if (forSnapshot &&
+      !access.isManager &&
+      access.duties.any(
+        (assignment) =>
+            (duties.contains(assignment.duty) ||
+                assignment.duty == ProgramStaffDuty.programCoordinator) &&
+            assignment.coversFunction(functionId) &&
+            !assignment.isActiveAt(now),
+      )) {
+    return false;
+  }
+  for (final duty in duties) {
+    if (!access.hasDuty(duty, now: now)) continue;
+    final functions = access.functionScope(duty, now: now);
+    if (functions == null || functions.contains(functionId)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /// Dispatch needs one tuple covering both ends of the selected route. Its
 /// captured sheet must refresh when any contributing tuple expires.
 ({bool allowed, DateTime? expiresAt}) programDispatchAccess(

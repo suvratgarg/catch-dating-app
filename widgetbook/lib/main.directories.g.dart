@@ -12342,6 +12342,61 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program door',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorAttendanceBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Badge states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDoorAttendanceBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorGuestRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDoorGuestRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDoorPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorPartySizeSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDoorPartySizeSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionDoorScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDoorScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Program hotel desk',
         children: [
           _widgetbook.WidgetbookComponent(

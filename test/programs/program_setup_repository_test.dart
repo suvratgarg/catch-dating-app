@@ -52,6 +52,7 @@ void main() {
                     duty: ProgramStaffDuty.hotelDesk,
                     pickupPointIds: {},
                     hotelIds: {'hotel'},
+                    functionIds: {},
                   ),
                 ],
                 expiresAt: expiry,

@@ -56,6 +56,7 @@ class ProgramDutyAssignment {
     required this.duty,
     required this.pickupPointIds,
     required this.hotelIds,
+    required this.functionIds,
     this.expiresAt,
   });
 
@@ -64,12 +65,18 @@ class ProgramDutyAssignment {
         duty: ProgramStaffDuty.values.byName(requiredString(map, 'duty')),
         pickupPointIds: stringList(map['pickupPointIds']).toSet(),
         hotelIds: stringList(map['hotelIds']).toSet(),
+        // Absent on legacy grants and non-function duties: unrestricted-ish
+        // semantics live on the duty, missing scope parses as empty.
+        functionIds: map['functionIds'] == null
+            ? const {}
+            : stringList(map['functionIds']).toSet(),
         expiresAt: nullableDateTime(map['expiresAtMillis']),
       );
 
   final ProgramStaffDuty duty;
   final Set<String> pickupPointIds;
   final Set<String> hotelIds;
+  final Set<String> functionIds;
 
   /// Null is an ungranted request scope or a legacy assignment, never authority.
   final DateTime? expiresAt;
@@ -78,14 +85,22 @@ class ProgramDutyAssignment {
       expiresAt != null &&
       expiresAt!.isAfter(now) &&
       (duty != ProgramStaffDuty.programCoordinator ||
-          (pickupPointIds.isEmpty && hotelIds.isEmpty)) &&
-      (duty != ProgramStaffDuty.hotelDesk || pickupPointIds.isEmpty);
+          (pickupPointIds.isEmpty &&
+              hotelIds.isEmpty &&
+              functionIds.isEmpty)) &&
+      (duty != ProgramStaffDuty.hotelDesk || pickupPointIds.isEmpty) &&
+      (functionIds.isEmpty ||
+          duty == ProgramStaffDuty.functionCheckIn ||
+          duty == ProgramStaffDuty.functionLead);
 
   bool get coversAllStations => pickupPointIds.isEmpty;
   bool get coversAllHotels => hotelIds.isEmpty;
+  bool get coversAllFunctions => functionIds.isEmpty;
   bool coversPickupPoint(String id) =>
       pickupPointIds.isEmpty || pickupPointIds.contains(id);
   bool coversHotel(String id) => hotelIds.isEmpty || hotelIds.contains(id);
+  bool coversFunction(String id) =>
+      functionIds.isEmpty || functionIds.contains(id);
 }
 
 class ProgramStation {
@@ -124,6 +139,44 @@ class ProgramHotel {
   final String name;
 }
 
+enum ProgramFunctionStatus { scheduled, completed, cancelled }
+
+class ProgramFunction {
+  const ProgramFunction({
+    required this.functionId,
+    required this.name,
+    this.venueName,
+    required this.startsAt,
+    required this.endsAt,
+    required this.checkInEnabled,
+    required this.status,
+    required this.expectedCount,
+    required this.checkedInCount,
+  });
+
+  factory ProgramFunction.fromMap(Map<Object?, Object?> map) => ProgramFunction(
+    functionId: requiredString(map, 'functionId'),
+    name: requiredString(map, 'name'),
+    venueName: map['venueName'] as String?,
+    startsAt: requiredDateTime(map, 'startsAtMillis'),
+    endsAt: requiredDateTime(map, 'endsAtMillis'),
+    checkInEnabled: map['checkInEnabled'] == true,
+    status: ProgramFunctionStatus.values.byName(requiredString(map, 'status')),
+    expectedCount: requiredInt(map, 'expectedCount'),
+    checkedInCount: requiredInt(map, 'checkedInCount'),
+  );
+
+  final String functionId;
+  final String name;
+  final String? venueName;
+  final DateTime startsAt;
+  final DateTime endsAt;
+  final bool checkInEnabled;
+  final ProgramFunctionStatus status;
+  final int expectedCount;
+  final int checkedInCount;
+}
+
 class ProgramWorkAccess {
   const ProgramWorkAccess({
     required this.programId,
@@ -138,6 +191,7 @@ class ProgramWorkAccess {
     required this.capabilities,
     required this.pickupPoints,
     required this.hotels,
+    required this.functions,
     required this.vehicleClasses,
   });
 
@@ -167,6 +221,10 @@ class ProgramWorkAccess {
         map['hotels'],
         'hotels',
       ).map(ProgramHotel.fromMap).toList(growable: false),
+      functions: mapList(
+        map['functions'],
+        'functions',
+      ).map(ProgramFunction.fromMap).toList(growable: false),
       vehicleClasses: mapList(
         map['vehicleClasses'],
         'vehicleClasses',
@@ -186,6 +244,7 @@ class ProgramWorkAccess {
   final Set<String> capabilities;
   final List<ProgramStation> pickupPoints;
   final List<ProgramHotel> hotels;
+  final List<ProgramFunction> functions;
   final List<ProgramVehicleClass> vehicleClasses;
 
   bool get isManager => actorRole == ProgramActorRole.manager;
@@ -234,6 +293,20 @@ class ProgramWorkAccess {
       }
       if (a.hotelIds.isEmpty) return null;
       scoped.addAll(a.hotelIds);
+    }
+    return scoped;
+  }
+
+  /// Functions this actor may open; empty scope on a duty means all.
+  Set<String>? functionScope(ProgramStaffDuty duty, {required DateTime now}) {
+    if (isManager) return null;
+    final scoped = <String>{};
+    for (final a in activeDutiesAt(now)) {
+      if (a.duty != duty && a.duty != ProgramStaffDuty.programCoordinator) {
+        continue;
+      }
+      if (a.functionIds.isEmpty) return null;
+      scoped.addAll(a.functionIds);
     }
     return scoped;
   }

@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 
-enum ProgramOperationKind { legObservation, dispatch }
+enum ProgramOperationKind { legObservation, dispatch, doorAction, walkIn }
 
 typedef ProgramOperationOutboxStatus = LocalCommandStatus;
 
@@ -73,6 +73,56 @@ class ProgramOperationOutboxEntry {
       'expectedLegRevisions': expectedLegRevisions
           .map((fence) => fence.toJson())
           .toList(growable: false),
+    },
+  );
+
+  /// One door journal operation for a function. The server derives the
+  /// journal id from scope+function+guest+action+timestamp+actor, so an
+  /// outbox replay of this exact entry lands as a duplicate, not a second
+  /// check-in.
+  factory ProgramOperationOutboxEntry.doorAction({
+    required String programId,
+    required String functionId,
+    required String guestId,
+    required String action,
+    required String clientOperationId,
+    required DateTime createdAt,
+    int? partySize,
+    String? note,
+  }) => ProgramOperationOutboxEntry._(
+    kind: ProgramOperationKind.doorAction,
+    programId: programId,
+    clientOperationId: clientOperationId,
+    createdAt: createdAt,
+    status: ProgramOperationOutboxStatus.pending,
+    payload: {
+      'functionId': functionId,
+      'guestId': guestId,
+      'action': action,
+      'partySize': partySize,
+      'note': note,
+    },
+  );
+
+  factory ProgramOperationOutboxEntry.walkIn({
+    required String programId,
+    required String functionId,
+    required String displayName,
+    required String clientOperationId,
+    required DateTime createdAt,
+    int? partySize,
+    String? note,
+  }) => ProgramOperationOutboxEntry._(
+    kind: ProgramOperationKind.walkIn,
+    programId: programId,
+    clientOperationId: clientOperationId,
+    createdAt: createdAt,
+    status: ProgramOperationOutboxStatus.pending,
+    payload: {
+      'functionId': functionId,
+      'displayName': displayName,
+      'partySize': partySize,
+      'note': note,
     },
   );
 
@@ -148,6 +198,37 @@ class ProgramOperationOutboxEntry {
             DispatchLegRevision.fromJson(fence);
           }
         }
+      case ProgramOperationKind.doorAction:
+        requiredString(payload, 'functionId');
+        requiredString(payload, 'guestId');
+        if (!{
+          'checkIn',
+          'undoCheckIn',
+          'markNoShow',
+          'walkInCreate',
+          'partySizeAdjust',
+        }.contains(payload['action'])) {
+          throw const FormatException('Invalid door action');
+        }
+        if (payload['partySize'] != null &&
+            (payload['partySize'] is! int ||
+                (payload['partySize']! as int) < 1)) {
+          throw const FormatException('Invalid door party size');
+        }
+        if (payload['note'] != null && payload['note'] is! String) {
+          throw const FormatException('Invalid door note');
+        }
+      case ProgramOperationKind.walkIn:
+        requiredString(payload, 'functionId');
+        requiredString(payload, 'displayName');
+        if (payload['partySize'] != null &&
+            (payload['partySize'] is! int ||
+                (payload['partySize']! as int) < 1)) {
+          throw const FormatException('Invalid walk-in party size');
+        }
+        if (payload['note'] != null && payload['note'] is! String) {
+          throw const FormatException('Invalid walk-in note');
+        }
     }
     return entry;
   }
@@ -160,9 +241,18 @@ class ProgramOperationOutboxEntry {
   final Map<String, Object?> payload;
   final String? lastErrorCode;
 
-  bool affectsLeg(String legId) => kind == ProgramOperationKind.legObservation
-      ? payload['legId'] == legId
-      : (payload['legIds']! as List).contains(legId);
+  bool affectsLeg(String legId) => switch (kind) {
+    ProgramOperationKind.legObservation => payload['legId'] == legId,
+    ProgramOperationKind.dispatch => (payload['legIds']! as List).contains(
+      legId,
+    ),
+    _ => false,
+  };
+
+  bool affectsDoorGuest(String functionId, String guestId) =>
+      kind == ProgramOperationKind.doorAction &&
+      payload['functionId'] == functionId &&
+      payload['guestId'] == guestId;
 
   ProgramOperationOutboxEntry copyWith({
     ProgramOperationOutboxStatus? status,
@@ -211,4 +301,23 @@ class ProgramOperationOutboxSummary {
     }
     return null;
   }
+
+  /// Most recent queued door action for a guest row at one function.
+  ProgramOperationOutboxEntry? forDoorGuest(String functionId, String guestId) {
+    for (final entry in entries.reversed) {
+      if (entry.affectsDoorGuest(functionId, guestId)) {
+        return entry;
+      }
+    }
+    return null;
+  }
+
+  /// Queued walk-ins at one function, in submission order.
+  List<ProgramOperationOutboxEntry> walkInsFor(String functionId) => entries
+      .where(
+        (entry) =>
+            entry.kind == ProgramOperationKind.walkIn &&
+            entry.payload['functionId'] == functionId,
+      )
+      .toList(growable: false);
 }

@@ -399,6 +399,8 @@ export {listProgramTripsCallablePayloadSchema} from "./schemas/listProgramTripsI
 export {listProgramGuestsCallablePayloadSchema} from "./schemas/listProgramGuestsInput";
 export {upsertProgramHouseholdCallablePayloadSchema} from "./schemas/upsertProgramHouseholdInput";
 export {recordProgramDoorJournalCallablePayloadSchema} from "./schemas/recordProgramDoorJournalInput";
+export {programFunctionScopeCallablePayloadSchema} from "./schemas/programFunctionScopeInput";
+export {createProgramWalkInCallablePayloadSchema} from "./schemas/createProgramWalkInInput";
 export {upsertProgramFunctionCallablePayloadSchema} from "./schemas/upsertProgramFunctionInput";
 export {upsertProgramPickupPointCallablePayloadSchema} from "./schemas/upsertProgramPickupPointInput";
 export {upsertProgramHotelCallablePayloadSchema} from "./schemas/upsertProgramHotelInput";
@@ -430,6 +432,7 @@ export {programArrivalsRosterCallableResponseSchema} from "./schemas/programArri
 export {programTransportPlanCallableResponseSchema} from "./schemas/programTransportPlanOutput";
 export {programHotelInboundCallableResponseSchema} from "./schemas/programHotelInboundOutput";
 export {recordProgramDoorJournalCallableResponseSchema} from "./schemas/recordProgramDoorJournalOutput";
+export {programFunctionDoorViewCallableResponseSchema} from "./schemas/programFunctionDoorViewOutput";
 export {programManifestImportCallableResponseSchema} from "./schemas/programManifestImportOutput";
 export {dispatchProgramTripCallableResponseSchema} from "./schemas/dispatchProgramTripOutput";
 export {transportVendorListCallableResponseSchema} from "./schemas/transportVendorListOutput";

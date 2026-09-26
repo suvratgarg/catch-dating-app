@@ -1089,6 +1089,22 @@
       ],
       "reason": "Pushed arrivals roster route rendered by ProgramArrivalsScreen with CatchRouteScaffold."
     },
+    "screen.programs.door": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkDoorScreen"
+          ],
+          "file": "lib/programs/presentation/program_door_screen.dart",
+          "symbol": "_ProgramFunctionDoorScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
     "screen.programs.dispatch": {
       "owners": [
         {
@@ -27694,6 +27710,186 @@
       "openGaps": [
         {
           "id": "DP-PROGRAMS-ARRIVALS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.door",
+      "name": "Program function door",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkDoorScreen",
+          "path": "/host/work/:programId/door/:functionId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_door_screen.dart",
+        "symbol": "ProgramFunctionDoorScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "error",
+          "loading",
+          "mutation",
+          "offline"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programFunctionDoorViewProvider + programOperationsControllerProvider",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_door_screen.dart",
+            "symbol": "ProgramFunctionDoorScreen"
+          },
+          {
+            "file": "lib/programs/data/program_work_repository.dart",
+            "symbol": "programFunctionDoorView"
+          },
+          {
+            "file": "lib/programs/data/program_operations_outbox.dart",
+            "symbol": "programOperationsOutbox"
+          },
+          {
+            "file": "lib/programs/presentation/program_operations_controller.dart",
+            "symbol": "ProgramOperationsController"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_operations_controller.dart",
+            "symbol": "ProgramOperationsController"
+          }
+        ],
+        "notes": "Every door write is an idempotent outbox operation; the durable journal derives entry ids server-side."
+      },
+      "designRefs": [
+        {
+          "id": "repo.programs-architecture",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/airport_arrivals_prd.md",
+          "notes": "Program workspace architecture, authority model, and arrivals vertical slices are specified in the airport arrivals PRD."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "roster_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "Loading viewport while the door view resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramFunctionDoorScreen/Screen states"
+          ]
+        },
+        {
+          "id": "roster_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "CatchLocalizedErrorState inside the route scaffold.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramFunctionDoorScreen/Screen states"
+          ]
+        },
+        {
+          "id": "roster_populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Roster rows carry RSVP, attendance, party size and household labels with check-in actions.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramFunctionDoorScreen/Screen states",
+            "ProgramDoorGuestRow/Row states"
+          ]
+        },
+        {
+          "id": "offline_queue",
+          "kind": "offline",
+          "status": "implemented",
+          "source": "Door actions and walk-ins enqueue through the program operations outbox and surface queued badges.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramFunctionDoorScreen/Screen states"
+          ]
+        },
+        {
+          "id": "door_mutation",
+          "kind": "mutation",
+          "status": "implemented",
+          "source": "Check-in, undo, no-show, party-size and walk-in writes batch through recordProgramDoorJournal and createProgramWalkIn.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramFunctionDoorScreen/Screen states",
+            "ProgramDoorPartySizeSheet/Sheet states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramFunctionDoorScreen composes the scoped door view: function header with live counts, guest rows with queued-state badges, a walk-in capture lane and the recent journal tail.",
+        "targetLayout": "Door rows continue moving toward provider-free display data with widgetbook state coverage.",
+        "sections": [
+          {
+            "id": "section.programs_door.adapter",
+            "name": "Door route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramFunctionDoorScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_door_screen.dart",
+              "symbol": "ProgramFunctionDoorScreen"
+            },
+            "currentOwner": "ProgramFunctionDoorScreen + programFunctionDoorViewProvider + programOperationsControllerProvider",
+            "targetOwner": "provider-free door roster rows",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.field",
+              "catch.badge",
+              "catch.banner",
+              "catch.menu",
+              "catch.button"
+            ],
+            "states": [
+              "roster_loading",
+              "roster_error",
+              "roster_populated",
+              "offline_queue",
+              "door_mutation"
+            ],
+            "migration": "Keep row rendering provider-free; mutations stay behind the outbox.",
+            "previewIds": [
+              "ProgramFunctionDoorScreen/Screen states",
+              "ProgramDoorGuestRow/Row states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-DOOR-001",
           "status": "open",
           "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
         }

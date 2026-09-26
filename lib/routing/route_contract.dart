@@ -134,6 +134,10 @@ enum Routes {
     '/host/work/:programId/hotel/:hotelId',
     AppRouteAudience.host,
   ),
+  hostWorkDoorScreen(
+    '/host/work/:programId/door/:functionId',
+    AppRouteAudience.host,
+  ),
   hostWorkTripsScreen('/host/work/:programId/trips', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
   hostOrganizerMessagingScreen(

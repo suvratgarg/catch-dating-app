@@ -117,6 +117,12 @@ String _initialLocationFromPlatform() {
       : Routes.startScreen.path;
 }
 
+@visibleForTesting
+// keepalive: initial app location is startup routing state consumed by the
+// app-wide keepAlive GoRouter provider.
+@Riverpod(keepAlive: true)
+String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
+
 /// Routes that unauthenticated users may access for read-only browsing.
 ///
 /// Keep this matcher explicit: nested account-only routes must not become public

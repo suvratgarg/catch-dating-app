@@ -2063,6 +2063,20 @@ const schemaSpecs = [
       "recordProgramDoorJournalCallablePayload.ts",
   },
   {
+    name: "ProgramFunctionScopeCallablePayload",
+    source: "callables/program_function_scope_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programFunctionScopeCallablePayload.ts",
+  },
+  {
+    name: "CreateProgramWalkInCallablePayload",
+    source: "callables/create_program_walk_in_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createProgramWalkInCallablePayload.ts",
+  },
+  {
     name: "UpsertProgramFunctionCallablePayload",
     source: "callables/upsert_program_function_payload.schema.json",
     typeOutput:
@@ -2296,6 +2310,15 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "recordProgramDoorJournalCallableResponse.ts",
+  },
+  {
+    name: "ProgramFunctionDoorViewCallableResponse",
+    source:
+      "callable_responses/" +
+      "program_function_door_view_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programFunctionDoorViewCallableResponse.ts",
   },
   {
     name: "ProgramManifestImportCallableResponse",

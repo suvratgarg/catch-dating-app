@@ -33441,6 +33441,18 @@ abstract class AppLocalizations {
   /// **'Inbound vehicles and expected guests for your hotel.'**
   String get programsWorkHotelSubtitle;
 
+  /// Program operations copy: programsWorkDoorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Door check-in'**
+  String get programsWorkDoorTitle;
+
+  /// Program operations copy: programsWorkDoorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue check-in lists for your functions.'**
+  String get programsWorkDoorSubtitle;
+
   /// Program operations copy: programsWorkLedgerTitle.
   ///
   /// In en, this message translates to:
@@ -33878,6 +33890,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dispatch now'**
   String get programsDispatchConfirm;
+
+  /// Venue door check-in workspace title and top-bar subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Door check-in'**
+  String get programsDoorTitle;
+
+  /// Checked-in headcount badge on the door screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 in} other{{count} in}}'**
+  String programsDoorCountsCheckedIn({required int count});
+
+  /// Expected headcount badge on the door screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 expected} other{{count} expected}}'**
+  String programsDoorCountsExpected({required int count});
+
+  /// No-show party count badge on the door screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 no-show} other{{count} no-shows}}'**
+  String programsDoorCountsNoShow({required int count});
+
+  /// Walk-in party count badge on the door screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 walk-in} other{{count} walk-ins}}'**
+  String programsDoorCountsWalkIns({required int count});
+
+  /// Warning banner when checkInEnabled is off or the function already completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in is not open for this function.'**
+  String get programsDoorClosedBanner;
+
+  /// Warning banner when the function is cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This function was cancelled — no check-in.'**
+  String get programsDoorCancelledBanner;
+
+  /// Roster section title on the door screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest list'**
+  String get programsDoorRosterTitle;
+
+  /// Roster section subtitle with the listed count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 listed guest} other{{count} listed guests}}'**
+  String programsDoorRosterSubtitle({required int count});
+
+  /// Empty roster message on the door screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests are listed for this function.'**
+  String get programsDoorRosterEmpty;
+
+  /// Badge for a door action still waiting in the offline outbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get programsDoorQueued;
+
+  /// Badge marking a guest row created at the door.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get programsDoorWalkInBadge;
+
+  /// Walk-in capture section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get programsDoorWalkInTitle;
+
+  /// Walk-in capture section subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register a guest who arrived without an invitation. They are checked in immediately.'**
+  String get programsDoorWalkInSubtitle;
+
+  /// Walk-in display name field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest name'**
+  String get programsDoorWalkInNameLabel;
+
+  /// Walk-in party size field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Party size'**
+  String get programsDoorWalkInPartyLabel;
+
+  /// Walk-in submit button.
+  ///
+  /// In en, this message translates to:
+  /// **'Register and check in'**
+  String get programsDoorWalkInSubmit;
+
+  /// Journal tail section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent door activity'**
+  String get programsDoorJournalTitle;
+
+  /// Journal tail section subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest recorded actions at this door.'**
+  String get programsDoorJournalSubtitle;
+
+  /// Fallback guest name in a journal row.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest'**
+  String get programsDoorJournalGuest;
+
+  /// Journal verb for checkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'checked in'**
+  String get programsDoorJournalCheckIn;
+
+  /// Journal verb for undoCheckIn.
+  ///
+  /// In en, this message translates to:
+  /// **'check-in undone'**
+  String get programsDoorJournalUndoCheckIn;
+
+  /// Journal verb for markNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'marked no-show'**
+  String get programsDoorJournalNoShow;
+
+  /// Journal verb for walkInCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'walked in'**
+  String get programsDoorJournalWalkIn;
+
+  /// Journal verb for partySizeAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'party size updated'**
+  String get programsDoorJournalPartySize;
+
+  /// Tooltip for the per-row door action menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest actions'**
+  String get programsDoorRowActions;
+
+  /// Row action: check the guest in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in'**
+  String get programsDoorCheckInAction;
+
+  /// Row action: undo a check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo check-in'**
+  String get programsDoorUndoAction;
+
+  /// Row action: mark the guest a no-show.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark no-show'**
+  String get programsDoorNoShowAction;
+
+  /// Row action: adjust the party size.
+  ///
+  /// In en, this message translates to:
+  /// **'Party size…'**
+  String get programsDoorPartySizeAction;
+
+  /// Party-size sheet input label.
+  ///
+  /// In en, this message translates to:
+  /// **'Party size'**
+  String get programsDoorPartySizeField;
+
+  /// Party-size sheet submit button.
+  ///
+  /// In en, this message translates to:
+  /// **'Update party size'**
+  String get programsDoorPartySizeSave;
+
+  /// Party size meta in a door roster row.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 guest} other{{count} guests}}'**
+  String programsDoorPartyCount({required int count});
+
+  /// RSVP badge: attending.
+  ///
+  /// In en, this message translates to:
+  /// **'Attending'**
+  String get programsDoorRsvpAttending;
+
+  /// RSVP badge: declined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get programsDoorRsvpDeclined;
+
+  /// RSVP badge: maybe.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe'**
+  String get programsDoorRsvpMaybe;
+
+  /// RSVP badge: pending.
+  ///
+  /// In en, this message translates to:
+  /// **'No RSVP'**
+  String get programsDoorRsvpPending;
+
+  /// Attendance badge: expected.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get programsDoorAttendanceExpected;
+
+  /// Attendance badge: checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in'**
+  String get programsDoorAttendanceCheckedIn;
+
+  /// Attendance badge: no-show.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
+  String get programsDoorAttendanceNoShow;
 
   /// Hotel desk page navigation
   ///

@@ -20851,6 +20851,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Inbound vehicles and expected guests for your hotel.';
 
   @override
+  String get programsWorkDoorTitle => 'Door check-in';
+
+  @override
+  String get programsWorkDoorSubtitle =>
+      'Venue check-in lists for your functions.';
+
+  @override
   String get programsWorkLedgerTitle => 'Trip ledger';
 
   @override
@@ -21094,6 +21101,179 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsDispatchConfirm => 'Dispatch now';
+
+  @override
+  String get programsDoorTitle => 'Door check-in';
+
+  @override
+  String programsDoorCountsCheckedIn({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count in',
+      one: '1 in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String programsDoorCountsExpected({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count expected',
+      one: '1 expected',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String programsDoorCountsNoShow({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count no-shows',
+      one: '1 no-show',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String programsDoorCountsWalkIns({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count walk-ins',
+      one: '1 walk-in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get programsDoorClosedBanner =>
+      'Check-in is not open for this function.';
+
+  @override
+  String get programsDoorCancelledBanner =>
+      'This function was cancelled — no check-in.';
+
+  @override
+  String get programsDoorRosterTitle => 'Guest list';
+
+  @override
+  String programsDoorRosterSubtitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count listed guests',
+      one: '1 listed guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get programsDoorRosterEmpty =>
+      'No guests are listed for this function.';
+
+  @override
+  String get programsDoorQueued => 'Queued';
+
+  @override
+  String get programsDoorWalkInBadge => 'Walk-in';
+
+  @override
+  String get programsDoorWalkInTitle => 'Walk-in';
+
+  @override
+  String get programsDoorWalkInSubtitle =>
+      'Register a guest who arrived without an invitation. They are checked in immediately.';
+
+  @override
+  String get programsDoorWalkInNameLabel => 'Guest name';
+
+  @override
+  String get programsDoorWalkInPartyLabel => 'Party size';
+
+  @override
+  String get programsDoorWalkInSubmit => 'Register and check in';
+
+  @override
+  String get programsDoorJournalTitle => 'Recent door activity';
+
+  @override
+  String get programsDoorJournalSubtitle =>
+      'Latest recorded actions at this door.';
+
+  @override
+  String get programsDoorJournalGuest => 'A guest';
+
+  @override
+  String get programsDoorJournalCheckIn => 'checked in';
+
+  @override
+  String get programsDoorJournalUndoCheckIn => 'check-in undone';
+
+  @override
+  String get programsDoorJournalNoShow => 'marked no-show';
+
+  @override
+  String get programsDoorJournalWalkIn => 'walked in';
+
+  @override
+  String get programsDoorJournalPartySize => 'party size updated';
+
+  @override
+  String get programsDoorRowActions => 'Guest actions';
+
+  @override
+  String get programsDoorCheckInAction => 'Check in';
+
+  @override
+  String get programsDoorUndoAction => 'Undo check-in';
+
+  @override
+  String get programsDoorNoShowAction => 'Mark no-show';
+
+  @override
+  String get programsDoorPartySizeAction => 'Party size…';
+
+  @override
+  String get programsDoorPartySizeField => 'Party size';
+
+  @override
+  String get programsDoorPartySizeSave => 'Update party size';
+
+  @override
+  String programsDoorPartyCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests',
+      one: '1 guest',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get programsDoorRsvpAttending => 'Attending';
+
+  @override
+  String get programsDoorRsvpDeclined => 'Declined';
+
+  @override
+  String get programsDoorRsvpMaybe => 'Maybe';
+
+  @override
+  String get programsDoorRsvpPending => 'No RSVP';
+
+  @override
+  String get programsDoorAttendanceExpected => 'Expected';
+
+  @override
+  String get programsDoorAttendanceCheckedIn => 'Checked in';
+
+  @override
+  String get programsDoorAttendanceNoShow => 'No-show';
 
   @override
   String get programsHotelPreviousTrip => 'Previous vehicles';

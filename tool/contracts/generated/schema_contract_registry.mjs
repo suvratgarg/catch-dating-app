@@ -139804,6 +139804,106 @@ export const recordProgramDoorJournalCallablePayloadSchema = {
   }
 };
 
+export const programFunctionScopeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_function_scope_payload.schema.json",
+  "title": "ProgramFunctionScopeCallablePayload",
+  "description": "Function-scoped program read shared by the door roster view and other per-function staff surfaces.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramFunctionDoorView"
+  ],
+  "required": [
+    "programId",
+    "functionId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Requested function. Staff are still intersected with their granted function scope; managers may read any function."
+    }
+  }
+};
+
+export const createProgramWalkInCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_program_walk_in_payload.schema.json",
+  "title": "CreateProgramWalkInCallablePayload",
+  "description": "Create a minimal programGuests record for a door walk-in and check it in through the durable door journal in one transaction. The derived guest id is deterministic for the clientOperationId, so retries replay idempotently.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "createProgramWalkIn"
+  ],
+  "required": [
+    "programId",
+    "functionId",
+    "displayName",
+    "occurredAtMillis",
+    "clientOperationId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The function the walk-in is checking into. Staff must hold functionCheckIn or functionLead covering this function."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "occurredAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Device-observed check-in time; joins the journal idempotency key like every other door action."
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Attending party size for the walk-in; null reads as 1."
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "deviceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+};
+
 export const upsertProgramFunctionCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_program_function_payload.schema.json",
@@ -141442,7 +141542,8 @@ export const programAccessCallableResponseSchema = {
     "capabilities",
     "pickupPoints",
     "hotels",
-    "vehicleClasses"
+    "vehicleClasses",
+    "functions"
   ],
   "properties": {
     "programId": {
@@ -141647,6 +141748,76 @@ export const programAccessCallableResponseSchema = {
             "type": "string",
             "minLength": 1,
             "maxLength": 140
+          }
+        }
+      }
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 40,
+      "description": "Function-scoped door/check-in surfaces for functionCheckIn and functionLead holders, intersected with each assignment's functionIds. Empty for other duties.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "venueName",
+          "startsAtMillis",
+          "endsAtMillis",
+          "checkInEnabled",
+          "status",
+          "expectedCount",
+          "checkedInCount"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "venueName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "checkInEnabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "expectedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "checkedInCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
           }
         }
       }
@@ -143430,6 +143601,346 @@ export const recordProgramDoorJournalCallableResponseSchema = {
     "alreadyApplied": {
       "type": "boolean",
       "description": "True when the entire batch replayed as duplicates and nothing new was written."
+    }
+  }
+};
+
+export const programFunctionDoorViewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_function_door_view_response.schema.json",
+  "title": "ProgramFunctionDoorViewCallableResponse",
+  "description": "Function-scoped door roster for check-in staff. Returns the function header, the invited roster (allGuests functions resolve every program guest; selectedGuests functions resolve invited join rows plus checked-in walk-ins), the recent journal tail for the activity rail, and live counts. Guest rows carry display names only — no contact fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramFunctionDoorView"
+  ],
+  "required": [
+    "programId",
+    "functionId",
+    "serverTimeMillis",
+    "accessExpiresAtMillis",
+    "function",
+    "counts",
+    "guests",
+    "journal"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "serverTimeMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Server clock at read time so the client can render relative check-in times without trusting the device clock."
+    },
+    "accessExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive deadline for retaining this scoped projection. Earliest contributing duty expiry; null only for organizer managers. Refresh after expiry even if another narrower duty remains active."
+    },
+    "function": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "invitationMode",
+        "checkInEnabled",
+        "status",
+        "startsAtMillis",
+        "endsAtMillis",
+        "venueName",
+        "venueNotes",
+        "dressCode",
+        "instructions",
+        "expectedCount",
+        "checkedInCount"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "invitationMode": {
+          "type": "string",
+          "enum": [
+            "allGuests",
+            "selectedGuests"
+          ],
+          "description": "Whether the function invites every program guest or only the programFunctionGuests rows marked invited."
+        },
+        "checkInEnabled": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "completed",
+            "cancelled"
+          ]
+        },
+        "startsAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "endsAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "venueName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 140
+        },
+        "venueNotes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "dressCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 140
+        },
+        "instructions": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "expectedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "checkedInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "listedCount",
+        "expectedHeads",
+        "checkedInHeads",
+        "checkedInParties",
+        "noShowCount",
+        "walkInCount"
+      ],
+      "properties": {
+        "listedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "description": "Guests on this function's door roster."
+        },
+        "expectedHeads": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "description": "Attending party-size sum across the roster."
+        },
+        "checkedInHeads": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "description": "Party-size sum of checked-in rows, including walk-ins."
+        },
+        "checkedInParties": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "noShowCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "walkInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "description": "Rows created at the door (invited=false)."
+        }
+      }
+    },
+    "guests": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "invited",
+          "rsvpStatus",
+          "attendanceStatus",
+          "partySize",
+          "householdLabel",
+          "responseNote"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "invited": {
+            "type": "boolean",
+            "description": "False for walk-ins created at the door."
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "attendanceStatus": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "checkedIn",
+              "noShow"
+            ],
+            "description": "Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends."
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "householdLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "responseNote": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "journal": {
+      "type": "array",
+      "maxItems": 60,
+      "description": "Most recent journal entries first, for the door activity rail.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "journalId",
+          "guestId",
+          "displayName",
+          "action",
+          "occurredAtMillis",
+          "partySize",
+          "note",
+          "actorLabel"
+        ],
+        "properties": {
+          "journalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Resolved guest name when the guest record is readable; null for deleted guests."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "checkIn",
+              "undoCheckIn",
+              "markNoShow",
+              "walkInCreate",
+              "partySizeAdjust"
+            ]
+          },
+          "occurredAtMillis": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "actorLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Staff display name resolved through programStaffGrants; never a uid."
+          }
+        }
+      }
     }
   }
 };

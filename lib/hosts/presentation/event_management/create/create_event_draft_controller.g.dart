@@ -55,7 +55,7 @@ final class CreateEventDraftControllerProvider
 }
 
 String _$createEventDraftControllerHash() =>
-    r'bbfe111b0ec450dee806545f60a3d47dc22deb88';
+    r'afce11e02001dff3c0d62a3fb38a1097856ea1d3';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

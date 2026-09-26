@@ -63,7 +63,7 @@ final class EventChatParticipantsControllerProvider
 }
 
 String _$eventChatParticipantsControllerHash() =>
-    r'ebbced2be0544e2436834b36c8fdc4317483e694';
+    r'4cc322f9e537cf6595f92c621c166abf59e58fca';
 
 /// No offline roster: refresh every loaded page, discard on authority failure,
 /// and hide names on backgrounding or account changes.

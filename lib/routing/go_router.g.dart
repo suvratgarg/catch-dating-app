@@ -9,50 +9,6 @@ part of 'go_router.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(initialAppLocation)
-@visibleForTesting
-final initialAppLocationProvider = InitialAppLocationProvider._();
-
-@visibleForTesting
-final class InitialAppLocationProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
-  InitialAppLocationProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'initialAppLocationProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$initialAppLocationHash();
-
-  @$internal
-  @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  String create(Ref ref) {
-    return initialAppLocation(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
-  }
-}
-
-String _$initialAppLocationHash() =>
-    r'8b2cdb2ef491a07c51dc7e03ee7ac9cb3d14c3da';
-
 @ProviderFor(consumerGoRouter)
 final consumerGoRouterProvider = ConsumerGoRouterProvider._();
 
@@ -189,3 +145,47 @@ final class GoRouterProvider
 }
 
 String _$goRouterHash() => r'6463e41ed4e5631b878e46a583239b4358b7dc16';
+
+@ProviderFor(initialAppLocation)
+@visibleForTesting
+final initialAppLocationProvider = InitialAppLocationProvider._();
+
+@visibleForTesting
+final class InitialAppLocationProvider
+    extends $FunctionalProvider<String, String, String>
+    with $Provider<String> {
+  InitialAppLocationProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'initialAppLocationProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$initialAppLocationHash();
+
+  @$internal
+  @override
+  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String create(Ref ref) {
+    return initialAppLocation(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$initialAppLocationHash() =>
+    r'8b2cdb2ef491a07c51dc7e03ee7ac9cb3d14c3da';

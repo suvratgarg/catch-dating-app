@@ -709,6 +709,8 @@ export {
 export {flightAlertWebhook} from "./transport/flightAlerts";
 export {recordProgramDoorJournal} from
   "./doorJournal/recordProgramDoorJournal";
+export {getProgramFunctionDoorView, createProgramWalkIn} from
+  "./doorJournal/doorView";
 
 export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
