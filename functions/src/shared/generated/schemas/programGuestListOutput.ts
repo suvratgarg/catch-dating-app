@@ -13,6 +13,7 @@ export const programGuestListCallableResponseSchema: Record<string, unknown> = {
     "programId",
     "guests",
     "households",
+    "functionGuests",
     "nextCursor"
   ],
   "properties": {
@@ -137,6 +138,64 @@ export const programGuestListCallableResponseSchema: Record<string, unknown> = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          }
+        }
+      }
+    },
+    "functionGuests": {
+      "type": "array",
+      "maxItems": 4000,
+      "description": "Per-function invitation/RSVP/attendance join rows covering the paged guests. Rows exist only where a programFunctionGuests document was written; an allGuests function with no row reads as implicitly invited and pending.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "functionId",
+          "invited",
+          "rsvpStatus",
+          "attendanceStatus",
+          "partySize"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "invited": {
+            "type": "boolean"
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "attendanceStatus": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "checkedIn",
+              "noShow"
+            ],
+            "description": "Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends."
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
           }
         }
       }

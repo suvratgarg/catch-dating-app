@@ -96913,9 +96913,33 @@ abstract final class CatchContractConstraints {
     maxItems: 40,
   );
 
+  static const organizerProgramCallableResponseFunctionsItemsCheckedInCount = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.checkedInCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerProgramCallableResponseFunctionsItemsCheckInEnabled = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.checkInEnabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerProgramCallableResponseFunctionsItemsDressCode = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.dressCode',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerProgramCallableResponseFunctionsItemsEndsAtMillis = CatchContractFieldConstraints(
     path: 'organizerProgramCallableResponse.functions.items.endsAtMillis',
     required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerProgramCallableResponseFunctionsItemsExpectedCount = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.expectedCount',
     valueTypes: <String>['integer'],
     minimum: 0,
   );
@@ -96928,12 +96952,32 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerProgramCallableResponseFunctionsItemsInstructions = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.instructions',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerProgramCallableResponseFunctionsItemsInvitationMode = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.invitationMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allGuests', 'selectedGuests'],
+  );
+
   static const organizerProgramCallableResponseFunctionsItemsName = CatchContractFieldConstraints(
     path: 'organizerProgramCallableResponse.functions.items.name',
     maxLength: 140,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerProgramCallableResponseFunctionsItemsRevision = CatchContractFieldConstraints(
+    path: 'organizerProgramCallableResponse.functions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
   );
 
   static const organizerProgramCallableResponseFunctionsItemsStartsAtMillis = CatchContractFieldConstraints(
@@ -104182,6 +104226,57 @@ abstract final class CatchContractConstraints {
     path: 'programGuestDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const programGuestListCallableResponseFunctionGuests = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 4000,
+  );
+
+  static const programGuestListCallableResponseFunctionGuestsItemsAttendanceStatus = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests.items.attendanceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['expected', 'checkedIn', 'noShow'],
+  );
+
+  static const programGuestListCallableResponseFunctionGuestsItemsFunctionId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests.items.functionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseFunctionGuestsItemsGuestId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests.items.guestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseFunctionGuestsItemsInvited = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests.items.invited',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programGuestListCallableResponseFunctionGuestsItemsPartySize = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests.items.partySize',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const programGuestListCallableResponseFunctionGuestsItemsRsvpStatus = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.functionGuests.items.rsvpStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
   );
 
   static const programGuestListCallableResponseGuests = CatchContractFieldConstraints(
@@ -138776,9 +138871,16 @@ abstract final class CatchContractConstraints {
     'organizerProgramCallableResponse.counts.households': organizerProgramCallableResponseCountsHouseholds,
     'organizerProgramCallableResponse.counts.inboundLegs': organizerProgramCallableResponseCountsInboundLegs,
     'organizerProgramCallableResponse.functions': organizerProgramCallableResponseFunctions,
+    'organizerProgramCallableResponse.functions.items.checkedInCount': organizerProgramCallableResponseFunctionsItemsCheckedInCount,
+    'organizerProgramCallableResponse.functions.items.checkInEnabled': organizerProgramCallableResponseFunctionsItemsCheckInEnabled,
+    'organizerProgramCallableResponse.functions.items.dressCode': organizerProgramCallableResponseFunctionsItemsDressCode,
     'organizerProgramCallableResponse.functions.items.endsAtMillis': organizerProgramCallableResponseFunctionsItemsEndsAtMillis,
+    'organizerProgramCallableResponse.functions.items.expectedCount': organizerProgramCallableResponseFunctionsItemsExpectedCount,
     'organizerProgramCallableResponse.functions.items.functionId': organizerProgramCallableResponseFunctionsItemsFunctionId,
+    'organizerProgramCallableResponse.functions.items.instructions': organizerProgramCallableResponseFunctionsItemsInstructions,
+    'organizerProgramCallableResponse.functions.items.invitationMode': organizerProgramCallableResponseFunctionsItemsInvitationMode,
     'organizerProgramCallableResponse.functions.items.name': organizerProgramCallableResponseFunctionsItemsName,
+    'organizerProgramCallableResponse.functions.items.revision': organizerProgramCallableResponseFunctionsItemsRevision,
     'organizerProgramCallableResponse.functions.items.startsAtMillis': organizerProgramCallableResponseFunctionsItemsStartsAtMillis,
     'organizerProgramCallableResponse.functions.items.status': organizerProgramCallableResponseFunctionsItemsStatus,
     'organizerProgramCallableResponse.functions.items.venueName': organizerProgramCallableResponseFunctionsItemsVenueName,
@@ -139773,6 +139875,13 @@ abstract final class CatchContractConstraints {
     'programGuestDocument.source': programGuestDocumentSource,
     'programGuestDocument.updatedAt._nanoseconds': programGuestDocumentUpdatedAtNanoseconds,
     'programGuestDocument.updatedAt._seconds': programGuestDocumentUpdatedAtSeconds,
+    'programGuestListCallableResponse.functionGuests': programGuestListCallableResponseFunctionGuests,
+    'programGuestListCallableResponse.functionGuests.items.attendanceStatus': programGuestListCallableResponseFunctionGuestsItemsAttendanceStatus,
+    'programGuestListCallableResponse.functionGuests.items.functionId': programGuestListCallableResponseFunctionGuestsItemsFunctionId,
+    'programGuestListCallableResponse.functionGuests.items.guestId': programGuestListCallableResponseFunctionGuestsItemsGuestId,
+    'programGuestListCallableResponse.functionGuests.items.invited': programGuestListCallableResponseFunctionGuestsItemsInvited,
+    'programGuestListCallableResponse.functionGuests.items.partySize': programGuestListCallableResponseFunctionGuestsItemsPartySize,
+    'programGuestListCallableResponse.functionGuests.items.rsvpStatus': programGuestListCallableResponseFunctionGuestsItemsRsvpStatus,
     'programGuestListCallableResponse.guests': programGuestListCallableResponseGuests,
     'programGuestListCallableResponse.guests.items.displayName': programGuestListCallableResponseGuestsItemsDisplayName,
     'programGuestListCallableResponse.guests.items.email': programGuestListCallableResponseGuestsItemsEmail,

@@ -298,6 +298,13 @@ export async function getOrganizerProgramHandler(
         endsAtMillis: fn.endsAt.toMillis(),
         venueName: fn.venueName,
         status: fn.status,
+        invitationMode: fn.invitationMode ?? "allGuests",
+        checkInEnabled: fn.checkInEnabled ?? false,
+        dressCode: fn.dressCode ?? null,
+        instructions: fn.instructions ?? null,
+        expectedCount: fn.expectedCount ?? null,
+        checkedInCount: fn.checkedInCount ?? null,
+        revision: fn.revision,
       };
     }),
     pickupPoints: pickupsSnap.docs.map((doc) => {

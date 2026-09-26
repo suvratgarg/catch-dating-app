@@ -9,6 +9,7 @@
     "programId",
     "guests",
     "households",
+    "functionGuests",
     "nextCursor"
   ],
   "properties": {
@@ -121,6 +122,52 @@
           "revision": {
             "type": "integer",
             "minimum": 1
+          }
+        }
+      }
+    },
+    "functionGuests": {
+      "type": "array",
+      "maxItems": 4000,
+      "description": "Per-function invitation/RSVP/attendance join rows covering the paged guests. Rows exist only where a programFunctionGuests document was written; an allGuests function with no row reads as implicitly invited and pending.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "functionId",
+          "invited",
+          "rsvpStatus",
+          "attendanceStatus",
+          "partySize"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "invited": {
+            "type": "boolean"
+          },
+          "rsvpStatus": {
+            "$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"
+          },
+          "attendanceStatus": {
+            "$ref": "../shared/program_common.schema.json#/definitions/programFunctionAttendanceStatus"
+          },
+          "partySize": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
           }
         }
       }

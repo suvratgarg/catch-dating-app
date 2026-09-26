@@ -194,6 +194,64 @@ test("imports use the same membership move and retain an empty old household",
     assertHouseholdContracts(db);
   });
 
+const functionGuest = (guestId: string, patch: object = {}): FakeData => ({
+  programId: "program-1", organizerId: "org-1",
+  functionId: "fn-sangeet", guestId,
+  invited: true, rsvpStatus: "attending", attendanceStatus: "expected",
+  partySize: 2, createdAt: now, updatedAt: now, revision: 1,
+  ...patch,
+});
+
+test("guest pages carry per-function invitation and RSVP rows", async () => {
+  const db = new FakeFirestore(seed());
+  db.setDoc("programFunctionGuests/fn-sangeet_guest-1",
+    functionGuest("guest-1"));
+  db.setDoc("programFunctionGuests/fn-mehndi_guest-1",
+    functionGuest("guest-1",
+      {functionId: "fn-mehndi", rsvpStatus: "declined", partySize: null}));
+  db.setDoc("programFunctionGuests/fn-sangeet_other",
+    functionGuest("guest-other-program"));
+  const page = await listProgramGuestsHandler(request({
+    programId: "program-1",
+  }, "manager-1"), deps(db));
+  assert.deepEqual(
+    page.functionGuests.map((row) => `${row.functionId}:${row.guestId}`)
+      .sort(),
+    ["fn-mehndi:guest-1", "fn-sangeet:guest-1"],
+  );
+  const sangeet = page.functionGuests
+    .find((row) => row.functionId === "fn-sangeet")!;
+  assert.equal(sangeet.rsvpStatus, "attending");
+  assert.equal(sangeet.partySize, 2);
+});
+
+test("function guest rows follow the guest page, not the program", async () => {
+  const db = new FakeFirestore(seed());
+  db.setDoc("programFunctionGuests/fn-sangeet_guest-1",
+    functionGuest("guest-1"));
+  db.setDoc("programFunctionGuests/fn-sangeet_guest-2",
+    functionGuest("guest-2"));
+  const first = await listProgramGuestsHandler(request({
+    programId: "program-1", limit: 1,
+  }, "manager-1"), deps(db));
+  assert.equal(first.functionGuests.length, 1);
+  const second = await listProgramGuestsHandler(request({
+    programId: "program-1", limit: 1, cursor: first.nextCursor!,
+  }, "manager-1"), deps(db));
+  assert.equal(second.functionGuests.length, 1);
+  assert.notEqual(first.functionGuests[0].guestId,
+    second.functionGuests[0].guestId);
+});
+
+test("corrupt function guest rows fail closed on ownership", async () => {
+  const db = new FakeFirestore(seed());
+  db.setDoc("programFunctionGuests/fn-sangeet_guest-1",
+    functionGuest("guest-1", {organizerId: "foreign"}));
+  await assert.rejects(listProgramGuestsHandler(request({
+    programId: "program-1",
+  }, "manager-1"), deps(db)), /ownership needs reconciliation/);
+});
+
 test("equal-name guests remain visible across every page boundary",
   async () => {
     const db = new FakeFirestore(baseSeed());
