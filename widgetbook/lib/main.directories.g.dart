@@ -257,6 +257,8 @@ import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
 import 'package:widgetbook_workspace/hosts/host_today_personalization_use_cases.dart'
     as _widgetbook_workspace_hosts_host_today_personalization_use_cases;
+import 'package:widgetbook_workspace/hosts/host_work_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_work_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
@@ -11392,6 +11394,31 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Footer states',
                 builder: _widgetbook_workspace_hosts_operations_wizard_chrome
                     .stepperFooterCatalogStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Host work shell',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_hosts_host_work_use_cases
+                    .hostWorkBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostWorkScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_hosts_host_work_use_cases
+                    .hostWorkScreenStates,
               ),
             ],
           ),

@@ -1163,6 +1163,33 @@
         }
       ],
       "reason": "The moments list and its create/edit surface are canonical pushed routes with shared compact back chrome."
+    },
+    "screen.host.work": {
+      "owners": [
+        {
+          "routes": [
+            "hostWorkScreen"
+          ],
+          "file": "lib/hosts/work/presentation/host_work_screen.dart",
+          "symbol": "_HostWorkScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostWorkScreen"
+          ],
+          "file": "lib/hosts/work/presentation/host_work_screen.dart",
+          "symbol": "HostWorkPageBody",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The assignment picker renders loading, error, and populated route compositions through CatchRouteScaffold."
     }
   },
   "layoutOnlyRoutes": {
@@ -28370,6 +28397,162 @@
               "moment_mutation"
             ],
             "migration": "Keep list and editor composition provider-free once the moments payload is resolved."
+          }
+        ]
+      },
+      "openGaps": []
+    },
+    {
+      "id": "screen.host.work",
+      "name": "Host work assignments",
+      "owner": "hosts",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostWorkScreen",
+          "path": "/host/work",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/hosts/work/presentation/host_work_screen.dart",
+        "symbol": "HostWorkScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; the work picker is a pushed route with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "hostWorkAssignmentsProvider, HostWorkRepository and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "hostWorkAssignmentsProvider",
+        "files": [
+          {
+            "file": "lib/hosts/work/presentation/host_work_screen.dart",
+            "symbol": "HostWorkScreen"
+          },
+          {
+            "file": "lib/hosts/work/data/host_work_repository.dart",
+            "symbol": "hostWorkAssignments"
+          }
+        ],
+        "mutationOwners": [],
+        "notes": "The server returns the caller's live assignments and shell entry; the picker only renders what listMyHostAssignments resolved and every destination re-checks server-side access."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout-spec",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "Unified host work shell entry and duty-driven destination access are specified in the rollout spec."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "assignments_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "HostWorkScreen renders the canonical loading viewport while hostWorkAssignmentsProvider resolves.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "HostWorkScreen/Screen states"
+          ]
+        },
+        {
+          "id": "assignments_error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "Assignment failures render CatchLocalizedErrorState with retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "HostWorkScreen/Screen states"
+          ]
+        },
+        {
+          "id": "assignments_empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Accounts with no live staff grants render the assignment empty state.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "HostWorkPageBody/Body states"
+          ]
+        },
+        {
+          "id": "assignment_picker",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Two or more live assignments render grouped by organizer with kind, duty, and expiry summaries.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "HostWorkPageBody/Body states"
+          ]
+        },
+        {
+          "id": "assignment_forward",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Exactly one live workShell assignment forwards straight into its scoped workspace without rendering the picker.",
+          "nextAction": "Review against program design references when they land."
+        }
+      ],
+      "composition": {
+        "currentLayout": "HostWorkScreen resolves assignments once; HostWorkPageBody groups them by organizer and navigates into each scoped workspace.",
+        "targetLayout": "The picker continues pushing destination resolution into server-derived display data.",
+        "sections": [
+          {
+            "id": "section.host_work.adapter",
+            "name": "Host work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "HostWorkScreen",
+              "HostWorkPageBody"
+            ],
+            "flutter": {
+              "file": "lib/hosts/work/presentation/host_work_screen.dart",
+              "symbol": "HostWorkScreen"
+            },
+            "currentOwner": "HostWorkScreen + hostWorkAssignmentsProvider",
+            "targetOwner": "provider-free work picker body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.field",
+              "catch.empty_state",
+              "catch.error_state",
+              "catch.skeleton",
+              "catch.surface"
+            ],
+            "states": [
+              "assignments_loading",
+              "assignments_error",
+              "assignments_empty",
+              "assignment_picker",
+              "assignment_forward"
+            ],
+            "migration": "Keep picker composition provider-free once the assignment payload is resolved.",
+            "previewIds": [
+              "HostWorkScreen/Screen states",
+              "HostWorkPageBody/Body states"
+            ]
           }
         ]
       },

@@ -642,6 +642,15 @@
       "reason": "Organizer moments workspace for event and program send rules; contracts compile after route captures and golden coverage land.",
       "targetFeature": "feature.host_event_manage",
       "debtId": "MOMENTS-FEATURE-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.work",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Unified staff work shell assignment picker for event and program scopes; contracts compile after route captures and golden coverage land.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-006"
     }
   ]
 }

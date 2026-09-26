@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "698940942f2ed3aefa3f926fa0064224add93bd730083de3951ddda9c0d24826",
-    "routeContractSha256": "daef38525c05b120c8ad5e1b377ba148d86fd860a55bf5f15ca1b3877702b338",
-    "goRouteCount": 100,
+    "normalizedFileSha256": "5440c85188ce5c781998e3a4d6a2e43a6140bfc40c39612aa2915f110c1de753",
+    "routeContractSha256": "e1cf504a42c2c1ee549a7699856f3b132660a733a0fe6f0c844d4b102f5304ce",
+    "goRouteCount": 101,
     "shellBranchCount": 9,
-    "enumRouteCount": 85,
-    "referencedRouteCount": 85,
-    "runtimeRouteCount": 85,
+    "enumRouteCount": 86,
+    "referencedRouteCount": 86,
+    "runtimeRouteCount": 86,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -984,6 +984,21 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkScreen",
+      "path": "/host/work",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/work",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const HostWorkScreen()",
+      "presentationTarget": "HostWorkScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkProgramScreen",
       "path": "/host/work/:programId",
       "pathParameters": [
@@ -1590,6 +1605,7 @@
     "hostWorkDispatchScreen",
     "hostWorkHotelScreen",
     "hostWorkProgramScreen",
+    "hostWorkScreen",
     "hostWorkTripsScreen",
     "launchAccessScreen",
     "loadingScreen",
