@@ -12,7 +12,6 @@ import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
-import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
@@ -253,95 +252,6 @@ final _trips = ProgramTripList(
   trips: [_trip],
 );
 
-const _functionId = 'fn_sangeet';
-
-ProgramDoorGuest _doorGuest(
-  String id,
-  String name, {
-  ProgramRsvpStatus rsvp = ProgramRsvpStatus.attending,
-  ProgramFunctionAttendanceStatus attendance =
-      ProgramFunctionAttendanceStatus.expected,
-  int? partySize,
-  String? householdLabel,
-  bool invited = true,
-}) => ProgramDoorGuest(
-  guestId: id,
-  displayName: name,
-  invited: invited,
-  rsvpStatus: rsvp,
-  attendanceStatus: attendance,
-  partySize: partySize,
-  householdLabel: householdLabel,
-);
-
-final _doorView = ProgramDoorView(
-  programId: _programId,
-  functionId: _functionId,
-  serverTime: _now,
-  accessExpiresAt: _now.add(const Duration(hours: 8)),
-  function: ProgramDoorFunction(
-    name: 'Sangeet',
-    invitationMode: ProgramFunctionInvitationMode.selectedGuests,
-    checkInEnabled: true,
-    status: ProgramFunctionStatus.scheduled,
-    startsAt: _now.add(const Duration(hours: 3)),
-    endsAt: _now.add(const Duration(hours: 6)),
-    venueName: 'The Leela Ballroom',
-    dressCode: 'Festive',
-    expectedCount: 12,
-    checkedInCount: 4,
-  ),
-  counts: const ProgramDoorCounts(
-    listedCount: 3,
-    expectedHeads: 12,
-    checkedInHeads: 4,
-    checkedInParties: 1,
-    noShowCount: 0,
-    walkInCount: 1,
-  ),
-  guests: [
-    _doorGuest(
-      'g_rohan',
-      'Rohan Sharma',
-      attendance: ProgramFunctionAttendanceStatus.checkedIn,
-      partySize: 3,
-      householdLabel: 'Sharma household',
-    ),
-    _doorGuest(
-      'g_nisha',
-      'Nisha Rao',
-      partySize: 2,
-      householdLabel: 'Rao household',
-    ),
-    _doorGuest(
-      'g_walk',
-      'Priya Kapoor',
-      rsvp: ProgramRsvpStatus.pending,
-      attendance: ProgramFunctionAttendanceStatus.checkedIn,
-      invited: false,
-    ),
-  ],
-  journal: [
-    ProgramDoorJournalEntry(
-      journalId: 'j1',
-      guestId: 'g_rohan',
-      displayName: 'Rohan Sharma',
-      action: ProgramDoorAction.checkIn,
-      occurredAt: _now.subtract(const Duration(minutes: 4)),
-      partySize: 3,
-      actorLabel: 'Arjun',
-    ),
-    ProgramDoorJournalEntry(
-      journalId: 'j2',
-      guestId: 'g_walk',
-      displayName: 'Priya Kapoor',
-      action: ProgramDoorAction.walkInCreate,
-      occurredAt: _now.subtract(const Duration(minutes: 9)),
-      actorLabel: 'Dev',
-    ),
-  ],
-);
-
 ProgramOperationOutboxStore _previewJournal() {
   final storage = MemoryCommandJournalStorage();
   return createProgramOperationJournal(
@@ -443,16 +353,6 @@ List<Override> _programOverrides() {
       _hotelId,
     ).overrideWithValue(AsyncData(_inbound)),
     programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
-    programFunctionDoorViewProvider(
-      _programId,
-      _functionId,
-    ).overrideWithValue(AsyncData(_doorView)),
-    programFunctionDoorViewWithSnapshotProvider(
-      _programId,
-      _functionId,
-    ).overrideWithValue(
-      AsyncData((value: _doorView, snapshotAt: null, snapshotExpiresAt: null)),
-    ),
     programTransportVendorsProvider('org_1', _programId).overrideWithValue(
       const AsyncData(<ProgramVendorOption>[
         ProgramVendorOption(
@@ -892,125 +792,3 @@ Widget programJournalRecoverySheetPreview(BuildContext context) =>
         child: const ProgramJournalRecoverySheet(accountId: 'uid_greeter'),
       ),
     );
-
-@widgetbook.UseCase(
-  name: 'Screen states',
-  type: ProgramFunctionDoorScreen,
-  path: '[P1 product surfaces]/Program door',
-)
-Widget programDoorScreenStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramFunctionDoorScreen',
-    contractId: 'screen.programs.door',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'open door',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProviderScope(
-            overrides: _programOverrides(),
-            child: const ProgramFunctionDoorScreen(
-              programId: _programId,
-              functionId: _functionId,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Row states',
-  type: ProgramDoorGuestRow,
-  path: '[P1 product surfaces]/Program door',
-)
-Widget programDoorGuestRowStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramDoorGuestRow',
-    catalogId: 'screen.programs.door',
-    children: [
-      ProgramDoorGuestRow(
-        guest: _doorView.guests[0],
-        doorOpen: true,
-        queuedStatus: null,
-        onAction: (_) {},
-      ),
-      ProgramDoorGuestRow(
-        guest: _doorView.guests[1],
-        doorOpen: true,
-        queuedStatus: ProgramOperationOutboxStatus.pending,
-        onAction: (_) {},
-      ),
-      ProgramDoorGuestRow(
-        guest: _doorView.guests[2],
-        doorOpen: false,
-        queuedStatus: null,
-        onAction: (_) {},
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Sheet states',
-  type: ProgramDoorPartySizeSheet,
-  path: '[P1 product surfaces]/Program door',
-)
-Widget programDoorPartySizeSheetStates(BuildContext context) {
-  return WidgetbookUtilitySheetFrame(
-    child: ProgramDoorPartySizeSheet(guest: _doorView.guests[0]),
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Body states',
-  type: ProgramDoorPageBody,
-  path: '[P1 product surfaces]/Program door',
-)
-Widget programDoorPageBodyStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProgramDoorPageBody',
-    contractId: 'screen.programs.door',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'open roster',
-        child: WidgetbookUtilityDeviceFrame(
-          child: ProgramDoorPageBody(
-            view: _doorView,
-            programId: _programId,
-            outbox: const ProgramOperationOutboxSummary([]),
-            operationsBusy: false,
-            showOperationsNotice: false,
-            walkInName: TextEditingController(),
-            walkInPartySize: TextEditingController(),
-            onGuestAction: (_, action) {},
-            onSubmitWalkIn: () {},
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Badge states',
-  type: ProgramDoorAttendanceBadge,
-  path: '[P1 product surfaces]/Program door',
-)
-Widget programDoorAttendanceBadgeStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'ProgramDoorAttendanceBadge',
-    catalogId: 'screen.programs.door',
-    children: const [
-      ProgramDoorAttendanceBadge(
-        status: ProgramFunctionAttendanceStatus.expected,
-      ),
-      ProgramDoorAttendanceBadge(
-        status: ProgramFunctionAttendanceStatus.checkedIn,
-      ),
-      ProgramDoorAttendanceBadge(
-        status: ProgramFunctionAttendanceStatus.noShow,
-      ),
-    ],
-  );
-}
