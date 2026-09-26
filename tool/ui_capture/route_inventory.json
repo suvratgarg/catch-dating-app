@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "95de28760fac146348d06b0261ef3d00e413bd14547b1d095adac1cab92fad54",
-    "routeContractSha256": "992e55bb1b098e3dad2d14555c3ed9446daf59e979d9c507ea11a75d664baad8",
+    "normalizedFileSha256": "698940942f2ed3aefa3f926fa0064224add93bd730083de3951ddda9c0d24826",
+    "routeContractSha256": "daef38525c05b120c8ad5e1b377ba148d86fd860a55bf5f15ca1b3877702b338",
     "goRouteCount": 100,
     "shellBranchCount": 9,
     "enumRouteCount": 85,
@@ -393,7 +393,7 @@
       "runtimeParentId": "eventDetailScreen",
       "runtimePathExpression": "'companion'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>EventSuccessCompanionRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null})",
+      "presentationExpression": "(context,state)=>EventSuccessCompanionRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
       "presentationTarget": "EventSuccessCompanionRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -750,7 +750,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'audiences/:audienceId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostSavedAudienceEditorScreen(organizerId:state.uri.queryParameters['organizerId']??'',audienceId:state.pathParameters['audienceId'],initialAudience:switch(state.extra){HostSavedAudience audience=>audience,_=>null})",
+      "presentationExpression": "(context,state)=>HostSavedAudienceEditorScreen(organizerId:state.uri.queryParameters['organizerId']??'',audienceId:state.pathParameters['audienceId'],initialAudience:_routeAudienceExtra(state))",
       "presentationTarget": "HostSavedAudienceEditorScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1293,7 +1293,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/manage'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null},initialSection:_hostManageSectionFromState(state))",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1311,7 +1311,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/edit'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>EditHostedEventRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null})",
+      "presentationExpression": "(context,state)=>EditHostedEventRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state))",
       "presentationTarget": "EditHostedEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1329,7 +1329,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/attendance'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null},initialSection:HostEventManageSection.live)",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:HostEventManageSection.live)",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1347,7 +1347,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/success'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:switch(state.extra){final Event event=>event,_=>null},initialSection:_hostManageSectionFromState(state))",
+      "presentationExpression": "(context,state)=>HostEventManageRouteScreen(clubId:state.pathParameters['clubId']!,eventId:state.pathParameters['eventId']!,initialEvent:_routeEventExtra(state),initialSection:_hostManageSectionFromState(state))",
       "presentationTarget": "HostEventManageRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1365,7 +1365,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/moments'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:OrganizerMomentScope.event(state.pathParameters['eventId']!),scopeTitle:switch(state.extra){final Event event=>event.title,_=>null})",
+      "presentationExpression": "(context,state)=>OrganizerMomentsScreen(scope:_eventMomentScope(state),scopeTitle:_routeEventExtra(state)?.title)",
       "presentationTarget": "OrganizerMomentsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1380,7 +1380,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostInboxScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>hostInboxScreenForUri(state.uri,initialOrganizerId:switch(state.extra){final Club club=>club.id,_=>null})",
+      "presentationExpression": "(context,state)=>hostInboxScreenForUri(state.uri,initialOrganizerId:_routeClubIdExtra(state))",
       "presentationTarget": "hostInboxScreenForUri",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true

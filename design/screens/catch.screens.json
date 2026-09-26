@@ -1136,6 +1136,33 @@
         }
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.host.event.moments": {
+      "owners": [
+        {
+          "routes": [
+            "hostAppEventMomentsScreen"
+          ],
+          "file": "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
+          "symbol": "_OrganizerMomentsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostAppEventMomentsScreen"
+          ],
+          "file": "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
+          "symbol": "_OrganizerMomentEditScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The moments list and its create/edit surface are canonical pushed routes with shared compact back chrome."
     }
   },
   "layoutOnlyRoutes": {

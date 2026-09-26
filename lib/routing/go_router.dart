@@ -91,6 +91,7 @@ export 'route_contract.dart';
 
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';
+part 'host_route_extras.dart';
 part 'host_inbox_route.dart';
 part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
@@ -429,10 +430,7 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                                   EventSuccessCompanionRouteScreen(
                                     clubId: state.pathParameters['clubId']!,
                                     eventId: state.pathParameters['eventId']!,
-                                    initialEvent: switch (state.extra) {
-                                      final Event event => event,
-                                      _ => null,
-                                    },
+                                    initialEvent: _routeEventExtra(state),
                                   ),
                             ),
                           ],
@@ -642,10 +640,12 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                     _ => null,
                   },
                   initialDraft: extra is HostCreateEventRouteArguments
-                      ? extra.initialDraft : null,
+                      ? extra.initialDraft
+                      : null,
 
                   initialSavedEventId: extra is HostCreateEventRouteArguments
-                      ? extra.initialSavedEventId : null,
+                      ? extra.initialSavedEventId
+                      : null,
                   externalBookingMode: switch (extra) {
                     final HostCreateEventRouteArguments arguments =>
                       arguments.externalBookingMode,
@@ -659,8 +659,10 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
                   promptForDrafts: extra is HostCreateEventRouteArguments
                       ? extra.promptForDrafts
                       : true,
-                  returnToResponsesOnSave: extra is HostCreateEventRouteArguments
-                      ? extra.returnToResponsesOnSave : false,
+                  returnToResponsesOnSave:
+                      extra is HostCreateEventRouteArguments
+                      ? extra.returnToResponsesOnSave
+                      : false,
                 );
               },
             ),
@@ -694,10 +696,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               builder: (context, state) => HostEventManageRouteScreen(
                 clubId: state.pathParameters['clubId']!,
                 eventId: state.pathParameters['eventId']!,
-                initialEvent: switch (state.extra) {
-                  final Event event => event,
-                  _ => null,
-                },
+                initialEvent: _routeEventExtra(state),
                 initialSection: _hostManageSectionFromState(state),
               ),
             ),
@@ -707,10 +706,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               builder: (context, state) => EditHostedEventRouteScreen(
                 clubId: state.pathParameters['clubId']!,
                 eventId: state.pathParameters['eventId']!,
-                initialEvent: switch (state.extra) {
-                  final Event event => event,
-                  _ => null,
-                },
+                initialEvent: _routeEventExtra(state),
               ),
             ),
             GoRoute(
@@ -719,10 +715,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               builder: (context, state) => HostEventManageRouteScreen(
                 clubId: state.pathParameters['clubId']!,
                 eventId: state.pathParameters['eventId']!,
-                initialEvent: switch (state.extra) {
-                  final Event event => event,
-                  _ => null,
-                },
+                initialEvent: _routeEventExtra(state),
                 initialSection: HostEventManageSection.live,
               ),
             ),
@@ -732,10 +725,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               builder: (context, state) => HostEventManageRouteScreen(
                 clubId: state.pathParameters['clubId']!,
                 eventId: state.pathParameters['eventId']!,
-                initialEvent: switch (state.extra) {
-                  final Event event => event,
-                  _ => null,
-                },
+                initialEvent: _routeEventExtra(state),
                 initialSection: _hostManageSectionFromState(state),
               ),
             ),
@@ -743,13 +733,8 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               path: 'events/:eventId/moments',
               name: Routes.hostAppEventMomentsScreen.name,
               builder: (context, state) => OrganizerMomentsScreen(
-                scope: OrganizerMomentScope.event(
-                  state.pathParameters['eventId']!,
-                ),
-                scopeTitle: switch (state.extra) {
-                  final Event event => event.title,
-                  _ => null,
-                },
+                scope: _eventMomentScope(state),
+                scopeTitle: _routeEventExtra(state)?.title,
               ),
             ),
           ],
@@ -809,10 +794,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostSavedAudienceEditorScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           audienceId: state.pathParameters['audienceId'],
-          initialAudience: switch (state.extra) {
-            HostSavedAudience audience => audience,
-            _ => null,
-          },
+          initialAudience: _routeAudienceExtra(state),
         ),
       ),
       GoRoute(
@@ -1054,10 +1036,7 @@ StatefulShellRoute _hostShellRoute(
             name: Routes.hostInboxScreen.name,
             builder: (context, state) => hostInboxScreenForUri(
               state.uri,
-              initialOrganizerId: switch (state.extra) {
-                final Club club => club.id,
-                _ => null,
-              },
+              initialOrganizerId: _routeClubIdExtra(state),
             ),
             routes: [
               GoRoute(

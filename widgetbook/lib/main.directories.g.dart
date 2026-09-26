@@ -9285,6 +9285,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'OrganizerMomentsEntryField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Entry field',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_moments_use_cases
+                            .organizerMomentsEntryField,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'OrganizerMomentsScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

@@ -1,11 +1,13 @@
 import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_controller.dart';
+import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_entry_field.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../clubs/catalog/fixtures.dart';
 import '../support/page_preview.dart';
 import '../utility/preview.dart';
 
@@ -77,6 +79,37 @@ List<Override> _momentsOverrides(OrganizerMomentsState state) => [
     _scope,
   ).overrideWith(() => _PreviewMoments(state)),
 ];
+
+@widgetbook.UseCase(
+  name: 'Entry field',
+  type: OrganizerMomentsEntryField,
+  path: '[P1 product surfaces]/Host events/Moments',
+)
+Widget organizerMomentsEntryField(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'OrganizerMomentsEntryField',
+    contractId: 'screen.host.event.moments',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'manage entry',
+        child: WidgetbookUtilityDeviceFrame(
+          child: OrganizerMomentsEntryField(
+            clubId: widgetbookClubClub.id,
+            event: widgetbookClubEvent(
+              id: 'preview_event',
+              startTime: DateTime(2026, 10, 3, 18),
+              meetingPoint: 'Marine Drive',
+              distanceKm: 5,
+              bookedCount: 24,
+              capacityLimit: 40,
+              description: 'Preview celebration',
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Screen states',

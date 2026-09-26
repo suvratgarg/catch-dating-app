@@ -22,6 +22,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_entry_field.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_roster_summary.dart';
@@ -304,18 +305,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 queryParameters: {'eventId': event.id},
               ),
             ),
-            CatchField.nav(
-              copy: catchFieldCopy(context.l10n),
-              title: context.l10n.hostMomentsManageEntryTitle,
-              body: context.l10n.hostMomentsManageEntryBody,
-              icon: CatchIcons.autoAwesomeOutlined,
-              emphasis: CatchFieldEmphasis.title,
-              onTap: () => context.pushNamed(
-                Routes.hostAppEventMomentsScreen.name,
-                pathParameters: {'clubId': club.id, 'eventId': event.id},
-                extra: event,
-              ),
-            ),
+            OrganizerMomentsEntryField(clubId: club.id, event: event),
           ],
         ),
         gapH20,
