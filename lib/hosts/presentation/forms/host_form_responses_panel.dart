@@ -445,6 +445,10 @@ class _HostFormResponsesPanelState
                   now: DateTime.now,
                   initialEventTarget: returnedTarget,
                   initiallyReviewSelection: returnedTarget != null,
+                  onCreateEvent: privateEventSetupAvailable()
+                      ? () => _openEventForSelection(
+                        queryController, accountId)
+                      : null,
                 )])
               : null,
           onOpenResponse: (responseId) => context.pushNamed(
