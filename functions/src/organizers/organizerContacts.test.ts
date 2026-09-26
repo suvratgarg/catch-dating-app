@@ -18,6 +18,7 @@ import {
 } from "./organizerContacts";
 import type {
   OrganizerAudienceSummaryDocument,
+  OrganizerContactOutreachDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerManualSendTaskDocument,
   OrganizerWhatsappMessageDocument,
@@ -99,11 +100,13 @@ test("customer timeline joins sources newest-first without overstating handoff",
       manualSendTasks: [manualTask],
       whatsappMessages: [whatsappMessage],
       catchReplies: [],
+      outreach: [],
       formsCoverage: "exact",
       eventsCoverage: "exact",
       sendsCoverage: "exact",
       repliesCoverage: "partial",
       repliesTruncated: false,
+      outreachCoverage: "exact",
     });
 
     assert.deepEqual(result.timeline.map((entry) => entry.kind), [
@@ -122,6 +125,72 @@ test("customer timeline joins sources newest-first without overstating handoff",
       result.coverage.replyObservation,
       "catchAndManagedWhatsappOnly"
     );
+  });
+
+test("customer timeline renders asserted outreach without note internals",
+  () => {
+    const at = (millis: number) =>
+      admin.firestore.Timestamp.fromMillis(millis);
+    const outreachDoc = (id: string, occurredAt: number) => ({
+      id,
+      data: {
+        organizerId: "organizer-1",
+        contactId: "contact-1",
+        authorUid: "manager-1",
+        channel: "phoneCall",
+        outcome: "noAnswer",
+        note: "  Try again after 6pm  ",
+        occurredAt: at(occurredAt),
+        revision: 1,
+        createdAt: at(occurredAt),
+        updatedAt: at(occurredAt),
+        updatedByUid: "manager-1",
+      } satisfies OrganizerContactOutreachDocument,
+    });
+
+    const result = buildContactTimeline({
+      forms: [{
+        kind: "form",
+        timelineId: "form-1",
+        responseId: "response-1",
+        formId: "form-1",
+        formTitle: "Quiz sign-up",
+        action: "submitted",
+        answeredQuestionCount: 4,
+        occurredAtMillis: 1_000,
+      }],
+      events: [],
+      sends: [],
+      manualSendTasks: [],
+      whatsappMessages: [],
+      catchReplies: [],
+      outreach: [
+        outreachDoc("outreach-older", 3_000),
+        outreachDoc("outreach-newer", 6_000),
+      ],
+      formsCoverage: "exact",
+      eventsCoverage: "exact",
+      sendsCoverage: "exact",
+      repliesCoverage: "partial",
+      repliesTruncated: false,
+      outreachCoverage: "partial",
+    });
+
+    assert.deepEqual(result.timeline.map((entry) => entry.kind), [
+      "outreach",
+      "outreach",
+      "form",
+    ]);
+    const newest = result.timeline[0];
+    if (newest.kind !== "outreach") {
+      throw new Error("Expected outreach entry.");
+    }
+    assert.equal(newest.channel, "phoneCall");
+    assert.equal(newest.outcome, "noAnswer");
+    assert.equal(newest.notePreview, "Try again after 6pm");
+    assert.equal(newest.occurredAtMillis, 6_000);
+    assert.equal(result.coverage.outreach, "partial");
+    assert.equal(result.truncated, true);
   });
 
 const callableResourceTestName =

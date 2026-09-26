@@ -1317,6 +1317,60 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                 "minimum": 0
               }
             }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "channel",
+              "outcome",
+              "notePreview",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "outreach"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "channel": {
+                "type": "string",
+                "enum": [
+                  "phoneCall",
+                  "whatsapp",
+                  "email",
+                  "sms",
+                  "inPerson",
+                  "other"
+                ]
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "reached",
+                  "noAnswer",
+                  "leftMessage",
+                  "wrongContact"
+                ]
+              },
+              "notePreview": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         ]
       }
@@ -1332,6 +1386,7 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
         "events",
         "sends",
         "replies",
+        "outreach",
         "replyObservation"
       ],
       "properties": {
@@ -1360,6 +1415,14 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
           ]
         },
         "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "outreach": {
           "type": "string",
           "enum": [
             "exact",
@@ -1810,6 +1873,7 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
         "events",
         "sends",
         "replies",
+        "outreach",
         "replyObservation"
       ],
       "properties": {
@@ -1838,6 +1902,14 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
           ]
         },
         "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "outreach": {
           "type": "string",
           "enum": [
             "exact",
@@ -2127,6 +2199,60 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
               "minimum": 0
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "channel",
+            "outcome",
+            "notePreview",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "outreach"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "channel": {
+              "type": "string",
+              "enum": [
+                "phoneCall",
+                "whatsapp",
+                "email",
+                "sms",
+                "inPerson",
+                "other"
+              ]
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "reached",
+                "noAnswer",
+                "leftMessage",
+                "wrongContact"
+              ]
+            },
+            "notePreview": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       ]
     },
@@ -2399,6 +2525,60 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
           "type": "string",
           "minLength": 1,
           "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "outreachTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "channel",
+        "outcome",
+        "notePreview",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "outreach"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "phoneCall",
+            "whatsapp",
+            "email",
+            "sms",
+            "inPerson",
+            "other"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "reached",
+            "noAnswer",
+            "leftMessage",
+            "wrongContact"
+          ]
+        },
+        "notePreview": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
         },
         "occurredAtMillis": {
           "type": "integer",

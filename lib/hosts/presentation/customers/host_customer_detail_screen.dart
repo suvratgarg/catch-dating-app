@@ -38,7 +38,7 @@ part 'host_customer_detail_body.dart';
 part 'host_customer_history_panel.dart';
 part 'host_customer_submissions_section.dart';
 
-enum _HostCustomerRecordAction { message, remove }
+enum _HostCustomerRecordAction { message, logOutreach, remove }
 
 class HostCustomerDetailScreen extends ConsumerStatefulWidget {
   const HostCustomerDetailScreen({
@@ -134,6 +134,11 @@ class _HostCustomerDetailScreenState
                     icon: CatchIcons.tabChats,
                   ),
                 CatchActionMenuItem(
+                  value: _HostCustomerRecordAction.logOutreach,
+                  label: context.l10n.hostCustomersLogOutreach,
+                  icon: CatchIcons.callOutlined,
+                ),
+                CatchActionMenuItem(
                   value: _HostCustomerRecordAction.remove,
                   label: context.l10n.hostsHostAudienceRemoveAction,
                   icon: CatchIcons.deleteOutline,
@@ -145,6 +150,7 @@ class _HostCustomerDetailScreenState
                   customer,
                   communicationPlanState?.value,
                 ),
+                _HostCustomerRecordAction.logOutreach => _logOutreach(customer),
                 _HostCustomerRecordAction.remove => _removeCustomer(customer),
               }),
             ),
@@ -297,6 +303,15 @@ class _HostCustomerDetailScreenState
           HostCustomerNoteSheet(customer: customer, note: note),
     );
     if (!mounted || updated != true) return;
+    _refreshDetail();
+  }
+
+  Future<void> _logOutreach(HostAudienceContactDetail customer) async {
+    final recorded = await showCatchBottomSheet<bool>(
+      context: context,
+      builder: (context) => HostCustomerOutreachSheet(customer: customer),
+    );
+    if (!mounted || recorded != true) return;
     _refreshDetail();
   }
 

@@ -14138,6 +14138,50 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notes are temporarily unavailable. Other customer details are still available.';
 
   @override
+  String get hostCustomersOutreach => 'Outreach';
+
+  @override
+  String get hostCustomersLogOutreach => 'Log outreach';
+
+  @override
+  String get hostCustomersLogOutreachBody =>
+      'Record a call, message or conversation you had with this person. It appears on their history.';
+
+  @override
+  String get hostCustomersOutreachChannelField => 'Channel';
+
+  @override
+  String get hostCustomersOutreachOutcomeField => 'Outcome';
+
+  @override
+  String hostCustomersOutreachChannel({required String channel}) {
+    String _temp0 = intl.Intl.selectLogic(channel, {
+      'phoneCall': 'Phone call',
+      'whatsapp': 'WhatsApp',
+      'email': 'Email',
+      'sms': 'Text message',
+      'inPerson': 'In person',
+      'other': 'Outreach',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostCustomersOutreachOutcome({required String outcome}) {
+    String _temp0 = intl.Intl.selectLogic(outcome, {
+      'reached': 'Reached',
+      'noAnswer': 'No answer',
+      'leftMessage': 'Left a message',
+      'wrongContact': 'Wrong contact',
+      'other': 'Outcome recorded',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get hostCustomersOutreachNote => 'Note';
+
+  @override
   String get hostSheetClose => 'Close';
 
   @override

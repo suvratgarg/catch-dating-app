@@ -83,6 +83,76 @@ class HostCustomerNote {
   bool get wasEdited => updatedAt.isAfter(createdAt);
 }
 
+enum HostCustomerOutreachChannel {
+  phoneCall,
+  whatsapp,
+  email,
+  sms,
+  inPerson,
+  other;
+
+  String get wireValue => name;
+}
+
+enum HostCustomerOutreachOutcome {
+  reached,
+  noAnswer,
+  leftMessage,
+  wrongContact;
+
+  String get wireValue => name;
+}
+
+class HostCustomerOutreach {
+  const HostCustomerOutreach({
+    required this.outreachId,
+    required this.channel,
+    required this.outcome,
+    required this.note,
+    required this.authorUid,
+    required this.occurredAt,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+  });
+
+  factory HostCustomerOutreach.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerOutreach(
+        outreachId: crmRequiredString(map, 'outreachId'),
+        channel: crmEnumByName(
+          HostCustomerOutreachChannel.values,
+          crmRequiredString(map, 'channel'),
+          'outreach channel',
+        ),
+        outcome: crmEnumByName(
+          HostCustomerOutreachOutcome.values,
+          crmRequiredString(map, 'outcome'),
+          'outreach outcome',
+        ),
+        note: crmNullableString(map['note']),
+        authorUid: crmRequiredString(map, 'authorUid'),
+        occurredAt: crmRequiredDateTimeFromMillis(map, 'occurredAtMillis'),
+        createdAt: crmRequiredDateTimeFromMillis(map, 'createdAtMillis'),
+        updatedAt: crmRequiredDateTimeFromMillis(map, 'updatedAtMillis'),
+        revision: crmRequiredInt(map, 'revision'),
+      );
+
+  factory HostCustomerOutreach.fromCallableData(Object? data) =>
+      HostCustomerOutreach.fromMap(
+        crmRequiredMap(data, 'organizer contact outreach'),
+      );
+
+  final String outreachId;
+  final HostCustomerOutreachChannel channel;
+  final HostCustomerOutreachOutcome outcome;
+  final String? note;
+  final String authorUid;
+  final DateTime occurredAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int revision;
+}
+
 enum HostCustomerPermissionEvidenceStatus {
   unavailable,
   notApplicable,

@@ -5615,6 +5615,23 @@ export interface OrganizerContactNoteDocument {
 }
 
 /**
+ * Manager-asserted outreach attempt on one organizer contact. Records are append-only through the manager-authorized record callable, appear on the contact timeline, and are excluded from contact exports.
+ */
+export interface OrganizerContactOutreachDocument {
+  organizerId: string;
+  contactId: string;
+  authorUid: string;
+  channel: "phoneCall" | "whatsapp" | "email" | "sms" | "inPerson" | "other";
+  outcome: "reached" | "noAnswer" | "leftMessage" | "wrongContact";
+  note?: string;
+  occurredAt: FirebaseFirestore.Timestamp;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  updatedByUid: string;
+}
+
+/**
  * Organizer-authored manual CRM tag vocabulary. Tag ids are structurally distinct from computed audience segment ids.
  */
 export interface OrganizerContactTagVocabularyDocument {

@@ -999,6 +999,16 @@
       ]
     },
     {
+      "collectionGroup": "organizerContactOutreach",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "contactId", "mode": "ASCENDING"},
+        {"fieldPath": "occurredAt", "mode": "DESCENDING"},
+        {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "organizerContactChannelStates",
       "queryScope": "COLLECTION",
       "fields": [

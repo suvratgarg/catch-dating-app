@@ -22008,6 +22008,54 @@ abstract class AppLocalizations {
   /// **'Notes are temporarily unavailable. Other customer details are still available.'**
   String get hostCustomersNotesUnavailableBody;
 
+  /// Customer history filter for logged outreach attempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Outreach'**
+  String get hostCustomersOutreach;
+
+  /// Opens the record-outreach sheet on a customer record.
+  ///
+  /// In en, this message translates to:
+  /// **'Log outreach'**
+  String get hostCustomersLogOutreach;
+
+  /// Explains what the record-outreach sheet saves.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a call, message or conversation you had with this person. It appears on their history.'**
+  String get hostCustomersLogOutreachBody;
+
+  /// Outreach channel picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel'**
+  String get hostCustomersOutreachChannelField;
+
+  /// Outreach outcome picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome'**
+  String get hostCustomersOutreachOutcomeField;
+
+  /// Outreach channel label in the record-outreach sheet and customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'{channel, select, phoneCall{Phone call} whatsapp{WhatsApp} email{Email} sms{Text message} inPerson{In person} other{Outreach}}'**
+  String hostCustomersOutreachChannel({required String channel});
+
+  /// Manager-asserted outreach outcome label in the record-outreach sheet and customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'{outcome, select, reached{Reached} noAnswer{No answer} leftMessage{Left a message} wrongContact{Wrong contact} other{Outcome recorded}}'**
+  String hostCustomersOutreachOutcome({required String outcome});
+
+  /// Optional outreach note input title.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get hostCustomersOutreachNote;
+
   /// Dismiss a sheet whose selections already apply immediately.
   ///
   /// In en, this message translates to:

@@ -90,12 +90,13 @@
     "timelineCoverageValue": {"type": "string", "enum": ["exact", "partial", "unavailable"]},
     "timelineCoverage": {
       "type": "object", "additionalProperties": false,
-      "required": ["forms", "events", "sends", "replies", "replyObservation"],
+      "required": ["forms", "events", "sends", "replies", "outreach", "replyObservation"],
       "properties": {
         "forms": {"$ref": "#/definitions/timelineCoverageValue"},
         "events": {"$ref": "#/definitions/timelineCoverageValue"},
         "sends": {"$ref": "#/definitions/timelineCoverageValue"},
         "replies": {"$ref": "#/definitions/timelineCoverageValue"},
+        "outreach": {"$ref": "#/definitions/timelineCoverageValue"},
         "replyObservation": {"const": "catchAndManagedWhatsappOnly"}
       }
     },
@@ -104,7 +105,8 @@
         {"$ref": "#/definitions/formTimelineEntry"},
         {"$ref": "#/definitions/eventTimelineEntry"},
         {"$ref": "#/definitions/sendTimelineEntry"},
-        {"$ref": "#/definitions/replyTimelineEntry"}
+        {"$ref": "#/definitions/replyTimelineEntry"},
+        {"$ref": "#/definitions/outreachTimelineEntry"}
       ]
     },
     "formTimelineEntry": {
@@ -161,6 +163,18 @@
         "direction": {"type": "string", "enum": ["inbound", "outbound"]},
         "bodyPreview": {"type": "string", "minLength": 1, "maxLength": 300},
         "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "occurredAtMillis": {"type": "integer", "minimum": 0}
+      }
+    },
+    "outreachTimelineEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "timelineId", "channel", "outcome", "notePreview", "occurredAtMillis"],
+      "properties": {
+        "kind": {"const": "outreach"},
+        "timelineId": {"type": "string", "minLength": 1, "maxLength": 240},
+        "channel": {"type": "string", "enum": ["phoneCall", "whatsapp", "email", "sms", "inPerson", "other"]},
+        "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact"]},
+        "notePreview": {"type": ["string", "null"], "minLength": 1, "maxLength": 300},
         "occurredAtMillis": {"type": "integer", "minimum": 0}
       }
     },

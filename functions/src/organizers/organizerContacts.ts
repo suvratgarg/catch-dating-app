@@ -36,6 +36,10 @@ import type {MutateOrganizerContactNoteCallablePayload} from
   "../shared/generated/mutateOrganizerContactNoteCallablePayload";
 import type {OrganizerContactNoteCallableResponse} from
   "../shared/generated/organizerContactNoteCallableResponse";
+import type {OrganizerContactOutreachCallableResponse} from
+  "../shared/generated/organizerContactOutreachCallableResponse";
+import type {RecordOrganizerContactOutreachCallablePayload} from
+  "../shared/generated/recordOrganizerContactOutreachCallablePayload";
 import type {
   OrganizerAudienceSummaryDocument,
   OrganizerBroadcastSummaryDocument,
@@ -48,6 +52,7 @@ import type {
   OrganizerContactMergeReceiptDocument,
   OrganizerContactNoteDocument,
   OrganizerContactOriginDocument,
+  OrganizerContactOutreachDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerContactTraitDocument,
   OrganizerCommunicationPermissionReceiptDocument,
@@ -90,6 +95,10 @@ import {
   validateMutateOrganizerContactNoteCallablePayload,
 } from
   "../shared/generated/validators/mutateOrganizerContactNoteInput";
+import {
+  validateRecordOrganizerContactOutreachCallablePayload,
+} from
+  "../shared/generated/validators/recordOrganizerContactOutreachInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -116,6 +125,8 @@ import {organizerCommunicationPreferenceId} from
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
 const maxDetailNotes = 100;
+const maxDetailOutreach = 100;
+const maxOutreachFutureSkewMillis = 5 * 60 * 1000;
 const maxDetailSends = 100;
 const maxDetailMergeReceipts = 500;
 const maxDetailOrigins = 50;
@@ -645,6 +656,7 @@ export async function getOrganizerContactDetailHandler(
     originSnap,
     manualSendTaskSnap,
     whatsappMessageSnap,
+    outreachSnap,
   ] = await Promise.all([
     contactRef.get(),
     traitRef.get(),
@@ -728,6 +740,18 @@ export async function getOrganizerContactDetailHandler(
         .limit(maxDetailReplyMessages + 1)
         .get(),
       "managed WhatsApp replies",
+      data.organizerId,
+      data.contactId
+    )),
+    historyQuery(() => optionalContactQuery(
+      db.collection("organizerContactOutreach")
+        .where("organizerId", "==", data.organizerId)
+        .where("contactId", "==", data.contactId)
+        .orderBy("occurredAt", "desc")
+        .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+        .limit(maxDetailOutreach + 1)
+        .get(),
+      "contact outreach",
       data.organizerId,
       data.contactId
     )),
@@ -836,6 +860,14 @@ export async function getOrganizerContactDetailHandler(
     .map((document) => document.data() as OrganizerWhatsappMessageDocument)
     .filter((message) => message.organizerId === data.organizerId &&
       message.contactId === data.contactId);
+  const outreach = (outreachSnap?.docs ?? [])
+    .slice(0, maxDetailOutreach)
+    .map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactOutreachDocument,
+    }))
+    .filter((record) => record.data.organizerId === data.organizerId &&
+      record.data.contactId === data.contactId);
   const catchRepliesResult = await historyQuery(() => optionalContactQuery(
     contactCatchReplyTimeline({
       db,
@@ -875,6 +907,9 @@ export async function getOrganizerContactDetailHandler(
       catchRepliesResult === null ? "unavailable" : "partial",
     repliesTruncated: (whatsappMessageSnap?.size ?? 0) >
       maxDetailReplyMessages || (catchRepliesResult?.truncated ?? false),
+    outreach,
+    outreachCoverage: outreachSnap === null ? "unavailable" :
+      outreachSnap.size > maxDetailOutreach ? "partial" : "exact",
   });
   const activeMerges = await activeMergeRows({
     db,
@@ -1270,11 +1305,13 @@ export function buildContactTimeline(params: {
   manualSendTasks: OrganizerManualSendTaskDocument[];
   whatsappMessages: OrganizerWhatsappMessageDocument[];
   catchReplies: ContactReplyTimelineEntry[];
+  outreach: Array<{id: string; data: OrganizerContactOutreachDocument}>;
   formsCoverage: ContactHistoryCoverage;
   eventsCoverage: ContactHistoryCoverage;
   sendsCoverage: ContactHistoryCoverage;
   repliesCoverage: ContactHistoryCoverage;
   repliesTruncated: boolean;
+  outreachCoverage: ContactHistoryCoverage;
 }): {
   timeline: GetOrganizerContactDetailCallableResponse["timeline"];
   truncated: boolean;
@@ -1339,6 +1376,16 @@ export function buildContactTimeline(params: {
       threadId: message.threadId,
       occurredAtMillis: message.occurredAt.toMillis(),
     }));
+  const outreach: ContactTimelineEntry[] = params.outreach.map(
+    (record) => ({
+      kind: "outreach",
+      timelineId: timelineEntryId("outreach", record.id),
+      channel: record.data.channel,
+      outcome: record.data.outcome,
+      notePreview: record.data.note === undefined ? null :
+        record.data.note.trim().slice(0, 300),
+      occurredAtMillis: record.data.occurredAt.toMillis(),
+    }));
   const combined = [
     ...params.forms,
     ...events,
@@ -1346,18 +1393,21 @@ export function buildContactTimeline(params: {
     ...manualSends,
     ...whatsappReplies,
     ...params.catchReplies,
+    ...outreach,
   ].sort(compareTimelineEntries);
   return {
     timeline: combined.slice(0, maxDetailTimelineEntries),
     truncated: combined.length > maxDetailTimelineEntries ||
       params.formsCoverage === "partial" ||
       params.eventsCoverage === "partial" ||
-      params.sendsCoverage === "partial" || params.repliesTruncated,
+      params.sendsCoverage === "partial" || params.repliesTruncated ||
+      params.outreachCoverage === "partial",
     coverage: {
       forms: params.formsCoverage,
       events: params.eventsCoverage,
       sends: params.sendsCoverage,
       replies: params.repliesCoverage,
+      outreach: params.outreachCoverage,
       replyObservation: "catchAndManagedWhatsappOnly",
     },
   };
@@ -1956,6 +2006,58 @@ export async function mutateOrganizerContactNoteHandler(
     });
     return organizerContactNoteResponse(data.noteId, updated);
   });
+}
+
+/**
+ * Appends a manager-asserted outreach attempt to one active organizer
+ * contact. The record is a host assertion, not a provider receipt: channel
+ * outcomes describe what the manager reports happened.
+ */
+export async function recordOrganizerContactOutreachHandler(
+  request: CallableRequest<unknown>,
+  deps: OrganizerContactsDeps = defaultDeps
+): Promise<OrganizerContactOutreachCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<
+    RecordOrganizerContactOutreachCallablePayload
+  >(
+    request,
+    validateRecordOrganizerContactOutreachCallablePayload,
+    normalizeContactOutreachPayload
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "recordOrganizerContactOutreach");
+  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  const contactRef = db.collection("organizerContacts").doc(data.contactId);
+  const outreachRef = db.collection("organizerContactOutreach").doc();
+  const now = admin.firestore.Timestamp.now();
+  const occurredAtMillis = data.occurredAtMillis ?? now.toMillis();
+  if (occurredAtMillis > now.toMillis() + maxOutreachFutureSkewMillis) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Outreach attempts cannot be recorded in the future."
+    );
+  }
+  const outreach: OrganizerContactOutreachDocument = {
+    organizerId: data.organizerId,
+    contactId: data.contactId,
+    authorUid: actorUid,
+    channel: data.channel,
+    outcome: data.outcome,
+    ...(data.note !== undefined ? {note: data.note} : {}),
+    occurredAt: admin.firestore.Timestamp.fromMillis(occurredAtMillis),
+    revision: Math.max(1, now.toMillis()),
+    createdAt: now,
+    updatedAt: now,
+    updatedByUid: actorUid,
+  };
+  await db.runTransaction(async (tx) => {
+    const contactSnap = await tx.get(contactRef);
+    const contact = contactSnap.data() as OrganizerContactDocument | undefined;
+    assertActiveOrganizerContact(contact, data.organizerId);
+    tx.create(outreachRef, outreach);
+  });
+  return organizerContactOutreachResponse(outreachRef.id, outreach);
 }
 
 /** Returns a bounded export instead of exposing bulk Firestore PII. */
@@ -2643,6 +2745,25 @@ function organizerContactNoteResponse(
   };
 }
 
+function organizerContactOutreachResponse(
+  outreachId: string,
+  outreach: OrganizerContactOutreachDocument
+): OrganizerContactOutreachCallableResponse {
+  return {
+    organizerId: outreach.organizerId,
+    contactId: outreach.contactId,
+    outreachId,
+    channel: outreach.channel,
+    outcome: outreach.outcome,
+    note: outreach.note ?? null,
+    authorUid: outreach.authorUid,
+    occurredAtMillis: outreach.occurredAt.toMillis(),
+    createdAtMillis: outreach.createdAt.toMillis(),
+    updatedAtMillis: outreach.updatedAt.toMillis(),
+    revision: outreach.revision,
+  };
+}
+
 function assertActiveOrganizerContact(
   contact: OrganizerContactDocument | undefined,
   organizerId: string
@@ -2739,6 +2860,27 @@ function normalizeContactNotePayload(data: unknown): unknown {
   }
   if (typeof normalized.body === "string") {
     normalized.body = normalized.body.trim();
+  }
+  return normalized;
+}
+
+function normalizeContactOutreachPayload(data: unknown): unknown {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return data;
+  }
+  const normalized = {...data} as Record<string, unknown>;
+  for (const field of ["organizerId", "contactId"]) {
+    if (typeof normalized[field] === "string") {
+      normalized[field] = normalized[field].trim();
+    }
+  }
+  if (typeof normalized.note === "string") {
+    const trimmed = normalized.note.trim();
+    if (trimmed.length === 0) {
+      delete normalized.note;
+    } else {
+      normalized.note = trimmed;
+    }
   }
   return normalized;
 }
@@ -3115,6 +3257,11 @@ export const createOrganizerContactNote = onCall(
 export const mutateOrganizerContactNote = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
   (request) => mutateOrganizerContactNoteHandler(request)
+);
+
+export const recordOrganizerContactOutreach = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
+  (request) => recordOrganizerContactOutreachHandler(request)
 );
 
 export const exportOrganizerContacts = onCall(

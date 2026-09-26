@@ -110187,6 +110187,154 @@ export const organizerContactNoteDocumentSchema = {
   }
 };
 
+export const organizerContactOutreachDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_outreach.schema.json",
+  "title": "OrganizerContactOutreachDocument",
+  "description": "Manager-asserted outreach attempt on one organizer contact. Records are append-only through the manager-authorized record callable, appear on the contact timeline, and are excluded from contact exports.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactOutreach",
+  "x-firestore-path": "organizerContactOutreach/{outreachId}",
+  "x-document-id-field": "outreachId",
+  "x-owner": "manager-only organizer contact outreach callable",
+  "required": [
+    "organizerId",
+    "contactId",
+    "authorUid",
+    "channel",
+    "outcome",
+    "occurredAt",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "phoneCall",
+        "whatsapp",
+        "email",
+        "sms",
+        "inPerson",
+        "other"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reached",
+        "noAnswer",
+        "leftMessage",
+        "wrongContact"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "occurredAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerContactTagVocabularyDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
@@ -242286,6 +242434,60 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                 "minimum": 0
               }
             }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "channel",
+              "outcome",
+              "notePreview",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "outreach"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "channel": {
+                "type": "string",
+                "enum": [
+                  "phoneCall",
+                  "whatsapp",
+                  "email",
+                  "sms",
+                  "inPerson",
+                  "other"
+                ]
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "reached",
+                  "noAnswer",
+                  "leftMessage",
+                  "wrongContact"
+                ]
+              },
+              "notePreview": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         ]
       }
@@ -242301,6 +242503,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "events",
         "sends",
         "replies",
+        "outreach",
         "replyObservation"
       ],
       "properties": {
@@ -242329,6 +242532,14 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           ]
         },
         "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "outreach": {
           "type": "string",
           "enum": [
             "exact",
@@ -242779,6 +242990,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "events",
         "sends",
         "replies",
+        "outreach",
         "replyObservation"
       ],
       "properties": {
@@ -242807,6 +243019,14 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           ]
         },
         "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "outreach": {
           "type": "string",
           "enum": [
             "exact",
@@ -243096,6 +243316,60 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "minimum": 0
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "channel",
+            "outcome",
+            "notePreview",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "outreach"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "channel": {
+              "type": "string",
+              "enum": [
+                "phoneCall",
+                "whatsapp",
+                "email",
+                "sms",
+                "inPerson",
+                "other"
+              ]
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "reached",
+                "noAnswer",
+                "leftMessage",
+                "wrongContact"
+              ]
+            },
+            "notePreview": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       ]
     },
@@ -243368,6 +243642,60 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "outreachTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "channel",
+        "outcome",
+        "notePreview",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "outreach"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "phoneCall",
+            "whatsapp",
+            "email",
+            "sms",
+            "inPerson",
+            "other"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "reached",
+            "noAnswer",
+            "leftMessage",
+            "wrongContact"
+          ]
+        },
+        "notePreview": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
         },
         "occurredAtMillis": {
           "type": "integer",
@@ -244941,6 +245269,151 @@ export const organizerContactNoteCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const recordOrganizerContactOutreachCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_organizer_contact_outreach_payload.schema.json",
+  "title": "RecordOrganizerContactOutreachCallablePayload",
+  "description": "Manager-authorized request to log one outreach attempt on an organizer contact. An omitted occurredAtMillis records the attempt at server receipt; explicit times may not be in the future.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "channel",
+    "outcome"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "phoneCall",
+        "whatsapp",
+        "email",
+        "sms",
+        "inPerson",
+        "other"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reached",
+        "noAnswer",
+        "leftMessage",
+        "wrongContact"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "occurredAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const organizerContactOutreachCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_contact_outreach_response.schema.json",
+  "title": "OrganizerContactOutreachCallableResponse",
+  "description": "Safe organizer contact outreach state returned after recording an attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "outreachId",
+    "channel",
+    "outcome",
+    "note",
+    "authorUid",
+    "occurredAtMillis",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "outreachId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "phoneCall",
+        "whatsapp",
+        "email",
+        "sms",
+        "inPerson",
+        "other"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reached",
+        "noAnswer",
+        "leftMessage",
+        "wrongContact"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "occurredAtMillis": {
+      "type": "integer",
+      "minimum": 0
     },
     "createdAtMillis": {
       "type": "integer",

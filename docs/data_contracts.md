@@ -2346,9 +2346,14 @@ entries from the organizer's server-owned
 `organizerContactTagVocabularies/{organizerId}` document, whose vocabulary is
 capped at twenty. `organizerContactNotes` stores author-stamped note records;
 new notes append, edits use optimistic revisions, contact detail returns the
-newest bounded window, and exports never include note content. Existing contact
-documents may omit `manualTagIds` and read as an empty assignment, so neither
-feature requires a backfill.
+newest bounded window, and exports never include note content.
+`organizerContactOutreach` stores append-only, author-stamped manager-asserted
+outreach attempts (channel plus outcome with an optional bounded note); the
+record callable validates the active contact, rejects future timestamps beyond
+a short skew, and contact detail projects the newest bounded window onto the
+timeline with explicit coverage while exports never include outreach content.
+Existing contact documents may omit `manualTagIds` and read as an empty
+assignment, so none of these features requires a backfill.
 
 `organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
 audiences. The closed `directoryFilters` predicate preserves the same combined

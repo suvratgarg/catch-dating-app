@@ -280,6 +280,7 @@ export {validateOrganizerCommunicationPermissionReceiptDocument} from "./validat
 export {validateOrganizerContactDocument} from "./validators/organizerContactDocument";
 export {validateOrganizerContactOriginDocument} from "./validators/organizerContactOriginDocument";
 export {validateOrganizerContactNoteDocument} from "./validators/organizerContactNoteDocument";
+export {validateOrganizerContactOutreachDocument} from "./validators/organizerContactOutreachDocument";
 export {validateOrganizerContactTagVocabularyDocument} from "./validators/organizerContactTagVocabularyDocument";
 export {validateOrganizerSavedAudienceDocument} from "./validators/organizerSavedAudienceDocument";
 export {validateOrganizerManualSendTaskDocument} from "./validators/organizerManualSendTaskDocument";
@@ -810,6 +811,8 @@ export {validateMutateOrganizerContactCallableResponse} from "./validators/mutat
 export {validateCreateOrganizerContactNoteCallablePayload} from "./validators/createOrganizerContactNoteInput";
 export {validateMutateOrganizerContactNoteCallablePayload} from "./validators/mutateOrganizerContactNoteInput";
 export {validateOrganizerContactNoteCallableResponse} from "./validators/organizerContactNoteOutput";
+export {validateRecordOrganizerContactOutreachCallablePayload} from "./validators/recordOrganizerContactOutreachInput";
+export {validateOrganizerContactOutreachCallableResponse} from "./validators/organizerContactOutreachOutput";
 export {validateExportOrganizerContactsCallablePayload} from "./validators/exportOrganizerContactsInput";
 export {validateExportOrganizerContactsCallableResponse} from "./validators/exportOrganizerContactsOutput";
 export {validateMergeOrganizerContactsCallablePayload} from "./validators/mergeOrganizerContactsInput";

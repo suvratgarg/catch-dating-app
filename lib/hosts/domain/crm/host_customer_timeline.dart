@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/hosts/domain/crm/crm_response_fields.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_revenue.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 
@@ -10,6 +11,7 @@ class HostCustomerTimelineCoverage {
     required this.events,
     required this.sends,
     required this.replies,
+    required this.outreach,
   });
 
   factory HostCustomerTimelineCoverage.fromMap(Map<Object?, Object?> map) {
@@ -24,6 +26,7 @@ class HostCustomerTimelineCoverage {
       events: _timelineCoverageValue(map, 'events'),
       sends: _timelineCoverageValue(map, 'sends'),
       replies: _timelineCoverageValue(map, 'replies'),
+      outreach: _timelineCoverageValue(map, 'outreach'),
     );
   }
 
@@ -31,12 +34,14 @@ class HostCustomerTimelineCoverage {
   final HostCustomerTimelineCoverageValue events;
   final HostCustomerTimelineCoverageValue sends;
   final HostCustomerTimelineCoverageValue replies;
+  final HostCustomerTimelineCoverageValue outreach;
 
   bool get isComplete =>
       forms == HostCustomerTimelineCoverageValue.exact &&
       events == HostCustomerTimelineCoverageValue.exact &&
       sends == HostCustomerTimelineCoverageValue.exact &&
-      replies == HostCustomerTimelineCoverageValue.exact;
+      replies == HostCustomerTimelineCoverageValue.exact &&
+      outreach == HostCustomerTimelineCoverageValue.exact;
 }
 
 HostCustomerTimelineCoverageValue _timelineCoverageValue(
@@ -60,6 +65,7 @@ sealed class HostCustomerTimelineEntry {
         'event' => HostCustomerEventTimelineEntry.fromMap(map),
         'send' => HostCustomerSendTimelineEntry.fromMap(map),
         'reply' => HostCustomerReplyTimelineEntry.fromMap(map),
+        'outreach' => HostCustomerOutreachTimelineEntry.fromMap(map),
         _ => throw const FormatException(
           'Customer timeline contained an unsupported entry kind.',
         ),
@@ -230,4 +236,37 @@ final class HostCustomerReplyTimelineEntry extends HostCustomerTimelineEntry {
   final HostWhatsappMessageDirection direction;
   final String bodyPreview;
   final String threadId;
+}
+
+final class HostCustomerOutreachTimelineEntry
+    extends HostCustomerTimelineEntry {
+  const HostCustomerOutreachTimelineEntry({
+    required super.timelineId,
+    required super.occurredAt,
+    required this.channel,
+    required this.outcome,
+    required this.notePreview,
+  });
+
+  factory HostCustomerOutreachTimelineEntry.fromMap(
+    Map<Object?, Object?> map,
+  ) => HostCustomerOutreachTimelineEntry(
+    timelineId: crmRequiredString(map, 'timelineId'),
+    occurredAt: crmRequiredDateTimeFromMillis(map, 'occurredAtMillis'),
+    channel: crmEnumByName(
+      HostCustomerOutreachChannel.values,
+      crmRequiredString(map, 'channel'),
+      'timeline outreach channel',
+    ),
+    outcome: crmEnumByName(
+      HostCustomerOutreachOutcome.values,
+      crmRequiredString(map, 'outcome'),
+      'timeline outreach outcome',
+    ),
+    notePreview: crmNullableString(map['notePreview']),
+  );
+
+  final HostCustomerOutreachChannel channel;
+  final HostCustomerOutreachOutcome outcome;
+  final String? notePreview;
 }

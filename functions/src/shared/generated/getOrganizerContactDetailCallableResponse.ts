@@ -357,6 +357,20 @@ export interface GetOrganizerContactDetailCallableResponse {
         threadId: string;
         occurredAtMillis: number;
       }
+    | {
+        kind: "outreach";
+        timelineId: string;
+        channel:
+          | "phoneCall"
+          | "whatsapp"
+          | "email"
+          | "sms"
+          | "inPerson"
+          | "other";
+        outcome: "reached" | "noAnswer" | "leftMessage" | "wrongContact";
+        notePreview: string | null;
+        occurredAtMillis: number;
+      }
   )[];
   timelineTruncated: boolean;
   timelineCoverage: {
@@ -364,6 +378,7 @@ export interface GetOrganizerContactDetailCallableResponse {
     events: "exact" | "partial" | "unavailable";
     sends: "exact" | "partial" | "unavailable";
     replies: "exact" | "partial" | "unavailable";
+    outreach: "exact" | "partial" | "unavailable";
     replyObservation: "catchAndManagedWhatsappOnly";
   };
   /**

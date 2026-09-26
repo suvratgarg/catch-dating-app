@@ -280,6 +280,7 @@ export {organizerCommunicationPermissionReceiptDocumentSchema} from "./schemas/o
 export {organizerContactDocumentSchema} from "./schemas/organizerContactDocument";
 export {organizerContactOriginDocumentSchema} from "./schemas/organizerContactOriginDocument";
 export {organizerContactNoteDocumentSchema} from "./schemas/organizerContactNoteDocument";
+export {organizerContactOutreachDocumentSchema} from "./schemas/organizerContactOutreachDocument";
 export {organizerContactTagVocabularyDocumentSchema} from "./schemas/organizerContactTagVocabularyDocument";
 export {organizerSavedAudienceDocumentSchema} from "./schemas/organizerSavedAudienceDocument";
 export {organizerManualSendTaskDocumentSchema} from "./schemas/organizerManualSendTaskDocument";
@@ -810,6 +811,8 @@ export {mutateOrganizerContactCallableResponseSchema} from "./schemas/mutateOrga
 export {createOrganizerContactNoteCallablePayloadSchema} from "./schemas/createOrganizerContactNoteInput";
 export {mutateOrganizerContactNoteCallablePayloadSchema} from "./schemas/mutateOrganizerContactNoteInput";
 export {organizerContactNoteCallableResponseSchema} from "./schemas/organizerContactNoteOutput";
+export {recordOrganizerContactOutreachCallablePayloadSchema} from "./schemas/recordOrganizerContactOutreachInput";
+export {organizerContactOutreachCallableResponseSchema} from "./schemas/organizerContactOutreachOutput";
 export {exportOrganizerContactsCallablePayloadSchema} from "./schemas/exportOrganizerContactsInput";
 export {exportOrganizerContactsCallableResponseSchema} from "./schemas/exportOrganizerContactsOutput";
 export {mergeOrganizerContactsCallablePayloadSchema} from "./schemas/mergeOrganizerContactsInput";

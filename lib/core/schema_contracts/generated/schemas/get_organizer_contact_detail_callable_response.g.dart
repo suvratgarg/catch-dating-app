@@ -1320,6 +1320,60 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
               },
             },
           },
+          <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'kind',
+              'timelineId',
+              'channel',
+              'outcome',
+              'notePreview',
+              'occurredAtMillis',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'outreach',
+              },
+              'timelineId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'channel': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'phoneCall',
+                  'whatsapp',
+                  'email',
+                  'sms',
+                  'inPerson',
+                  'other',
+                ],
+              },
+              'outcome': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'reached',
+                  'noAnswer',
+                  'leftMessage',
+                  'wrongContact',
+                ],
+              },
+              'notePreview': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 300,
+              },
+              'occurredAtMillis': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
         ],
       },
     },
@@ -1334,6 +1388,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'events',
         'sends',
         'replies',
+        'outreach',
         'replyObservation',
       ],
       'properties': <String, Object?>{
@@ -1362,6 +1417,14 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           ],
         },
         'replies': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'outreach': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
             'exact',
@@ -1812,6 +1875,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
         'events',
         'sends',
         'replies',
+        'outreach',
         'replyObservation',
       ],
       'properties': <String, Object?>{
@@ -1840,6 +1904,14 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           ],
         },
         'replies': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'exact',
+            'partial',
+            'unavailable',
+          ],
+        },
+        'outreach': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
             'exact',
@@ -2130,6 +2202,60 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'timelineId',
+            'channel',
+            'outcome',
+            'notePreview',
+            'occurredAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'outreach',
+            },
+            'timelineId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'channel': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'phoneCall',
+                'whatsapp',
+                'email',
+                'sms',
+                'inPerson',
+                'other',
+              ],
+            },
+            'outcome': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'reached',
+                'noAnswer',
+                'leftMessage',
+                'wrongContact',
+              ],
+            },
+            'notePreview': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 300,
+            },
+            'occurredAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
       ],
     },
     'formTimelineEntry': <String, Object?>{
@@ -2401,6 +2527,60 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
+        },
+        'occurredAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'outreachTimelineEntry': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+        'timelineId',
+        'channel',
+        'outcome',
+        'notePreview',
+        'occurredAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'const': 'outreach',
+        },
+        'timelineId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'channel': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'phoneCall',
+            'whatsapp',
+            'email',
+            'sms',
+            'inPerson',
+            'other',
+          ],
+        },
+        'outcome': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'reached',
+            'noAnswer',
+            'leftMessage',
+            'wrongContact',
+          ],
+        },
+        'notePreview': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 300,
         },
         'occurredAtMillis': <String, Object?>{
           'type': 'integer',
