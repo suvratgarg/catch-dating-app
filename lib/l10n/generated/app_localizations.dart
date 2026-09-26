@@ -26227,6 +26227,516 @@ abstract class AppLocalizations {
   /// **'Open person'**
   String get hostApplicationOpenPerson;
 
+  /// Moments list screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get hostMomentsTitle;
+
+  /// Create-moment editor title and toolbar tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New moment'**
+  String get hostMomentsNew;
+
+  /// Empty state title for the moments list.
+  ///
+  /// In en, this message translates to:
+  /// **'No moments yet'**
+  String get hostMomentsEmptyTitle;
+
+  /// Empty state body for the moments list.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a moment to schedule messages and alerts for this scope.'**
+  String get hostMomentsEmptyBody;
+
+  /// Event manage navigation row title for the moments surface.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get hostMomentsManageEntryTitle;
+
+  /// Event manage navigation row body for the moments surface.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule messages and alerts.'**
+  String get hostMomentsManageEntryBody;
+
+  /// Accessibility label for the per-moment actions menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Moment actions'**
+  String get hostMomentActions;
+
+  /// Arm a draft moment so it can fire.
+  ///
+  /// In en, this message translates to:
+  /// **'Arm'**
+  String get hostMomentArm;
+
+  /// Pause an armed moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get hostMomentPause;
+
+  /// Resume a paused moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get hostMomentResume;
+
+  /// Fire an armed manual moment immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Run now'**
+  String get hostMomentRun;
+
+  /// Revise a moment definition.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit moment'**
+  String get hostMomentEdit;
+
+  /// Moment status: draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get hostMomentStatusDraft;
+
+  /// Moment status: armed.
+  ///
+  /// In en, this message translates to:
+  /// **'Armed'**
+  String get hostMomentStatusArmed;
+
+  /// Moment status: paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get hostMomentStatusPaused;
+
+  /// Moment status: done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hostMomentStatusDone;
+
+  /// Origin badge for system-default moments.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get hostMomentOriginDefault;
+
+  /// Initiation kind label: manual run.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get hostMomentKindManual;
+
+  /// Initiation kind label: scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get hostMomentKindScheduled;
+
+  /// Initiation kind label: anchored to an event time.
+  ///
+  /// In en, this message translates to:
+  /// **'Anchored'**
+  String get hostMomentKindAnchored;
+
+  /// Initiation kind label: triggered by an event.
+  ///
+  /// In en, this message translates to:
+  /// **'Triggered'**
+  String get hostMomentKindTriggered;
+
+  /// Initiation summary for a manual moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs manually'**
+  String get hostMomentInitiationManual;
+
+  /// Initiation summary for a scheduled moment.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled {time}'**
+  String hostMomentInitiationScheduled({required String time});
+
+  /// Initiation summary for a triggered moment.
+  ///
+  /// In en, this message translates to:
+  /// **'On {trigger}'**
+  String hostMomentInitiationTriggered({required String trigger});
+
+  /// Anchor offset summary when the moment fires before the anchor.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min before'**
+  String hostMomentOffsetBefore({required int minutes});
+
+  /// Anchor offset summary when the moment fires after the anchor.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min after'**
+  String hostMomentOffsetAfter({required int minutes});
+
+  /// Anchor offset summary when the moment fires at the anchor.
+  ///
+  /// In en, this message translates to:
+  /// **'At'**
+  String get hostMomentOffsetAt;
+
+  /// Anchor kind label: scope start.
+  ///
+  /// In en, this message translates to:
+  /// **'event start'**
+  String get hostMomentAnchorScopeStart;
+
+  /// Anchor kind label: scope end.
+  ///
+  /// In en, this message translates to:
+  /// **'event end'**
+  String get hostMomentAnchorScopeEnd;
+
+  /// Anchor kind label: function start.
+  ///
+  /// In en, this message translates to:
+  /// **'function start'**
+  String get hostMomentAnchorFunctionStart;
+
+  /// Anchor kind label: function end.
+  ///
+  /// In en, this message translates to:
+  /// **'function end'**
+  String get hostMomentAnchorFunctionEnd;
+
+  /// Anchor kind label: RSVP deadline.
+  ///
+  /// In en, this message translates to:
+  /// **'RSVP deadline'**
+  String get hostMomentAnchorRsvpDeadline;
+
+  /// Anchor kind label: travel leg time.
+  ///
+  /// In en, this message translates to:
+  /// **'travel leg'**
+  String get hostMomentAnchorTravelLeg;
+
+  /// Trigger kind label: late arrival at hotel.
+  ///
+  /// In en, this message translates to:
+  /// **'late hotel arrival'**
+  String get hostMomentTriggerLateArrival;
+
+  /// Trigger kind label: flight disruption.
+  ///
+  /// In en, this message translates to:
+  /// **'flight disruption'**
+  String get hostMomentTriggerFlightDisrupted;
+
+  /// Sense label: individual recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get hostMomentSenseIndividual;
+
+  /// Sense label: resolved audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get hostMomentSenseAudience;
+
+  /// Audience kind label: the moment subject.
+  ///
+  /// In en, this message translates to:
+  /// **'Subject'**
+  String get hostMomentAudienceSubject;
+
+  /// Audience kind label: event participants.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get hostMomentAudienceParticipants;
+
+  /// Audience kind label: function guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Function guests'**
+  String get hostMomentAudienceFunctionGuests;
+
+  /// Audience kind label: households.
+  ///
+  /// In en, this message translates to:
+  /// **'Households'**
+  String get hostMomentAudienceHouseholds;
+
+  /// Audience kind label: staff duty holders.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get hostMomentAudienceStaffDuty;
+
+  /// Action kind label: send a message template.
+  ///
+  /// In en, this message translates to:
+  /// **'Message template'**
+  String get hostMomentActionTemplate;
+
+  /// Action kind label: push notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notification'**
+  String get hostMomentActionPush;
+
+  /// Action kind label: staff attention item.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff alert'**
+  String get hostMomentActionStaffAlert;
+
+  /// Moment name field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostMomentName;
+
+  /// Validation copy when the moment name is blank.
+  ///
+  /// In en, this message translates to:
+  /// **'Name the moment.'**
+  String get hostMomentNameRequired;
+
+  /// Editor section title for initiation.
+  ///
+  /// In en, this message translates to:
+  /// **'When it fires'**
+  String get hostMomentWhen;
+
+  /// Initiation kind field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire mode'**
+  String get hostMomentInitiation;
+
+  /// Scheduled fire-time field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire time'**
+  String get hostMomentFireTime;
+
+  /// Empty scheduled fire-time row body.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date and time'**
+  String get hostMomentFireTimeEmpty;
+
+  /// Validation copy when a scheduled moment has no time.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the fire time.'**
+  String get hostMomentFireTimeRequired;
+
+  /// Anchor kind field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Anchor'**
+  String get hostMomentAnchor;
+
+  /// Anchor id field label (function or leg).
+  ///
+  /// In en, this message translates to:
+  /// **'Anchor ID'**
+  String get hostMomentAnchorId;
+
+  /// Anchor offset field label; negative fires before.
+  ///
+  /// In en, this message translates to:
+  /// **'Offset (minutes)'**
+  String get hostMomentOffset;
+
+  /// Validation copy when the offset is not an integer.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a minute offset.'**
+  String get hostMomentOffsetInvalid;
+
+  /// Trigger kind field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger'**
+  String get hostMomentTrigger;
+
+  /// Function id field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Function ID'**
+  String get hostMomentFunctionId;
+
+  /// Validation copy when a function-scoped audience lacks a function id.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the function.'**
+  String get hostMomentFunctionIdRequired;
+
+  /// Sense field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Send sense'**
+  String get hostMomentSense;
+
+  /// Audience kind field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get hostMomentAudience;
+
+  /// Editor section title for sense and audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Who it reaches'**
+  String get hostMomentAudienceSection;
+
+  /// Toggle limiting participants to signed-up status.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed up only'**
+  String get hostMomentSignedUpOnly;
+
+  /// RSVP inclusion field label.
+  ///
+  /// In en, this message translates to:
+  /// **'RSVP states'**
+  String get hostMomentRsvp;
+
+  /// RSVP state label: attending.
+  ///
+  /// In en, this message translates to:
+  /// **'Attending'**
+  String get hostMomentRsvpAttending;
+
+  /// RSVP state label: maybe.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe'**
+  String get hostMomentRsvpMaybe;
+
+  /// Toggle for household-level dedupe.
+  ///
+  /// In en, this message translates to:
+  /// **'One message per household'**
+  String get hostMomentHouseholdDedupe;
+
+  /// Toggle limiting households to pending members.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending replies only'**
+  String get hostMomentRsvpPendingOnly;
+
+  /// Staff duty field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Duty'**
+  String get hostMomentDuty;
+
+  /// Validation copy when a duty-scoped field is blank.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the duty.'**
+  String get hostMomentDutyRequired;
+
+  /// Staff duty scope ids field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope IDs'**
+  String get hostMomentScopeIds;
+
+  /// Editor section title for the action.
+  ///
+  /// In en, this message translates to:
+  /// **'What it does'**
+  String get hostMomentActionSection;
+
+  /// Action kind field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get hostMomentAction;
+
+  /// Messaging connection field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection ID'**
+  String get hostMomentConnectionId;
+
+  /// Message template field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Template ID'**
+  String get hostMomentTemplateId;
+
+  /// Validation copy when a template action lacks ids.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the connection and template.'**
+  String get hostMomentTemplateRequired;
+
+  /// Template variables field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Variables'**
+  String get hostMomentVariables;
+
+  /// Push notification type field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification type'**
+  String get hostMomentNotificationType;
+
+  /// Push preference key field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Preference key'**
+  String get hostMomentPreferenceKey;
+
+  /// Staff attention severity field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get hostMomentSeverity;
+
+  /// Severity label: info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get hostMomentSeverityInfo;
+
+  /// Severity label: warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get hostMomentSeverityWarning;
+
+  /// Severity label: urgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent'**
+  String get hostMomentSeverityUrgent;
+
+  /// Staff attention title template field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Title template'**
+  String get hostMomentTitleTemplate;
+
+  /// Moment editor save action label.
+  ///
+  /// In en, this message translates to:
+  /// **'Save moment'**
+  String get hostMomentSave;
+
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:

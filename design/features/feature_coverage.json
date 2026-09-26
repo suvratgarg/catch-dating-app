@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-23",
+  "updated": "2026-09-26",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -633,6 +633,15 @@
       "status": "excluded",
       "priority": "P2",
       "reason": "Private token-scoped program RSVP surface (noindex, clientDynamic). Program feature contracts do not exist yet; route already carries route/meta/review contracts."
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.moments",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Organizer moments workspace for event and program send rules; contracts compile after route captures and golden coverage land.",
+      "targetFeature": "feature.host_event_manage",
+      "debtId": "MOMENTS-FEATURE-001"
     }
   ]
 }

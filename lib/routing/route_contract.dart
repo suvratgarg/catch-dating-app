@@ -185,6 +185,10 @@ enum Routes {
     '/host/organizers/:clubId/events/:eventId/success',
     AppRouteAudience.host,
   ),
+  hostAppEventMomentsScreen(
+    '/host/organizers/:clubId/events/:eventId/moments',
+    AppRouteAudience.host,
+  ),
   hostInboxScreen('/host/inbox', AppRouteAudience.host),
   hostChatScreen('/host/inbox/:matchId', AppRouteAudience.host);
 

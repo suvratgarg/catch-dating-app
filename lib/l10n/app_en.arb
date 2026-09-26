@@ -22869,6 +22869,662 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.applications"
   },
+  "hostMomentsTitle": "Moments",
+  "@hostMomentsTitle": {
+    "description": "Moments list screen title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentsNew": "New moment",
+  "@hostMomentsNew": {
+    "description": "Create-moment editor title and toolbar tooltip.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentsEmptyTitle": "No moments yet",
+  "@hostMomentsEmptyTitle": {
+    "description": "Empty state title for the moments list.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentsEmptyBody": "Create a moment to schedule messages and alerts for this scope.",
+  "@hostMomentsEmptyBody": {
+    "description": "Empty state body for the moments list.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentsManageEntryTitle": "Moments",
+  "@hostMomentsManageEntryTitle": {
+    "description": "Event manage navigation row title for the moments surface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentsManageEntryBody": "Schedule messages and alerts.",
+  "@hostMomentsManageEntryBody": {
+    "description": "Event manage navigation row body for the moments surface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentActions": "Moment actions",
+  "@hostMomentActions": {
+    "description": "Accessibility label for the per-moment actions menu.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentArm": "Arm",
+  "@hostMomentArm": {
+    "description": "Arm a draft moment so it can fire.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentPause": "Pause",
+  "@hostMomentPause": {
+    "description": "Pause an armed moment.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentResume": "Resume",
+  "@hostMomentResume": {
+    "description": "Resume a paused moment.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentRun": "Run now",
+  "@hostMomentRun": {
+    "description": "Fire an armed manual moment immediately.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentEdit": "Edit moment",
+  "@hostMomentEdit": {
+    "description": "Revise a moment definition.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentStatusDraft": "Draft",
+  "@hostMomentStatusDraft": {
+    "description": "Moment status: draft.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentStatusArmed": "Armed",
+  "@hostMomentStatusArmed": {
+    "description": "Moment status: armed.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentStatusPaused": "Paused",
+  "@hostMomentStatusPaused": {
+    "description": "Moment status: paused.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentStatusDone": "Done",
+  "@hostMomentStatusDone": {
+    "description": "Moment status: done.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentOriginDefault": "Default",
+  "@hostMomentOriginDefault": {
+    "description": "Origin badge for system-default moments.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentKindManual": "Manual",
+  "@hostMomentKindManual": {
+    "description": "Initiation kind label: manual run.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentKindScheduled": "Scheduled",
+  "@hostMomentKindScheduled": {
+    "description": "Initiation kind label: scheduled.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentKindAnchored": "Anchored",
+  "@hostMomentKindAnchored": {
+    "description": "Initiation kind label: anchored to an event time.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentKindTriggered": "Triggered",
+  "@hostMomentKindTriggered": {
+    "description": "Initiation kind label: triggered by an event.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentInitiationManual": "Runs manually",
+  "@hostMomentInitiationManual": {
+    "description": "Initiation summary for a manual moment.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentInitiationScheduled": "Scheduled {time}",
+  "@hostMomentInitiationScheduled": {
+    "description": "Initiation summary for a scheduled moment.",
+    "placeholders": {"time": {"type": "String", "example": "12 Oct 2026 · 4:00 pm"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentInitiationTriggered": "On {trigger}",
+  "@hostMomentInitiationTriggered": {
+    "description": "Initiation summary for a triggered moment.",
+    "placeholders": {"trigger": {"type": "String", "example": "flight disruption"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentOffsetBefore": "{minutes} min before",
+  "@hostMomentOffsetBefore": {
+    "description": "Anchor offset summary when the moment fires before the anchor.",
+    "placeholders": {"minutes": {"type": "int", "example": "15"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentOffsetAfter": "{minutes} min after",
+  "@hostMomentOffsetAfter": {
+    "description": "Anchor offset summary when the moment fires after the anchor.",
+    "placeholders": {"minutes": {"type": "int", "example": "15"}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentOffsetAt": "At",
+  "@hostMomentOffsetAt": {
+    "description": "Anchor offset summary when the moment fires at the anchor.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchorScopeStart": "event start",
+  "@hostMomentAnchorScopeStart": {
+    "description": "Anchor kind label: scope start.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchorScopeEnd": "event end",
+  "@hostMomentAnchorScopeEnd": {
+    "description": "Anchor kind label: scope end.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchorFunctionStart": "function start",
+  "@hostMomentAnchorFunctionStart": {
+    "description": "Anchor kind label: function start.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchorFunctionEnd": "function end",
+  "@hostMomentAnchorFunctionEnd": {
+    "description": "Anchor kind label: function end.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchorRsvpDeadline": "RSVP deadline",
+  "@hostMomentAnchorRsvpDeadline": {
+    "description": "Anchor kind label: RSVP deadline.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchorTravelLeg": "travel leg",
+  "@hostMomentAnchorTravelLeg": {
+    "description": "Anchor kind label: travel leg time.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentTriggerLateArrival": "late hotel arrival",
+  "@hostMomentTriggerLateArrival": {
+    "description": "Trigger kind label: late arrival at hotel.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentTriggerFlightDisrupted": "flight disruption",
+  "@hostMomentTriggerFlightDisrupted": {
+    "description": "Trigger kind label: flight disruption.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentSenseIndividual": "Individual",
+  "@hostMomentSenseIndividual": {
+    "description": "Sense label: individual recipient.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentSenseAudience": "Audience",
+  "@hostMomentSenseAudience": {
+    "description": "Sense label: resolved audience.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudienceSubject": "Subject",
+  "@hostMomentAudienceSubject": {
+    "description": "Audience kind label: the moment subject.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudienceParticipants": "Participants",
+  "@hostMomentAudienceParticipants": {
+    "description": "Audience kind label: event participants.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudienceFunctionGuests": "Function guests",
+  "@hostMomentAudienceFunctionGuests": {
+    "description": "Audience kind label: function guests.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudienceHouseholds": "Households",
+  "@hostMomentAudienceHouseholds": {
+    "description": "Audience kind label: households.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudienceStaffDuty": "Staff",
+  "@hostMomentAudienceStaffDuty": {
+    "description": "Audience kind label: staff duty holders.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentActionTemplate": "Message template",
+  "@hostMomentActionTemplate": {
+    "description": "Action kind label: send a message template.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentActionPush": "Push notification",
+  "@hostMomentActionPush": {
+    "description": "Action kind label: push notification.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentActionStaffAlert": "Staff alert",
+  "@hostMomentActionStaffAlert": {
+    "description": "Action kind label: staff attention item.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentName": "Name",
+  "@hostMomentName": {
+    "description": "Moment name field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentNameRequired": "Name the moment.",
+  "@hostMomentNameRequired": {
+    "description": "Validation copy when the moment name is blank.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentWhen": "When it fires",
+  "@hostMomentWhen": {
+    "description": "Editor section title for initiation.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentInitiation": "Fire mode",
+  "@hostMomentInitiation": {
+    "description": "Initiation kind field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentFireTime": "Fire time",
+  "@hostMomentFireTime": {
+    "description": "Scheduled fire-time field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentFireTimeEmpty": "Pick a date and time",
+  "@hostMomentFireTimeEmpty": {
+    "description": "Empty scheduled fire-time row body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentFireTimeRequired": "Pick the fire time.",
+  "@hostMomentFireTimeRequired": {
+    "description": "Validation copy when a scheduled moment has no time.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentAnchor": "Anchor",
+  "@hostMomentAnchor": {
+    "description": "Anchor kind field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAnchorId": "Anchor ID",
+  "@hostMomentAnchorId": {
+    "description": "Anchor id field label (function or leg).",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentOffset": "Offset (minutes)",
+  "@hostMomentOffset": {
+    "description": "Anchor offset field label; negative fires before.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentOffsetInvalid": "Enter a minute offset.",
+  "@hostMomentOffsetInvalid": {
+    "description": "Validation copy when the offset is not an integer.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentTrigger": "Trigger",
+  "@hostMomentTrigger": {
+    "description": "Trigger kind field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentFunctionId": "Function ID",
+  "@hostMomentFunctionId": {
+    "description": "Function id field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentFunctionIdRequired": "Pick the function.",
+  "@hostMomentFunctionIdRequired": {
+    "description": "Validation copy when a function-scoped audience lacks a function id.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentSense": "Send sense",
+  "@hostMomentSense": {
+    "description": "Sense field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudience": "Audience",
+  "@hostMomentAudience": {
+    "description": "Audience kind field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentAudienceSection": "Who it reaches",
+  "@hostMomentAudienceSection": {
+    "description": "Editor section title for sense and audience.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentSignedUpOnly": "Signed up only",
+  "@hostMomentSignedUpOnly": {
+    "description": "Toggle limiting participants to signed-up status.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentRsvp": "RSVP states",
+  "@hostMomentRsvp": {
+    "description": "RSVP inclusion field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentRsvpAttending": "Attending",
+  "@hostMomentRsvpAttending": {
+    "description": "RSVP state label: attending.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentRsvpMaybe": "Maybe",
+  "@hostMomentRsvpMaybe": {
+    "description": "RSVP state label: maybe.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentHouseholdDedupe": "One message per household",
+  "@hostMomentHouseholdDedupe": {
+    "description": "Toggle for household-level dedupe.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentRsvpPendingOnly": "Pending replies only",
+  "@hostMomentRsvpPendingOnly": {
+    "description": "Toggle limiting households to pending members.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentDuty": "Duty",
+  "@hostMomentDuty": {
+    "description": "Staff duty field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentDutyRequired": "Pick the duty.",
+  "@hostMomentDutyRequired": {
+    "description": "Validation copy when a duty-scoped field is blank.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentScopeIds": "Scope IDs",
+  "@hostMomentScopeIds": {
+    "description": "Staff duty scope ids field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentActionSection": "What it does",
+  "@hostMomentActionSection": {
+    "description": "Editor section title for the action.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentAction": "Action",
+  "@hostMomentAction": {
+    "description": "Action kind field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentConnectionId": "Connection ID",
+  "@hostMomentConnectionId": {
+    "description": "Messaging connection field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentTemplateId": "Template ID",
+  "@hostMomentTemplateId": {
+    "description": "Message template field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentTemplateRequired": "Pick the connection and template.",
+  "@hostMomentTemplateRequired": {
+    "description": "Validation copy when a template action lacks ids.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments"
+  },
+  "hostMomentVariables": "Variables",
+  "@hostMomentVariables": {
+    "description": "Template variables field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentNotificationType": "Notification type",
+  "@hostMomentNotificationType": {
+    "description": "Push notification type field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentPreferenceKey": "Preference key",
+  "@hostMomentPreferenceKey": {
+    "description": "Push preference key field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentSeverity": "Severity",
+  "@hostMomentSeverity": {
+    "description": "Staff attention severity field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
+  "hostMomentSeverityInfo": "Info",
+  "@hostMomentSeverityInfo": {
+    "description": "Severity label: info.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentSeverityWarning": "Warning",
+  "@hostMomentSeverityWarning": {
+    "description": "Severity label: warning.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentSeverityUrgent": "Urgent",
+  "@hostMomentSeverityUrgent": {
+    "description": "Severity label: urgent.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 16
+  },
+  "hostMomentTitleTemplate": "Title template",
+  "@hostMomentTitleTemplate": {
+    "description": "Staff attention title template field label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 32
+  },
+  "hostMomentSave": "Save moment",
+  "@hostMomentSave": {
+    "description": "Moment editor save action label.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.events.presentation.moments",
+    "x-max-chars": 24
+  },
   "hostSavedAudienceEditRules": "Edit rules",
   "@hostSavedAudienceEditRules": {
     "description": "Saved audience overview label.",

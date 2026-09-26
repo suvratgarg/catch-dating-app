@@ -303,6 +303,8 @@ import 'package:widgetbook_workspace/hosts/operations/team_management.dart'
     as _widgetbook_workspace_hosts_operations_team_management;
 import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
+import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
+    as _widgetbook_workspace_hosts_organizer_moments_use_cases;
 import 'package:widgetbook_workspace/hosts/unified_event_setup_use_cases.dart'
     as _widgetbook_workspace_hosts_unified_event_setup_use_cases;
 import 'package:widgetbook_workspace/matches/catalog/celebration.dart'
@@ -9260,6 +9262,49 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Schedule states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
                     .hostedEventScheduleSectionCatalogStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Host events',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Moments',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerMomentEditScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Screen states',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_moments_use_cases
+                            .organizerMomentEditScreenStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerMomentsEntryField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Entry field',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_moments_use_cases
+                            .organizerMomentsEntryField,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerMomentsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Screen states',
+                    builder:
+                        _widgetbook_workspace_hosts_organizer_moments_use_cases
+                            .organizerMomentsScreenStates,
+                  ),
+                ],
               ),
             ],
           ),
