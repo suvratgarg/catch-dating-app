@@ -1469,7 +1469,7 @@ async function contactRevenue(params: {
 }
 
 type RevenueSource = "catchPayment" | "hostImport" | "hostEstimate" |
-  "providerOrder";
+  "providerOrder" | "hostAttested";
 
 interface RevenueFact {
   eventId: string;

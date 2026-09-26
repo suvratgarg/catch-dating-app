@@ -2320,7 +2320,10 @@ may later edit those endpoints but cannot remove its last endpoint. Legacy and
 system-derived name-only records remain readable and can still rename without
 being forced through a migration. Customer detail unifies event-scoped
 revenue from completed, non-refunded Catch payments, financially complete
-provider orders, organizer-imported amounts, and explicit organizer estimates.
+provider orders, organizer-imported amounts, explicit organizer estimates, and
+organizer-attested manual offer payments. Admission stamps the attested
+amount, currency and `hostAttested` source onto the operational attendee so
+the rebuildable contact-event edge projects the fact into revenue history.
 Every amount retains its source; reported and estimated values are never
 presented as verified payments. A Catch payment takes precedence over a
 reported fact for the same customer event so the sale is not counted twice.

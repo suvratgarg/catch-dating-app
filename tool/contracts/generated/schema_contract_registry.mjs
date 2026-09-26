@@ -113363,6 +113363,7 @@ export const organizerContactEventEdgeDocumentSchema = {
         "hostImport",
         "hostEstimate",
         "providerOrder",
+        "hostAttested",
         null
       ]
     },
@@ -132145,6 +132146,7 @@ export const eventAttendeeDocumentSchema = {
         "hostImport",
         "hostEstimate",
         "providerOrder",
+        "hostAttested",
         null
       ]
     },
@@ -241543,7 +241545,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                         "catchPayment",
                         "hostImport",
                         "hostEstimate",
-                        "providerOrder"
+                        "providerOrder",
+                        "hostAttested"
                       ]
                     },
                     "amountMinor": {
@@ -241728,7 +241731,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                     "catchPayment",
                     "hostImport",
                     "hostEstimate",
-                    "providerOrder"
+                    "providerOrder",
+                    "hostAttested"
                   ]
                 },
                 "factCount": {
@@ -243801,7 +243805,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                         "catchPayment",
                         "hostImport",
                         "hostEstimate",
-                        "providerOrder"
+                        "providerOrder",
+                        "hostAttested"
                       ]
                     },
                     "amountMinor": {
@@ -243864,7 +243869,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                   "catchPayment",
                   "hostImport",
                   "hostEstimate",
-                  "providerOrder"
+                  "providerOrder",
+                  "hostAttested"
                 ]
               },
               "amountMinor": {
@@ -243897,7 +243903,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "catchPayment",
             "hostImport",
             "hostEstimate",
-            "providerOrder"
+            "providerOrder",
+            "hostAttested"
           ]
         },
         "amountMinor": {
@@ -244170,7 +244177,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                   "catchPayment",
                   "hostImport",
                   "hostEstimate",
-                  "providerOrder"
+                  "providerOrder",
+                  "hostAttested"
                 ]
               },
               "factCount": {
@@ -244216,7 +244224,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "catchPayment",
             "hostImport",
             "hostEstimate",
-            "providerOrder"
+            "providerOrder",
+            "hostAttested"
           ]
         },
         "factCount": {

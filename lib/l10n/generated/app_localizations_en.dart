@@ -13768,6 +13768,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersRevenueSourceEstimate => 'Estimated by your team';
 
   @override
+  String get hostCustomersRevenueSourceAttested => 'Confirmed by your team';
+
+  @override
   String get hostCustomersMessageOptionsLoading =>
       'Checking messaging options…';
 

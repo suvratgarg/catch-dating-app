@@ -98,7 +98,7 @@
     },
     "revenueSource": {
       "type": ["string", "null"],
-      "enum": ["hostImport", "hostEstimate", "providerOrder", null]
+      "enum": ["hostImport", "hostEstimate", "providerOrder", "hostAttested", null]
     },
     "revenueAllocation": {
       "type": ["string", "null"],

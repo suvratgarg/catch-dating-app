@@ -5999,7 +5999,12 @@ export interface OrganizerContactEventEdgeDocument {
   checkedInAt: FirebaseFirestore.Timestamp | null;
   revenueAmountMinor?: number | null;
   revenueCurrency?: string | null;
-  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueSource?:
+    | "hostImport"
+    | "hostEstimate"
+    | "providerOrder"
+    | "hostAttested"
+    | null;
   revenueAllocation?: "perAttendee" | "sharedOrder" | null;
   revenueOrderReference?: string | null;
   inviteLinkId?: string | null;
@@ -9017,7 +9022,12 @@ export interface EventAttendeeDocument {
    */
   revenueAmountMinor?: number | null;
   revenueCurrency?: string | null;
-  revenueSource?: "hostImport" | "hostEstimate" | "providerOrder" | null;
+  revenueSource?:
+    | "hostImport"
+    | "hostEstimate"
+    | "providerOrder"
+    | "hostAttested"
+    | null;
   revenueAllocation?: "perAttendee" | "sharedOrder" | null;
   revenueOrderReference?: string | null;
   /**

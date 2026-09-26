@@ -438,3 +438,28 @@ test(importedRevenueTestName, () => {
     allocation: "sharedOrder",
   }]);
 });
+
+test("attested manual offer payments aggregate as reported revenue",
+  () => {
+    const result = summarizeContactRevenueFacts({
+      coverage: "exact",
+      facts: [{
+        eventId: "event-1",
+        currency: "INR",
+        amountMinor: 500,
+        source: "hostAttested",
+        factCount: 1,
+        allocation: "perAttendee",
+      }],
+    });
+    assert.equal(result.revenue.amounts[0].amountMinor, 500);
+    assert.equal(
+      result.revenue.amounts[0].sources[0].source, "hostAttested");
+    assert.deepEqual(result.byEvent.get("event-1"), [{
+      currency: "INR",
+      amountMinor: 500,
+      source: "hostAttested",
+      factCount: 1,
+      allocation: "perAttendee",
+    }]);
+  });

@@ -146,7 +146,8 @@ export interface GetOrganizerContactDetailCallableResponse {
           | "catchPayment"
           | "hostImport"
           | "hostEstimate"
-          | "providerOrder";
+          | "providerOrder"
+          | "hostAttested";
         amountMinor: number;
         factCount: number;
       }[];
@@ -194,7 +195,12 @@ export interface GetOrganizerContactDetailCallableResponse {
     revenues: {
       currency: string;
       amountMinor: number;
-      source: "catchPayment" | "hostImport" | "hostEstimate" | "providerOrder";
+      source:
+        | "catchPayment"
+        | "hostImport"
+        | "hostEstimate"
+        | "providerOrder"
+        | "hostAttested";
       factCount: number;
       allocation: "perAttendee" | "sharedOrder";
     }[];

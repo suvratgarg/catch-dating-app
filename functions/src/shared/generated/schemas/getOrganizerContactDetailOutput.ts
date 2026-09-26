@@ -581,7 +581,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                         "catchPayment",
                         "hostImport",
                         "hostEstimate",
-                        "providerOrder"
+                        "providerOrder",
+                        "hostAttested"
                       ]
                     },
                     "amountMinor": {
@@ -766,7 +767,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                     "catchPayment",
                     "hostImport",
                     "hostEstimate",
-                    "providerOrder"
+                    "providerOrder",
+                    "hostAttested"
                   ]
                 },
                 "factCount": {
@@ -2839,7 +2841,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                         "catchPayment",
                         "hostImport",
                         "hostEstimate",
-                        "providerOrder"
+                        "providerOrder",
+                        "hostAttested"
                       ]
                     },
                     "amountMinor": {
@@ -2902,7 +2905,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                   "catchPayment",
                   "hostImport",
                   "hostEstimate",
-                  "providerOrder"
+                  "providerOrder",
+                  "hostAttested"
                 ]
               },
               "amountMinor": {
@@ -2935,7 +2939,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "catchPayment",
             "hostImport",
             "hostEstimate",
-            "providerOrder"
+            "providerOrder",
+            "hostAttested"
           ]
         },
         "amountMinor": {
@@ -3208,7 +3213,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                   "catchPayment",
                   "hostImport",
                   "hostEstimate",
-                  "providerOrder"
+                  "providerOrder",
+                  "hostAttested"
                 ]
               },
               "factCount": {
@@ -3254,7 +3260,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "catchPayment",
             "hostImport",
             "hostEstimate",
-            "providerOrder"
+            "providerOrder",
+            "hostAttested"
           ]
         },
         "factCount": {

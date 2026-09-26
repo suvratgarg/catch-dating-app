@@ -21486,6 +21486,12 @@ abstract class AppLocalizations {
   /// **'Estimated by your team'**
   String get hostCustomersRevenueSourceEstimate;
 
+  /// Host-attested manual payment provenance label for offer payments the organizer confirmed receiving outside Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed by your team'**
+  String get hostCustomersRevenueSourceAttested;
+
   /// Loading state for the server-derived customer communication plan.
   ///
   /// In en, this message translates to:

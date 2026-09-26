@@ -30152,7 +30152,7 @@ abstract final class CatchContractConstraints {
   static const eventAttendeeDocumentRevenueSource = CatchContractFieldConstraints(
     path: 'eventAttendeeDocument.revenueSource',
     valueTypes: <String>['string'],
-    enumValues: <String>['hostImport', 'hostEstimate', 'providerOrder'],
+    enumValues: <String>['hostImport', 'hostEstimate', 'providerOrder', 'hostAttested'],
   );
 
   static const eventAttendeeDocumentSearchName = CatchContractFieldConstraints(
@@ -66831,7 +66831,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.events.items.revenues.items.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchPayment', 'hostImport', 'hostEstimate', 'providerOrder'],
+    enumValues: <String>['catchPayment', 'hostImport', 'hostEstimate', 'providerOrder', 'hostAttested'],
   );
 
   static const getOrganizerContactDetailCallableResponseEventsItemsSource = CatchContractFieldConstraints(
@@ -67133,7 +67133,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.revenue.amounts.items.sources.items.source',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchPayment', 'hostImport', 'hostEstimate', 'providerOrder'],
+    enumValues: <String>['catchPayment', 'hostImport', 'hostEstimate', 'providerOrder', 'hostAttested'],
   );
 
   static const getOrganizerContactDetailCallableResponseRevenueCoverage = CatchContractFieldConstraints(
@@ -84564,7 +84564,7 @@ abstract final class CatchContractConstraints {
   static const organizerContactEventEdgeDocumentRevenueSource = CatchContractFieldConstraints(
     path: 'organizerContactEventEdgeDocument.revenueSource',
     valueTypes: <String>['string'],
-    enumValues: <String>['hostImport', 'hostEstimate', 'providerOrder'],
+    enumValues: <String>['hostImport', 'hostEstimate', 'providerOrder', 'hostAttested'],
   );
 
   static const organizerContactEventEdgeDocumentRevision = CatchContractFieldConstraints(

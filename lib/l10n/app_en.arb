@@ -21300,6 +21300,8 @@
   "@hostCustomersRevenueSourceImport": {"description": "Organizer-imported revenue provenance label.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
   "hostCustomersRevenueSourceEstimate": "Estimated by your team",
   "@hostCustomersRevenueSourceEstimate": {"description": "Organizer-entered unverified revenue provenance label.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
+  "hostCustomersRevenueSourceAttested": "Confirmed by your team",
+  "@hostCustomersRevenueSourceAttested": {"description": "Host-attested manual payment provenance label for offer payments the organizer confirmed receiving outside Catch.", "x-audience": "host", "x-owner": "legal", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessageOptionsLoading": "Checking messaging options…",
   "@hostCustomersMessageOptionsLoading": {"description": "Loading state for the server-derived customer communication plan.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostCustomersMessageOptionsUnavailable": "Messaging options unavailable",

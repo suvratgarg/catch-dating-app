@@ -584,6 +584,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                         'hostImport',
                         'hostEstimate',
                         'providerOrder',
+                        'hostAttested',
                       ],
                     },
                     'amountMinor': <String, Object?>{
@@ -769,6 +770,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                     'hostImport',
                     'hostEstimate',
                     'providerOrder',
+                    'hostAttested',
                   ],
                 },
                 'factCount': <String, Object?>{
@@ -2842,6 +2844,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                         'hostImport',
                         'hostEstimate',
                         'providerOrder',
+                        'hostAttested',
                       ],
                     },
                     'amountMinor': <String, Object?>{
@@ -2905,6 +2908,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                   'hostImport',
                   'hostEstimate',
                   'providerOrder',
+                  'hostAttested',
                 ],
               },
               'amountMinor': <String, Object?>{
@@ -2938,6 +2942,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'hostImport',
             'hostEstimate',
             'providerOrder',
+            'hostAttested',
           ],
         },
         'amountMinor': <String, Object?>{
@@ -3211,6 +3216,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                   'hostImport',
                   'hostEstimate',
                   'providerOrder',
+                  'hostAttested',
                 ],
               },
               'factCount': <String, Object?>{
@@ -3257,6 +3263,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'hostImport',
             'hostEstimate',
             'providerOrder',
+            'hostAttested',
           ],
         },
         'factCount': <String, Object?>{
