@@ -19,16 +19,18 @@ class OrganizerMomentsEntryField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.nav(
-      copy: catchFieldCopy(context.l10n),
-      title: context.l10n.hostMomentsManageEntryTitle,
-      body: context.l10n.hostMomentsManageEntryBody,
-      icon: CatchIcons.autoAwesomeOutlined,
-      emphasis: CatchFieldEmphasis.title,
-      onTap: () => context.pushNamed(
-        Routes.hostAppEventMomentsScreen.name,
-        pathParameters: {'clubId': clubId, 'eventId': event.id},
-        extra: event,
+    return CatchFieldLanes.single(
+      child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
+        title: context.l10n.hostMomentsManageEntryTitle,
+        body: context.l10n.hostMomentsManageEntryBody,
+        icon: CatchIcons.autoAwesomeOutlined,
+        emphasis: CatchFieldEmphasis.title,
+        onTap: () => context.pushNamed(
+          Routes.hostAppEventMomentsScreen.name,
+          pathParameters: {'clubId': clubId, 'eventId': event.id},
+          extra: event,
+        ),
       ),
     );
   }
