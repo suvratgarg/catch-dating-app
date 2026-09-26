@@ -417,6 +417,13 @@
       "reason": "Covered by screen.host.event.manage as the rendered least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
     },
     {
+      "routeId": "hostWorkScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.host.work",
+      "reason": "Covered by screen.host.work as the unified staff assignment picker for event and program scopes."
+    },
+    {
       "routeId": "hostWorkProgramScreen",
       "status": "contracted",
       "priority": "P1",

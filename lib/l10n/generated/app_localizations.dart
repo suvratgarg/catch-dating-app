@@ -31370,6 +31370,114 @@ abstract class AppLocalizations {
   /// **'Rehearse this event'**
   String get hostTodayRehearseThisEvent;
 
+  /// Unified staff work shell title.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get hostWorkShellTitle;
+
+  /// Unified staff work shell subtitle under the top bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Your staff assignments'**
+  String get hostWorkShellSubtitle;
+
+  /// Empty state title when the account holds no live staff assignments.
+  ///
+  /// In en, this message translates to:
+  /// **'No assignments yet'**
+  String get hostWorkShellEmptyTitle;
+
+  /// Empty state body for the staff work shell.
+  ///
+  /// In en, this message translates to:
+  /// **'When an organizer grants you duties for an event or program, they show up here.'**
+  String get hostWorkShellEmptyMessage;
+
+  /// Assignment scope label for a single event.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get hostWorkAssignmentKindEvent;
+
+  /// Assignment scope label for a multi-day program.
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get hostWorkAssignmentKindProgram;
+
+  /// Staff grant expiry shown on an assignment row.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends {date}'**
+  String hostWorkAssignmentExpires({required Object date});
+
+  /// Duty label: program coordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinator'**
+  String get hostWorkDutyProgramCoordinator;
+
+  /// Duty label: guest relations desk.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest relations'**
+  String get hostWorkDutyGuestRelations;
+
+  /// Duty label: program communications.
+  ///
+  /// In en, this message translates to:
+  /// **'Communications'**
+  String get hostWorkDutyCommunications;
+
+  /// Duty label: function door check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in'**
+  String get hostWorkDutyFunctionCheckIn;
+
+  /// Duty label: function lead.
+  ///
+  /// In en, this message translates to:
+  /// **'Function lead'**
+  String get hostWorkDutyFunctionLead;
+
+  /// Duty label: airport or station greeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport greeter'**
+  String get hostWorkDutyAirportGreeter;
+
+  /// Duty label: hotel welcome desk.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk'**
+  String get hostWorkDutyHotelDesk;
+
+  /// Duty label: transport dispatcher.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatcher'**
+  String get hostWorkDutyTransportDispatcher;
+
+  /// Duty label: reconciliation viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconciliation'**
+  String get hostWorkDutyReconciliationViewer;
+
+  /// Duty label: counts-only stakeholder viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewer'**
+  String get hostWorkDutyStakeholderViewer;
+
+  /// Duty label: single-event lead.
+  ///
+  /// In en, this message translates to:
+  /// **'Event lead'**
+  String get hostWorkDutyEventLead;
+
   /// Dress rehearsal entry and optional configuration: EntryUpcoming.
   ///
   /// In en, this message translates to:

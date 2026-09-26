@@ -19677,6 +19677,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayRehearseThisEvent => 'Rehearse this event';
 
   @override
+  String get hostWorkShellTitle => 'Work';
+
+  @override
+  String get hostWorkShellSubtitle => 'Your staff assignments';
+
+  @override
+  String get hostWorkShellEmptyTitle => 'No assignments yet';
+
+  @override
+  String get hostWorkShellEmptyMessage =>
+      'When an organizer grants you duties for an event or program, they show up here.';
+
+  @override
+  String get hostWorkAssignmentKindEvent => 'Event';
+
+  @override
+  String get hostWorkAssignmentKindProgram => 'Program';
+
+  @override
+  String hostWorkAssignmentExpires({required Object date}) {
+    return 'Ends $date';
+  }
+
+  @override
+  String get hostWorkDutyProgramCoordinator => 'Coordinator';
+
+  @override
+  String get hostWorkDutyGuestRelations => 'Guest relations';
+
+  @override
+  String get hostWorkDutyCommunications => 'Communications';
+
+  @override
+  String get hostWorkDutyFunctionCheckIn => 'Check-in';
+
+  @override
+  String get hostWorkDutyFunctionLead => 'Function lead';
+
+  @override
+  String get hostWorkDutyAirportGreeter => 'Airport greeter';
+
+  @override
+  String get hostWorkDutyHotelDesk => 'Hotel desk';
+
+  @override
+  String get hostWorkDutyTransportDispatcher => 'Dispatcher';
+
+  @override
+  String get hostWorkDutyReconciliationViewer => 'Reconciliation';
+
+  @override
+  String get hostWorkDutyStakeholderViewer => 'Viewer';
+
+  @override
+  String get hostWorkDutyEventLead => 'Event lead';
+
+  @override
   String get hostRehearsalEntryUpcoming => 'Rehearse your next event';
 
   @override

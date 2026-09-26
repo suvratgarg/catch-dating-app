@@ -12480,6 +12480,63 @@
       "nextPass": "programs-arrivals-design-parity-01",
       "screens": [
         {
+          "id": "host.work",
+          "routeId": "hostWorkScreen",
+          "implementationPaths": [
+            "lib/hosts/work/presentation/host_work_screen.dart",
+            "lib/hosts/work/data/host_work_repository.dart",
+            "lib/hosts/work/domain/host_work_assignment.dart"
+          ],
+          "componentIds": [
+            "catch.empty_state",
+            "catch.field",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.program-rollout-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/program_operations_rollout_spec.md",
+              "notes": "Unified host work shell entry and duty-driven destination access are specified in the rollout spec."
+            }
+          ],
+          "states": [
+            {
+              "id": "assignments_loading",
+              "kind": "loading",
+              "status": "implemented",
+              "notes": "Loading viewport while hostWorkAssignmentsProvider resolves."
+            },
+            {
+              "id": "assignments_error",
+              "kind": "error",
+              "status": "implemented",
+              "notes": "Localized error state with retry."
+            },
+            {
+              "id": "assignments_empty",
+              "kind": "empty",
+              "status": "implemented",
+              "notes": "No live grants render the assignment empty state."
+            },
+            {
+              "id": "assignment_picker",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "Assignments grouped by organizer with kind, duty, and expiry summaries."
+            },
+            {
+              "id": "assignment_forward",
+              "kind": "populated",
+              "status": "implemented",
+              "notes": "A lone workShell assignment forwards straight into its scoped workspace."
+            }
+          ]
+        },
+        {
           "id": "programs.work",
           "routeId": "hostWorkProgramScreen",
           "implementationPaths": [

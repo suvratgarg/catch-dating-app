@@ -1292,6 +1292,12 @@
       "status": "planned",
       "priority": "P2",
       "reason": "Own-account WhatsApp consent and withdrawal have focused controller/widget coverage; canonical marketing capture registration remains planned."
+    },
+    {
+      "routeId": "hostWorkScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "The unified staff assignment picker is implemented with loading/error/empty/picker states; captures remain planned until an authenticated staff fixture is admitted to the canonical capture catalog."
     }
   ]
 }

@@ -54,6 +54,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/work/presentation/host_work_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
@@ -127,27 +128,6 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
     ),
   };
 }
-
-const _fromQueryParam = 'from';
-const _onboardingIntentQueryParam = 'intent';
-const _completeProfileIntent = 'complete-profile';
-const _completeRunPreferencesIntent = 'complete-run-preferences';
-const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
-
-@visibleForTesting
-// keepalive: initial app location is startup routing state consumed by the
-// app-wide keepAlive GoRouter provider.
-@Riverpod(keepAlive: true)
-String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
-
-// keepalive: GoRouter is the app-wide navigation graph and owns route refresh
-// listeners for auth/update state.
-@Riverpod(keepAlive: true)
-GoRouter consumerGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: false);
-
-// keepalive: Host navigation is the app-wide route graph for the Host root.
-@Riverpod(keepAlive: true)
-GoRouter hostGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: true);
 
 /// Compatibility provider for test harnesses that intentionally exercise both
 /// role graphs in one Dart process. Installable app roots use one of the two
@@ -531,6 +511,11 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostOperatorEventScreen.name,
       builder: (context, state) =>
           HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkScreen.path,
+      name: Routes.hostWorkScreen.name,
+      builder: (context, state) => const HostWorkScreen(),
     ),
     GoRoute(
       path: Routes.hostWorkProgramScreen.path,
@@ -1073,10 +1058,6 @@ StatefulShellRoute _hostShellRoute(
 }
 
 // Minimal ChangeNotifier used as GoRouter's refreshListenable.
-class _RouterRefreshNotifier extends ChangeNotifier {
-  void notify() => notifyListeners();
-}
-
 // Keep these widget factories at their original source identity for inventory.
 // The GoRoute declarations above remain in their owning shell branches.
 // Detail page transitions are implemented in detail_route_pages.dart.
