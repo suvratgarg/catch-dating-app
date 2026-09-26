@@ -29,6 +29,7 @@ const _work = {
   'grantExpiresAtMillis': null,
   'capabilities': ['arrivalsTransport'],
   'pickupPoints': [],
+    'functions': [],
   'hotels': [],
   'vehicleClasses': [],
 };

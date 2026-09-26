@@ -418,6 +418,15 @@
       "occurrences": 3
     },
     {
+      "path": "lib/programs/presentation/program_door_screen.dart",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
+      "leading": "back",
+      "occurrences": 3
+    },
+    {
       "path": "lib/programs/presentation/program_dispatch_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",

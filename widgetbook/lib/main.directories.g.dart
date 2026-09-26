@@ -527,6 +527,8 @@ import 'package:widgetbook_workspace/profiles/catalog/tabs.dart'
     as _widgetbook_workspace_profiles_catalog_tabs;
 import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
+import 'package:widgetbook_workspace/programs/door_use_cases.dart'
+    as _widgetbook_workspace_programs_door_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -12358,6 +12360,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Sheet states',
                 builder: _widgetbook_workspace_programs_use_cases
                     .programDispatchSheetStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program door',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorAttendanceBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Badge states',
+                builder: _widgetbook_workspace_programs_door_use_cases
+                    .programDoorAttendanceBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorGuestRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_door_use_cases
+                    .programDoorGuestRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_door_use_cases
+                    .programDoorPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDoorPartySizeSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_door_use_cases
+                    .programDoorPartySizeSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionDoorScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_door_use_cases
+                    .programDoorScreenStates,
               ),
             ],
           ),

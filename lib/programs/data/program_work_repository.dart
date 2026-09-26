@@ -13,6 +13,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_work_repository.g.dart';
+part 'program_work_repository_door.dart';
 
 /// Operational program surface: work access, arrivals roster, transport
 /// plan, readiness claims, dispatch, trip lifecycle and hotel inbound.

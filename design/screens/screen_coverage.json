@@ -445,6 +445,13 @@
       "reason": "Covered by screen.programs.hotel_desk as the hotel-scoped inbound view."
     },
     {
+      "routeId": "hostWorkDoorScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.door",
+      "reason": "Covered by screen.programs.door as the function-scoped door check-in roster."
+    },
+    {
       "routeId": "hostWorkTripsScreen",
       "status": "contracted",
       "priority": "P1",

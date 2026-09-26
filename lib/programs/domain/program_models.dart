@@ -6,6 +6,7 @@
 library;
 
 part 'program_access_models.dart';
+part 'program_door_models.dart';
 
 enum TravelLegReadiness {
   expected,

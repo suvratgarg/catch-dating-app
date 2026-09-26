@@ -62,6 +62,7 @@ import 'package:catch_dating_app/payments/presentation/payment_confirmation_scre
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
@@ -134,12 +135,6 @@ const _completeProfileIntent = 'complete-profile';
 const _completeRunPreferencesIntent = 'complete-run-preferences';
 const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
 
-@visibleForTesting
-// keepalive: initial app location is startup routing state consumed by the
-// app-wide keepAlive GoRouter provider.
-@Riverpod(keepAlive: true)
-String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
-
 // keepalive: GoRouter is the app-wide navigation graph and owns route refresh
 // listeners for auth/update state.
 @Riverpod(keepAlive: true)
@@ -148,15 +143,6 @@ GoRouter consumerGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: false);
 // keepalive: Host navigation is the app-wide route graph for the Host root.
 @Riverpod(keepAlive: true)
 GoRouter hostGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: true);
-
-/// Compatibility provider for test harnesses that intentionally exercise both
-/// role graphs in one Dart process. Installable app roots use one of the two
-/// compile-time role providers above.
-// keepalive: compatibility tests need one stable role-selected router graph.
-@Riverpod(keepAlive: true)
-GoRouter goRouter(Ref ref) {
-  return _buildGoRouter(ref, isHostApp: AppConfig.appRole.isHost);
-}
 
 GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   final notifier = _RouterRefreshNotifier();
@@ -564,6 +550,15 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       builder: (context, state) => ProgramHotelDeskScreen(
         programId: state.pathParameters['programId']!,
         hotelId: state.pathParameters['hotelId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkDoorScreen.path,
+      name: Routes.hostWorkDoorScreen.name,
+      builder: (context, state) => ProgramFunctionDoorScreen(
+        programId: state.pathParameters['programId']!,
+        functionId: state.pathParameters['functionId']!,
+        functionName: state.uri.queryParameters['function'],
       ),
     ),
     GoRoute(

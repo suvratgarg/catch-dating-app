@@ -60,12 +60,21 @@ final _access = ProgramWorkAccess(
       duty: ProgramStaffDuty.airportGreeter,
       pickupPointIds: {'del_t3'},
       hotelIds: {},
+      functionIds: {},
       expiresAt: _now.add(const Duration(hours: 8)),
     ),
     ProgramDutyAssignment(
       duty: ProgramStaffDuty.transportDispatcher,
       pickupPointIds: {'del_t3'},
       hotelIds: {},
+      functionIds: {},
+      expiresAt: _now.add(const Duration(hours: 8)),
+    ),
+    ProgramDutyAssignment(
+      duty: ProgramStaffDuty.functionCheckIn,
+      pickupPointIds: {},
+      hotelIds: {},
+      functionIds: {'fn_sangeet'},
       expiresAt: _now.add(const Duration(hours: 8)),
     ),
   ],
@@ -81,6 +90,19 @@ final _access = ProgramWorkAccess(
     ),
   ],
   hotels: const [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+  functions: [
+    ProgramFunction(
+      functionId: 'fn_sangeet',
+      name: 'Sangeet',
+      venueName: 'The Leela Ballroom',
+      startsAt: _now.add(const Duration(hours: 3)),
+      endsAt: _now.add(const Duration(hours: 6)),
+      checkInEnabled: true,
+      status: ProgramFunctionStatus.scheduled,
+      expectedCount: 12,
+      checkedInCount: 4,
+    ),
+  ],
   vehicleClasses: _vehicleClasses,
 );
 
@@ -274,6 +296,36 @@ class _PreviewMutator implements ProgramOperationsMutator {
     revision: 1,
     alreadyApplied: false,
     passengerCount: 0,
+  );
+
+  @override
+  Future<ProgramDoorJournalBatch> recordDoorAction({
+    required String programId,
+    required String functionId,
+    required Map<String, Object?> operation,
+  }) async => const ProgramDoorJournalBatch(
+    entityId: 'fn',
+    revision: 2,
+    results: [],
+    appendedCount: 1,
+    duplicateCount: 0,
+    rejectedCount: 0,
+    alreadyApplied: false,
+  );
+
+  @override
+  Future<ProgramMutationResult> createWalkIn({
+    required String programId,
+    required String functionId,
+    required String displayName,
+    required DateTime occurredAt,
+    required String clientOperationId,
+    int? partySize,
+    String? note,
+  }) async => const ProgramMutationResult(
+    entityId: 'guest',
+    revision: 1,
+    alreadyApplied: false,
   );
 }
 

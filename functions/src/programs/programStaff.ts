@@ -38,6 +38,7 @@ import {normalizeRosterPhone} from "../events/eventAttendees";
 import {eventStaffDisplayName, resolveStaffAuthUser} from
   "../events/eventStaff";
 import type {
+  ProgramFunctionDocument,
   ProgramHotelDocument,
   ProgramPickupPointDocument,
   ProgramStaffGrantDocument,
@@ -115,14 +116,36 @@ export async function getProgramWorkAccessHandler(
       "pickupPointIds");
   const hotelScope = access.role === "manager" ? null :
     unionScope(access.grant!.duties, "hotelIds");
+  // Function surfaces exist only for door duties; other staff never pay the
+  // function query and always read an empty list. An empty scope set loads
+  // nothing; null means unrestricted.
+  const doorDuties = access.grant?.duties.filter((duty) =>
+    duty.duty === "functionCheckIn" || duty.duty === "functionLead" ||
+    duty.duty === "programCoordinator") ?? [];
+  const functionScope = access.role === "manager" ? null :
+    unionScope(doorDuties, "functionIds");
   const common = {db, programId: data.programId,
     organizerId: program.organizerId};
-  const [pickups, destinations] = await Promise.all([
+  const [pickups, destinations, functionRows] = await Promise.all([
     loadWorkResources<ProgramPickupPointDocument>({...common,
       collection: "programPickupPoints", scope: pickupScope, cap: 32}),
     loadWorkResources<ProgramHotelDocument>({...common,
       collection: "programHotels", scope: hotelScope, cap: 64}),
+    loadWorkFunctions({...common, scope: functionScope, cap: 40}),
   ]);
+  const functions = functionRows
+    .sort((a, b) => a.doc.startsAt.toMillis() - b.doc.startsAt.toMillis())
+    .map(({id, doc}) => ({
+      functionId: id,
+      name: doc.name,
+      venueName: doc.venueName,
+      startsAtMillis: doc.startsAt.toMillis(),
+      endsAtMillis: doc.endsAt.toMillis(),
+      checkInEnabled: doc.checkInEnabled ?? true,
+      status: doc.status,
+      expectedCount: doc.expectedCount ?? 0,
+      checkedInCount: doc.checkedInCount ?? 0,
+    }));
   const pickupPoints = pickups.map((entry) => ({
     pickupPointId: entry.id,
     label: entry.doc.label,
@@ -146,6 +169,7 @@ export async function getProgramWorkAccessHandler(
     capabilities: program.capabilities,
     pickupPoints,
     hotels,
+    functions,
     vehicleClasses: program.transportSettings.vehicleClasses,
   };
 }
@@ -182,6 +206,41 @@ async function loadWorkResources<
     throw new HttpsError("resource-exhausted",
       `This work view exceeds ${params.cap} active ${label}. ` +
       "Reduce active resources or narrow the staff scope.");
+  }
+  return resources;
+}
+
+/**
+ * Functions have no `active` flag — scope loads go by id, unrestricted loads
+ * page by programId+organizerId, and overflow is explicit like other
+ * resources.
+ */
+async function loadWorkFunctions(params: {
+  db: FirebaseFirestore.Firestore;
+  programId: string;
+  organizerId: string;
+  scope: Set<string> | null;
+  cap: number;
+}): Promise<Array<{id: string; doc: ProgramFunctionDocument}>> {
+  const collection = params.db.collection("programFunctions");
+  const docs = params.scope === null ? (await collection
+    .where("programId", "==", params.programId)
+    .where("organizerId", "==", params.organizerId)
+    .limit(params.cap + 1).get()).docs :
+    await Promise.all([...params.scope].sort().map((id) =>
+      collection.doc(id).get()));
+  const resources: Array<{id: string; doc: ProgramFunctionDocument}> = [];
+  for (const snap of docs) {
+    const doc = snap.data() as ProgramFunctionDocument | undefined;
+    if (doc && doc.programId === params.programId &&
+        doc.organizerId === params.organizerId) {
+      resources.push({id: snap.id, doc});
+    }
+  }
+  if (resources.length > params.cap) {
+    throw new HttpsError("resource-exhausted",
+      `This work view exceeds ${params.cap} functions. ` +
+      "Narrow the staff scope to fewer functions.");
   }
   return resources;
 }

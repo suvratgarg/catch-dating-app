@@ -768,3 +768,174 @@ final class ProgramTransportVendorsFamily extends $Family
   @override
   String toString() => r'programTransportVendorsProvider';
 }
+
+@ProviderFor(programFunctionDoorView)
+final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
+
+final class ProgramFunctionDoorViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramDoorView>,
+          ProgramDoorView,
+          FutureOr<ProgramDoorView>
+        >
+    with $FutureModifier<ProgramDoorView>, $FutureProvider<ProgramDoorView> {
+  ProgramFunctionDoorViewProvider._({
+    required ProgramFunctionDoorViewFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programFunctionDoorViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programFunctionDoorViewHash();
+
+  @override
+  String toString() {
+    return r'programFunctionDoorViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramDoorView> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramDoorView> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return programFunctionDoorView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramFunctionDoorViewProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programFunctionDoorViewHash() =>
+    r'f73a6dc0c0bbd06be491ede77e443b26c2281059';
+
+final class ProgramFunctionDoorViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<FutureOr<ProgramDoorView>, (String, String)> {
+  ProgramFunctionDoorViewFamily._()
+    : super(
+        retry: null,
+        name: r'programFunctionDoorViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProgramFunctionDoorViewProvider call(String programId, String functionId) =>
+      ProgramFunctionDoorViewProvider._(
+        argument: (programId, functionId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'programFunctionDoorViewProvider';
+}
+
+@ProviderFor(programFunctionDoorViewWithSnapshot)
+final programFunctionDoorViewWithSnapshotProvider =
+    ProgramFunctionDoorViewWithSnapshotFamily._();
+
+final class ProgramFunctionDoorViewWithSnapshotProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramReadView<ProgramDoorView>>,
+          ProgramReadView<ProgramDoorView>,
+          FutureOr<ProgramReadView<ProgramDoorView>>
+        >
+    with
+        $FutureModifier<ProgramReadView<ProgramDoorView>>,
+        $FutureProvider<ProgramReadView<ProgramDoorView>> {
+  ProgramFunctionDoorViewWithSnapshotProvider._({
+    required ProgramFunctionDoorViewWithSnapshotFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programFunctionDoorViewWithSnapshotProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$programFunctionDoorViewWithSnapshotHash();
+
+  @override
+  String toString() {
+    return r'programFunctionDoorViewWithSnapshotProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramReadView<ProgramDoorView>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramReadView<ProgramDoorView>> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return programFunctionDoorViewWithSnapshot(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramFunctionDoorViewWithSnapshotProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programFunctionDoorViewWithSnapshotHash() =>
+    r'033a5625589ab42a2286a690e161d5a8678b4c47';
+
+final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramReadView<ProgramDoorView>>,
+          (String, String)
+        > {
+  ProgramFunctionDoorViewWithSnapshotFamily._()
+    : super(
+        retry: null,
+        name: r'programFunctionDoorViewWithSnapshotProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProgramFunctionDoorViewWithSnapshotProvider call(
+    String programId,
+    String functionId,
+  ) => ProgramFunctionDoorViewWithSnapshotProvider._(
+    argument: (programId, functionId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'programFunctionDoorViewWithSnapshotProvider';
+}

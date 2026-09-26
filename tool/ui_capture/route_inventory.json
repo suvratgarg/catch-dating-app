@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "698940942f2ed3aefa3f926fa0064224add93bd730083de3951ddda9c0d24826",
-    "routeContractSha256": "daef38525c05b120c8ad5e1b377ba148d86fd860a55bf5f15ca1b3877702b338",
-    "goRouteCount": 100,
+    "normalizedFileSha256": "49d092d2aa4f2c429124820463b7ba6009940f7f468616b924f6215867cad5d1",
+    "routeContractSha256": "bf284b476980ec38cbf08dee5f4ffffc32e64703a6357e2539d69d04b6efe80f",
+    "goRouteCount": 101,
     "shellBranchCount": 9,
-    "enumRouteCount": 85,
-    "referencedRouteCount": 85,
-    "runtimeRouteCount": 85,
+    "enumRouteCount": 86,
+    "referencedRouteCount": 86,
+    "runtimeRouteCount": 86,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -1055,6 +1055,24 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkDoorScreen",
+      "path": "/host/work/:programId/door/:functionId",
+      "pathParameters": [
+        "programId",
+        "functionId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/door/:functionId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkDoorScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramFunctionDoorScreen(programId:state.pathParameters['programId']!,functionId:state.pathParameters['functionId']!,functionName:state.uri.queryParameters['function'])",
+      "presentationTarget": "ProgramFunctionDoorScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostWorkTripsScreen",
       "path": "/host/work/:programId/trips",
       "pathParameters": [
@@ -1588,6 +1606,7 @@
     "hostTodayScreen",
     "hostWorkArrivalsScreen",
     "hostWorkDispatchScreen",
+    "hostWorkDoorScreen",
     "hostWorkHotelScreen",
     "hostWorkProgramScreen",
     "hostWorkTripsScreen",
