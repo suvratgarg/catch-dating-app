@@ -1,7 +1,7 @@
 import type {ResolveOrganizerCommunicationPlanCallableResponse} from
   "../shared/generated/resolveOrganizerCommunicationPlanCallableResponse";
 
-export const organizerCommunicationPlanCapabilityVersion = 1;
+export const organizerCommunicationPlanCapabilityVersion = 2;
 
 export type IndividualCommunicationContactFacts = Readonly<{
   contactId: string;
@@ -10,6 +10,7 @@ export type IndividualCommunicationContactFacts = Readonly<{
   identityState: "unlinked" | "verified" | "ambiguous";
   ambiguousCandidateCount: number;
   phoneE164: string | null;
+  email: string | null;
   whatsappStatus: "unknown" | "optedIn" | "optedOut";
   whatsappAdminSuppressed: boolean;
 }>;
@@ -29,16 +30,19 @@ export function resolveIndividualCommunicationPlan(
 ): RecipientPlan {
   const catchChat = catchChatRoute(contact);
   const personalHandoff = personalHandoffRoute(contact);
+  const emailHandoff = emailHandoffRoute(contact);
   const recommended = catchChat.availability === "available" ? catchChat :
-    personalHandoff.availability === "available" ? personalHandoff : null;
+    personalHandoff.availability === "available" ? personalHandoff :
+      emailHandoff.availability === "available" ? emailHandoff : null;
   return {
     contactId: contact.contactId,
     displayName: contact.displayName,
     outcome: recommended?.routeId === "catchChat" ? "inCatch" :
-      recommended?.routeId === "personalWhatsappHandoff" ? "byHand" :
+      recommended?.routeId === "personalWhatsappHandoff" ||
+        recommended?.routeId === "personalEmailHandoff" ? "byHand" :
         "unavailable",
     recommendedRouteId: recommended?.routeId ?? null,
-    routes: [catchChat, personalHandoff],
+    routes: [catchChat, personalHandoff, emailHandoff],
   };
 }
 
@@ -65,6 +69,23 @@ function personalHandoffRoute(
       contact.whatsappStatus === "optedOut" ? "contactOptedOut" : null;
   return {
     routeId: "personalWhatsappHandoff",
+    executionMode: "externalHandoff",
+    availability: blocker === null ? "available" : "unavailable",
+    blocker,
+  };
+}
+
+/**
+ * Email is a handoff to the host's own mail app. Channel-state suppression
+ * only tracks the WhatsApp transport today, so availability depends solely
+ * on a recorded address.
+ */
+function emailHandoffRoute(
+  contact: IndividualCommunicationContactFacts
+): RouteOption {
+  const blocker = contact.email?.trim() ? null : "missingEmail";
+  return {
+    routeId: "personalEmailHandoff",
     executionMode: "externalHandoff",
     availability: blocker === null ? "available" : "unavailable",
     blocker,

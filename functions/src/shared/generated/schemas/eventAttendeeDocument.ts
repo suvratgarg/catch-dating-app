@@ -182,6 +182,7 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
         "hostImport",
         "hostEstimate",
         "providerOrder",
+        "hostAttested",
         null
       ]
     },

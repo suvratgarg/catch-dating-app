@@ -7,6 +7,7 @@ enum HostCustomerRevenueSource {
   hostImport,
   hostEstimate,
   providerOrder,
+  hostAttested,
 }
 
 enum HostCustomerEventOrigin { catchNative, externalCompanion, unknown }

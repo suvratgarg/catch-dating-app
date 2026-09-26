@@ -472,6 +472,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             ambiguousCandidateCount:
               contact.ambiguousCandidateContactIds?.length ?? 0,
             phoneE164: phone,
+            email: contact.email ?? null,
             whatsappStatus: optedOut ? "optedOut" : contact.whatsappStatus,
             whatsappAdminSuppressed: suppressed,
           });

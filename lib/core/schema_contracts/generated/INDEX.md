@@ -287,6 +287,7 @@ Do not edit it by hand.
 | OrganizerContactDocument | `firestore/organizer_contacts.schema.json` | `functions/src/shared/generated/organizerContactDocument.ts` |
 | OrganizerContactOriginDocument | `firestore/organizer_contact_origins.schema.json` | `functions/src/shared/generated/organizerContactOriginDocument.ts` |
 | OrganizerContactNoteDocument | `firestore/organizer_contact_notes.schema.json` | `functions/src/shared/generated/organizerContactNoteDocument.ts` |
+| OrganizerContactOutreachDocument | `firestore/organizer_contact_outreach.schema.json` | `functions/src/shared/generated/organizerContactOutreachDocument.ts` |
 | OrganizerContactTagVocabularyDocument | `firestore/organizer_contact_tag_vocabularies.schema.json` | `functions/src/shared/generated/organizerContactTagVocabularyDocument.ts` |
 | OrganizerSavedAudienceDocument | `firestore/organizer_saved_audiences.schema.json` | `functions/src/shared/generated/organizerSavedAudienceDocument.ts` |
 | OrganizerManualSendTaskDocument | `firestore/organizer_manual_send_tasks.schema.json` | `functions/src/shared/generated/organizerManualSendTaskDocument.ts` |
@@ -817,6 +818,8 @@ Do not edit it by hand.
 | CreateOrganizerContactNoteCallablePayload | `callables/create_organizer_contact_note_payload.schema.json` | `functions/src/shared/generated/createOrganizerContactNoteCallablePayload.ts` |
 | MutateOrganizerContactNoteCallablePayload | `callables/mutate_organizer_contact_note_payload.schema.json` | `functions/src/shared/generated/mutateOrganizerContactNoteCallablePayload.ts` |
 | OrganizerContactNoteCallableResponse | `callable_responses/organizer_contact_note_response.schema.json` | `functions/src/shared/generated/organizerContactNoteCallableResponse.ts` |
+| RecordOrganizerContactOutreachCallablePayload | `callables/record_organizer_contact_outreach_payload.schema.json` | `functions/src/shared/generated/recordOrganizerContactOutreachCallablePayload.ts` |
+| OrganizerContactOutreachCallableResponse | `callable_responses/organizer_contact_outreach_response.schema.json` | `functions/src/shared/generated/organizerContactOutreachCallableResponse.ts` |
 | ExportOrganizerContactsCallablePayload | `callables/export_organizer_contacts_payload.schema.json` | `functions/src/shared/generated/exportOrganizerContactsCallablePayload.ts` |
 | ExportOrganizerContactsCallableResponse | `callable_responses/export_organizer_contacts_response.schema.json` | `functions/src/shared/generated/exportOrganizerContactsCallableResponse.ts` |
 | MergeOrganizerContactsCallablePayload | `callables/merge_organizer_contacts_payload.schema.json` | `functions/src/shared/generated/mergeOrganizerContactsCallablePayload.ts` |
@@ -1201,6 +1204,7 @@ Do not edit it by hand.
 | `schemaOrganizerContactDocumentSchema` | OrganizerContactDocument | `firestore/organizer_contacts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_document.g.dart` |
 | `schemaOrganizerContactOriginDocumentSchema` | OrganizerContactOriginDocument | `firestore/organizer_contact_origins.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_origin_document.g.dart` |
 | `schemaOrganizerContactNoteDocumentSchema` | OrganizerContactNoteDocument | `firestore/organizer_contact_notes.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_note_document.g.dart` |
+| `schemaOrganizerContactOutreachDocumentSchema` | OrganizerContactOutreachDocument | `firestore/organizer_contact_outreach.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_outreach_document.g.dart` |
 | `schemaOrganizerContactTagVocabularyDocumentSchema` | OrganizerContactTagVocabularyDocument | `firestore/organizer_contact_tag_vocabularies.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_tag_vocabulary_document.g.dart` |
 | `schemaOrganizerSavedAudienceDocumentSchema` | OrganizerSavedAudienceDocument | `firestore/organizer_saved_audiences.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_saved_audience_document.g.dart` |
 | `schemaOrganizerManualSendTaskDocumentSchema` | OrganizerManualSendTaskDocument | `firestore/organizer_manual_send_tasks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_manual_send_task_document.g.dart` |
@@ -1731,6 +1735,8 @@ Do not edit it by hand.
 | `schemaCreateOrganizerContactNoteCallablePayloadSchema` | CreateOrganizerContactNoteCallablePayload | `callables/create_organizer_contact_note_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_organizer_contact_note_callable_payload.g.dart` |
 | `schemaMutateOrganizerContactNoteCallablePayloadSchema` | MutateOrganizerContactNoteCallablePayload | `callables/mutate_organizer_contact_note_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mutate_organizer_contact_note_callable_payload.g.dart` |
 | `schemaOrganizerContactNoteCallableResponseSchema` | OrganizerContactNoteCallableResponse | `callable_responses/organizer_contact_note_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_note_callable_response.g.dart` |
+| `schemaRecordOrganizerContactOutreachCallablePayloadSchema` | RecordOrganizerContactOutreachCallablePayload | `callables/record_organizer_contact_outreach_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_organizer_contact_outreach_callable_payload.g.dart` |
+| `schemaOrganizerContactOutreachCallableResponseSchema` | OrganizerContactOutreachCallableResponse | `callable_responses/organizer_contact_outreach_response.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_contact_outreach_callable_response.g.dart` |
 | `schemaExportOrganizerContactsCallablePayloadSchema` | ExportOrganizerContactsCallablePayload | `callables/export_organizer_contacts_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/export_organizer_contacts_callable_payload.g.dart` |
 | `schemaExportOrganizerContactsCallableResponseSchema` | ExportOrganizerContactsCallableResponse | `callable_responses/export_organizer_contacts_response.schema.json` | `lib/core/schema_contracts/generated/schemas/export_organizer_contacts_callable_response.g.dart` |
 | `schemaMergeOrganizerContactsCallablePayloadSchema` | MergeOrganizerContactsCallablePayload | `callables/merge_organizer_contacts_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/merge_organizer_contacts_callable_payload.g.dart` |
@@ -2134,6 +2140,7 @@ Do not edit it by hand.
 | MutateOrganizerContactCallableRequest | MutateOrganizerContactCallablePayload | `callables/mutate_organizer_contact_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mutate_organizer_contact_callable_request.g.dart` |
 | CreateOrganizerContactNoteCallableRequest | CreateOrganizerContactNoteCallablePayload | `callables/create_organizer_contact_note_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_contact_note_callable_request.g.dart` |
 | MutateOrganizerContactNoteCallableRequest | MutateOrganizerContactNoteCallablePayload | `callables/mutate_organizer_contact_note_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mutate_organizer_contact_note_callable_request.g.dart` |
+| RecordOrganizerContactOutreachCallableRequest | RecordOrganizerContactOutreachCallablePayload | `callables/record_organizer_contact_outreach_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_organizer_contact_outreach_callable_request.g.dart` |
 | ExportOrganizerContactsCallableRequest | ExportOrganizerContactsCallablePayload | `callables/export_organizer_contacts_payload.schema.json` | `lib/core/schema_contracts/generated/callables/export_organizer_contacts_callable_request.g.dart` |
 | MergeOrganizerContactsCallableRequest | MergeOrganizerContactsCallablePayload | `callables/merge_organizer_contacts_payload.schema.json` | `lib/core/schema_contracts/generated/callables/merge_organizer_contacts_callable_request.g.dart` |
 | ListOrganizerContactMergeCandidatesCallableRequest | ListOrganizerContactMergeCandidatesCallablePayload | `callables/list_organizer_contact_merge_candidates_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_organizer_contact_merge_candidates_callable_request.g.dart` |

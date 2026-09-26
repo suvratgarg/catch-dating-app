@@ -158,6 +158,7 @@ Map<String, Object?> crmContactDetailData() => <String, Object?>{
     'events': 'exact',
     'sends': 'exact',
     'replies': 'partial',
+    'outreach': 'exact',
     'replyObservation': 'catchAndManagedWhatsappOnly',
   },
   'activeMerges': [

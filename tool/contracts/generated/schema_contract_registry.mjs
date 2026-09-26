@@ -110187,6 +110187,155 @@ export const organizerContactNoteDocumentSchema = {
   }
 };
 
+export const organizerContactOutreachDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_contact_outreach.schema.json",
+  "title": "OrganizerContactOutreachDocument",
+  "description": "Manager-asserted outreach attempt on one organizer contact. Records are append-only through the manager-authorized record callable, appear on the contact timeline, and are excluded from contact exports.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerContactOutreach",
+  "x-firestore-path": "organizerContactOutreach/{outreachId}",
+  "x-document-id-field": "outreachId",
+  "x-owner": "manager-only organizer contact outreach callable",
+  "required": [
+    "organizerId",
+    "contactId",
+    "authorUid",
+    "channel",
+    "outcome",
+    "occurredAt",
+    "revision",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "phoneCall",
+        "whatsapp",
+        "email",
+        "sms",
+        "inPerson",
+        "other"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reached",
+        "noAnswer",
+        "leftMessage",
+        "wrongContact",
+        "attempted"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "occurredAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerContactTagVocabularyDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_tag_vocabularies.schema.json",
@@ -112366,7 +112515,8 @@ export const organizerAttentionItemDocumentSchema = {
         "formResponseReview",
         "inboxReply",
         "postEventReconciliation",
-        "momentStaffAttention"
+        "momentStaffAttention",
+        "eventOfferPaymentFollowUp"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json",
       "x-catch-ownership": "server-only"
@@ -112401,7 +112551,8 @@ export const organizerAttentionItemDocumentSchema = {
         "organizerFormResponses",
         "organizerWhatsappThreads",
         "eventAttendees",
-        "organizerMomentSends"
+        "organizerMomentSends",
+        "organizerEventOffers"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -113363,6 +113514,7 @@ export const organizerContactEventEdgeDocumentSchema = {
         "hostImport",
         "hostEstimate",
         "providerOrder",
+        "hostAttested",
         null
       ]
     },
@@ -132145,6 +132297,7 @@ export const eventAttendeeDocumentSchema = {
         "hostImport",
         "hostEstimate",
         "providerOrder",
+        "hostAttested",
         null
       ]
     },
@@ -239607,7 +239760,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "formResponseReview",
               "inboxReply",
               "postEventReconciliation",
-              "momentStaffAttention"
+              "momentStaffAttention",
+              "eventOfferPaymentFollowUp"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -239640,7 +239794,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "organizerFormResponses",
               "organizerWhatsappThreads",
               "eventAttendees",
-              "organizerMomentSends"
+              "organizerMomentSends",
+              "organizerEventOffers"
             ]
           },
           "sourceId": {
@@ -239843,8 +239998,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
     },
     "coverage": {
       "type": "array",
-      "minItems": 18,
-      "maxItems": 18,
+      "minItems": 19,
+      "maxItems": 19,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -239874,7 +240029,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "formResponseReview",
               "inboxReply",
               "postEventReconciliation",
-              "momentStaffAttention"
+              "momentStaffAttention",
+              "eventOfferPaymentFollowUp"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -241543,7 +241699,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                         "catchPayment",
                         "hostImport",
                         "hostEstimate",
-                        "providerOrder"
+                        "providerOrder",
+                        "hostAttested"
                       ]
                     },
                     "amountMinor": {
@@ -241728,7 +241885,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                     "catchPayment",
                     "hostImport",
                     "hostEstimate",
-                    "providerOrder"
+                    "providerOrder",
+                    "hostAttested"
                   ]
                 },
                 "factCount": {
@@ -242277,6 +242435,61 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                 "minimum": 0
               }
             }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "timelineId",
+              "channel",
+              "outcome",
+              "notePreview",
+              "occurredAtMillis"
+            ],
+            "properties": {
+              "kind": {
+                "const": "outreach"
+              },
+              "timelineId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "channel": {
+                "type": "string",
+                "enum": [
+                  "phoneCall",
+                  "whatsapp",
+                  "email",
+                  "sms",
+                  "inPerson",
+                  "other"
+                ]
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "reached",
+                  "noAnswer",
+                  "leftMessage",
+                  "wrongContact",
+                  "attempted"
+                ]
+              },
+              "notePreview": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "occurredAtMillis": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         ]
       }
@@ -242292,6 +242505,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "events",
         "sends",
         "replies",
+        "outreach",
         "replyObservation"
       ],
       "properties": {
@@ -242320,6 +242534,14 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           ]
         },
         "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "outreach": {
           "type": "string",
           "enum": [
             "exact",
@@ -242770,6 +242992,7 @@ export const getOrganizerContactDetailCallableResponseSchema = {
         "events",
         "sends",
         "replies",
+        "outreach",
         "replyObservation"
       ],
       "properties": {
@@ -242798,6 +243021,14 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           ]
         },
         "replies": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "outreach": {
           "type": "string",
           "enum": [
             "exact",
@@ -243087,6 +243318,61 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "minimum": 0
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "timelineId",
+            "channel",
+            "outcome",
+            "notePreview",
+            "occurredAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "outreach"
+            },
+            "timelineId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "channel": {
+              "type": "string",
+              "enum": [
+                "phoneCall",
+                "whatsapp",
+                "email",
+                "sms",
+                "inPerson",
+                "other"
+              ]
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "reached",
+                "noAnswer",
+                "leftMessage",
+                "wrongContact",
+                "attempted"
+              ]
+            },
+            "notePreview": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "occurredAtMillis": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       ]
     },
@@ -243359,6 +243645,61 @@ export const getOrganizerContactDetailCallableResponseSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "outreachTimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "timelineId",
+        "channel",
+        "outcome",
+        "notePreview",
+        "occurredAtMillis"
+      ],
+      "properties": {
+        "kind": {
+          "const": "outreach"
+        },
+        "timelineId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "phoneCall",
+            "whatsapp",
+            "email",
+            "sms",
+            "inPerson",
+            "other"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "reached",
+            "noAnswer",
+            "leftMessage",
+            "wrongContact",
+            "attempted"
+          ]
+        },
+        "notePreview": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 300
         },
         "occurredAtMillis": {
           "type": "integer",
@@ -243801,7 +244142,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                         "catchPayment",
                         "hostImport",
                         "hostEstimate",
-                        "providerOrder"
+                        "providerOrder",
+                        "hostAttested"
                       ]
                     },
                     "amountMinor": {
@@ -243864,7 +244206,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                   "catchPayment",
                   "hostImport",
                   "hostEstimate",
-                  "providerOrder"
+                  "providerOrder",
+                  "hostAttested"
                 ]
               },
               "amountMinor": {
@@ -243897,7 +244240,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "catchPayment",
             "hostImport",
             "hostEstimate",
-            "providerOrder"
+            "providerOrder",
+            "hostAttested"
           ]
         },
         "amountMinor": {
@@ -244170,7 +244514,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                   "catchPayment",
                   "hostImport",
                   "hostEstimate",
-                  "providerOrder"
+                  "providerOrder",
+                  "hostAttested"
                 ]
               },
               "factCount": {
@@ -244216,7 +244561,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "catchPayment",
             "hostImport",
             "hostEstimate",
-            "providerOrder"
+            "providerOrder",
+            "hostAttested"
           ]
         },
         "factCount": {
@@ -244356,6 +244702,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                 "type": "string",
                 "enum": [
                   "personalWhatsappHandoff",
+                  "personalEmailHandoff",
                   "organizerWhatsappCampaign",
                   "catchWhatsapp",
                   "catchChat",
@@ -244370,8 +244717,8 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
           },
           "routes": {
             "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
+            "minItems": 3,
+            "maxItems": 3,
             "items": {
               "type": "object",
               "additionalProperties": false,
@@ -244386,6 +244733,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                   "type": "string",
                   "enum": [
                     "personalWhatsappHandoff",
+                    "personalEmailHandoff",
                     "organizerWhatsappCampaign",
                     "catchWhatsapp",
                     "catchChat",
@@ -244415,6 +244763,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                         "catchAccountRequired",
                         "identityAmbiguous",
                         "missingPhone",
+                        "missingEmail",
                         "organizerSuppressed",
                         "contactOptedOut",
                         "permissionRequired",
@@ -244439,6 +244788,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
       "type": "string",
       "enum": [
         "personalWhatsappHandoff",
+        "personalEmailHandoff",
         "organizerWhatsappCampaign",
         "catchWhatsapp",
         "catchChat",
@@ -244452,6 +244802,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
         "catchAccountRequired",
         "identityAmbiguous",
         "missingPhone",
+        "missingEmail",
         "organizerSuppressed",
         "contactOptedOut",
         "permissionRequired",
@@ -244473,6 +244824,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
           "type": "string",
           "enum": [
             "personalWhatsappHandoff",
+            "personalEmailHandoff",
             "organizerWhatsappCampaign",
             "catchWhatsapp",
             "catchChat",
@@ -244502,6 +244854,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                 "catchAccountRequired",
                 "identityAmbiguous",
                 "missingPhone",
+                "missingEmail",
                 "organizerSuppressed",
                 "contactOptedOut",
                 "permissionRequired",
@@ -244552,6 +244905,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
               "type": "string",
               "enum": [
                 "personalWhatsappHandoff",
+                "personalEmailHandoff",
                 "organizerWhatsappCampaign",
                 "catchWhatsapp",
                 "catchChat",
@@ -244566,8 +244920,8 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
         },
         "routes": {
           "type": "array",
-          "minItems": 2,
-          "maxItems": 2,
+          "minItems": 3,
+          "maxItems": 3,
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -244582,6 +244936,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                 "type": "string",
                 "enum": [
                   "personalWhatsappHandoff",
+                  "personalEmailHandoff",
                   "organizerWhatsappCampaign",
                   "catchWhatsapp",
                   "catchChat",
@@ -244611,6 +244966,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                       "catchAccountRequired",
                       "identityAmbiguous",
                       "missingPhone",
+                      "missingEmail",
                       "organizerSuppressed",
                       "contactOptedOut",
                       "permissionRequired",
@@ -244927,6 +245283,153 @@ export const organizerContactNoteCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const recordOrganizerContactOutreachCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_organizer_contact_outreach_payload.schema.json",
+  "title": "RecordOrganizerContactOutreachCallablePayload",
+  "description": "Manager-authorized request to log one outreach attempt on an organizer contact. An omitted occurredAtMillis records the attempt at server receipt; explicit times may not be in the future.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "channel",
+    "outcome"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "phoneCall",
+        "whatsapp",
+        "email",
+        "sms",
+        "inPerson",
+        "other"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reached",
+        "noAnswer",
+        "leftMessage",
+        "wrongContact",
+        "attempted"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "occurredAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const organizerContactOutreachCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_contact_outreach_response.schema.json",
+  "title": "OrganizerContactOutreachCallableResponse",
+  "description": "Safe organizer contact outreach state returned after recording an attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "contactId",
+    "outreachId",
+    "channel",
+    "outcome",
+    "note",
+    "authorUid",
+    "occurredAtMillis",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "contactId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "outreachId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "phoneCall",
+        "whatsapp",
+        "email",
+        "sms",
+        "inPerson",
+        "other"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reached",
+        "noAnswer",
+        "leftMessage",
+        "wrongContact",
+        "attempted"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "authorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "occurredAtMillis": {
+      "type": "integer",
+      "minimum": 0
     },
     "createdAtMillis": {
       "type": "integer",
@@ -259100,7 +259603,7 @@ export const organizerFormTemplateCatalog = {
 export const hostAttentionPolicyCatalog = {
   "schemaVersion": 1,
   "kind": "hostAttentionPolicies",
-  "policyVersion": 3,
+  "policyVersion": 4,
   "horizonHours": 168,
   "immediateHours": 24,
   "soonHours": 72,
@@ -259482,6 +259985,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
       "readinessReason": "organizerMomentSends is a durable engine journal written at fire time."
+    },
+    {
+      "kind": "eventOfferPaymentFollowUp",
+      "scope": "event",
+      "sourceOwner": "organizerEventOffers",
+      "sourceIdPolicy": "Canonical event id grouping unpaid offered event offers.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of the sorted unpaid offer ids, generations, revisions, manual payment review states, offer times, amounts, currencies, and expiries.",
+      "triggerPredicate": "One or more offers for the event are still offered, require payment (paymentSnapshot.expectedAmountMinor > 0), have no hostAttestedReceived manual payment, and have not reached expiresAtMillis.",
+      "resolutionPredicate": "Every offer for the event is attested, admitted, withdrawn, expired, or otherwise leaves the offered-unpaid state.",
+      "permissionPredicate": "Caller is a canonical manager of the offer organizer; recipient contact details and payment links stay out of the projection.",
+      "consequence": "risksRevenue",
+      "dueAtPolicy": "Earliest unpaid offer due time: offeredAtMillis plus the immediate horizon, bounded by the offer expiry.",
+      "expiresAtPolicy": "Latest unpaid offer expiresAtMillis.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Offer status, payment snapshot, manual payment review, and expiry are canonical server-owned offer facts."
     }
   ]
 };

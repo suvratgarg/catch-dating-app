@@ -1,11 +1,31 @@
 part of 'host_form_response_detail_screen.dart';
 
+final RegExp _hostResponsePhoneE164Pattern = RegExp(r'^\+[1-9][0-9]{7,14}$');
+
 Uri? hostResponsePhoneUri(String? value) {
   final phone = value?.trim();
-  if (phone == null || !RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(phone)) {
+  if (phone == null || !_hostResponsePhoneE164Pattern.hasMatch(phone)) {
     return null;
   }
   return Uri.parse('tel:$phone');
+}
+
+Uri? hostResponseWhatsappUri({
+  required String? value,
+  required String? displayName,
+  required AppLocalizations l10n,
+}) {
+  final phone = value?.trim();
+  if (phone == null || !_hostResponsePhoneE164Pattern.hasMatch(phone)) {
+    return null;
+  }
+  final name = displayName?.trim();
+  final parameters = (name == null || name.isEmpty)
+      ? null
+      : <String, String>{
+          'text': l10n.hostCustomersWhatsappDefaultMessage(name: name),
+        };
+  return Uri.https('wa.me', '/${phone.substring(1)}', parameters);
 }
 
 Uri? hostResponseSocialUri(String? value, String domain) {
@@ -418,6 +438,17 @@ class HostResponseContactSection extends StatelessWidget {
           label: context.l10n.hostApplicationCall,
           icon: CatchIcons.phoneOutlined,
           uri: phone,
+        ),
+      if (hostResponseWhatsappUri(
+            value: outreach?.phoneE164 ?? identity?.phoneE164,
+            displayName: identity?.displayName,
+            l10n: context.l10n,
+          )
+          case final Uri whatsapp)
+        (
+          label: context.l10n.hostsHostOrganizerCrmWhatsapp,
+          icon: CatchIcons.chatBubbleOutlineRounded,
+          uri: whatsapp,
         ),
       if (outreach?.email ?? identity?.email case final String email)
         (

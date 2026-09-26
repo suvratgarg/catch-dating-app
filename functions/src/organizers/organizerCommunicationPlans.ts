@@ -86,6 +86,7 @@ export async function resolveOrganizerCommunicationPlanHandler(
     identityState: contact.identityState,
     ambiguousCandidateCount: contact.ambiguousCandidateContactIds.length,
     phoneE164: contact.phoneE164,
+    email: contact.email ?? null,
     whatsappStatus: contact.whatsappStatus,
     whatsappAdminSuppressed: channelState?.adminSuppressed === true,
   });

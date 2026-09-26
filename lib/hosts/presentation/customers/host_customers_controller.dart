@@ -423,6 +423,22 @@ class HostCustomersController {
     body: body,
   );
 
+  Future<HostCustomerOutreach> recordOutreach({
+    required String organizerId,
+    required String contactId,
+    required HostCustomerOutreachChannel channel,
+    required HostCustomerOutreachOutcome outcome,
+    String? note,
+    DateTime? occurredAt,
+  }) => _repository.recordContactOutreach(
+    organizerId: organizerId,
+    contactId: contactId,
+    channel: channel,
+    outcome: outcome,
+    note: note,
+    occurredAt: occurredAt,
+  );
+
   Future<HostCustomerNote> editNote({
     required String organizerId,
     required String contactId,

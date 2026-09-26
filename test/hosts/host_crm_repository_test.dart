@@ -206,6 +206,54 @@ void main() {
     },
   );
 
+  test('communication plan parses an email handoff recommendation', () {
+    final plan = HostCommunicationPlan.fromCallableData({
+      'organizerId': 'organizer-1',
+      'intent': 'individualConversation',
+      'capabilityVersion': 2,
+      'resolvedAtMillis': 1700000000000,
+      'recipients': [
+        {
+          'contactId': 'contact-1',
+          'displayName': 'Asha',
+          'outcome': 'byHand',
+          'recommendedRouteId': 'personalEmailHandoff',
+          'routes': [
+            {
+              'routeId': 'catchChat',
+              'executionMode': 'managedDelivery',
+              'availability': 'unavailable',
+              'blocker': 'catchAccountRequired',
+            },
+            {
+              'routeId': 'personalWhatsappHandoff',
+              'executionMode': 'externalHandoff',
+              'availability': 'unavailable',
+              'blocker': 'missingPhone',
+            },
+            {
+              'routeId': 'personalEmailHandoff',
+              'executionMode': 'externalHandoff',
+              'availability': 'available',
+              'blocker': null,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(
+      plan.singleRecipient.recommendedRouteId,
+      HostCommunicationRouteId.personalEmailHandoff,
+    );
+    expect(
+      plan.singleRecipient
+          .route(HostCommunicationRouteId.personalWhatsappHandoff)
+          .blocker,
+      HostCommunicationRouteBlocker.missingPhone,
+    );
+  });
+
   test('communication plan parser rejects contradictory route state', () {
     expect(
       () => HostCommunicationPlan.fromCallableData({

@@ -9960,6 +9960,27 @@ abstract class AppLocalizations {
   /// **'Review'**
   String get hostTodayAttentionReview;
 
+  /// Title for an unpaid event-offer follow-up task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect offer payments'**
+  String get hostTodayAttentionOfferPaymentTitle;
+
+  /// Body for an unpaid event-offer follow-up task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} offers for {eventName} are still waiting for payment.'**
+  String hostTodayAttentionOfferPaymentBody({
+    required Object count,
+    required Object eventName,
+  });
+
+  /// Action opening the event guest list for an unpaid offer follow-up task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guests'**
+  String get hostTodayAttentionOfferPaymentOpen;
+
   /// Title for a provider sync task on Host Today.
   ///
   /// In en, this message translates to:
@@ -21486,6 +21507,12 @@ abstract class AppLocalizations {
   /// **'Estimated by your team'**
   String get hostCustomersRevenueSourceEstimate;
 
+  /// Host-attested manual payment provenance label for offer payments the organizer confirmed receiving outside Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed by your team'**
+  String get hostCustomersRevenueSourceAttested;
+
   /// Loading state for the server-derived customer communication plan.
   ///
   /// In en, this message translates to:
@@ -21980,6 +22007,123 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notes are temporarily unavailable. Other customer details are still available.'**
   String get hostCustomersNotesUnavailableBody;
+
+  /// Customer history filter for logged outreach attempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Outreach'**
+  String get hostCustomersOutreach;
+
+  /// Opens the record-outreach sheet on a customer record.
+  ///
+  /// In en, this message translates to:
+  /// **'Log outreach'**
+  String get hostCustomersLogOutreach;
+
+  /// Explains what the record-outreach sheet saves.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a call, message or conversation you had with this person. It appears on their history.'**
+  String get hostCustomersLogOutreachBody;
+
+  /// Outreach channel picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel'**
+  String get hostCustomersOutreachChannelField;
+
+  /// Outreach outcome picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome'**
+  String get hostCustomersOutreachOutcomeField;
+
+  /// Outreach channel label in the record-outreach sheet and customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'{channel, select, phoneCall{Phone call} whatsapp{WhatsApp} email{Email} sms{Text message} inPerson{In person} other{Outreach}}'**
+  String hostCustomersOutreachChannel({required String channel});
+
+  /// Manager-asserted outreach outcome label in the record-outreach sheet and customer timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'{outcome, select, reached{Reached} noAnswer{No answer} leftMessage{Left a message} wrongContact{Wrong contact} attempted{Attempted} other{Outcome recorded}}'**
+  String hostCustomersOutreachOutcome({required String outcome});
+
+  /// Optional outreach note input title.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get hostCustomersOutreachNote;
+
+  /// Explicit channel and sender label for a personal-device email handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal email'**
+  String get hostCustomersEmailAppChannel;
+
+  /// Consequence of the derived personal email handoff route.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your email, then send it from your mail app.'**
+  String get hostCustomersMessagePersonEmail;
+
+  /// Personal email handoff blocker when the customer has no email address.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an email address to use an email handoff.'**
+  String get hostCustomersEmailMissingEmail;
+
+  /// Title for the personal email handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Email app'**
+  String get hostCustomersEmailHandoffTitle;
+
+  /// Recipient shown in the personal email handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {email}'**
+  String hostCustomersEmailHandoffSubtitle({
+    required String name,
+    required String email,
+  });
+
+  /// Disclosure for the untracked personal email handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens your email app on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.'**
+  String get hostCustomersEmailHandoffDisclosure;
+
+  /// Editable message field title in the personal email handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostCustomersEmailMessage;
+
+  /// Editable starter text for a personal email handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi {name},'**
+  String hostCustomersEmailDefaultMessage({required String name});
+
+  /// Launches the email app with the selected customer and editable text prefilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Open email'**
+  String get hostCustomersOpenEmail;
+
+  /// Failure shown when the personal email handoff cannot launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open an email app on this device.'**
+  String get hostCustomersEmailOpenFailed;
+
+  /// Failure after the external email app accepted a handoff but the durable acknowledgement failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email app opened, but Catch couldn’t record the attempt.'**
+  String get hostCustomersEmailRecordFailed;
 
   /// Dismiss a sheet whose selections already apply immediately.
   ///

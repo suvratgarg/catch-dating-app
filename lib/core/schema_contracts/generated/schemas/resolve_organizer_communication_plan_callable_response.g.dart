@@ -79,6 +79,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                 'type': 'string',
                 'enum': <Object?>[
                   'personalWhatsappHandoff',
+                  'personalEmailHandoff',
                   'organizerWhatsappCampaign',
                   'catchWhatsapp',
                   'catchChat',
@@ -93,8 +94,8 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
           },
           'routes': <String, Object?>{
             'type': 'array',
-            'minItems': 2,
-            'maxItems': 2,
+            'minItems': 3,
+            'maxItems': 3,
             'items': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -109,6 +110,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                   'type': 'string',
                   'enum': <Object?>[
                     'personalWhatsappHandoff',
+                    'personalEmailHandoff',
                     'organizerWhatsappCampaign',
                     'catchWhatsapp',
                     'catchChat',
@@ -138,6 +140,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                         'catchAccountRequired',
                         'identityAmbiguous',
                         'missingPhone',
+                        'missingEmail',
                         'organizerSuppressed',
                         'contactOptedOut',
                         'permissionRequired',
@@ -162,6 +165,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
       'type': 'string',
       'enum': <Object?>[
         'personalWhatsappHandoff',
+        'personalEmailHandoff',
         'organizerWhatsappCampaign',
         'catchWhatsapp',
         'catchChat',
@@ -175,6 +179,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
         'catchAccountRequired',
         'identityAmbiguous',
         'missingPhone',
+        'missingEmail',
         'organizerSuppressed',
         'contactOptedOut',
         'permissionRequired',
@@ -196,6 +201,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
           'type': 'string',
           'enum': <Object?>[
             'personalWhatsappHandoff',
+            'personalEmailHandoff',
             'organizerWhatsappCampaign',
             'catchWhatsapp',
             'catchChat',
@@ -225,6 +231,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                 'catchAccountRequired',
                 'identityAmbiguous',
                 'missingPhone',
+                'missingEmail',
                 'organizerSuppressed',
                 'contactOptedOut',
                 'permissionRequired',
@@ -275,6 +282,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
               'type': 'string',
               'enum': <Object?>[
                 'personalWhatsappHandoff',
+                'personalEmailHandoff',
                 'organizerWhatsappCampaign',
                 'catchWhatsapp',
                 'catchChat',
@@ -289,8 +297,8 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
         },
         'routes': <String, Object?>{
           'type': 'array',
-          'minItems': 2,
-          'maxItems': 2,
+          'minItems': 3,
+          'maxItems': 3,
           'items': <String, Object?>{
             'type': 'object',
             'additionalProperties': false,
@@ -305,6 +313,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                 'type': 'string',
                 'enum': <Object?>[
                   'personalWhatsappHandoff',
+                  'personalEmailHandoff',
                   'organizerWhatsappCampaign',
                   'catchWhatsapp',
                   'catchChat',
@@ -334,6 +343,7 @@ const schemaResolveOrganizerCommunicationPlanCallableResponseSchema = <String, O
                       'catchAccountRequired',
                       'identityAmbiguous',
                       'missingPhone',
+                      'missingEmail',
                       'organizerSuppressed',
                       'contactOptedOut',
                       'permissionRequired',
