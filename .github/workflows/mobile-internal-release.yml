@@ -570,15 +570,44 @@ jobs:
           trap 'rm -f "$asc_key_path"' EXIT
           /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_path"
           chmod 600 "$asc_key_path"
-          xcodebuild \
-            -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
-            -exportPath "$EXPORT_PATH" \
-            -exportOptionsPlist "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$asc_key_path" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+          export_log="$RUNNER_TEMP/${APP_ROLE}-ios-export.log"
+          max_attempts=3
+          for ((attempt = 1; attempt <= max_attempts; attempt++)); do
+            if xcodebuild \
+              -exportArchive \
+              -archivePath "$ARCHIVE_PATH" \
+              -exportPath "$EXPORT_PATH" \
+              -exportOptionsPlist "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist" \
+              -allowProvisioningUpdates \
+              -authenticationKeyPath "$asc_key_path" \
+              -authenticationKeyID "$ASC_KEY_ID" \
+              -authenticationKeyIssuerID "$ASC_ISSUER_ID" 2>&1 | tee "$export_log"; then
+              break
+            fi
+            if [[ "$attempt" -lt "$max_attempts" ]] && grep -q "correct format" "$export_log"; then
+              echo "::warning::Export attempt $attempt hit a transient App Store Connect response; retrying."
+              sleep 20
+              continue
+            fi
+            diag_dir="build/ios/release-evidence/${APP_ROLE}-export-diagnostics"
+            mkdir -p "$diag_dir"
+            cp "$export_log" "$diag_dir/export.log" 2>/dev/null || true
+            latest_logs="$(ls -td "$TMPDIR"/*.xcdistributionlogs 2>/dev/null | head -1)"
+            if [[ -n "${latest_logs:-}" ]]; then
+              cp -R "$latest_logs" "$diag_dir/"
+            fi
+            exit 1
+          done
+
+      - name: Upload iOS export diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-export-diagnostics-v1-${{ matrix.release_target }}-${{ needs.authorize.outputs.source_ci_run_id }}-${{ needs.authorize.outputs.source_ci_run_attempt }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ios/release-evidence/${{ env.APP_ROLE }}-export-diagnostics
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Verify exported release identity
         run: |

@@ -2245,6 +2245,22 @@ configuration, or unrelated network-looking errors. This keeps signed-package
 production resilient to an interrupted distribution download without masking
 deterministic product failures.
 
+The iOS `Export prod IPA` step applies the same policy shape to
+`xcodebuild -exportArchive`: at most three attempts with a 20-second delay,
+and only when the failed output contains the transient App Store Connect
+response signature `isn't in the correct format` (matched as `correct
+format`). Apple occasionally answers the export's provisioning negotiation
+with an unparseable response; the same archive, secrets, and code then export
+cleanly on a later attempt. Any other export error, and a persistent transient
+after three attempts, fails the step on first encounter or exhaustion. On a
+final failure the step preserves the export log and the newest
+`*.xcdistributionlogs` bundle under
+`build/ios/release-evidence/<role>-export-diagnostics`, uploaded as a 14-day
+failure-only `ios-export-diagnostics-v1-<target>-...` artifact so the Apple
+error detail survives runner teardown. The retry never weakens verification:
+the exported IPA still passes the strict identity, package-policy, and
+exact-bytes binding gates below.
+
 ```sh
 node tool/run.mjs check \
   ci:mobile-release-package \
