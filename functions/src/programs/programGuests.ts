@@ -2,6 +2,10 @@
   programId:ASCENDING,
   displayName:ASCENDING
 ) */
+/* firestore-index: programFunctionGuests (
+  programId:ASCENDING,
+  guestId:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {householdMemberIds, planHouseholdMembership} from
   "./programHouseholdMembership";
@@ -18,6 +22,7 @@ import {
   requireProgramDuty,
 } from "../shared/programAuthority";
 import type {
+  ProgramFunctionGuestDocument,
   ProgramGuestDocument,
   ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -184,6 +189,10 @@ export async function listProgramGuestsHandler(
       revision: doc.revision,
     };
   }));
+  const functionGuests = await listFunctionGuestRows(
+    db, access.program.organizerId, data.programId,
+    page.map((doc) => doc.id),
+  );
   return {
     programId: data.programId,
     guests: page.map((doc) => {
@@ -206,8 +215,57 @@ export async function listProgramGuestsHandler(
       };
     }),
     households: households.filter((h) => h !== null),
+    functionGuests,
     nextCursor,
   };
+}
+
+interface FunctionGuestRow {
+  guestId: string;
+  functionId: string;
+  invited: boolean;
+  rsvpStatus: ProgramFunctionGuestDocument["rsvpStatus"];
+  attendanceStatus: ProgramFunctionGuestDocument["attendanceStatus"];
+  partySize: number | null;
+}
+
+/**
+ * Function-guest join rows covering one guest page, loaded in chunks of the
+ * Firestore `in` limit so the organizer grid needs a single read per page.
+ * Rows belong only to this program and organizer; anything else is corrupt
+ * and fails closed.
+ */
+async function listFunctionGuestRows(
+  db: FirebaseFirestore.Firestore,
+  organizerId: string,
+  programId: string,
+  guestIds: string[],
+): Promise<FunctionGuestRow[]> {
+  const rows: FunctionGuestRow[] = [];
+  for (let i = 0; i < guestIds.length; i += 30) {
+    const chunk = guestIds.slice(i, i + 30);
+    const snap = await db.collection("programFunctionGuests")
+      .where("programId", "==", programId)
+      .where("guestId", "in", chunk)
+      .get();
+    for (const doc of snap.docs) {
+      const row = doc.data() as ProgramFunctionGuestDocument;
+      if (row.organizerId !== organizerId ||
+          row.programId !== programId) {
+        throw new HttpsError("failed-precondition",
+          "Function guest ownership needs reconciliation.");
+      }
+      rows.push({
+        guestId: row.guestId,
+        functionId: row.functionId,
+        invited: row.invited,
+        rsvpStatus: row.rsvpStatus,
+        attendanceStatus: row.attendanceStatus,
+        partySize: row.partySize ?? null,
+      });
+    }
+  }
+  return rows;
 }
 
 export async function upsertProgramHouseholdHandler(
@@ -329,6 +387,7 @@ export async function listProgramHouseholdsHandler(
   return {
     programId: data.programId,
     guests: [],
+    functionGuests: [],
     households: snap.docs.map((doc) => {
       const household = doc.data() as ProgramHouseholdDocument;
       if (household.organizerId !== access.program.organizerId) {

@@ -199,7 +199,14 @@ export const organizerProgramCallableResponseSchema: Record<string, unknown> = {
           "startsAtMillis",
           "endsAtMillis",
           "venueName",
-          "status"
+          "status",
+          "invitationMode",
+          "checkInEnabled",
+          "dressCode",
+          "instructions",
+          "expectedCount",
+          "checkedInCount",
+          "revision"
         ],
         "properties": {
           "functionId": {
@@ -232,6 +239,49 @@ export const organizerProgramCallableResponseSchema: Record<string, unknown> = {
               "completed",
               "cancelled"
             ]
+          },
+          "invitationMode": {
+            "type": "string",
+            "enum": [
+              "allGuests",
+              "selectedGuests"
+            ],
+            "description": "Effective mode; absent document field reads as allGuests."
+          },
+          "checkInEnabled": {
+            "type": "boolean"
+          },
+          "dressCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "instructions": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          },
+          "expectedCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "checkedInCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
           }
         }
       }

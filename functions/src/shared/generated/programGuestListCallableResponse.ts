@@ -33,5 +33,21 @@ export interface ProgramGuestListCallableResponse {
     memberGuestIds: string[];
     revision: number;
   }[];
+  /**
+   * Per-function invitation/RSVP/attendance join rows covering the paged guests. Rows exist only where a programFunctionGuests document was written; an allGuests function with no row reads as implicitly invited and pending.
+   *
+   * @maxItems 4000
+   */
+  functionGuests: {
+    guestId: string;
+    functionId: string;
+    invited: boolean;
+    rsvpStatus: "pending" | "attending" | "declined" | "maybe";
+    /**
+     * Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends.
+     */
+    attendanceStatus: "expected" | "checkedIn" | "noShow";
+    partySize: number | null;
+  }[];
   nextCursor: string | null;
 }

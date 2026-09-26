@@ -1916,6 +1916,7 @@
     {"collectionGroup":"organizerMomentSends","queryScope":"COLLECTION","fields":[{"fieldPath":"recipientKey","order":"ASCENDING"},{"fieldPath":"dayKey","order":"ASCENDING"},{"fieldPath":"decision","order":"ASCENDING"}]},
     {"collectionGroup":"organizerMomentSends","queryScope":"COLLECTION","fields":[{"fieldPath":"organizerId","order":"ASCENDING"},{"fieldPath":"actionKind","order":"ASCENDING"},{"fieldPath":"createdAtMillis","order":"ASCENDING"}]},
     {"collectionGroup":"programFunctionGuests","queryScope":"COLLECTION","fields":[{"fieldPath":"programId","order":"ASCENDING"},{"fieldPath":"functionId","order":"ASCENDING"}]},
+    {"collectionGroup":"programFunctionGuests","queryScope":"COLLECTION","fields":[{"fieldPath":"programId","order":"ASCENDING"},{"fieldPath":"guestId","order":"ASCENDING"}]},
     {"collectionGroup":"programGuests","queryScope":"COLLECTION","fields":[{"fieldPath":"programId","order":"ASCENDING"},{"fieldPath":"householdId","order":"ASCENDING"}]}
   ],
   "fieldOverrides": [

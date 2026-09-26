@@ -15,6 +15,7 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
     'programId',
     'guests',
     'households',
+    'functionGuests',
     'nextCursor',
   ],
   'properties': <String, Object?>{
@@ -139,6 +140,64 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
           'revision': <String, Object?>{
             'type': 'integer',
             'minimum': 1,
+          },
+        },
+      },
+    },
+    'functionGuests': <String, Object?>{
+      'type': 'array',
+      'maxItems': 4000,
+      'description': 'Per-function invitation/RSVP/attendance join rows covering the paged guests. Rows exist only where a programFunctionGuests document was written; an allGuests function with no row reads as implicitly invited and pending.',
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'guestId',
+          'functionId',
+          'invited',
+          'rsvpStatus',
+          'attendanceStatus',
+          'partySize',
+        ],
+        'properties': <String, Object?>{
+          'guestId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'functionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'invited': <String, Object?>{
+            'type': 'boolean',
+          },
+          'rsvpStatus': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'pending',
+              'attending',
+              'declined',
+              'maybe',
+            ],
+          },
+          'attendanceStatus': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'expected',
+              'checkedIn',
+              'noShow',
+            ],
+            'description': 'Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends.',
+          },
+          'partySize': <String, Object?>{
+            'type': <Object?>[
+              'integer',
+              'null',
+            ],
+            'minimum': 1,
+            'maximum': 20,
           },
         },
       },
