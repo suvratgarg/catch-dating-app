@@ -22047,7 +22047,7 @@ abstract class AppLocalizations {
   /// Manager-asserted outreach outcome label in the record-outreach sheet and customer timeline.
   ///
   /// In en, this message translates to:
-  /// **'{outcome, select, reached{Reached} noAnswer{No answer} leftMessage{Left a message} wrongContact{Wrong contact} other{Outcome recorded}}'**
+  /// **'{outcome, select, reached{Reached} noAnswer{No answer} leftMessage{Left a message} wrongContact{Wrong contact} attempted{Attempted} other{Outcome recorded}}'**
   String hostCustomersOutreachOutcome({required String outcome});
 
   /// Optional outreach note input title.
@@ -22055,6 +22055,75 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Note'**
   String get hostCustomersOutreachNote;
+
+  /// Explicit channel and sender label for a personal-device email handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal email'**
+  String get hostCustomersEmailAppChannel;
+
+  /// Consequence of the derived personal email handoff route.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your email, then send it from your mail app.'**
+  String get hostCustomersMessagePersonEmail;
+
+  /// Personal email handoff blocker when the customer has no email address.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an email address to use an email handoff.'**
+  String get hostCustomersEmailMissingEmail;
+
+  /// Title for the personal email handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Email app'**
+  String get hostCustomersEmailHandoffTitle;
+
+  /// Recipient shown in the personal email handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {email}'**
+  String hostCustomersEmailHandoffSubtitle({
+    required String name,
+    required String email,
+  });
+
+  /// Disclosure for the untracked personal email handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens your email app on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.'**
+  String get hostCustomersEmailHandoffDisclosure;
+
+  /// Editable message field title in the personal email handoff composer.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get hostCustomersEmailMessage;
+
+  /// Editable starter text for a personal email handoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi {name},'**
+  String hostCustomersEmailDefaultMessage({required String name});
+
+  /// Launches the email app with the selected customer and editable text prefilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Open email'**
+  String get hostCustomersOpenEmail;
+
+  /// Failure shown when the personal email handoff cannot launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open an email app on this device.'**
+  String get hostCustomersEmailOpenFailed;
+
+  /// Failure after the external email app accepted a handoff but the durable acknowledgement failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email app opened, but Catch couldn’t record the attempt.'**
+  String get hostCustomersEmailRecordFailed;
 
   /// Dismiss a sheet whose selections already apply immediately.
   ///

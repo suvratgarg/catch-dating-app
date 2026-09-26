@@ -2,7 +2,9 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
@@ -354,3 +356,27 @@ Widget hostCustomerFilterSheetStates(BuildContext context) => Scaffold(
     ),
   ),
 );
+
+@widgetbook.UseCase(
+  name: 'Draft outreach log',
+  type: HostCustomerOutreachSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerOutreachSheetStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerOutreachSheet(customer: customer),
+    );
+
+@widgetbook.UseCase(
+  name: 'Email handoff draft',
+  type: HostCustomerEmailHandoffSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerEmailHandoffSheetStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerEmailHandoffSheet(customer: customer),
+    );

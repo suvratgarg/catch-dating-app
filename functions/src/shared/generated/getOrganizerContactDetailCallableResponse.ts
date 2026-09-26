@@ -367,7 +367,12 @@ export interface GetOrganizerContactDetailCallableResponse {
           | "sms"
           | "inPerson"
           | "other";
-        outcome: "reached" | "noAnswer" | "leftMessage" | "wrongContact";
+        outcome:
+          | "reached"
+          | "noAnswer"
+          | "leftMessage"
+          | "wrongContact"
+          | "attempted";
         notePreview: string | null;
         occurredAtMillis: number;
       }

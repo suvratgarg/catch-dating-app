@@ -98,7 +98,8 @@ enum HostCustomerOutreachOutcome {
   reached,
   noAnswer,
   leftMessage,
-  wrongContact;
+  wrongContact,
+  attempted;
 
   String get wireValue => name;
 }

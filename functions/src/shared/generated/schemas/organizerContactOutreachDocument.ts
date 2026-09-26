@@ -62,7 +62,8 @@ export const organizerContactOutreachDocumentSchema: Record<string, unknown> = {
         "reached",
         "noAnswer",
         "leftMessage",
-        "wrongContact"
+        "wrongContact",
+        "attempted"
       ],
       "x-catch-ownership": "server-only"
     },

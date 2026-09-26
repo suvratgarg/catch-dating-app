@@ -110247,7 +110247,8 @@ export const organizerContactOutreachDocumentSchema = {
         "reached",
         "noAnswer",
         "leftMessage",
-        "wrongContact"
+        "wrongContact",
+        "attempted"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -242472,7 +242473,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                   "reached",
                   "noAnswer",
                   "leftMessage",
-                  "wrongContact"
+                  "wrongContact",
+                  "attempted"
                 ]
               },
               "notePreview": {
@@ -243354,7 +243356,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
                 "reached",
                 "noAnswer",
                 "leftMessage",
-                "wrongContact"
+                "wrongContact",
+                "attempted"
               ]
             },
             "notePreview": {
@@ -243686,7 +243689,8 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "reached",
             "noAnswer",
             "leftMessage",
-            "wrongContact"
+            "wrongContact",
+            "attempted"
           ]
         },
         "notePreview": {
@@ -244698,6 +244702,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                 "type": "string",
                 "enum": [
                   "personalWhatsappHandoff",
+                  "personalEmailHandoff",
                   "organizerWhatsappCampaign",
                   "catchWhatsapp",
                   "catchChat",
@@ -244712,8 +244717,8 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
           },
           "routes": {
             "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
+            "minItems": 3,
+            "maxItems": 3,
             "items": {
               "type": "object",
               "additionalProperties": false,
@@ -244728,6 +244733,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                   "type": "string",
                   "enum": [
                     "personalWhatsappHandoff",
+                    "personalEmailHandoff",
                     "organizerWhatsappCampaign",
                     "catchWhatsapp",
                     "catchChat",
@@ -244757,6 +244763,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                         "catchAccountRequired",
                         "identityAmbiguous",
                         "missingPhone",
+                        "missingEmail",
                         "organizerSuppressed",
                         "contactOptedOut",
                         "permissionRequired",
@@ -244781,6 +244788,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
       "type": "string",
       "enum": [
         "personalWhatsappHandoff",
+        "personalEmailHandoff",
         "organizerWhatsappCampaign",
         "catchWhatsapp",
         "catchChat",
@@ -244794,6 +244802,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
         "catchAccountRequired",
         "identityAmbiguous",
         "missingPhone",
+        "missingEmail",
         "organizerSuppressed",
         "contactOptedOut",
         "permissionRequired",
@@ -244815,6 +244824,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
           "type": "string",
           "enum": [
             "personalWhatsappHandoff",
+            "personalEmailHandoff",
             "organizerWhatsappCampaign",
             "catchWhatsapp",
             "catchChat",
@@ -244844,6 +244854,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                 "catchAccountRequired",
                 "identityAmbiguous",
                 "missingPhone",
+                "missingEmail",
                 "organizerSuppressed",
                 "contactOptedOut",
                 "permissionRequired",
@@ -244894,6 +244905,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
               "type": "string",
               "enum": [
                 "personalWhatsappHandoff",
+                "personalEmailHandoff",
                 "organizerWhatsappCampaign",
                 "catchWhatsapp",
                 "catchChat",
@@ -244908,8 +244920,8 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
         },
         "routes": {
           "type": "array",
-          "minItems": 2,
-          "maxItems": 2,
+          "minItems": 3,
+          "maxItems": 3,
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -244924,6 +244936,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                 "type": "string",
                 "enum": [
                   "personalWhatsappHandoff",
+                  "personalEmailHandoff",
                   "organizerWhatsappCampaign",
                   "catchWhatsapp",
                   "catchChat",
@@ -244953,6 +244966,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema = {
                       "catchAccountRequired",
                       "identityAmbiguous",
                       "missingPhone",
+                      "missingEmail",
                       "organizerSuppressed",
                       "contactOptedOut",
                       "permissionRequired",
@@ -245327,7 +245341,8 @@ export const recordOrganizerContactOutreachCallablePayloadSchema = {
         "reached",
         "noAnswer",
         "leftMessage",
-        "wrongContact"
+        "wrongContact",
+        "attempted"
       ]
     },
     "note": {
@@ -245395,7 +245410,8 @@ export const organizerContactOutreachCallableResponseSchema = {
         "reached",
         "noAnswer",
         "leftMessage",
-        "wrongContact"
+        "wrongContact",
+        "attempted"
       ]
     },
     "note": {

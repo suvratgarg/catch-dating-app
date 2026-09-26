@@ -2421,11 +2421,18 @@ close manual work. Active queue reads apply the server-time expiry bound in the
 indexed query rather than waiting for asynchronous TTL deletion to hide stale
 work.
 
+The communication plan also resolves a personal-device email handoff when the
+contact record carries an email address. It is an external `mailto` launch with
+no durable task, no provider receipts, and no delivery observability; a
+successful device acceptance records only an `organizerContactOutreach`
+`attempted` assertion so the attempt appears on the customer timeline.
+
 `organizerContactActivity` is a callable-composed bounded cursor projection,
 not a client-readable master collection. It joins sanitized origin, form or
 application, attendance, note, permission, send/reply and merge facts for one
 active organizer contact. Each row has a typed kind, stable source id,
-occurred-at time, safe display payload, and coverage metadata. It never copies
+occurred-at time, safe display payload, and coverage metadata. Outreach rows
+project the manager-asserted `organizerContactOutreach` attempts. It never copies
 private Consumer profile, compatibility, safety, wingman, raw provider receipt,
 or unrelated organizer content.
 

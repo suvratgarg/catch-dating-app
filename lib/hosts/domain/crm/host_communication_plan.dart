@@ -6,6 +6,7 @@ enum HostCommunicationOutcome { inCatch, automatic, byHand, unavailable }
 
 enum HostCommunicationRouteId {
   personalWhatsappHandoff,
+  personalEmailHandoff,
   organizerWhatsappCampaign,
   catchWhatsapp,
   catchChat,
@@ -21,6 +22,7 @@ enum HostCommunicationRouteBlocker {
   catchAccountRequired,
   identityAmbiguous,
   missingPhone,
+  missingEmail,
   organizerSuppressed,
   contactOptedOut,
   permissionRequired,

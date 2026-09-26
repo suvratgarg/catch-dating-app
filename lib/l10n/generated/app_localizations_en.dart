@@ -14173,6 +14173,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'noAnswer': 'No answer',
       'leftMessage': 'Left a message',
       'wrongContact': 'Wrong contact',
+      'attempted': 'Attempted',
       'other': 'Outcome recorded',
     });
     return '$_temp0';
@@ -14180,6 +14181,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersOutreachNote => 'Note';
+
+  @override
+  String get hostCustomersEmailAppChannel => 'Personal email';
+
+  @override
+  String get hostCustomersMessagePersonEmail =>
+      'Review your email, then send it from your mail app.';
+
+  @override
+  String get hostCustomersEmailMissingEmail =>
+      'Add an email address to use an email handoff.';
+
+  @override
+  String get hostCustomersEmailHandoffTitle => 'Email app';
+
+  @override
+  String hostCustomersEmailHandoffSubtitle({
+    required String name,
+    required String email,
+  }) {
+    return '$name · $email';
+  }
+
+  @override
+  String get hostCustomersEmailHandoffDisclosure =>
+      'Opens your email app on this device with editable text. You review it and press Send; Catch cannot track delivery or replies.';
+
+  @override
+  String get hostCustomersEmailMessage => 'Message';
+
+  @override
+  String hostCustomersEmailDefaultMessage({required String name}) {
+    return 'Hi $name,';
+  }
+
+  @override
+  String get hostCustomersOpenEmail => 'Open email';
+
+  @override
+  String get hostCustomersEmailOpenFailed =>
+      'Could not open an email app on this device.';
+
+  @override
+  String get hostCustomersEmailRecordFailed =>
+      'Your email app opened, but Catch couldn’t record the attempt.';
 
   @override
   String get hostSheetClose => 'Close';

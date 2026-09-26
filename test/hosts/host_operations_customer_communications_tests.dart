@@ -294,6 +294,101 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       containsPair('expectedRevision', 1),
     );
   });
+
+  testWidgets('customer email handoff pre-fills copy and records the attempt', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 3600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    Uri? launchedUri;
+    final lifecycle = <String>[];
+    final functions = _ManualHandoffTestFunctions(lifecycle)
+      ..responses['recordOrganizerContactOutreach'] = <String, Object?>{
+        'organizerId': 'organizer-1',
+        'contactId': 'contact-1',
+        'outreachId': 'outreach-1',
+        'channel': 'email',
+        'outcome': 'attempted',
+        'note': null,
+        'authorUid': _hostUid,
+        'occurredAtMillis': 1700000000000,
+        'createdAtMillis': 1700000000000,
+        'updatedAtMillis': 1700000000000,
+        'revision': 1,
+      };
+    final detail = _customerDetail(email: 'ananya@example.com');
+
+    await _pumpHostScreen(
+      tester,
+      const HostCustomerDetailScreen(
+        organizerId: 'organizer-1',
+        contactId: 'contact-1',
+      ),
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+        hostAudienceContactDetailProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(AsyncData(detail)),
+        hostCommunicationPlanProvider(
+          'organizer-1',
+          'contact-1',
+        ).overrideWithValue(
+          AsyncData(
+            _individualCommunicationPlan(
+              catchChatAvailable: false,
+              whatsappHandoffAvailable: false,
+              emailHandoffAvailable: true,
+            ),
+          ),
+        ),
+        firebaseFunctionsProvider.overrideWithValue(functions),
+        hostContactsRepositoryProvider.overrideWithValue(
+          HostContactsRepository(functions),
+        ),
+        externalUrlLauncherProvider.overrideWithValue((
+          uri, {
+          mode = LaunchMode.platformDefault,
+        }) async {
+          lifecycle.add('launch');
+          launchedUri = uri;
+          return true;
+        }),
+      ],
+    );
+
+    await tester.tap(find.byKey(const ValueKey('host-customer-message')));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Email app'), findsOneWidget);
+    expect(find.textContaining('Ananya Rao · ananya@example.com'),
+        findsOneWidget);
+    final messageInput = tester.widget<TextField>(
+      find.descendant(
+        of: find.byKey(const ValueKey('host-customer-email-message')),
+        matching: find.byType(TextField),
+      ),
+    );
+    expect(messageInput.controller?.text, 'Hi Ananya Rao,');
+
+    await tester.tap(
+      find.byKey(const ValueKey('host-customer-confirm-email')),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(launchedUri?.scheme, 'mailto');
+    expect(launchedUri?.path, 'ananya@example.com');
+    expect(launchedUri?.queryParameters['body'], 'Hi Ananya Rao,');
+    expect(lifecycle, ['launch', 'call:recordOrganizerContactOutreach']);
+    final outreach = functions.calls['recordOrganizerContactOutreach']!.single;
+    expect(outreach['organizerId'], 'organizer-1');
+    expect(outreach['contactId'], 'contact-1');
+    expect(outreach['channel'], 'email');
+    expect(outreach['outcome'], 'attempted');
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _ManualHandoffTestFunctions extends Fake implements FirebaseFunctions {

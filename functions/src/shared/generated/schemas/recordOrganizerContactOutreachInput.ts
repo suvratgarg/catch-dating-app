@@ -43,7 +43,8 @@ export const recordOrganizerContactOutreachCallablePayloadSchema: Record<string,
         "reached",
         "noAnswer",
         "leftMessage",
-        "wrongContact"
+        "wrongContact",
+        "attempted"
       ]
     },
     "note": {

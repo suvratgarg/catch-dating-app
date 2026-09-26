@@ -1358,6 +1358,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                   'noAnswer',
                   'leftMessage',
                   'wrongContact',
+                  'attempted',
                 ],
               },
               'notePreview': <String, Object?>{
@@ -2240,6 +2241,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
                 'noAnswer',
                 'leftMessage',
                 'wrongContact',
+                'attempted',
               ],
             },
             'notePreview': <String, Object?>{
@@ -2572,6 +2574,7 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'noAnswer',
             'leftMessage',
             'wrongContact',
+            'attempted',
           ],
         },
         'notePreview': <String, Object?>{

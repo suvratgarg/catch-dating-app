@@ -19,8 +19,10 @@ import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -479,6 +481,8 @@ class _HostCustomerDetailScreenState
         return _startConversation(customer);
       case HostCommunicationRouteId.personalWhatsappHandoff:
         return _openWhatsapp(customer);
+      case HostCommunicationRouteId.personalEmailHandoff:
+        return _openEmail(customer);
       case null:
       case HostCommunicationRouteId.organizerWhatsappCampaign:
       case HostCommunicationRouteId.catchWhatsapp:
@@ -587,6 +591,12 @@ class _HostCustomerDetailScreenState
       showCatchBottomSheet<void>(
         context: context,
         builder: (_) => _HostWhatsappHandoffSheet(customer: customer),
+      );
+
+  Future<void> _openEmail(HostAudienceContactDetail customer) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => HostCustomerEmailHandoffSheet(customer: customer),
       );
 }
 

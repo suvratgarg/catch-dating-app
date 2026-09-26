@@ -166,6 +166,8 @@ String _recommendedMessageTitle(
     context.l10n.hostsHostOrganizerCrmCatchApp,
   HostCommunicationRouteId.personalWhatsappHandoff =>
     context.l10n.hostCustomersWhatsappAppChannel,
+  HostCommunicationRouteId.personalEmailHandoff =>
+    context.l10n.hostCustomersEmailAppChannel,
   _ => context.l10n.hostCustomersMessageOptionsUnavailable,
 };
 
@@ -177,6 +179,8 @@ String _recommendedMessageBody(
     context.l10n.hostCustomersMessagePersonCatch,
   HostCommunicationRouteId.personalWhatsappHandoff =>
     context.l10n.hostCustomersMessagePersonHandoff,
+  HostCommunicationRouteId.personalEmailHandoff =>
+    context.l10n.hostCustomersMessagePersonEmail,
   _ => context.l10n.hostCustomersMessageOptionsUnavailable,
 };
 
@@ -207,6 +211,8 @@ String _communicationRouteBlockerLabel(
     context.l10n.hostCustomersConversationAmbiguous,
   HostCommunicationRouteBlocker.missingPhone =>
     context.l10n.hostCustomersWhatsappMissingPhone,
+  HostCommunicationRouteBlocker.missingEmail =>
+    context.l10n.hostCustomersEmailMissingEmail,
   HostCommunicationRouteBlocker.organizerSuppressed =>
     context.l10n.hostCustomersWhatsappOrganizerSuppressed,
   HostCommunicationRouteBlocker.contactOptedOut =>

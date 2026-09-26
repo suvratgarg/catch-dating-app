@@ -15,7 +15,7 @@
     "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
     "authorUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
     "channel": {"type": "string", "enum": ["phoneCall", "whatsapp", "email", "sms", "inPerson", "other"], "x-catch-ownership": "server-only"},
-    "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact"], "x-catch-ownership": "server-only"},
+    "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact", "attempted"], "x-catch-ownership": "server-only"},
     "note": {"type": "string", "minLength": 1, "maxLength": 500, "x-catch-ownership": "server-only"},
     "occurredAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},

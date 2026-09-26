@@ -10,7 +10,12 @@ export interface OrganizerContactOutreachCallableResponse {
   contactId: string;
   outreachId: string;
   channel: "phoneCall" | "whatsapp" | "email" | "sms" | "inPerson" | "other";
-  outcome: "reached" | "noAnswer" | "leftMessage" | "wrongContact";
+  outcome:
+    | "reached"
+    | "noAnswer"
+    | "leftMessage"
+    | "wrongContact"
+    | "attempted";
   note: string | null;
   authorUid: string;
   occurredAtMillis: number;

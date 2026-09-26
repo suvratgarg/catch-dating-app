@@ -1355,7 +1355,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                   "reached",
                   "noAnswer",
                   "leftMessage",
-                  "wrongContact"
+                  "wrongContact",
+                  "attempted"
                 ]
               },
               "notePreview": {
@@ -2237,7 +2238,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
                 "reached",
                 "noAnswer",
                 "leftMessage",
-                "wrongContact"
+                "wrongContact",
+                "attempted"
               ]
             },
             "notePreview": {
@@ -2569,7 +2571,8 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "reached",
             "noAnswer",
             "leftMessage",
-            "wrongContact"
+            "wrongContact",
+            "attempted"
           ]
         },
         "notePreview": {

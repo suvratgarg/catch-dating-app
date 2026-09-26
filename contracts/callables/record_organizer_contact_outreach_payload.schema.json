@@ -10,7 +10,7 @@
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "channel": {"type": "string", "enum": ["phoneCall", "whatsapp", "email", "sms", "inPerson", "other"]},
-    "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact"]},
+    "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact", "attempted"]},
     "note": {"type": "string", "minLength": 1, "maxLength": 500},
     "occurredAtMillis": {"type": "integer", "minimum": 0}
   }

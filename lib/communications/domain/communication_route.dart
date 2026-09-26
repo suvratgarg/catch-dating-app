@@ -4,6 +4,7 @@
 /// consent, delivery, and observability contracts.
 enum CommunicationRouteId {
   personalWhatsappHandoff,
+  personalEmailHandoff,
   organizerWhatsappCampaign,
   catchWhatsapp,
   catchChat,
@@ -14,7 +15,7 @@ enum CommunicationRouteId {
   organizerEventWhatsapp,
 }
 
-enum CommunicationTransport { catchApp, whatsapp, sms, rcs }
+enum CommunicationTransport { catchApp, whatsapp, sms, rcs, email }
 
 enum CommunicationSenderIdentity {
   hostPersonalDevice,
@@ -90,6 +91,20 @@ const communicationRouteCatalog =
             id: CommunicationRouteId.personalWhatsappHandoff,
             transport: CommunicationTransport.whatsapp,
             adapterKey: 'whatsapp_handoff',
+            senderIdentity: CommunicationSenderIdentity.hostPersonalDevice,
+            deliveryMode: CommunicationDeliveryMode.externalHandoff,
+            audienceScope: CommunicationAudienceScope.singleContact,
+            consentScope: CommunicationConsentScope.directUserAction,
+            observability: CommunicationObservability.none,
+            requiresHostFinalSend: true,
+            supportsReplies: true,
+            supportsScheduling: false,
+          ),
+      CommunicationRouteId.personalEmailHandoff:
+          CommunicationRouteCapability(
+            id: CommunicationRouteId.personalEmailHandoff,
+            transport: CommunicationTransport.email,
+            adapterKey: 'mailto_handoff',
             senderIdentity: CommunicationSenderIdentity.hostPersonalDevice,
             deliveryMode: CommunicationDeliveryMode.externalHandoff,
             audienceScope: CommunicationAudienceScope.singleContact,

@@ -9,7 +9,12 @@ export interface RecordOrganizerContactOutreachCallablePayload {
   organizerId: string;
   contactId: string;
   channel: "phoneCall" | "whatsapp" | "email" | "sms" | "inPerson" | "other";
-  outcome: "reached" | "noAnswer" | "leftMessage" | "wrongContact";
+  outcome:
+    | "reached"
+    | "noAnswer"
+    | "leftMessage"
+    | "wrongContact"
+    | "attempted";
   note?: string;
   occurredAtMillis?: number;
 }

@@ -67410,7 +67410,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.timeline.items.outcome',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact'],
+    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact', 'attempted'],
   );
 
   static const getOrganizerContactDetailCallableResponseTimelineItemsReferenceId = CatchContractFieldConstraints(
@@ -85827,7 +85827,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactOutreachCallableResponse.outcome',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact'],
+    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact', 'attempted'],
   );
 
   static const organizerContactOutreachCallableResponseOutreachId = CatchContractFieldConstraints(
@@ -85924,7 +85924,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactOutreachDocument.outcome',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact'],
+    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact', 'attempted'],
   );
 
   static const organizerContactOutreachDocumentRevision = CatchContractFieldConstraints(
@@ -108828,7 +108828,7 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerContactOutreachCallablePayload.outcome',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact'],
+    enumValues: <String>['reached', 'noAnswer', 'leftMessage', 'wrongContact', 'attempted'],
   );
 
   static const recordProgramDoorJournalCallablePayloadFunctionId = CatchContractFieldConstraints(
@@ -110554,7 +110554,7 @@ abstract final class CatchContractConstraints {
   static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRecommendedRouteId = CatchContractFieldConstraints(
     path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.recommendedRouteId',
     valueTypes: <String>['string'],
-    enumValues: <String>['personalWhatsappHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
+    enumValues: <String>['personalWhatsappHandoff', 'personalEmailHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
   );
 
   static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutes = CatchContractFieldConstraints(
@@ -110562,8 +110562,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    minItems: 2,
-    maxItems: 2,
+    minItems: 3,
+    maxItems: 3,
   );
 
   static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsAvailability = CatchContractFieldConstraints(
@@ -110576,7 +110576,7 @@ abstract final class CatchContractConstraints {
   static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsBlocker = CatchContractFieldConstraints(
     path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.blocker',
     valueTypes: <String>['string'],
-    enumValues: <String>['catchAccountRequired', 'identityAmbiguous', 'missingPhone', 'organizerSuppressed', 'contactOptedOut', 'permissionRequired', 'senderUnavailable', 'intentUnsupported'],
+    enumValues: <String>['catchAccountRequired', 'identityAmbiguous', 'missingPhone', 'missingEmail', 'organizerSuppressed', 'contactOptedOut', 'permissionRequired', 'senderUnavailable', 'intentUnsupported'],
   );
 
   static const resolveOrganizerCommunicationPlanCallableResponseRecipientsItemsRoutesItemsExecutionMode = CatchContractFieldConstraints(
@@ -110590,7 +110590,7 @@ abstract final class CatchContractConstraints {
     path: 'resolveOrganizerCommunicationPlanCallableResponse.recipients.items.routes.items.routeId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['personalWhatsappHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
+    enumValues: <String>['personalWhatsappHandoff', 'personalEmailHandoff', 'organizerWhatsappCampaign', 'catchWhatsapp', 'catchChat', 'catchEventAnnouncement', 'organizerFollowerUpdate'],
   );
 
   static const resolveOrganizerCommunicationPlanCallableResponseResolvedAtMillis = CatchContractFieldConstraints(

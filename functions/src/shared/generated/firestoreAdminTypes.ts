@@ -5622,7 +5622,12 @@ export interface OrganizerContactOutreachDocument {
   contactId: string;
   authorUid: string;
   channel: "phoneCall" | "whatsapp" | "email" | "sms" | "inPerson" | "other";
-  outcome: "reached" | "noAnswer" | "leftMessage" | "wrongContact";
+  outcome:
+    | "reached"
+    | "noAnswer"
+    | "leftMessage"
+    | "wrongContact"
+    | "attempted";
   note?: string;
   occurredAt: FirebaseFirestore.Timestamp;
   revision: number;

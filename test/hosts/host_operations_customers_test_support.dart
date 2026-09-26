@@ -68,6 +68,7 @@ HostAudienceContactDetail _customerDetail({
   HostAudienceIdentityState identityState = HostAudienceIdentityState.verified,
   String identityConfidence = 'verified_account',
   String? phoneE164,
+  String? email,
   HostCustomerWhatsappPermission? whatsappPermission,
   List<HostCustomerOrigin>? origins,
   bool originsTruncated = false,
@@ -80,7 +81,7 @@ HostAudienceContactDetail _customerDetail({
   sourceDisplayName: 'Ananya Rao',
   displayNameOverride: null,
   phoneE164: phoneE164,
-  email: null,
+  email: email,
   linkedAccount: linkedAccount,
   identityState: identityState,
   identityConfidence: identityConfidence,
@@ -233,11 +234,15 @@ HostCommunicationPlan _individualCommunicationPlan({
   HostCommunicationRouteBlocker? catchChatBlocker,
   bool whatsappHandoffAvailable = true,
   HostCommunicationRouteBlocker? whatsappHandoffBlocker,
+  bool emailHandoffAvailable = false,
+  HostCommunicationRouteBlocker? emailHandoffBlocker,
 }) {
   final recommendedRouteId = catchChatAvailable
       ? HostCommunicationRouteId.catchChat
       : whatsappHandoffAvailable
       ? HostCommunicationRouteId.personalWhatsappHandoff
+      : emailHandoffAvailable
+      ? HostCommunicationRouteId.personalEmailHandoff
       : null;
   return HostCommunicationPlan(
     organizerId: 'organizer-1',
@@ -250,7 +255,7 @@ HostCommunicationPlan _individualCommunicationPlan({
         displayName: 'Ananya Rao',
         outcome: catchChatAvailable
             ? HostCommunicationOutcome.inCatch
-            : whatsappHandoffAvailable
+            : whatsappHandoffAvailable || emailHandoffAvailable
             ? HostCommunicationOutcome.byHand
             : HostCommunicationOutcome.unavailable,
         recommendedRouteId: recommendedRouteId,
@@ -276,6 +281,17 @@ HostCommunicationPlan _individualCommunicationPlan({
                 ? null
                 : whatsappHandoffBlocker ??
                       HostCommunicationRouteBlocker.missingPhone,
+          ),
+          HostCommunicationRouteOption(
+            routeId: HostCommunicationRouteId.personalEmailHandoff,
+            executionMode: HostCommunicationExecutionMode.externalHandoff,
+            availability: emailHandoffAvailable
+                ? HostCommunicationRouteAvailability.available
+                : HostCommunicationRouteAvailability.unavailable,
+            blocker: emailHandoffAvailable
+                ? null
+                : emailHandoffBlocker ??
+                      HostCommunicationRouteBlocker.missingEmail,
           ),
         ],
       ),

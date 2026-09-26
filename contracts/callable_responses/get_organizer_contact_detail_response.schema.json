@@ -173,7 +173,7 @@
         "kind": {"const": "outreach"},
         "timelineId": {"type": "string", "minLength": 1, "maxLength": 240},
         "channel": {"type": "string", "enum": ["phoneCall", "whatsapp", "email", "sms", "inPerson", "other"]},
-        "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact"]},
+        "outcome": {"type": "string", "enum": ["reached", "noAnswer", "leftMessage", "wrongContact", "attempted"]},
         "notePreview": {"type": ["string", "null"], "minLength": 1, "maxLength": 300},
         "occurredAtMillis": {"type": "integer", "minimum": 0}
       }

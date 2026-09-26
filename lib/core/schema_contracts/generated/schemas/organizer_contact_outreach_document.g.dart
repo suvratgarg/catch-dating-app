@@ -65,6 +65,7 @@ const schemaOrganizerContactOutreachDocumentSchema = <String, Object?>{
         'noAnswer',
         'leftMessage',
         'wrongContact',
+        'attempted',
       ],
       'x-catch-ownership': 'server-only',
     },

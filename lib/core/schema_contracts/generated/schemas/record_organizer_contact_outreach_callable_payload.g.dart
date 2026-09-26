@@ -46,6 +46,7 @@ const schemaRecordOrganizerContactOutreachCallablePayloadSchema = <String, Objec
         'noAnswer',
         'leftMessage',
         'wrongContact',
+        'attempted',
       ],
     },
     'note': <String, Object?>{

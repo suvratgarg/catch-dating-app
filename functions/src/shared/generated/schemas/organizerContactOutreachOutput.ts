@@ -55,7 +55,8 @@ export const organizerContactOutreachCallableResponseSchema: Record<string, unkn
         "reached",
         "noAnswer",
         "leftMessage",
-        "wrongContact"
+        "wrongContact",
+        "attempted"
       ]
     },
     "note": {
