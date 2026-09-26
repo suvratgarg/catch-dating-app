@@ -159,6 +159,14 @@ void main() {
             'referenceId': 'task-1',
             'occurredAtMillis': 7000,
           },
+          {
+            'kind': 'outreach',
+            'timelineId': 'timeline-outreach-1',
+            'channel': 'phoneCall',
+            'outcome': 'noAnswer',
+            'notePreview': 'Try again after 6pm',
+            'occurredAtMillis': 8000,
+          },
         ],
         'timelineTruncated': false,
         'timelineCoverage': {
@@ -166,6 +174,7 @@ void main() {
           'events': 'exact',
           'sends': 'exact',
           'replies': 'partial',
+          'outreach': 'exact',
           'replyObservation': 'catchAndManagedWhatsappOnly',
         },
         'revision': 4,
@@ -194,7 +203,21 @@ void main() {
       );
       expect(detail.sends.last.kind, HostCustomerSendKind.announcement);
       expect(detail.sends.last.eventId, 'event-1');
-      expect(detail.timeline.single, isA<HostCustomerSendTimelineEntry>());
+      expect(detail.timeline.length, 2);
+      expect(
+        detail.timeline.first,
+        isA<HostCustomerSendTimelineEntry>(),
+      );
+      final outreach = detail.timeline.last;
+      expect(outreach, isA<HostCustomerOutreachTimelineEntry>());
+      final logged = outreach as HostCustomerOutreachTimelineEntry;
+      expect(logged.outcome, HostCustomerOutreachOutcome.noAnswer);
+      expect(logged.channel, HostCustomerOutreachChannel.phoneCall);
+      expect(logged.notePreview, 'Try again after 6pm');
+      expect(
+        detail.timelineCoverage.outreach,
+        HostCustomerTimelineCoverageValue.exact,
+      );
       expect(
         detail.sends.last.deliveryStatus,
         HostCustomerSendDeliveryStatus.available,

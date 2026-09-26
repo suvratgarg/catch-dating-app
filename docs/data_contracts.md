@@ -587,7 +587,12 @@ complete server coverage, required local merging, shortcuts, and missing truth.
 The source-ready server kinds are live-event operations, open practical guest-
 help review, delivery work that explicitly requires host review, ordinary
 waitlist review, manual join-request review, application review, provider-sync
-failure, form-automation failure, and payout setup.
+failure, form-automation failure, payout setup, fired staff-attention moment
+sends, and unpaid event-offer follow-up. The offer follow-up aggregates every
+still-offered paid offer whose manual payment is not host-attested and whose
+expiry has not passed, grouped per event, so a host is reminded to collect or
+chase payment before the offer lapses; the item resolves itself once every
+offer is attested, admitted, withdrawn, or expired.
 Practical help is aggregated per active event from event-lead-owned cases;
 safety-owned cases remain inside their restricted operator boundary. Delivery
 review is aggregated only from validated `liveMessageDelivery` Operations work
@@ -2320,7 +2325,10 @@ may later edit those endpoints but cannot remove its last endpoint. Legacy and
 system-derived name-only records remain readable and can still rename without
 being forced through a migration. Customer detail unifies event-scoped
 revenue from completed, non-refunded Catch payments, financially complete
-provider orders, organizer-imported amounts, and explicit organizer estimates.
+provider orders, organizer-imported amounts, explicit organizer estimates, and
+organizer-attested manual offer payments. Admission stamps the attested
+amount, currency and `hostAttested` source onto the operational attendee so
+the rebuildable contact-event edge projects the fact into revenue history.
 Every amount retains its source; reported and estimated values are never
 presented as verified payments. A Catch payment takes precedence over a
 reported fact for the same customer event so the sale is not counted twice.
@@ -2338,9 +2346,14 @@ entries from the organizer's server-owned
 `organizerContactTagVocabularies/{organizerId}` document, whose vocabulary is
 capped at twenty. `organizerContactNotes` stores author-stamped note records;
 new notes append, edits use optimistic revisions, contact detail returns the
-newest bounded window, and exports never include note content. Existing contact
-documents may omit `manualTagIds` and read as an empty assignment, so neither
-feature requires a backfill.
+newest bounded window, and exports never include note content.
+`organizerContactOutreach` stores append-only, author-stamped manager-asserted
+outreach attempts (channel plus outcome with an optional bounded note); the
+record callable validates the active contact, rejects future timestamps beyond
+a short skew, and contact detail projects the newest bounded window onto the
+timeline with explicit coverage while exports never include outreach content.
+Existing contact documents may omit `manualTagIds` and read as an empty
+assignment, so none of these features requires a backfill.
 
 `organizerSavedAudiences/{audienceId}` owns reusable Customers-authored CRM
 audiences. The closed `directoryFilters` predicate preserves the same combined
@@ -2408,11 +2421,18 @@ close manual work. Active queue reads apply the server-time expiry bound in the
 indexed query rather than waiting for asynchronous TTL deletion to hide stale
 work.
 
+The communication plan also resolves a personal-device email handoff when the
+contact record carries an email address. It is an external `mailto` launch with
+no durable task, no provider receipts, and no delivery observability; a
+successful device acceptance records only an `organizerContactOutreach`
+`attempted` assertion so the attempt appears on the customer timeline.
+
 `organizerContactActivity` is a callable-composed bounded cursor projection,
 not a client-readable master collection. It joins sanitized origin, form or
 application, attendance, note, permission, send/reply and merge facts for one
 active organizer contact. Each row has a typed kind, stable source id,
-occurred-at time, safe display payload, and coverage metadata. It never copies
+occurred-at time, safe display payload, and coverage metadata. Outreach rows
+project the manager-asserted `organizerContactOutreach` attempts. It never copies
 private Consumer profile, compatibility, safety, wingman, raw provider receipt,
 or unrelated organizer content.
 

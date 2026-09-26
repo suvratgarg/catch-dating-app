@@ -477,6 +477,60 @@ void main() {
     expect(pending.replays, 1);
     expect(pending.newMutations, 0);
   });
+
+  testWidgets('event picker shows in-flow create action only when the parent '
+      'enables private setup', (tester) async {
+    final query = HostResponseQueryController(_Query());
+    final offers = _Offers();
+    final offerController = HostEventOfferController(offers);
+    addTearDown(query.dispose);
+    addTearDown(offerController.dispose);
+    await query.apply(const HostResponseQueryRequest(
+      organizerId: 'org', formId: 'form', versionId: 'form_v1'));
+    query.toggleSelection('response-one');
+    var createCalls = 0;
+    Widget section({Future<void> Function()? onCreateEvent}) => MaterialApp(
+      theme: AppTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: SingleChildScrollView(
+        child: HostEventOfferWorkspaceSection(
+          organizerId: 'org', accountId: 'manager',
+          queryController: query, offerController: offerController,
+          listOffers: ({required organizerId, required eventId,
+              afterOfferId}) async => const {
+            'items': <Object>[], 'nextCursor': null,
+          },
+          getOffer: ({required organizerId, required eventId,
+              required contactId}) async => _existingOffer(),
+          prepareHandoff: ({required offer}) async =>
+              const HostOfferHandoff(kind: 'blocked', offerId: 'offer-one',
+                blockers: ['fixture']),
+          copyMessage: (_) async {}, openHandoff: (_) async => false,
+          targets: _Targets(),
+          getResponseDetail: (_) async => _detail('contact-one'),
+          openResponseForConversion: (_) async {},
+          openEventSettings: (_) async {}, copy: _copy,
+          now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+          onCreateEvent: onCreateEvent,
+        ),
+      )),
+    );
+    const createButton = Key('offer-create-event');
+    await tester.pumpWidget(section());
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Create event offers'));
+    await pumpFeatureUi(tester);
+    expect(find.byKey(createButton), findsNothing);
+
+    await tester.pumpWidget(section(onCreateEvent: () async => createCalls++));
+    await pumpFeatureUi(tester);
+    await tester.ensureVisible(find.byKey(createButton));
+    await tester.tap(find.byKey(createButton));
+    await pumpFeatureUi(tester);
+    expect(createCalls, 1);
+    expect(offers.previewCalls, 0);
+  });
 }
 
 class _SwitchingAuth extends Fake implements FirebaseAuth {

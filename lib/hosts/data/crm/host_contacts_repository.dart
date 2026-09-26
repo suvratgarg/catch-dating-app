@@ -226,6 +226,28 @@ class HostContactsRepository {
     parse: HostCustomerNote.fromCallableData,
   );
 
+  Future<HostCustomerOutreach> recordContactOutreach({
+    required String organizerId,
+    required String contactId,
+    required HostCustomerOutreachChannel channel,
+    required HostCustomerOutreachOutcome outcome,
+    String? note,
+    DateTime? occurredAt,
+  }) => callHostCrm(
+    _functions,
+    name: 'recordOrganizerContactOutreach',
+    payload: RecordOrganizerContactOutreachCallableRequest(
+      organizerId: organizerId,
+      contactId: contactId,
+      channel: channel.wireValue,
+      outcome: outcome.wireValue,
+      note: note,
+      occurredAtMillis: occurredAt?.millisecondsSinceEpoch,
+    ).toJson(),
+    action: 'record organizer contact outreach',
+    parse: HostCustomerOutreach.fromCallableData,
+  );
+
   Future<HostAudienceExport> exportContacts(
     String organizerId, {
     HostAudienceSegment? segment,

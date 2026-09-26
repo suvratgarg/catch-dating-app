@@ -19,8 +19,10 @@ import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_email_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_loading_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_outreach_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -38,7 +40,7 @@ part 'host_customer_detail_body.dart';
 part 'host_customer_history_panel.dart';
 part 'host_customer_submissions_section.dart';
 
-enum _HostCustomerRecordAction { message, remove }
+enum _HostCustomerRecordAction { message, logOutreach, remove }
 
 class HostCustomerDetailScreen extends ConsumerStatefulWidget {
   const HostCustomerDetailScreen({
@@ -134,6 +136,11 @@ class _HostCustomerDetailScreenState
                     icon: CatchIcons.tabChats,
                   ),
                 CatchActionMenuItem(
+                  value: _HostCustomerRecordAction.logOutreach,
+                  label: context.l10n.hostCustomersLogOutreach,
+                  icon: CatchIcons.callOutlined,
+                ),
+                CatchActionMenuItem(
                   value: _HostCustomerRecordAction.remove,
                   label: context.l10n.hostsHostAudienceRemoveAction,
                   icon: CatchIcons.deleteOutline,
@@ -145,6 +152,7 @@ class _HostCustomerDetailScreenState
                   customer,
                   communicationPlanState?.value,
                 ),
+                _HostCustomerRecordAction.logOutreach => _logOutreach(customer),
                 _HostCustomerRecordAction.remove => _removeCustomer(customer),
               }),
             ),
@@ -297,6 +305,15 @@ class _HostCustomerDetailScreenState
           HostCustomerNoteSheet(customer: customer, note: note),
     );
     if (!mounted || updated != true) return;
+    _refreshDetail();
+  }
+
+  Future<void> _logOutreach(HostAudienceContactDetail customer) async {
+    final recorded = await showCatchBottomSheet<bool>(
+      context: context,
+      builder: (context) => HostCustomerOutreachSheet(customer: customer),
+    );
+    if (!mounted || recorded != true) return;
     _refreshDetail();
   }
 
@@ -464,6 +481,8 @@ class _HostCustomerDetailScreenState
         return _startConversation(customer);
       case HostCommunicationRouteId.personalWhatsappHandoff:
         return _openWhatsapp(customer);
+      case HostCommunicationRouteId.personalEmailHandoff:
+        return _openEmail(customer);
       case null:
       case HostCommunicationRouteId.organizerWhatsappCampaign:
       case HostCommunicationRouteId.catchWhatsapp:
@@ -572,6 +591,12 @@ class _HostCustomerDetailScreenState
       showCatchBottomSheet<void>(
         context: context,
         builder: (_) => _HostWhatsappHandoffSheet(customer: customer),
+      );
+
+  Future<void> _openEmail(HostAudienceContactDetail customer) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => HostCustomerEmailHandoffSheet(customer: customer),
       );
 }
 

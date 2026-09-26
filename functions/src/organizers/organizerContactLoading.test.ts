@@ -7,7 +7,7 @@ import {AudienceTestStore} from "./organizerAudienceTestStore";
 const operationalCollections = [
   "organizerCampaignRecipients", "organizerBroadcastSummaries",
   "organizerManualSendTasks", "organizerWhatsappMessages",
-  "organizerContactMergeReceipts",
+  "organizerContactMergeReceipts", "organizerContactOutreach",
 ];
 
 function harness(includeHistory?: boolean) {

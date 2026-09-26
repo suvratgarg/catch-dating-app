@@ -99,6 +99,7 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     this.initiallyReviewSelection = false,
     this.initialEventId,
     this.initialEventTarget,
+    this.onCreateEvent,
   });
 
   final String organizerId;
@@ -126,6 +127,11 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   final bool initiallyReviewSelection;
   final String? initialEventId;
   final HostOfferEventTarget? initialEventTarget;
+  /// Starts the manager's inline event creation route. The parent owns the
+  /// return: a saved event comes back through [initialEventTarget] and this
+  /// selection is revalidated before any offer is drafted. Null keeps the
+  /// create action hidden while private event setup stays release gated.
+  final Future<void> Function()? onCreateEvent;
 
   @override
   State<HostEventOfferWorkspaceSection> createState() =>
@@ -250,6 +256,13 @@ class _HostEventOfferWorkspaceSectionState
         if (_controller.ids.isNotEmpty) ...[
           CatchSection.content(child: Text(copy.selectEvent,
             style: CatchTextStyles.sectionTitle(context))),
+          if (widget.onCreateEvent != null)
+            CatchSection.content(child: CatchButton(
+              key: const ValueKey('offer-create-event'),
+              label: context.l10n.hostsHostEventsListLabelNewEvent,
+              variant: CatchButtonVariant.secondary,
+              onPressed: _controller.loading ? null : widget.onCreateEvent,
+            )),
           if (_controller.events.isEmpty && !_controller.loading)
             CatchSection.content(child: Text(copy.emptyEvents,
               style: CatchTextStyles.supporting(context))),

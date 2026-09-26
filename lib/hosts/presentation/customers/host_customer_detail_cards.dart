@@ -722,6 +722,8 @@ String _customerRevenueSourceLabel(
     context.l10n.hostCustomersRevenueSourceImport,
   HostCustomerRevenueSource.hostEstimate =>
     context.l10n.hostCustomersRevenueSourceEstimate,
+  HostCustomerRevenueSource.hostAttested =>
+    context.l10n.hostCustomersRevenueSourceAttested,
 };
 
 String _customerRevenueSourceSummary(

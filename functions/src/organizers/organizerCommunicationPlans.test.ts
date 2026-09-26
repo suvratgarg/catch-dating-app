@@ -29,7 +29,7 @@ test("callable authorizes and returns server-derived routes", async () => {
   });
 
   assert.deepEqual(actions, ["resolveOrganizerCommunicationPlan"]);
-  assert.equal(result.capabilityVersion, 1);
+  assert.equal(result.capabilityVersion, 2);
   assert.equal(result.resolvedAtMillis, 1_700_000_000_000);
   assert.equal(result.recipients[0].recommendedRouteId, "catchChat");
 });
@@ -91,6 +91,7 @@ function activeContact(): Record<string, unknown> {
     displayNameOverride: null,
     linkedUid: "user-1",
     phoneE164: "+919876543210",
+    email: "asha@example.com",
     identityState: "verified",
     ambiguousCandidateContactIds: [],
     whatsappStatus: "unknown",

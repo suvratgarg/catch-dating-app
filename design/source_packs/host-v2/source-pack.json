@@ -169,6 +169,10 @@
       "sha256": "9309434cb09c357def2c583652d335eb7dedfb5295c9ad66e7d4e75a796dc5f3"
     },
     {
+      "path": "explorations/response-admission-flow/index.html",
+      "sha256": "a1e942d07f055f95a3ff4be1266811decfc9f15ce92d39daed36127f41fd9eb2"
+    },
+    {
       "path": "Host App Coverage.html",
       "sha256": "7c7e680a396c1a7661e69046197c0304361d921a0f90ebad5a1fdf647370c9b0"
     },

@@ -95,6 +95,7 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
               'inboxReply',
               'postEventReconciliation',
               'momentStaffAttention',
+              'eventOfferPaymentFollowUp',
             ],
             'x-catch-catalog': '../catalogs/host_attention_policies.json',
           },
@@ -128,6 +129,7 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
               'organizerWhatsappThreads',
               'eventAttendees',
               'organizerMomentSends',
+              'organizerEventOffers',
             ],
           },
           'sourceId': <String, Object?>{
@@ -330,8 +332,8 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
     },
     'coverage': <String, Object?>{
       'type': 'array',
-      'minItems': 18,
-      'maxItems': 18,
+      'minItems': 19,
+      'maxItems': 19,
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
@@ -362,6 +364,7 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
               'inboxReply',
               'postEventReconciliation',
               'momentStaffAttention',
+              'eventOfferPaymentFollowUp',
             ],
             'x-catch-catalog': '../catalogs/host_attention_policies.json',
           },

@@ -77,6 +77,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                 "type": "string",
                 "enum": [
                   "personalWhatsappHandoff",
+                  "personalEmailHandoff",
                   "organizerWhatsappCampaign",
                   "catchWhatsapp",
                   "catchChat",
@@ -91,8 +92,8 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
           },
           "routes": {
             "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
+            "minItems": 3,
+            "maxItems": 3,
             "items": {
               "type": "object",
               "additionalProperties": false,
@@ -107,6 +108,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                   "type": "string",
                   "enum": [
                     "personalWhatsappHandoff",
+                    "personalEmailHandoff",
                     "organizerWhatsappCampaign",
                     "catchWhatsapp",
                     "catchChat",
@@ -136,6 +138,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                         "catchAccountRequired",
                         "identityAmbiguous",
                         "missingPhone",
+                        "missingEmail",
                         "organizerSuppressed",
                         "contactOptedOut",
                         "permissionRequired",
@@ -160,6 +163,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
       "type": "string",
       "enum": [
         "personalWhatsappHandoff",
+        "personalEmailHandoff",
         "organizerWhatsappCampaign",
         "catchWhatsapp",
         "catchChat",
@@ -173,6 +177,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
         "catchAccountRequired",
         "identityAmbiguous",
         "missingPhone",
+        "missingEmail",
         "organizerSuppressed",
         "contactOptedOut",
         "permissionRequired",
@@ -194,6 +199,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
           "type": "string",
           "enum": [
             "personalWhatsappHandoff",
+            "personalEmailHandoff",
             "organizerWhatsappCampaign",
             "catchWhatsapp",
             "catchChat",
@@ -223,6 +229,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                 "catchAccountRequired",
                 "identityAmbiguous",
                 "missingPhone",
+                "missingEmail",
                 "organizerSuppressed",
                 "contactOptedOut",
                 "permissionRequired",
@@ -273,6 +280,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
               "type": "string",
               "enum": [
                 "personalWhatsappHandoff",
+                "personalEmailHandoff",
                 "organizerWhatsappCampaign",
                 "catchWhatsapp",
                 "catchChat",
@@ -287,8 +295,8 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
         },
         "routes": {
           "type": "array",
-          "minItems": 2,
-          "maxItems": 2,
+          "minItems": 3,
+          "maxItems": 3,
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -303,6 +311,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                 "type": "string",
                 "enum": [
                   "personalWhatsappHandoff",
+                  "personalEmailHandoff",
                   "organizerWhatsappCampaign",
                   "catchWhatsapp",
                   "catchChat",
@@ -332,6 +341,7 @@ export const resolveOrganizerCommunicationPlanCallableResponseSchema: Record<str
                       "catchAccountRequired",
                       "identityAmbiguous",
                       "missingPhone",
+                      "missingEmail",
                       "organizerSuppressed",
                       "contactOptedOut",
                       "permissionRequired",

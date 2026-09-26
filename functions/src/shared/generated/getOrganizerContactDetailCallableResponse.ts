@@ -146,7 +146,8 @@ export interface GetOrganizerContactDetailCallableResponse {
           | "catchPayment"
           | "hostImport"
           | "hostEstimate"
-          | "providerOrder";
+          | "providerOrder"
+          | "hostAttested";
         amountMinor: number;
         factCount: number;
       }[];
@@ -194,7 +195,12 @@ export interface GetOrganizerContactDetailCallableResponse {
     revenues: {
       currency: string;
       amountMinor: number;
-      source: "catchPayment" | "hostImport" | "hostEstimate" | "providerOrder";
+      source:
+        | "catchPayment"
+        | "hostImport"
+        | "hostEstimate"
+        | "providerOrder"
+        | "hostAttested";
       factCount: number;
       allocation: "perAttendee" | "sharedOrder";
     }[];
@@ -351,6 +357,25 @@ export interface GetOrganizerContactDetailCallableResponse {
         threadId: string;
         occurredAtMillis: number;
       }
+    | {
+        kind: "outreach";
+        timelineId: string;
+        channel:
+          | "phoneCall"
+          | "whatsapp"
+          | "email"
+          | "sms"
+          | "inPerson"
+          | "other";
+        outcome:
+          | "reached"
+          | "noAnswer"
+          | "leftMessage"
+          | "wrongContact"
+          | "attempted";
+        notePreview: string | null;
+        occurredAtMillis: number;
+      }
   )[];
   timelineTruncated: boolean;
   timelineCoverage: {
@@ -358,6 +383,7 @@ export interface GetOrganizerContactDetailCallableResponse {
     events: "exact" | "partial" | "unavailable";
     sends: "exact" | "partial" | "unavailable";
     replies: "exact" | "partial" | "unavailable";
+    outreach: "exact" | "partial" | "unavailable";
     replyObservation: "catchAndManagedWhatsappOnly";
   };
   /**

@@ -457,6 +457,68 @@ test("stored manual payment attestation is copied exactly into receipt",
     assert.deepEqual(receipt?.paymentSnapshot, offer.paymentSnapshot);
     assert.deepEqual(receipt?.manualPayment, offer.manualPayment);
     assert.equal(store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
+    const attendee = store.get(`eventAttendees/${result.attendeeId}`);
+    assert.equal(attendee?.revenueAmountMinor, 500);
+    assert.equal(attendee?.revenueCurrency, "INR");
+    assert.equal(attendee?.revenueSource, "hostAttested");
+    assert.equal(attendee?.revenueAllocation, "perAttendee");
+  });
+
+test("attested manual payment lands on a linked imported attendee",
+  async () => {
+    const {store, commit} = fixture();
+    const phone = "+919999999999";
+    const uid = "respondent1";
+    const guestId = eventAttendeeId(eventId, `phone:${phone}`);
+    const guestKey = "guest_key";
+    store.get(`organizerFormResponses/${responseId}`)!.identityKind =
+      "phoneVerified";
+    store.get(`organizerFormResponses/${responseId}`)!.respondentUid = uid;
+    store.get(`organizerFormResponses/${responseId}`)!.identity = {
+      displayName: "Ada Guest", email: null, phoneE164: phone,
+      searchName: "ada guest", origin: "respondentGranted"};
+    store.get(`organizerContacts/${contactId}`)!.phoneE164 = phone;
+    store.get(`eventSeatLedgers/${eventId}`)!.occupied = 1;
+    store.get(`events/${eventId}`)!.bookedCount = 1;
+    store.put(`eventAttendees/${guestId}`, {eventId, clubId: org,
+      organizerId: org, source: "hostImport", status: "registered",
+      linkedUid: null, phoneE164: phone, externalReference: null,
+      displayName: "Imported Ada"});
+    store.alias("attendee", guestId, guestKey);
+    store.alias("phone", phone, guestKey);
+    store.put(`eventSeatReservations/${hash(eventId, guestKey)}`,
+      {eventId, canonicalKey: guestKey, identityRevision: 1,
+        active: true, revision: 1, reservedAtMillis: 1000,
+        releasedAtMillis: null});
+    const offer = store.get(`organizerEventOffers/${offerId}`)!;
+    const snapshot = offer.paymentSnapshot as Row;
+    offer.paymentSnapshot = {...snapshot, expectedAmountMinor: 500,
+      collectionMode: "manualInstructions",
+      paymentInstructions: "Pay at the counter"};
+    offer.manualPayment = {status: "hostAttestedReceived",
+      evidenceReference: "bank-123", evidenceRecordedAtMillis: 1600,
+      reviewedByUid: actorUid, reviewedAtMillis: 1800,
+      reviewNote: "Checked bank statement", bankReceiptChecked: true,
+      attestedAmountMinor: 500, attestedCurrency: "INR",
+      attestedEventPaymentRevision: 1,
+      attestedEventPaymentHash: "a".repeat(64)};
+    const result = await commit();
+    assert.equal(result.attendeeId, guestId);
+    const guest = store.get(`eventAttendees/${guestId}`);
+    assert.equal(guest?.source, "hostImport");
+    assert.equal(guest?.revenueAmountMinor, 500);
+    assert.equal(guest?.revenueCurrency, "INR");
+    assert.equal(guest?.revenueSource, "hostAttested");
+    assert.equal(guest?.revenueAllocation, "perAttendee");
+  });
+
+test("admission without an attested payment writes no revenue fact",
+  async () => {
+    const {store, commit} = fixture();
+    const result = await commit();
+    const attendee = store.get(`eventAttendees/${result.attendeeId}`);
+    assert.equal(attendee?.revenueSource ?? null, null);
+    assert.equal(attendee?.revenueAmountMinor ?? null, null);
   });
 
 test("foreign roster and mismatched payment proof leave zero writes",

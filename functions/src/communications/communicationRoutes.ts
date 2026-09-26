@@ -4,11 +4,13 @@
  * In particular, Catch-owned WhatsApp and organizer-owned WhatsApp must never
  * share sender, consent, or suppression state merely because both use Meta.
  */
-export type CommunicationTransport = "catchApp" | "whatsapp" | "sms" | "rcs";
+export type CommunicationTransport =
+  "catchApp" | "whatsapp" | "sms" | "rcs" | "email";
 
 export type CommunicationRouteDefinition = Readonly<{
   id:
     | "personalWhatsappHandoff"
+    | "personalEmailHandoff"
     | "organizerWhatsappCampaign"
     | "catchWhatsapp"
     | "catchChat"
@@ -53,6 +55,19 @@ export const communicationRoutes = {
     id: "personalWhatsappHandoff",
     transport: "whatsapp",
     adapterKey: "whatsapp_handoff",
+    senderIdentity: "hostPersonalDevice",
+    deliveryMode: "externalHandoff",
+    audienceScope: "singleContact",
+    consentScope: "directUserAction",
+    observability: "none",
+    requiresHostFinalSend: true,
+    supportsReplies: true,
+    supportsScheduling: false,
+  },
+  personalEmailHandoff: {
+    id: "personalEmailHandoff",
+    transport: "email",
+    adapterKey: "mailto_handoff",
     senderIdentity: "hostPersonalDevice",
     deliveryMode: "externalHandoff",
     audienceScope: "singleContact",

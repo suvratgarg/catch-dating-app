@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catch — Response → Customer journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F4F1;
+  --surface: #FFFFFF;
+  --raised: #FAFAF8;
+  --ink: #16140F;
+  --ink2: #544F47;
+  --ink3: #9C958A;
+  --line: rgba(22,20,15,0.078);
+  --line2: rgba(22,20,15,0.141);
+  --primary: #16140F;
+  --primary-ink: #F4F4F1;
+  --primary-soft: #ECEAE4;
+  --success: #2F7D55;
+  --warning: #B9770F;
+  --danger: #C2261A;
+  --gold: #C9A24A;
+  --font-voice: "Archivo", system-ui, sans-serif;
+  --font-function: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #E2E1DC;
+  font-family: var(--font-function);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 1560px; margin: 0 auto; padding: 56px 40px 120px; }
+
+/* ---------- header ---------- */
+h1 { font-family: var(--font-voice); font-weight: 700; font-size: 44px; letter-spacing: -0.02em; margin: 0 0 10px; }
+.sub { font-size: 15px; color: var(--ink2); max-width: 760px; line-height: 1.6; margin: 0 0 28px; }
+.legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 56px; }
+.tag { font-family: var(--font-data); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; border: 1px solid var(--line2); color: var(--ink2); background: var(--surface); }
+.tag.existing { border-color: var(--line2); }
+.tag.proposed { border: 1px dashed var(--warning); color: var(--warning); background: #FBF3E3; }
+.tag.gap { border: 1px dashed var(--danger); color: var(--danger); background: #FBEBE9; }
+.tag.new { border-color: var(--success); color: var(--success); background: #EAF3EE; }
+
+/* ---------- sections ---------- */
+.step { margin-bottom: 96px; }
+.step-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
+.step-num { font-family: var(--font-data); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
+.step-title { font-family: var(--font-voice); font-weight: 700; font-size: 26px; letter-spacing: -0.01em; }
+.step-note { font-size: 13.5px; color: var(--ink2); max-width: 720px; line-height: 1.6; margin: 0 0 28px; }
+.step-note code { font-family: var(--font-data); font-size: 11.5px; background: var(--primary-soft); padding: 1px 5px; border-radius: 4px; }
+.step-grid { display: flex; gap: 36px; align-items: flex-start; flex-wrap: wrap; }
+
+/* ---------- phone frame ---------- */
+.phone {
+  width: 375px; flex: 0 0 375px;
+  background: var(--surface);
+  border-radius: 40px;
+  border: 1px solid rgba(22,20,15,0.18);
+  box-shadow: 0 24px 60px rgba(22,20,15,0.16), 0 4px 12px rgba(22,20,15,0.08);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.pstatus { display: flex; justify-content: space-between; align-items: center; padding: 14px 26px 4px; font-size: 13px; font-weight: 600; }
+.pstatus .icons { display: flex; gap: 5px; align-items: center; color: var(--ink); }
+.pappbar { display: flex; align-items: center; gap: 12px; padding: 10px 16px 12px; border-bottom: 1px solid var(--line); }
+.pappbar .back { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line2); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.pappbar .ttl { font-family: var(--font-voice); font-weight: 700; font-size: 17px; flex: 1; }
+.pappbar .sub2 { font-size: 11px; color: var(--ink3); }
+.iconbtn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line2); display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--ink); }
+.pbody { flex: 1; overflow: hidden; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.pdock { padding: 10px 16px 22px; border-top: 1px solid var(--line); background: var(--surface); }
+
+/* ---------- ui atoms ---------- */
+.seg { display: flex; gap: 4px; background: var(--primary-soft); border-radius: 100px; padding: 3px; }
+.seg span { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 100px; color: var(--ink2); white-space: nowrap; }
+.seg span.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.search { border: 1px solid var(--line2); border-radius: 100px; padding: 10px 16px; font-size: 13px; color: var(--ink3); display: flex; gap: 8px; align-items: center; }
+.card { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.rowcard { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.rowcard.sel { border-color: var(--primary); border-width: 1.5px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-soft); display: flex; align-items: center; justify-content: center; font-family: var(--font-voice); font-weight: 700; font-size: 14px; flex: 0 0 40px; }
+.rmeta { flex: 1; min-width: 0; }
+.rname { font-weight: 650; font-size: 14.5px; }
+.rsub { font-size: 12px; color: var(--ink2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.badge { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 8px; border-radius: 100px; white-space: nowrap; }
+.badge.neutral { background: var(--primary-soft); color: var(--ink2); }
+.badge.review { background: #E8EBF2; color: #2E4FA6; }
+.badge.ok { background: #EAF3EE; color: var(--success); }
+.badge.warn { background: #FBF3E3; color: var(--warning); }
+.badge.danger { background: #FBEBE9; color: var(--danger); }
+.badge.gold { background: #F6EEDD; color: #8A6B1F; }
+.btn { border-radius: 100px; padding: 12px 18px; font-size: 14px; font-weight: 650; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; }
+.btn.primary { background: var(--primary); color: var(--primary-ink); width: 100%; }
+.btn.sec { background: transparent; border: 1px solid var(--line2); color: var(--ink); }
+.btn.dangersec { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+.btn.sm { padding: 9px 14px; font-size: 12.5px; }
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.btnrow .btn { flex: 1; min-width: 0; }
+.mono { font-family: var(--font-data); font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); }
+.field { border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; display: flex; align-items: center; gap: 10px; background: var(--surface); }
+.field .f-ic { font-size: 15px; color: var(--ink2); width: 20px; text-align: center; }
+.field .f-meta { flex: 1; min-width: 0; }
+.field .f-label { font-size: 10.5px; color: var(--ink3); font-family: var(--font-data); letter-spacing: 0.06em; text-transform: uppercase; }
+.field .f-val { font-size: 14px; font-weight: 550; margin-top: 1px; }
+.field .f-chev { color: var(--ink3); }
+.answer { border-top: 1px solid var(--line); padding: 10px 0; }
+.answer .q { font-size: 11px; color: var(--ink3); margin-bottom: 3px; }
+.answer .a { font-size: 14px; line-height: 1.45; }
+.callout { display: flex; gap: 10px; padding: 11px 13px; border-radius: 12px; font-size: 12.5px; line-height: 1.5; }
+.callout.warn { background: #FBF3E3; color: #7A5A10; border: 1px dashed var(--warning); }
+.callout.info { background: var(--primary-soft); color: var(--ink2); }
+.check { width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid var(--line2); flex: 0 0 22px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
+.check.on { background: var(--primary); border-color: var(--primary); }
+.switch { width: 40px; height: 24px; border-radius: 100px; background: var(--primary); position: relative; flex: 0 0 40px; }
+.switch::after { content: ''; position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+.tl { position: relative; padding-left: 22px; }
+.tl::before { content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 1.5px; background: var(--line2); }
+.tl-item { position: relative; padding-bottom: 16px; }
+.tl-item::before { content: ''; position: absolute; left: -21px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--ink3); border: 2px solid var(--surface); }
+.tl-item.ok::before { background: var(--success); }
+.tl-item.now::before { background: var(--warning); width: 11px; height: 11px; left: -22px; top: 3px; }
+.tl-item .t-t { font-size: 13.5px; font-weight: 600; }
+.tl-item .t-s { font-size: 11.5px; color: var(--ink2); margin-top: 1px; }
+
+/* proposed marker inside screens */
+.proposed-el { position: relative; }
+.proposed-el::after {
+  content: 'NEW'; position: absolute; top: -7px; right: -6px;
+  font-family: var(--font-data); font-size: 8px; font-weight: 600; letter-spacing: 0.08em;
+  background: var(--warning); color: #fff; padding: 2px 6px; border-radius: 100px;
+}
+
+/* ---------- annotations ---------- */
+.annot { flex: 1; min-width: 300px; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
+.annot h4 { font-family: var(--font-voice); font-size: 15px; font-weight: 700; margin: 6px 0 0; }
+.annot-item { display: flex; gap: 12px; font-size: 13px; line-height: 1.55; color: var(--ink2); }
+.annot-item .n { font-family: var(--font-data); font-size: 10px; font-weight: 600; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; flex: 0 0 20px; margin-top: 1px; }
+.annot-item .n.p { background: var(--warning); }
+.annot-item .n.g { background: var(--danger); }
+.annot-item code { font-family: var(--font-data); font-size: 11px; background: var(--primary-soft); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+.n-pill { position: absolute; font-family: var(--font-data); font-size: 9px; font-weight: 600; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; }
+.n-pill.p { background: var(--warning); }
+.n-pill.g { background: var(--danger); }
+
+/* ---------- flowchart ---------- */
+.flow { display: flex; flex-direction: column; gap: 0; max-width: 980px; margin: 0 auto; }
+.frow { display: flex; align-items: stretch; gap: 20px; }
+.fcol-main { flex: 0 0 300px; }
+.fcol-side { flex: 1; display: flex; align-items: center; }
+.fnode { background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; padding: 12px 16px; position: relative; }
+.fnode .f-k { font-family: var(--font-data); font-size: 9px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
+.fnode .f-t { font-weight: 700; font-size: 14.5px; }
+.fnode .f-s { font-size: 11.5px; color: var(--ink2); margin-top: 2px; }
+.fnode.branch { border-style: dashed; }
+.fnode.proposed { border: 1.5px dashed var(--warning); }
+.farrow { width: 2px; margin: 0 auto; background: var(--ink3); height: 26px; position: relative; }
+.farrow::after { content: ''; position: absolute; bottom: 0; left: -4px; border: 5px solid transparent; border-top: 7px solid var(--ink3); }
+.fside { font-size: 12px; line-height: 1.5; color: var(--ink2); padding: 10px 14px; border-radius: 10px; }
+.fside.gap { background: #FBEBE9; border: 1px dashed var(--danger); color: #8C2B21; }
+.fside.prop { background: #FBF3E3; border: 1px dashed var(--warning); color: #7A5A10; }
+.fside code { font-family: var(--font-data); font-size: 10.5px; background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 3px; }
+.wa { background: #E7F6E9; border-radius: 18px; padding: 16px; }
+.wa-bubble { background: #fff; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; line-height: 1.5; box-shadow: 0 1px 1px rgba(0,0,0,0.08); max-width: 300px; }
+.wa-bubble .link { color: #128C7E; word-break: break-all; }
+.wa-meta { font-size: 10px; color: var(--ink3); text-align: right; margin-top: 4px; }
+.two { display: flex; gap: 10px; }
+.two > * { flex: 1; }
+@media (max-width: 900px) { .page { padding: 32px 16px 80px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Response → Customer journey</h1>
+<p class="sub">Host side, end to end: a registration response comes in, gets reviewed, becomes a CRM contact, receives an admission offer for an event, pays, and lands on the customer record with revenue attached. Elements marked <b>PROPOSED</b> do not exist today — they are drawn in place so the seams are visible.</p>
+<div class="legend">
+  <span class="tag existing">Existing today</span>
+  <span class="tag proposed">Proposed addition</span>
+  <span class="tag gap">Gap / broken seam</span>
+</div>
+
+<!-- ==================== FLOWCHART ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">MAP</span><span class="step-title">The whole pipeline</span></div>
+  <p class="step-note">Left column is the state the object is in. Right column flags what works, what's missing, and where the host gets bounced out of the flow today.</p>
+  <div class="flow">
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Form response</div><div class="f-t">Submitted</div><div class="f-s">Registration form — identity + answers captured</div></div></div>
+    <div class="fcol-side"><div class="fside">Response exists independently of a CRM contact. Purposes: application / registration / intake / waiver / feedback / survey.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Review</div><div class="f-t">In review · Waitlisted · Declined · Approved</div><div class="f-s">Host triage + one review note</div></div></div>
+    <div class="fcol-side"><div class="fside gap">GAP — no pipeline stages or outreach log. "Called, no answer" can only be a free-text note. Contact buttons are Call / Email / IG / LinkedIn — no WhatsApp at this level.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Conversion</div><div class="f-t">CRM contact</div><div class="f-s">One conversion step per response</div></div></div>
+    <div class="fcol-side"><div class="fside gap">GAP — tracked WhatsApp handoff requires contactId (<code>prepareManualSendTask</code>), so messaging, offers and audience queries all bounce through conversion — one response at a time.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Offer · draft</div><div class="f-t">Pick event + recipients + expiry</div><div class="f-s">Payment terms snapshotted at issuance</div></div></div>
+    <div class="fcol-side"><div class="fside gap">GAP — event picker lists existing events only; no inline "new event". Missing payment terms bounce the host to event settings.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Offer · issued</div><div class="f-t">Offered</div><div class="f-s">Immutable, revisioned, expires before event start</div></div></div>
+    <div class="fcol-side"><div class="fside">Payment snapshot frozen: collectionMode, expected amount, currency, reusable page / instructions / personal link.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Delivery</div><div class="f-t">WhatsApp handoff (wa.me)</div><div class="f-s">Rendered message + payment link → host's own WhatsApp</div></div></div>
+    <div class="fcol-side"><div class="fside gap">GAP — nothing is sent automatically, nothing is tracked as delivered, and there is no accept/decline link for the recipient. <code>catchCheckout</code> mode exists but is marked unsupported.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Payment · manual</div><div class="f-t">Evidence → Host attested</div><div class="f-s">Host records reference, then attests with bank-check flag</div></div></div>
+    <div class="fcol-side"><div class="fside gap">GAP — no "offered &amp; unpaid" attention item or reminder. Attestation writes only to offer/audit collections — never to the contact's revenue facts.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Admission</div><div class="f-t">Admitted → attendee + seat</div><div class="f-s">commitOrganizerFormAdmission consumes the offered offer</div></div></div>
+    <div class="fcol-side"><div class="fside">Paid offers require <code>hostAttestedReceived</code> + bankReceiptChecked before a seat is written. Free offers admit directly.</div></div></div>
+    <div class="farrow"></div>
+
+    <div class="frow"><div class="fcol-main"><div class="fnode"><div class="f-k">Customer record</div><div class="f-t">Timeline + revenue</div><div class="f-s">Sends, replies, notes, attendance, revenue by source</div></div></div>
+    <div class="fcol-side"><div class="fside gap">GAP — revenue sees <code>catchPayment</code>, <code>hostImport</code>, <code>hostEstimate</code>, <code>providerOrder</code>. Manually attested offer money is invisible here. Email exists only as a mailto: link — no managed email channel at all.</div></div></div>
+  </div>
+</div>
+
+<!-- ==================== S1 RESPONSES ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">01</span><span class="step-title">Responses</span></div>
+  <p class="step-note">The responses directory for a form. Multi-select feeds the offer flow. The review statuses are the only "pipeline" the CRM has today — there are no custom stages, no outreach outcomes like "called, no answer".</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Sunday Long Table<span class="sub2" style="display:block">Registration · 14 responses</span></div><div class="iconbtn">⋯</div></div>
+      <div class="pbody">
+        <div class="seg"><span class="on">All · 14</span><span>New · 5</span><span>In review · 3</span><span>Approved · 4</span></div>
+        <div class="search">⌕&nbsp; Search by name</div>
+        <div class="rowcard sel"><div class="check on">✓</div><div class="avatar">AR</div><div class="rmeta"><div class="rname">Ananya Rao</div><div class="rsub">Submitted today · 12:40</div></div><span class="badge neutral">Submitted</span></div>
+        <div class="rowcard sel"><div class="check on">✓</div><div class="avatar">KM</div><div class="rmeta"><div class="rname">Kabir Mehta</div><div class="rsub">Submitted today · 11:15</div></div><span class="badge neutral">Submitted</span></div>
+        <div class="rowcard sel"><div class="check on">✓</div><div class="avatar">RI</div><div class="rmeta"><div class="rname">Rohan Iyer</div><div class="rsub">Submitted yesterday</div></div><span class="badge neutral">Submitted</span></div>
+        <div class="rowcard"><div class="check"></div><div class="avatar">PS</div><div class="rmeta"><div class="rname">Priya Sharma</div><div class="rsub">In review · you left a note</div></div><span class="badge review">In review</span></div>
+        <div class="rowcard"><div class="check"></div><div class="avatar">AS</div><div class="rmeta"><div class="rname">Arjun Singh</div><div class="rsub">Waitlisted Tue</div></div><span class="badge warn">Waitlisted</span></div>
+        <div class="rowcard"><div class="check"></div><div class="avatar">MN</div><div class="rmeta"><div class="rname">Meera Nair</div><div class="rsub">Approved Mon</div></div><span class="badge ok">Approved</span></div>
+      </div>
+      <div class="pdock"><div class="btn primary">Offer admission · 3 selected</div></div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n">1</span><div><b>Statuses are review statuses, not stages.</b> <code>submitted / inReview / waitlisted / declined / approved</code> — there is no "contacted", "no answer", "follow up" or custom stage. Outreach outcomes would need a new model (activity log on the contact/response).</div></div>
+      <div class="annot-item"><span class="n">2</span><div><b>Multi-select → "Offer admission"</b> is the entry to the offer workspace. Selection is a query hash — the workspace re-reads every response before drafting.</div></div>
+      <div class="annot-item"><span class="n p">P</span><div><b>Proposed:</b> a per-row or per-detail WhatsApp action that doesn't require the host to leave this screen — see screen 02.</div></div>
+      <div class="annot-item"><span class="n p">P</span><div><b>Proposed:</b> review-stage quick filters that reflect real triage ("called", "no reply") if an outreach/activity model gets added.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== S2 REVIEW RESPONSE ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">02</span><span class="step-title">Review response</span></div>
+  <p class="step-note">The response detail. Today the contact row is Call / Email / Instagram / LinkedIn only — even though a verified <code>phoneE164</code> is already on the record. The proposed change adds WhatsApp (and keeps email) as one-tap actions at this level.</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Ananya Rao<span class="sub2" style="display:block">Sunday Long Table · Registration</span></div><span class="badge neutral">Submitted</span></div>
+      <div class="pbody">
+        <div class="mono">Contact</div>
+        <div class="btnrow">
+          <div class="btn sec sm">✆ Call</div>
+          <div class="btn sec sm proposed-el">◌ WhatsApp</div>
+        </div>
+        <div class="btnrow">
+          <div class="btn sec sm">✉ Email</div>
+          <div class="btn sec sm">↗ Instagram</div>
+          <div class="btn sec sm">↗ LinkedIn</div>
+        </div>
+        <div class="card" style="padding: 4px 14px">
+          <div class="answer"><div class="q">Why do you want to join?</div><div class="a">New to Mumbai, looking for a regular Sunday group that isn't a bar crawl.</div></div>
+          <div class="answer"><div class="q">What makes a great night out?</div><div class="a">Small table, good food, everyone actually talks.</div></div>
+          <div class="answer"><div class="q">Instagram</div><div class="a">@ananya.rao</div></div>
+        </div>
+        <div class="mono">Review</div>
+        <div class="btnrow">
+          <div class="btn sec sm">In review</div>
+          <div class="btn sec sm">Waitlist</div>
+          <div class="btn dangersec sm">Decline</div>
+        </div>
+        <div class="field"><div class="f-meta"><div class="f-label">Review note · optional</div><div class="f-val" style="color:var(--ink3); font-weight:400">Seems like a good fit…</div></div></div>
+        <div class="field"><div class="f-ic">＋</div><div class="f-meta"><div class="f-val">Add to Customers</div><div class="f-label">Creates a CRM contact</div></div><div class="f-chev">›</div></div>
+      </div>
+      <div class="pdock"><div class="btn primary">Approve</div></div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n p">1</span><div><b>Proposed: WhatsApp at response level.</b> Two flavors — (a) raw <code>wa.me/{phone}?text=…</code> link, zero backend work but untracked; (b) auto-convert to contact inline, then the existing manual-send-task sheet (tracked on the timeline, shows up under customer history). (b) is strictly better and the conversion is already idempotent.</div></div>
+      <div class="annot-item"><span class="n">2</span><div><b>Email already exists here</b> as a <code>mailto:</code> deep link — it opens the host's mail app, nothing is recorded. There is no managed email send anywhere in the system.</div></div>
+      <div class="annot-item"><span class="n">3</span><div><b>"Add to Customers"</b> is <code>HostFormConversionKind.crmContact</code> — a separate explicit step. Offers, audiences, campaigns and the tracked WhatsApp handoff all require this contact.</div></div>
+      <div class="annot-item"><span class="n p">4</span><div><b>Proposed: log outreach.</b> The sheet that opens WhatsApp could record "messaged" on the application/contact timeline automatically (manual send tasks already do this at customer level — <code>recordManualHandoffOpened</code>).</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== S3 EVENT ASSIGN ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">03</span><span class="step-title">Offer admission — pick or create the event</span></div>
+  <p class="step-note">Today <code>listOrganizerEventOfferTargets</code> returns existing owned events only. The host can't create an event here — they'd leave the flow, run the five-step create wizard, come back. Proposed: a "New event" row that creates a stub event inline and returns to the offer draft.</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Offer admission<span class="sub2" style="display:block">3 people selected</span></div></div>
+      <div class="pbody">
+        <div class="mono">Choose an event</div>
+        <div class="field proposed-el" style="border:1.5px dashed var(--warning)"><div class="f-ic">＋</div><div class="f-meta"><div class="f-val" style="color:var(--warning); font-weight:700">New event</div><div class="f-label">Create a stub and offer into it</div></div><div class="f-chev">›</div></div>
+        <div class="field" style="border-color:var(--primary); border-width:1.5px"><div class="f-ic">◷</div><div class="f-meta"><div class="f-val">Sunday Long Table</div><div class="f-label">Sun, 30 Aug · 7:00 PM · Bandra</div></div><div class="check on" style="width:20px;height:20px">✓</div></div>
+        <div class="field"><div class="f-ic">◷</div><div class="f-meta"><div class="f-val">Trivia Night</div><div class="f-label">Fri, 4 Sep · 8:00 PM · Khar West</div></div><div class="f-chev">›</div></div>
+        <div class="field"><div class="f-ic">◷</div><div class="f-meta"><div class="f-val">Box League — Week 6</div><div class="f-label">Sat, 5 Sep · 9:00 AM · Juhu</div></div><div class="f-chev">›</div></div>
+        <div class="callout warn" style="font-size:12px">Today: this picker only lists existing events — <code>listOrganizerEventOfferTargets</code>. Incomplete payment terms bounce the host to event settings and lose the flow.</div>
+      </div>
+    </div>
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">New event<span class="sub2" style="display:block">Quick create · Sunday Table Club</span></div></div>
+      <div class="pbody">
+        <div class="mono">Basics</div>
+        <div class="field"><div class="f-meta"><div class="f-label">Event name</div><div class="f-val">Sunday Long Table — Sep 6</div></div></div>
+        <div class="two">
+          <div class="field"><div class="f-meta"><div class="f-label">Date</div><div class="f-val">Sun, 6 Sep</div></div></div>
+          <div class="field"><div class="f-meta"><div class="f-label">Time</div><div class="f-val">7:00 PM</div></div></div>
+        </div>
+        <div class="field"><div class="f-ic">◎</div><div class="f-meta"><div class="f-label">Place</div><div class="f-val">Veranda, Bandra</div></div><div class="f-chev">›</div></div>
+        <div class="mono" style="margin-top:4px">Admission</div>
+        <div class="two">
+          <div class="field"><div class="f-meta"><div class="f-label">Price</div><div class="f-val">₹ 1,500</div></div></div>
+          <div class="field"><div class="f-meta"><div class="f-label">Seats</div><div class="f-val">12</div></div></div>
+        </div>
+        <div class="field"><div class="f-ic">⛓</div><div class="f-meta"><div class="f-label">Payment collection</div><div class="f-val">Personal payment link</div></div><div class="f-chev">›</div></div>
+        <div class="callout info" style="font-size:12px">Creates a draft event with just enough for an offer: name, start, place, price, capacity. Full details (photos, guide, policy) stay editable later in the event editor.</div>
+      </div>
+      <div class="pdock"><div class="btn primary">Create &amp; continue offer</div></div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n p">1</span><div><b>Proposed: "New event" row</b> in the picker. Creates a minimal event and returns with the offer draft intact — the flow never leaves.</div></div>
+      <div class="annot-item"><span class="n p">2</span><div><b>Proposed: quick-create sheet.</b> The seat/admission authority (<code>eventAttendee</code> + seat write in <code>commitOrganizerFormAdmission</code>) doesn't need the full wizard — only an event doc with start time, organizer ownership, and payment terms for the offer snapshot.</div></div>
+      <div class="annot-item"><span class="n g">3</span><div><b>Gap it fixes:</b> today the payment-terms gate ejects the host to event settings mid-flow (<code>suggestedExpiresAt == null → openEventSettings</code>). Quick-create collects price + collection mode inline instead.</div></div>
+      <div class="annot-item"><span class="n">4</span><div><b>Constraint to keep:</b> offer expiry must precede event start, and the payment snapshot is frozen at issuance — a stub event's terms get locked into the offer the same way a full event's do.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== S4 OFFER REVIEW + ISSUE ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">04</span><span class="step-title">Offer — review &amp; issue</span></div>
+  <p class="step-note">The offer draft: recipients, expiry, payment terms. Commit writes immutable offer docs (<code>draft → offered</code>). Each row already forces a CRM contact — the workspace blocks until every selected response has one.</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Review offer<span class="sub2" style="display:block">Sunday Long Table · Sun 30 Aug</span></div></div>
+      <div class="pbody">
+        <div class="mono">Recipients · 3</div>
+        <div class="rowcard"><div class="avatar">AR</div><div class="rmeta"><div class="rname">Ananya Rao</div><div class="rsub">Approved application</div></div><span class="badge ok">Contact ✓</span></div>
+        <div class="rowcard"><div class="avatar">KM</div><div class="rmeta"><div class="rname">Kabir Mehta</div><div class="rsub">Approved application</div></div><span class="badge ok">Contact ✓</span></div>
+        <div class="rowcard"><div class="avatar">RI</div><div class="rmeta"><div class="rname">Rohan Iyer</div><div class="rsub">Approved application</div></div><span class="badge warn">Needs contact</span></div>
+        <div class="mono">Terms</div>
+        <div class="card" style="padding:12px 14px; display:flex; flex-direction:column; gap:8px">
+          <div style="display:flex; justify-content:space-between; font-size:13px"><span style="color:var(--ink2)">Price</span><b>₹1,500</b></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px"><span style="color:var(--ink2)">Collection</span><b>Personal payment link</b></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px"><span style="color:var(--ink2)">Offer expires</span><b>Sun 30 Aug · 5:00 PM</b></div>
+        </div>
+        <div class="field"><div class="f-meta"><div class="f-label">Rohan's payment link</div><div class="f-val" style="font-weight:400; color:var(--ink2); font-size:12.5px">https://rzp.io/i/…</div></div></div>
+        <div class="callout info" style="font-size:12px">Expiry auto-suggests 2 h before start. Payment terms are snapshotted into each offer — changing event pricing later never rewrites an issued offer.</div>
+      </div>
+      <div class="pdock"><div class="btn primary">Issue 3 offers</div></div>
+    </div>
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Offers<span class="sub2" style="display:block">Sunday Long Table · Sun 30 Aug</span></div></div>
+      <div class="pbody">
+        <div class="callout warn proposed-el" style="font-size:12px"><b>3 offers unpaid · expires in 2 days.</b> Proposed: an attention item nudges the host; today nothing reminds anyone.</div>
+        <div class="mono">Issued</div>
+        <div class="rowcard"><div class="avatar">AR</div><div class="rmeta"><div class="rname">Ananya Rao</div><div class="rsub">Offered · ₹1,500 · unpaid</div></div><span class="badge warn">Unpaid</span></div>
+        <div class="rowcard" style="border-color:var(--primary); border-width:1.5px"><div class="avatar">KM</div><div class="rmeta"><div class="rname">Kabir Mehta</div><div class="rsub">Offered · ₹1,500 · evidence recorded</div></div><span class="badge review">Review pay</span></div>
+        <div class="rowcard"><div class="avatar">RI</div><div class="rmeta"><div class="rname">Rohan Iyer</div><div class="rsub">Offered · expires Sun 5 PM</div></div><span class="badge neutral">Offered</span></div>
+        <div class="mono">Kabir Mehta · payment</div>
+        <div class="card" style="padding:12px 14px; font-size:13px; display:flex; flex-direction:column; gap:6px">
+          <div>Evidence: <b>"UPI ref 4231…"</b> · submitted 1 h ago</div>
+          <div style="color:var(--ink2); font-size:12px">Check the bank receipt, then attest. Attestation is what unlocks admission.</div>
+          <div class="btnrow" style="margin-top:4px"><div class="btn sec sm">Reject</div><div class="btn primary sm" style="padding:9px 14px">Attest received</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n">1</span><div><b>"Needs contact" is a hard block today</b> — each response without a CRM contact must be converted one at a time before the draft can preview. Proposed: batch-convert inline.</div></div>
+      <div class="annot-item"><span class="n">2</span><div><b>Offer states:</b> <code>draft → offered → withdrawn | expired</code>. Generation bumps on reissue so an old offer can't authorize a new one.</div></div>
+      <div class="annot-item"><span class="n p">3</span><div><b>Proposed: unpaid-offer attention item.</b> The attention catalog has application/waitlist/payout/sync kinds — no offer kind. An "offered &amp; unpaid &amp; unexpired" row fits the existing machinery.</div></div>
+      <div class="annot-item"><span class="n g">4</span><div><b>Gap: no recipient state.</b> There's no "accepted" or "declined" by the customer — the host can't tell "haven't sent the message yet" from "sent, no reply" from "paid". An accept/RSVP token in the handoff link would close this.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== S5 THE MESSAGE ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">05</span><span class="step-title">The message that gets sent</span></div>
+  <p class="step-note">"Prepare message" renders a template with the frozen payment terms and opens the host's own WhatsApp via <code>wa.me</code>. Nothing is sent server-side; the host presses send. The manual-send task records that the handoff was opened.</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Send offer<span class="sub2" style="display:block">Kabir Mehta · Sunday Long Table</span></div></div>
+      <div class="pbody">
+        <div class="callout info" style="font-size:12px">Opens your WhatsApp with this message pre-filled. You press send in WhatsApp.</div>
+        <div class="mono">Message preview</div>
+        <div class="card" style="padding:14px; font-size:13.5px; line-height:1.55">
+          Hi Kabir, your offer for <b>Sunday Long Table</b> is ready on <b>2026-08-30 19:00 Asia/Kolkata (GMT+05:30)</b>.<br><br>Payment link: <span style="color:#128C7E">https://rzp.io/i/sunday-aug30</span>
+        </div>
+        <div class="mono">Channel</div>
+        <div class="field"><div class="f-ic">◌</div><div class="f-meta"><div class="f-val">WhatsApp · personal handoff</div><div class="f-label">+91 98200 12345</div></div></div>
+        <div class="field proposed-el" style="border:1.5px dashed var(--warning)"><div class="f-ic">✉</div><div class="f-meta"><div class="f-val" style="color:var(--warning); font-weight:700">Email · not available yet</div><div class="f-label">Proposed channel for non-WhatsApp markets</div></div></div>
+        <div class="callout warn" style="font-size:12px">WhatsApp Business is connected but reply-only (24-h inbound window) — it can't start this thread. All first contact is personal wa.me.</div>
+      </div>
+      <div class="pdock"><div class="btnrow"><div class="btn sec sm" style="flex:0 0 auto">Copy</div><div class="btn primary" style="flex:1">Open WhatsApp</div></div></div>
+    </div>
+    <div class="phone">
+      <div class="pstatus"><span>12:53</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div style="background:#0B141A; padding:12px 16px; display:flex; gap:10px; align-items:center"><div class="avatar" style="width:32px;height:32px;flex-basis:32px;font-size:12px">KM</div><div style="color:#E9EDEF; font-weight:600; font-size:15px">Kabir Mehta</div></div>
+      <div style="flex:1; background:#0B141A; padding:16px; display:flex; flex-direction:column; gap:10px; min-height:380px">
+        <div style="align-self:center; font-size:10px; color:#8696A0; font-family:var(--font-data)">TODAY</div>
+        <div class="wa-bubble" style="align-self:flex-end; background:#005C4B; color:#E9EDEF">Hi Kabir, your offer for Sunday Long Table is ready on 2026-08-30 19:00 Asia/Kolkata (GMT+05:30).<br><br>Payment link: <span class="link" style="color:#53BDEB">https://rzp.io/i/sunday-aug30</span><div class="wa-meta" style="color:#8696A0">12:53 ✓✓</div></div>
+        <div class="wa-bubble" style="background:#202C33; color:#E9EDEF">Paid! 🎉 UPI ref 4231<div class="wa-meta">12:58</div></div>
+      </div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n">1</span><div><b>Template tokens:</b> <code>{name} {event} {time}</code> + <code>{paymentLink}</code> or <code>{paymentInstructions}</code> depending on collection mode. Free events render "No payment is required."</div></div>
+      <div class="annot-item"><span class="n">2</span><div><b>Blocked states are explicit:</b> expired offer, changed payment terms, missing/invalid phone, opted-out contact, missing link or instructions — 20+ typed blockers in <code>prepareOfferHandoff</code>.</div></div>
+      <div class="annot-item"><span class="n p">3</span><div><b>Proposed: email as a parallel handoff route.</b> For markets where WhatsApp isn't dominant — same prepare/edit/record machinery, <code>mailto:</code> now, a real provider later. Today email doesn't exist beyond a raw link.</div></div>
+      <div class="annot-item"><span class="n p">4</span><div><b>Proposed: acceptance link.</b> Add an RSVP/accept token to the message so "offered" can resolve to "accepted/declined" without the host interpreting a reply — today the offer has no recipient state at all.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== S6 REVENUE ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">06</span><span class="step-title">Revenue on the customer</span></div>
+  <p class="step-note">Today revenue aggregates Catch payments (requires a verified linked account) plus host-reported facts (imports, estimates, provider orders). <b>A host-attested manual payment writes no revenue fact</b> — the money is invisible here. The proposed row fixes the seam.</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Kabir Mehta</div><div class="iconbtn">⋯</div></div>
+      <div class="pbody">
+        <div class="mono">Lifetime revenue · partial coverage</div>
+        <div style="font-family:var(--font-voice); font-size:34px; font-weight:700">₹7,300</div>
+        <div class="card" style="padding:4px 14px">
+          <div class="answer" style="display:flex; justify-content:space-between; align-items:center"><div><div class="a" style="font-weight:600">Sunday Long Table</div><div class="q">Sun 30 Aug · Manual · attested by you</div></div><div style="display:flex; gap:8px; align-items:center"><b>₹1,500</b><span class="badge gold proposed-el" style="position:static">Attested</span></div></div>
+          <div class="answer" style="display:flex; justify-content:space-between; align-items:center"><div><div class="a" style="font-weight:600">Trivia Night</div><div class="q">Fri 28 Aug · Provider order · BookMyShow</div></div><div style="display:flex; gap:8px; align-items:center"><b>₹800</b><span class="badge neutral">Provider</span></div></div>
+          <div class="answer" style="display:flex; justify-content:space-between; align-items:center"><div><div class="a" style="font-weight:600">Box League — Week 4</div><div class="q">Sat 15 Aug · Catch checkout</div></div><div style="display:flex; gap:8px; align-items:center"><b>₹2,000</b><span class="badge ok">Catch</span></div></div>
+          <div class="answer" style="display:flex; justify-content:space-between; align-items:center"><div><div class="a" style="font-weight:600">Mixed Social</div><div class="q">May · Host estimate</div></div><div style="display:flex; gap:8px; align-items:center"><b>₹3,000</b><span class="badge neutral">Estimate</span></div></div>
+        </div>
+        <div class="callout warn" style="font-size:12px">The ₹1,500 row only exists if attestation writes a revenue fact (<code>hostAttested</code>) onto the contact-event edge. Today it doesn't — total would read ₹5,800 and the offer money vanishes.</div>
+      </div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n">1</span><div><b>Revenue sources today:</b> <code>catchPayment</code> (payments collection, only for verified linked UIDs), <code>hostImport</code>/<code>hostEstimate</code> (roster import), <code>providerOrder</code> (external ticketing sync).</div></div>
+      <div class="annot-item"><span class="n g">2</span><div><b>Gap:</b> <code>reconcileEvidence → hostAttestedReceived</code> writes to offer/action/batch/audit collections only. No edge fact, no attendee revenue, no payments row. The link the host intuitively expects — "they paid via my link → shows in their history" — doesn't exist.</div></div>
+      <div class="annot-item"><span class="n p">3</span><div><b>Proposed:</b> on attestation, write a <code>hostAttested</code> revenue fact (attestedAmountMinor/currency are already captured on the offer) onto the contact-event edge. Exact for that fact; coverage stays honest via the existing exact/partial flag.</div></div>
+      <div class="annot-item"><span class="n">4</span><div><b>Alternative path:</b> wire <code>catchCheckout</code> into offers — a real payments-collection row links automatically, but only for customers with verified Catch accounts. Manual attested revenue still needs source 3.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== S7 CUSTOMER DETAIL ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">07</span><span class="step-title">Customer detail — where it all lands</span></div>
+  <p class="step-note">The person record. Message (Catch chat if verified, else WhatsApp handoff), email/call deep links, attendance summary, and a timeline that should show the whole chain: response → approved → offer → message → paid → admitted → attended.</p>
+  <div class="step-grid">
+    <div class="phone">
+      <div class="pstatus"><span>12:50</span><span class="icons">▲ ⠿ ▮</span></div>
+      <div class="pappbar"><div class="back">‹</div><div class="ttl">Kabir Mehta</div><div class="iconbtn">◌</div><div class="iconbtn">⋯</div></div>
+      <div class="pbody">
+        <div style="display:flex; gap:12px; align-items:center"><div class="avatar" style="width:52px;height:52px;flex-basis:52px;font-size:17px">KM</div><div><div style="font-weight:700; font-size:17px">Kabir Mehta <span class="badge ok" style="font-size:8px; vertical-align:2px">Regular</span></div><div style="font-size:12px; color:var(--ink2)">+91 98200 12345 · kabir@example.com</div></div></div>
+        <div class="btnrow"><div class="btn primary sm" style="flex:1">◌ Message</div><div class="btn sec sm">✆</div><div class="btn sec sm">✉</div></div>
+        <div class="card" style="padding:10px 14px; display:flex; text-align:center">
+          <div style="flex:1"><div style="font-family:var(--font-voice); font-size:20px; font-weight:700">9</div><div class="q" style="font-size:10px; color:var(--ink3)">attended</div></div>
+          <div style="flex:1"><div style="font-family:var(--font-voice); font-size:20px; font-weight:700">₹7,300</div><div class="q" style="font-size:10px; color:var(--ink3)">lifetime</div></div>
+          <div style="flex:1"><div style="font-family:var(--font-voice); font-size:20px; font-weight:700">89%</div><div class="q" style="font-size:10px; color:var(--ink3)">attendance</div></div>
+        </div>
+        <div class="mono">History</div>
+        <div class="tl">
+          <div class="tl-item ok"><div class="t-t">Attended · Sunday Long Table</div><div class="t-s">Sun 30 Aug · checked in 6:52 PM</div></div>
+          <div class="tl-item ok"><div class="t-t">Admitted · seat confirmed</div><div class="t-s">Sun 30 Aug · after payment attested</div></div>
+          <div class="tl-item ok"><div class="t-t">Payment attested · ₹1,500</div><div class="t-s">Sun 28 Aug · UPI ref 4231 · bank checked</div></div>
+          <div class="tl-item ok"><div class="t-t">WhatsApp offer sent</div><div class="t-s">Sat 27 Aug · manual handoff opened</div></div>
+          <div class="tl-item ok"><div class="t-t">Offer issued · Sunday Long Table</div><div class="t-s">Sat 27 Aug · expires Sun 5 PM</div></div>
+          <div class="tl-item"><div class="t-t">Application approved</div><div class="t-s">Sat 27 Aug · "Seems like a good fit"</div></div>
+          <div class="tl-item"><div class="t-t">Registration submitted</div><div class="t-s">Fri 26 Aug · Sunday Long Table form</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="annot">
+      <div class="annot-item"><span class="n">1</span><div><b>"Message" resolves via the communication plan:</b> Catch chat if the contact is a verified linked account, else the personal WhatsApp handoff sheet (tracked manual send task). That's the button that only exists after contact conversion.</div></div>
+      <div class="annot-item"><span class="n">2</span><div><b>Timeline kinds today:</b> form submissions, sends (campaign / announcement / manual handoff), replies, notes. Offer issuance and payment attestation <i>would</i> need to land here as entries — the model supports them, nothing writes them yet.</div></div>
+      <div class="annot-item"><span class="n p">3</span><div><b>Proposed additions to this record:</b> unpaid-offer state visible on the row, outreach outcomes (called/no answer), and the attested-revenue row feeding the lifetime total.</div></div>
+      <div class="annot-item"><span class="n g">4</span><div><b>What a host still can't do here:</b> see "accepted the offer" (doesn't exist), send a managed first-touch email or WhatsApp template (reply-only window), or trace a payment link to the ₹ amount (no linkage).</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SUMMARY ==================== -->
+<div class="step">
+  <div class="step-head"><span class="step-num">∑</span><span class="step-title">The seam list</span></div>
+  <div class="step-grid">
+    <div class="annot" style="max-width:100%">
+      <div class="annot-item"><span class="n g">A</span><div><b>Response-level messaging</b> — WhatsApp (and tracked email later) without forcing contact conversion first. Small: reuse <code>prepareManualSendTask</code> after an inline convert.</div></div>
+      <div class="annot-item"><span class="n g">B</span><div><b>In-flow event creation</b> — stub event from the offer picker. Medium: new write path + return to draft.</div></div>
+      <div class="annot-item"><span class="n g">C</span><div><b>Unpaid-offer lifecycle</b> — attention item + optional recipient accept/decline link. Small for the reminder; real contract work for acceptance.</div></div>
+      <div class="annot-item"><span class="n g">D</span><div><b>Revenue linkage</b> — attested manual payment writes a <code>hostAttested</code> edge fact. Small-medium; the amount/currency are already on the offer.</div></div>
+      <div class="annot-item"><span class="n g">E</span><div><b>Email channel</b> — no managed email exists today. Largest lift; gates non-WhatsApp markets.</div></div>
+      <div class="annot-item"><span class="n g">F</span><div><b>Outreach tracking</b> — "called, no answer" needs an activity/attempt model on the contact. Small once the timeline kinds are extended.</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

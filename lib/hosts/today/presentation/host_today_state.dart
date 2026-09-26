@@ -165,6 +165,17 @@ class HostTodayAttentionData {
         primaryActionLabel: l10n.hostTodayAttentionReviewAttendance,
         icon: CatchIcons.factCheckOutlined,
       ),
+      HostAttentionKind.eventOfferPaymentFollowUp => HostTodayAttentionData(
+        item: item,
+        title: l10n.hostTodayAttentionOfferPaymentTitle,
+        body: l10n.hostTodayAttentionOfferPaymentBody(
+          count: count,
+          eventName: eventName,
+        ),
+        primaryActionLabel: l10n.hostTodayAttentionOfferPaymentOpen,
+        icon: CatchIcons.pendingActionsOutlined,
+      ),
+      HostAttentionKind.momentStaffAttention ||
       HostAttentionKind.dressRehearsal ||
       HostAttentionKind.eventSuccessPreparation ||
       HostAttentionKind.roomLayoutSetup ||
