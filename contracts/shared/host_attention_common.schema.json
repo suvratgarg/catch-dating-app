@@ -25,7 +25,8 @@
         "formResponseReview",
         "inboxReply",
         "postEventReconciliation",
-        "momentStaffAttention"
+        "momentStaffAttention",
+        "eventOfferPaymentFollowUp"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json"
     },
@@ -58,7 +59,8 @@
         "organizerFormResponses",
         "organizerWhatsappThreads",
         "eventAttendees",
-        "organizerMomentSends"
+        "organizerMomentSends",
+        "organizerEventOffers"
       ]
     },
     "status": {

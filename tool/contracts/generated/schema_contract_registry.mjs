@@ -112366,7 +112366,8 @@ export const organizerAttentionItemDocumentSchema = {
         "formResponseReview",
         "inboxReply",
         "postEventReconciliation",
-        "momentStaffAttention"
+        "momentStaffAttention",
+        "eventOfferPaymentFollowUp"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json",
       "x-catch-ownership": "server-only"
@@ -112401,7 +112402,8 @@ export const organizerAttentionItemDocumentSchema = {
         "organizerFormResponses",
         "organizerWhatsappThreads",
         "eventAttendees",
-        "organizerMomentSends"
+        "organizerMomentSends",
+        "organizerEventOffers"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -239609,7 +239611,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "formResponseReview",
               "inboxReply",
               "postEventReconciliation",
-              "momentStaffAttention"
+              "momentStaffAttention",
+              "eventOfferPaymentFollowUp"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -239642,7 +239645,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "organizerFormResponses",
               "organizerWhatsappThreads",
               "eventAttendees",
-              "organizerMomentSends"
+              "organizerMomentSends",
+              "organizerEventOffers"
             ]
           },
           "sourceId": {
@@ -239845,8 +239849,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
     },
     "coverage": {
       "type": "array",
-      "minItems": 18,
-      "maxItems": 18,
+      "minItems": 19,
+      "maxItems": 19,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -239876,7 +239880,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "formResponseReview",
               "inboxReply",
               "postEventReconciliation",
-              "momentStaffAttention"
+              "momentStaffAttention",
+              "eventOfferPaymentFollowUp"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -259109,7 +259114,7 @@ export const organizerFormTemplateCatalog = {
 export const hostAttentionPolicyCatalog = {
   "schemaVersion": 1,
   "kind": "hostAttentionPolicies",
-  "policyVersion": 3,
+  "policyVersion": 4,
   "horizonHours": 168,
   "immediateHours": 24,
   "soonHours": 72,
@@ -259491,6 +259496,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
       "readinessReason": "organizerMomentSends is a durable engine journal written at fire time."
+    },
+    {
+      "kind": "eventOfferPaymentFollowUp",
+      "scope": "event",
+      "sourceOwner": "organizerEventOffers",
+      "sourceIdPolicy": "Canonical event id grouping unpaid offered event offers.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of the sorted unpaid offer ids, generations, revisions, manual payment review states, offer times, amounts, currencies, and expiries.",
+      "triggerPredicate": "One or more offers for the event are still offered, require payment (paymentSnapshot.expectedAmountMinor > 0), have no hostAttestedReceived manual payment, and have not reached expiresAtMillis.",
+      "resolutionPredicate": "Every offer for the event is attested, admitted, withdrawn, expired, or otherwise leaves the offered-unpaid state.",
+      "permissionPredicate": "Caller is a canonical manager of the offer organizer; recipient contact details and payment links stay out of the projection.",
+      "consequence": "risksRevenue",
+      "dueAtPolicy": "Earliest unpaid offer due time: offeredAtMillis plus the immediate horizon, bounded by the offer expiry.",
+      "expiresAtPolicy": "Latest unpaid offer expiresAtMillis.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "guests"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Offer status, payment snapshot, manual payment review, and expiry are canonical server-owned offer facts."
     }
   ]
 };

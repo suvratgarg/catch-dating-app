@@ -73740,15 +73740,15 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    minItems: 18,
-    maxItems: 18,
+    minItems: 19,
+    maxItems: 19,
   );
 
   static const listOrganizerAttentionItemsCallableResponseCoverageItemsKind = CatchContractFieldConstraints(
     path: 'listOrganizerAttentionItemsCallableResponse.coverage.items.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention'],
+    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention', 'eventOfferPaymentFollowUp'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseCoverageItemsReason = CatchContractFieldConstraints(
@@ -73918,7 +73918,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerAttentionItemsCallableResponse.items.items.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention'],
+    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention', 'eventOfferPaymentFollowUp'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseItemsItemsOpenedAtMillis = CatchContractFieldConstraints(
@@ -73964,7 +73964,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerAttentionItemsCallableResponse.items.items.sourceOwner',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees', 'organizerMomentSends'],
+    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees', 'organizerMomentSends', 'organizerEventOffers'],
   );
 
   static const listOrganizerAttentionItemsCallableResponseItemsItemsSourceRevision = CatchContractFieldConstraints(
@@ -81519,7 +81519,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerAttentionItemDocument.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention'],
+    enumValues: <String>['eventLiveOperations', 'eventAssistanceCaseReview', 'eventAssistanceDeliveryReview', 'eventWaitlistReview', 'eventJoinRequestReview', 'applicationReview', 'providerSyncFailure', 'formAutomationFailure', 'payoutSetup', 'attendanceSync', 'dressRehearsal', 'eventSuccessPreparation', 'roomLayoutSetup', 'eventStaffing', 'formResponseReview', 'inboxReply', 'postEventReconciliation', 'momentStaffAttention', 'eventOfferPaymentFollowUp'],
   );
 
   static const organizerAttentionItemDocumentOpenedAtNanoseconds = CatchContractFieldConstraints(
@@ -81612,7 +81612,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerAttentionItemDocument.sourceOwner',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees', 'organizerMomentSends'],
+    enumValues: <String>['events', 'eventParticipations', 'organizerApplications', 'providerSyncRuns', 'organizerFormAutomationRuns', 'hostPaymentAccounts', 'hostAttendanceOutbox', 'eventAssistanceCases', 'operationWorkItems', 'eventSuccessPlans', 'eventRehearsals', 'eventStaffGrants', 'organizerFormResponses', 'organizerWhatsappThreads', 'eventAttendees', 'organizerMomentSends', 'organizerEventOffers'],
   );
 
   static const organizerAttentionItemDocumentSourceRevision = CatchContractFieldConstraints(

@@ -6256,6 +6256,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayAttentionReview => 'Review';
 
   @override
+  String get hostTodayAttentionOfferPaymentTitle => 'Collect offer payments';
+
+  @override
+  String hostTodayAttentionOfferPaymentBody({
+    required Object count,
+    required Object eventName,
+  }) {
+    return '$count offers for $eventName are still waiting for payment.';
+  }
+
+  @override
+  String get hostTodayAttentionOfferPaymentOpen => 'Review guests';
+
+  @override
   String get hostTodayAttentionProviderTitle => 'Resolve guest sync';
 
   @override

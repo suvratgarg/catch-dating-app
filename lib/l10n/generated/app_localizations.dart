@@ -9960,6 +9960,27 @@ abstract class AppLocalizations {
   /// **'Review'**
   String get hostTodayAttentionReview;
 
+  /// Title for an unpaid event-offer follow-up task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect offer payments'**
+  String get hostTodayAttentionOfferPaymentTitle;
+
+  /// Body for an unpaid event-offer follow-up task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} offers for {eventName} are still waiting for payment.'**
+  String hostTodayAttentionOfferPaymentBody({
+    required Object count,
+    required Object eventName,
+  });
+
+  /// Action opening the event guest list for an unpaid offer follow-up task on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guests'**
+  String get hostTodayAttentionOfferPaymentOpen;
+
   /// Title for a provider sync task on Host Today.
   ///
   /// In en, this message translates to:

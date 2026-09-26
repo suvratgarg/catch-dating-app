@@ -587,7 +587,12 @@ complete server coverage, required local merging, shortcuts, and missing truth.
 The source-ready server kinds are live-event operations, open practical guest-
 help review, delivery work that explicitly requires host review, ordinary
 waitlist review, manual join-request review, application review, provider-sync
-failure, form-automation failure, and payout setup.
+failure, form-automation failure, payout setup, fired staff-attention moment
+sends, and unpaid event-offer follow-up. The offer follow-up aggregates every
+still-offered paid offer whose manual payment is not host-attested and whose
+expiry has not passed, grouped per event, so a host is reminded to collect or
+chase payment before the offer lapses; the item resolves itself once every
+offer is attested, admitted, withdrawn, or expired.
 Practical help is aggregated per active event from event-lead-owned cases;
 safety-owned cases remain inside their restricted operator boundary. Delivery
 review is aggregated only from validated `liveMessageDelivery` Operations work

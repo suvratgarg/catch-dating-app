@@ -92,7 +92,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
               "formResponseReview",
               "inboxReply",
               "postEventReconciliation",
-              "momentStaffAttention"
+              "momentStaffAttention",
+              "eventOfferPaymentFollowUp"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },
@@ -125,7 +126,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
               "organizerFormResponses",
               "organizerWhatsappThreads",
               "eventAttendees",
-              "organizerMomentSends"
+              "organizerMomentSends",
+              "organizerEventOffers"
             ]
           },
           "sourceId": {
@@ -328,8 +330,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
     },
     "coverage": {
       "type": "array",
-      "minItems": 18,
-      "maxItems": 18,
+      "minItems": 19,
+      "maxItems": 19,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -359,7 +361,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
               "formResponseReview",
               "inboxReply",
               "postEventReconciliation",
-              "momentStaffAttention"
+              "momentStaffAttention",
+              "eventOfferPaymentFollowUp"
             ],
             "x-catch-catalog": "../catalogs/host_attention_policies.json"
           },

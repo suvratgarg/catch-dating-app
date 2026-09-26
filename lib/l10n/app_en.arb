@@ -11523,6 +11523,28 @@
     "x-owner": "product",
     "x-surface": "hosts.today"
   },
+  "hostTodayAttentionOfferPaymentTitle": "Collect offer payments",
+  "@hostTodayAttentionOfferPaymentTitle": {
+    "description": "Title for an unpaid event-offer follow-up task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionOfferPaymentBody": "{count} offers for {eventName} are still waiting for payment.",
+  "@hostTodayAttentionOfferPaymentBody": {
+    "description": "Body for an unpaid event-offer follow-up task on Host Today.",
+    "placeholders": {"count": {}, "eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
+  "hostTodayAttentionOfferPaymentOpen": "Review guests",
+  "@hostTodayAttentionOfferPaymentOpen": {
+    "description": "Action opening the event guest list for an unpaid offer follow-up task on Host Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
   "hostTodayAttentionProviderTitle": "Resolve guest sync",
   "@hostTodayAttentionProviderTitle": {
     "description": "Title for a provider sync task on Host Today.",

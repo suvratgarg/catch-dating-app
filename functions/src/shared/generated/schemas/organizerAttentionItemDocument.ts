@@ -79,7 +79,8 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
         "formResponseReview",
         "inboxReply",
         "postEventReconciliation",
-        "momentStaffAttention"
+        "momentStaffAttention",
+        "eventOfferPaymentFollowUp"
       ],
       "x-catch-catalog": "../catalogs/host_attention_policies.json",
       "x-catch-ownership": "server-only"
@@ -114,7 +115,8 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
         "organizerFormResponses",
         "organizerWhatsappThreads",
         "eventAttendees",
-        "organizerMomentSends"
+        "organizerMomentSends",
+        "organizerEventOffers"
       ],
       "x-catch-ownership": "server-only"
     },

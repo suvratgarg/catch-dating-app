@@ -257,6 +257,15 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
       case HostAttentionDestinationRoute.hostEvents:
         context.goNamed(Routes.hostEventsScreen.name);
         return;
+      case HostAttentionDestinationRoute.hostProgramWork:
+        // Program-scoped items carry the program id as the source prefix.
+        final programId = item.sourceId.split(':').first;
+        if (programId.isEmpty) return;
+        context.pushNamed(
+          Routes.hostWorkProgramScreen.name,
+          pathParameters: {'programId': programId},
+        );
+        return;
     }
   }
 }

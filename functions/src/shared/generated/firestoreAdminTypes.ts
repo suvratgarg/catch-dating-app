@@ -5837,7 +5837,8 @@ export interface OrganizerAttentionItemDocument {
     | "formResponseReview"
     | "inboxReply"
     | "postEventReconciliation"
-    | "momentStaffAttention";
+    | "momentStaffAttention"
+    | "eventOfferPaymentFollowUp";
   scope: "organizer" | "event" | "application" | "form" | "thread" | "account";
   sourceOwner:
     | "events"
@@ -5855,7 +5856,8 @@ export interface OrganizerAttentionItemDocument {
     | "organizerFormResponses"
     | "organizerWhatsappThreads"
     | "eventAttendees"
-    | "organizerMomentSends";
+    | "organizerMomentSends"
+    | "organizerEventOffers";
   sourceId: string;
   sourceRevision: string;
   eventId: string | null;
