@@ -18950,19 +18950,19 @@ abstract class AppLocalizations {
   /// Host public event registration control title.
   ///
   /// In en, this message translates to:
-  /// **'Website registration'**
+  /// **'Free Catch registration'**
   String get hostsHostPublicRegistrationTitle;
 
   /// Enabled website registration state.
   ///
   /// In en, this message translates to:
-  /// **'Phone OTP sign-up is enabled'**
+  /// **'Guests can register on Catch'**
   String get hostsHostPublicRegistrationSubtitleEnabled;
 
   /// Disabled website registration state.
   ///
   /// In en, this message translates to:
-  /// **'Consumer booking is optional'**
+  /// **'Catch registration is closed'**
   String get hostsHostPublicRegistrationSubtitleDisabled;
 
   /// Open website registration badge.
@@ -18980,7 +18980,7 @@ abstract class AppLocalizations {
   /// Explains standalone website registration.
   ///
   /// In en, this message translates to:
-  /// **'People can sign up from the public event page with only a name and phone OTP. They join this operational roster without completing a Consumer profile.'**
+  /// **'Guests register on the event page using their name and verified phone number, and join this event’s guest list. The original event source and bookings on other platforms stay unchanged.'**
   String get hostsHostPublicRegistrationBodyPublished;
 
   /// Publication prerequisite for website registration.
@@ -18992,19 +18992,19 @@ abstract class AppLocalizations {
   /// Explains why standalone website registration cannot safely bypass payment or identity gates.
   ///
   /// In en, this message translates to:
-  /// **'Phone OTP registration currently supports free events with open admission. Keep importing the external roster for paid, invite-only, approval, membership, or profile-balanced events; those flows need their own payment or identity gate.'**
+  /// **'Free registration is available for open events. Paid, invite-only, approval, membership, and profile-balanced events need their payment or eligibility checks first.'**
   String get hostsHostPublicRegistrationBodyUnsupported;
 
   /// Enable website registration CTA.
   ///
   /// In en, this message translates to:
-  /// **'Enable phone OTP sign-up'**
+  /// **'Enable free registration'**
   String get hostsHostPublicRegistrationActionEnable;
 
   /// Disable website registration CTA.
   ///
   /// In en, this message translates to:
-  /// **'Disable website sign-up'**
+  /// **'Close registration'**
   String get hostsHostPublicRegistrationActionDisable;
 
   /// Past attendee count label.

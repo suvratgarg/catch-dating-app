@@ -13,6 +13,9 @@ import type {FcmParams} from "../shared/notifications";
 import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
   "./planChangeRecords";
 
+import {requireCatchBookingAuthority} from "./eventOrigin";
+import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+
 type FakeData = Record<string, unknown>;
 
 class FakeDocRef {
@@ -1799,4 +1802,25 @@ test("capacity edit keeps explicit event policy and ready ledger consistent",
       .capacityLimit, 25);
     assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.policyHash,
       deriveEventSeatPolicy(updated).policyHash);
+  });
+
+test("free website registration preserves external booking provenance",
+  async () => {
+    const origin = {mode: "externalCompanion", bookingAuthority: "external",
+      rosterAuthority: "hostImport", provider: "luma",
+      externalEventId: "evt_imported", externalEventUrl: "https://lu.ma/demo",
+      sourceExternalEventId: "evt_imported", adapterVersion: "luma-csv-v1",
+      connectedAt: ts("2026-05-01T00:00:00.000Z"), connectedBy: "host-1"};
+    const h = harness({"organizers/club-1": club(),
+      "events/event-1": event({eventOrigin: origin})});
+    for (const enabled of [true, true, false]) {
+      await updateEventHandler(request("host-1", {eventId: "event-1",
+        fields: {publicRegistrationEnabled: enabled}}), h.deps);
+      const saved = h.firestore.get("events/event-1")!;
+      assert.equal(saved.publicRegistrationEnabled, enabled);
+      assert.deepEqual(saved.eventOrigin, origin);
+      assert.throws(() => requireCatchBookingAuthority(
+        saved as unknown as EventDocument),
+      (error) => assertHttpsCode(error, "failed-precondition"));
+    }
   });

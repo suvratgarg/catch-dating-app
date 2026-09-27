@@ -12143,15 +12143,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Make organizer private';
 
   @override
-  String get hostsHostPublicRegistrationTitle => 'Website registration';
+  String get hostsHostPublicRegistrationTitle => 'Free Catch registration';
 
   @override
   String get hostsHostPublicRegistrationSubtitleEnabled =>
-      'Phone OTP sign-up is enabled';
+      'Guests can register on Catch';
 
   @override
   String get hostsHostPublicRegistrationSubtitleDisabled =>
-      'Consumer booking is optional';
+      'Catch registration is closed';
 
   @override
   String get hostsHostPublicRegistrationStatusOpen => 'Open';
@@ -12161,7 +12161,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPublicRegistrationBodyPublished =>
-      'People can sign up from the public event page with only a name and phone OTP. They join this operational roster without completing a Consumer profile.';
+      'Guests register on the event page using their name and verified phone number, and join this event’s guest list. The original event source and bookings on other platforms stay unchanged.';
 
   @override
   String get hostsHostPublicRegistrationBodyNeedsPage =>
@@ -12169,15 +12169,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostPublicRegistrationBodyUnsupported =>
-      'Phone OTP registration currently supports free events with open admission. Keep importing the external roster for paid, invite-only, approval, membership, or profile-balanced events; those flows need their own payment or identity gate.';
+      'Free registration is available for open events. Paid, invite-only, approval, membership, and profile-balanced events need their payment or eligibility checks first.';
 
   @override
   String get hostsHostPublicRegistrationActionEnable =>
-      'Enable phone OTP sign-up';
+      'Enable free registration';
 
   @override
-  String get hostsHostPublicRegistrationActionDisable =>
-      'Disable website sign-up';
+  String get hostsHostPublicRegistrationActionDisable => 'Close registration';
 
   @override
   String get hostsHostAudienceAttended => 'Attended';
