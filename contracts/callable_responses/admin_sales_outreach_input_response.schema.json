@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_sales_outreach_input_response.schema.json",
+  "title": "AdminBuildSalesOutreachInputResponse",
+  "x-callable-aliases": ["adminBuildSalesOutreachInput"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bundle", "sourceHash", "sendAuthority"],
+  "properties": {
+    "bundle": {"$ref": "../operations/outreach_drafting_input.schema.json"},
+    "sourceHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "sendAuthority": {"const": false}
+  }
+}
