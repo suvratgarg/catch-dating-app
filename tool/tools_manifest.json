@@ -5270,6 +5270,18 @@
           "fails when a registry adds an unclassified feature surface",
           "rejects orphaned source contracts"
         ]
+      },
+      "impactPaths": [
+        "design/features/feature_coverage.json",
+        "design/features/feature_coverage.schema.json",
+        "tool/design/check_feature_coverage.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       }
     },
     {
@@ -6179,7 +6191,20 @@
         "node --check tool/design/build_context_pack.mjs",
         "node tool/design/build_context_pack.mjs --check"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "design_context_pack/MANIFEST.json",
+        "design_context_pack/gallery/manifest.json",
+        "tool/design/context_pack_builder_test.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      }
     },
     {
       "id": "design:context-pack-builder",

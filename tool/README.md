@@ -78,6 +78,13 @@ the exact active owner declared by `path` or `impactPaths`, its transitive
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full
 runs retain the complete six-bucket matrix.
+The feature-coverage ledger and schema select `design:feature-coverage`; the
+context-pack and gallery manifests select `design:context-pack`, which rebuilds
+the pack in a temporary directory and verifies drift. Their check tests and
+generator have the same owners. These explicit mappings avoid full fanout when
+ordinary screen changes update generated manifests; unknown companion inputs
+still trigger the full fallback. Both owners retain the full source checkout,
+with Node/root npm for coverage and Node/Flutter/pub for context generation.
 CI passes the same PR, merge-queue, main, or nightly mode into both planners.
 Companion files owned exclusively by Docs, Policy, or another Harness lane are
 excluded from direct tool ownership instead of broadening a valid Tools
