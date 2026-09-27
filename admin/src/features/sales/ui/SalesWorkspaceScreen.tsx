@@ -21,10 +21,11 @@ import type {
 import {SalesRecordsWorkspace} from "./SalesRecordsPanels";
 import {SalesImportWorkspace} from "./SalesImportPanel";
 import {SalesDemoWorkspace} from "./SalesDemoPanel";
+import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
 
 type SalesArea = "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
 type DetailTab = "overview" | "people" | "workflow" | "activity" |
-  "opportunities" | "research" | "demo";
+  "opportunities" | "research" | "demo" | "commercial";
 
 const areaOptions: Array<{id: SalesArea; label: string}> = [
   {id: "today", label: "Today"},
@@ -41,6 +42,7 @@ const detailTabs: Array<{id: DetailTab; label: string}> = [
   {id: "demo", label: "Private demo"},
   {id: "activity", label: "Activity"},
   {id: "opportunities", label: "Opportunities"},
+  {id: "commercial", label: "Pilot & terms"},
   {id: "research", label: "Research"},
 ];
 const stageOptions = [
@@ -575,6 +577,8 @@ function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}:
     {tab === "activity" ? <HostActivity detail={detail} controller={controller} /> : null}
     {tab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
+    {tab === "commercial" ? renderSalesCommercialWorkspace(detail,
+      controller.evidence.data?.rows ?? []) : null}
     {tab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
       controller={controller} /> : null}
     {tab === "demo" ? <SalesDemoWorkspace

@@ -618,7 +618,7 @@ export async function executeCommercialRead(
         db
           .collection(stageCollection)
           .where("opportunityId", "==", input.opportunityId)
-          .orderBy(admin.firestore.FieldPath.documentId())
+          .orderBy("changedAt", "desc")
           .limit(26)
           .get(),
       ]);
