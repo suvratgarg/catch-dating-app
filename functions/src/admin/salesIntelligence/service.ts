@@ -410,6 +410,13 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
   if (hash(qualification) !== hash(account.qualificationPolicy)) {
     return fail("failed-precondition", "Sales qualification policy changed since review.");
   }
+  // Qualification and contactability can remain eligible after an evidence
+  // edit. Bind the draft to the complete bounded current evidence set too.
+  const allEvidence = await tx.get(db.collection("salesEvidence")
+    .where("organizerId", "==", organizerId).limit(MAX_EVIDENCE + 1));
+  if (allEvidence.size > MAX_EVIDENCE) {
+    return fail("resource-exhausted", "Evidence must be curated before drafting.");
+  }
   const clauses = clauseSnaps.map((snap) => snap.data() as Clause | undefined);
   const sourceEvidence: Array<Record<string, unknown>> = [];
   const expectedKinds = [
@@ -474,12 +481,14 @@ export async function buildOutreachInput(deps: IntelligenceDeps,
   return {bundle, sourceHash: hash({material: materialBundle(bundle),
     intelligencePolicy: policy,
     contactRecordRevision: contact.revision,
+    allEvidence: allEvidence.docs.map((doc) => ({id: doc.id,
+      data: doc.data()})).sort((a, b) => a.id.localeCompare(b.id)),
     sourceEvidence: sourceEvidence.sort((a, b) =>
       String(a.evidenceId).localeCompare(String(b.evidenceId)))}),
   sendAuthority: false};
 }
 
-interface DraftRequest {
+export interface DraftRequest {
   organizerId: string; contactId: string; opportunityId: string;
   observationIds: string[]; capabilityIds: string[]; referenceIds: string[];
   ctaIds: string[]; channel: "email" | "message";
@@ -682,4 +691,20 @@ export async function copyOutreachDraft(deps: IntelligenceDeps,
     }, async (tx) => {
       await requireCurrentDraft(deps, principal, tx, draftId);
     });
+}
+
+export async function getOutreachDraft(deps: IntelligenceDeps,
+  principal: SalesPrincipal, payload: unknown): Promise<Record<string, unknown>> {
+  employee(principal);
+  const input = object(payload, ["draftId"]);
+  const draftId = id(input.draftId);
+  await deps.authorize(principal, false);
+  const result = await deps.db.runTransaction(async (tx) => {
+    const {stored} = await requireCurrentDraft(deps, principal, tx, draftId);
+    return {draftId, draft: stored.draft, status: stored.status,
+      reviewedAt: stored.reviewedAt, reviewedBy: stored.reviewedBy,
+      sendAuthority: false};
+  });
+  await deps.authorize(principal, false);
+  return result;
 }

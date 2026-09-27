@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/sales_outreach_jobs.schema.json",
+  "title": "SalesOutreachJobDocument",
+  "description": "Private frozen zero-model draft request, attempt lease and completion pointer. Firestore is authoritative; local Operations files are temporary scratch only.",
+  "type": "object", "additionalProperties": false,
+  "x-firestore-collection": "salesOutreachJobs",
+  "x-firestore-path": "salesOutreachJobs/{jobId}",
+  "x-document-id-field": "jobId",
+  "x-owner": "private Sales intelligence generate callable",
+  "required": ["schemaVersion", "classification", "jobId", "actorUid", "requestId", "materialHash", "sourceHash", "sourceRequest", "frozenBundle", "status", "attemptCount", "leaseOwner", "leaseUntil", "expiresAt", "createdAt", "updatedAt", "result", "failure"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "classification": {"const": "sales_private"},
+    "jobId": {"$ref": "#/definitions/id"},
+    "actorUid": {"$ref": "#/definitions/id"},
+    "requestId": {"$ref": "#/definitions/id"},
+    "materialHash": {"$ref": "#/definitions/hash"},
+    "sourceHash": {"$ref": "#/definitions/hash"},
+    "sourceRequest": {"$ref": "../callables/admin_sales_intelligence_draft_payload.schema.json"},
+    "frozenBundle": {"$ref": "../operations/outreach_drafting_input.schema.json"},
+    "status": {"enum": ["running", "completed", "failed"]},
+    "attemptCount": {"type": "integer", "minimum": 1, "maximum": 3},
+    "leaseOwner": {"type": ["string", "null"], "maxLength": 64},
+    "leaseUntil": {"type": ["string", "null"], "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "updatedAt": {"type": "string", "format": "date-time"},
+    "result": {"type": ["object", "null"], "additionalProperties": false, "required": ["draftId", "contentHash"], "properties": {"draftId": {"$ref": "#/definitions/id"}, "contentHash": {"$ref": "#/definitions/hash"}}},
+    "failure": {"type": ["string", "null"], "maxLength": 160}
+  },
+  "definitions": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

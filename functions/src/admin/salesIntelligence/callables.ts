@@ -5,8 +5,11 @@ import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {currentSalesEmployee} from "../sales/callables";
 import type {SalesPrincipal} from "../sales/types";
+import {getDraftJob} from "./job";
+import {generateSalesOutreachDraft} from "./runtime";
 import {buildOutreachInput, copyOutreachDraft, getIntelligenceScore,
-  reviewIntelligenceClause, reviewOutreachDraft, saveFactorAssessment,
+  getOutreachDraft, reviewIntelligenceClause, reviewOutreachDraft,
+  saveFactorAssessment,
   saveIntelligenceClause, saveIntelligencePolicy,
   saveScoreSnapshot, type IntelligenceDeps} from "./service";
 
@@ -18,7 +21,8 @@ async function context(request: CallableRequest<unknown>, action: string,
   const principal = await currentSalesEmployee(request);
   const db = admin.firestore();
   await checkRateLimit(db, principal.uid, `sales-intelligence:${action}`,
-    {maxRequests: mutation ? 15 : 40, windowMs: 60_000});
+    {maxRequests: action === "draft.generate" ? 5 : mutation ? 15 : 40,
+      windowMs: 60_000});
   return {principal, deps: {db, now: () => new Date(),
     authorize: async (_principal, owner) => {
       const current = await currentSalesEmployee(request);
@@ -49,5 +53,9 @@ export const adminReviewSalesIntelligenceClause = write("clause.review", reviewI
 export const adminSaveSalesScoreSnapshot = write("score.snapshot", saveScoreSnapshot);
 export const adminReviewSalesOutreachDraft = write("draft.review", reviewOutreachDraft);
 export const adminCopySalesOutreachDraft = write("draft.copy", copyOutreachDraft);
+export const adminGenerateSalesOutreachDraft =
+  write("draft.generate", generateSalesOutreachDraft);
 export const adminGetSalesIntelligenceScore = read("score.get", getIntelligenceScore);
 export const adminBuildSalesOutreachInput = read("draft.input", buildOutreachInput);
+export const adminGetSalesOutreachDraftJob = read("draft.job", getDraftJob);
+export const adminGetSalesOutreachDraft = read("draft.get", getOutreachDraft);
