@@ -24,7 +24,9 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
         "create",
         "update",
         "preferences",
-        "details"
+        "details",
+        "publish",
+        "unpublish"
       ]
     },
     "actorUid": {

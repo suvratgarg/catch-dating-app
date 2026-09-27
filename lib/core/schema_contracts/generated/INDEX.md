@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `functions/src/shared/generated/setEventPublicationCallablePayload.ts` |
+| EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `functions/src/shared/generated/eventPublicationCallableResponse.ts` |
 | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `functions/src/shared/generated/publicEventPaymentDocument.ts` |
 | PublicEventAdmissionReceiptDocument | `firestore/public_event_admission_receipts.schema.json` | `functions/src/shared/generated/publicEventAdmissionReceiptDocument.ts` |
 | EventRegistrationReceiptDocument | `firestore/event_registration_receipts.schema.json` | `functions/src/shared/generated/eventRegistrationReceiptDocument.ts` |
@@ -956,6 +958,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaSetEventPublicationCallablePayloadSchema` | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_publication_callable_payload.g.dart` |
+| `schemaEventPublicationCallableResponseSchema` | EventPublicationCallableResponse | `callable_responses/event_publication_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_publication_callable_response.g.dart` |
 | `schemaPublicEventPaymentDocumentSchema` | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_payment_document.g.dart` |
 | `schemaPublicEventAdmissionReceiptDocumentSchema` | PublicEventAdmissionReceiptDocument | `firestore/public_event_admission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_admission_receipt_document.g.dart` |
 | `schemaEventRegistrationReceiptDocumentSchema` | EventRegistrationReceiptDocument | `firestore/event_registration_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_registration_receipt_document.g.dart` |
@@ -1900,6 +1904,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| SetEventPublicationCallableRequest | SetEventPublicationCallablePayload | `callables/set_event_publication_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_publication_callable_request.g.dart` |
 | PrepareEventOfferInvitationCallableRequest | PrepareEventOfferInvitationCallablePayload | `callables/prepare_event_offer_invitation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/prepare_event_offer_invitation_callable_request.g.dart` |
 | PreviewOrganizerFormAdmissionCallableRequest | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart` |
 | CommitOrganizerFormAdmissionCallableRequest | CommitOrganizerFormAdmissionCallablePayload | `callables/commit_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart` |

@@ -439,4 +439,11 @@ export type EventDocument = {
    */
   publicRegistrationMode?: "closed" | "free" | "paid";
   publicRegistrationRevision?: number;
+  /**
+   * First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.
+   */
+  firstPublishedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 };

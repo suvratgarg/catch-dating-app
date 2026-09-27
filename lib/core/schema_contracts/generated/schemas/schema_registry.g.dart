@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'SetEventPublicationCallablePayload',
+    source: 'callables/set_event_publication_payload.schema.json',
+    schema: schemaSetEventPublicationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventPublicationCallableResponse',
+    source: 'callable_responses/event_publication_response.schema.json',
+    schema: schemaEventPublicationCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'PublicEventPaymentDocument',
     source: 'firestore/public_event_payments.schema.json',
     schema: schemaPublicEventPaymentDocumentSchema,
@@ -4714,6 +4724,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'SetEventPublicationCallablePayload': schemaSetEventPublicationCallablePayloadSchema,
+  'EventPublicationCallableResponse': schemaEventPublicationCallableResponseSchema,
   'PublicEventPaymentDocument': schemaPublicEventPaymentDocumentSchema,
   'PublicEventAdmissionReceiptDocument': schemaPublicEventAdmissionReceiptDocumentSchema,
   'EventRegistrationReceiptDocument': schemaEventRegistrationReceiptDocumentSchema,
@@ -5656,6 +5668,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/set_event_publication_payload.schema.json': schemaSetEventPublicationCallablePayloadSchema,
+  'callable_responses/event_publication_response.schema.json': schemaEventPublicationCallableResponseSchema,
   'firestore/public_event_payments.schema.json': schemaPublicEventPaymentDocumentSchema,
   'firestore/public_event_admission_receipts.schema.json': schemaPublicEventAdmissionReceiptDocumentSchema,
   'firestore/event_registration_receipts.schema.json': schemaEventRegistrationReceiptDocumentSchema,

@@ -1782,6 +1782,20 @@ Create/edit accept explicit city and timezone decisions, a stable request ID,
 and a reviewed defaults hash when inheriting organizer values. Edit also
 requires the current setup revision. Unknown authority fields are rejected.
 
+`setEventPublication` is the separate revision-fenced visibility command for
+progressive events. Publishing validates the complete rich event contract,
+future active schedule, current manager and visible organizer, rebuilds discovery
+fields and claims the organizer schedule in the same transaction as the receipt.
+Unpublishing closes registration and advances its revision; republishing leaves
+registration closed. Neither transition rewrites origin, guests, offers or money.
+The first-publication timestamp survives unpublishing, preventing old schedule
+commitments from becoming an editable new draft. Receipts report the original
+transition on replay and never repeat it after a later transition. Search and
+organizer next-event projections retry from canonical state. Static website
+exports require removal/redeployment as a separate release step; a successful
+publication receipt is not proof that cached public copies have disappeared.
+The command remains behind the same private-persistence rollout gate.
+
 The manager read response is a whitelist projection with civil date/time,
 resolved city/timezone, revision and setup provenance. It does not parse a
 minimal event through the rich Event model or invent venue, end time, capacity

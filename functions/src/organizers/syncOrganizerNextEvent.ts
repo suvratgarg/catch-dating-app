@@ -94,7 +94,7 @@ export async function syncOrganizerNextEventHandler(
 }
 
 export const syncOrganizerNextEvent = onDocumentWritten(
-  "events/{eventId}",
+  {document: "events/{eventId}", retry: true},
   async (event) => {
     const before = event.data?.before.data() as EventDocument | undefined;
     const after = event.data?.after.data() as EventDocument | undefined;

@@ -2046,6 +2046,27 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "minimum": 1,
       "maximum": 9007199254740991,
       "x-catch-ownership": "callable-owned"
+    },
+    "firstPublishedAt": {
+      "type": "object",
+      "description": "First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [

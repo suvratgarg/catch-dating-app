@@ -455,6 +455,11 @@
       "minimum": 1,
       "maximum": 9007199254740991,
       "x-catch-ownership": "callable-owned"
+    },
+    "firstPublishedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.",
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [

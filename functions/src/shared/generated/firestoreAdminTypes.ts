@@ -938,7 +938,13 @@ export interface EventSetupPreferencesDocument {
 }
 
 export interface EventSetupReceiptDocument {
-  operation: "create" | "update" | "preferences" | "details";
+  operation:
+    | "create"
+    | "update"
+    | "preferences"
+    | "details"
+    | "publish"
+    | "unpublish";
   actorUid: string;
   organizerId: string;
   requestHash: string;
@@ -9067,6 +9073,7 @@ export interface EventDocument {
    */
   publicRegistrationMode?: "closed" | "free" | "paid";
   publicRegistrationRevision?: number;
+  firstPublishedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**

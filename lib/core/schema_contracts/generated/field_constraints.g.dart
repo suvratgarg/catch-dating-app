@@ -32590,6 +32590,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventDocumentFirstPublishedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventDocument.firstPublishedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventDocumentFirstPublishedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventDocument.firstPublishedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventDocumentGenderCounts = CatchContractFieldConstraints(
     path: 'eventDocument.genderCounts',
     required: true,
@@ -37567,6 +37581,34 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventPublicationCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'eventPublicationCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicationCallableResponsePublicationState = CatchContractFieldConstraints(
+    path: 'eventPublicationCallableResponse.publicationState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['private', 'published'],
+  );
+
+  static const eventPublicationCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'eventPublicationCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventPublicationCallableResponseSetupRevision = CatchContractFieldConstraints(
+    path: 'eventPublicationCallableResponse.setupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
   );
 
   static const eventRcsBudgetDocumentAgentId = CatchContractFieldConstraints(
@@ -55983,7 +56025,7 @@ abstract final class CatchContractConstraints {
     path: 'eventSetupReceiptDocument.operation',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['create', 'update', 'preferences', 'details'],
+    enumValues: <String>['create', 'update', 'preferences', 'details', 'publish', 'unpublish'],
   );
 
   static const eventSetupReceiptDocumentOrganizerId = CatchContractFieldConstraints(
@@ -117355,6 +117397,44 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const setEventPublicationCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventPublicationCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventPublicationCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'setEventPublicationCallablePayload.expectedSetupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483646,
+  );
+
+  static const setEventPublicationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'setEventPublicationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventPublicationCallablePayloadPublicationState = CatchContractFieldConstraints(
+    path: 'setEventPublicationCallablePayload.publicationState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['private', 'published'],
+  );
+
+  static const setEventPublicationCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventPublicationCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
+  );
+
   static const setEventRcsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'setEventRcsPreferenceCallablePayload.attendeeId',
     maxLength: 160,
@@ -134534,6 +134614,8 @@ abstract final class CatchContractConstraints {
     'eventDocument.eventPolicy.settlement.hostPayoutTiming': eventDocumentEventPolicySettlementHostPayoutTiming,
     'eventDocument.eventPolicy.version': eventDocumentEventPolicyVersion,
     'eventDocument.eventTimezone': eventDocumentEventTimezone,
+    'eventDocument.firstPublishedAt._nanoseconds': eventDocumentFirstPublishedAtNanoseconds,
+    'eventDocument.firstPublishedAt._seconds': eventDocumentFirstPublishedAtSeconds,
     'eventDocument.genderCounts': eventDocumentGenderCounts,
     'eventDocument.itinerary': eventDocumentItinerary,
     'eventDocument.itinerary.items.description': eventDocumentItineraryItemsDescription,
@@ -135217,6 +135299,10 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
+    'eventPublicationCallableResponse.eventId': eventPublicationCallableResponseEventId,
+    'eventPublicationCallableResponse.publicationState': eventPublicationCallableResponsePublicationState,
+    'eventPublicationCallableResponse.replayed': eventPublicationCallableResponseReplayed,
+    'eventPublicationCallableResponse.setupRevision': eventPublicationCallableResponseSetupRevision,
     'eventRcsBudgetDocument.agentId': eventRcsBudgetDocumentAgentId,
     'eventRcsBudgetDocument.approvalId': eventRcsBudgetDocumentApprovalId,
     'eventRcsBudgetDocument.budgetId': eventRcsBudgetDocumentBudgetId,
@@ -146088,6 +146174,11 @@ abstract final class CatchContractConstraints {
     'setEventChatTypingCallablePayload.isTyping': setEventChatTypingCallablePayloadIsTyping,
     'setEventChatTypingCallableResponse.expiresAtMillis': setEventChatTypingCallableResponseExpiresAtMillis,
     'setEventChatTypingCallableResponse.revision': setEventChatTypingCallableResponseRevision,
+    'setEventPublicationCallablePayload.eventId': setEventPublicationCallablePayloadEventId,
+    'setEventPublicationCallablePayload.expectedSetupRevision': setEventPublicationCallablePayloadExpectedSetupRevision,
+    'setEventPublicationCallablePayload.organizerId': setEventPublicationCallablePayloadOrganizerId,
+    'setEventPublicationCallablePayload.publicationState': setEventPublicationCallablePayloadPublicationState,
+    'setEventPublicationCallablePayload.requestId': setEventPublicationCallablePayloadRequestId,
     'setEventRcsPreferenceCallablePayload.attendeeId': setEventRcsPreferenceCallablePayloadAttendeeId,
     'setEventRcsPreferenceCallablePayload.decision.copyVersion': setEventRcsPreferenceCallablePayloadDecisionCopyVersion,
     'setEventRcsPreferenceCallablePayload.decision.kind': setEventRcsPreferenceCallablePayloadDecisionKind,

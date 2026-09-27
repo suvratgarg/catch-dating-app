@@ -15,6 +15,8 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "SetEventPublicationCallablePayload", source: "callables/set_event_publication_payload.schema.json", typeOutput: "functions/src/shared/generated/setEventPublicationCallablePayload.ts"},
+  {name: "EventPublicationCallableResponse", source: "callable_responses/event_publication_response.schema.json", typeOutput: "functions/src/shared/generated/eventPublicationCallableResponse.ts"},
   {"name": "PublicEventPaymentDocument", "source": "firestore/public_event_payments.schema.json", "typeOutput": "functions/src/shared/generated/publicEventPaymentDocument.ts"},
   {"name": "PublicEventAdmissionReceiptDocument", "source": "firestore/public_event_admission_receipts.schema.json", "typeOutput": "functions/src/shared/generated/publicEventAdmissionReceiptDocument.ts"},
   {"name": "EventRegistrationReceiptDocument", "source": "firestore/event_registration_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventRegistrationReceiptDocument.ts"},

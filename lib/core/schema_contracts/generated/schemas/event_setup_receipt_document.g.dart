@@ -27,6 +27,8 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
         'update',
         'preferences',
         'details',
+        'publish',
+        'unpublish',
       ],
     },
     'actorUid': <String, Object?>{

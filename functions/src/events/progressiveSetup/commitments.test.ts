@@ -121,6 +121,7 @@ test("malformed private event fails before commitment scans", async () => {
     {eventOrigin: {source: "external"}},
     {publicationState: "published"},
     {bookedCount: 1},
+    {firstPublishedAt: Timestamp.fromMillis(1)},
     {eventTimezone: ""},
   ]) {
     const h = harness();

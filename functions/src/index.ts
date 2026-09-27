@@ -729,7 +729,7 @@ export {getProgramFunctionDoorView, createProgramWalkIn} from
 export {
   createPrivateEventSetup, updatePrivateEventBasics, getPrivateEventSetup,
   updatePrivateEventPreferences, listPrivateEventSetups,
-  updatePrivateEventDetails, listOfferEventTargets,
+  updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
 } from "./events/progressiveSetup/callables";
 
 export {queryOrganizerFormResponses} from "./organizerResponseQuery/callable";

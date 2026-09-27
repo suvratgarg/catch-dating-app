@@ -3346,7 +3346,8 @@
         "createPrivateEventSetup",
         "updatePrivateEventBasics",
         "updatePrivateEventDetails",
-        "updatePrivateEventPreferences"
+        "updatePrivateEventPreferences",
+        "setEventPublication"
       ]
     },
     {

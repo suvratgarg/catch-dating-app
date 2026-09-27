@@ -174,6 +174,11 @@ export async function updatePrivateEventDetails(params: {
           minutes * 60_000));
       }
     }
+    if (event.firstPublishedAt !== undefined &&
+        canonicalJson(event.endTime) !== canonicalJson(next.endTime)) {
+      throw new HttpsError("failed-precondition",
+        "A previously published schedule needs the event change flow.");
+    }
     if (venueDecision) {
       for (const key of ["meetingPoint", "meetingLocation", "sourceVenueId",
         "startingPointLat", "startingPointLng", "locationDetails"]) {

@@ -303,6 +303,7 @@ export 'callables/set_event_assistance_participation_callable_request.g.dart';
 export 'callables/set_event_attendee_attendance_callable_request.g.dart';
 export 'callables/set_event_chat_reaction_callable_request.g.dart';
 export 'callables/set_event_chat_typing_callable_request.g.dart';
+export 'callables/set_event_publication_callable_request.g.dart';
 export 'callables/set_event_success_accountability_resolution_callable_request.g.dart';
 export 'callables/set_organizer_form_automation_state_callable_request.g.dart';
 export 'callables/set_organizer_form_lifecycle_callable_request.g.dart';

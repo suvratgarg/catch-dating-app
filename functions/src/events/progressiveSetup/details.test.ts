@@ -288,3 +288,17 @@ test("a private event under another organizer cannot be edited", async () => {
   await assert.rejects(save(), (error) => code(error, "not-found"));
   assert.equal(store.writes.length, 0);
 });
+
+test("unpublishing does not permit silently moving the published schedule",
+  async () => {
+    const {store, command, save} = await setup();
+    const event = store.rows.get("events/event1")!;
+    event.firstPublishedAt = admin.firestore.Timestamp.fromMillis(1);
+    event.endTime = admin.firestore.Timestamp.fromMillis(start + 90 * 60_000);
+    await assert.rejects(save({...command, details: {
+      durationMinutes: {mode: "set", value: 120},
+    }}), (error) => code(error, "failed-precondition"));
+    assert.equal(store.writes.length, 0);
+    await save(); // Unchanged duration still permits completing venue details.
+    assert.equal(store.rows.get("events/event1")!.meetingPoint, "Courtyard");
+  });

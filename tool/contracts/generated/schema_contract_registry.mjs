@@ -1,6 +1,84 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const setEventPublicationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_publication_payload.schema.json",
+  "title": "SetEventPublicationCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "requestId",
+    "eventId",
+    "expectedSetupRevision",
+    "publicationState"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483646
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "private",
+        "published"
+      ]
+    }
+  }
+};
+
+export const eventPublicationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_publication_response.schema.json",
+  "title": "EventPublicationCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "setupRevision",
+    "replayed",
+    "publicationState"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "replayed": {
+      "type": "boolean"
+    },
+    "publicationState": {
+      "type": "string",
+      "enum": [
+        "private",
+        "published"
+      ]
+    }
+  }
+};
+
 export const publicEventPaymentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/public_event_payments.schema.json",
@@ -10185,7 +10263,9 @@ export const eventSetupReceiptDocumentSchema = {
         "create",
         "update",
         "preferences",
-        "details"
+        "details",
+        "publish",
+        "unpublish"
       ]
     },
     "actorUid": {
@@ -134958,6 +135038,27 @@ export const eventDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
+    "firstPublishedAt": {
+      "type": "object",
+      "description": "First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
       "x-catch-ownership": "callable-owned"
     }
   },

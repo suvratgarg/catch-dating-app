@@ -2049,6 +2049,27 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maximum': 9007199254740991,
       'x-catch-ownership': 'callable-owned',
     },
+    'firstPublishedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
