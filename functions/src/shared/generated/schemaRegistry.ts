@@ -5,6 +5,13 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {publicEventPaymentDocumentSchema} from "./schemas/publicEventPaymentDocument";
+export {publicEventAdmissionReceiptDocumentSchema} from "./schemas/publicEventAdmissionReceiptDocument";
+export {eventRegistrationReceiptDocumentSchema} from "./schemas/eventRegistrationReceiptDocument";
+export {managePublicEventCheckoutCallablePayloadSchema} from "./schemas/managePublicEventCheckoutInput";
+export {managePublicEventCheckoutCallableResponseSchema} from "./schemas/managePublicEventCheckoutOutput";
+export {configureEventRegistrationCallablePayloadSchema} from "./schemas/configureEventRegistrationInput";
+export {configureEventRegistrationCallableResponseSchema} from "./schemas/configureEventRegistrationOutput";
 export {organizerEventOfferPaymentDocumentSchema} from "./schemas/organizerEventOfferPaymentDocument";
 export {organizerEventOfferRecipientDocumentSchema} from "./schemas/organizerEventOfferRecipientDocument";
 export {paymentRoutingSnapshotSchema} from "./schemas/paymentRoutingSnapshot";

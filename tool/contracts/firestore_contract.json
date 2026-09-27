@@ -3529,6 +3529,51 @@
       "read": "server only; recipient payment projection",
       "write": "server only; atomic hold, captured admission, expiry and refund lifecycle",
       "exportedFunctions": []
+    },
+    {
+      "id": "publicEventPayments",
+      "path": "publicEventPayments/{documentId}",
+      "rulesMatch": "/publicEventPayments/{documentId}",
+      "typescriptInterface": "PublicEventPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public checkout and registration receipts server-only"
+      ],
+      "owner": "public event registration and checkout service",
+      "read": "server only; authenticated guest or manager projection",
+      "write": "server only; transactional registration and payment authority",
+      "exportedFunctions": []
+    },
+    {
+      "id": "publicEventAdmissionReceipts",
+      "path": "publicEventAdmissionReceipts/{documentId}",
+      "rulesMatch": "/publicEventAdmissionReceipts/{documentId}",
+      "typescriptInterface": "PublicEventAdmissionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public checkout and registration receipts server-only"
+      ],
+      "owner": "public event registration and checkout service",
+      "read": "server only; authenticated guest or manager projection",
+      "write": "server only; transactional registration and payment authority",
+      "exportedFunctions": []
+    },
+    {
+      "id": "eventRegistrationReceipts",
+      "path": "eventRegistrationReceipts/{documentId}",
+      "rulesMatch": "/eventRegistrationReceipts/{documentId}",
+      "typescriptInterface": "EventRegistrationReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public checkout and registration receipts server-only"
+      ],
+      "owner": "public event registration and checkout service",
+      "read": "server only; authenticated guest or manager projection",
+      "write": "server only; transactional registration and payment authority",
+      "exportedFunctions": []
     }
   ]
 }

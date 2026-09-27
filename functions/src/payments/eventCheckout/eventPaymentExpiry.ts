@@ -26,7 +26,10 @@ export async function releaseEventPaymentHold<P extends EventSeatPaymentState>(
     const payment = params.ledger.parse((await tx.get(ref)).data(), paymentId);
     if (payment.admissionReceiptId) return "admitted";
     if (payment.reservationReleased) return payment.status;
-    if (reason === "expired" &&
+    const rejectedOrder = payment.status === "failed" &&
+      payment.lastErrorCode === "orderRejected" && !payment.providerOrderId &&
+      !payment.providerPaymentId && !payment.capturedAt;
+    if (reason === "expired" && !rejectedOrder &&
         nowMillis < payment.checkoutExpiresAt.toMillis()) return payment.status;
     if (reason === "fulfillmentFailed" &&
         (payment.status !== "captured" || !payment.capturedAt ||

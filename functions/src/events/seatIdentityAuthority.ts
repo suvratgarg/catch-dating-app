@@ -706,7 +706,7 @@ async function prepareVerifiedUidAttendeeEnrollmentInternal(params: Parameters<
       !["hostImport", "hostManual", "providerSync", "webOtp"]
         .includes(attendee.source) ||
       !(allowPending ?
-        ["registered", "checkedIn", "invited", "waitlisted"] :
+        ["registered", "checkedIn", "invited", "waitlisted", "cancelled"] :
         ["registered", "checkedIn"]).includes(attendee.status) ||
       attendee.phoneE164 !== normalized.value ||
       attendee.linkedUid !== null && attendee.linkedUid !== uid) {

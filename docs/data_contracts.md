@@ -2750,6 +2750,40 @@ Exact cancellation retries replay the saved decision. Recipient history survives
 invitation expiry and disabled new-checkout gates. Provider test-mode acceptance
 remains required before activation.
 
+### Public paid event registration
+
+`configureEventRegistration` is the manager-owned, revision-checked opt-in for
+`closed`, `free` or `paid` public registration. Its immutable
+`eventRegistrationReceipts` make exact retries safe. It preserves event origin
+and native-booking provenance. A legacy enabled boolean authorizes free signup
+only. Paid enablement requires an open, published, future event, canonical paid
+price, reconciled seats and a ready event-admission payment route. Public phone
+OTP never substitutes for invitation, application approval, membership, cohort
+or pair eligibility. The legacy boolean editor cannot change paid mode.
+
+`managePublicEventCheckout` quotes, prepares, finds, reconciles and cancels a
+UID-owned public checkout. It requires App Check, rate limits and current phone
+Auth; deletion and disabled-account checks do not require a Consumer profile.
+The quote freezes the reviewed amount, registration revision, event start and
+cash-refund deadline. `publicEventPayments` owns the attempt and its 15-minute
+seat hold; `publicEventAdmissionReceipts` proves its captured admission. Both
+collections deny client access. They never create a form approval, reviewed
+offer, conversion receipt or Consumer participation edge.
+
+The public adapter shares provider recovery, signed webhook dispatch, refund,
+cancellation and Route settlement machinery with reviewed offers. Admission
+atomically confirms its own hold, updates the canonical roster and count, writes
+its immutable receipt and marks payment completion. Imported guest identity and
+source are retained. An existing active native booking returns its admission
+without charging again. Closing new registration honors an existing hold;
+unpublication, cancellation, changed start, identity loss or hold expiry causes
+a captured attempt to release inventory and enter refund recovery. A retry never
+renews a hold or reselects a merchant. Guest cancellation follows the frozen
+cash/no-refund terms; Catch credits remain deferred. Re-registration may reuse
+the roster row, while the old cancelled charge remains independent historical
+financial evidence. A no-refund charge can settle only after event completion
+and the scheduled end, even when a subsequent registration replaced that row.
+
 ### Organizer-connected form payments
 
 `paymentRoutingPolicies/app` owns application defaults; organizer overrides use
@@ -2773,7 +2807,7 @@ alone does not establish provider or country eligibility. New form-fee attempts 
 Legacy OAuth-only ledgers remain recoverable. Route ledgers have a null
 `connectionId` and use the platform account as `accountId`; OAuth ledgers retain
 the merchant connection. The configuration command alone does not activate
-provider setup or the unfinished event-offer checkout.
+provider setup or establish live payment acceptance.
 
 `organizerPaymentConnections` binds one organizer to one Razorpay merchant,
 mode, verified merchant webhook and pinned Secret Manager credential version.

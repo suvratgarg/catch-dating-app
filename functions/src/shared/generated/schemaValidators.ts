@@ -5,6 +5,13 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validatePublicEventPaymentDocument} from "./validators/publicEventPaymentDocument";
+export {validatePublicEventAdmissionReceiptDocument} from "./validators/publicEventAdmissionReceiptDocument";
+export {validateEventRegistrationReceiptDocument} from "./validators/eventRegistrationReceiptDocument";
+export {validateManagePublicEventCheckoutCallablePayload} from "./validators/managePublicEventCheckoutInput";
+export {validateManagePublicEventCheckoutCallableResponse} from "./validators/managePublicEventCheckoutOutput";
+export {validateConfigureEventRegistrationCallablePayload} from "./validators/configureEventRegistrationInput";
+export {validateConfigureEventRegistrationCallableResponse} from "./validators/configureEventRegistrationOutput";
 export {validateOrganizerEventOfferPaymentDocument} from "./validators/organizerEventOfferPaymentDocument";
 export {validateOrganizerEventOfferRecipientDocument} from "./validators/organizerEventOfferRecipientDocument";
 export {validatePaymentRoutingSnapshot} from "./validators/paymentRoutingSnapshot";

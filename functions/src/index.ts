@@ -749,3 +749,8 @@ export {commitOrganizerFormAdmission} from
 
 export {previewOrganizerFormAdmission} from
   "./organizerFormAdmission/previewCallable";
+
+export {configureEventRegistration, managePublicEventCheckout} from
+  "./events/publicRegistration/callables";
+export {reconcilePublicEventPayments, onCancelledPublicEventPayments} from
+  "./events/publicRegistration/recovery";

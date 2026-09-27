@@ -16,8 +16,8 @@ import {InvalidFormPaymentWebhook, parseVerifiedFormWebhook,
 import {formPaymentRuntime} from "./formPaymentRuntime";
 import type {FormPaymentProcessor} from "./formPaymentProcessor";
 
-import {processVerifiedOfferPaymentOrder} from
-  "../offerPayments/offerPaymentWebhook";
+import {processVerifiedEventPaymentOrder} from
+  "../eventCheckout/eventPaymentWebhookDispatch";
 
 /** The public URL must name the current configured profile version. */
 export function formRouteWebhookConfigurationVersion(version: string,
@@ -98,7 +98,7 @@ export async function processFormRoutePaymentWebhook(receiptId: string,
         receipt.providerOrderId !== providerPayment.orderId) invalid();
     const order = await deps.provider.fetchOrder(deps.profile.keyId,
       providerPayment.orderId);
-    processed = await processVerifiedOfferPaymentOrder({db: deps.db, order,
+    processed = await processVerifiedEventPaymentOrder({db: deps.db, order,
       providerPaymentId: receipt.providerPaymentId,
       accountId: receipt.accountId, mode: deps.profile.mode,
       route: "razorpayRoute"});

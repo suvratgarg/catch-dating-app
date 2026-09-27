@@ -68,6 +68,8 @@ async function completedEvent<P extends EventSeatPaymentState>(input: {
     tx.get(db.collection("eventSuccessPlans").doc(eventId)),
     input.readAdmission({db, tx, payment, paymentId}),
   ]);
+  // A cancelled no-refund charge is historical financial authority. A later
+  // registration may reuse its roster row without erasing the original charge.
   const attendee = (await tx.get(db.collection("eventAttendees")
     .doc(receipt.attendeeId))).data();
   const event = eventSnap.data();
@@ -83,13 +85,14 @@ async function completedEvent<P extends EventSeatPaymentState>(input: {
       plan.status !== "complete" || !plan.liveControlRevision ||
       !Number.isSafeInteger(completed) || completed <= 0 ||
       completed < payment.admittedAt.toMillis() || completed > nowMillis ||
-      !validateEventAttendeeDocument(attendee) ||
-      attendee.eventId !== eventId || attendee.organizerId !== organizerId ||
-      attendee.linkedUid !== payment.recipientUid ||
-      !(cancelledWithoutRefund ? ["cancelled"] : ["registered", "checkedIn"])
-        .includes(attendee.status) ||
-      attendee.revenueOrderReference !== payment.providerOrderId ||
-      attendee.revenueAmountMinor !== payment.amountPaise) return null;
+      (cancelledWithoutRefund ?
+        payment.cancellation?.attendeeId !== receipt.attendeeId :
+        !validateEventAttendeeDocument(attendee) ||
+        attendee.eventId !== eventId || attendee.organizerId !== organizerId ||
+        attendee.linkedUid !== payment.recipientUid ||
+        !["registered", "checkedIn"].includes(attendee.status) ||
+        attendee.revenueOrderReference !== payment.providerOrderId ||
+        attendee.revenueAmountMinor !== payment.amountPaise)) return null;
   return completed;
 }
 

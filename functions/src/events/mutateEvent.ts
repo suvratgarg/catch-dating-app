@@ -1,3 +1,4 @@
+import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {randomBytes} from "crypto";
@@ -69,7 +70,6 @@ import {
 } from "./eventPayloadNormalization";
 import {
   EventPolicyBundleDocument,
-  eventPolicyFromEvent,
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
@@ -1753,7 +1753,24 @@ function buildUpdateEventPatch(
     patch.eventFormat = normalizeEventFormat(fields.eventFormat);
   }
   if (fields.publicRegistrationEnabled !== undefined) {
+    if (event.publicRegistrationMode === "paid" &&
+        fields.publicRegistrationEnabled !== event.publicRegistrationEnabled) {
+      throw new HttpsError("failed-precondition",
+        "Use event registration settings to change paid registration.");
+    }
     patch.publicRegistrationEnabled = fields.publicRegistrationEnabled;
+    if (event.publicRegistrationMode !== undefined &&
+        fields.publicRegistrationEnabled !== event.publicRegistrationEnabled) {
+      const revision = event.publicRegistrationRevision ?? 0;
+      if (!Number.isSafeInteger(revision) ||
+          revision >= Number.MAX_SAFE_INTEGER) {
+        throw new HttpsError("failed-precondition",
+          "Invalid registration revision.");
+      }
+      patch.publicRegistrationMode = fields.publicRegistrationEnabled ?
+        "free" : "closed";
+      patch.publicRegistrationRevision = revision + 1;
+    }
   }
   if (fields.constraints !== undefined) {
     patch.constraints = normalizeConstraints(fields.constraints);
@@ -2124,22 +2141,8 @@ function assertStandalonePublicRegistrationPolicy(
       event.constraints,
     eventPolicy: fields.eventPolicy ?? event.eventPolicy,
   };
-  const policy = eventPolicyFromEvent(mergedEvent);
-  if (policy.pricing.basePriceInPaise > 0) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Disable website OTP registration before making this a paid event."
-    );
-  }
-  if (policy.admission.format !== "open" ||
-      policy.admission.inviteRequired === true ||
-      policy.admission.membershipRequired === true ||
-      policy.admission.manualApprovalRequired === true) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Website OTP registration currently supports open-admission events."
-    );
-  }
+  assertPublicRegistrationTerms(mergedEvent,
+    event.publicRegistrationMode === "paid" ? "paid" : "free");
 }
 
 /**

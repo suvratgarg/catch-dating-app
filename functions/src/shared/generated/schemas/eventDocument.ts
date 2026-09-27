@@ -2030,6 +2030,22 @@ export const eventDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ],
+      "description": "Explicit registration capability. Older enabled events without this field support free OTP registration only.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicRegistrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
     }
   },
   "allOf": [
@@ -2123,6 +2139,60 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "eventTimezone",
           "setupDefaults"
         ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicRegistrationRevision",
+          "publicRegistrationEnabled"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ],
+        "properties": {
+          "publicRegistrationMode": {
+            "const": "closed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "publicRegistrationMode"
+        ],
+        "properties": {
+          "publicRegistrationMode": {
+            "enum": [
+              "free",
+              "paid"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "publicRegistrationEnabled": {
+            "const": true
+          }
+        }
       }
     }
   ]

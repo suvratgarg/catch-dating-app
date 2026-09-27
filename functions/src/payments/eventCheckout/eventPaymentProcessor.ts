@@ -62,6 +62,11 @@ export class EventPaymentProcessor<P extends EventPaymentState> {
   async ensureOrder(): Promise<P> {
     const initial = await this.read();
     if (initial.providerOrderId || initial.admissionReceiptId) return initial;
+    if (initial.status === "failed" &&
+        initial.lastErrorCode === "orderRejected") {
+      await this.expire();
+      return this.read();
+    }
     const merchant = await this.deps.authority.resolve();
     const claim = await this.deps.db.runTransaction(async (tx) => {
       const current = this.bound((await tx.get(this.ref())).data());
@@ -109,10 +114,10 @@ export class EventPaymentProcessor<P extends EventPaymentState> {
           updatedAt: Timestamp.fromMillis(this.now()), lastErrorCode: null});
       });
     } catch (error) {
-      await this.deps.db.runTransaction(async (tx) => {
+      const rejectedOrder = await this.deps.db.runTransaction(async (tx) => {
         const current = this.bound((await tx.get(this.ref())).data());
         if (current.leaseUntil?.toMillis() !== claim.leaseUntil.toMillis()) {
-          return;
+          return false;
         }
         const rejected = claim.create &&
           error instanceof FormPaymentProviderError &&
@@ -122,7 +127,9 @@ export class EventPaymentProcessor<P extends EventPaymentState> {
             rejected ? "failed" : "orderUnknown",
           lastErrorCode: rejected ? "orderRejected" : "orderOutcomeUnknown",
           updatedAt: Timestamp.fromMillis(this.now())});
+        return rejected;
       });
+      if (rejectedOrder) await this.expire();
       throw new HttpsError("unavailable", "Payment setup is being checked.");
     }
     return this.read();

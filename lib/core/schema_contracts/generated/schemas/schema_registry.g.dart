@@ -17,6 +17,41 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'PublicEventPaymentDocument',
+    source: 'firestore/public_event_payments.schema.json',
+    schema: schemaPublicEventPaymentDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PublicEventAdmissionReceiptDocument',
+    source: 'firestore/public_event_admission_receipts.schema.json',
+    schema: schemaPublicEventAdmissionReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRegistrationReceiptDocument',
+    source: 'firestore/event_registration_receipts.schema.json',
+    schema: schemaEventRegistrationReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManagePublicEventCheckoutCallablePayload',
+    source: 'callables/manage_public_event_checkout_payload.schema.json',
+    schema: schemaManagePublicEventCheckoutCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManagePublicEventCheckoutCallableResponse',
+    source: 'callable_responses/manage_public_event_checkout_response.schema.json',
+    schema: schemaManagePublicEventCheckoutCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ConfigureEventRegistrationCallablePayload',
+    source: 'callables/configure_event_registration_payload.schema.json',
+    schema: schemaConfigureEventRegistrationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ConfigureEventRegistrationCallableResponse',
+    source: 'callable_responses/configure_event_registration_response.schema.json',
+    schema: schemaConfigureEventRegistrationCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OrganizerEventOfferPaymentDocument',
     source: 'firestore/organizer_event_offer_payments.schema.json',
     schema: schemaOrganizerEventOfferPaymentDocumentSchema,
@@ -4679,6 +4714,13 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'PublicEventPaymentDocument': schemaPublicEventPaymentDocumentSchema,
+  'PublicEventAdmissionReceiptDocument': schemaPublicEventAdmissionReceiptDocumentSchema,
+  'EventRegistrationReceiptDocument': schemaEventRegistrationReceiptDocumentSchema,
+  'ManagePublicEventCheckoutCallablePayload': schemaManagePublicEventCheckoutCallablePayloadSchema,
+  'ManagePublicEventCheckoutCallableResponse': schemaManagePublicEventCheckoutCallableResponseSchema,
+  'ConfigureEventRegistrationCallablePayload': schemaConfigureEventRegistrationCallablePayloadSchema,
+  'ConfigureEventRegistrationCallableResponse': schemaConfigureEventRegistrationCallableResponseSchema,
   'OrganizerEventOfferPaymentDocument': schemaOrganizerEventOfferPaymentDocumentSchema,
   'OrganizerEventOfferRecipientDocument': schemaOrganizerEventOfferRecipientDocumentSchema,
   'PaymentRoutingSnapshot': schemaPaymentRoutingSnapshotSchema,
@@ -5614,6 +5656,13 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/public_event_payments.schema.json': schemaPublicEventPaymentDocumentSchema,
+  'firestore/public_event_admission_receipts.schema.json': schemaPublicEventAdmissionReceiptDocumentSchema,
+  'firestore/event_registration_receipts.schema.json': schemaEventRegistrationReceiptDocumentSchema,
+  'callables/manage_public_event_checkout_payload.schema.json': schemaManagePublicEventCheckoutCallablePayloadSchema,
+  'callable_responses/manage_public_event_checkout_response.schema.json': schemaManagePublicEventCheckoutCallableResponseSchema,
+  'callables/configure_event_registration_payload.schema.json': schemaConfigureEventRegistrationCallablePayloadSchema,
+  'callable_responses/configure_event_registration_response.schema.json': schemaConfigureEventRegistrationCallableResponseSchema,
   'firestore/organizer_event_offer_payments.schema.json': schemaOrganizerEventOfferPaymentDocumentSchema,
   'firestore/organizer_event_offer_recipients.schema.json': schemaOrganizerEventOfferRecipientDocumentSchema,
   'embedded/payment_routing_snapshot.schema.json': schemaPaymentRoutingSnapshotSchema,

@@ -15,6 +15,13 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "PublicEventPaymentDocument", "source": "firestore/public_event_payments.schema.json", "typeOutput": "functions/src/shared/generated/publicEventPaymentDocument.ts"},
+  {"name": "PublicEventAdmissionReceiptDocument", "source": "firestore/public_event_admission_receipts.schema.json", "typeOutput": "functions/src/shared/generated/publicEventAdmissionReceiptDocument.ts"},
+  {"name": "EventRegistrationReceiptDocument", "source": "firestore/event_registration_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventRegistrationReceiptDocument.ts"},
+  {"name": "ManagePublicEventCheckoutCallablePayload", "source": "callables/manage_public_event_checkout_payload.schema.json", "typeOutput": "functions/src/shared/generated/managePublicEventCheckoutCallablePayload.ts", "additionalTypeOutputs": ["website/src/shared/contracts/generated/managePublicEventCheckoutCallablePayload.ts"]},
+  {"name": "ManagePublicEventCheckoutCallableResponse", "source": "callable_responses/manage_public_event_checkout_response.schema.json", "typeOutput": "functions/src/shared/generated/managePublicEventCheckoutCallableResponse.ts", "additionalTypeOutputs": ["website/src/shared/contracts/generated/managePublicEventCheckoutCallableResponse.ts"]},
+  {"name": "ConfigureEventRegistrationCallablePayload", "source": "callables/configure_event_registration_payload.schema.json", "typeOutput": "functions/src/shared/generated/configureEventRegistrationCallablePayload.ts"},
+  {"name": "ConfigureEventRegistrationCallableResponse", "source": "callable_responses/configure_event_registration_response.schema.json", "typeOutput": "functions/src/shared/generated/configureEventRegistrationCallableResponse.ts"},
   {name: "OrganizerEventOfferPaymentDocument", source: "firestore/organizer_event_offer_payments.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferPaymentDocument.ts"},
   {name: "OrganizerEventOfferRecipientDocument", source: "firestore/organizer_event_offer_recipients.schema.json", typeOutput: "functions/src/shared/generated/organizerEventOfferRecipientDocument.ts"},
   {name: "PaymentRoutingSnapshot", source: "embedded/payment_routing_snapshot.schema.json", typeOutput: "functions/src/shared/generated/paymentRoutingSnapshot.ts"},

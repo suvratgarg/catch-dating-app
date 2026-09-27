@@ -12,6 +12,13 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `functions/src/shared/generated/publicEventPaymentDocument.ts` |
+| PublicEventAdmissionReceiptDocument | `firestore/public_event_admission_receipts.schema.json` | `functions/src/shared/generated/publicEventAdmissionReceiptDocument.ts` |
+| EventRegistrationReceiptDocument | `firestore/event_registration_receipts.schema.json` | `functions/src/shared/generated/eventRegistrationReceiptDocument.ts` |
+| ManagePublicEventCheckoutCallablePayload | `callables/manage_public_event_checkout_payload.schema.json` | `functions/src/shared/generated/managePublicEventCheckoutCallablePayload.ts` |
+| ManagePublicEventCheckoutCallableResponse | `callable_responses/manage_public_event_checkout_response.schema.json` | `functions/src/shared/generated/managePublicEventCheckoutCallableResponse.ts` |
+| ConfigureEventRegistrationCallablePayload | `callables/configure_event_registration_payload.schema.json` | `functions/src/shared/generated/configureEventRegistrationCallablePayload.ts` |
+| ConfigureEventRegistrationCallableResponse | `callable_responses/configure_event_registration_response.schema.json` | `functions/src/shared/generated/configureEventRegistrationCallableResponse.ts` |
 | OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `functions/src/shared/generated/organizerEventOfferPaymentDocument.ts` |
 | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `functions/src/shared/generated/organizerEventOfferRecipientDocument.ts` |
 | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `functions/src/shared/generated/paymentRoutingSnapshot.ts` |
@@ -949,6 +956,13 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaPublicEventPaymentDocumentSchema` | PublicEventPaymentDocument | `firestore/public_event_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_payment_document.g.dart` |
+| `schemaPublicEventAdmissionReceiptDocumentSchema` | PublicEventAdmissionReceiptDocument | `firestore/public_event_admission_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/public_event_admission_receipt_document.g.dart` |
+| `schemaEventRegistrationReceiptDocumentSchema` | EventRegistrationReceiptDocument | `firestore/event_registration_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_registration_receipt_document.g.dart` |
+| `schemaManagePublicEventCheckoutCallablePayloadSchema` | ManagePublicEventCheckoutCallablePayload | `callables/manage_public_event_checkout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_public_event_checkout_callable_payload.g.dart` |
+| `schemaManagePublicEventCheckoutCallableResponseSchema` | ManagePublicEventCheckoutCallableResponse | `callable_responses/manage_public_event_checkout_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_public_event_checkout_callable_response.g.dart` |
+| `schemaConfigureEventRegistrationCallablePayloadSchema` | ConfigureEventRegistrationCallablePayload | `callables/configure_event_registration_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_registration_callable_payload.g.dart` |
+| `schemaConfigureEventRegistrationCallableResponseSchema` | ConfigureEventRegistrationCallableResponse | `callable_responses/configure_event_registration_response.schema.json` | `lib/core/schema_contracts/generated/schemas/configure_event_registration_callable_response.g.dart` |
 | `schemaOrganizerEventOfferPaymentDocumentSchema` | OrganizerEventOfferPaymentDocument | `firestore/organizer_event_offer_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_payment_document.g.dart` |
 | `schemaOrganizerEventOfferRecipientDocumentSchema` | OrganizerEventOfferRecipientDocument | `firestore/organizer_event_offer_recipients.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_event_offer_recipient_document.g.dart` |
 | `schemaPaymentRoutingSnapshotSchema` | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_snapshot.g.dart` |
@@ -2240,6 +2254,8 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| ManagePublicEventCheckoutCallablePayload | not an object schema |
+| ConfigureEventRegistrationCallablePayload | cannot map field "mode" (no type) |
 | ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |
 | ManageEventOfferCheckoutCallablePayload | not an object schema |
 | SetEventRcsPreferenceCallablePayload | cannot map field "decision" (no type) |

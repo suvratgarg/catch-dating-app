@@ -12,8 +12,8 @@ import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import type {FormPaymentProcessor} from "./formPaymentProcessor";
 import type {FormPaymentCredentials} from "./formPaymentCredentials";
 
-import {processVerifiedOfferPaymentOrder} from
-  "../offerPayments/offerPaymentWebhook";
+import {processVerifiedEventPaymentOrder} from
+  "../eventCheckout/eventPaymentWebhookDispatch";
 
 interface WebhookDeps {
   db: FirebaseFirestore.Firestore;
@@ -109,7 +109,7 @@ export async function processFormPaymentWebhook(receiptId: string,
       receipt.providerOrderId !== providerPayment.orderId) invalid();
   const order = await deps.provider.fetchOrder(credential.token.accessToken,
     providerPayment.orderId);
-  const offerProcessed = await processVerifiedOfferPaymentOrder({db: deps.db,
+  const offerProcessed = await processVerifiedEventPaymentOrder({db: deps.db,
     order, providerPaymentId: receipt.providerPaymentId,
     accountId: receipt.accountId, mode: connection.mode,
     route: "razorpayOAuth", connectionId: receipt.connectionId,

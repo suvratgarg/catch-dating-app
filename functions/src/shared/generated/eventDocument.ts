@@ -434,4 +434,9 @@ export type EventDocument = {
   eventLocalStartTime?: string;
   eventTimezone?: string;
   setupDefaults?: EventSetupDefaults;
+  /**
+   * Explicit registration capability. Older enabled events without this field support free OTP registration only.
+   */
+  publicRegistrationMode?: "closed" | "free" | "paid";
+  publicRegistrationRevision?: number;
 };

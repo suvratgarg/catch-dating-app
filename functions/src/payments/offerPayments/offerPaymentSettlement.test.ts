@@ -200,3 +200,21 @@ test("no-refund guest cancellation settles only after the event completes",
   assert.equal(h.counts().releaseCount, 1);
   assert.equal(h.payment().status, "cancelled");
   });
+
+test("no-refund receipt survives a later registration using the same row",
+  async () => {
+    const h = await fixture();
+    h.store.get(h.path)!.cancellationPolicy = {
+      refundDeadlineMillis: 2000, eventStartsAtMillis: 5_000_000};
+    await cancelPaidOfferForCancelledEvent({db: h.store.db(),
+      paymentId: h.paymentId, nowMillis: 3000,
+      guest: {uid, expectedRefundAmountPaise: 0}});
+    const receipt = h.store.get("organizerFormAdmissionReceipts/" +
+      h.payment().admissionReceiptId)!;
+    Object.assign(h.store.get(`eventAttendees/${receipt.attendeeId}`)!, {
+      status: "registered", revenueOrderReference: "order_later",
+      revenueAmountMinor: 20000});
+    await h.run();
+    assert.equal(h.counts().releaseCount, 1);
+    assert.equal(h.payment().status, "cancelled");
+  });

@@ -3,6 +3,13 @@
 
 import {createRequire} from "node:module";
 import {
+  publicEventPaymentDocumentSchema,
+  publicEventAdmissionReceiptDocumentSchema,
+  eventRegistrationReceiptDocumentSchema,
+  managePublicEventCheckoutCallablePayloadSchema,
+  managePublicEventCheckoutCallableResponseSchema,
+  configureEventRegistrationCallablePayloadSchema,
+  configureEventRegistrationCallableResponseSchema,
   organizerEventOfferPaymentDocumentSchema,
   organizerEventOfferRecipientDocumentSchema,
   paymentRoutingSnapshotSchema,
@@ -959,6 +966,13 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validatePublicEventPaymentDocument = ajv.compile(publicEventPaymentDocumentSchema);
+export const validatePublicEventAdmissionReceiptDocument = ajv.compile(publicEventAdmissionReceiptDocumentSchema);
+export const validateEventRegistrationReceiptDocument = ajv.compile(eventRegistrationReceiptDocumentSchema);
+export const validateManagePublicEventCheckoutCallablePayload = ajv.compile(managePublicEventCheckoutCallablePayloadSchema);
+export const validateManagePublicEventCheckoutCallableResponse = ajv.compile(managePublicEventCheckoutCallableResponseSchema);
+export const validateConfigureEventRegistrationCallablePayload = ajv.compile(configureEventRegistrationCallablePayloadSchema);
+export const validateConfigureEventRegistrationCallableResponse = ajv.compile(configureEventRegistrationCallableResponseSchema);
 export const validateOrganizerEventOfferPaymentDocument = ajv.compile(organizerEventOfferPaymentDocumentSchema);
 export const validateOrganizerEventOfferRecipientDocument = ajv.compile(organizerEventOfferRecipientDocumentSchema);
 export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
