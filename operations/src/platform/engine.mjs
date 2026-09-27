@@ -180,7 +180,19 @@ export class OperationsEngine {
         const items = await this.store.listWorkItems({runId});
         assertWorkflowInventory(this.workflow, items);
         for (const item of items) {
-          const outcome = this.workflow.review(item, {now: this.now()});
+          const outcome = await this.workflow.review(item, {
+            now: this.now(),
+            budget,
+            persistBudget: async () => {
+              await this.store.updateRun(runId, (current) => ({
+                ...current,
+                budget: budget.snapshot(),
+                updatedAt: this.now(),
+              }), await leaseSession.writeOptions());
+            },
+            recordReviewAction: (type, payload, actionId) =>
+              this.recordAction(runId, type, payload, leaseSession, {actionId}),
+          });
           const updated = transitionWorkItem(item, outcome.primaryStage, {
             at: this.now(),
             reason: outcome.reason,
