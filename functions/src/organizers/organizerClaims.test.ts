@@ -89,7 +89,7 @@ test("claim approval still requires an authorized reviewer", async () => {
   assert.deepEqual([...docs], before);
 });
 
-test("claim request retries and approval project one follow-up into private Sales", async () => {
+test("claim retries and approval project one private follow-up", async () => {
   const {docs, deps, request} = fixture("hidden");
   const organizer = docs.get("organizers/example-host")!;
   organizer.claim = {state: "unclaimed"};
@@ -118,18 +118,19 @@ test("claim request retries and approval project one follow-up into private Sale
   assert.equal(task.revision, 2);
   assert.equal(task.ownerUid, "sales-employee");
   assert.equal(task.kind, "service_commitment");
-  assert.equal(docs.get("organizers/example-host")?.appVisibility, "hidden");
+  assert.equal(docs.get("organizers/example-host")?.appVisibility,
+    "hidden");
   assert.equal(JSON.stringify(docs.get("organizers/example-host"))
     .includes("privateNote"), false);
-  assert.equal(JSON.stringify(docs.get(`organizerClaimRequests/${first.requestId}`))
-    .includes("privateNote"), false);
+  const claimRecord = docs.get(`organizerClaimRequests/${first.requestId}`);
+  assert.equal(JSON.stringify(claimRecord).includes("privateNote"), false);
   await assert.rejects(adminDecideOrganizerClaimHandler(request, deps),
     {code: "failed-precondition"});
   assert.equal(salesRows("salesActivities/").length, 2);
   assert.equal(salesRows("salesTasks/")[0].revision, 2);
 });
 
-test("claim rejection records its outcome without granting ownership", async () => {
+test("claim rejection records outcome without ownership", async () => {
   const {docs, deps, request} = fixture("hidden");
   docs.set("organizerSalesAccounts/example-host", {
     classification: "sales_private", organizerId: "example-host",

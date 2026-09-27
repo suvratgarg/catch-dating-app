@@ -33,7 +33,7 @@ export async function prepareClaimSalesTransition(
   const note = {
     requested: "An organizer ownership claim was submitted for review.",
     approved: "Organizer ownership was approved through claim review.",
-    rejected: "The organizer ownership claim was rejected through claim review.",
+    rejected: "Organizer ownership was rejected through claim review.",
   }[transition.status];
   return () => {
     tx.create(db.collection("salesActivities").doc(activityId), {

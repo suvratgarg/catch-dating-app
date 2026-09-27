@@ -213,7 +213,8 @@ export async function adminDecideOrganizerClaimHandler(
       requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument") : null;
     const stageSalesTransition = await prepareClaimSalesTransition(tx, db, {
       organizerId: claimRequest.organizerId, claimRequestId: data.requestId,
-      transitionId, status: data.decision === "approve" ? "approved" : "rejected",
+      transitionId,
+      status: data.decision === "approve" ? "approved" : "rejected",
       actorUid: adminContext.uid, recordedAt,
     });
 
