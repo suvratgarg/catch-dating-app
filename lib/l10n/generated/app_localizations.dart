@@ -36558,6 +36558,708 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load your events. Try again.'**
   String get hostFormTargetLoadFailed;
+
+  /// Program workspace copy: programsListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Programs'**
+  String get programsListTitle;
+
+  /// Program workspace copy: programsListNoOrganizerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No organizer selected'**
+  String get programsListNoOrganizerTitle;
+
+  /// Program workspace copy: programsListNoOrganizerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an organizer to manage its programs.'**
+  String get programsListNoOrganizerMessage;
+
+  /// Program workspace copy: programsListCreateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New program'**
+  String get programsListCreateLabel;
+
+  /// Program workspace copy: programsListEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No programs yet'**
+  String get programsListEmptyTitle;
+
+  /// Program workspace copy: programsListEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a multi-day program to coordinate functions, travel and guest RSVP.'**
+  String get programsListEmptyMessage;
+
+  /// Program workspace copy: programsCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New program'**
+  String get programsCreateTitle;
+
+  /// Program workspace copy: programsCreateNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Program title'**
+  String get programsCreateNameLabel;
+
+  /// Program workspace copy: programsCreateNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rao–Shah wedding weekend'**
+  String get programsCreateNameHint;
+
+  /// Program workspace copy: programsCreateTimezoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get programsCreateTimezoneLabel;
+
+  /// Program workspace copy: programsCreateTimezoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'America/Los_Angeles'**
+  String get programsCreateTimezoneHint;
+
+  /// Program workspace copy: programsCreateStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First day'**
+  String get programsCreateStartLabel;
+
+  /// Program workspace copy: programsCreateEndLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last day'**
+  String get programsCreateEndLabel;
+
+  /// Program workspace copy: programsCreateSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Create program'**
+  String get programsCreateSubmit;
+
+  /// Program workspace copy: programsWorkspaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get programsWorkspaceTitle;
+
+  /// Program workspace copy: programsWorkspaceStatsGuests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests'**
+  String programsWorkspaceStatsGuests({required int count});
+
+  /// Program workspace copy: programsWorkspaceStatsHouseholds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} households'**
+  String programsWorkspaceStatsHouseholds({required int count});
+
+  /// Program workspace copy: programsWorkspaceStatsLegs.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} inbound legs'**
+  String programsWorkspaceStatsLegs({required int count});
+
+  /// Program workspace copy: programsWorkspaceStatsStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} staff'**
+  String programsWorkspaceStatsStaff({required int count});
+
+  /// Program workspace copy: programsWorkspaceScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get programsWorkspaceScheduleTitle;
+
+  /// Program workspace copy: programsWorkspaceScheduleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Functions by day'**
+  String get programsWorkspaceScheduleSubtitle;
+
+  /// Program workspace copy: programsWorkspaceDayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {index} · {date}'**
+  String programsWorkspaceDayLabel({required String date, required int index});
+
+  /// Program workspace copy: programsWorkspaceFunctionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New function'**
+  String get programsWorkspaceFunctionNew;
+
+  /// Program workspace copy: programsWorkspaceNoFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions yet — add the first event of the program.'**
+  String get programsWorkspaceNoFunctions;
+
+  /// Program workspace copy: programsWorkspaceDayEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No functions on this day.'**
+  String get programsWorkspaceDayEmpty;
+
+  /// Program workspace copy: programsWorkspaceFunctionEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit function'**
+  String get programsWorkspaceFunctionEdit;
+
+  /// Program workspace copy: programsWorkspaceFunctionSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get programsWorkspaceFunctionSave;
+
+  /// Program workspace copy: programsWorkspaceFunctionInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitations'**
+  String get programsWorkspaceFunctionInvitations;
+
+  /// Program workspace copy: programsWorkspaceFunctionName.
+  ///
+  /// In en, this message translates to:
+  /// **'Function name'**
+  String get programsWorkspaceFunctionName;
+
+  /// Program workspace copy: programsWorkspaceFunctionVenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get programsWorkspaceFunctionVenue;
+
+  /// Program workspace copy: programsWorkspaceFunctionVenueNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue notes'**
+  String get programsWorkspaceFunctionVenueNotes;
+
+  /// Program workspace copy: programsWorkspaceFunctionStarts.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get programsWorkspaceFunctionStarts;
+
+  /// Program workspace copy: programsWorkspaceFunctionEnds.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get programsWorkspaceFunctionEnds;
+
+  /// Program workspace copy: programsWorkspaceInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitations: {mode}'**
+  String programsWorkspaceInvitations({required String mode});
+
+  /// Program workspace copy: programsWorkspaceCheckedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{checked}/{expected} checked in'**
+  String programsWorkspaceCheckedIn({
+    required int expected,
+    required int checked,
+  });
+
+  /// Program workspace copy: programsWorkspaceManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get programsWorkspaceManageTitle;
+
+  /// Program workspace copy: programsWorkspaceGuestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests & RSVP'**
+  String get programsWorkspaceGuestsTitle;
+
+  /// Program workspace copy: programsWorkspaceTeamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team & duties'**
+  String get programsWorkspaceTeamTitle;
+
+  /// Program workspace copy: programsWorkspaceImportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manifest import'**
+  String get programsWorkspaceImportTitle;
+
+  /// Program workspace copy: programsGuestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests & RSVP'**
+  String get programsGuestsTitle;
+
+  /// Program workspace copy: programsGuestsGridTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Households × functions'**
+  String get programsGuestsGridTitle;
+
+  /// Program workspace copy: programsGuestsGridSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RSVP state for {function}'**
+  String programsGuestsGridSubtitle({required String function});
+
+  /// Program workspace copy: programsGuestsAddGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guest'**
+  String get programsGuestsAddGuest;
+
+  /// Program workspace copy: programsGuestsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests yet'**
+  String get programsGuestsEmptyTitle;
+
+  /// Program workspace copy: programsGuestsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a manifest or add guests to build the RSVP grid.'**
+  String get programsGuestsEmptyMessage;
+
+  /// Program workspace copy: programsGuestsGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get programsGuestsGroupsTitle;
+
+  /// Program workspace copy: programsGuestsGroupsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grouping dimensions for audience and allocation cuts'**
+  String get programsGuestsGroupsSubtitle;
+
+  /// Program workspace copy: programsGuestsGroupsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet.'**
+  String get programsGuestsGroupsEmpty;
+
+  /// Program workspace copy: programsGuestsGroupNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get programsGuestsGroupNew;
+
+  /// Program workspace copy: programsGuestsGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group label'**
+  String get programsGuestsGroupLabel;
+
+  /// Program workspace copy: programsGuestsGroupDimension.
+  ///
+  /// In en, this message translates to:
+  /// **'Dimension'**
+  String get programsGuestsGroupDimension;
+
+  /// Program workspace copy: programsGuestsGroupDimensionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'side, lineage, relation, company…'**
+  String get programsGuestsGroupDimensionHint;
+
+  /// Program workspace copy: programsGuestsGroupMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String programsGuestsGroupMembers({required int count});
+
+  /// Program workspace copy: programsGuestsGroupDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get programsGuestsGroupDelete;
+
+  /// Program workspace copy: programsGuestsGroupDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group'**
+  String get programsGuestsGroupDeleteTitle;
+
+  /// Program workspace copy: programsGuestsGroupDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {label}? Guests keep their RSVP rows.'**
+  String programsGuestsGroupDeleteMessage({required String label});
+
+  /// Program workspace copy: programsGuestsMutationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'\'t save'**
+  String get programsGuestsMutationFailed;
+
+  /// Program workspace copy: programsGuestsNoHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'No household'**
+  String get programsGuestsNoHousehold;
+
+  /// Program workspace copy: programsGuestsInviteModeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'all guests'**
+  String get programsGuestsInviteModeAll;
+
+  /// Program workspace copy: programsGuestsInviteModeSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'selected guests'**
+  String get programsGuestsInviteModeSelected;
+
+  /// Program workspace copy: programsGuestsInviteSelectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick invited guests from the guest list after saving.'**
+  String get programsGuestsInviteSelectionHint;
+
+  /// Program workspace copy: programsGuestsNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest name'**
+  String get programsGuestsNameLabel;
+
+  /// Program workspace copy: programsGuestsPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (E.164)'**
+  String get programsGuestsPhoneLabel;
+
+  /// Program workspace copy: programsGuestsEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get programsGuestsEmailLabel;
+
+  /// Program workspace copy: programsGuestsHouseholdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get programsGuestsHouseholdLabel;
+
+  /// Program workspace copy: programsTeamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team & duties'**
+  String get programsTeamTitle;
+
+  /// Program workspace copy: programsTeamSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff access scoped to program duties'**
+  String get programsTeamSubtitle;
+
+  /// Program workspace copy: programsTeamGrant.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant access'**
+  String get programsTeamGrant;
+
+  /// Program workspace copy: programsTeamInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite by phone'**
+  String get programsTeamInvite;
+
+  /// Program workspace copy: programsTeamRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get programsTeamRevoke;
+
+  /// Program workspace copy: programsTeamRevokeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke staff access'**
+  String get programsTeamRevokeTitle;
+
+  /// Program workspace copy: programsTeamRevokeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}\'\'s access to this program?'**
+  String programsTeamRevokeMessage({required String name});
+
+  /// Program workspace copy: programsTeamEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff yet'**
+  String get programsTeamEmptyTitle;
+
+  /// Program workspace copy: programsTeamEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant duties or invite staff by phone to run this program.'**
+  String get programsTeamEmptyMessage;
+
+  /// Program workspace copy: programsTeamExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String programsTeamExpires({required String date});
+
+  /// Program workspace copy: programsTeamNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get programsTeamNameLabel;
+
+  /// Program workspace copy: programsTeamPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (E.164)'**
+  String get programsTeamPhoneLabel;
+
+  /// Program workspace copy: programsTeamDutiesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duties'**
+  String get programsTeamDutiesLabel;
+
+  /// Program workspace copy: programsTeamExpiryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Access expires'**
+  String get programsTeamExpiryLabel;
+
+  /// Program workspace copy: programsImportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manifest import'**
+  String get programsImportTitle;
+
+  /// Program workspace copy: programsImportFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Source file'**
+  String get programsImportFileTitle;
+
+  /// Program workspace copy: programsImportFileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV or XLSX guest and travel manifest'**
+  String get programsImportFileSubtitle;
+
+  /// Program workspace copy: programsImportPickFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get programsImportPickFile;
+
+  /// Program workspace copy: programsImportFileSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} rows · {columns} columns'**
+  String programsImportFileSummary({required int count, required int columns});
+
+  /// Program workspace copy: programsImportMappingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Column mapping'**
+  String get programsImportMappingTitle;
+
+  /// Program workspace copy: programsImportMappingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map manifest fields to file columns'**
+  String get programsImportMappingSubtitle;
+
+  /// Program workspace copy: programsImportFieldSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get programsImportFieldSkip;
+
+  /// Program workspace copy: programsImportFieldDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get programsImportFieldDisplayName;
+
+  /// Program workspace copy: programsImportFieldPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get programsImportFieldPhone;
+
+  /// Program workspace copy: programsImportFieldEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get programsImportFieldEmail;
+
+  /// Program workspace copy: programsImportFieldExternalReference.
+  ///
+  /// In en, this message translates to:
+  /// **'External reference'**
+  String get programsImportFieldExternalReference;
+
+  /// Program workspace copy: programsImportFieldHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Household label'**
+  String get programsImportFieldHousehold;
+
+  /// Program workspace copy: programsImportFieldGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Group labels'**
+  String get programsImportFieldGroups;
+
+  /// Program workspace copy: programsImportFieldParty.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel party label'**
+  String get programsImportFieldParty;
+
+  /// Program workspace copy: programsImportFieldFlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight number'**
+  String get programsImportFieldFlight;
+
+  /// Program workspace copy: programsImportFieldOrigin.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin IATA'**
+  String get programsImportFieldOrigin;
+
+  /// Program workspace copy: programsImportFieldDestinationIata.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination IATA'**
+  String get programsImportFieldDestinationIata;
+
+  /// Program workspace copy: programsImportFieldArrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled arrival'**
+  String get programsImportFieldArrival;
+
+  /// Program workspace copy: programsImportFieldPassengers.
+  ///
+  /// In en, this message translates to:
+  /// **'Passengers'**
+  String get programsImportFieldPassengers;
+
+  /// Program workspace copy: programsImportFieldLuggage.
+  ///
+  /// In en, this message translates to:
+  /// **'Luggage units'**
+  String get programsImportFieldLuggage;
+
+  /// Program workspace copy: programsImportFieldPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup point label'**
+  String get programsImportFieldPickup;
+
+  /// Program workspace copy: programsImportFieldHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination hotel'**
+  String get programsImportFieldHotel;
+
+  /// Program workspace copy: programsImportFieldDestinationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination label'**
+  String get programsImportFieldDestinationLabel;
+
+  /// Program workspace copy: programsImportRowSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{mapped} rows ready · {skipped} skipped'**
+  String programsImportRowSummary({required int skipped, required int mapped});
+
+  /// Program workspace copy: programsImportPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview & commit'**
+  String get programsImportPreviewTitle;
+
+  /// Program workspace copy: programsImportPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview import'**
+  String get programsImportPreview;
+
+  /// Program workspace copy: programsImportCommit.
+  ///
+  /// In en, this message translates to:
+  /// **'Import rows'**
+  String get programsImportCommit;
+
+  /// Program workspace copy: programsImportResultGuests.
+  ///
+  /// In en, this message translates to:
+  /// **'+{created} guests · {updated} updated'**
+  String programsImportResultGuests({
+    required int created,
+    required int updated,
+  });
+
+  /// Program workspace copy: programsImportResultLegs.
+  ///
+  /// In en, this message translates to:
+  /// **'+{created} legs · {updated} updated'**
+  String programsImportResultLegs({required int created, required int updated});
+
+  /// Program workspace copy: programsImportResultHouseholds.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} households'**
+  String programsImportResultHouseholds({required int count});
+
+  /// Program workspace copy: programsImportResultGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} groups'**
+  String programsImportResultGroups({required int count});
+
+  /// Program workspace copy: programsImportAlreadyApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'already applied'**
+  String get programsImportAlreadyApplied;
+
+  /// Program workspace copy: programsImportErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} row errors'**
+  String programsImportErrors({required int count});
+
+  /// Program workspace copy: programsImportRowError.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {index}: {message}'**
+  String programsImportRowError({required String message, required int index});
+
+  /// Program workspace copy: programsImportEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No file selected'**
+  String get programsImportEmptyTitle;
+
+  /// Program workspace copy: programsImportEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a CSV or XLSX manifest to map columns.'**
+  String get programsImportEmptyMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -22717,4 +22717,412 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormTargetLoadFailed =>
       'Could not load your events. Try again.';
+
+  @override
+  String get programsListTitle => 'Programs';
+
+  @override
+  String get programsListNoOrganizerTitle => 'No organizer selected';
+
+  @override
+  String get programsListNoOrganizerMessage =>
+      'Pick an organizer to manage its programs.';
+
+  @override
+  String get programsListCreateLabel => 'New program';
+
+  @override
+  String get programsListEmptyTitle => 'No programs yet';
+
+  @override
+  String get programsListEmptyMessage =>
+      'Create a multi-day program to coordinate functions, travel and guest RSVP.';
+
+  @override
+  String get programsCreateTitle => 'New program';
+
+  @override
+  String get programsCreateNameLabel => 'Program title';
+
+  @override
+  String get programsCreateNameHint => 'Rao–Shah wedding weekend';
+
+  @override
+  String get programsCreateTimezoneLabel => 'Timezone';
+
+  @override
+  String get programsCreateTimezoneHint => 'America/Los_Angeles';
+
+  @override
+  String get programsCreateStartLabel => 'First day';
+
+  @override
+  String get programsCreateEndLabel => 'Last day';
+
+  @override
+  String get programsCreateSubmit => 'Create program';
+
+  @override
+  String get programsWorkspaceTitle => 'Program';
+
+  @override
+  String programsWorkspaceStatsGuests({required int count}) {
+    return '$count guests';
+  }
+
+  @override
+  String programsWorkspaceStatsHouseholds({required int count}) {
+    return '$count households';
+  }
+
+  @override
+  String programsWorkspaceStatsLegs({required int count}) {
+    return '$count inbound legs';
+  }
+
+  @override
+  String programsWorkspaceStatsStaff({required int count}) {
+    return '$count staff';
+  }
+
+  @override
+  String get programsWorkspaceScheduleTitle => 'Schedule';
+
+  @override
+  String get programsWorkspaceScheduleSubtitle => 'Functions by day';
+
+  @override
+  String programsWorkspaceDayLabel({required String date, required int index}) {
+    return 'Day $index · $date';
+  }
+
+  @override
+  String get programsWorkspaceFunctionNew => 'New function';
+
+  @override
+  String get programsWorkspaceNoFunctions =>
+      'No functions yet — add the first event of the program.';
+
+  @override
+  String get programsWorkspaceDayEmpty => 'No functions on this day.';
+
+  @override
+  String get programsWorkspaceFunctionEdit => 'Edit function';
+
+  @override
+  String get programsWorkspaceFunctionSave => 'Save';
+
+  @override
+  String get programsWorkspaceFunctionInvitations => 'Invitations';
+
+  @override
+  String get programsWorkspaceFunctionName => 'Function name';
+
+  @override
+  String get programsWorkspaceFunctionVenue => 'Venue';
+
+  @override
+  String get programsWorkspaceFunctionVenueNotes => 'Venue notes';
+
+  @override
+  String get programsWorkspaceFunctionStarts => 'Starts';
+
+  @override
+  String get programsWorkspaceFunctionEnds => 'Ends';
+
+  @override
+  String programsWorkspaceInvitations({required String mode}) {
+    return 'Invitations: $mode';
+  }
+
+  @override
+  String programsWorkspaceCheckedIn({
+    required int expected,
+    required int checked,
+  }) {
+    return '$checked/$expected checked in';
+  }
+
+  @override
+  String get programsWorkspaceManageTitle => 'Manage';
+
+  @override
+  String get programsWorkspaceGuestsTitle => 'Guests & RSVP';
+
+  @override
+  String get programsWorkspaceTeamTitle => 'Team & duties';
+
+  @override
+  String get programsWorkspaceImportTitle => 'Manifest import';
+
+  @override
+  String get programsGuestsTitle => 'Guests & RSVP';
+
+  @override
+  String get programsGuestsGridTitle => 'Households × functions';
+
+  @override
+  String programsGuestsGridSubtitle({required String function}) {
+    return 'RSVP state for $function';
+  }
+
+  @override
+  String get programsGuestsAddGuest => 'Add guest';
+
+  @override
+  String get programsGuestsEmptyTitle => 'No guests yet';
+
+  @override
+  String get programsGuestsEmptyMessage =>
+      'Import a manifest or add guests to build the RSVP grid.';
+
+  @override
+  String get programsGuestsGroupsTitle => 'Groups';
+
+  @override
+  String get programsGuestsGroupsSubtitle =>
+      'Grouping dimensions for audience and allocation cuts';
+
+  @override
+  String get programsGuestsGroupsEmpty => 'No groups yet.';
+
+  @override
+  String get programsGuestsGroupNew => 'New group';
+
+  @override
+  String get programsGuestsGroupLabel => 'Group label';
+
+  @override
+  String get programsGuestsGroupDimension => 'Dimension';
+
+  @override
+  String get programsGuestsGroupDimensionHint =>
+      'side, lineage, relation, company…';
+
+  @override
+  String programsGuestsGroupMembers({required int count}) {
+    return '$count members';
+  }
+
+  @override
+  String get programsGuestsGroupDelete => 'Delete';
+
+  @override
+  String get programsGuestsGroupDeleteTitle => 'Delete group';
+
+  @override
+  String programsGuestsGroupDeleteMessage({required String label}) {
+    return 'Remove $label? Guests keep their RSVP rows.';
+  }
+
+  @override
+  String get programsGuestsMutationFailed => 'Couldn\'t save';
+
+  @override
+  String get programsGuestsNoHousehold => 'No household';
+
+  @override
+  String get programsGuestsInviteModeAll => 'all guests';
+
+  @override
+  String get programsGuestsInviteModeSelected => 'selected guests';
+
+  @override
+  String get programsGuestsInviteSelectionHint =>
+      'Pick invited guests from the guest list after saving.';
+
+  @override
+  String get programsGuestsNameLabel => 'Guest name';
+
+  @override
+  String get programsGuestsPhoneLabel => 'Phone (E.164)';
+
+  @override
+  String get programsGuestsEmailLabel => 'Email';
+
+  @override
+  String get programsGuestsHouseholdLabel => 'Household';
+
+  @override
+  String get programsTeamTitle => 'Team & duties';
+
+  @override
+  String get programsTeamSubtitle => 'Staff access scoped to program duties';
+
+  @override
+  String get programsTeamGrant => 'Grant access';
+
+  @override
+  String get programsTeamInvite => 'Invite by phone';
+
+  @override
+  String get programsTeamRevoke => 'Revoke';
+
+  @override
+  String get programsTeamRevokeTitle => 'Revoke staff access';
+
+  @override
+  String programsTeamRevokeMessage({required String name}) {
+    return 'Remove $name\'s access to this program?';
+  }
+
+  @override
+  String get programsTeamEmptyTitle => 'No staff yet';
+
+  @override
+  String get programsTeamEmptyMessage =>
+      'Grant duties or invite staff by phone to run this program.';
+
+  @override
+  String programsTeamExpires({required String date}) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get programsTeamNameLabel => 'Display name';
+
+  @override
+  String get programsTeamPhoneLabel => 'Phone (E.164)';
+
+  @override
+  String get programsTeamDutiesLabel => 'Duties';
+
+  @override
+  String get programsTeamExpiryLabel => 'Access expires';
+
+  @override
+  String get programsImportTitle => 'Manifest import';
+
+  @override
+  String get programsImportFileTitle => 'Source file';
+
+  @override
+  String get programsImportFileSubtitle =>
+      'CSV or XLSX guest and travel manifest';
+
+  @override
+  String get programsImportPickFile => 'Choose file';
+
+  @override
+  String programsImportFileSummary({required int count, required int columns}) {
+    return '$count rows · $columns columns';
+  }
+
+  @override
+  String get programsImportMappingTitle => 'Column mapping';
+
+  @override
+  String get programsImportMappingSubtitle =>
+      'Map manifest fields to file columns';
+
+  @override
+  String get programsImportFieldSkip => 'Skip';
+
+  @override
+  String get programsImportFieldDisplayName => 'Display name';
+
+  @override
+  String get programsImportFieldPhone => 'Phone';
+
+  @override
+  String get programsImportFieldEmail => 'Email';
+
+  @override
+  String get programsImportFieldExternalReference => 'External reference';
+
+  @override
+  String get programsImportFieldHousehold => 'Household label';
+
+  @override
+  String get programsImportFieldGroups => 'Group labels';
+
+  @override
+  String get programsImportFieldParty => 'Travel party label';
+
+  @override
+  String get programsImportFieldFlight => 'Flight number';
+
+  @override
+  String get programsImportFieldOrigin => 'Origin IATA';
+
+  @override
+  String get programsImportFieldDestinationIata => 'Destination IATA';
+
+  @override
+  String get programsImportFieldArrival => 'Scheduled arrival';
+
+  @override
+  String get programsImportFieldPassengers => 'Passengers';
+
+  @override
+  String get programsImportFieldLuggage => 'Luggage units';
+
+  @override
+  String get programsImportFieldPickup => 'Pickup point label';
+
+  @override
+  String get programsImportFieldHotel => 'Destination hotel';
+
+  @override
+  String get programsImportFieldDestinationLabel => 'Destination label';
+
+  @override
+  String programsImportRowSummary({required int skipped, required int mapped}) {
+    return '$mapped rows ready · $skipped skipped';
+  }
+
+  @override
+  String get programsImportPreviewTitle => 'Preview & commit';
+
+  @override
+  String get programsImportPreview => 'Preview import';
+
+  @override
+  String get programsImportCommit => 'Import rows';
+
+  @override
+  String programsImportResultGuests({
+    required int created,
+    required int updated,
+  }) {
+    return '+$created guests · $updated updated';
+  }
+
+  @override
+  String programsImportResultLegs({
+    required int created,
+    required int updated,
+  }) {
+    return '+$created legs · $updated updated';
+  }
+
+  @override
+  String programsImportResultHouseholds({required int count}) {
+    return '+$count households';
+  }
+
+  @override
+  String programsImportResultGroups({required int count}) {
+    return '+$count groups';
+  }
+
+  @override
+  String get programsImportAlreadyApplied => 'already applied';
+
+  @override
+  String programsImportErrors({required int count}) {
+    return '$count row errors';
+  }
+
+  @override
+  String programsImportRowError({required String message, required int index}) {
+    return 'Row $index: $message';
+  }
+
+  @override
+  String get programsImportEmptyTitle => 'No file selected';
+
+  @override
+  String get programsImportEmptyMessage =>
+      'Pick a CSV or XLSX manifest to map columns.';
 }

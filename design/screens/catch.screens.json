@@ -1073,6 +1073,130 @@
       ],
       "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
     },
+    "screen.programs.list": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramsScreen"
+          ],
+          "file": "lib/programs/presentation/program_list_screen.dart",
+          "symbol": "ProgramListScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostProgramsScreen"
+          ],
+          "file": "lib/programs/presentation/program_list_screen.dart",
+          "symbol": "_ProgramListPageBodyState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.workspace": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramWorkspaceScreen"
+          ],
+          "file": "lib/programs/presentation/program_workspace_screen.dart",
+          "symbol": "ProgramWorkspaceScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostProgramWorkspaceScreen"
+          ],
+          "file": "lib/programs/presentation/program_workspace_screen.dart",
+          "symbol": "_ProgramWorkspacePageBodyState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.guests": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramGuestsScreen"
+          ],
+          "file": "lib/programs/presentation/program_guests_screen.dart",
+          "symbol": "ProgramGuestsScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostProgramGuestsScreen"
+          ],
+          "file": "lib/programs/presentation/program_guests_screen.dart",
+          "symbol": "_ProgramGuestsPageBodyState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.team": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramTeamScreen"
+          ],
+          "file": "lib/programs/presentation/program_team_screen.dart",
+          "symbol": "ProgramTeamScreen",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostProgramTeamScreen"
+          ],
+          "file": "lib/programs/presentation/program_team_screen.dart",
+          "symbol": "_ProgramTeamPageBodyState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
+    "screen.programs.import": {
+      "owners": [
+        {
+          "routes": [
+            "hostProgramImportScreen"
+          ],
+          "file": "lib/programs/presentation/program_import_screen.dart",
+          "symbol": "_ProgramImportScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
+        }
+      ],
+      "reason": "The state owner renders loading, error, and populated route compositions through CatchRouteScaffold."
+    },
     "screen.programs.arrivals": {
       "owners": [
         {
@@ -27560,6 +27684,790 @@
       "openGaps": [
         {
           "id": "DP-PROGRAMS-WORK-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.list",
+      "name": "Programs list",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramsScreen",
+          "path": "/host/programs",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_list_screen.dart",
+        "symbol": "ProgramListScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "organizerProgramList",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_list_screen.dart",
+            "symbol": "ProgramListScreen"
+          },
+          {
+            "file": "lib/programs/data/program_setup_repository.dart",
+            "symbol": "organizerProgramList"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_workspace_controller.dart",
+            "symbol": "ProgramWorkspaceController"
+          }
+        ],
+        "notes": "Mutations route through ProgramWorkspaceController: creates programs through upsertProgram."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R1 organizer program workspace surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramListScreen renders the canonical loading viewport while providers resolve.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramListScreen/Screen states"
+          ]
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "ProgramListScreen renders CatchLocalizedErrorState with scoped retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramListScreen/Screen states"
+          ]
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Program cards carry kind, status, dates and guest counts with workspace, guests, team and import navigation.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramListScreen/Screen states",
+            "ProgramListPageBody/Body states"
+          ]
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Organizer with no programs renders CatchEmptyState and the create-program call to action.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramListScreen/Screen states",
+            "ProgramListPageBody/Body states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramListScreen resolves the signed-in host’s operable organizer and composes the program index, empty state and create dialog through CatchRouteScaffold.",
+        "targetLayout": "The list continues reusing event-side organizer resolution while program counts and navigation stay data-driven.",
+        "sections": [
+          {
+            "id": "section.programs_work.adapter",
+            "name": "Program work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramWorkScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_work_screen.dart",
+              "symbol": "ProgramWorkScreen"
+            },
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free program work body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field"
+            ],
+            "states": [
+              "access_loading",
+              "access_error",
+              "workspaces",
+              "no_duties"
+            ],
+            "migration": "Keep section composition provider-free once the access payload is resolved.",
+            "previewIds": [
+              "ProgramWorkScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-LIST-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.workspace",
+      "name": "Program workspace",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramWorkspaceScreen",
+          "path": "/host/programs/:programId",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_workspace_screen.dart",
+        "symbol": "ProgramWorkspaceScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "organizerProgramDetail",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_workspace_screen.dart",
+            "symbol": "ProgramWorkspaceScreen"
+          },
+          {
+            "file": "lib/programs/data/program_setup_repository.dart",
+            "symbol": "organizerProgramDetail"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_workspace_controller.dart",
+            "symbol": "ProgramWorkspaceController"
+          }
+        ],
+        "notes": "Mutations route through ProgramWorkspaceController: function upsert and invitation fan-out."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R1 organizer program workspace surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramWorkspaceScreen renders the canonical loading viewport while providers resolve.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkspaceScreen/Screen states"
+          ]
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "ProgramWorkspaceScreen renders CatchLocalizedErrorState with scoped retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkspaceScreen/Screen states"
+          ]
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Day rail groups functions across the program range with status badges, check-in counts and edit and invitation actions.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkspaceScreen/Screen states",
+            "ProgramWorkspacePageBody/Body states"
+          ]
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Programs without scheduled functions render the day rail with an empty schedule section.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramWorkspaceScreen/Screen states",
+            "ProgramWorkspacePageBody/Body states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramWorkspaceScreen renders the program header, day selector rail, per-day function tiles, stations and hotels, and program-scope navigation through CatchRouteScaffold.",
+        "targetLayout": "The workspace keeps the day-rail and function tiles as the organizer schedule surface and defers transport and hotel detail to scoped work surfaces.",
+        "sections": [
+          {
+            "id": "section.programs_work.adapter",
+            "name": "Program work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramWorkScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_work_screen.dart",
+              "symbol": "ProgramWorkScreen"
+            },
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free program work body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field"
+            ],
+            "states": [
+              "access_loading",
+              "access_error",
+              "workspaces",
+              "no_duties"
+            ],
+            "migration": "Keep section composition provider-free once the access payload is resolved.",
+            "previewIds": [
+              "ProgramWorkScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-WORKSPACE-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.guests",
+      "name": "Program guests RSVP grid",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramGuestsScreen",
+          "path": "/host/programs/:programId/guests",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_guests_screen.dart",
+        "symbol": "ProgramGuestsScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programGuestList",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_guests_screen.dart",
+            "symbol": "ProgramGuestsScreen"
+          },
+          {
+            "file": "lib/programs/data/program_setup_repository.dart",
+            "symbol": "programGuestList"
+          },
+          {
+            "file": "lib/programs/data/program_setup_repository.dart",
+            "symbol": "organizerProgramDetail"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_workspace_controller.dart",
+            "symbol": "ProgramWorkspaceController"
+          }
+        ],
+        "notes": "Mutations route through ProgramWorkspaceController: guest upsert, function RSVP, household and group writes."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R1 organizer program workspace surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramGuestsScreen renders the canonical loading viewport while providers resolve.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramGuestsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "ProgramGuestsScreen renders CatchLocalizedErrorState with scoped retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramGuestsScreen/Screen states"
+          ]
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Household sections and unaffiliated guests render the function RSVP matrix, group chips and per-guest edit and RSVP controls.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramGuestsScreen/Screen states",
+            "ProgramGuestsPageBody/Body states"
+          ]
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Programs without guests render CatchEmptyState with add and import calls to action.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramGuestsScreen/Screen states",
+            "ProgramGuestsPageBody/Body states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramGuestsScreen composes the group ledger, household sections with per-function RSVP cells, the unaffiliated guest lane and guest, group and household dialogs through CatchRouteScaffold.",
+        "targetLayout": "The matrix stays joined on listProgramGuests and keeps household, group and RSVP writes behind the shared workspace controller.",
+        "sections": [
+          {
+            "id": "section.programs_work.adapter",
+            "name": "Program work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramWorkScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_work_screen.dart",
+              "symbol": "ProgramWorkScreen"
+            },
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free program work body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field"
+            ],
+            "states": [
+              "access_loading",
+              "access_error",
+              "workspaces",
+              "no_duties"
+            ],
+            "migration": "Keep section composition provider-free once the access payload is resolved.",
+            "previewIds": [
+              "ProgramWorkScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-GUESTS-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.team",
+      "name": "Program team & duties",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramTeamScreen",
+          "path": "/host/programs/:programId/team",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_team_screen.dart",
+        "symbol": "ProgramTeamScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programStaffList",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_team_screen.dart",
+            "symbol": "ProgramTeamScreen"
+          },
+          {
+            "file": "lib/programs/data/program_setup_repository.dart",
+            "symbol": "programStaffList"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_workspace_controller.dart",
+            "symbol": "ProgramWorkspaceController"
+          }
+        ],
+        "notes": "Mutations route through ProgramWorkspaceController: grant, invite and revoke staff access."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R1 organizer program workspace surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramTeamScreen renders the canonical loading viewport while providers resolve.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTeamScreen/Screen states"
+          ]
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "ProgramTeamScreen renders CatchLocalizedErrorState with scoped retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTeamScreen/Screen states"
+          ]
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Staff rows show name, phone tail, duty badges, scoped ids and expiry with revoke access control.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTeamScreen/Screen states",
+            "ProgramTeamPageBody/Body states"
+          ]
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Programs without staff render CatchEmptyState with grant and invite calls to action.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramTeamScreen/Screen states",
+            "ProgramTeamPageBody/Body states"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramTeamScreen composes the staff roster with duty badges, scope chips, expiry copy and the grant and invite access dialog through CatchRouteScaffold.",
+        "targetLayout": "Team management keeps least-privilege duty assignment through the shared staff access dialog.",
+        "sections": [
+          {
+            "id": "section.programs_work.adapter",
+            "name": "Program work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramWorkScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_work_screen.dart",
+              "symbol": "ProgramWorkScreen"
+            },
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free program work body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field"
+            ],
+            "states": [
+              "access_loading",
+              "access_error",
+              "workspaces",
+              "no_duties"
+            ],
+            "migration": "Keep section composition provider-free once the access payload is resolved.",
+            "previewIds": [
+              "ProgramWorkScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-TEAM-001",
+          "status": "open",
+          "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
+        }
+      ]
+    },
+    {
+      "id": "screen.programs.import",
+      "name": "Program manifest import",
+      "owner": "programs",
+      "priority": "P1",
+      "status": "in_progress",
+      "routes": [
+        {
+          "id": "hostProgramImportScreen",
+          "path": "/host/programs/:programId/import",
+          "role": "primary"
+        }
+      ],
+      "source": {
+        "file": "lib/programs/presentation/program_import_screen.dart",
+        "symbol": "ProgramImportScreen"
+      },
+      "shell": {
+        "owner": "host",
+        "nestedScaffoldAllowed": false,
+        "reason": "The Host adaptive shell owns root navigation; program workspaces are pushed routes with canonical back chrome."
+      },
+      "topBar": {
+        "role": "compact",
+        "expression": "CatchTopBar",
+        "owner": "CatchRouteScaffold",
+        "reason": "Pushed scoped workspace routes use canonical compact back chrome."
+      },
+      "statePolicy": {
+        "requiredStates": [
+          "data",
+          "empty",
+          "error",
+          "loading"
+        ],
+        "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
+      },
+      "stateController": {
+        "primary": "programWorkspaceActions",
+        "files": [
+          {
+            "file": "lib/programs/presentation/program_import_screen.dart",
+            "symbol": "ProgramImportScreen"
+          },
+          {
+            "file": "lib/programs/presentation/program_workspace_controller.dart",
+            "symbol": "ProgramWorkspaceController"
+          }
+        ],
+        "mutationOwners": [
+          {
+            "file": "lib/programs/presentation/program_workspace_controller.dart",
+            "symbol": "ProgramWorkspaceController"
+          }
+        ],
+        "notes": "Mutations route through ProgramWorkspaceController: manifest preview and commit imports."
+      },
+      "designRefs": [
+        {
+          "id": "repo.program-rollout",
+          "kind": "repo",
+          "status": "available",
+          "path": "docs/plans/program_operations_rollout_spec.md",
+          "notes": "R1 organizer program workspace surface."
+        }
+      ],
+      "captures": [],
+      "states": [
+        {
+          "id": "loading",
+          "kind": "loading",
+          "status": "implemented",
+          "source": "ProgramImportScreen renders the canonical loading viewport while providers resolve.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramImportScreen/Screen states"
+          ]
+        },
+        {
+          "id": "error",
+          "kind": "error",
+          "status": "implemented",
+          "source": "ProgramImportScreen renders CatchLocalizedErrorState with scoped retry.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramImportScreen/Screen states"
+          ]
+        },
+        {
+          "id": "populated",
+          "kind": "populated",
+          "status": "implemented",
+          "source": "Parsed tables render per-row field mapping and preview results render created, updated and skipped counts with row errors.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramImportScreen/Screen states",
+            "ProgramImportResultSection/Result section"
+          ]
+        },
+        {
+          "id": "empty",
+          "kind": "empty",
+          "status": "implemented",
+          "source": "Before a file is chosen the screen renders the file picker call to action only.",
+          "nextAction": "Review against program design references when they land.",
+          "previewIds": [
+            "ProgramImportScreen/Screen states",
+            "ProgramImportResultSection/Result section"
+          ]
+        }
+      ],
+      "composition": {
+        "currentLayout": "ProgramImportScreen composes the file picker, column mapping rows, preview and commit progress and the import result section through CatchRouteScaffold.",
+        "targetLayout": "Import keeps the manifest column mapper client-side and posts preview and commit through importProgramManifest with distinct operation ids.",
+        "sections": [
+          {
+            "id": "section.programs_work.adapter",
+            "name": "Program work route adapter",
+            "status": "implemented_local",
+            "layer": "screen-adapter",
+            "claudeComponents": [
+              "ProgramWorkScreen"
+            ],
+            "flutter": {
+              "file": "lib/programs/presentation/program_work_screen.dart",
+              "symbol": "ProgramWorkScreen"
+            },
+            "currentOwner": "ProgramWorkScreen + programWorkEntryProvider",
+            "targetOwner": "provider-free program work body",
+            "dependencies": [
+              "catch.top_bar",
+              "catch.section",
+              "catch.badge",
+              "catch.field"
+            ],
+            "states": [
+              "access_loading",
+              "access_error",
+              "workspaces",
+              "no_duties"
+            ],
+            "migration": "Keep section composition provider-free once the access payload is resolved.",
+            "previewIds": [
+              "ProgramWorkScreen/Screen states"
+            ]
+          }
+        ]
+      },
+      "openGaps": [
+        {
+          "id": "DP-PROGRAMS-IMPORT-001",
           "status": "open",
           "nextAction": "No captures exist yet; add route captures and widget previews when the program workspace gains golden coverage."
         }

@@ -533,6 +533,8 @@ import 'package:widgetbook_workspace/programs/door_use_cases.dart'
     as _widgetbook_workspace_programs_door_use_cases;
 import 'package:widgetbook_workspace/programs/use_cases.dart'
     as _widgetbook_workspace_programs_use_cases;
+import 'package:widgetbook_workspace/programs/workspace_use_cases.dart'
+    as _widgetbook_workspace_programs_workspace_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
     as _widgetbook_workspace_shell_app_shell_use_cases;
 import 'package:widgetbook_workspace/user_analytics/user_analytics_use_cases.dart'
@@ -12448,6 +12450,61 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Program guests',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestEditDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Guest edit dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestEditDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestGroupEditDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Group edit dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestGroupEditDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestsFunctionRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Function row',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestsFunctionRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestsPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestsPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramGuestsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programGuestsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Program hotel desk',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -12467,6 +12524,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Tile states',
                 builder: _widgetbook_workspace_programs_use_cases
                     .programHotelInboundTripTileStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program import',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramImportResultSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Result section',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programImportResultSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramImportScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programImportScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program team',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramStaffAccessDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Access dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programStaffAccessDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTeamPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programTeamPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTeamScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programTeamScreenStates,
               ),
             ],
           ),
@@ -12527,6 +12644,81 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_programs_use_cases
                     .programWorkScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program workspace',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramCreateDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Create dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programCreateDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramFunctionEditDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Function edit dialog',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programFunctionEditDialogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramListPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programListPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramListScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programListScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkspaceFunctionTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Function tile',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programWorkspaceFunctionTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkspacePageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programWorkspacePageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkspaceScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_workspace_use_cases
+                    .programWorkspaceScreenStates,
               ),
             ],
           ),

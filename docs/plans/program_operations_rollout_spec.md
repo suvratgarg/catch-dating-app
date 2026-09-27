@@ -134,7 +134,7 @@ never CRM, saved audiences, sender connections, or payouts.
 | Feature | State |
 |---|---|
 | Program CRUD + wedding preset + function upsert + staff grant/invite + guest/household upsert + manifest import | **callables built + deployed** |
-| Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **missing — largest organizer-facing hole** (plan W1) |
+| Program workspace UI (schedule day-rail, household×function RSVP grid, Team & duties, headcount dashboard) | **PR #452** — `/host/programs` list/workspace/guests/team/import (W1) |
 | Programs under Events tab + Organizer → Plan screen | **missing** (W5) |
 | Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **unmerged branch** `codex/organizer-entitlements-20260922` — needs re-verify + merge |
 | Attendance report / export per function | **missing** |

@@ -175,12 +175,193 @@ class ProgramSetupRepository {
     parse: ProgramMutationResult.fromCallableData,
   );
 
+  /// `getOrganizerProgram`: program settings, functions, pickup points,
+  /// hotels and rollup counts for the manager workspace.
+  Future<OrganizerProgramDetail> getProgram(String programId) => _call(
+    name: 'getOrganizerProgram',
+    payload: ProgramIdCallableRequest(programId: programId).toJson(),
+    action: 'load the program',
+    parse: OrganizerProgramDetail.fromCallableData,
+  );
+
+  /// `listProgramGuests`: one page of guests plus the household, function and
+  /// group projections the RSVP grid renders.
+  Future<ProgramGuestListPage> listGuests(
+    String programId, {
+    int? limit,
+    String? cursor,
+  }) => _call(
+    name: 'listProgramGuests',
+    payload: ListProgramGuestsCallableRequest(
+      programId: programId,
+      limit: limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load program guests',
+    parse: ProgramGuestListPage.fromCallableData,
+  );
+
+  Future<ProgramMutationResult> upsertFunction({
+    required String programId,
+    required String name,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required String venueName,
+    String? functionId,
+    int? expectedRevision,
+    String? venueNotes,
+    String? status,
+  }) => _call(
+    name: 'upsertProgramFunction',
+    payload: UpsertProgramFunctionCallableRequest(
+      programId: programId,
+      functionId: functionId,
+      expectedRevision: expectedRevision,
+      name: name,
+      startsAtMillis: startsAt.millisecondsSinceEpoch,
+      endsAtMillis: endsAt.millisecondsSinceEpoch,
+      venueName: venueName,
+      venueNotes: venueNotes,
+      status: status,
+    ).toJson(),
+    action: 'save the function',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  /// Applies the function invitation mode; `selectedGuestIds` only matters
+  /// when the mode is `selectedGuests`.
+  Future<ProgramMutationResult> applyFunctionInvitations({
+    required String programId,
+    required String functionId,
+    required String invitationMode,
+    required int expectedRevision,
+    List<String>? selectedGuestIds,
+  }) => _call(
+    name: 'applyProgramFunctionInvitations',
+    payload: ApplyProgramFunctionInvitationsCallableRequest(
+      programId: programId,
+      functionId: functionId,
+      invitationMode: invitationMode,
+      selectedGuestIds: selectedGuestIds,
+      expectedRevision: expectedRevision,
+    ).toJson(),
+    action: 'update invitations',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  /// Organizer-side RSVP correction on the household×function grid.
+  Future<ProgramMutationResult> recordFunctionRsvp({
+    required String programId,
+    required String functionId,
+    required String guestId,
+    required String rsvpStatus,
+    int? partySize,
+    String? responseNote,
+    bool allowUninvited = false,
+  }) => _call(
+    name: 'recordProgramFunctionRsvp',
+    payload: RecordProgramFunctionRsvpCallableRequest(
+      programId: programId,
+      functionId: functionId,
+      guestId: guestId,
+      rsvpStatus: rsvpStatus,
+      partySize: partySize,
+      responseNote: responseNote,
+      allowUninvited: allowUninvited,
+    ).toJson(),
+    action: 'record the RSVP',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  Future<ProgramMutationResult> upsertHousehold({
+    required String programId,
+    required String label,
+    required String primaryContactName,
+    required List<String> memberGuestIds,
+    String? householdId,
+    int? expectedRevision,
+    String? primaryPhoneE164,
+    String? primaryEmail,
+    String? deliveryPreference,
+  }) => _call(
+    name: 'upsertProgramHousehold',
+    payload: UpsertProgramHouseholdCallableRequest(
+      programId: programId,
+      householdId: householdId,
+      expectedRevision: expectedRevision,
+      label: label,
+      primaryContactName: primaryContactName,
+      primaryPhoneE164: primaryPhoneE164,
+      primaryEmail: primaryEmail,
+      memberGuestIds: memberGuestIds,
+      deliveryPreference: deliveryPreference,
+    ).toJson(),
+    action: 'save the household',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  Future<ProgramMutationResult> upsertGuestGroup({
+    required String programId,
+    required String label,
+    required String dimension,
+    String? groupId,
+    int? expectedRevision,
+    int? sortOrder,
+  }) => _call(
+    name: 'upsertProgramGuestGroup',
+    payload: UpsertProgramGuestGroupCallableRequest(
+      programId: programId,
+      groupId: groupId,
+      expectedRevision: expectedRevision,
+      label: label,
+      dimension: dimension,
+      sortOrder: sortOrder,
+    ).toJson(),
+    action: 'save the group',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  Future<ProgramMutationResult> deleteGuestGroup({
+    required String programId,
+    required String groupId,
+    required int expectedRevision,
+  }) => _call(
+    name: 'deleteProgramGuestGroup',
+    payload: DeleteProgramGuestGroupCallableRequest(
+      programId: programId,
+      groupId: groupId,
+      expectedRevision: expectedRevision,
+    ).toJson(),
+    action: 'delete the group',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  /// `importProgramManifest`: `preview` returns counts and row errors without
+  /// writing; `commit` applies. `clientOperationId` makes retries idempotent.
+  Future<ProgramManifestImportResult> importManifest({
+    required String programId,
+    required String mode,
+    required String clientOperationId,
+    required List<Map<String, Object?>> rows,
+  }) => _call(
+    name: 'importProgramManifest',
+    payload: ImportProgramManifestCallableRequest(
+      programId: programId,
+      mode: mode,
+      clientOperationId: clientOperationId,
+      rows: rows,
+    ).toJson(),
+    action: mode == 'commit' ? 'import the manifest' : 'preview the import',
+    parse: ProgramManifestImportResult.fromCallableData,
+  );
+
   Future<ProgramMutationResult> upsertGuest({
     required String programId,
     required String displayName,
     String? guestId,
     int? expectedRevision,
     String? householdId,
+    List<String>? groupIds,
     String? phoneE164,
     String? email,
     String? externalReference,
@@ -193,6 +374,7 @@ class ProgramSetupRepository {
       expectedRevision: expectedRevision,
       displayName: displayName,
       householdId: householdId,
+      groupIds: groupIds,
       phoneE164: phoneE164,
       email: email,
       externalReference: externalReference,
@@ -356,3 +538,33 @@ Future<ProgramStaffList> programStaffList(
 }) => ref
     .read(programSetupRepositoryProvider)
     .listStaff(programId, cursor: cursor);
+
+@riverpod
+Future<List<OrganizerProgramSummary>> organizerProgramList(
+  Ref ref,
+  String organizerId,
+) async {
+  final rows = await ref
+      .watch(programSetupRepositoryProvider)
+      .listPrograms(organizerId);
+  return rows
+      .map(
+        (row) => OrganizerProgramSummary(
+          programId: row.programId,
+          title: row.title,
+          kind: ProgramKind.values.byName(row.kind),
+          status: ProgramStatus.values.byName(row.status),
+        ),
+      )
+      .toList(growable: false);
+}
+
+@riverpod
+Future<OrganizerProgramDetail> organizerProgramDetail(
+  Ref ref,
+  String programId,
+) => ref.watch(programSetupRepositoryProvider).getProgram(programId);
+
+@riverpod
+Future<ProgramGuestListPage> programGuestList(Ref ref, String programId) =>
+    ref.watch(programSetupRepositoryProvider).listGuests(programId);

@@ -64,9 +64,14 @@ import 'package:catch_dating_app/payments/presentation/payment_history_screen.da
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_list_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_workspace_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
@@ -133,36 +138,15 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   final analytics = ref.read(appAnalyticsProvider);
   final keys = _RouterNavigatorKeys();
 
-  ref.listen(uidProvider, (_, _) => notifier.notify());
-  ref.listen(authControllerProvider, (previous, next) {
-    if (previous?.hasPendingVerification != next.hasPendingVerification) {
-      notifier.notify();
-    }
-  });
-  if (!isHostApp) {
-    ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
-  }
-
-  ref.onDispose(notifier.dispose);
+  _wireRouterRefresh(ref, notifier, isHostApp: isHostApp);
 
   final router = GoRouter(
     navigatorKey: keys.root,
     initialLocation: ref.watch(initialAppLocationProvider),
     refreshListenable: notifier,
     observers: [AnalyticsRouteObserver(analytics)],
-    redirect: (context, state) {
-      return appRedirect(
-        uidAsync: ref.read(uidProvider),
-        userProfileAsync: isHostApp
-            ? const AsyncData<UserProfile?>(null)
-            : ref.read(watchUserProfileProvider),
-        hasPendingAuthVerification: ref
-            .read(authControllerProvider)
-            .hasPendingVerification,
-        matchedLocation: state.matchedLocation,
-        uri: state.uri,
-      );
-    },
+    redirect: (context, state) =>
+        _appRedirectFor(ref, state, isHostApp: isHostApp),
     routes: [
       GoRoute(
         path: Routes.loadingScreen.path,
@@ -475,20 +459,6 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   return router;
 }
 
-class _RouteLoadingScreen extends StatelessWidget {
-  const _RouteLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchScaffold.standalone(
-      backgroundColor: t.bg,
-      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
-    );
-  }
-}
-
 List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
@@ -555,6 +525,40 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostWorkTripsScreen.name,
       builder: (context, state) =>
           ProgramTripsScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
+      path: Routes.hostProgramsScreen.path,
+      name: Routes.hostProgramsScreen.name,
+      builder: (context, state) =>
+          ProgramListScreen(initialOrganizerId: _routeOrganizerQueryId(state)),
+    ),
+    GoRoute(
+      path: Routes.hostProgramWorkspaceScreen.path,
+      name: Routes.hostProgramWorkspaceScreen.name,
+      builder: (context, state) =>
+          ProgramWorkspaceScreen(programId: state.pathParameters['programId']!),
+      routes: [
+        GoRoute(
+          path: 'guests',
+          name: Routes.hostProgramGuestsScreen.name,
+          builder: (context, state) => ProgramGuestsScreen(
+            programId: state.pathParameters['programId']!,
+          ),
+        ),
+        GoRoute(
+          path: 'team',
+          name: Routes.hostProgramTeamScreen.name,
+          builder: (context, state) =>
+              ProgramTeamScreen(programId: state.pathParameters['programId']!),
+        ),
+        GoRoute(
+          path: 'import',
+          name: Routes.hostProgramImportScreen.name,
+          builder: (context, state) => ProgramImportScreen(
+            programId: state.pathParameters['programId']!,
+          ),
+        ),
+      ],
     ),
     GoRoute(
       path: Routes.hostOrganizerMessagingScreen.path,
@@ -734,10 +738,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
     name: Routes.hostAudienceScreen.name,
     builder: (context, state) => hostAudienceScreenForUri(
       state.uri,
-      initialContactDisplayName: switch (state.extra) {
-        HostCustomerDetailRouteArguments(:final displayName) => displayName,
-        _ => null,
-      },
+      initialContactDisplayName: _routeContactNameExtra(state),
     ),
     routes: [
       GoRoute(
@@ -860,10 +861,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostCustomerDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           contactId: state.pathParameters['contactId']!,
-          initialDisplayName: switch (state.extra) {
-            HostCustomerDetailRouteArguments(:final displayName) => displayName,
-            _ => null,
-          },
+          initialDisplayName: _routeContactNameExtra(state),
         ),
       ),
     ],
@@ -957,9 +955,7 @@ StatefulShellRoute _hostShellRoute(
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) => HostAppShell(
       navigationShell: navigationShell,
-      requestedOrganizerId:
-          state.uri.queryParameters['organizerId'] ??
-          state.uri.queryParameters['clubId'],
+      requestedOrganizerId: _routeOrganizerQueryId(state),
     ),
     branches: [
       StatefulShellBranch(
@@ -970,9 +966,7 @@ StatefulShellRoute _hostShellRoute(
             path: Routes.hostTodayScreen.path,
             name: Routes.hostTodayScreen.name,
             builder: (context, state) => HostTodayScreen(
-              initialOrganizerId:
-                  state.uri.queryParameters['organizerId'] ??
-                  state.uri.queryParameters['clubId'],
+              initialOrganizerId: _routeOrganizerQueryId(state),
             ),
             routes: [
               GoRoute(
@@ -995,9 +989,7 @@ StatefulShellRoute _hostShellRoute(
             path: Routes.hostEventsScreen.path,
             name: Routes.hostEventsScreen.name,
             builder: (context, state) => HostEventsScreen(
-              initialOrganizerId:
-                  state.uri.queryParameters['organizerId'] ??
-                  state.uri.queryParameters['clubId'],
+              initialOrganizerId: _routeOrganizerQueryId(state),
             ),
           ),
         ],
@@ -1029,10 +1021,7 @@ StatefulShellRoute _hostShellRoute(
                 parentNavigatorKey: keys.root,
                 builder: (context, state) => ChatScreen(
                   matchId: state.pathParameters['matchId']!,
-                  otherProfile: switch (state.extra) {
-                    final PublicProfile profile => profile,
-                    _ => null,
-                  },
+                  otherProfile: _routePublicProfileExtra(state),
                 ),
               ),
             ],
@@ -1056,10 +1045,20 @@ StatefulShellRoute _hostShellRoute(
   );
 }
 
-// Minimal ChangeNotifier used as GoRouter's refreshListenable.
-// Keep these widget factories at their original source identity for inventory.
-// The GoRoute declarations above remain in their owning shell branches.
-// Detail page transitions are implemented in detail_route_pages.dart.
+class _RouteLoadingScreen extends StatelessWidget {
+  const _RouteLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchScaffold.standalone(
+      backgroundColor: t.bg,
+      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
+    );
+  }
+}
+
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
   return EventDetailScreen(
     clubId: state.pathParameters['clubId']!,
