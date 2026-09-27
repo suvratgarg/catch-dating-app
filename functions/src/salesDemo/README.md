@@ -21,7 +21,9 @@ contact digest. A missing binding makes an invitation preview-only. A contact
 entered in a form, a client boolean, or organizer membership is never accepted
 as proof. If a person's verified endpoint is unavailable or outdated, an
 operator must verify and issue a new bound invitation; the trial cannot repair
-or claim their organizer account.
+or claim their organizer account. Every owner and prospect operation, including
+reads and exact receipt replay, compares the token's `auth_time` to the current
+Auth user's `tokensValidAfterTime`; revoked Firebase sessions fail closed.
 
 The grant token is returned to the Admin Owner on invitation issuance and exact
 same-key replay. Store it only as a digest in Firestore. A website may read it
@@ -47,8 +49,11 @@ gate. Absence or a changed capability or evidence revision fails closed. No
 browser field can enable it.
 
 Sessions are limited to one active session per invitation and at most three
-sessions for the invitation's lifetime. Start and actions use transactional
-idempotency receipts. Session actions permit only synthetic application review,
+sessions for the invitation's lifetime. Start transactions permit at most 12
+distinct start/resume request IDs per invitation and six per minute; exact
+same-key retries read their receipt before those ceilings and create no new
+state. Start and actions use transactional idempotency receipts. Session actions
+permit only synthetic application review,
 reply preparation, guest admission, and assistance request. A fixed synthetic
 applicant has no email, phone, user ID, production guest ID, payment, or outbox
 reference. This is a separate Forms practice adapter: the existing rehearsal

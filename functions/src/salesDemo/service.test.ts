@@ -6,7 +6,9 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Identity, CurrentUser} from "./model";
-import {DemoDeps, advanceSession, getPreview, getSession,
+import {DemoDeps, adminGetBlueprint, adminGetCapability, adminGetInvitation,
+  adminListBlueprints, adminListInvitations,
+  advanceSession, getPreview, getSession,
   issueInvitation, reviewBlueprint, revokeInvitation, saveBlueprint,
   startSession, withdrawBlueprint} from "./service";
 
@@ -21,7 +23,24 @@ class MemoryDb {
     this.writes++;
   }
   collection(name: string) {
-    return {doc: (id: string) => {
+    const query = (field: string, target: string,
+      cursor: string | null = null, cap = 20) => ({
+      orderBy: () => query(field, target, cursor, cap),
+      startAfter: (anchor: Ref) => query(field, target, anchor.id, cap),
+      limit: (next: number) => query(field, target, cursor, next),
+      get: async () => {
+        const docs = [...this.docs.entries()]
+          .filter(([path, data]) => path.startsWith(`${name}/`) &&
+            data[field] === target && (!cursor ||
+              path.slice(name.length + 1) > cursor))
+          .sort(([a], [b]) => a.localeCompare(b)).slice(0, cap)
+          .map(([path]) => this.snap({path,
+            id: path.slice(name.length + 1)}));
+        return {docs};
+      },
+    });
+    return {where: (field: string, _operator: string, target: string) =>
+      query(field, target), doc: (id: string) => {
       const ref = {path: `${name}/${id}`, id};
       return {...ref, get: async () => this.snap(ref)};
     }};
@@ -68,11 +87,16 @@ class MemoryDb {
     throw new Error("transaction contention");
   }
 }
-const owner: Identity = {uid: "owner-uid", token: {}};
+const TOKEN_AUTH_TIME = Date.parse("2026-09-28T10:00:00.000Z") / 1000;
+const TOKEN_VALID_AFTER = "2026-09-28T09:00:00.000Z";
+const owner: Identity = {uid: "owner-uid",
+  token: {auth_time: TOKEN_AUTH_TIME}};
 const intended: Identity = {uid: "intended-uid", token: {
-  email: "host@example.invalid", email_verified: true}};
+  email: "host@example.invalid", email_verified: true,
+  auth_time: TOKEN_AUTH_TIME}};
 const other: Identity = {uid: "other-uid", token: {
-  email: "other@example.invalid", email_verified: true}};
+  email: "other@example.invalid", email_verified: true,
+  auth_time: TOKEN_AUTH_TIME}};
 const samplePreview = {brandName: "Example Host", headline: "Try a sample",
   scenario: "Sample application review", steps: ["Review a sample application",
     "Prepare a sample reply", "Admit a sample guest"],
@@ -89,11 +113,12 @@ function fixture() {
       reviewedAt: "2026-09-28T09:00:00.000Z"});
   let clock = new Date("2026-09-28T10:00:00.000Z");
   const users = new Map<string, CurrentUser>([
-    ["owner-uid", {disabled: false, customClaims: {adminOwner: true}}],
+    ["owner-uid", {disabled: false, customClaims: {adminOwner: true},
+      tokensValidAfterTime: TOKEN_VALID_AFTER}],
     ["intended-uid", {disabled: false, email: "host@example.invalid",
-      emailVerified: true}],
+      emailVerified: true, tokensValidAfterTime: TOKEN_VALID_AFTER}],
     ["other-uid", {disabled: false, email: "other@example.invalid",
-      emailVerified: true}],
+      emailVerified: true, tokensValidAfterTime: TOKEN_VALID_AFTER}],
   ]);
   const deps: DemoDeps = {db: db as unknown as FirebaseFirestore.Firestore,
     now: () => clock, getUser: async (uid) => users.get(uid) ??
@@ -145,6 +170,71 @@ test("preview is minimal and does not mutate or consume an invitation",
       false);
     assert.equal([...db.docs.keys()].some((key) =>
       key.startsWith("salesDemoSessions/")), false);
+  });
+
+test("owner management reads are scoped, paginated and omit invitation secrets",
+  async () => {
+    const {db, deps, users} = fixture();
+    await blueprint(deps);
+    const issued = await invite(deps);
+    const before = db.writes;
+    const capability = await adminGetCapability(deps, owner, {});
+    assert.deepEqual(capability, {capability: "synthetic_forms_v1",
+      revision: "revision-001", evidenceRevision: "evidence-001",
+      enabled: true});
+    const otherBlueprint = {...db.docs.get("salesDemoBlueprints/blueprint-001"),
+      blueprintId: "blueprint-002", organizerId: "organizer-002"};
+    db.put("salesDemoBlueprints/blueprint-002", otherBlueprint);
+    db.put("salesDemoBlueprints/blueprint-003", {...otherBlueprint,
+      blueprintId: "blueprint-003"});
+    const first = await adminListBlueprints(deps, owner,
+      {organizerId: "organizer-002", limit: 1});
+    assert.deepEqual(first.rows.map((row) => row.blueprintId),
+      ["blueprint-002"]);
+    assert.equal(first.nextCursor, "blueprint-002");
+    const second = await adminListBlueprints(deps, owner,
+      {organizerId: "organizer-002", cursor: first.nextCursor, limit: 1});
+    assert.deepEqual(second.rows.map((row) => row.blueprintId),
+      ["blueprint-003"]);
+    assert.equal(second.nextCursor, null);
+    await rejectsCode(adminListBlueprints(deps, owner,
+      {organizerId: "organizer-002", cursor: "blueprint-001"}),
+    "invalid-argument");
+    const invites = await adminListInvitations(deps, owner,
+      {blueprintId: "blueprint-001", limit: 1});
+    assert.equal(invites.rows.length, 1);
+    assert.equal(JSON.stringify(invites)
+      .includes(String(issued.grantToken)), false);
+    assert.equal(JSON.stringify(invites).includes("tokenDigest"), false);
+    assert.equal(JSON.stringify(invites).includes("contactBinding"), false);
+    assert.equal(db.writes, before + 2);
+    users.set(owner.uid, {disabled: false, customClaims: {adminOwner: true},
+      tokensValidAfterTime: "2026-09-28T10:00:01.000Z"});
+    await rejectsCode(adminGetCapability(deps, owner, {}),
+      "permission-denied");
+    await rejectsCode(adminListBlueprints(deps, owner,
+      {organizerId: "organizer-002"}), "permission-denied");
+    await rejectsCode(adminListInvitations(deps, owner,
+      {blueprintId: "blueprint-001"}), "permission-denied");
+  });
+
+test("owner revocation during a management read denies its result",
+  async () => {
+    const {deps, users} = fixture();
+    await blueprint(deps);
+    const original = deps.getUser;
+    let reads = 0;
+    deps.getUser = async (uid) => {
+      const current = await original(uid);
+      if (uid === owner.uid && ++reads === 1) {
+        users.set(owner.uid, {disabled: false,
+          customClaims: {adminOwner: true},
+          tokensValidAfterTime: "2026-09-28T10:00:01.000Z"});
+      }
+      return current;
+    };
+    await rejectsCode(adminListBlueprints(deps, owner,
+      {organizerId: "organizer-001"}), "permission-denied");
   });
 
 test("preview-only invitation cannot start without contact binding",
@@ -243,6 +333,61 @@ test("completed sessions renew only within the invitation cap",
       ?.sessionCount, 2);
   });
 
+test("distinct start receipts are capped, throttled and exact retry stays free",
+  async () => {
+    const {db, deps, setTime} = fixture();
+    await blueprint(deps);
+    const issued = await invite(deps);
+    const start = (number: number) => startSession(deps, intended,
+      {invitationId: issued.invitationId,
+        grantToken: issued.grantToken,
+        requestId: `start-demo-${String(number).padStart(3, "0")}`});
+    const first = await start(1);
+    for (let number = 2; number <= 6; number++) {
+      assert.equal((await start(number)).sessionId, first.sessionId);
+    }
+    await rejectsCode(start(7), "resource-exhausted");
+    const writesBeforeRetry = db.writes;
+    assert.equal((await start(1)).sessionId, first.sessionId);
+    assert.equal(db.writes, writesBeforeRetry);
+    setTime("2026-09-28T10:01:00.000Z");
+    for (let number = 7; number <= 12; number++) {
+      assert.equal((await start(number)).sessionId, first.sessionId);
+    }
+    for (let number = 13; number <= 1001; number++) {
+      await rejectsCode(start(number), "resource-exhausted");
+    }
+    const invitation = db.docs.get(
+      `salesDemoInvitations/${issued.invitationId}`);
+    assert.equal(invitation?.startReceiptCount, 12);
+    assert.equal(invitation?.sessionCount, 1);
+    assert.equal([...db.docs.values()].filter((doc) =>
+      doc.action === "salesDemo.session.start").length, 12);
+    const replayWrites = db.writes;
+    assert.equal((await start(1)).sessionId, first.sessionId);
+    assert.equal(db.writes, replayWrites);
+  });
+
+test("concurrent distinct starts cannot exceed the minute ceiling",
+  async () => {
+    const {db, deps} = fixture();
+    await blueprint(deps);
+    const issued = await invite(deps);
+    const settled = await Promise.allSettled(Array.from({length: 20},
+      (_, index) => startSession(deps, intended,
+        {invitationId: issued.invitationId,
+          grantToken: issued.grantToken,
+          requestId: `parallel-${String(index).padStart(3, "0")}`})));
+    const successes = settled.filter((result) =>
+      result.status === "fulfilled").length;
+    assert.ok(successes > 0 && successes <= 6);
+    assert.equal(db.docs.get(
+      `salesDemoInvitations/${issued.invitationId}`)?.startReceiptCount,
+    successes);
+    assert.equal([...db.docs.values()].filter((doc) =>
+      doc.action === "salesDemo.session.start").length, successes);
+  });
+
 test("needs-info branch prepares a reply without admitting a guest",
   async () => {
     const {deps} = fixture();
@@ -280,7 +425,8 @@ test("cross-account, token, and unverified contact attempts fail",
     await rejectsCode(startSession(deps, intended,
       {...input, grantToken: "x".repeat(43)}), "permission-denied");
     await rejectsCode(startSession(deps, {uid: intended.uid, token: {
-      email: "host@example.invalid", email_verified: false}}, input),
+      email: "host@example.invalid", email_verified: false,
+      auth_time: TOKEN_AUTH_TIME}}, input),
     "permission-denied");
     await rejectsCode(startSession(deps, intended,
       {...input, phoneVerified: true}), "invalid-argument");
@@ -355,7 +501,8 @@ test("verified phone claim must match bound current Auth phone",
     const {deps, users} = fixture();
     await blueprint(deps);
     users.set(intended.uid, {disabled: false,
-      phoneNumber: "+15550001111"});
+      phoneNumber: "+15550001111",
+      tokensValidAfterTime: TOKEN_VALID_AFTER});
     const issued = await invite(deps,
       {kind: "phone", value: "+15550001111"});
     const input = {invitationId: issued.invitationId,
@@ -363,12 +510,58 @@ test("verified phone claim must match bound current Auth phone",
     await rejectsCode(startSession(deps, intended, input),
       "permission-denied");
     const phoneIdentity: Identity = {uid: intended.uid,
-      token: {phone_number: "+15550001112"}};
+      token: {phone_number: "+15550001112",
+        auth_time: TOKEN_AUTH_TIME}};
     await rejectsCode(startSession(deps, phoneIdentity, input),
       "permission-denied");
     phoneIdentity.token.phone_number = "+15550001111";
     assert.equal((await startSession(deps, phoneIdentity, input)).status,
       "active");
+  });
+
+test("revoked prospect Firebase token denies reads, writes and replay",
+  async () => {
+    const {deps, users} = fixture();
+    await blueprint(deps);
+    const issued = await invite(deps);
+    const startInput = {invitationId: issued.invitationId,
+      grantToken: issued.grantToken, requestId: "start-demo-001"};
+    const started = await startSession(deps, intended, startInput);
+    const actionInput = {sessionId: started.sessionId,
+      grantToken: issued.grantToken, requestId: "review-step-001",
+      expectedRevision: 1, action: "reviewApplication", choice: "approve"};
+    await advanceSession(deps, intended, actionInput);
+    users.set(intended.uid, {disabled: false,
+      email: "host@example.invalid", emailVerified: true,
+      tokensValidAfterTime: "2026-09-28T10:00:01.000Z"});
+    await rejectsCode(getSession(deps, intended,
+      {sessionId: started.sessionId, grantToken: issued.grantToken}),
+    "permission-denied");
+    await rejectsCode(startSession(deps, intended, startInput),
+      "permission-denied");
+    await rejectsCode(advanceSession(deps, intended, actionInput),
+      "permission-denied");
+    await rejectsCode(startSession(deps, intended,
+      {...startInput, requestId: "start-demo-002"}),
+    "permission-denied");
+  });
+
+test("revoked owner Firebase token denies reads and management replay",
+  async () => {
+    const {deps, users} = fixture();
+    await blueprint(deps);
+    const issued = await invite(deps);
+    users.set(owner.uid, {disabled: false,
+      customClaims: {adminOwner: true},
+      tokensValidAfterTime: "2026-09-28T10:00:01.000Z"});
+    await rejectsCode(adminGetBlueprint(deps, owner,
+      {blueprintId: "blueprint-001"}), "permission-denied");
+    await rejectsCode(adminGetInvitation(deps, owner,
+      {invitationId: issued.invitationId}), "permission-denied");
+    await rejectsCode(invite(deps), "permission-denied");
+    await rejectsCode(revokeInvitation(deps, owner,
+      {requestId: "revoke-demo-001", invitationId: issued.invitationId,
+        expectedRevision: 1}), "permission-denied");
   });
 
 test("revocation during a transaction prevents a trial commit",

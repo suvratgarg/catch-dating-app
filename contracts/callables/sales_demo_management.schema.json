@@ -2,8 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/sales_demo_management.schema.json",
   "title": "SalesDemoManagementCallablePayloads",
-  "description": "Admin Owner save, review, withdraw, issue and revoke command inputs. Exact owner reads take one ID only. A request ID is stable across retries.",
-  "anyOf": [{"$ref": "#/definitions/save"}, {"$ref": "#/definitions/blueprintDecision"}, {"$ref": "#/definitions/issue"}, {"$ref": "#/definitions/revoke"}, {"$ref": "#/definitions/blueprintRead"}, {"$ref": "#/definitions/invitationRead"}],
+  "description": "Admin Owner demo commands and bounded owner reads. A request ID is stable across retries; reads never return grant digests.",
+  "anyOf": [{"$ref": "#/definitions/save"}, {"$ref": "#/definitions/blueprintDecision"}, {"$ref": "#/definitions/issue"}, {"$ref": "#/definitions/revoke"}, {"$ref": "#/definitions/blueprintRead"}, {"$ref": "#/definitions/invitationRead"}, {"$ref": "#/definitions/capabilityRead"}, {"$ref": "#/definitions/blueprintList"}, {"$ref": "#/definitions/invitationList"}],
   "definitions": {
     "id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
     "requestId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"},
@@ -41,7 +41,11 @@
       "expectedRevision": {"type": "integer", "minimum": 1}
     }},
     "blueprintRead": {"type": "object", "additionalProperties": false, "required": ["blueprintId"], "properties": {"blueprintId": {"$ref": "#/definitions/id"}}},
-    "invitationRead": {"type": "object", "additionalProperties": false, "required": ["invitationId"], "properties": {"invitationId": {"$ref": "#/definitions/id"}}}
+    "invitationRead": {"type": "object", "additionalProperties": false, "required": ["invitationId"], "properties": {"invitationId": {"$ref": "#/definitions/id"}}},
+    "capabilityRead": {"type": "object", "additionalProperties": false, "maxProperties": 0},
+    "page": {"type": "integer", "minimum": 1, "maximum": 20},
+    "blueprintList": {"type": "object", "additionalProperties": false, "required": ["organizerId"], "properties": {"organizerId": {"$ref": "#/definitions/id"}, "cursor": {"$ref": "#/definitions/id"}, "limit": {"$ref": "#/definitions/page"}}},
+    "invitationList": {"type": "object", "additionalProperties": false, "required": ["blueprintId"], "properties": {"blueprintId": {"$ref": "#/definitions/id"}, "cursor": {"$ref": "#/definitions/id"}, "limit": {"$ref": "#/definitions/page"}}}
   },
-  "x-callables": ["adminSaveSalesDemoBlueprint", "adminReviewSalesDemoBlueprint", "adminWithdrawSalesDemoBlueprint", "adminIssueSalesDemoInvitation", "adminRevokeSalesDemoInvitation", "adminGetSalesDemoBlueprint", "adminGetSalesDemoInvitation"]
+  "x-callables": ["adminSaveSalesDemoBlueprint", "adminReviewSalesDemoBlueprint", "adminWithdrawSalesDemoBlueprint", "adminIssueSalesDemoInvitation", "adminRevokeSalesDemoInvitation", "adminGetSalesDemoBlueprint", "adminGetSalesDemoInvitation", "adminGetSalesDemoCapability", "adminListSalesDemoBlueprints", "adminListSalesDemoInvitations"]
 }

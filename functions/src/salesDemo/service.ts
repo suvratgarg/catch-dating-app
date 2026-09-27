@@ -11,6 +11,8 @@ const SESSIONS = "salesDemoSessions";
 const RECEIPTS = "salesDemoReceipts";
 const CAPABILITIES = "salesDemoCapabilities";
 const MAX_SESSION_ACTIONS = 20;
+const MAX_START_RECEIPTS = 12;
+const MAX_STARTS_PER_MINUTE = 6;
 const DAY = 86_400_000;
 
 export interface DemoDeps {
@@ -76,8 +78,20 @@ function boundContact(identity: Identity, user: CurrentUser,
   return exactDigest(binding.digest, contactDigest(secret, {kind: "phone",
     value: user.phoneNumber}).digest);
 }
+function currentToken(identity: Identity, user: CurrentUser): void {
+  const authenticatedAt = identity.token.auth_time;
+  const validAfter = typeof user.tokensValidAfterTime === "string" ?
+    Date.parse(user.tokensValidAfterTime) : Number.NaN;
+  if (typeof authenticatedAt !== "number" ||
+      !Number.isInteger(authenticatedAt) || authenticatedAt <= 0 ||
+      !Number.isFinite(validAfter) ||
+      authenticatedAt * 1000 < validAfter) {
+    fail("permission-denied", "Firebase session is no longer current.");
+  }
+}
 async function owner(deps: DemoDeps, identity: Identity): Promise<void> {
   const user = await deps.getUser(identity.uid);
+  currentToken(identity, user);
   if (user.disabled || user.customClaims?.adminOwner !== true ||
       identity.token === undefined) {
     fail("permission-denied", "Current Admin Owner required.");
@@ -309,7 +323,9 @@ export async function issueInvitation(deps: DemoDeps, identity: Identity,
         blueprintRevision, tokenDigest: hash(issuedToken),
         contactBinding: bindingDigest, expiresAt: new Date(expiresAt)
           .toISOString(), revoked: false, revision: 1, sessionCap,
-        sessionCount: 0, currentSessionId: null,
+        sessionCount: 0, startReceiptCount: 0,
+        startWindowMinute: 0, startWindowCount: 0,
+        currentSessionId: null,
         issuedByUid: identity.uid, issuedAt};
       tx.create(ref, doc);
       return {result: {invitationId, blueprintId,
@@ -401,6 +417,7 @@ async function grant(deps: DemoDeps, identity: Identity,
     return fail("permission-denied", "Interactive grant unavailable.");
   }
   const user = await deps.getUser(identity.uid);
+  currentToken(identity, user);
   if (user.disabled || !boundContact(identity, user,
     current.contactBinding, key(deps))) {
     return fail("permission-denied", "Verified contact does not match.");
@@ -484,6 +501,22 @@ export async function startSession(deps: DemoDeps, identity: Identity,
       }
       return sessionProjection(session);
     }
+    const minute = Math.floor(deps.now().getTime() / 60_000);
+    const windowCount = invitation.startWindowMinute === minute ?
+      invitation.startWindowCount : 0;
+    if (!Number.isInteger(invitation.startReceiptCount) ||
+        !Number.isInteger(windowCount) ||
+        invitation.startReceiptCount < 0 || windowCount < 0) {
+      return fail("failed-precondition",
+        "Invitation start budget unavailable.");
+    }
+    if (invitation.startReceiptCount >= MAX_START_RECEIPTS) {
+      return fail("resource-exhausted",
+        "Invitation start limit reached; ask for a renewed invitation.");
+    }
+    if (windowCount >= MAX_STARTS_PER_MINUTE) {
+      return fail("resource-exhausted", "Too many trial starts; retry later.");
+    }
     let active: Session | undefined;
     if (invitation.currentSessionId) {
       const snap = await tx.get(deps.db.collection(SESSIONS)
@@ -499,11 +532,14 @@ export async function startSession(deps: DemoDeps, identity: Identity,
       active = initialSession(candidateSessionId, invitation,
         identity.uid, now);
       tx.create(deps.db.collection(SESSIONS).doc(candidateSessionId), active);
-      tx.update(inviteRef, {currentSessionId: candidateSessionId,
-        sessionCount: invitation.sessionCount + 1});
     } else if (active.actorUid !== identity.uid) {
       return fail("permission-denied", "Trial belongs to another account.");
     }
+    tx.update(inviteRef, {currentSessionId: active.sessionId,
+      sessionCount: invitation.currentSessionId === active.sessionId ?
+        invitation.sessionCount : invitation.sessionCount + 1,
+      startReceiptCount: invitation.startReceiptCount + 1,
+      startWindowMinute: minute, startWindowCount: windowCount + 1});
     tx.create(receiptRef, {schemaVersion: 1,
       classification: "sales_private", receiptId: receiptRef.id,
       actorUid: identity.uid, requestId: stableRequestId,
@@ -661,6 +697,7 @@ export async function adminGetBlueprint(deps: DemoDeps, identity: Identity,
   only(body, ["blueprintId"]);
   const snap = await deps.db.collection(BLUEPRINTS)
     .doc(id(body.blueprintId)).get();
+  await owner(deps, identity);
   if (!snap.exists) return fail("not-found", "Blueprint not found.");
   return snap.data() as Blueprint;
 }
@@ -671,9 +708,78 @@ export async function adminGetInvitation(deps: DemoDeps, identity: Identity,
   only(body, ["invitationId"]);
   const snap = await deps.db.collection(INVITATIONS)
     .doc(id(body.invitationId)).get();
+  await owner(deps, identity);
   if (!snap.exists) return fail("not-found", "Invitation not found.");
   const {tokenDigest, contactBinding, ...safe} = snap.data() as Invitation;
   void tokenDigest;
   void contactBinding;
   return safe;
+}
+
+export async function adminGetCapability(deps: DemoDeps,
+  identity: Identity, raw: unknown): Promise<CapabilityGate> {
+  await owner(deps, identity);
+  const body = record(raw);
+  only(body, []);
+  const gate = await currentCapability(deps);
+  await owner(deps, identity);
+  return {capability: gate.capability, revision: gate.revision,
+    evidenceRevision: gate.evidenceRevision, enabled: true};
+}
+
+function pageInput(raw: unknown, scopeKey: string):
+  {target: string; cursor: string | null; limit: number} {
+  const body = record(raw);
+  only(body, [scopeKey, "cursor", "limit"]);
+  const target = id(body[scopeKey]);
+  const cursor = body.cursor === undefined || body.cursor === null ?
+    null : id(body.cursor);
+  const limit = body.limit === undefined ? 20 : positive(body.limit, 20);
+  return {target, cursor, limit};
+}
+
+export async function adminListBlueprints(deps: DemoDeps, identity: Identity,
+  raw: unknown): Promise<{rows: Blueprint[]; nextCursor: string | null}> {
+  await owner(deps, identity);
+  const {target, cursor, limit} = pageInput(raw, "organizerId");
+  let query: FirebaseFirestore.Query = deps.db.collection(BLUEPRINTS)
+    .where("organizerId", "==", target).orderBy("__name__");
+  if (cursor) {
+    const anchor = await deps.db.collection(BLUEPRINTS).doc(cursor).get();
+    if (!anchor.exists || anchor.data()?.organizerId !== target) {
+      return fail("invalid-argument", "Invalid blueprint page cursor.");
+    }
+    query = query.startAfter(anchor);
+  }
+  const snaps = await query.limit(limit + 1).get();
+  await owner(deps, identity);
+  const rows = snaps.docs.slice(0, limit);
+  return {rows: rows.map((snap) => snap.data() as Blueprint),
+    nextCursor: snaps.docs.length > limit ? rows[rows.length - 1].id : null};
+}
+
+export async function adminListInvitations(deps: DemoDeps,
+  identity: Identity, raw: unknown): Promise<{rows: Array<Omit<Invitation,
+  "tokenDigest" | "contactBinding">>; nextCursor: string | null}> {
+  await owner(deps, identity);
+  const {target, cursor, limit} = pageInput(raw, "blueprintId");
+  let query: FirebaseFirestore.Query = deps.db.collection(INVITATIONS)
+    .where("blueprintId", "==", target).orderBy("__name__");
+  if (cursor) {
+    const anchor = await deps.db.collection(INVITATIONS).doc(cursor).get();
+    if (!anchor.exists || anchor.data()?.blueprintId !== target) {
+      return fail("invalid-argument", "Invalid invitation page cursor.");
+    }
+    query = query.startAfter(anchor);
+  }
+  const snaps = await query.limit(limit + 1).get();
+  await owner(deps, identity);
+  const rows = snaps.docs.slice(0, limit).map((snap) => {
+    const {tokenDigest, contactBinding, ...safe} = snap.data() as Invitation;
+    void tokenDigest;
+    void contactBinding;
+    return safe;
+  });
+  return {rows, nextCursor: snaps.docs.length > limit ?
+    snaps.docs[limit - 1].id : null};
 }

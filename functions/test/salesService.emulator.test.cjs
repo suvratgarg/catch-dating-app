@@ -200,3 +200,86 @@ test("actual persisted service writes satisfy their private schemas", async () =
   }
   assert.ok(checked > 20, "Validate actual writes from the service journeys.");
 });
+
+test("private demo uses real atomic start limits and only synthetic records", async () => {
+  const demo = require("../lib/salesDemo/service");
+  const authTime = Date.parse("2026-09-28T10:00:00.000Z") / 1000;
+  const owner = {uid: "demo-owner", token: {auth_time: authTime}};
+  const viewer = {uid: "demo-viewer", token: {auth_time: authTime,
+    email: "synthetic@example.invalid", email_verified: true}};
+  const runtime = {db, now: () => new Date("2026-09-28T10:00:00.000Z"),
+    tokenKey: () => Buffer.alloc(32, 9), getUser: async (uid) => ({
+      disabled: false, customClaims: uid === owner.uid ? {adminOwner: true} : {},
+      tokensValidAfterTime: "2026-09-28T09:00:00.000Z",
+      email: "synthetic@example.invalid", emailVerified: true})};
+  const beforeCollections = (await db.listCollections()).map((ref) => ref.id);
+  const publicBefore = (await db.collection("organizers").get()).docs
+    .map((doc) => [doc.id, doc.data()]);
+  await db.doc("salesDemoCapabilities/synthetic_forms_v1").set({
+    schemaVersion: 1, classification: "sales_private",
+    capability: "synthetic_forms_v1", revision: "revision-001",
+    evidenceRevision: "evidence-001", enabled: true,
+    reviewedByUid: "product-owner", reviewedAt: "2026-09-28T09:00:00.000Z"});
+  await demo.saveBlueprint(runtime, owner, {requestId: "emulator-save-demo",
+    blueprintId: "emulator-blueprint", expectedRevision: 0,
+    organizerId: null, candidateId: "synthetic-candidate", opportunityId: null,
+    evidenceRevision: "evidence-001", formCapabilityReview: {
+      questionTypes: "manual", branching: "unsupported", requiredFields: "manual",
+      scoringApproval: "unsupported", uploads: "retained"}, fieldMappings: [],
+    preview: {brandName: "Synthetic Host", headline: "Sample workflow",
+      scenario: "Review a synthetic application", steps: ["Review", "Reply", "Admit"],
+      retainedTools: [], limitations: ["Synthetic records only"], cta: "Try sample"}});
+  await demo.reviewBlueprint(runtime, owner, {requestId: "emulator-review-demo",
+    blueprintId: "emulator-blueprint", expectedRevision: 1});
+  const issued = await demo.issueInvitation(runtime, owner, {
+    requestId: "emulator-issue-demo", blueprintId: "emulator-blueprint",
+    blueprintRevision: 2, contactBinding: {kind: "email",
+      value: "synthetic@example.invalid"},
+    expiresAt: "2026-09-30T10:00:00.000Z", sessionCap: 2});
+  const access = {invitationId: issued.invitationId, grantToken: issued.grantToken};
+  await demo.getPreview(runtime, {invitationId: issued.invitationId});
+  assert.equal((await db.collection("salesDemoSessions").get()).size, 0);
+  const starts = await Promise.allSettled(Array.from({length: 8}, (_, index) =>
+    demo.startSession(runtime, viewer, {...access,
+      requestId: `emulator-start-${index}`})));
+  assert.equal(starts.filter((result) => result.status === "fulfilled").length, 6);
+  assert.ok(starts.filter((result) => result.status === "rejected")
+    .every((result) => result.reason.code === "resource-exhausted"));
+  const active = starts.find((result) => result.status === "fulfilled").value;
+  assert.equal((await db.collection("salesDemoSessions").get()).size, 1);
+  const invitation = (await db.doc(`salesDemoInvitations/${issued.invitationId}`)
+    .get()).data();
+  assert.equal(invitation.sessionCount, 1);
+  assert.equal(invitation.startReceiptCount, 6);
+  let session = active;
+  for (const [index, action] of ["reviewApplication", "prepareReply", "admitGuest"].entries()) {
+    session = await demo.advanceSession(runtime, viewer, {sessionId: session.sessionId,
+      grantToken: issued.grantToken, expectedRevision: session.revision,
+      requestId: `emulator-action-${index}`, action,
+      ...(index === 0 ? {choice: "approve"} : index === 1 ? {choice: "welcome"} : {})});
+  }
+  assert.equal(session.status, "completed");
+  await demo.revokeInvitation(runtime, owner, {requestId: "emulator-revoke-demo",
+    invitationId: issued.invitationId, expectedRevision: 1});
+  await assert.rejects(demo.getSession(runtime, viewer, {sessionId: session.sessionId,
+    grantToken: issued.grantToken}), {code: "permission-denied"});
+  const ajv = new Ajv({allErrors: true, strict: false}); addFormats(ajv);
+  const collections = {salesDemoBlueprints: "sales_demo_blueprints",
+    salesDemoCapabilities: "sales_demo_capabilities",
+    salesDemoInvitations: "sales_demo_invitations",
+    salesDemoSessions: "sales_demo_sessions", salesDemoReceipts: "sales_demo_receipts"};
+  for (const [collection, schema] of Object.entries(collections)) {
+    const validate = ajv.compile(JSON.parse(fs.readFileSync(path.resolve(__dirname,
+      `../../contracts/firestore/${schema}.schema.json`), "utf8")));
+    for (const record of (await db.collection(collection).get()).docs) {
+      assert.equal(validate(record.data()), true,
+        `${record.ref.path}: ${ajv.errorsText(validate.errors)}`);
+      assert.equal(JSON.stringify(record.data()).includes(issued.grantToken), false);
+    }
+  }
+  assert.deepEqual((await db.collection("organizers").get()).docs
+    .map((doc) => [doc.id, doc.data()]), publicBefore);
+  const added = (await db.listCollections()).map((ref) => ref.id)
+    .filter((name) => !beforeCollections.includes(name));
+  assert.ok(added.every((name) => name in collections || name === "adminAuditLogs"));
+});

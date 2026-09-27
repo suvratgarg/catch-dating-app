@@ -2,15 +2,16 @@ import * as admin from "firebase-admin";
 import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
 import {onSchedule} from "firebase-functions/v2/scheduler";
+import {appCheckCallableOptionsWithLimits,
+  appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {Identity} from "./model";
-import {DemoDeps, adminGetBlueprint, adminGetInvitation, advanceSession,
+import {DemoDeps, adminGetBlueprint, adminGetCapability, adminGetInvitation,
+  adminListBlueprints, adminListInvitations, advanceSession,
   getPreview, getSession, issueInvitation, reviewBlueprint,
   revokeInvitation, saveBlueprint, startSession,
   withdrawBlueprint} from "./service";
 
 const demoGrantKey = defineSecret("SALES_DEMO_GRANT_KEY");
-const baseOptions = {enforceAppCheck: true,
-  secrets: [demoGrantKey], maxInstances: 10};
 function deps(): DemoDeps {
   return {db: admin.firestore(), now: () => new Date(),
     getUser: (uid) => admin.auth().getUser(uid),
@@ -24,30 +25,56 @@ function identity(request: CallableRequest<unknown>): Identity {
 }
 
 /** Public read-only projection; link unfurls never materialize a session. */
-export const getSalesDemoPreview = onCall({enforceAppCheck: true,
-  maxInstances: 10}, async (request) => getPreview(deps(), request.data));
-export const startSalesDemo = onCall(baseOptions, async (request) =>
-  startSession(deps(), identity(request), request.data));
-export const getSalesDemoSession = onCall(baseOptions, async (request) =>
-  getSession(deps(), identity(request), request.data));
-export const advanceSalesDemo = onCall(baseOptions, async (request) =>
-  advanceSession(deps(), identity(request), request.data));
-export const adminSaveSalesDemoBlueprint = onCall(baseOptions,
+export const getSalesDemoPreview = onCall(
+  appCheckCallableOptionsWithLimits({maxInstances: 10}),
+  async (request) => getPreview(deps(), request.data));
+export const startSalesDemo = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) =>
+    startSession(deps(), identity(request), request.data));
+export const getSalesDemoSession = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) =>
+    getSession(deps(), identity(request), request.data));
+export const advanceSalesDemo = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
+  async (request) =>
+    advanceSession(deps(), identity(request), request.data));
+export const adminSaveSalesDemoBlueprint = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => saveBlueprint(deps(), identity(request), request.data));
-export const adminReviewSalesDemoBlueprint = onCall(baseOptions,
+export const adminReviewSalesDemoBlueprint = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => reviewBlueprint(deps(), identity(request), request.data));
-export const adminWithdrawSalesDemoBlueprint = onCall(baseOptions,
+export const adminWithdrawSalesDemoBlueprint = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => withdrawBlueprint(deps(), identity(request),
     request.data));
-export const adminIssueSalesDemoInvitation = onCall(baseOptions,
+export const adminIssueSalesDemoInvitation = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => issueInvitation(deps(), identity(request), request.data));
-export const adminRevokeSalesDemoInvitation = onCall(baseOptions,
+export const adminRevokeSalesDemoInvitation = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => revokeInvitation(deps(), identity(request), request.data));
-export const adminGetSalesDemoBlueprint = onCall(baseOptions,
+export const adminGetSalesDemoBlueprint = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => adminGetBlueprint(deps(), identity(request),
     request.data));
-export const adminGetSalesDemoInvitation = onCall(baseOptions,
+export const adminGetSalesDemoInvitation = onCall(
+  appCheckCallableOptionsWithSecrets([demoGrantKey], {maxInstances: 10}),
   async (request) => adminGetInvitation(deps(), identity(request),
+    request.data));
+export const adminGetSalesDemoCapability = onCall(
+  appCheckCallableOptionsWithLimits({maxInstances: 10}),
+  async (request) => adminGetCapability(deps(), identity(request),
+    request.data));
+export const adminListSalesDemoBlueprints = onCall(
+  appCheckCallableOptionsWithLimits({maxInstances: 10}),
+  async (request) => adminListBlueprints(deps(), identity(request),
+    request.data));
+export const adminListSalesDemoInvitations = onCall(
+  appCheckCallableOptionsWithLimits({maxInstances: 10}),
+  async (request) => adminListInvitations(deps(), identity(request),
     request.data));
 
 /** Bounded cleanup of expired synthetic state and trial receipts. */

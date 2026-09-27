@@ -63,6 +63,9 @@ export interface Invitation {
   revision: number;
   sessionCap: number;
   sessionCount: number;
+  startReceiptCount: number;
+  startWindowMinute: number;
+  startWindowCount: number;
   currentSessionId: string | null;
   issuedByUid: string;
   issuedAt: string;
@@ -96,11 +99,12 @@ export interface Session {
 export interface Identity {
   uid: string;
   token: {email?: unknown; email_verified?: unknown;
-    phone_number?: unknown};
+    phone_number?: unknown; auth_time?: unknown};
 }
 export interface CurrentUser {
   disabled: boolean;
   customClaims?: Record<string, unknown>;
+  tokensValidAfterTime?: string;
   email?: string;
   emailVerified?: boolean;
   phoneNumber?: string;
