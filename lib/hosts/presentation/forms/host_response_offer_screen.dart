@@ -53,6 +53,9 @@ class _HostResponseOfferScreenState
   bool _accountLost = false;
   HostOfferEventTarget? _created;
   bool _creating = false;
+  final _primaryAction = ValueNotifier<Widget?>(null);
+  Widget? _pendingAction;
+  bool _actionUpdateScheduled = false;
 
   bool _current(String accountId) =>
       mounted &&
@@ -64,6 +67,7 @@ class _HostResponseOfferScreenState
   @override
   void dispose() {
     _offers?.dispose();
+    _primaryAction.dispose();
     super.dispose();
   }
 
@@ -204,15 +208,19 @@ class _HostResponseOfferScreenState
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
+      footer: available
+          ? ValueListenableBuilder<Widget?>(
+              valueListenable: _primaryAction,
+              builder: (_, action, _) => action ?? const SizedBox.shrink(),
+            )
+          : null,
       body: CatchRouteBody.standardSections(
         sections: [
           CatchSectionListItem(
             child: !available
-                ? CatchSection.content(
-                    child: Text(
-                      context.l10n.hostEventOfferUnavailable,
-                      style: CatchTextStyles.supporting(context),
-                    ),
+                ? Text(
+                    context.l10n.hostEventOfferUnavailable,
+                    style: CatchTextStyles.supporting(context),
                   )
                 : HostEventOfferWorkspaceSection(
                     organizerId: widget.organizerId,
@@ -269,10 +277,26 @@ class _HostResponseOfferScreenState
                     createAdmissionController: _admission,
                     copy: hostEventOfferWorkspaceCopy(context.l10n),
                     now: DateTime.now,
+                    layoutBuilder: _offerLayout,
                   ),
           ),
         ],
       ),
     );
+  }
+
+  // Publish only the footer after the content build. Its listenable rebuilds
+  // the footer alone, so changing an action never remounts the workspace or
+  // feeds a parent-build loop. Coalesce updates before the next frame.
+  Widget _offerLayout(Widget body, Widget? action) {
+    _pendingAction = action;
+    if (!_actionUpdateScheduled) {
+      _actionUpdateScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _actionUpdateScheduled = false;
+        if (mounted && !_accountLost) _primaryAction.value = _pendingAction;
+      });
+    }
+    return body;
   }
 }

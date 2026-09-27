@@ -106,8 +106,10 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
     this.initialEventTarget,
     this.onCreateEvent,
     this.createAdmissionController,
+    this.layoutBuilder,
   });
 
+  final Widget Function(Widget body, Widget? primaryAction)? layoutBuilder;
   final String organizerId;
   final String? accountId;
   final HostResponseQueryController? queryController;
@@ -282,8 +284,90 @@ class _HostEventOfferWorkspaceSectionState
     return formatMinorCurrency(amount, currencyCode: currency);
   }
 
+  Widget _frame(Widget body, Widget? action) =>
+      widget.layoutBuilder?.call(body, action) ??
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [body, ?action],
+      );
+
   @override
   Widget build(BuildContext context) {
+    final copy = widget.copy;
+    final selected = _controller.selectedOffer;
+    if (_controller.event != null &&
+        _controller.missingContacts.isEmpty &&
+        _controller.configuration?.suggestedExpiresAt != null &&
+        selected == null &&
+        _controller.draft != null) {
+      return HostEventOfferReviewSection(
+        layoutBuilder: (body, action) =>
+            _frame(_body(context, review: body), action),
+        controller: widget.offerController,
+        draft: _controller.draft!,
+        amountLabel: _amountLabel(context),
+        showEvent: false,
+        eventTitle: _controller.event!.name?.trim().isNotEmpty == true
+            ? _controller.event!.name!
+            : copy.untitledEvent,
+        contactLabel: (id) =>
+            _controller.details
+                .where((detail) => detail.contactId == id)
+                .firstOrNull
+                ?.response
+                .identity
+                .primaryLabel ??
+            context.l10n.hostFormResponsesAnonymous,
+        eventStartsAt: _controller.configuration!.startsAt,
+        now: widget.now,
+        commitRequestId: _controller.commitRequestId!,
+        copy: copy.review,
+      );
+    }
+    if (selected != null &&
+        selected.effectiveStatus == HostOfferStatus.offered &&
+        selected.paymentSnapshot != null &&
+        selected.paymentSnapshot!.expectedAmountMinor > 0 &&
+        const {
+          'manualInstructions',
+          'reusablePage',
+          'personalRequest',
+        }.contains(selected.paymentSnapshot!.collectionMode)) {
+      return HostManualPaymentReviewSection(
+        layoutBuilder: (body, action) =>
+            _frame(_body(context, manual: body), action),
+        key: ValueKey(
+          'offer-manual-${selected.offerId}-'
+          '${selected.generation}-${selected.revision}',
+        ),
+        controller: widget.offerController,
+        offer: selected,
+        copy: copy.review,
+        referenceRequestId: _controller.referenceRequestId!,
+        reviewRequestId: _controller.reviewRequestId!,
+        onUpdated: _controller.manualUpdated,
+      );
+    }
+    final personal =
+        _controller.selectedOffer == null &&
+        _controller.draft == null &&
+        _controller.personalMode &&
+        _controller.missingContacts.isEmpty &&
+        _controller.configuration?.suggestedExpiresAt != null;
+    return _frame(
+      _body(context),
+      personal
+          ? CatchDockSurface.pageAction(
+              label: copy.review.preview,
+              onPressed: _controller.loading
+                  ? null
+                  : _controller.previewPersonal,
+            )
+          : null,
+    );
+  }
+
+  Widget _body(BuildContext context, {Widget? review, Widget? manual}) {
     final copy = widget.copy;
     final intent = widget.queryController?.selectionIntent;
     return Column(
@@ -293,7 +377,7 @@ class _HostEventOfferWorkspaceSectionState
             _controller.ids.isEmpty &&
             (intent != null || widget.responseId != null) &&
             widget.accountId != null)
-          CatchSection.content(
+          CatchSection.plain(
             child: CatchButton(
               label: copy.create,
               onPressed: _controller.loading ? null : _controller.start,
@@ -301,14 +385,15 @@ class _HostEventOfferWorkspaceSectionState
           ),
         if (_controller.ids.isNotEmpty) ...[
           if (_controller.event == null) ...[
-            CatchSection.content(
+            CatchSection.plain(
               child: Text(
                 copy.selectEvent,
                 style: CatchTextStyles.sectionTitle(context),
               ),
             ),
+            if (widget.onCreateEvent != null) gapH12,
             if (widget.onCreateEvent != null)
-              CatchSection.content(
+              CatchSection.plain(
                 child: CatchButton(
                   key: const ValueKey('offer-create-event'),
                   label: context.l10n.hostsHostEventsListLabelNewEvent,
@@ -318,7 +403,7 @@ class _HostEventOfferWorkspaceSectionState
                 ),
               ),
             if (_controller.events.isEmpty && !_controller.loading)
-              CatchSection.content(
+              CatchSection.plain(
                 child: Text(
                   copy.emptyEvents,
                   style: CatchTextStyles.supporting(context),
@@ -343,7 +428,7 @@ class _HostEventOfferWorkspaceSectionState
                 ],
               ),
             if (_controller.nextEventCursor != null)
-              CatchSection.content(
+              CatchSection.plain(
                 child: CatchButton(
                   label: copy.loadMoreEvents,
                   variant: CatchButtonVariant.secondary,
@@ -371,7 +456,7 @@ class _HostEventOfferWorkspaceSectionState
               ],
             ),
             if (_controller.missingContacts.isNotEmpty) ...[
-              CatchSection.content(
+              CatchSection.plain(
                 child: Text(
                   copy.needsContact,
                   style: CatchTextStyles.supporting(context),
@@ -399,7 +484,7 @@ class _HostEventOfferWorkspaceSectionState
                 ],
               ),
             ] else if (_controller.configuration?.suggestedExpiresAt == null)
-              CatchSection.content(
+              CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -418,27 +503,8 @@ class _HostEventOfferWorkspaceSectionState
               )
             else if (_controller.selectedOffer == null &&
                 _controller.draft != null)
-              HostEventOfferReviewSection(
-                controller: widget.offerController,
-                draft: _controller.draft!,
-                amountLabel: _amountLabel(context),
-                showEvent: false,
-                eventTitle: _controller.event!.name?.trim().isNotEmpty == true
-                    ? _controller.event!.name!
-                    : copy.untitledEvent,
-                contactLabel: (id) =>
-                    _controller.details
-                        .where((detail) => detail.contactId == id)
-                        .firstOrNull
-                        ?.response
-                        .identity
-                        .primaryLabel ??
-                    context.l10n.hostFormResponsesAnonymous,
-                eventStartsAt: _controller.configuration!.startsAt,
-                now: widget.now,
-                commitRequestId: _controller.commitRequestId!,
-                copy: copy.review,
-              ),
+              review!,
+
             if (_controller.selectedOffer == null &&
                 _controller.draft == null &&
                 _controller.personalMode &&
@@ -462,18 +528,10 @@ class _HostEventOfferWorkspaceSectionState
                     ),
                 ],
               ),
-              CatchSection.content(
-                child: CatchButton(
-                  label: copy.review.preview,
-                  onPressed: _controller.loading
-                      ? null
-                      : _controller.previewPersonal,
-                ),
-              ),
             ],
             if (_controller.offers.isNotEmpty &&
                 _controller.selectedOffer == null)
-              CatchSection.content(
+              CatchSection.plain(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -549,7 +607,7 @@ class _HostEventOfferWorkspaceSectionState
                 ],
               ),
               if (_controller.ids.length > 1)
-                CatchSection.content(
+                CatchSection.plain(
                   child: CatchButton(
                     label: copy.existing,
                     variant: CatchButtonVariant.secondary,
@@ -559,7 +617,7 @@ class _HostEventOfferWorkspaceSectionState
                   ),
                 ),
               if (selected.effectiveStatus == HostOfferStatus.offered)
-                CatchSection.content(
+                CatchSection.plain(
                   child: CatchButton(
                     label: copy.handoffPrepare,
                     fullWidth: true,
@@ -570,14 +628,14 @@ class _HostEventOfferWorkspaceSectionState
                   ),
                 ),
               if (_controller.handoff?.kind == 'blocked')
-                CatchSection.content(
+                CatchSection.plain(
                   child: Text(
                     copy.handoffBlocked,
                     style: CatchTextStyles.supporting(context),
                   ),
                 ),
               if (_controller.handoff?.kind == 'prepared')
-                CatchSection.content(
+                CatchSection.plain(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -643,30 +701,19 @@ class _HostEventOfferWorkspaceSectionState
                     'reusablePage',
                     'personalRequest',
                   }.contains(selected.paymentSnapshot!.collectionMode))
-                HostManualPaymentReviewSection(
-                  key: ValueKey(
-                    'offer-manual-${selected.offerId}-'
-                    '${selected.generation}-${selected.revision}',
-                  ),
-                  controller: widget.offerController,
-                  offer: selected,
-                  copy: copy.review,
-                  referenceRequestId: _controller.referenceRequestId!,
-                  reviewRequestId: _controller.reviewRequestId!,
-                  onUpdated: _controller.manualUpdated,
-                ),
+                manual!,
             ],
           ],
         ],
         if (_controller.loading)
-          CatchSection.content(
+          CatchSection.plain(
             child: Text(
               copy.review.previewing,
               style: CatchTextStyles.supporting(context),
             ),
           ),
         if (_controller.hasError || _controller.selectionStale) ...[
-          CatchSection.content(
+          CatchSection.plain(
             child: Text(
               _controller.selectionStale
                   ? copy.selectionChanged
@@ -674,7 +721,7 @@ class _HostEventOfferWorkspaceSectionState
               style: CatchTextStyles.supporting(context),
             ),
           ),
-          CatchSection.content(
+          CatchSection.plain(
             child: CatchButton(
               label: context.l10n.sharedActionTryAgain,
               onPressed: _controller.loading ? null : _controller.start,

@@ -270,6 +270,11 @@ class _HostFormResponseDetailScreenState
                   onOpenAsset: _openAsset,
                   onContact: _openContact,
                   onOpenPayment: _openPayment,
+                  onChooseEvent:
+                      !widget.returnToOffer &&
+                          ref.watch(privateEventSetupAvailableProvider)
+                      ? () => _offerEvent(value)
+                      : null,
                 ),
               ],
             );
@@ -543,7 +548,7 @@ class _HostFormResponseDetailScreenState
   Future<void> _offerEvent(HostResponseReviewDetail detail) async {
     if (_busy ||
         !ref.read(privateEventSetupAvailableProvider) ||
-        !detail.canOfferEvent) {
+        !detail.canChooseEvent) {
       return;
     }
     if (widget.returnToOffer) {

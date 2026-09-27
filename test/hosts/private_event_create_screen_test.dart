@@ -93,7 +93,7 @@ void main() {
       ),
     );
     await pumpFeatureUi(tester);
-    expect(find.text('Save & continue'), findsOneWidget);
+    expect(find.text('Save & return to review'), findsOneWidget);
     if (Platform.environment['CATCH_RSVP_FLOW_REVIEW_DIR'] case final output?) {
       final boundary = tester.renderObject<RenderRepaintBoundary>(
         find.byKey(const ValueKey('inline-event-capture')),

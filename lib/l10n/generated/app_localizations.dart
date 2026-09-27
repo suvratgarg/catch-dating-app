@@ -35380,7 +35380,7 @@ abstract class AppLocalizations {
   /// Saves a private event and returns to the form response selection that opened the event editor.
   ///
   /// In en, this message translates to:
-  /// **'Save & continue'**
+  /// **'Save & return to review'**
   String get hostsPrivateEventSaveReturnResponses;
 
   /// Copy for the progressive private event setup flow.
@@ -36046,7 +36046,7 @@ abstract class AppLocalizations {
   /// Host forms to event offer action or state.
   ///
   /// In en, this message translates to:
-  /// **'Choose an event'**
+  /// **'Available events'**
   String get hostEventOfferSelectEvent;
 
   /// Host forms to event offer action or state.
@@ -37479,6 +37479,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Valid until'**
   String get hostEventOfferExpiry;
+
+  /// Explains that selecting an event does not accept the application.
+  ///
+  /// In en, this message translates to:
+  /// **'Acceptance is required before creating the offer.'**
+  String get hostResponseChooseBeforeAcceptance;
+
+  /// Explains the minimal inline event save and return to response review.
+  ///
+  /// In en, this message translates to:
+  /// **'Save these basics and return to your selected responses. You can finish event details later.'**
+  String get hostsPrivateEventReturnToReviewHint;
 }
 
 class _AppLocalizationsDelegate

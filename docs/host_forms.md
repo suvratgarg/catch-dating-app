@@ -58,24 +58,33 @@ A Host can complete this loop:
 ## Response-to-event continuation
 
 Response and application routes share one detail page for answers and review.
-Contact actions and submission metadata are disclosures. A single review
+Contact actions remain visible for repeated triage; submission metadata is a
+disclosure. Private notes use the shared explicit-save field: Save and Cancel
+appear only while editing, and saving a note preserves the review status. A single review
 status control contains In review, Waitlisted and Declined; acceptance remains
 the primary action and explicitly links People. Application review no longer
 exposes a competing Add to People action. Ordinary forms retain CRM linkage
 without being forced into application review.
 
-After acceptance and CRM linkage, Offer an event is the primary continuation;
-Open person is secondary. Single-response and query-selection entry points use
+Offer an event is available before acceptance so organizers can choose or
+create the event first. Acceptance stays a separate review action; choosing an
+event never approves the application or creates an offer. After acceptance and
+CRM linkage, Offer an event becomes the primary continuation; Open person is
+secondary. Single-response and query-selection entry points use
 `HostResponseOfferScreen` and the same offer controller. The chooser always
 provides Create event, including when other events exist. Saving a private draft
-returns it selected; cancellation preserves the originating page and selection.
+returns it selected through Save & return to review; the helper copy makes clear
+that full event setup can wait. Cancellation preserves the originating page and
+selection.
 The return rechecks manager, selection and event identity. Missing CRM or
 unapproved applications return to the same response review and then continue the
 preserved offer. Imported applications without a native response retain review
 and CRM; this continuation does not synthesize response IDs for them.
 
 Selection, offer review and existing-offer handling are successive states of
-that continuation. A single existing offer opens directly. Payment evidence
+that continuation. The route owns one content gutter and the bottom action area:
+Preview, Create and Record reference remain reachable below scrolling content.
+A single existing offer opens directly. Payment evidence
 controls apply only to paid external/manual collection; free and Catch checkout
 offers do not expose bank-attestation fields. Offer issuance, personal sharing,
 verified payment and admission remain separate commands. The former Propose

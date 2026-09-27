@@ -4,6 +4,7 @@ import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,6 +59,13 @@ void main() {
         ),
       ),
     );
+    await pumpFeatureUi(tester);
+    expect(find.text('Save review note'), findsNothing);
+    final noteField = find.byWidgetPredicate(
+      (widget) => widget is CatchField && widget.title == 'Private review note',
+    );
+    await tester.ensureVisible(noteField);
+    await tester.tap(noteField);
     await pumpFeatureUi(tester);
     final input = find.byType(TextField);
     await tester.ensureVisible(input);
@@ -160,8 +168,6 @@ void main() {
           ),
         ),
       );
-      await pumpFeatureUi(tester);
-      await tester.tap(find.text('Contact details'));
       await pumpFeatureUi(tester);
       for (final label in ['Call', 'Instagram']) {
         expect(find.text(label).hitTestable(), findsOneWidget);

@@ -182,6 +182,16 @@ void main() {
         ),
         findsOneWidget,
       );
+      final section = tester.widget<HostResponseDetailSection>(
+        find.byType(HostResponseDetailSection),
+      );
+      expect(section.value.canChooseEvent, isTrue);
+      expect(section.onChooseEvent, isNotNull);
+      expect(
+        section.value.canOfferEvent,
+        status == HostApplicationReviewStatus.approved,
+      );
+      expect(find.text('Offer an event'), findsOneWidget);
       await _captureDetail(
         tester,
         'review-${status.name}',
@@ -194,6 +204,32 @@ void main() {
         'review-${status.name}-lower',
         directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
       );
+      if (status == HostApplicationReviewStatus.submitted) {
+        final noteField = find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchField && widget.title == 'Private review note',
+        );
+        expect(find.text('Save review note'), findsNothing);
+        await tester.ensureVisible(noteField);
+        await tester.tap(noteField);
+        await pumpFeatureUi(tester);
+        expect(find.text('Save review note'), findsOneWidget);
+        await tester.enterText(
+          find.descendant(of: noteField, matching: find.byType(TextField)),
+          'Discuss the preferred event date.',
+        );
+        await pumpFeatureUi(tester);
+        await _captureDetail(
+          tester,
+          'review-note-editing',
+          directoryEnv: 'CATCH_RSVP_FLOW_REVIEW_DIR',
+        );
+        await tester.ensureVisible(find.text('Cancel'));
+        await tester.tap(find.text('Cancel'));
+        await pumpFeatureUi(tester);
+        expect(find.text('Save review note'), findsNothing);
+        expect(find.text('Discuss the preferred event date.'), findsNothing);
+      }
       expect(tester.takeException(), isNull);
     });
   }
@@ -216,8 +252,6 @@ void main() {
     );
     expect(find.text('Review application'), findsNothing);
     expect(find.text('Why do you want to join?'), findsOneWidget);
-    await tester.tap(find.text('Contact details'));
-    await pumpFeatureUi(tester);
     final call = find.widgetWithText(CatchButton, 'Call');
     final email = find.widgetWithText(CatchButton, 'Email');
     expect(tester.getSize(email).width, greaterThanOrEqualTo(44));
@@ -242,8 +276,6 @@ void main() {
         textScale: 2,
         disableAnimations: true,
       );
-      await tester.tap(find.text('Contact details'));
-      await pumpFeatureUi(tester);
       final call = find.widgetWithText(CatchButton, 'Call');
       final email = find.widgetWithText(CatchButton, 'Email');
       expect(

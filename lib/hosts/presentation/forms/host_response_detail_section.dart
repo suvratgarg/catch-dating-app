@@ -54,7 +54,9 @@ class HostResponseDetailSection extends ConsumerWidget {
     required this.onOpenAsset,
     required this.onContact,
     required this.onOpenPayment,
+    this.onChooseEvent,
   });
+  final VoidCallback? onChooseEvent;
   final HostResponseReviewDetail value;
   final String organizerId;
   final TextEditingController note;
@@ -128,26 +130,40 @@ class HostResponseDetailSection extends ConsumerWidget {
           ),
         if (!value.revoked) ...[
           gapH24,
-          CatchSection.fieldRows(
-            children: [
-              CatchField.control(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostResponseContactDetails,
-                contractExemption:
-                    'Authorized contact actions in one optional disclosure.',
-                child: HostResponseContactSection(
-                  value: value,
-                  onContact: onContact,
-                ),
-              ),
-              if (value.contactId != null)
-                CatchField.nav(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostApplicationOpenPerson,
-                  onTap: busy ? null : () => onOpenPerson(value.contactId!),
-                ),
-            ],
+          Semantics(
+            label: context.l10n.hostResponseContactDetails,
+            child: HostResponseContactSection(
+              value: value,
+              onContact: onContact,
+            ),
           ),
+          if (value.contactId != null ||
+              (onChooseEvent != null &&
+                  value.canChooseEvent &&
+                  !value.canOfferEvent))
+            CatchFieldLanes.divided(
+              children: [
+                if (onChooseEvent != null &&
+                    value.canChooseEvent &&
+                    !value.canOfferEvent)
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostResponseOfferEvent,
+                    emphasis: CatchFieldEmphasis.title,
+                    body: value.application != null
+                        ? context.l10n.hostResponseChooseBeforeAcceptance
+                        : null,
+                    bodyMaxLines: 3,
+                    onTap: busy ? null : onChooseEvent,
+                  ),
+                if (value.contactId != null)
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.hostApplicationOpenPerson,
+                    onTap: busy ? null : () => onOpenPerson(value.contactId!),
+                  ),
+              ],
+            ),
         ],
         if (response?.payment case final payment? when !value.revoked) ...[
           gapH24,
@@ -260,39 +276,14 @@ class HostResponseDetailSection extends ConsumerWidget {
         ],
         if (value.canReview) ...[
           gapH24,
-          CatchSection.divided(
-            title: context.l10n.hostApplicationReviewNote,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchField.input(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostApplicationReviewNote,
-                  controller: note,
-                  inputHint: context.l10n.hostApplicationReviewNoteHint,
-                  contract: CatchContractConstraints
-                      .reviewOrganizerApplicationCallablePayloadReviewNote,
-                  labelMode: CatchFieldLabelTextMode.optional,
-                  maxLines: 3,
-                ),
-                gapH12,
-                ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: note,
-                  builder: (context, text, _) => CatchButton(
-                    label: context.l10n.hostResponseSaveReviewNote,
-                    variant: CatchButtonVariant.secondary,
-                    status: saving
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    onPressed:
-                        busy ||
-                            text.text.trim() ==
-                                (application!.reviewNote ?? '').trim()
-                        ? null
-                        : () => onReview(application, application.reviewStatus),
-                  ),
-                ),
-              ],
+          CatchFieldLanes.single(
+            child: _ResponseReviewNoteEditor(
+              key: ValueKey('review-note-${application!.applicationId}'),
+              application: application,
+              controller: note,
+              busy: busy,
+              saving: saving,
+              onSave: () => onReview(application, application.reviewStatus),
             ),
           ),
         ] else if (application?.reviewNote case final String note
@@ -568,4 +559,68 @@ class HostResponsePrimaryAction extends StatelessWidget {
     }
     return const SizedBox.shrink();
   }
+}
+
+/// Uses the shared explicit-save field so actions participate in its reveal,
+/// keyboard focus and cancellation behavior rather than floating below it.
+class _ResponseReviewNoteEditor extends StatefulWidget {
+  const _ResponseReviewNoteEditor({
+    super.key,
+    required this.application,
+    required this.controller,
+    required this.busy,
+    required this.saving,
+    required this.onSave,
+  });
+  final HostApplicationDetail application;
+  final TextEditingController controller;
+  final bool busy;
+  final bool saving;
+  final Future<void> Function() onSave;
+  @override
+  State<_ResponseReviewNoteEditor> createState() =>
+      _ResponseReviewNoteEditorState();
+}
+
+class _ResponseReviewNoteEditorState extends State<_ResponseReviewNoteEditor> {
+  bool _open = false;
+  @override
+  void didUpdateWidget(covariant _ResponseReviewNoteEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.application.revision != oldWidget.application.revision &&
+        widget.controller.text.trim() ==
+            (widget.application.reviewNote ?? '').trim()) {
+      _open = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => CatchField.inputActions(
+    copy: catchFieldCopy(
+      context.l10n,
+    ).copyWith(doneLabel: context.l10n.hostResponseSaveReviewNote),
+    title: context.l10n.hostApplicationReviewNote,
+    controller: widget.controller,
+    inputHint: context.l10n.hostApplicationReviewNoteHint,
+    contract: CatchContractConstraints
+        .reviewOrganizerApplicationCallablePayloadReviewNote,
+    maxLines: 3,
+    open: _open,
+    status: widget.saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
+    states: {if (widget.busy && !widget.saving) WidgetState.disabled},
+    onOpenChanged: (open) => setState(() => _open = open),
+    onCancel: () {
+      widget.controller.text = widget.application.reviewNote ?? '';
+      setState(() => _open = false);
+    },
+    onSubmit: () {
+      if (widget.busy) return;
+      if (widget.controller.text.trim() ==
+          (widget.application.reviewNote ?? '').trim()) {
+        setState(() => _open = false);
+      } else {
+        widget.onSave();
+      }
+    },
+  );
 }

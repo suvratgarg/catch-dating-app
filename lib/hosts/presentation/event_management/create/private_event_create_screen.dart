@@ -743,7 +743,9 @@ class _PrivateEventCreateScreenState
                       ),
                       gapH4,
                       Text(
-                        context.l10n.hostsPrivateEventSaveHint,
+                        widget.returnToResponsesOnSave
+                            ? context.l10n.hostsPrivateEventReturnToReviewHint
+                            : context.l10n.hostsPrivateEventSaveHint,
                         style: Theme.of(context)
                             .textTheme.bodyMedium?.copyWith(color: t.ink2),
                       ),

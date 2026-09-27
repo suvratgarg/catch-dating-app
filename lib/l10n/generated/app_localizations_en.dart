@@ -22042,7 +22042,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsPrivateEventSaveReturnResponses => 'Save & continue';
+  String get hostsPrivateEventSaveReturnResponses => 'Save & return to review';
 
   @override
   String get hostsPrivateEventSaveContinue => 'Save & continue';
@@ -22432,7 +22432,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventOfferCreate => 'Create event offers';
 
   @override
-  String get hostEventOfferSelectEvent => 'Choose an event';
+  String get hostEventOfferSelectEvent => 'Available events';
 
   @override
   String get hostEventOfferSelectEventEmpty =>
@@ -23267,4 +23267,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventOfferExpiry => 'Valid until';
+
+  @override
+  String get hostResponseChooseBeforeAcceptance =>
+      'Acceptance is required before creating the offer.';
+
+  @override
+  String get hostsPrivateEventReturnToReviewHint =>
+      'Save these basics and return to your selected responses. You can finish event details later.';
 }

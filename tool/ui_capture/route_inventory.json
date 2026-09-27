@@ -1595,7 +1595,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/forms/host_form_response_detail_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
-      "line": 554,
+      "line": 559,
       "ordinal": 1,
       "presentationExpression": "(_)=>HostResponseOfferScreen(organizerId:widget.organizerId,responseId:detail.response!.response.responseId)",
       "presentationTarget": "HostResponseOfferScreen",
@@ -1613,7 +1613,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "line": 142,
+      "line": 146,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
       "presentationTarget": "HostEventOfferPreferencesScreen",
@@ -1622,7 +1622,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/forms/host_response_offer_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "line": 259,
+      "line": 267,
       "ordinal": 2,
       "presentationExpression": "(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true)",
       "presentationTarget": "HostFormResponseDetailScreen",

@@ -63,6 +63,7 @@ class HostResponseReviewDetail {
       response?.response.status == HostFormResponseStatus.withdrawn;
   bool get canReview => application != null && !withdrawn && !revoked;
   bool get canConvert => response != null && !withdrawn && !revoked;
+  bool get canChooseEvent => canConvert;
   bool get canOfferEvent =>
       canConvert &&
       contactId != null &&

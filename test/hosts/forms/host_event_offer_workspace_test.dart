@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
@@ -10,6 +12,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
@@ -60,6 +63,70 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('route footer follows event choice and clears on account loss', (
+    tester,
+  ) async {
+    final auth = _SwitchingAuth('manager');
+    final accounts = StreamController<String?>();
+    final storage = MemoryCommandJournalStorage();
+    addTearDown(accounts.close);
+    addTearDown(storage.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          privateEventSetupAvailableProvider.overrideWithValue(true),
+          uidProvider.overrideWith((ref) => accounts.stream),
+          firebaseAuthProvider.overrideWithValue(auth),
+          firebaseFunctionsProvider.overrideWithValue(_RouteFunctions()),
+          commandJournalStorageProvider.overrideWithValue(() async => storage),
+          hostFormResponseDetailProvider(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ).overrideWith((ref) async => _detail('contact-one')),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HostResponseOfferScreen(
+            organizerId: 'org',
+            responseId: 'response-one',
+          ),
+        ),
+      ),
+    );
+    accounts.add('manager');
+    await pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('offer-target-event-one')),
+    );
+    final workspaceState = tester.state(
+      find.byType(HostEventOfferWorkspaceSection),
+    );
+    final preview = AppLocalizationsEn().hostEventOfferPreview;
+    expect(find.text(preview), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+    await pumpUntilFound(tester, find.text(preview));
+    final dock = find.byType(CatchDockSurface);
+    expect(dock, findsOneWidget);
+    expect(tester.getBottomLeft(dock).dy, greaterThan(500));
+    expect(
+      tester.state(find.byType(HostEventOfferWorkspaceSection)),
+      same(workspaceState),
+    );
+    await tester.tap(find.text('Sunday run'));
+    await pumpFeatureUi(tester);
+    expect(find.text(preview), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
+    await pumpUntilFound(tester, find.text(preview));
+    auth.uid = null;
+    accounts.add(null);
+    await pumpFeatureUi(tester);
+    expect(find.text(preview), findsNothing);
+    expect(find.byType(HostEventOfferWorkspaceSection), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('legacy response cache is hidden until the new manager read '
       'resolves', (tester) async {
@@ -288,69 +355,66 @@ void main() {
             device: CaptureDevice.iphone17Pro,
             textScale: scale,
             outputDirectory: Directory(output),
-            builder: (context) => CatchRouteScaffold(
-              topBarBuilder: (context, scrolledUnder) =>
-                  const CatchTopBar.route(
-                    title: 'Offer an event',
-                    navigation: CatchTopBarNavigation(
-                      mode: CatchTopBarNavigationMode.back,
-                    ),
-                  ),
-              body: CatchRouteBody.standardSections(
-                sections: [
-                  CatchSectionListItem(
-                    child: HostEventOfferWorkspaceSection(
-                      organizerId: 'org',
-                      accountId: 'manager',
-                      responseId: 'response-one',
-                      offerController: controller,
-                      targets: _Targets(empty: stage == 'empty'),
-                      initiallyReviewSelection: true,
-                      listOffers:
-                          ({
-                            required organizerId,
-                            required eventId,
-                            afterOfferId,
-                          }) async => {
-                            'items': stage == 'existing'
-                                ? [
-                                    {
-                                      'offerId': 'offer-one',
-                                      'eventId': 'event-one',
-                                      'contactId': 'contact-one',
-                                      'effectiveStatus': 'offered',
-                                    },
-                                  ]
-                                : <Object>[],
-                            'nextCursor': null,
-                          },
-                      getOffer:
-                          ({
-                            required organizerId,
-                            required eventId,
-                            required contactId,
-                          }) async => _existingOffer(),
-                      prepareHandoff: ({required offer}) async => HostOfferHandoff(
-                        kind: 'prepared',
-                        offerId: offer.offerId,
-                        blockers: const [],
-                        contactId: offer.contactId,
-                        editableText:
-                            'Hi Maya, you have an offer for Sunday run. Open your invitation to confirm your place.',
-                        copyText: 'Synthetic invitation for review',
+            builder: (context) => HostEventOfferWorkspaceSection(
+              organizerId: 'org',
+              accountId: 'manager',
+              responseId: 'response-one',
+              offerController: controller,
+              targets: _Targets(empty: stage == 'empty'),
+              initiallyReviewSelection: true,
+              listOffers:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    afterOfferId,
+                  }) async => {
+                    'items': stage == 'existing'
+                        ? [
+                            {
+                              'offerId': 'offer-one',
+                              'eventId': 'event-one',
+                              'contactId': 'contact-one',
+                              'effectiveStatus': 'offered',
+                            },
+                          ]
+                        : <Object>[],
+                    'nextCursor': null,
+                  },
+              getOffer:
+                  ({
+                    required organizerId,
+                    required eventId,
+                    required contactId,
+                  }) async => _existingOffer(),
+              prepareHandoff: ({required offer}) async => HostOfferHandoff(
+                kind: 'prepared',
+                offerId: offer.offerId,
+                blockers: const [],
+                contactId: offer.contactId,
+                editableText:
+                    'Hi Maya, you have an offer for Sunday run. Open your invitation to confirm your place.',
+                copyText: 'Synthetic invitation for review',
+              ),
+              copyMessage: (_) async {},
+              openHandoff: (_) async => false,
+              getResponseDetail: (_) async => _detail('contact-one'),
+              openResponseForConversion: (_) async {},
+              openEventSettings: (_) async {},
+              onCreateEvent: () async {},
+              copy: hostEventOfferWorkspaceCopy(context.l10n),
+              now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+              layoutBuilder: (body, action) => CatchRouteScaffold(
+                topBarBuilder: (context, scrolledUnder) =>
+                    const CatchTopBar.route(
+                      title: 'Offer an event',
+                      navigation: CatchTopBarNavigation(
+                        mode: CatchTopBarNavigationMode.back,
                       ),
-                      copyMessage: (_) async {},
-                      openHandoff: (_) async => false,
-                      getResponseDetail: (_) async => _detail('contact-one'),
-                      openResponseForConversion: (_) async {},
-                      openEventSettings: (_) async {},
-                      onCreateEvent: () async {},
-                      copy: hostEventOfferWorkspaceCopy(context.l10n),
-                      now: () =>
-                          DateTime.fromMillisecondsSinceEpoch(1799990000000),
                     ),
-                  ),
-                ],
+                footer: action,
+                body: CatchRouteBody.standardSections(
+                  sections: [CatchSectionListItem(child: body)],
+                ),
               ),
             ),
             drive: (tester) async {
@@ -365,6 +429,31 @@ void main() {
                 await tester.ensureVisible(find.text('Preview offers'));
                 await tester.tap(find.text('Preview offers'));
                 await pumpFeatureUi(tester);
+              }
+              if (stage == 'review' ||
+                  stage == 'confirm' ||
+                  stage == 'existing') {
+                final dock = find.byKey(
+                  const ValueKey('catch_bottom_action.page_action'),
+                );
+                expect(dock, findsOneWidget);
+                final viewportHeight =
+                    tester.view.physicalSize.height /
+                    tester.view.devicePixelRatio;
+                expect(
+                  tester.getBottomLeft(dock).dy,
+                  lessThanOrEqualTo(viewportHeight),
+                );
+                expect(
+                  tester.getBottomLeft(dock).dy,
+                  greaterThan(viewportHeight - 100),
+                );
+              }
+              if ((stage == 'review' || stage == 'confirm') && scale == 1) {
+                expect(
+                  tester.getTopLeft(find.text('Sunday run')).dx,
+                  closeTo(tester.getTopLeft(find.text('Recipient')).dx, 1),
+                );
               }
               expect(tester.takeException(), isNull);
             },
@@ -1487,3 +1576,55 @@ HostEventOffer _existingOffer({
     bankReceiptChecked: false,
   ),
 );
+
+class _RouteFunctions extends Fake implements FirebaseFunctions {
+  @override
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
+      _RouteCallable(name);
+}
+
+class _RouteCallable extends Fake implements HttpsCallable {
+  _RouteCallable(this.name);
+  final String name;
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final Object data = switch (name) {
+      'listOfferEventTargets' => {
+        'events': [
+          {
+            'eventId': 'event-one',
+            'name': 'Sunday run',
+            'startTimeMillis': 2100000000000,
+            'timezone': 'Asia/Kolkata',
+            'publicationState': 'private',
+            'setupRevision': 1,
+          },
+        ],
+        'nextCursor': null,
+      },
+      'getEventOfferConfiguration' => {
+        'organizerId': 'org',
+        'eventId': 'event-one',
+        'eventSourceRevision': 1,
+        'startsAtMillis': 2100000000000,
+        'nowMillis': now,
+        'paymentTerms': {
+          'preferredCollection': 'manualInstructions',
+          'expectedAmountMinor': 50000,
+          'currency': 'INR',
+        },
+        'suggestedExpiresAtMillis': now + 3600000,
+      },
+      'listEventOffers' => {'items': <Object>[], 'nextCursor': null},
+      _ => throw StateError('Unexpected callable: $name'),
+    };
+    return _RouteResult<T>(data as T);
+  }
+}
+
+class _RouteResult<T> extends Fake implements HttpsCallableResult<T> {
+  _RouteResult(this.data);
+  @override
+  final T data;
+}
