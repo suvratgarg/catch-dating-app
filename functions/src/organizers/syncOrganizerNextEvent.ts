@@ -32,7 +32,7 @@ export async function refreshOrganizerNextEvent(
     const organizerSnap = await tx.get(organizerRef);
     if (!organizerSnap.exists) return;
     // Compatibility stage: legacy public events may lack publicationState.
-    // Private event creation remains disabled until public-reader cutover.
+    // Keep legacy public rows until the publication backfill/read cutover.
     /* firestore-index: events (
       organizerId:ASCENDING, status:ASCENDING,
       startTime:ASCENDING, __name__:ASCENDING
@@ -42,15 +42,21 @@ export async function refreshOrganizerNextEvent(
       .where("status", "==", "active")
       .where("startTime", ">=", now)
       .orderBy("startTime", "asc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "asc")
-      .limit(1);
-    const page = await tx.get(query);
-    const nextEvent = page.docs[0]?.data() as EventDocument | undefined;
-    // Query results are current event documents in this transaction snapshot.
-    // A contradictory row must not project a public label.
-    const visible = nextEvent && isEventPubliclyAccessible(nextEvent) &&
-      nextEvent.organizerId === organizerId &&
-      nextEvent.status === "active" ? nextEvent : undefined;
+      .orderBy(admin.firestore.FieldPath.documentId(), "asc");
+    // The usual legacy/public case still reads one row. When private drafts
+    // precede it, continue in bounded pages rather than clearing the public
+    // projection. Document cursors preserve ordering even at tied start times.
+    // All pages share this transaction snapshot with the final projection.
+    let page = await tx.get(query.limit(1));
+    let visible: EventDocument | undefined;
+    while (page.docs.length > 0) {
+      visible = page.docs.map((doc) => doc.data() as EventDocument)
+        .find((event) => isEventPubliclyAccessible(event) &&
+          event.organizerId === organizerId && event.status === "active");
+      if (visible) break;
+      page = await tx.get(query.startAfter(page.docs[page.docs.length - 1])
+        .limit(50));
+    }
     tx.set(organizerRef, {
       nextEventAt: visible?.startTime ?? null,
       nextEventLabel: visible ?
