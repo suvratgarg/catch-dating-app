@@ -10,7 +10,16 @@
   "invitationStatus": "invited",
   "rsvpStatus": "attending",
   "source": "import",
-  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "revision": 1
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "groupIds": [
+    "group-side-a"
+  ]
 }

@@ -465,7 +465,7 @@ test("groupLabels resolve or create groups and keep memberCount", async () => {
   for (const [, doc] of groups) {
     assert.equal(doc.memberCount, 1);
     assert.ok((guest.groupIds as string[]).includes(
-      [...store.docs.entries()].find(([k, d]) => d === doc)![0]
+      [...store.docs.entries()].find(([, d]) => d === doc)![0]
         .split("/")[1]));
   }
   // Re-importing the same labels is idempotent: the leg-identity match

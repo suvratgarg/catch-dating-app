@@ -64,7 +64,7 @@ test("updating a group preserves memberCount and honors expectedRevision",
     await assert.rejects(upsertProgramGuestGroupHandler(request({
       programId: "program-1", groupId: "missing", label: "x",
       dimension: "side", expectedRevision: 1}, "manager-1"), deps(db)),
-      /not found|does not exist/i);
+    /not found|does not exist/i);
     assertGroupContracts(db);
   });
 
@@ -106,11 +106,11 @@ test("guest upserts reject unknown or foreign groups", async () => {
   await assert.rejects(upsertProgramGuestHandler(request({
     programId: "program-1", guestId: "guest-1", displayName: "Rohan Sharma",
     expectedRevision: 1, groupIds: ["nope"]}, "manager-1"), deps(db)),
-    /Unknown guest group/);
+  /Unknown guest group/);
   await assert.rejects(upsertProgramGuestHandler(request({
     programId: "program-1", guestId: "guest-1", displayName: "Rohan Sharma",
     expectedRevision: 1, groupIds: ["company-b"]}, "manager-1"), deps(db)),
-    /reconciliation/);
+  /reconciliation/);
 });
 
 test("deleting a group scrubs member groupIds in bounded pages", async () => {
@@ -119,7 +119,7 @@ test("deleting a group scrubs member groupIds in bounded pages", async () => {
   db.updateDoc("programGuests/guest-2", {groupIds: ["side-a"]});
   const result = await deleteProgramGuestGroupHandler(request({
     programId: "program-1", groupId: "side-a", expectedRevision: 1},
-    "manager-1"), deps(db));
+  "manager-1"), deps(db));
   assert.equal(result.entityId, "side-a");
   assert.equal(db.getDoc("programGuestGroups/side-a"), undefined);
   assert.deepEqual(db.getDoc("programGuests/guest-1")!.groupIds,
@@ -127,7 +127,7 @@ test("deleting a group scrubs member groupIds in bounded pages", async () => {
   assert.deepEqual(db.getDoc("programGuests/guest-2")!.groupIds, []);
   await assert.rejects(deleteProgramGuestGroupHandler(request({
     programId: "program-1", groupId: "side-a"}, "manager-1"), deps(db)),
-    /not found/);
+  /not found/);
 });
 
 test("guest lists embed the referenced group labels", async () => {
