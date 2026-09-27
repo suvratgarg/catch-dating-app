@@ -578,6 +578,59 @@ const schemaUpdatePrivateEventDetailsCallablePayloadSchema = <String, Object?>{
             },
           ],
         },
+        'description': <String, Object?>{
+          'type': 'string',
+          'maxLength': 2000,
+        },
+        'admissionTerms': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'capacityLimit',
+            'priceInPaise',
+            'currency',
+            'cancellationPolicyId',
+          ],
+          'properties': <String, Object?>{
+            'capacityLimit': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'priceInPaise': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 100000000,
+            },
+            'currency': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Z]{3}\$',
+            },
+            'cancellationPolicyId': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'notApplicable',
+                'flexible',
+                'standard',
+                'strict',
+              ],
+            },
+          },
+        },
+        'distanceKm': <String, Object?>{
+          'type': 'number',
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'pace': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'easy',
+            'moderate',
+            'fast',
+            'competitive',
+          ],
+        },
       },
       'minProperties': 1,
     },

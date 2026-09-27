@@ -5,6 +5,12 @@ import {resolve} from "node:path";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Store} from "../../organizerFormAdmission/admissionTestFixture";
+import {createPrivateEventSetup} from "./service";
+import {updatePrivateEventDetails} from "./details";
+import {getManagerEventSetupDefaults} from
+  "../../organizers/eventSetupDefaults/service";
+import {eventSetupDefaultsDependencies} from
+  "../../organizers/eventSetupDefaults/dependencies";
 import {setEventPublication} from "./publication";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
@@ -166,3 +172,51 @@ test("unpublish remains possible after cancellation without reopening bookings",
     await assert.rejects(h.run({...h.command, requestId: "publish-two",
       expectedSetupRevision: 3}), errorCode("failed-precondition"));
   });
+
+
+test("fresh progressive event publishes after details", async () => {
+  const h = setup();
+  h.store.rows.delete("events/event1");
+  const db = {
+    collection: (name: string) => {
+      const source = h.store.collection(name);
+      return {...source, doc: (id = "fresh-event") =>
+        ({...source.doc(id), id})};
+    },
+    runTransaction: h.store.runTransaction.bind(h.store),
+  } as unknown as FirebaseFirestore.Firestore;
+  const deps = {...h.deps, db, freshEventSeatWritersReady: () => true};
+  const created = await createPrivateEventSetup({actorUid: "host1", deps,
+    command: {organizerId: "org1", requestId: "create-fresh",
+      basics: {name: "Sunday dinner", city: {mode: "set", value: {
+        cityId: "in-mp-indore", marketId: "in-mp-indore"}},
+      localDate: "2030-03-17", localStartTime: "19:00",
+      timezone: {mode: "set", value: "Asia/Kolkata"}}}});
+  const defaults = await getManagerEventSetupDefaults({actorUid: "host1",
+    organizerId: "org1", deps: eventSetupDefaultsDependencies(db)});
+  const saved = await updatePrivateEventDetails({actorUid: "host1", deps,
+    command: {organizerId: "org1", eventId: created.eventId,
+      requestId: "details-fresh", expectedSetupRevision: 1,
+      reviewedDefaultsHash: defaults.preferencesHash, details: {
+        durationMinutes: {mode: "set", value: 90},
+        venue: {mode: "set", value: {name: "Town Hall",
+          latitude: 22.7, longitude: 75.8}},
+        description: "A shared dinner with new friends.",
+        eventFormat: {mode: "set", value: {version: 1, activityKind: "dinner",
+          interactionModel: "seatedTable"}},
+        admissionTerms: {capacityLimit: 12, priceInPaise: 50000,
+          currency: "INR", cancellationPolicyId: "standard"}}}});
+  const publish = await setEventPublication({actorUid: "host1", deps,
+    nowMillis: () => Date.parse("2030-03-01T00:00:00Z"),
+    command: {...h.command, eventId: created.eventId,
+      expectedSetupRevision: saved.setupRevision}});
+  assert.equal(publish.publicationState, "published");
+  const event = h.store.get(`events/${created.eventId}`)!;
+  assert.equal(validateEventDocument(event), true,
+    JSON.stringify(validateEventDocument.errors));
+  assert.equal(event.publicRegistrationEnabled, false);
+  assert.equal(event.distanceKm, 0);
+  assert.equal(event.pace, "easy");
+  assert.equal(h.store.get(`eventSeatLedgers/${created.eventId}`)!.state,
+    "ready");
+});

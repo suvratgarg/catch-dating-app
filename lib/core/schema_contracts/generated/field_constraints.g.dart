@@ -105131,6 +105131,49 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const privateEventSetupCallableResponseEventDetailsAdmissionTermsCancellationPolicyId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.admissionTerms.cancellationPolicyId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsAdmissionTermsCapacityLimit = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.admissionTerms.capacityLimit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsAdmissionTermsCurrency = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.admissionTerms.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsAdmissionTermsPriceInPaise = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.admissionTerms.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsDescription = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.description',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsDistanceKm = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.distanceKm',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const privateEventSetupCallableResponseEventDetailsEndTimeMillis = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.eventDetails.endTimeMillis',
     valueTypes: <String>['integer'],
@@ -105433,6 +105476,12 @@ abstract final class CatchContractConstraints {
     maxLength: 256,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsPace = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.pace',
+    valueTypes: <String>['string'],
+    enumValues: <String>['easy', 'moderate', 'fast', 'competitive'],
   );
 
   static const privateEventSetupCallableResponseEventDetailsSourceVenueId = CatchContractFieldConstraints(
@@ -124518,6 +124567,49 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,127}\$',
   );
 
+  static const updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCancellationPolicyId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.admissionTerms.cancellationPolicyId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCapacityLimit = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.admissionTerms.capacityLimit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCurrency = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.admissionTerms.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.admissionTerms.priceInPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsDescription = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.description',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsDistanceKm = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.distanceKm',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 100,
+  );
+
   static const updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesMode = CatchContractFieldConstraints(
     path: 'updatePrivateEventDetailsCallablePayload.details.durationMinutes.mode',
     required: true,
@@ -124792,6 +124884,12 @@ abstract final class CatchContractConstraints {
     path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.version',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsPace = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.pace',
+    valueTypes: <String>['string'],
+    enumValues: <String>['easy', 'moderate', 'fast', 'competitive'],
   );
 
   static const updatePrivateEventDetailsCallablePayloadDetailsVenueMode = CatchContractFieldConstraints(
@@ -144579,6 +144677,12 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.city.cityId': privateEventSetupCallableResponseCityCityId,
     'privateEventSetupCallableResponse.city.marketId': privateEventSetupCallableResponseCityMarketId,
     'privateEventSetupCallableResponse.detailsConfigured': privateEventSetupCallableResponseDetailsConfigured,
+    'privateEventSetupCallableResponse.eventDetails.admissionTerms.cancellationPolicyId': privateEventSetupCallableResponseEventDetailsAdmissionTermsCancellationPolicyId,
+    'privateEventSetupCallableResponse.eventDetails.admissionTerms.capacityLimit': privateEventSetupCallableResponseEventDetailsAdmissionTermsCapacityLimit,
+    'privateEventSetupCallableResponse.eventDetails.admissionTerms.currency': privateEventSetupCallableResponseEventDetailsAdmissionTermsCurrency,
+    'privateEventSetupCallableResponse.eventDetails.admissionTerms.priceInPaise': privateEventSetupCallableResponseEventDetailsAdmissionTermsPriceInPaise,
+    'privateEventSetupCallableResponse.eventDetails.description': privateEventSetupCallableResponseEventDetailsDescription,
+    'privateEventSetupCallableResponse.eventDetails.distanceKm': privateEventSetupCallableResponseEventDetailsDistanceKm,
     'privateEventSetupCallableResponse.eventDetails.endTimeMillis': privateEventSetupCallableResponseEventDetailsEndTimeMillis,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.groupStrategy': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanGroupStrategy,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
@@ -144621,6 +144725,7 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.eventDetails.meetingLocation.name': privateEventSetupCallableResponseEventDetailsMeetingLocationName,
     'privateEventSetupCallableResponse.eventDetails.meetingLocation.notes': privateEventSetupCallableResponseEventDetailsMeetingLocationNotes,
     'privateEventSetupCallableResponse.eventDetails.meetingLocation.placeId': privateEventSetupCallableResponseEventDetailsMeetingLocationPlaceId,
+    'privateEventSetupCallableResponse.eventDetails.pace': privateEventSetupCallableResponseEventDetailsPace,
     'privateEventSetupCallableResponse.eventDetails.sourceVenueId': privateEventSetupCallableResponseEventDetailsSourceVenueId,
     'privateEventSetupCallableResponse.eventDetails.venueName': privateEventSetupCallableResponseEventDetailsVenueName,
     'privateEventSetupCallableResponse.eventId': privateEventSetupCallableResponseEventId,
@@ -147228,6 +147333,12 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventBasicsCallablePayload.expectedSetupRevision': updatePrivateEventBasicsCallablePayloadExpectedSetupRevision,
     'updatePrivateEventBasicsCallablePayload.organizerId': updatePrivateEventBasicsCallablePayloadOrganizerId,
     'updatePrivateEventBasicsCallablePayload.requestId': updatePrivateEventBasicsCallablePayloadRequestId,
+    'updatePrivateEventDetailsCallablePayload.details.admissionTerms.cancellationPolicyId': updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCancellationPolicyId,
+    'updatePrivateEventDetailsCallablePayload.details.admissionTerms.capacityLimit': updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCapacityLimit,
+    'updatePrivateEventDetailsCallablePayload.details.admissionTerms.currency': updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsCurrency,
+    'updatePrivateEventDetailsCallablePayload.details.admissionTerms.priceInPaise': updatePrivateEventDetailsCallablePayloadDetailsAdmissionTermsPriceInPaise,
+    'updatePrivateEventDetailsCallablePayload.details.description': updatePrivateEventDetailsCallablePayloadDetailsDescription,
+    'updatePrivateEventDetailsCallablePayload.details.distanceKm': updatePrivateEventDetailsCallablePayloadDetailsDistanceKm,
     'updatePrivateEventDetailsCallablePayload.details.durationMinutes.mode': updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesMode,
     'updatePrivateEventDetailsCallablePayload.details.durationMinutes.value': updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesValue,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.mode': updatePrivateEventDetailsCallablePayloadDetailsEventFormatMode,
@@ -147266,6 +147377,7 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.eventSuccessPrimitives.unitOutcome': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueEventSuccessPrimitivesUnitOutcome,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.interactionModel': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueInteractionModel,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.version': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueVersion,
+    'updatePrivateEventDetailsCallablePayload.details.pace': updatePrivateEventDetailsCallablePayloadDetailsPace,
     'updatePrivateEventDetailsCallablePayload.details.venue.mode': updatePrivateEventDetailsCallablePayloadDetailsVenueMode,
     'updatePrivateEventDetailsCallablePayload.details.venue.value.address': updatePrivateEventDetailsCallablePayloadDetailsVenueValueAddress,
     'updatePrivateEventDetailsCallablePayload.details.venue.value.latitude': updatePrivateEventDetailsCallablePayloadDetailsVenueValueLatitude,

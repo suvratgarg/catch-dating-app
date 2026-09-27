@@ -37557,6 +37557,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Meeting place is ready for directions and the public listing.'**
   String get hostsPrivateEventDetailLocationReady;
+
+  /// Private event admission terms section
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity and price'**
+  String get hostsPrivateEventAdmissionTerms;
+
+  /// Explains explicit event terms without enabling registration
+  ///
+  /// In en, this message translates to:
+  /// **'Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.'**
+  String get hostsPrivateEventAdmissionTermsHint;
+
+  /// Saves the reviewed admission terms together
+  ///
+  /// In en, this message translates to:
+  /// **'Save capacity and price'**
+  String get hostsPrivateEventSaveTerms;
+
+  /// Cash refund choice without credits
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund until {hours} hours before; no refund after'**
+  String hostsPrivateEventRefundCutoff({required int hours});
 }
 
 class _AppLocalizationsDelegate

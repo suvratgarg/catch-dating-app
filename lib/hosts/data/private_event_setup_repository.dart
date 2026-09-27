@@ -282,6 +282,57 @@ class PrivateEventBasicsUpdateRequest {
   };
 }
 
+/// Explicit terms for one event; these do not open public registration.
+class PrivateEventAdmissionTerms {
+  const PrivateEventAdmissionTerms({
+    required this.capacityLimit,
+    required this.priceInPaise,
+    required this.currency,
+    required this.cancellationPolicyId,
+  });
+  final int capacityLimit;
+  final int priceInPaise;
+  final String currency;
+  final String cancellationPolicyId;
+  bool get isValid =>
+      capacityLimit >= 1 &&
+      capacityLimit <= 1000 &&
+      priceInPaise >= 0 &&
+      priceInPaise <= 100000000 &&
+      RegExp(r'^[A-Z]{3}$').hasMatch(currency) &&
+      (priceInPaise == 0
+          ? cancellationPolicyId == 'notApplicable'
+          : const {
+              'flexible',
+              'standard',
+              'strict',
+            }.contains(cancellationPolicyId));
+  Map<String, Object?> toJson() => {
+    'capacityLimit': capacityLimit,
+    'priceInPaise': priceInPaise,
+    'currency': currency,
+    'cancellationPolicyId': cancellationPolicyId,
+  };
+  factory PrivateEventAdmissionTerms.fromResponse(Object? raw) {
+    if (raw is! Map ||
+        raw.length != 4 ||
+        raw['capacityLimit'] is! int ||
+        raw['priceInPaise'] is! int ||
+        raw['currency'] is! String ||
+        raw['cancellationPolicyId'] is! String) {
+      throw const FormatException('Invalid event admission terms');
+    }
+    final result = PrivateEventAdmissionTerms(
+      capacityLimit: raw['capacityLimit'] as int,
+      priceInPaise: raw['priceInPaise'] as int,
+      currency: raw['currency'] as String,
+      cancellationPolicyId: raw['cancellationPolicyId'] as String,
+    );
+    if (!result.isValid) throw const FormatException('Invalid admission terms');
+    return result;
+  }
+}
+
 /// Actual optional event fields, as opposed to organizer recommendations.
 class PrivateEventDetailsSnapshot {
   const PrivateEventDetailsSnapshot({
@@ -290,8 +341,16 @@ class PrivateEventDetailsSnapshot {
     this.meetingLocation,
     this.sourceVenueId,
     this.eventFormat,
+    this.description,
+    this.admissionTerms,
+    this.distanceKm,
+    this.pace,
   });
 
+  final String? description;
+  final PrivateEventAdmissionTerms? admissionTerms;
+  final double? distanceKm;
+  final String? pace;
   final int? endTimeMillis;
   final String? venueName;
   final EventMeetingLocation? meetingLocation;
@@ -302,13 +361,17 @@ class PrivateEventDetailsSnapshot {
     if (response is! Map) throw const FormatException('Invalid event details');
     final data = Map<String, Object?>.from(response);
     if (data.length < 4 ||
-        data.length > 5 ||
+        data.length > 9 ||
         data.keys.toSet().difference({
           'endTimeMillis',
           'venueName',
           'sourceVenueId',
           'eventFormat',
           'meetingLocation',
+          'description',
+          'admissionTerms',
+          'distanceKm',
+          'pace',
         }).isNotEmpty ||
         (data['endTimeMillis'] != null && data['endTimeMillis'] is! int) ||
         (data['venueName'] != null &&
@@ -316,6 +379,23 @@ class PrivateEventDetailsSnapshot {
                 (data['venueName'] as String).trim().isEmpty)) ||
         (data['sourceVenueId'] != null && data['sourceVenueId'] is! String)) {
       throw const FormatException('Invalid event details');
+    }
+    if ((data['description'] != null &&
+            (data['description'] is! String ||
+                (data['description'] as String).length > 2000)) ||
+        (data['distanceKm'] != null &&
+            (data['distanceKm'] is! num ||
+                !(data['distanceKm'] as num).isFinite ||
+                (data['distanceKm'] as num) < 0 ||
+                (data['distanceKm'] as num) > 100)) ||
+        (data['pace'] != null &&
+            !const {
+              'easy',
+              'moderate',
+              'fast',
+              'competitive',
+            }.contains(data['pace']))) {
+      throw const FormatException('Invalid event listing details');
     }
     final rawFormat = data['eventFormat'];
     EventFormatSnapshot? format;
@@ -353,6 +433,12 @@ class PrivateEventDetailsSnapshot {
     }
     return PrivateEventDetailsSnapshot(
       meetingLocation: location,
+      description: data['description'] as String?,
+      distanceKm: (data['distanceKm'] as num?)?.toDouble(),
+      pace: data['pace'] as String?,
+      admissionTerms: data['admissionTerms'] == null
+          ? null
+          : PrivateEventAdmissionTerms.fromResponse(data['admissionTerms']),
       endTimeMillis: data['endTimeMillis'] as int?,
       venueName: data['venueName'] as String?,
       sourceVenueId: data['sourceVenueId'] as String?,

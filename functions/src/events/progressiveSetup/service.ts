@@ -41,6 +41,8 @@ export interface ProgressiveSetupDependencies {
   db: FirebaseFirestore.Firestore;
   /** Trusted deployment gate; it is never read from a client command. */
   privacyMigrationReady: () => boolean;
+  /** Server-owned deployment assertion; never accepted from a request. */
+  freshEventSeatWritersReady?: () => boolean;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   /** Integration must fence roster, offer and payment commitments in tx. */

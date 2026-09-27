@@ -1774,6 +1774,16 @@ defaults. A named venue does not invent coordinates; hosts can instead use the e
 map picker to save a canonical named meeting location. Its coordinates and
 legacy mirrors are persisted together; replacing a saved venue clears its
 source-venue reference. Name-only replacement clears stale map fields. Neither save publishes the event nor admits a guest.
+Description and distance/pace for distance-based activities are explicit details.
+Non-distance format selection writes the existing compatibility values (0/easy),
+which readers hide for those formats. Capacity, price/currency and cash-refund
+policy are saved together; credits remain deferred. The update preserves existing
+admission restrictions and never changes offer payment snapshots. An empty,
+ordinary private event receives matching ready seat ledger and fence records in
+that transaction, only after counters and bounded queries show no guest, payment,
+identity, import or migration history. Demo-owned events are excluded because
+seed tooling has legacy seat writers. Existing reserved places or checkout holds
+block changed terms; historical sources require seat reconciliation.
 The manager read includes `eventDetails` for reopening those actual values;
 event preferences remain separate recommendations. Hosts can add or edit venue
 and duration after creating offers or importing a roster. Changing format still

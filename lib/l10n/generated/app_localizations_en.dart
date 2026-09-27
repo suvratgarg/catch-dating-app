@@ -23314,4 +23314,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventDetailLocationReady =>
       'Meeting place is ready for directions and the public listing.';
+
+  @override
+  String get hostsPrivateEventAdmissionTerms => 'Capacity and price';
+
+  @override
+  String get hostsPrivateEventAdmissionTermsHint =>
+      'Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.';
+
+  @override
+  String get hostsPrivateEventSaveTerms => 'Save capacity and price';
+
+  @override
+  String hostsPrivateEventRefundCutoff({required int hours}) {
+    return 'Full refund until $hours hours before; no refund after';
+  }
 }

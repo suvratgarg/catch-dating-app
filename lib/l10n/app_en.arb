@@ -30030,5 +30030,13 @@
   "hostsPrivateEventDetailLocationReady": "Meeting place is ready for directions and the public listing.",
   "@hostsPrivateEventDetailPickLocation": {"description": "Private event meeting location setup copy."},
   "@hostsPrivateEventDetailLocationNeeded": {"description": "Private event meeting location setup copy."},
-  "@hostsPrivateEventDetailLocationReady": {"description": "Private event meeting location setup copy."}
+  "@hostsPrivateEventDetailLocationReady": {"description": "Private event meeting location setup copy."},
+  "hostsPrivateEventAdmissionTerms": "Capacity and price",
+  "@hostsPrivateEventAdmissionTerms": {"description": "Private event admission terms section"},
+  "hostsPrivateEventAdmissionTermsHint": "Set the total capacity and ticket price. Enter 0 for a free event. Registration stays closed until you enable it separately.",
+  "@hostsPrivateEventAdmissionTermsHint": {"description": "Explains explicit event terms without enabling registration"},
+  "hostsPrivateEventSaveTerms": "Save capacity and price",
+  "@hostsPrivateEventSaveTerms": {"description": "Saves the reviewed admission terms together"},
+  "hostsPrivateEventRefundCutoff": "Full refund until {hours} hours before; no refund after",
+  "@hostsPrivateEventRefundCutoff": {"description": "Cash refund choice without credits", "placeholders": {"hours": {"type": "int"}}}
 }

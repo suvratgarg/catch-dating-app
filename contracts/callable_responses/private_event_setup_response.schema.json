@@ -176,6 +176,41 @@
               "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
             }
           ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "admissionTerms": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "../callables/update_private_event_details_payload.schema.json#/properties/details/properties/admissionTerms"
+            }
+          ]
+        },
+        "distanceKm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }

@@ -180,5 +180,18 @@ export interface UpdatePrivateEventDetailsCallablePayload {
       | {
           mode: "clear";
         };
+    description?: string;
+    admissionTerms?: {
+      capacityLimit: number;
+      priceInPaise: number;
+      currency: string;
+      cancellationPolicyId:
+        | "notApplicable"
+        | "flexible"
+        | "standard"
+        | "strict";
+    };
+    distanceKm?: number;
+    pace?: "easy" | "moderate" | "fast" | "competitive";
   };
 }

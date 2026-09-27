@@ -17,8 +17,16 @@ class PrivateEventDetailsPatch {
     this.venue,
     this.meetingLocation,
     this.eventFormat,
+    this.description,
+    this.admissionTerms,
+    this.distanceKm,
+    this.pace,
   });
 
+  final String? description;
+  final PrivateEventAdmissionTerms? admissionTerms;
+  final double? distanceKm;
+  final String? pace;
   final EventSetupValue<int>? durationMinutes;
   final EventSetupValue<String>? venue;
   final EventMeetingLocation? meetingLocation;
@@ -28,7 +36,24 @@ class PrivateEventDetailsPatch {
     if (durationMinutes == null &&
         venue == null &&
         meetingLocation == null &&
-        eventFormat == null) {
+        eventFormat == null &&
+        description == null &&
+        admissionTerms == null &&
+        distanceKm == null &&
+        pace == null) {
+      return false;
+    }
+    if ((description != null && description!.length > 2000) ||
+        (admissionTerms != null && !admissionTerms!.isValid) ||
+        (distanceKm != null &&
+            (!distanceKm!.isFinite || distanceKm! < 0 || distanceKm! > 100)) ||
+        (pace != null &&
+            !const {
+              'easy',
+              'moderate',
+              'fast',
+              'competitive',
+            }.contains(pace))) {
       return false;
     }
     final duration = durationMinutes;
@@ -67,6 +92,10 @@ class PrivateEventDetailsPatch {
   }
 
   Map<String, Object?> toJson() => {
+    if (description != null) 'description': description,
+    if (admissionTerms != null) 'admissionTerms': admissionTerms!.toJson(),
+    if (distanceKm != null) 'distanceKm': distanceKm,
+    if (pace != null) 'pace': pace,
     if (durationMinutes != null)
       'durationMinutes': durationMinutes!.toJson((value) => value),
     if (venue != null) 'venue': venue!.toJson((value) => {'name': value}),
@@ -81,6 +110,10 @@ class PrivateEventDetailsPatch {
       'durationMinutes',
       'venue',
       'eventFormat',
+      'description',
+      'admissionTerms',
+      'distanceKm',
+      'pace',
     }).isNotEmpty) {
       throw const FormatException('Unknown private event detail');
     }
@@ -112,6 +145,12 @@ class PrivateEventDetailsPatch {
         (rawLocation.containsKey('latitude') ||
             rawLocation.containsKey('longitude'));
     final patch = PrivateEventDetailsPatch(
+      description: json['description'] as String?,
+      distanceKm: (json['distanceKm'] as num?)?.toDouble(),
+      pace: json['pace'] as String?,
+      admissionTerms: json['admissionTerms'] == null
+          ? null
+          : PrivateEventAdmissionTerms.fromResponse(json['admissionTerms']),
       meetingLocation: hasLocation
           ? parse<EventMeetingLocation>(rawVenue, (raw) {
               if (raw is! Map ||

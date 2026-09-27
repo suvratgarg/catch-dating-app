@@ -170,5 +170,18 @@ export interface PrivateEventSetupCallableResponse {
       longitude: number;
       notes?: string | null;
     };
+    description?: string | null;
+    admissionTerms?: null | {
+      capacityLimit: number;
+      priceInPaise: number;
+      currency: string;
+      cancellationPolicyId:
+        | "notApplicable"
+        | "flexible"
+        | "standard"
+        | "strict";
+    };
+    distanceKm?: number | null;
+    pace?: ("easy" | "moderate" | "fast" | "competitive") | null;
   };
 }

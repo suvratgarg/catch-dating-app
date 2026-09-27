@@ -106,6 +106,62 @@ void main() {
   );
 
   test(
+    'listing terms journal retains exact price and rejects invalid policies',
+    () {
+      const terms = PrivateEventAdmissionTerms(
+        capacityLimit: 12,
+        priceInPaise: 50025,
+        currency: 'INR',
+        cancellationPolicyId: 'strict',
+      );
+      const patch = PrivateEventDetailsPatch(
+        admissionTerms: terms,
+        description: 'Shared dinner',
+        distanceKm: 5.5,
+        pace: 'easy',
+      );
+      expect(patch.isValid, isTrue);
+      final restored = PrivateEventDetailsPatch.fromJson(patch.toJson());
+      expect(restored.toJson(), patch.toJson());
+      expect(restored.admissionTerms?.priceInPaise, 50025);
+      expect(
+        const PrivateEventDetailsPatch(
+          admissionTerms: PrivateEventAdmissionTerms(
+            capacityLimit: 12,
+            priceInPaise: 0,
+            currency: 'INR',
+            cancellationPolicyId: 'strict',
+          ),
+        ).isValid,
+        isFalse,
+      );
+      expect(
+        const PrivateEventDetailsPatch(distanceKm: double.nan).isValid,
+        isFalse,
+      );
+      expect(
+        () => PrivateEventAdmissionTerms.fromResponse({
+          ...terms.toJson(),
+          'unexpected': true,
+        }),
+        throwsFormatException,
+      );
+      final snapshot = PrivateEventDetailsSnapshot.fromResponse({
+        'endTimeMillis': null,
+        'venueName': null,
+        'sourceVenueId': null,
+        'eventFormat': null,
+        'description': 'Shared dinner',
+        'admissionTerms': terms.toJson(),
+        'distanceKm': 5.5,
+        'pace': 'easy',
+      });
+      expect(snapshot.admissionTerms?.toJson(), terms.toJson());
+      expect(snapshot.distanceKm, 5.5);
+    },
+  );
+
+  test(
     'lost response, revocation and reopen replay one exact journaled command',
     () async {
       final hash = List.filled(64, 'a').join();

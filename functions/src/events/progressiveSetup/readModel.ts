@@ -5,6 +5,10 @@ import {validateGetPrivateEventSetupCallablePayload} from
   "../../shared/generated/validators/getPrivateEventSetupInput";
 import {validatePrivateEventSetupCallableResponse} from
   "../../shared/generated/validators/privateEventSetupOutput";
+import {eventPolicyFromEvent} from "../eventPolicy";
+import type {EventDocument} from
+  "../../shared/generated/firestoreAdminTypes";
+import {isEventPolicyTerms} from "../configuredEvent";
 import {projectEventPreferences} from "./preferences";
 import {authorizeSetupManager} from "./service";
 import {canEditPrivateEventBasics} from "./commitments";
@@ -57,6 +61,15 @@ export async function getPrivateEventSetup(params: {
         endTimeMillis,
         venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
         meetingLocation: event.meetingLocation ?? null,
+        description: event.description ?? null,
+        distanceKm: event.distanceKm ?? null,
+        pace: event.pace ?? null,
+        admissionTerms: isEventPolicyTerms(event as EventDocument) ? {
+          capacityLimit: event.capacityLimit, priceInPaise: event.priceInPaise,
+          currency: event.currency ?? "INR",
+          cancellationPolicyId: eventPolicyFromEvent(event as EventDocument)
+            .cancellation.policyId,
+        } : null,
         sourceVenueId: event.sourceVenueId ?? null,
         eventFormat: event.eventFormat ?? null,
       },

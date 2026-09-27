@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/presentation/location_picker_screen.dart
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_listing_fields.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -435,6 +436,13 @@ class PrivateEventDetailsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+                          if (event != null)
+                            PrivateEventListingFields(
+                              key: ValueKey(
+                                '${event.eventId}:${event.city.cityId}',
+                              ),
+                              controller: controller,
+                            ),
                         ],
                       ),
                     ],

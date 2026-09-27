@@ -61,6 +61,9 @@ const defaultDeps: SetupCallableDependencies = {
     // Must stay closed until canonical schema + rules/public readers migrate.
     // No request field or environment toggle can bypass this release boundary.
     privacyMigrationReady: () => false,
+    // Ordinary event seat writers use the shared fence. The fresh initializer
+    // excludes demo-owned events, whose seed tooling has a legacy writer.
+    freshEventSeatWritersReady: () => true,
     timestampFromMillis: admin.firestore.Timestamp.fromMillis,
     serverTimestamp: admin.firestore.FieldValue.serverTimestamp,
     assertBasicsEditable: assertPrivateEventBasicsEditable,

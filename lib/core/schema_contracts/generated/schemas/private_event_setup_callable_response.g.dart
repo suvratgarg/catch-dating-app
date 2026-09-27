@@ -1325,6 +1325,79 @@ const schemaPrivateEventSetupCallableResponseSchema = <String, Object?>{
             },
           ],
         },
+        'description': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 2000,
+        },
+        'admissionTerms': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'null',
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'capacityLimit',
+                'priceInPaise',
+                'currency',
+                'cancellationPolicyId',
+              ],
+              'properties': <String, Object?>{
+                'capacityLimit': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000,
+                },
+                'priceInPaise': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 100000000,
+                },
+                'currency': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[A-Z]{3}\$',
+                },
+                'cancellationPolicyId': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'notApplicable',
+                    'flexible',
+                    'standard',
+                    'strict',
+                  ],
+                },
+              },
+            },
+          ],
+        },
+        'distanceKm': <String, Object?>{
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'pace': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'easy',
+                'moderate',
+                'fast',
+                'competitive',
+              ],
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
       },
     },
   },
