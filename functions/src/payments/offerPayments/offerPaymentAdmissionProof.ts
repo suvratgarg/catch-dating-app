@@ -6,7 +6,7 @@ import {validateOrganizerFormAdmissionReceiptDocument} from
 import {validateOrganizerFormAdmissionDocument} from
   "../../shared/generated/validators/organizerFormAdmissionDocument";
 import {canonicalJson} from "../../events/eventSetupPreferences/resolve";
-import {formAdmissionReceiptId} from
+import {formAdmissionOwnershipId, formAdmissionReceiptId} from
   "../../organizerFormAdmission/admissionService";
 import {admissionRequestHash} from
   "../../organizerFormAdmission/admissionPolicy";
@@ -58,4 +58,26 @@ export function assertPaidOfferAdmission(input: {
       "Paid admission proof is unavailable.");
   }
   return {receipt, ownership};
+}
+
+/** Current transaction reads preserve the source-specific historical proof. */
+export async function readPaidOfferAdmission(input: {
+  db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
+  payment: Payment; paymentId: string;
+}): Promise<{attendeeId: string}> {
+  const {db, tx, payment, paymentId} = input;
+  if (!payment.admissionReceiptId) {
+    throw new HttpsError("failed-precondition",
+      "Paid admission proof is unavailable.");
+  }
+  const [receipt, ownership] = await Promise.all([
+    tx.get(db.collection("organizerFormAdmissionReceipts")
+      .doc(payment.admissionReceiptId)),
+    tx.get(db.collection("organizerFormAdmissions")
+      .doc(formAdmissionOwnershipId(payment.organizerId,
+        payment.eventId, payment.responseId))),
+  ]);
+  const proof = assertPaidOfferAdmission({payment, paymentId,
+    receipt: receipt.data(), ownership: ownership.data()});
+  return {attendeeId: proof.receipt.attendeeId};
 }
