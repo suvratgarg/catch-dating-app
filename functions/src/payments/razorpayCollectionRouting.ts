@@ -1,0 +1,128 @@
+import * as admin from "firebase-admin";
+import Razorpay from "razorpay";
+import {HttpsError} from "firebase-functions/v2/https";
+import type {OrganizerPaymentConnectionDocument as Connection} from
+  "../shared/generated/firestoreAdminTypes";
+import {requireDoc} from "../shared/validation";
+import {PaymentRoutingRegistry, readPaymentRoute,
+  type PaymentPurpose, type PaymentRoutingSnapshot} from "./paymentRouting";
+import {RazorpayPlatformPaymentConfigLoader,
+  razorpayPlatformPaymentConfigVersion,
+  type RazorpayPlatformPaymentConfig} from "./razorpayPlatformPaymentConfig";
+import {formPaymentRuntime} from "./formPayments/formPaymentRuntime";
+import {requireReadyFormPaymentConnection} from
+  "./formPayments/formPaymentConnectionPolicy";
+import {readReadyRouteAccount} from
+  "./formPayments/razorpayRouteFormAuthority";
+
+let platformConfig: RazorpayPlatformPaymentConfigLoader | undefined;
+
+function platformLoader(): RazorpayPlatformPaymentConfigLoader {
+  const projectId = admin.app().options.projectId ??
+    process.env.GCLOUD_PROJECT ?? process.env.GOOGLE_CLOUD_PROJECT ?? "";
+  platformConfig ??= new RazorpayPlatformPaymentConfigLoader(projectId);
+  return platformConfig;
+}
+
+export interface RazorpayCollectionRoutingDeps {
+  oauth: typeof formPaymentRuntime;
+  platformVersion: () => string;
+  platform: (version: string) => Promise<RazorpayPlatformPaymentConfig>;
+  verifyDestination: (profile: RazorpayPlatformPaymentConfig,
+    accountId: string, productId: string) => Promise<void>;
+}
+export const razorpayCollectionRoutingDefaults:
+  RazorpayCollectionRoutingDeps = {
+    oauth: formPaymentRuntime,
+    platformVersion: () => razorpayPlatformPaymentConfigVersion.value().trim(),
+    platform: (version) => platformLoader().load(version),
+    verifyDestination: async (profile, accountId, productId) => {
+      try {
+        const client = new Razorpay({key_id: profile.keyId,
+          key_secret: profile.keySecret});
+        const [account, product] = await Promise.all([
+          client.accounts.fetch(accountId),
+          client.products.fetch(accountId, productId),
+        ]);
+        const accountData = account as unknown as {id: string; status: string};
+        const productData = product as unknown as {
+        id: string; activation_status: string};
+        if (accountData.id !== accountId ||
+          !["created", "activated"].includes(accountData.status) ||
+          productData.id !== productId ||
+          productData.activation_status !== "activated") unavailable();
+      } catch {
+      // Provider replies can include onboarding details. Keep errors bounded.
+        unavailable();
+      }
+    },
+  };
+
+/** Only new attempts choose policy. */
+export async function prepareRazorpayCollectionRouting(input: {
+  db: FirebaseFirestore.Firestore; organizerId: string;
+  purpose: PaymentPurpose; connectionId: string | null; amountMinor: number;
+}, deps: RazorpayCollectionRoutingDeps = razorpayCollectionRoutingDefaults):
+  Promise<PaymentRoutingSnapshot> {
+  const {db, organizerId, purpose, connectionId, amountMinor} = input;
+  if (!["formFee", "eventAdmission"].includes(purpose)) unavailable();
+  const connectionSnap = connectionId ? await db
+    .collection("organizerPaymentConnections").doc(connectionId).get() : null;
+  const connection = connectionSnap?.exists ? requireDoc<Connection>(
+    connectionSnap, "OrganizerPaymentConnectionDocument") : null;
+  const selected = await readPaymentRoute({db, organizerId, purpose,
+    legacySelection: purpose === "formFee" && connection ? {
+      route: "razorpayOAuth", mode: connection.mode,
+      currency: "INR", merchantCountry: "IN"} :
+      undefined});
+  const registry = new PaymentRoutingRegistry<PaymentRoutingSnapshot>({
+    razorpayOAuth: {
+      prepare: async ({selection}) => {
+        const ready = requireReadyFormPaymentConnection(connection,
+          organizerId, Date.now());
+        if (!connectionId || ready.mode !== selection.mode) unavailable();
+        const runtime = await deps.oauth();
+        if (runtime.mode !== selection.mode) unavailable();
+        await runtime.credentials.access({organizerId, connectionId,
+          accountId: ready.accountId!, mode: ready.mode});
+        return {bindingId: connectionId, merchantAccountId: ready.accountId!,
+          destinationAccountId: null, checkoutKey: ready.publicToken!,
+          configurationVersion: runtime.configurationVersion,
+          transferAmountMinor: null, settlementHold: null};
+      },
+      resume: async (snapshot) => snapshot,
+    },
+    razorpayRoute: {
+      prepare: async ({selection}) => {
+        const configurationVersion = deps.platformVersion();
+        const profile = await deps.platform(configurationVersion);
+        if (profile.mode !== selection.mode) unavailable();
+        const {bindingId, account} = await readReadyRouteAccount({db,
+          organizerId});
+        await deps.verifyDestination(profile, account.providerAccountId,
+          account.razorpayProductId!);
+        const feeMinor = Math.floor(amountMinor *
+          profile.feeBasisPoints[purpose] / 10000);
+        const transferAmountMinor = amountMinor - feeMinor;
+        if (transferAmountMinor < 100) unavailable();
+        return {bindingId, merchantAccountId: profile.platformAccountId,
+          destinationAccountId: account.providerAccountId,
+          checkoutKey: profile.keyId, configurationVersion,
+          transferAmountMinor, settlementHold: purpose === "eventAdmission"};
+      },
+      resume: async (snapshot) => snapshot,
+    },
+  });
+  const prepared = await registry.prepare({organizerId, purpose,
+    currency: "INR", amountMinor, selected});
+  return prepared.snapshot;
+}
+
+function unavailable(): never {
+  throw new HttpsError("failed-precondition",
+    "The selected payment collection route is not ready.");
+}
+
+export function loadRazorpayPlatformProfile(configurationVersion: string) {
+  return platformLoader().load(configurationVersion);
+}

@@ -12,6 +12,8 @@ import {validateGetOrganizerFormPaymentCallableResponse} from
   "../../shared/generated/validators/getOrganizerFormPaymentOutput";
 import type {RazorpayPlatformPaymentConfig} from
   "../razorpayPlatformPaymentConfig";
+import {prepareRazorpayCollectionRouting} from "../razorpayCollectionRouting";
+import {organizerPaymentPolicyId} from "../paymentRouting";
 
 const now = Timestamp.fromMillis(1000);
 const profile: RazorpayPlatformPaymentConfig = {
@@ -163,4 +165,56 @@ test("Host Route readiness stays independent of partner OAuth setup",
     assert.deepEqual(await formPaymentCollectionSetup({db: h.db,
       organizerId: "org"}, h.deps),
     {route: "razorpayRoute", mode: "test", ready: false});
+  });
+
+test("event collection uses its own fee and holds settlement",
+  async () => {
+    const h = fixture();
+    const path = "paymentRoutingPolicies/app";
+    h.store.records.set(path, {...h.store.records.get(path),
+      eventAdmission: {route: "razorpayRoute", mode: "test", currency: "INR",
+        merchantCountry: "IN"}});
+    const event = await prepareRazorpayCollectionRouting({db: h.db,
+      organizerId: "org", purpose: "eventAdmission", connectionId: null,
+      amountMinor: 10000}, h.deps);
+    assert.equal(event.purpose, "eventAdmission");
+    assert.equal(event.transferAmountMinor, 9500);
+    assert.equal(event.settlementHold, true);
+    const form = await h.prepare();
+    assert.equal(form.snapshot.transferAmountMinor, 9750);
+    assert.equal(form.snapshot.settlementHold, false);
+  });
+
+test("event collection never falls back to form fees or an unavailable rail",
+  async () => {
+    for (const selection of [null, {route: "disabled"},
+      {route: "stripeConnectDestination", mode: "test", currency: "INR",
+        merchantCountry: "IN"}]) {
+      const h = fixture();
+      const path = "paymentRoutingPolicies/app";
+      h.store.records.set(path, {...h.store.records.get(path),
+        eventAdmission: selection});
+      await assert.rejects(prepareRazorpayCollectionRouting({db: h.db,
+        organizerId: "org", purpose: "eventAdmission", connectionId: null,
+        amountMinor: 10000}, h.deps));
+      assert.equal(h.verified(), 0);
+      assert.deepEqual(h.loaded, []);
+    }
+  });
+
+test("organizer event override is independent of the app form route",
+  async () => {
+    const h = fixture();
+    h.store.records.set(
+      `paymentRoutingPolicies/${organizerPaymentPolicyId("org")}`, {
+        scope: "organizer", organizerId: "org", revision: 2, updatedAt: now,
+        formFee: null, eventAdmission: {route: "razorpayRoute", mode: "test",
+          currency: "INR", merchantCountry: "IN"},
+      });
+    const event = await prepareRazorpayCollectionRouting({db: h.db,
+      organizerId: "org", purpose: "eventAdmission", connectionId: null,
+      amountMinor: 10000}, h.deps);
+    assert.equal(event.policySource, "organizer");
+    assert.equal(event.organizerRevision, 2);
+    assert.equal((await h.prepare()).snapshot.policySource, "app");
   });
