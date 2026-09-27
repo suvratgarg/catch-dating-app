@@ -151,15 +151,16 @@ test("unready or malformed payout records fail before provider work",
     }
   });
 
-test("Host Route readiness stays independent of partner OAuth setup", async () => {
-  const h = fixture();
-  assert.deepEqual(await formPaymentCollectionSetup({db: h.db,
-    organizerId: "org"}, h.deps),
-  {route: "razorpayRoute", mode: "test", ready: true});
-  h.deps.platform = async () => {
-    throw new Error("Missing profile");
-  };
-  assert.deepEqual(await formPaymentCollectionSetup({db: h.db,
-    organizerId: "org"}, h.deps),
-  {route: "razorpayRoute", mode: "test", ready: false});
-});
+test("Host Route readiness stays independent of partner OAuth setup",
+  async () => {
+    const h = fixture();
+    assert.deepEqual(await formPaymentCollectionSetup({db: h.db,
+      organizerId: "org"}, h.deps),
+    {route: "razorpayRoute", mode: "test", ready: true});
+    h.deps.platform = async () => {
+      throw new Error("Missing profile");
+    };
+    assert.deepEqual(await formPaymentCollectionSetup({db: h.db,
+      organizerId: "org"}, h.deps),
+    {route: "razorpayRoute", mode: "test", ready: false});
+  });

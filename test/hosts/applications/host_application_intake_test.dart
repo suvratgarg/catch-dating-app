@@ -131,7 +131,7 @@ void main() {
   });
 
   testWidgets(
-    'contact links and review actions precede long answers on mobile',
+    'contact shortcuts remain reachable and answers precede review on mobile',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -161,11 +161,17 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
-      for (final label in ['Call', 'Instagram', 'Waitlist', 'Decline']) {
+      for (final label in ['Call', 'Instagram']) {
         expect(find.text(label).hitTestable(), findsOneWidget);
         expect(
           tester.getTopLeft(find.text(label)).dy,
           lessThan(tester.getTopLeft(find.text('ANSWERS')).dy),
+        );
+      }
+      for (final label in ['Waitlist', 'Decline']) {
+        expect(
+          tester.getTopLeft(find.text(label)).dy,
+          greaterThan(tester.getTopLeft(find.text('ANSWERS')).dy),
         );
       }
       await tester.tap(find.text('Call'));

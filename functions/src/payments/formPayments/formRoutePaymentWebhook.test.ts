@@ -110,7 +110,8 @@ test("interrupted Route reconciliation remains retryable", async () => {
 test("public webhook profile selector cannot choose a secret or alias", () => {
   assert.equal(formRouteWebhookConfigurationVersion("1", version),
     version);
-  for (const value of ["latest", "0", "2", "../2", "1/other", "99999999999999999"]) {
+  for (const value of ["latest", "0", "2", "../2", "1/other",
+    "99999999999999999"]) {
     assert.throws(() => formRouteWebhookConfigurationVersion(value, version));
   }
   assert.throws(() => formRouteWebhookConfigurationVersion("1", ""));

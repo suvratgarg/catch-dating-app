@@ -143,7 +143,7 @@ void main() {
         storage: () async => storage, currentAccountId: () => account));
     addTearDown(controller.dispose);
     final load = controller.review();
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
     account = 'other';
     pending.complete(HostFormAdmissionPreview.fromData(ready(), scope));
     await load;

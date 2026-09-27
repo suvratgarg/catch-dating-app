@@ -1510,9 +1510,9 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_panel.dart:1",
-      "sourcePath": "lib/hosts/presentation/forms/host_form_responses_panel.dart",
-      "line": 265,
+      "siteId": "material-page:lib/hosts/presentation/forms/host_form_responses_event_actions.dart:1",
+      "sourcePath": "lib/hosts/presentation/forms/host_form_responses_event_actions.dart",
+      "line": 130,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>HostEventOfferPreferencesScreen(key:ValueKey('offer-settings-${widget.organizerId}-$eventId-$accountId'),organizerId:widget.organizerId,eventId:eventId,onBack:()=>Navigator.of(routeContext).pop())",
       "presentationTarget": "HostEventOfferPreferencesScreen",

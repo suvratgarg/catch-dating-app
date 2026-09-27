@@ -560,7 +560,8 @@ export async function publishOrganizerFormHandler(
           mode: connection.mode, currency: "INR", merchantCountry: "IN"} :
           undefined});
       if (selection.currency !== "INR" || selection.merchantCountry !== "IN") {
-        throw new HttpsError("failed-precondition", "Unsupported fee currency.");
+        throw new HttpsError("failed-precondition",
+          "Unsupported fee currency.");
       }
       if (selection.route === "razorpayRoute") {
         await readReadyRouteAccount({db, tx, organizerId: data.organizerId});
@@ -571,7 +572,8 @@ export async function publishOrganizerFormHandler(
           throw new HttpsError("failed-precondition", "Payment mode mismatch.");
         }
       } else {
-        throw new HttpsError("failed-precondition", "Payment route unavailable.");
+        throw new HttpsError("failed-precondition",
+          "Payment route unavailable.");
       }
     }
     if (current.form.activeVersionId) {
