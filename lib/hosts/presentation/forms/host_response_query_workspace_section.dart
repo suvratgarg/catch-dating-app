@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
@@ -75,6 +75,7 @@ class HostResponseQueryCapability {
   });
 
   final String versionId;
+
   /// Optional test/custom gateway; the Forms panel creates one state-owned
   /// repository when this capability is explicitly enabled by its route.
   final HostResponseQueryGateway? gateway;
@@ -197,12 +198,29 @@ class _HostResponseQueryWorkspaceSectionState
                 ? options[index].direction == _ascendingSortDirection
                       ? widget.copy.oldest
                       : widget.copy.newest
-                : '${view.catalog.firstWhere((field) => field.questionId == options[index].questionId).label} · ${options[index].direction == _ascendingSortDirection ? widget.copy.oldest : widget.copy.newest}',
+                : _sortLabel(options[index], view),
           ),
       ],
     );
-    if (!mounted || chosen == null || chosen < 0) return;
+    if (!mounted || chosen == null || chosen < 0 || chosen >= options.length) {
+      return;
+    }
     _apply(_with(sort: options[chosen]));
+  }
+
+  String _sortLabel(HostResponseSort sort, HostResponseQueryView view) {
+    if (sort.questionId == null) {
+      return sort.direction == _ascendingSortDirection
+          ? widget.copy.oldest
+          : widget.copy.newest;
+    }
+    final field = view.catalog
+        .where((field) => field.questionId == sort.questionId)
+        .firstOrNull;
+    final direction = sort.direction == _ascendingSortDirection
+        ? context.l10n.hostResponseQueryAscending
+        : context.l10n.hostResponseQueryDescending;
+    return field == null ? direction : '${field.label} · $direction';
   }
 
   @override
@@ -211,128 +229,215 @@ class _HostResponseQueryWorkspaceSectionState
     builder: (context, _) {
       final view = widget.controller.view;
       final copy = widget.copy;
+      final loading = view.status == HostResponseQueryStatus.loading;
+      final ready = view.status == HostResponseQueryStatus.ready;
+      final canSelect =
+          widget.onReviewSelection != null ||
+          widget.onCreateEventForSelection != null ||
+          widget.offerWorkspace != null;
+      final filterCount = _request.predicate?.conditionCount ?? 0;
+      final errorMessage = switch (view.status) {
+        HostResponseQueryStatus.stale => copy.stale,
+        HostResponseQueryStatus.budgetExceeded => copy.budgetExceeded,
+        HostResponseQueryStatus.permissionLost => copy.permissionLost,
+        HostResponseQueryStatus.failure => copy.failed,
+        _ => null,
+      };
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchSection.content(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Wrap(
-                  spacing: CatchSpacing.s3,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    CatchButton(
-                      label: copy.filter,
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: view.catalog.isEmpty
-                          ? null
-                          : () => setState(() => _showFilter = !_showFilter),
-                    ),
-                    CatchButton(
-                      label: copy.sort,
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: view.catalog.isEmpty
-                          ? null
-                          : () => _chooseSort(view),
-                    ),
-                    CatchButton(
-                      label: copy.refresh,
-                      variant: CatchButtonVariant.secondary,
-                      onPressed: view.status == HostResponseQueryStatus.loading
-                          ? null
-                          : () => widget.controller.apply(_request),
-                    ),
-                  ],
+          CatchSection.controls(
+            sortLabel: context.l10n.hostCustomersSortControl(
+              label: _sortLabel(_request.sort, view),
+            ),
+            onSort: loading ? null : () => _chooseSort(view),
+            filtersLabel: copy.filter,
+            onFilters: loading || view.catalog.isEmpty
+                ? null
+                : () => setState(() => _showFilter = !_showFilter),
+            activeFilters: filterCount == 0
+                ? null
+                : context.l10n.hostResponseQueryFilterCount(count: filterCount),
+            clearLabel: filterCount == 0 ? null : copy.editor.reset,
+            onClear: filterCount == 0
+                ? null
+                : () => _apply(_with(clearPredicate: true)),
+          ),
+          if (_showFilter && view.catalog.isNotEmpty)
+            CatchSection.content(
+              child: HostResponseQueryEditorSection(
+                fields: view.catalog,
+                copy: copy.editor,
+                initial: _request.predicate,
+                onApply: (predicate) => _apply(
+                  _with(
+                    predicate: predicate,
+                    clearPredicate: predicate == null,
+                  ),
                 ),
-                if (_showFilter && view.catalog.isNotEmpty) ...[
-                  gapH16,
-                  HostResponseQueryEditorSection(
-                    fields: view.catalog,
-                    copy: copy.editor,
-                    initial: _request.predicate,
-                    onApply: (predicate) => _apply(
-                      _with(
-                        predicate: predicate,
-                        clearPredicate: predicate == null,
+              ),
+            ),
+          if (ready || view.status == HostResponseQueryStatus.empty)
+            CatchSection.content(
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchSpacing.s4,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      context.l10n.hostResponseQueryResultCount(
+                        count: view.total,
                       ),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                   ),
+                  CatchButton.command(
+                    label: copy.refresh,
+                    onPressed: () => widget.controller.apply(_request),
+                  ),
                 ],
-                gapH16,
-                if (view.status == HostResponseQueryStatus.loading)
-                  Text(copy.loading, style: CatchTextStyles.supporting(context))
-                else if (view.status == HostResponseQueryStatus.empty)
-                  Text(copy.empty, style: CatchTextStyles.supporting(context))
-                else if (view.status == HostResponseQueryStatus.stale)
-                  Text(copy.stale, style: CatchTextStyles.supporting(context))
-                else if (view.status == HostResponseQueryStatus.budgetExceeded)
-                  Text(
-                    copy.budgetExceeded,
-                    style: CatchTextStyles.supporting(context),
-                  )
-                else if (view.status == HostResponseQueryStatus.permissionLost)
-                  Text(
-                    copy.permissionLost,
-                    style: CatchTextStyles.supporting(context),
-                  )
-                else if (view.status == HostResponseQueryStatus.failure)
-                  Text(copy.failed, style: CatchTextStyles.supporting(context)),
-                if (view.status == HostResponseQueryStatus.ready) ...[
-                  if (view.selectedIds.isNotEmpty) ...[
-                    Text(
+              ),
+            ),
+          if (loading)
+            Semantics(
+              label: copy.loading,
+              liveRegion: true,
+              child: CatchSection.loadingRows(
+                layouts: const [
+                  CatchPersonLayout.placeholder(
+                    hasSupportingText: true,
+                    hasContext: true,
+                  ),
+                  CatchPersonLayout.placeholder(
+                    hasSupportingText: true,
+                    hasContext: true,
+                  ),
+                  CatchPersonLayout.placeholder(
+                    hasSupportingText: true,
+                    hasContext: true,
+                  ),
+                ],
+              ),
+            ),
+          if (errorMessage != null)
+            CatchSection.content(
+              child: CatchBanner.errorWithRetry(
+                message: errorMessage,
+                retryLabel: copy.refresh,
+                onRetry: () => widget.controller.apply(_request),
+              ),
+            ),
+          if (view.status == HostResponseQueryStatus.empty)
+            CatchSection.content(
+              child: Text(
+                copy.empty,
+                style: CatchTextStyles.supporting(context),
+              ),
+            ),
+          if (ready && view.selectedIds.isNotEmpty)
+            CatchSection.content(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
                       copy.selected(view.selectedIds.length),
                       style: CatchTextStyles.supporting(context),
                     ),
-                    Wrap(
-                      spacing: CatchSpacing.s3,
-                      children: [
+                  ),
+                  gapH8,
+                  Wrap(
+                    spacing: CatchSpacing.s3,
+                    runSpacing: CatchSpacing.s2,
+                    children: [
+                      if (widget.onReviewSelection != null)
                         CatchButton(
-                          label: copy.clearSelection,
-                          variant: CatchButtonVariant.secondary,
-                          onPressed: widget.controller.clearSelection,
+                          label: copy.reviewSelection,
+                          onPressed: () {
+                            final intent = widget.controller.selectionIntent;
+                            if (intent != null) {
+                              widget.onReviewSelection!(
+                                intent.ids,
+                                intent.resultHash,
+                              );
+                            }
+                          },
                         ),
-                        if (widget.onReviewSelection != null)
-                          CatchButton(
-                            label: copy.reviewSelection,
-                            onPressed: () {
-                              final intent = widget.controller.selectionIntent;
-                              if (intent != null) {
-                                widget.onReviewSelection!(
-                                  intent.ids,
-                                  intent.resultHash,
-                                );
-                              }
-                            },
-                          ),
-                        if (widget.onCreateEventForSelection != null &&
-                            view.canActOnSelection)
-                          CatchButton(
-                            label: context.l10n.hostsHostEventsListLabelNewEvent,
-                            onPressed: widget.onCreateEventForSelection,
+                      if (widget.onCreateEventForSelection != null &&
+                          view.canActOnSelection)
+                        CatchButton(
+                          label: context.l10n.hostsHostEventsListLabelNewEvent,
+                          onPressed: widget.onCreateEventForSelection,
+                        ),
+                      CatchButton.command(
+                        label: copy.clearSelection,
+                        onPressed: widget.controller.clearSelection,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          if (ready)
+            CatchSection.rows(
+              children: [
+                for (final row in view.rows)
+                  CatchField.navigate(
+                    key: ValueKey('query-response-${row.responseId}'),
+                    states: view.selectedIds.contains(row.responseId)
+                        ? const {WidgetState.selected}
+                        : const {},
+                    content: CatchPersonLayout(
+                      name:
+                          row.identity.primaryLabel ??
+                          context.l10n.hostFormResponsesAnonymous,
+                      supportingText: row.formTitle,
+                      context: AppTimeFormatters.compactRelativeTime(
+                        row.submittedAt,
+                      ),
+                      badges: [
+                        if (row.status == HostFormResponseStatus.withdrawn)
+                          CatchRowBadge(
+                            label: copy.withdrawn,
+                            tone: CatchBadgeTone.neutral,
                           ),
                       ],
                     ),
-                    gapH12,
-                  ],
-                  if (view.canLoadMore) ...[
-                    gapH16,
-                    CatchButton(
-                      label: copy.loadMore,
-                      status: view.loadingMore
-                          ? CatchButtonStatus.loading
-                          : CatchButtonStatus.idle,
-                      onPressed: view.loadingMore
-                          ? null
-                          : widget.controller.loadMore,
-                    ),
-                  ],
-                ],
+                    onActivate: () => widget.onOpenResponse(row.responseId),
+                    secondaryAction:
+                        !canSelect ||
+                            !view.availableIds.contains(row.responseId)
+                        ? null
+                        : CatchFieldSecondaryAction.command(
+                            label:
+                                '${view.selectedIds.contains(row.responseId) ? copy.deselect : copy.select}: ${row.identity.primaryLabel ?? context.l10n.hostFormResponsesAnonymous}',
+                            icon: view.selectedIds.contains(row.responseId)
+                                ? CatchIcons.checkCircleFilled
+                                : CatchIcons.circle,
+                            onActivate: () => widget.controller.toggleSelection(
+                              row.responseId,
+                            ),
+                          ),
+                  ),
               ],
             ),
-          ),
-          if (widget.exportGateway != null &&
-              widget.exportAccountId != null)
+          if (ready && view.nextCursor != null)
+            CatchSection.content(
+              child: CatchButton(
+                label: copy.loadMore,
+                variant: CatchButtonVariant.secondary,
+                fullWidth: true,
+                status: view.loadingMore
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                onPressed: view.loadingMore ? null : widget.controller.loadMore,
+              ),
+            ),
+          if (widget.exportGateway != null && widget.exportAccountId != null)
             HostResponseExportAction(
               accountId: widget.exportAccountId!,
               organizerId: _request.organizerId,
@@ -340,41 +445,7 @@ class _HostResponseQueryWorkspaceSectionState
               queryController: widget.controller,
               gateway: widget.exportGateway!,
             ),
-          if (view.status == HostResponseQueryStatus.ready)
-            CatchSection.fieldRows(
-              children: [
-                for (final row in view.rows)
-                  CatchField.content(
-                    key: ValueKey('query-response-${row.responseId}'),
-                    copy: catchFieldCopy(context.l10n),
-                    title:
-                        row.identity.primaryLabel ??
-                        context.l10n.hostFormResponsesAnonymous,
-                    body: row.status == HostFormResponseStatus.withdrawn
-                        ? copy.withdrawn
-                        : row.formTitle,
-                    onTap: () => widget.onOpenResponse(row.responseId),
-                    actions: widget.onReviewSelection == null &&
-                            widget.onCreateEventForSelection == null &&
-                            widget.offerWorkspace == null
-                        ? null
-                        : CatchButton.command(
-                            label: view.selectedIds.contains(row.responseId)
-                                ? copy.deselect
-                                : copy.select,
-                            onPressed:
-                                view.availableIds.contains(row.responseId)
-                                ? () => widget.controller.toggleSelection(
-                                    row.responseId,
-                                  )
-                                : null,
-                          ),
-                  ),
-              ],
-            ),
-          if (view.status == HostResponseQueryStatus.ready &&
-              widget.offerWorkspace != null)
-            widget.offerWorkspace!,
+          if (ready && widget.offerWorkspace != null) widget.offerWorkspace!,
         ],
       );
     },

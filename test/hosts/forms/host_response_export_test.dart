@@ -281,9 +281,9 @@ void main() {
         ),
       )),
     ));
-    await pumpUntilFound(tester, find.text('Select'));
-    await tester.ensureVisible(find.text('Select'));
-    await tester.tap(find.text('Select'));
+    await pumpUntilFound(tester, find.byTooltip('Select: Maya'));
+    await tester.ensureVisible(find.byTooltip('Select: Maya'));
+    await tester.tap(find.byTooltip('Select: Maya'));
     await pumpFeatureUi(tester);
     expect(query.selectionIntent?.ids, ['response-1']);
     await tester.ensureVisible(find.text('Create event'));

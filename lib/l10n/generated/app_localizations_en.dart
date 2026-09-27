@@ -22717,4 +22717,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormTargetLoadFailed =>
       'Could not load your events. Try again.';
+
+  @override
+  String get hostResponseQueryRefresh => 'Refresh responses';
+
+  @override
+  String get hostResponseQueryAscending => 'Ascending';
+
+  @override
+  String get hostResponseQueryDescending => 'Descending';
+
+  @override
+  String hostResponseQueryResultCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostResponseQueryFilterCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conditions',
+      one: '1 condition',
+    );
+    return '$_temp0';
+  }
 }

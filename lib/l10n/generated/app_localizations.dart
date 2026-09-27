@@ -36558,6 +36558,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load your events. Try again.'**
   String get hostFormTargetLoadFailed;
+
+  /// Refresh the current response query.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh responses'**
+  String get hostResponseQueryRefresh;
+
+  /// Ascending order for a form answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get hostResponseQueryAscending;
+
+  /// Descending order for a form answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get hostResponseQueryDescending;
+
+  /// Total responses in the exact filtered result.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 response} other{{count} responses}}'**
+  String hostResponseQueryResultCount({required int count});
+
+  /// Number of active advanced response filter conditions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 condition} other{{count} conditions}}'**
+  String hostResponseQueryFilterCount({required int count});
 }
 
 class _AppLocalizationsDelegate

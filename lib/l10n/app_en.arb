@@ -29700,5 +29700,15 @@
   "hostFormTargetPublishedNotice": "Changes to a published form take effect when you publish the draft updates.",
   "@hostFormTargetPublishedNotice": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
   "hostFormTargetLoadFailed": "Could not load your events. Try again.",
-  "@hostFormTargetLoadFailed": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120}
+  "@hostFormTargetLoadFailed": {"description": "Host form event binding settings.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "x-max-chars": 120},
+  "hostResponseQueryRefresh": "Refresh responses",
+  "@hostResponseQueryRefresh": {"description": "Refresh the current response query.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseQueryAscending": "Ascending",
+  "@hostResponseQueryAscending": {"description": "Ascending order for a form answer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseQueryDescending": "Descending",
+  "@hostResponseQueryDescending": {"description": "Descending order for a form answer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseQueryResultCount": "{count, plural, =1{1 response} other{{count} responses}}",
+  "@hostResponseQueryResultCount": {"description": "Total responses in the exact filtered result.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"count": {"type": "int"}}},
+  "hostResponseQueryFilterCount": "{count, plural, =1{1 condition} other{{count} conditions}}",
+  "@hostResponseQueryFilterCount": {"description": "Number of active advanced response filter conditions.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"count": {"type": "int"}}}
 }

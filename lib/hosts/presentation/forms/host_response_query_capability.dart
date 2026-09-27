@@ -27,7 +27,7 @@ HostResponseQueryCapability hostResponseQueryCapability(
     sort: l10n.hostCustomersSort,
     newest: l10n.hostApplicationsSortNewest,
     oldest: l10n.hostApplicationsSortOldest,
-    refresh: l10n.hostEventOfferRefresh,
+    refresh: l10n.hostResponseQueryRefresh,
     loadMore: l10n.hostFormResponsesLoadMore,
     loading: l10n.hostResponseQueryLoading,
     empty: l10n.hostResponseQueryEmpty,
@@ -63,20 +63,27 @@ HostResponseQueryCapability hostResponseQueryCapability(
         HostResponseOperator.missing: l10n.hostResponseQueryOperatorMissing,
         HostResponseOperator.choiceAny: l10n.hostResponseQueryOperatorChoiceAny,
         HostResponseOperator.choiceAll: l10n.hostResponseQueryOperatorChoiceAll,
-        HostResponseOperator.choiceNone: l10n.hostResponseQueryOperatorChoiceNone,
-        HostResponseOperator.textEquals: l10n.hostResponseQueryOperatorTextEquals,
-        HostResponseOperator.textContains: l10n.hostResponseQueryOperatorTextContains,
-        HostResponseOperator.textStartsWith: l10n.hostResponseQueryOperatorTextStartsWith,
+        HostResponseOperator.choiceNone:
+            l10n.hostResponseQueryOperatorChoiceNone,
+        HostResponseOperator.textEquals:
+            l10n.hostResponseQueryOperatorTextEquals,
+        HostResponseOperator.textContains:
+            l10n.hostResponseQueryOperatorTextContains,
+        HostResponseOperator.textStartsWith:
+            l10n.hostResponseQueryOperatorTextStartsWith,
         HostResponseOperator.numberEq: l10n.hostResponseQueryOperatorNumberEq,
         HostResponseOperator.numberGt: l10n.hostResponseQueryOperatorNumberGt,
         HostResponseOperator.numberGte: l10n.hostResponseQueryOperatorNumberGte,
         HostResponseOperator.numberLt: l10n.hostResponseQueryOperatorNumberLt,
         HostResponseOperator.numberLte: l10n.hostResponseQueryOperatorNumberLte,
-        HostResponseOperator.numberBetween: l10n.hostResponseQueryOperatorNumberBetween,
+        HostResponseOperator.numberBetween:
+            l10n.hostResponseQueryOperatorNumberBetween,
         HostResponseOperator.dateOn: l10n.hostResponseQueryOperatorDateOn,
-        HostResponseOperator.dateBefore: l10n.hostResponseQueryOperatorDateBefore,
+        HostResponseOperator.dateBefore:
+            l10n.hostResponseQueryOperatorDateBefore,
         HostResponseOperator.dateAfter: l10n.hostResponseQueryOperatorDateAfter,
-        HostResponseOperator.dateBetween: l10n.hostResponseQueryOperatorDateBetween,
+        HostResponseOperator.dateBetween:
+            l10n.hostResponseQueryOperatorDateBetween,
         HostResponseOperator.booleanIs: l10n.hostResponseQueryOperatorBooleanIs,
       },
     ),
@@ -134,4 +141,3 @@ HostResponseQueryCapability hostResponseQueryCapability(
     ),
   ),
 );
-
