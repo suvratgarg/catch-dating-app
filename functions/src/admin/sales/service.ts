@@ -607,7 +607,8 @@ async function upsertTask(
       "Outbound task is blocked by suppression or identity review.",
     );
   }
-  const contactId = input.task.contactId ?? current?.contactId ?? null;
+  const contactId = input.task.contactId === undefined ?
+    current?.contactId ?? null : input.task.contactId;
   if (input.task.status === "open" && outboundTaskKinds.has(input.task.kind)) {
     if (!contactId) {
       throw new HttpsError(
@@ -628,9 +629,9 @@ async function upsertTask(
     classification: "sales_private",
     taskId,
     organizerId: input.organizerId,
-    contactId,
     revision: (current?.revision ?? 0) + 1,
     ...input.task,
+    contactId,
     createdAt: current?.createdAt ?? now,
     updatedAt: now,
     updatedBy: principal.uid,

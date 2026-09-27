@@ -20,6 +20,9 @@ const privatePaths = [
   "assistantClients/client-one", "assistantDelegations/delegation-one",
   "assistantGatewayBudgets/budget-one",
   "assistantManagementReceipts/receipt-one",
+  "salesDemoBlueprints/blueprint-one", "salesDemoCapabilities/capability-one",
+  "salesDemoInvitations/invitation-one", "salesDemoSessions/session-one",
+  "salesDemoReceipts/receipt-one",
 ];
 let env;
 

@@ -1,4 +1,8 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const Ajv = require("ajv");
+const addFormats = require("ajv-formats");
 const {after, before, test} = require("node:test");
 const admin = require("firebase-admin");
 const {executeSalesAction: write, executeSalesRead: read} =
@@ -157,4 +161,42 @@ test("expired contact evidence hides outbound work but preserves service replies
   await assert.rejects(write(actor, "contacts.setContactability", {...review,
     expectedRevision: 2, requestId: "expiry-review-0002"}, expired),
   {code: "failed-precondition"});
+});
+
+
+test("actual persisted service writes satisfy their private schemas", async () => {
+  const ajv = new Ajv({allErrors: true, strict: false});
+  addFormats(ajv);
+  const collections = {
+    organizerSalesAccounts: "organizer_sales_accounts",
+    salesContacts: "sales_contacts",
+    salesContactRelationships: "sales_contact_relationships",
+    salesEvidence: "sales_evidence", salesTasks: "sales_tasks",
+    salesActionReceipts: "sales_action_receipts",
+    salesImportJobs: "sales_import_jobs", salesImportRows: "sales_import_rows",
+    salesSuppressionDecisions: "sales_suppression_decisions",
+  };
+  let checked = 0;
+  for (const [collection, schemaName] of Object.entries(collections)) {
+    const validate = ajv.compile(JSON.parse(fs.readFileSync(path.resolve(
+      __dirname, `../../contracts/firestore/${schemaName}.schema.json`), "utf8")));
+    const snapshot = await db.collection(collection).get();
+    for (const doc of snapshot.docs) {
+      assert.equal(validate(doc.data()), true,
+        `${doc.ref.path}: ${ajv.errorsText(validate.errors)}`);
+      checked++;
+      if (collection === "salesImportJobs") {
+        const rows = await doc.ref.collection("rows").get();
+        const rowSchema = JSON.parse(fs.readFileSync(path.resolve(__dirname,
+          "../../contracts/firestore/sales_import_job_rows.schema.json"), "utf8"));
+        const validateRow = ajv.getSchema(rowSchema.$id) ?? ajv.compile(rowSchema);
+        for (const row of rows.docs) {
+          assert.equal(validateRow(row.data()), true,
+            `${row.ref.path}: ${ajv.errorsText(validateRow.errors)}`);
+          checked++;
+        }
+      }
+    }
+  }
+  assert.ok(checked > 20, "Validate actual writes from the service journeys.");
 });

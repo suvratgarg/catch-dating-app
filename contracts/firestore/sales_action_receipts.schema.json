@@ -119,7 +119,7 @@
     },
     "result": {
       "type": "object",
-      "maxProperties": 6,
+      "maxProperties": 7,
       "additionalProperties": {
         "anyOf": [
           {

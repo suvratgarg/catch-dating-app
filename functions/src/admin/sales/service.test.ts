@@ -774,6 +774,33 @@ test("contact draft review needs linked evidence", async () => {
     deps,
   );
   assert.equal((task.task as Doc).contactId, contactId);
+  // Explicit removal must be checked as the final persisted value, rather
+  // than validating the prior contact and then overwriting it with null.
+  await assert.rejects(executeSalesAction(employee, "tasks.upsert", {
+    organizerId: "org-1",
+    taskId: (task.task as Doc).taskId,
+    requestId: "req-task-remove-contact",
+    expectedRevision: 1,
+    task: {
+      kind: "follow_up", title: "Keep reviewed contact", dueAt: null,
+      ownerUid: "admin-1", status: "open", contactId: null,
+    },
+  }, deps), (error: unknown) =>
+    error instanceof HttpsError && error.code === "failed-precondition");
+  const storedTask = db.docs.get(`salesTasks/${(task.task as Doc).taskId}`);
+  assert.equal(storedTask?.contactId, contactId);
+  const retained = await executeSalesAction(employee, "tasks.upsert", {
+    organizerId: "org-1",
+    taskId: (task.task as Doc).taskId,
+    requestId: "req-task-retain-contact",
+    expectedRevision: 1,
+    task: {
+      kind: "follow_up", title: "Keep reviewed contact", dueAt: null,
+      ownerUid: "admin-1", status: "open",
+    },
+  }, deps);
+  assert.equal((retained.task as Doc).contactId, contactId);
+
   await executeSalesAction(
     employee,
     "contacts.setContactability",
@@ -795,7 +822,7 @@ test("contact draft review needs linked evidence", async () => {
         organizerId: "org-1",
         taskId: (task.task as Doc).taskId,
         requestId: "req-task-0003",
-        expectedRevision: 1,
+        expectedRevision: 2,
         task: {
           kind: "follow_up",
           title: "Blocked after opt-out",
