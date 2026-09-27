@@ -2,7 +2,8 @@ export type CommercialAction =
   | "commercial.pilots.upsert"
   | "commercial.quotes.revise"
   | "commercial.quotes.approve"
-  | "commercial.quotes.accept";
+  | "commercial.quotes.accept"
+  | "commercial.finance.attest";
 export type CommercialRead = "commercial.report" | "commercial.detail";
 
 export interface EvidenceReference {
@@ -59,10 +60,49 @@ export interface QuoteDecisionInput {
   evidence: EvidenceSelection;
 }
 
+export interface HostSettlementAttestationInput {
+  organizerId: string;
+  opportunityId: string;
+  requestId: string;
+  expectedQuoteRevision: number;
+  termVersion: number;
+  amountMinor: number;
+  currency: string;
+  purpose: "host_subscription";
+  receivedAt: string;
+  settlementMethod: "bank_transfer" | "cash" | "other_external";
+  servicePeriod: {startsAt: string; endsAt: string} | null;
+  evidence: EvidenceSelection;
+}
+
 export type CommercialPayload =
   | PilotPlanInput
   | QuoteReviseInput
-  | QuoteDecisionInput;
+  | QuoteDecisionInput
+  | HostSettlementAttestationInput;
+
+export interface HostSettlementAttestation {
+  schemaVersion: 1;
+  classification: "sales_private";
+  revision: 1;
+  attestationId: string;
+  organizerId: string;
+  opportunityId: string;
+  quoteId: string;
+  termVersion: number;
+  termsHash: string;
+  amountMinor: number;
+  currency: string;
+  purpose: "host_subscription";
+  receivedAt: string;
+  settlementMethod: HostSettlementAttestationInput["settlementMethod"];
+  servicePeriod: HostSettlementAttestationInput["servicePeriod"];
+  evidence: EvidenceReference;
+  status: "manual_attested_collected";
+  providerConfirmed: false;
+  actorUid: string;
+  attestedAt: string;
+}
 
 export interface PilotPlan {
   schemaVersion: 1;

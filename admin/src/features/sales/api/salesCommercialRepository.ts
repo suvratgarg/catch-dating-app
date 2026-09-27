@@ -2,12 +2,18 @@ import {httpsCallable} from "firebase/functions";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import {dataMode} from "../../../shared/api/dataMode";
 import type {CommercialDecisionInput, CommercialDetail, CommercialPilotInput,
-  CommercialQuoteInput, CommercialReport} from "./salesCommercialTypes";
+  CommercialQuoteInput, CommercialReport, CommercialSettlementInput,
+  CommercialCloseInput, CommercialSettlementAttestation} from
+  "./salesCommercialTypes";
 
-function call<Request, Response>(name: string, payload: Request): Promise<Response> {
-  return httpsCallable<Request, Response>(functions, name)(payload).then(
-    (result) => result.data
-  );
+async function call<Request, Response>(name: string,
+  payload: Request): Promise<Response> {
+  const {validateAdminCallableRequest, validateAdminCallableResponse} = await import(
+    "../../../generated/validators/adminCallableValidators");
+  validateAdminCallableRequest(name, payload);
+  const result = await httpsCallable<Request, Response>(functions, name)(payload);
+  validateAdminCallableResponse(name, result.data);
+  return result.data;
 }
 function liveOnly(): void {
   if (dataMode() === "sample") {
@@ -43,4 +49,14 @@ export async function acceptCommercialQuote(input: CommercialDecisionInput):
 Promise<{quote: CommercialDetail["quote"]}> {
   liveOnly();
   return call("adminAcceptSalesQuote", input);
+}
+export async function attestHostSettlement(input: CommercialSettlementInput):
+Promise<{attestation: CommercialSettlementAttestation}> {
+  liveOnly();
+  return call("adminAttestSalesHostSettlement", input);
+}
+export async function closeWonWithFinance(input: CommercialCloseInput):
+Promise<{opportunity: CommercialDetail["opportunity"]}> {
+  liveOnly();
+  return call("adminUpsertSalesOpportunity", input);
 }

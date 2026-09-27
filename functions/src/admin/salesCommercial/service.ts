@@ -2,6 +2,9 @@ import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {SalesOpportunity, SalesPrincipal} from "../sales/types";
+import {attestHostSettlementInTransaction,
+  hostSettlementAttestationId} from "./finance";
+import {commercialQuoteId} from "./ids";
 import {validateCommercialAction, validateCommercialRead} from "./schemas";
 import type {
   CommercialAction,
@@ -10,6 +13,8 @@ import type {
   CommercialRead,
   EvidenceReference,
   EvidenceSelection,
+  HostSettlementAttestation,
+  HostSettlementAttestationInput,
   OpportunityStageHistory,
   PilotPlan,
   PilotPlanInput,
@@ -42,9 +47,7 @@ function canonical(value: unknown): string {
   return JSON.stringify(value);
 }
 
-export function commercialQuoteId(opportunityId: string): string {
-  return `quote-${sha(opportunityId).slice(0, 24)}`;
-}
+export {commercialQuoteId} from "./ids";
 
 function assertPrincipal(
   principal: SalesPrincipal,
@@ -506,6 +509,10 @@ export async function executeCommercialActionInTransaction(
   if (action === "commercial.quotes.revise") {
     return reviseQuote(tx, db, principal, input as QuoteReviseInput, now);
   }
+  if (action === "commercial.finance.attest") {
+    return attestHostSettlementInTransaction(tx, db, principal,
+      input as HostSettlementAttestationInput, now);
+  }
   return decideQuote(
     tx,
     db,
@@ -525,13 +532,18 @@ export function appendOpportunityStageHistory(
   next: SalesOpportunity,
   requestId: string,
   reason: string | null,
+  financeCloseProof: HostSettlementAttestation | null = null,
 ): OpportunityStageHistory | null {
   if (current?.stage === next.stage) return null;
   if (next.stage === "closed_won") {
-    throw new HttpsError(
-      "failed-precondition",
-      "Commercial close requires finance-owned review.",
-    );
+    if (!financeCloseProof ||
+      financeCloseProof.organizerId !== next.organizerId ||
+      financeCloseProof.opportunityId !== next.opportunityId ||
+      financeCloseProof.status !== "manual_attested_collected" ||
+      financeCloseProof.providerConfirmed !== false) {
+      throw new HttpsError("failed-precondition",
+        "Commercial close requires finance-owned review.");
+    }
   }
   if (
     (next.stage === "closed_lost" || current?.stage === "closed_lost") &&
@@ -552,7 +564,9 @@ export function appendOpportunityStageHistory(
     opportunityId: next.opportunityId,
     fromStage: current?.stage ?? null,
     toStage: next.stage,
-    reason: reason?.trim() || null,
+    reason: next.stage === "closed_won" ?
+      `manual_host_settlement:${financeCloseProof!.attestationId}` :
+      reason?.trim() || null,
     actorUid: principal.uid,
     changedAt: next.stageEnteredAt,
   };
@@ -648,7 +662,8 @@ export async function executeCommercialRead(
         "Commercial record host mismatch.",
       );
     }
-    const [quoteVersionSnap, approvedSnap, acceptedSnap] = await Promise.all([
+    const [quoteVersionSnap, approvedSnap, acceptedSnap,
+      settlementSnap] = await Promise.all([
       quote ?
         db
           .collection(versionCollection)
@@ -660,6 +675,10 @@ export async function executeCommercialRead(
         Promise.resolve(null),
       quote?.acceptedDecisionId ?
         db.collection(decisionCollection).doc(quote.acceptedDecisionId).get() :
+        Promise.resolve(null),
+      quote ? db.collection("salesHostSettlementAttestations")
+        .doc(hostSettlementAttestationId(quote.quoteId,
+          quote.termVersion)).get() :
         Promise.resolve(null),
     ]);
     const scope = (record: FirebaseFirestore.DocumentSnapshot | null) => {
@@ -684,9 +703,10 @@ export async function executeCommercialRead(
       quoteVersion: scope(quoteVersionSnap),
       approvedDecision: scope(approvedSnap),
       acceptedDecision: scope(acceptedSnap),
+      settlementAttestation: scope(settlementSnap),
       history,
       historyTruncated: historySnap.docs.length > 25,
-      paymentStatus: "unknown",
+      paymentStatus: settlementSnap?.exists ? "manual_attested" : "unknown",
       bookedHostRevenueMinor: null,
     };
   }
@@ -713,13 +733,23 @@ export async function executeCommercialRead(
         (pilotSnap.data() as PilotPlan) :
         null;
       const quote = quoteSnap.exists ? (quoteSnap.data() as QuoteHead) : null;
+      const settlementSnap = quote ? await db
+        .collection("salesHostSettlementAttestations")
+        .doc(hostSettlementAttestationId(quote.quoteId, quote.termVersion))
+        .get() : null;
+      const settlement = settlementSnap?.exists ?
+        settlementSnap.data() as HostSettlementAttestation : null;
       if (
         (pilotPlan &&
           (pilotPlan.organizerId !== input.organizerId ||
             pilotPlan.opportunityId !== opportunity.opportunityId)) ||
         (quote &&
           (quote.organizerId !== input.organizerId ||
-            quote.opportunityId !== opportunity.opportunityId))
+            quote.opportunityId !== opportunity.opportunityId)) ||
+        (settlement && (settlement.organizerId !== input.organizerId ||
+          settlement.opportunityId !== opportunity.opportunityId ||
+          settlement.quoteId !== quote?.quoteId ||
+          settlement.termVersion !== quote.termVersion))
       ) {
         throw new HttpsError(
           "failed-precondition",
@@ -735,7 +765,11 @@ export async function executeCommercialRead(
         quoteStatus: quote?.status ?? null,
         quoteRevision: quote?.revision ?? null,
         termVersion: quote?.termVersion ?? null,
-        paymentStatus: "unknown",
+        paymentStatus: settlement ? "manual_attested" : "unknown",
+        manuallyAttestedHostRevenue: settlement ? {
+          amountMinor: settlement.amountMinor, currency: settlement.currency,
+          providerConfirmed: false, purpose: "host_subscription",
+        } : null,
         bookedHostRevenueMinor: null,
       };
     }),

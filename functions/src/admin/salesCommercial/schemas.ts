@@ -105,6 +105,25 @@ export const COMMERCIAL_ACTION_SCHEMAS: Record<CommercialAction, Schema> = {
   ),
   "commercial.quotes.approve": quoteDecisionSchema(),
   "commercial.quotes.accept": quoteDecisionSchema(),
+  "commercial.finance.attest": object(
+    ["organizerId", "opportunityId", "requestId", "expectedQuoteRevision",
+      "termVersion", "amountMinor", "currency", "purpose", "receivedAt",
+      "settlementMethod", "servicePeriod", "evidence"],
+    {
+      organizerId: id, opportunityId: id,
+      requestId: {...id, minLength: 8},
+      expectedQuoteRevision: revision,
+      termVersion: {type: "integer", minimum: 1, maximum: 1_000_000_000},
+      amountMinor: {type: "integer", minimum: 1, maximum: 1_000_000_000_000},
+      currency: {type: "string", pattern: "^[A-Z]{3}$"},
+      purpose: {const: "host_subscription"}, receivedAt: dateTime,
+      settlementMethod: {enum: ["bank_transfer", "cash", "other_external"]},
+      servicePeriod: {anyOf: [object(["startsAt", "endsAt"], {
+        startsAt: dateTime, endsAt: dateTime,
+      }), {type: "null"}]},
+      evidence,
+    },
+  ),
 };
 
 function quoteDecisionSchema(): Schema {

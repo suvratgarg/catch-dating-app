@@ -9,10 +9,12 @@ import {dataMode} from "../../../shared/api/dataMode";
 import {salesErrorMessage, toLocalDateTimeInput} from
   "../controllers/useSalesWorkspaceController";
 import {getCommercialDetail, listCommercialReport, upsertCommercialPilot,
-  reviseCommercialQuote, approveCommercialQuote, acceptCommercialQuote} from
+  reviseCommercialQuote, approveCommercialQuote, acceptCommercialQuote,
+  attestHostSettlement, closeWonWithFinance} from
   "../api/salesCommercialRepository";
 import type {CommercialDetail, CommercialPilotInput, CommercialQuoteInput,
-  CommercialDecisionInput, CommercialStatus, CommercialTerms} from
+  CommercialDecisionInput, CommercialStatus, CommercialTerms,
+  CommercialSettlementInput, CommercialCloseInput} from
   "../api/salesCommercialTypes";
 import type {SalesAccountDetail, SalesEvidence} from "../api/salesTypes";
 
@@ -34,12 +36,14 @@ function evidenceOptions(rows: SalesEvidence[]) {
 type Save = (action: string, material: unknown,
   invoke: (requestId: string) => Promise<unknown>, notice: string) => Promise<boolean>;
 export function renderSalesCommercialWorkspace(detail: SalesAccountDetail,
-  evidence: SalesEvidence[]) {
-  return <SalesCommercialWorkspace detail={detail} evidence={evidence} />;
+  evidence: SalesEvidence[], isAdminOwner: boolean) {
+  return <SalesCommercialWorkspace detail={detail} evidence={evidence}
+    isAdminOwner={isAdminOwner} />;
 }
 
-function SalesCommercialWorkspace({detail, evidence}: {
+function SalesCommercialWorkspace({detail, evidence, isAdminOwner}: {
   detail: SalesAccountDetail; evidence: SalesEvidence[];
+  isAdminOwner: boolean;
 }) {
   const organizerId = detail.account.organizerId;
   const [opportunityId, setOpportunityId] = useState(
@@ -77,6 +81,8 @@ function SalesCommercialWorkspace({detail, evidence}: {
       await Promise.all([
         queryClient.invalidateQueries({queryKey: ["sales", "commercial", organizerId]}),
         queryClient.invalidateQueries({queryKey: ["sales", "commercial-report", organizerId]}),
+        queryClient.invalidateQueries({queryKey: ["sales", "account", organizerId]}),
+        queryClient.invalidateQueries({queryKey: ["sales", "opportunities"]}),
       ]);
       return true;
     } catch (error) {
@@ -93,8 +99,8 @@ function SalesCommercialWorkspace({detail, evidence}: {
   </Panel>;
   return <>
     <Panel title="Pilots and commercial terms" icon={<ClipboardList size={18} />}>
-      <p>Record a reviewed pilot and quote for this host. Accepted terms are a private
-        employee review; payment and closed-won status remain unknown.</p>
+      <p>Record a reviewed pilot and quote for this host. Accepted terms,
+        manual host collection and opportunity close are separate reviews.</p>
       <SelectField label="Opportunity" value={opportunityId}
         onChange={setOpportunityId} options={selectableOpportunities.map((item) => ({
           value: item.opportunityId,
@@ -113,6 +119,9 @@ function SalesCommercialWorkspace({detail, evidence}: {
       <QuoteEditor key={`quote:${opportunityId}`} organizerId={organizerId}
         opportunityId={opportunityId} record={record.data} evidence={evidence}
         saving={saving} save={save} />
+      <FinanceCloseEditor key={`finance:${opportunityId}`} organizerId={organizerId}
+        opportunityId={opportunityId} record={record.data} evidence={evidence}
+        isAdminOwner={isAdminOwner} saving={saving} save={save} />
       <StageHistory record={record.data} />
     </> : null}
     <Panel title="Host commercial report" icon={<ClipboardList size={18} />}>
@@ -124,7 +133,11 @@ function SalesCommercialWorkspace({detail, evidence}: {
         </EmptyState> : report.data?.rows.length ? report.data.rows.map((row) =>
           <StateRow key={row.opportunityId} label={row.stage.replaceAll("_", " ")}
             value={`Pilot: ${row.pilotStatus ?? "none"} · Quote: ${row.quoteStatus ??
-              "none"} · Payment: unknown`} />) : <EmptyState>No commercial records.</EmptyState>}
+              "none"} · Host collection: ${row.manuallyAttestedHostRevenue ?
+              `${row.manuallyAttestedHostRevenue.currency} ` +
+              `${(row.manuallyAttestedHostRevenue.amountMinor / 100).toFixed(2)} ` +
+              "manually attested" : "unknown"}`} />) :
+          <EmptyState>No commercial records.</EmptyState>}
       <AdminButton disabled={!previous.length} onClick={() => {
         const stack = [...previous]; setCursor(stack.pop()); setPrevious(stack);
       }}>Previous page</AdminButton>{" "}
@@ -327,7 +340,128 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
           "Record terms acceptance"}
       </AdminButton>
     </AdminForm> : null}
-    <StateRow label="Payment" value="Unknown — finance reconciliation is separate" />
+    <StateRow label="Host collection" value={record.settlementAttestation ?
+      "Manually attested; provider unconfirmed" :
+      "Unknown — finance review is separate"} />
+  </Panel>;
+}
+
+function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
+  isAdminOwner, saving, save}: {
+  organizerId: string; opportunityId: string; record: CommercialDetail;
+  evidence: SalesEvidence[]; isAdminOwner: boolean;
+  saving: boolean; save: Save;
+}) {
+  const quote = record.quote;
+  const terms = record.quoteVersion?.terms;
+  const attestation = record.settlementAttestation;
+  const [receivedAt, setReceivedAt] = useState("");
+  const [method, setMethod] = useState<CommercialSettlementInput["settlementMethod"]>(
+    "bank_transfer");
+  const [periodStart, setPeriodStart] = useState("");
+  const [periodEnd, setPeriodEnd] = useState("");
+  const [proofId, setProofId] = useState("");
+  const [reviewedKey, setReviewedKey] = useState("");
+  const [localError, setLocalError] = useState("");
+  const eligibleEvidence = evidence.filter((row) =>
+    row.sourceType === "first_party" || row.sourceType === "import_artifact");
+  const recurring = terms?.billingCadence === "monthly" ||
+    terms?.billingCadence === "annual";
+  const reviewKey = `${quote?.quoteId}:${quote?.revision}:` +
+    `${attestation?.attestationId}:${record.opportunity.revision}`;
+  const submitAttestation = async () => {
+    const received = iso(receivedAt);
+    const servicePeriod = recurring ? {
+      startsAt: iso(periodStart), endsAt: iso(periodEnd),
+    } : null;
+    if (!quote || !terms || !received || !proofId ||
+      recurring && (!servicePeriod?.startsAt || !servicePeriod.endsAt)) {
+      setLocalError("Choose a payment date and reviewed source evidence" +
+        (recurring ? ", plus the service period." : "."));
+      return;
+    }
+    const input: Omit<CommercialSettlementInput, "requestId"> = {
+      organizerId, opportunityId, expectedQuoteRevision: quote.revision,
+      termVersion: quote.termVersion, amountMinor: terms.amountMinor,
+      currency: terms.currency, purpose: "host_subscription",
+      receivedAt: received, settlementMethod: method,
+      servicePeriod: servicePeriod as CommercialSettlementInput["servicePeriod"],
+      evidence: {evidenceId: proofId},
+    };
+    setLocalError("");
+    if (await save("finance-attest", input, (requestId) =>
+      attestHostSettlement({...input, requestId}),
+    "Manual host collection attested. Provider confirmation remains unknown.")) {
+      setProofId(""); setReviewedKey("");
+    }
+  };
+  const close = async () => {
+    if (!attestation || reviewedKey !== reviewKey ||
+      record.opportunity.stage === "closed_won") return;
+    const input: Omit<CommercialCloseInput, "requestId"> = {organizerId,
+      opportunityId, expectedRevision: record.opportunity.revision,
+      financeAttestationId: attestation.attestationId, fields: {
+        motion: record.opportunity.motion, stage: "closed_won",
+        ownerUid: record.opportunity.ownerUid,
+        nextStep: null, nextStepAt: null,
+      }};
+    if (await save("finance-close", input, (requestId) =>
+      closeWonWithFinance({...input, requestId}),
+    "Opportunity closed won with manual finance proof; provider unconfirmed."))
+      setReviewedKey("");
+  };
+  return <Panel title="Host collection and close" icon={<ClipboardList size={18} />}>
+    <p>Only an Admin Owner can attest one host subscription period received elsewhere.
+      This does not charge a card, confirm a provider settlement or count guest
+      booking payments.</p>
+    {attestation ? <>
+      <StateRow label="Manual host collection" value={
+        `${attestation.currency} ${(attestation.amountMinor / 100).toFixed(2)} · ` +
+        `received ${new Date(attestation.receivedAt).toLocaleDateString()} · ` +
+        `${attestation.settlementMethod.replaceAll("_", " ")}`} />
+      <StateRow label="Reviewed source" value={attestation.evidence.sourceRef} />
+      <StateRow label="Provider confirmation" value="Not confirmed" />
+    </> : <StateRow label="Host collection" value="Not recorded" />}
+    {isAdminOwner && quote?.status === "accepted_reviewed" && terms &&
+      !attestation ? <AdminForm onSubmit={(event) => {
+        event.preventDefault(); void submitAttestation();
+      }}>
+        <h3>Attest manual host collection</h3>
+        <p>Exact accepted amount: {terms.currency} {(
+          terms.amountMinor / 100).toFixed(2)}. Record a real first-party
+          settlement source; a human note alone is not accepted as proof.</p>
+        <TextField label="Received on" type="datetime-local" value={receivedAt}
+          onChange={setReceivedAt} required />
+        <SelectField label="Settlement method" value={method}
+          onChange={(value) => setMethod(value as typeof method)} options={[
+            {value: "bank_transfer", label: "Bank transfer"},
+            {value: "cash", label: "Cash"},
+            {value: "other_external", label: "Other external method"},
+          ]} />
+        {recurring ? <>
+          <TextField label="Service period start" type="datetime-local"
+            value={periodStart} onChange={setPeriodStart} required />
+          <TextField label="Service period end" type="datetime-local"
+            value={periodEnd} onChange={setPeriodEnd} required />
+        </> : null}
+        <SelectField label="Reviewed settlement evidence" value={proofId}
+          onChange={setProofId} options={evidenceOptions(eligibleEvidence)} />
+        {localError ? <p role="alert">{localError}</p> : null}
+        <AdminButton type="submit" disabled={saving || !proofId}>
+          Record manual host collection</AdminButton>
+      </AdminForm> : null}
+    {isAdminOwner && attestation &&
+      record.opportunity.stage !== "closed_won" ? <>
+        <p>Closing won records the opportunity outcome against this exact accepted
+          quote and finance attestation. It does not confirm provider settlement
+          or activate a product entitlement.</p>
+        <AdminButton type="button" onClick={() => setReviewedKey(reviewKey)}>
+          Review current quote and finance proof</AdminButton>{" "}
+        <AdminButton type="button" disabled={saving || reviewedKey !== reviewKey}
+          onClick={() => void close()}>Mark closed won</AdminButton>
+      </> : null}
+    {record.opportunity.stage === "closed_won" ? <StateRow
+      label="Opportunity" value="Closed won with finance proof" /> : null}
   </Panel>;
 }
 

@@ -578,7 +578,7 @@ function HostDetail({controller, currentUserUid, isAdminOwner, onOpenOrganizer}:
     {tab === "opportunities" ? <HostOpportunities detail={detail}
       controller={controller} currentUserUid={currentUserUid} /> : null}
     {tab === "commercial" ? renderSalesCommercialWorkspace(detail,
-      controller.evidence.data?.rows ?? []) : null}
+      controller.evidence.data?.rows ?? [], isAdminOwner) : null}
     {tab === "people" ? <SalesRecordsWorkspace section="people" detail={detail}
       controller={controller} /> : null}
     {tab === "demo" ? <SalesDemoWorkspace
