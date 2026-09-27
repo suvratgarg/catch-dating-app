@@ -5,9 +5,10 @@ import path from "node:path";
 import {test} from "node:test";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import {evaluateScore, parsePolicy, type Assessment,
+import {evaluateScore, hash, parsePolicy, type Assessment,
   type IntelligencePolicy} from "./model";
-import {saveIntelligencePolicy, saveFactorAssessment,
+import {getIntelligenceCatalog, getIntelligenceScore, listOutreachDrafts,
+  saveIntelligencePolicy, saveFactorAssessment,
   type IntelligenceDeps} from "./service";
 import type {SalesPrincipal} from "../sales/types";
 
@@ -191,6 +192,66 @@ test("factor assessment rejects unreviewed source without writing a receipt", as
   /not reviewed Sales evidence/u);
   assert.equal([...memory.docs.keys()].filter((key) =>
     key.startsWith("salesIntelligenceReceipts/")).length, 0);
+});
+
+test("bounded catalog and draft list recheck employee authority after reads", async () => {
+  const memory = new MemoryDb();
+  memory.docs.set("organizerSalesAccounts/org-one", {classification: "sales_private",
+    organizerId: "org-one", revision: 1});
+  memory.docs.set("salesIntelligencePolicies/current", {...storedPolicy});
+  memory.docs.set("salesIntelligenceAssessments/assessment-one", {...assessments[0]});
+  memory.docs.set("salesIntelligenceClauses/clause-one", {
+    classification: "sales_private", organizerId: "org-one",
+    clauseId: "clause-one", kind: "observation", state: "approved"});
+  const principal: SalesPrincipal = {uid: "employee-1", roles: ["admin"]};
+  let calls = 0;
+  const deps: IntelligenceDeps = {db: memory as unknown as FirebaseFirestore.Firestore,
+    now: () => new Date(at), authorize: async () => {
+      calls++;
+    }};
+  const catalog = await getIntelligenceCatalog(deps, principal,
+    {organizerId: "org-one"});
+  assert.equal((catalog.clauses as unknown[]).length, 1);
+  assert(calls >= 2);
+  const list = await listOutreachDrafts(deps, principal,
+    {organizerId: "org-one"});
+  assert.deepEqual(list, {rows: []});
+  deps.authorize = async () => {
+    calls++;
+    if (calls % 3 === 0) throw new Error("employee revoked mid-read");
+  };
+  calls = 0;
+  await assert.rejects(getIntelligenceCatalog(deps, principal,
+    {organizerId: "org-one"}), /employee revoked mid-read/u);
+  calls = 0;
+  await assert.rejects(listOutreachDrafts(deps, principal,
+    {organizerId: "org-one"}), /employee revoked mid-read/u);
+});
+
+test("a replaced policy factor ignores historical assessment documents", async () => {
+  const memory = new MemoryDb();
+  const newerPolicy = {...storedPolicy, revision: 3,
+    factors: storedPolicy.factors.map((factor, index) => index === 0 ?
+      {...factor, id: "replacement"} : factor)};
+  memory.docs.set("salesIntelligencePolicies/current", newerPolicy);
+  memory.docs.set("organizerSalesAccounts/org-one", {classification: "sales_private",
+    organizerId: "org-one", revision: 1});
+  for (const row of [...assessments, {...assessments[0], factorId: "replacement"}]) {
+    const assessmentId = `assess-${hash(["org-one", row.factorId]).slice(0, 32)}`;
+    memory.docs.set(`salesIntelligenceAssessments/${assessmentId}`,
+      {...row, assessmentId});
+  }
+  const deps: IntelligenceDeps = {db: memory as unknown as FirebaseFirestore.Firestore,
+    now: () => new Date(at), authorize: async () => undefined};
+  const principal: SalesPrincipal = {uid: "employee-1", roles: ["admin"]};
+  const catalog = await getIntelligenceCatalog(deps, principal,
+    {organizerId: "org-one"});
+  assert.equal((catalog.assessments as Assessment[]).length, 7);
+  assert.equal((catalog.assessments as Assessment[]).some((row) =>
+    row.factorId === "one"), false);
+  const score = await getIntelligenceScore(deps, principal,
+    {organizerId: "org-one"});
+  assert.equal(score.snapshot.factors.length, 7);
 });
 
 test("persisted policy, assessment and score satisfy their strict source contracts", () => {

@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_catalog_response.schema.json",
+  "title": "AdminGetSalesIntelligenceCatalogResponse",
+  "type": "object", "additionalProperties": false,
+  "required": ["policy", "assessments", "clauses", "evaluatedAt"],
+  "properties": {
+    "policy": {"anyOf": [{"$ref": "../firestore/sales_intelligence_policies.schema.json"}, {"type": "null"}]},
+    "assessments": {"type": "array", "maxItems": 7, "items": {"$ref": "../firestore/sales_intelligence_assessments.schema.json"}},
+    "clauses": {"type": "array", "maxItems": 50, "items": {"$ref": "../firestore/sales_intelligence_clauses.schema.json"}},
+    "evaluatedAt": {"type": "string", "format": "date-time"}
+  }
+}

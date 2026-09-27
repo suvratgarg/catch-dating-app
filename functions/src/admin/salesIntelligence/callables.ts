@@ -7,8 +7,9 @@ import {currentSalesEmployee} from "../sales/callables";
 import type {SalesPrincipal} from "../sales/types";
 import {getDraftJob} from "./job";
 import {generateSalesOutreachDraft} from "./runtime";
-import {buildOutreachInput, copyOutreachDraft, getIntelligenceScore,
-  getOutreachDraft, reviewIntelligenceClause, reviewOutreachDraft,
+import {buildOutreachInput, copyOutreachDraft, getIntelligenceCatalog,
+  getIntelligenceScore, getOutreachDraft, listOutreachDrafts,
+  reviewIntelligenceClause, reviewOutreachDraft,
   saveFactorAssessment,
   saveIntelligenceClause, saveIntelligencePolicy,
   saveScoreSnapshot, type IntelligenceDeps} from "./service";
@@ -56,6 +57,9 @@ export const adminCopySalesOutreachDraft = write("draft.copy", copyOutreachDraft
 export const adminGenerateSalesOutreachDraft =
   write("draft.generate", generateSalesOutreachDraft);
 export const adminGetSalesIntelligenceScore = read("score.get", getIntelligenceScore);
+export const adminGetSalesIntelligenceCatalog =
+  read("catalog.get", getIntelligenceCatalog);
 export const adminBuildSalesOutreachInput = read("draft.input", buildOutreachInput);
 export const adminGetSalesOutreachDraftJob = read("draft.job", getDraftJob);
 export const adminGetSalesOutreachDraft = read("draft.get", getOutreachDraft);
+export const adminListSalesOutreachDrafts = read("draft.list", listOutreachDrafts);

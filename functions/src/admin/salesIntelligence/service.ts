@@ -32,6 +32,9 @@ function receiptId(principal: SalesPrincipal, action: string,
   request: string): string {
   return `intel-${hash([principal.uid, action, request]).slice(0, 32)}`;
 }
+function assessmentIdFor(organizerId: string, factorId: string): string {
+  return `assess-${hash([organizerId, factorId]).slice(0, 32)}`;
+}
 async function mutate<T extends Record<string, unknown>>(
   deps: IntelligenceDeps, principal: SalesPrincipal, action: string,
   request: string, material: unknown, ownerOnly: boolean,
@@ -174,7 +177,7 @@ export async function saveFactorAssessment(deps: IntelligenceDeps,
           return fail("failed-precondition", "Assessment source is not reviewed Sales evidence.");
         }
       }
-      const assessmentId = `assess-${hash([organizerId, factorId]).slice(0, 32)}`;
+      const assessmentId = assessmentIdFor(organizerId, factorId);
       const ref = deps.db.collection("salesIntelligenceAssessments").doc(assessmentId);
       if (Number((await tx.get(ref)).data()?.revision ?? 0) !== expectedRevision) {
         return fail("aborted", "Assessment changed since review.");
@@ -196,25 +199,117 @@ export async function getIntelligenceScore(deps: IntelligenceDeps,
   const organizerId = id(input.organizerId);
   await deps.authorize(principal, false);
   const db = deps.db;
-  const [accountSnap, policySnap, assessmentSnap, evidenceSnap] = await Promise.all([
+  const [accountSnap, policySnap, evidenceSnap] = await Promise.all([
     db.collection("organizerSalesAccounts").doc(organizerId).get(),
     db.doc(POLICY_REF).get(),
-    db.collection("salesIntelligenceAssessments").where("organizerId", "==", organizerId).limit(8).get(),
     db.collection("salesEvidence").where("organizerId", "==", organizerId).limit(MAX_EVIDENCE + 1).get(),
   ]);
   await deps.authorize(principal, false);
   if (!accountSnap.exists || !accountOk(accountSnap.data(), organizerId)) {
     return fail("not-found", "Private Sales account not found.");
   }
-  if (assessmentSnap.size > 7 || evidenceSnap.size > MAX_EVIDENCE) {
+  if (evidenceSnap.size > MAX_EVIDENCE) {
     return fail("resource-exhausted", "Evidence must be curated before scoring.");
   }
   const policy = requireCurrentPolicy(policySnap.data());
+  const assessments = await Promise.all(policy.factors.map((factor) =>
+    db.collection("salesIntelligenceAssessments")
+      .doc(assessmentIdFor(organizerId, factor.id)).get()));
+  await deps.authorize(principal, false);
   const snapshot = evaluateScore(policy, organizerId,
     accountSnap.data()!.revision as number,
-    assessmentSnap.docs.map((doc) => doc.data() as Assessment),
+    assessments.filter((doc) => doc.exists).map((doc) => doc.data() as Assessment),
     evidenceSnap.docs.map((doc) => doc.data()), deps.now().toISOString());
   return {snapshot};
+}
+
+/** Bounded, private current catalog for selecting reviewed evidence and prose. */
+export async function getIntelligenceCatalog(deps: IntelligenceDeps,
+  principal: SalesPrincipal, payload: unknown): Promise<Record<string, unknown>> {
+  employee(principal);
+  const input = object(payload, ["organizerId"]);
+  const organizerId = id(input.organizerId);
+  await deps.authorize(principal, false);
+  const db = deps.db;
+  const [account, policySnap, clauseSnap] = await Promise.all([
+    db.collection("organizerSalesAccounts").doc(organizerId).get(),
+    db.doc(POLICY_REF).get(),
+    db.collection("salesIntelligenceClauses")
+      .where("organizerId", "==", organizerId).limit(51).get(),
+  ]);
+  await deps.authorize(principal, false);
+  if (!accountOk(account.data(), organizerId)) {
+    return fail("not-found", "Private Sales account not found.");
+  }
+  if (clauseSnap.size > 50) {
+    return fail("resource-exhausted", "Private catalog needs curation before review.");
+  }
+  const policy = policySnap.exists ? requireCurrentPolicy(policySnap.data()) : null;
+  const assessmentSnaps = policy ? await Promise.all(policy.factors.map((factor) =>
+    db.collection("salesIntelligenceAssessments")
+      .doc(assessmentIdFor(organizerId, factor.id)).get())) : [];
+  await deps.authorize(principal, false);
+  const assessments = assessmentSnaps.filter((doc) => doc.exists)
+    .map((doc) => doc.data() as Assessment);
+  const clauses = clauseSnap.docs.map((doc) => doc.data() as Clause);
+  if (assessments.some((row) => row.classification !== "sales_private" ||
+      row.organizerId !== organizerId ||
+      (policy && !policy.factors.some((factor) => factor.id === row.factorId))) ||
+      clauses.some((row) => row.classification !== "sales_private" ||
+        row.organizerId !== organizerId)) {
+    return fail("failed-precondition", "Private catalog contains invalid records.");
+  }
+  await deps.authorize(principal, false);
+  return {policy, assessments: assessments.map((row) => ({
+    schemaVersion: 1, classification: "sales_private", assessmentId: row.assessmentId,
+    organizerId: row.organizerId, factorId: row.factorId, revision: row.revision,
+    state: row.state, value: row.value, evidenceIds: row.evidenceIds,
+    reason: row.reason, reviewedAt: row.reviewedAt, reviewerUid: row.reviewerUid,
+  })).sort((a, b) => a.factorId.localeCompare(b.factorId)),
+  clauses: clauses.map((row) => ({schemaVersion: 1,
+    classification: "sales_private", clauseId: row.clauseId,
+    organizerId: row.organizerId, revision: row.revision, kind: row.kind,
+    text: row.text, state: row.state, evidenceIds: row.evidenceIds,
+    validUntil: row.validUntil, permission: row.permission,
+    reviewedAt: row.reviewedAt, reviewedBy: row.reviewedBy,
+    updatedAt: row.updatedAt, updatedBy: row.updatedBy,
+  })).sort((a, b) => a.clauseId.localeCompare(b.clauseId)),
+  evaluatedAt: deps.now().toISOString()};
+}
+
+/** An intentionally capped organizer list; full drafts require current-source get. */
+export async function listOutreachDrafts(deps: IntelligenceDeps,
+  principal: SalesPrincipal, payload: unknown): Promise<Record<string, unknown>> {
+  employee(principal);
+  const input = object(payload, ["organizerId"]);
+  const organizerId = id(input.organizerId);
+  await deps.authorize(principal, false);
+  const [account, draftsSnap] = await Promise.all([
+    deps.db.collection("organizerSalesAccounts").doc(organizerId).get(),
+    deps.db.collection("salesOutreachDrafts")
+      .where("organizerId", "==", organizerId).limit(51).get(),
+  ]);
+  await deps.authorize(principal, false);
+  if (!accountOk(account.data(), organizerId)) {
+    return fail("not-found", "Private Sales account not found.");
+  }
+  if (draftsSnap.size > 50) {
+    return fail("resource-exhausted", "Draft list needs curation before review.");
+  }
+  const rows = draftsSnap.docs.map((doc) => doc.data());
+  if (rows.some((row) => row.classification !== "sales_private" ||
+      row.organizerId !== organizerId || typeof row.draftId !== "string" ||
+      typeof row.draft?.contentHash !== "string" ||
+      typeof row.createdAt !== "string")) {
+    return fail("failed-precondition", "Private draft list contains invalid records.");
+  }
+  await deps.authorize(principal, false);
+  return {rows: rows.map((row) => ({draftId: row.draftId,
+    contactId: row.contactId, opportunityId: row.opportunityId,
+    subject: row.draft.subject, status: row.status,
+    contentHash: row.draft.contentHash, createdAt: row.createdAt,
+    reviewedAt: row.reviewedAt})).sort((a, b) =>
+    b.createdAt.localeCompare(a.createdAt) || a.draftId.localeCompare(b.draftId))};
 }
 
 export async function saveScoreSnapshot(deps: IntelligenceDeps,
@@ -235,17 +330,19 @@ export async function saveScoreSnapshot(deps: IntelligenceDeps,
           policy.revision !== expectedPolicyRevision) {
         return fail("aborted", "Reviewed score sources changed.");
       }
-      const [assessments, evidence] = await Promise.all([
-        tx.get(db.collection("salesIntelligenceAssessments")
-          .where("organizerId", "==", organizerId).limit(8)),
+      const [assessmentSnaps, evidence] = await Promise.all([
+        Promise.all(policy.factors.map((factor) =>
+          tx.get(db.collection("salesIntelligenceAssessments")
+            .doc(assessmentIdFor(organizerId, factor.id))))),
         tx.get(db.collection("salesEvidence")
           .where("organizerId", "==", organizerId).limit(MAX_EVIDENCE + 1)),
       ]);
-      if (assessments.size > 7 || evidence.size > MAX_EVIDENCE) {
+      if (evidence.size > MAX_EVIDENCE) {
         return fail("resource-exhausted", "Evidence must be curated before scoring.");
       }
       const snapshot = evaluateScore(policy, organizerId, account.revision,
-        assessments.docs.map((doc) => doc.data() as Assessment),
+        assessmentSnaps.filter((doc) => doc.exists)
+          .map((doc) => doc.data() as Assessment),
         evidence.docs.map((doc) => doc.data()), now);
       tx.create(db.collection("salesIntelligenceScoreSnapshots")
         .doc(snapshot.snapshotId), snapshot);
