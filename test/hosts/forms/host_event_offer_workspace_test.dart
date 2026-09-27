@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
@@ -287,6 +288,74 @@ void main() {
     await workspace.choose(workspace.event!);
     expect(workspace.selectionStale, isTrue);
     expect(targets.configurationCalls, 3);
+  });
+
+  test('approved applications retain their source and resolve admission response', () async {
+    final source = _Query();
+    final query = HostResponseQueryController(source);
+    final offers = HostEventOfferController(_Offers());
+    final targets = _Targets();
+    addTearDown(query.dispose);
+    addTearDown(offers.dispose);
+    await query.apply(
+      const HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v1',
+      ),
+    );
+    query.toggleSelection('response-one');
+    final workspace = HostEventOfferWorkspaceController(
+      organizerId: 'org',
+      accountId: 'manager',
+      queryController: query,
+      offerController: offers,
+      listOffers:
+          ({required organizerId, required eventId, afterOfferId}) async =>
+              const {'items': <Object>[], 'nextCursor': null},
+      getOffer:
+          ({
+            required organizerId,
+            required eventId,
+            required contactId,
+          }) async => _existingOffer(applicationId: 'application-one'),
+      prepareHandoff: ({required offer}) async => const HostOfferHandoff(
+        kind: 'blocked',
+        offerId: 'offer-one',
+        blockers: ['fixture'],
+      ),
+      copyMessage: (_) async {},
+      openHandoff: (_) async => false,
+      targets: targets,
+      getResponseDetail: (_) async => _detail('contact-one', applicationId: 'application-one'),
+      openResponseForConversion: (_) async {},
+      openEventSettings: (_) async => targets.revision = 2,
+      now: () => DateTime.fromMillisecondsSinceEpoch(1799990000000),
+      initialEventTarget: HostOfferEventTarget(
+        eventId: 'event-one',
+        name: 'Freshly saved',
+        startTime: _start,
+        timezone: 'Asia/Kolkata',
+        publicationState: 'private',
+        setupRevision: 1,
+      ),
+    );
+    addTearDown(workspace.dispose);
+    await workspace.start();
+    expect(workspace.draft!.rows.single.sourceKind,
+        HostOfferSourceKind.application);
+    expect(workspace.draft!.rows.single.sourceId, 'application-one');
+    await workspace.selectExisting({'offerId': 'offer-one',
+      'eventId': 'event-one', 'contactId': 'contact-one'});
+    expect(workspace.selectedResponseId, 'response-one');
+    final offer = workspace.selectedOffer!;
+    expect(() => HostFormAdmissionScope.fromOffer(offer), throwsFormatException);
+    final scope = HostFormAdmissionScope.fromOffer(offer,
+        responseId: workspace.selectedResponseId);
+    expect(scope.responseId, 'response-one');
+    expect(scope.offerId, 'offer-one');
+    workspace.manualUpdated(_existingOffer(applicationId: 'another-application'));
+    expect(workspace.selectedResponseId, isNull);
   });
 
   test('workspace controller invalidates selected offer context when the '
@@ -1008,7 +1077,8 @@ class _Targets implements HostOfferEventTargetsGateway {
 
 final _start = DateTime.fromMillisecondsSinceEpoch(1800000000000);
 
-HostFormResponseDetail _detail(String? contactId) => HostFormResponseDetail(
+HostFormResponseDetail _detail(String? contactId, {String? applicationId}) => HostFormResponseDetail(
+  applicationId: applicationId,
   response: HostFormResponseSummary(
     responseId: 'response-one',
     formId: 'form',
@@ -1133,13 +1203,14 @@ final _copy = HostEventOfferWorkspaceCopy(
   ),
 );
 
-HostEventOffer _existingOffer() => HostEventOffer(
+HostEventOffer _existingOffer({String? applicationId}) => HostEventOffer(
   offerId: 'offer-one',
   organizerId: 'org',
   eventId: 'event-one',
   contactId: 'contact-one',
-  sourceId: 'response-one',
-  sourceKind: HostOfferSourceKind.formResponse,
+  sourceId: applicationId ?? 'response-one',
+  sourceKind: applicationId == null
+      ? HostOfferSourceKind.formResponse : HostOfferSourceKind.application,
   status: HostOfferStatus.offered,
   effectiveStatus: HostOfferStatus.offered,
   generation: 1,

@@ -380,5 +380,45 @@ const schemaOrganizerFormAdmissionReceiptDocumentSchema = <String, Object?>{
         },
       },
     },
+    'applicationApproval': <String, Object?>{
+      'description': 'Current native form application approval checked atomically at admission. Absent on legacy receipts.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'applicationId',
+            'revision',
+            'contactId',
+            'reviewedAtMillis',
+          ],
+          'properties': <String, Object?>{
+            'applicationId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'contactId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'revision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+            'reviewedAtMillis': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 9007199254740991,
+            },
+          },
+        },
+      ],
+    },
   },
 };

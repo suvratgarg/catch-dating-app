@@ -368,8 +368,9 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
             organizerId: organizerId,
             eventId: configuration.eventId,
             contactId: detail.contactId!,
-            sourceKind: HostOfferSourceKind.formResponse,
-            sourceId: detail.response.responseId,
+            sourceKind: detail.applicationId == null
+                ? HostOfferSourceKind.formResponse : HostOfferSourceKind.application,
+            sourceId: detail.applicationId ?? detail.response.responseId,
             expiresAt: expiry,
             organizerPaymentLink: _personalMode
                 ? Uri.tryParse(_personalLinks[detail.contactId!] ?? '')
@@ -715,6 +716,16 @@ class HostEventOfferWorkspaceController extends ChangeNotifier {
   List<Map<String, Object?>> get offers => _offers;
   String? get nextOfferCursor => _nextOfferCursor;
   HostEventOffer? get selectedOffer => _selectedOffer;
+  String? get selectedResponseId {
+    final offer = _selectedOffer;
+    if (offer == null) return null;
+    final matches = _details.where((detail) =>
+        detail.contactId == offer.contactId &&
+        (offer.sourceKind == HostOfferSourceKind.formResponse
+            ? detail.response.responseId == offer.sourceId
+            : detail.applicationId == offer.sourceId));
+    return matches.length == 1 ? matches.single.response.responseId : null;
+  }
   HostOfferHandoff? get handoff => _handoff;
   String? get referenceRequestId => _referenceRequestId;
   String? get reviewRequestId => _reviewRequestId;

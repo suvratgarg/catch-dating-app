@@ -344,8 +344,8 @@ class _HostFormResponsesPanelState
                         if (_inlineReturnError != null)
                           CatchBanner.error(message: _inlineReturnError!),
                         HostEventOfferWorkspaceSection(
-                          createAdmissionController: (offer) =>
-                              _admissionController(offer, accountId),
+                          createAdmissionController: (offer, responseId) =>
+                              _admissionController(offer, accountId, responseId),
                           key: ValueKey(
                             'offer-workspace-$accountId-${widget.formId}',
                           ),

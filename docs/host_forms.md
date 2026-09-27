@@ -858,8 +858,19 @@ The shared runtime account does not receive a new signing permission.
 
 ### Atomic form admission endpoint
 
+Native application admission uses the current approved application and its
+submitted response in the same seat transaction. It does not require or create
+a separate CRM conversion receipt. The immutable version, application target,
+respondent identity, response access, customer origin and current survivor must
+agree. The offer workspace preserves the application source when drafting and
+resolves its actual submitted response for admission. Revoked approval blocks a
+new admission; a completed command can still replay its historical receipt.
+Admission receipts preserve the approval ID, revision, customer and review time.
+Legacy participant-grant/import applications remain outside this form endpoint.
+
 `commitOrganizerFormAdmission` is the authenticated, App Check-protected
-command boundary for a reviewed registration/intake response. It validates the
+command boundary for a reviewed registration/intake response or an approved
+native application from a generic form. It validates the
 exact input, applies the actor rate limit, and delegates to the existing single
 Firestore transaction. The transaction rechecks current manager/account, CRM
 origin/contact, immutable submitted version, current issued offer, exact payment

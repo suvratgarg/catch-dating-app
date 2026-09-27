@@ -56,6 +56,9 @@ import {AdmissionCommand, AdmissionFacts, AdmissionOwnership,
   AdmissionPolicyError, AdmissionReceipt, decideFormAdmission} from
   "./admissionPolicy";
 
+import {ApplicationAdmissionApproval, readApplicationAdmissionApproval} from
+  "./applicationAuthority";
+
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$/u;
 const REQUEST_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$/u;
 const key = (...parts: string[]) => createHash("sha256")
@@ -111,8 +114,10 @@ function publicReceipt(receipt: AdmissionReceipt, replayed: boolean):
 
 function sourceFacts(response: OrganizerFormResponseDocument,
   version: OrganizerFormVersionDocument,
-  conversion: OrganizerFormConversionReceiptDocument,
-  responseId: string): AdmissionFacts["source"] {
+  conversion: OrganizerFormConversionReceiptDocument | undefined,
+  responseId: string,
+  applicationApproval: ApplicationAdmissionApproval | null):
+  AdmissionFacts["source"] {
   return {organizerId: response.organizerId, responseId,
     formId: response.formId, versionId: response.versionId,
     status: response.status, withdrawn: response.withdrawnAt !== null,
@@ -120,8 +125,8 @@ function sourceFacts(response: OrganizerFormResponseDocument,
     purpose: version.definition.purpose,
     targetKind: version.definition.defaultTargetKind,
     targetId: version.definition.defaultTargetId,
-    crmReceiptCompleted: conversion.status === "completed",
-    crmReceiptContactId: conversion.resultId};
+    crmReceiptCompleted: conversion?.status === "completed",
+    crmReceiptContactId: conversion?.resultId ?? null, applicationApproval};
 }
 
 /** No fabricated phone/email may leak from users/{uid} or Admin Auth. */
@@ -315,7 +320,7 @@ async function executeAdmission(
     const event = eventRaw as EventDocument | undefined;
     const conversion = conversionRaw as
       OrganizerFormConversionReceiptDocument | undefined;
-    if (!response || !event || !conversion || !offerRaw ||
+    if (!response || !event || !offerRaw ||
         !validateOrganizerFormResponseDocument(responseRaw) ||
         response.organizerId !== payload.organizerId ||
         !ID.test(response.formId) || !ID.test(response.versionId) ||
@@ -331,13 +336,7 @@ async function executeAdmission(
           !response.respondentUid) ||
         event.clubId !== payload.organizerId ||
         event.organizerId !== undefined &&
-          event.organizerId !== payload.organizerId ||
-        conversion.organizerId !== payload.organizerId ||
-        conversion.responseId !== payload.responseId ||
-        conversion.formId !== response.formId ||
-        conversion.kind !== "crmContact" ||
-        conversion.status !== "completed" ||
-        !ID.test(conversion.resultId ?? "")) {
+          event.organizerId !== payload.organizerId) {
       unavailable("Current form, CRM or event source is unavailable.");
     }
     const expectedOfferId = eventOfferId({organizerId: payload.organizerId,
@@ -346,9 +345,15 @@ async function executeAdmission(
       conflict("Offer identity does not match this contact and event.");
     }
     const offer = parseStoredEventOffer(offerRaw, payload.offerId);
-    if (offer.applicationId !== payload.responseId ||
-        offer.sourceKind !== "formResponse") {
-      unavailable("Issued offer has a different response source.");
+    const applicationSource = (offer.sourceKind ?? "application") ===
+      "application";
+    if (!applicationSource && (offer.applicationId !== payload.responseId ||
+        !conversion || conversion.organizerId !== payload.organizerId ||
+        conversion.responseId !== payload.responseId ||
+        conversion.formId !== response.formId ||
+        conversion.kind !== "crmContact" || conversion.status !== "completed" ||
+        !ID.test(conversion.resultId ?? ""))) {
+      unavailable("Issued offer or CRM conversion has a different source.");
     }
     const [formRaw, versionRaw, originRaw] = await Promise.all([
       read(db, tx, "organizerForms", response.formId),
@@ -367,7 +372,8 @@ async function executeAdmission(
         version.organizerId !== payload.organizerId ||
         version.formId !== response.formId ||
         !version.definition ||
-        !["registration", "intake"].includes(version.definition.purpose) ||
+        !["registration", "intake", "application"]
+          .includes(version.definition.purpose) ||
         !["event", "organizer", "campaign"].includes(
           version.definition.defaultTargetKind) ||
         form.purpose !== version.definition.purpose ||
@@ -378,10 +384,15 @@ async function executeAdmission(
         origin.responseId !== payload.responseId ||
         origin.formId !== response.formId ||
         origin.eventId !== null ||
-        origin.originContactId !== conversion.resultId ||
+        !applicationSource &&
+          origin.originContactId !== conversion?.resultId ||
         origin.currentContactId !== payload.contactId) {
       unavailable("Immutable form version or CRM origin is unavailable.");
     }
+    const applicationApproval = applicationSource ?
+      await readApplicationAdmissionApproval({db, tx, response,
+        responseId: payload.responseId, version, origin, offer,
+        nowMillis: now}) : null;
     const contactRaw = await read(db, tx, "organizerContacts",
       payload.contactId);
     const contact = contactRaw as OrganizerContactDocument | undefined;
@@ -540,7 +551,7 @@ async function executeAdmission(
     }
     const facts: AdmissionFacts = {manager,
       source: sourceFacts(response, version, conversion,
-        payload.responseId),
+        payload.responseId, applicationApproval),
       origin: {organizerId: origin.organizerId,
         responseId: payload.responseId, formId: response.formId,
         originContactId: origin.originContactId,
@@ -553,7 +564,7 @@ async function executeAdmission(
         sourceRevision: sourceRevision ?? 0},
       offer: {offerId: offer.offerId, organizerId: offer.organizerId,
         eventId: offer.eventId, contactId: offer.contactId,
-        responseId: offer.applicationId,
+        responseId: payload.responseId,
         sourceKind: offer.sourceKind ?? "application",
         status: offer.status, generation: offer.generation,
         revision: offer.revision,
@@ -686,7 +697,7 @@ async function executeAdmission(
       offerGeneration: reviewed.expectedOfferGeneration};
     const storedReceipt = {...receipt,
       paymentSnapshot: offer.paymentSnapshot,
-      manualPayment: offer.manualPayment};
+      manualPayment: offer.manualPayment, applicationApproval};
     if (!validateOrganizerFormAdmissionReceiptDocument(storedReceipt) ||
         !validateOrganizerFormAdmissionDocument(ownership)) {
       conflict("Prepared admission receipt is invalid.");

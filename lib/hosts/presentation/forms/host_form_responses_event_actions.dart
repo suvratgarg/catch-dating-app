@@ -140,13 +140,14 @@ extension _HostFormResponseEventActions on _HostFormResponsesPanelState {
     );
   }
   HostFormAdmissionController _admissionController(
-    HostEventOffer offer, String accountId,
+    HostEventOffer offer, String accountId, String responseId,
   ) {
     final gateway = CallableHostFormAdmissionGateway(
       ref.read(firebaseFunctionsProvider));
     String? currentAccount() => ref.read(firebaseAuthProvider).currentUser?.uid;
     return HostFormAdmissionController(accountId: accountId,
-      scope: HostFormAdmissionScope.fromOffer(offer), gateway: gateway,
+      scope: HostFormAdmissionScope.fromOffer(offer, responseId: responseId),
+      gateway: gateway,
       currentAccountId: currentAccount,
       outbox: JournalHostFormAdmissionOutbox(gateway: gateway,
         storage: ref.read(commandJournalStorageProvider),

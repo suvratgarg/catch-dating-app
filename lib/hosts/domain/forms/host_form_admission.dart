@@ -14,14 +14,19 @@ final class HostFormAdmissionScope {
     required this.offerId,
   });
 
-  factory HostFormAdmissionScope.fromOffer(HostEventOffer offer) {
-    if (offer.sourceKind != HostOfferSourceKind.formResponse) {
-      throw const FormatException('Admission requires a form response offer.');
+  factory HostFormAdmissionScope.fromOffer(
+    HostEventOffer offer, {String? responseId}
+  ) {
+    final sourceResponseId = offer.sourceKind == HostOfferSourceKind.formResponse
+        ? offer.sourceId : responseId;
+    if (sourceResponseId == null || sourceResponseId.isEmpty ||
+        responseId != null && responseId != sourceResponseId) {
+      throw const FormatException('Admission requires its submitted response.');
     }
     return HostFormAdmissionScope(
       organizerId: offer.organizerId,
       eventId: offer.eventId,
-      responseId: offer.sourceId,
+      responseId: sourceResponseId,
       contactId: offer.contactId,
       offerId: offer.offerId,
     );

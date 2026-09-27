@@ -1246,6 +1246,46 @@ export const organizerFormAdmissionReceiptDocumentSchema = {
           ]
         }
       }
+    },
+    "applicationApproval": {
+      "description": "Current native form application approval checked atomically at admission. Absent on legacy receipts.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicationId",
+            "revision",
+            "contactId",
+            "reviewedAtMillis"
+          ],
+          "properties": {
+            "applicationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "contactId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "reviewedAtMillis": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
     }
   }
 };

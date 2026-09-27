@@ -135,7 +135,8 @@ class HostEventOfferWorkspaceSection extends StatefulWidget {
   /// selection is revalidated before any offer is drafted. Null keeps the
   /// create action hidden while private event setup stays release gated.
   final Future<void> Function()? onCreateEvent;
-  final HostFormAdmissionController Function(HostEventOffer offer)?
+  final HostFormAdmissionController Function(
+      HostEventOffer offer, String responseId)?
       createAdmissionController;
 
   @override
@@ -386,12 +387,13 @@ class _HostEventOfferWorkspaceSectionState
               ]),
             if (_controller.selectedOffer case final selected?) ...[
               if (widget.createAdmissionController != null &&
-                  selected.sourceKind == HostOfferSourceKind.formResponse &&
+                  _controller.selectedResponseId != null &&
                   selected.effectiveStatus == HostOfferStatus.offered)
                 HostFormAdmissionSection(
                   key: ValueKey('admission-${widget.accountId}-${selected.offerId}-'
                     '${selected.revision}-${selected.generation}'),
-                  createController: () => widget.createAdmissionController!(selected),
+                  createController: () => widget.createAdmissionController!(
+                    selected, _controller.selectedResponseId!),
                   onAdmitted: _controller.refreshOffers,
                 ),
               if (selected.effectiveStatus == HostOfferStatus.offered)

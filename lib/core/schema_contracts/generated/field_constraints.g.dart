@@ -89650,6 +89650,38 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const organizerFormAdmissionReceiptDocumentApplicationApprovalApplicationId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.applicationApproval.applicationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentApplicationApprovalContactId = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.applicationApproval.contactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormAdmissionReceiptDocumentApplicationApprovalReviewedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.applicationApproval.reviewedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerFormAdmissionReceiptDocumentApplicationApprovalRevision = CatchContractFieldConstraints(
+    path: 'organizerFormAdmissionReceiptDocument.applicationApproval.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerFormAdmissionReceiptDocumentAttendeeId = CatchContractFieldConstraints(
     path: 'organizerFormAdmissionReceiptDocument.attendeeId',
     maxLength: 180,
@@ -139112,6 +139144,10 @@ abstract final class CatchContractConstraints {
     'organizerFormAdmissionDocument.responseId': organizerFormAdmissionDocumentResponseId,
     'organizerFormAdmissionReceiptDocument.actorUid': organizerFormAdmissionReceiptDocumentActorUid,
     'organizerFormAdmissionReceiptDocument.admittedAtMillis': organizerFormAdmissionReceiptDocumentAdmittedAtMillis,
+    'organizerFormAdmissionReceiptDocument.applicationApproval.applicationId': organizerFormAdmissionReceiptDocumentApplicationApprovalApplicationId,
+    'organizerFormAdmissionReceiptDocument.applicationApproval.contactId': organizerFormAdmissionReceiptDocumentApplicationApprovalContactId,
+    'organizerFormAdmissionReceiptDocument.applicationApproval.reviewedAtMillis': organizerFormAdmissionReceiptDocumentApplicationApprovalReviewedAtMillis,
+    'organizerFormAdmissionReceiptDocument.applicationApproval.revision': organizerFormAdmissionReceiptDocumentApplicationApprovalRevision,
     'organizerFormAdmissionReceiptDocument.attendeeId': organizerFormAdmissionReceiptDocumentAttendeeId,
     'organizerFormAdmissionReceiptDocument.canonicalSeatKey': organizerFormAdmissionReceiptDocumentCanonicalSeatKey,
     'organizerFormAdmissionReceiptDocument.contactId': organizerFormAdmissionReceiptDocumentContactId,

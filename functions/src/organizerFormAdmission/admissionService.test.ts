@@ -17,6 +17,8 @@ import {eventOfferId} from
   "../organizerEventOffers/eventOfferDomain";
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
+import {genericFormApplicationId} from
+  "../organizers/organizerApplicationAccess";
 import {AdmissionPolicyError} from "./admissionPolicy";
 import {commitOrganizerFormAdmission, previewOrganizerFormAdmission,
   formAdmissionOwnershipId,
@@ -633,3 +635,115 @@ test("active waitlist offers protect the last seat until expiry", async () => {
   await commit();
   assert.equal(store.get(`eventSeatLedgers/${eventId}`)!.occupied, 2);
 });
+
+
+function approvedApplicationFixture() {
+  const current = fixture();
+  const {store} = current;
+  const applicationId = genericFormApplicationId(responseId);
+  store.rows.delete(`organizerFormConversionReceipts/${
+    formConversionReceiptId(responseId, "crmContact")}`);
+  store.get("organizerForms/form1")!.purpose = "application";
+  (store.get("organizerFormVersions/version1")!.definition as Row)
+    .purpose = "application";
+  Object.assign(store.get(`organizerEventOffers/${offerId}`)!,
+    {sourceKind: "application", applicationId});
+  const source = {kind: "native", providerId: null, externalFormId: null,
+    externalResponseId: responseId, importReceiptId: null};
+  store.put(`organizerApplications/${applicationId}`, {organizerId: org,
+    formId: "form1", formVersionId: "version1", targetKind: "event",
+    targetId: eventId, linkedUid: null, contactId,
+    applicantDisplayName: "Ada Guest",
+    applicantDisplayNameNormalized: "ada guest",
+    reviewStatus: "approved", latestResponseId: responseId, source,
+    assignedReviewerUid: actorUid, reviewNote: "Accepted", revision: 2,
+    submittedAt: ts(1100), updatedAt: ts(1500), reviewedAt: ts(1500)});
+  store.put(`organizerApplicationResponses/${responseId}`, {organizerId: org,
+    applicationId, formId: "form1", formVersionId: "version1",
+    linkedUid: null, answers: [], source, consentVersion: "v1",
+    grantId: null, submittedAt: ts(1100)});
+  return {...current, applicationId};
+}
+
+test("approved application admits without inventing a CRM conversion receipt",
+  async () => {
+    const {store, commit, applicationId} = approvedApplicationFixture();
+    const preview = await previewOrganizerFormAdmission({
+      db: store.db(), actorUid,
+      payload: {organizerId: org, eventId, responseId, contactId, offerId},
+      nowMillis: () => 2000});
+    assert.equal(preview.canCommit, true);
+    assert.equal(store.writes.length, 0);
+    const result = await commit();
+    assert.deepEqual(store.get(`organizerFormAdmissionReceipts/${
+      result.receiptId}`)?.applicationApproval,
+    {applicationId, revision: 2, contactId, reviewedAtMillis: 1500});
+    assert.equal(store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
+    assert.ok(!store.writes.some((path) =>
+      path.startsWith("organizerFormConversionReceipts/")));
+    store.get(`organizerApplications/${applicationId}`)!.reviewStatus =
+      "declined";
+    const writes = store.writes.length;
+    assert.equal((await commit()).replayed, true);
+    assert.equal(store.writes.length, writes);
+  });
+
+test("approval changes and crossed application identities prevent all writes",
+  async () => {
+    for (const mutate of [
+      (app: Row) => {
+        app.reviewStatus = "declined";
+      },
+      (app: Row) => {
+        app.reviewStatus = "submitted";
+      },
+      (app: Row) => {
+        app.latestResponseId = "anotherResponse";
+      },
+      (app: Row) => {
+        app.organizerId = "foreign";
+      },
+      (app: Row) => {
+        app.formVersionId = "anotherVersion";
+      },
+      (app: Row) => {
+        app.contactId = "anotherContact";
+      },
+      (app: Row) => {
+        app.targetId = "anotherEvent";
+      },
+      (app: Row) => {
+        app.linkedUid = "anotherUid";
+      },
+      (app: Row) => {
+        app.reviewedAt = ts(3000);
+      },
+      (app: Row) => {
+        app.revision = 0;
+      },
+    ]) {
+      const {store, commit, applicationId} = approvedApplicationFixture();
+      mutate(store.get(`organizerApplications/${applicationId}`)!);
+      await assert.rejects(commit(), denied);
+      assert.equal(store.writes.length, 0);
+    }
+    for (const collection of ["organizerApplicationResponses",
+      "organizerFormResponses"]) {
+      const {store, commit} = approvedApplicationFixture();
+      store.rows.delete(`${collection}/${responseId}`);
+      await assert.rejects(commit(), denied);
+      assert.equal(store.writes.length, 0);
+    }
+  });
+
+test("approved source follows a merged contact origin without a second seat",
+  async () => {
+    const {store, commit, originId, applicationId} =
+      approvedApplicationFixture();
+    store.get(`organizerApplications/${applicationId}`)!.contactId = "original";
+    store.get(`organizerContactOrigins/${originId}`)!.originContactId =
+      "original";
+    const receipt = await commit();
+    assert.equal(receipt.contactId, contactId);
+    assert.equal(store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
+  });

@@ -25,4 +25,13 @@ export interface OrganizerFormAdmissionReceiptDocument {
   actorUid: string;
   paymentSnapshot: EventOfferPaymentSnapshot;
   manualPayment: EventOfferManualPayment;
+  /**
+   * Current native form application approval checked atomically at admission. Absent on legacy receipts.
+   */
+  applicationApproval?: null | {
+    applicationId: string;
+    contactId: string;
+    revision: number;
+    reviewedAtMillis: number;
+  };
 }
