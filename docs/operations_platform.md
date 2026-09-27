@@ -967,6 +967,23 @@ gaps and complete-factor fit. Missing factors produce a null score with
 coverage, never a zero or a renormalized partial score. It performs no import,
 network request, contact-authority decision or product mutation.
 
+The reviewed migration runner at
+`operations/src/domains/host-revenue/migration-cli.mjs` accepts a private mapped
+source and freezes its full content into bounded packets. `freeze` is offline;
+`review` reads the server preview for every packet; `apply` requires the exact
+review hash and current employee ID/App Check credentials through the existing
+Admin callable client. It uses the Operations store's fenced leases and local
+checkpoints, while Sales business receipts remain authoritative. A restart
+reads each receipt before retrying a missing batch; a changed source, stale
+server preview, lost authority or uncertain receipt read stops progression.
+Every source row must reconcile to created, matched, duplicate, unresolved or
+rejected. An applied batch containing unresolved rows is not a completed
+identity migration. Private artifacts and checkpoints belong outside Git.
+The runner currently preserves existing accounts and only creates reviewed
+private companions; it does not create public organizers, grant contact
+permission, publish listings or send messages. Compensation and historical
+activity/cohort promotion require separately reviewed domain actions.
+
 `outreach-drafting` is a separate registered shadow workflow. It reuses the
 platform run, lease, checkpoint, cache, budget and receipt owners. Inputs freeze
 reviewed observations, capability statements, permitted references and CTAs.
