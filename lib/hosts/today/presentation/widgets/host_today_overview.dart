@@ -7,9 +7,11 @@ import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_event_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 export 'host_today_event_section.dart';
 
@@ -261,6 +263,18 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
                 onPressed: onViewEvents,
+              ),
+              CatchButton(
+                key: const ValueKey<String>('host-today-view-programs'),
+                label: context.l10n.programsListTitle,
+                leading: Icon(
+                  CatchIcons.calendarMonthOutlined,
+                  size: CatchIcon.sm,
+                ),
+                variant: CatchButtonVariant.ghost,
+                size: CatchButtonSize.sm,
+                onPressed: () =>
+                    context.pushNamed(Routes.hostProgramsScreen.name),
               ),
               if (onStartRehearsal != null)
                 CatchButton(

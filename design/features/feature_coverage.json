@@ -637,6 +637,51 @@
       "debtId": "PROGRAMS-FEATURE-006"
     },
     {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.list",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Organizer program index with create-program entry and workspace navigation.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-007"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.workspace",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Organizer program workspace: day rail, function tiles, stations, hotels, and program navigation.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-008"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.guests",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Household-by-function RSVP matrix with groups, households, and per-function RSVP writes.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-009"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.team",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Staff roster with duty badges, scope chips, and grant/invite/revoke access actions.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-010"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.programs.import",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Manifest import with column mapping, preview/commit, and result reporting.",
+      "targetFeature": "feature.programs_arrivals_ops",
+      "debtId": "PROGRAMS-FEATURE-011"
+    },
+    {
       "authority": "marketing_routes",
       "authorityId": "household_rsvp",
       "status": "excluded",
