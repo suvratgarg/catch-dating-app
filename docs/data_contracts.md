@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.155.0
+version: 1.156.0
 updated: 2026-09-27
 owner: recursive_audit_loop
 status: active
@@ -1848,6 +1848,22 @@ the selected event and suggests expiry from the server clock and event policy.
 The read includes the private preference revision and resolved intent provenance
 so editing preserves inherit/set/clear decisions. Missing configuration remains
 null with revision zero, never an invented free price or expiry.
+`previewEventOfferPreferences` authorizes the same manager and resolves the
+complete candidate against the event, saved preferences and organizer defaults
+in one read-only transaction. Its before/after projection includes inherited
+admission preferences that are absent from the organizer suggestion DTO. The
+shared private/published editor stages edits, previews all changed fields, and
+requires explicit Apply. Reload or later edits invalidate review. Each original
+write command still verifies its own event/setup revision, preferences revision
+and reviewed defaults hash; preview grants no write authority. Issued offers and
+shared payment links retain their original terms and require separate review.
+New editor requests carry the captured manager UID; a changed authenticated UID
+cannot execute that command. Private editor auth changes invalidate its review.
+A request-scoped stale-rejection marker is emitted only after receipt absence and
+failed revision/default validation; the client may retire that exact command and
+reload. Generic aborts, permissions failures and uncertain transport outcomes
+retain their frozen journal for recovery.
+
 `configureEventOfferPreferences` writes the same private preferences for owned
 published, legacy or private events. The transaction rechecks manager/deleted-user
 authority, event source revision, preference revision and reviewed organizer

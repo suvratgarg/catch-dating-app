@@ -22,6 +22,7 @@ export {validateCommitOrganizerFormAdmissionCallableResponse} from "./validators
 export {validateOrganizerFormAdmissionReceiptDocument} from "./validators/organizerFormAdmissionReceiptDocument";
 export {validateConfigureEventOfferPreferencesCallablePayload} from "./validators/configureEventOfferPreferencesInput";
 export {validateConfigureEventOfferPreferencesCallableResponse} from "./validators/configureEventOfferPreferencesOutput";
+export {validatePreviewEventOfferPreferencesCallableResponse} from "./validators/previewEventOfferPreferencesOutput";
 export {validateEventOfferConfigurationReceiptDocument} from "./validators/eventOfferConfigurationReceiptDocument";
 export {validateListOfferEventTargetsCallablePayload} from "./validators/listOfferEventTargetsInput";
 export {validateOfferEventTargetListCallableResponse} from "./validators/offerEventTargetListOutput";

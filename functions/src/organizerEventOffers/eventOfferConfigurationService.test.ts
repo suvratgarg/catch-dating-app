@@ -280,3 +280,89 @@ test("replay rechecks current manager and event tenant", async () => {
     assert.equal(h.rows.get("eventSetupPreferences/event1")?.revision, 1);
   }
 });
+
+
+test("settings preview resolves inherited changes without writing or reissuing",
+  async () => {
+    const h = await setup();
+    await h.save();
+    const issued = {paymentSnapshot: {expectedAmountMinor: 25000,
+      currency: "INR", paymentInstructions: "Pay the organizer"}};
+    h.rows.set("organizerEventOffers/issued", issued);
+    h.rows.set("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 2, eventSetup: {currency: "INR", offerValidityMinutes: 90,
+        paymentInstructions: "Use the new account"}});
+    const defaults = await getManagerEventSetupDefaults({actorUid: "host1",
+      organizerId: "org1", deps: eventSetupDefaultsDependencies(h.deps.db)});
+    const command = {...h.command, requestId: "preview-change-1",
+      expectedPreferencesRevision: 1,
+      reviewedDefaultsHash: defaults.preferencesHash};
+    h.writePaths.length = 0;
+    const preview = await configureEventOfferPreferences({actorUid: "host1",
+      command, deps: h.deps, previewOnly: true});
+    assert.equal(preview.current?.preferences.offerValidityMinutes.value, 60);
+    assert.equal(preview.candidate.preferences.offerValidityMinutes.value, 90);
+    assert.equal(preview.candidate.preferences.expectedAmountMinor.value,
+      25000);
+    assert.equal(preview.existingOffersKeepOriginalTerms, true);
+    assert.deepEqual(h.writePaths, []);
+    assert.deepEqual(h.rows.get("organizerEventOffers/issued"), issued);
+    await configureEventOfferPreferences({actorUid: "host1", command,
+      deps: h.deps});
+    assert.deepEqual(h.rows.get("eventSetupPreferences/event1")?.preferences,
+      preview.candidate.preferences);
+    assert.deepEqual(h.rows.get("organizerEventOffers/issued"), issued);
+  });
+
+test("preview cannot bypass current authority or stale review fences",
+  async () => {
+    for (const kind of ["manager", "source", "defaults", "preferences"]) {
+      const h = await setup();
+      await configureEventOfferPreferences({actorUid: "host1",
+        command: h.command, deps: h.deps, previewOnly: true});
+      if (kind === "manager") {
+        h.rows.set("organizers/org1", {...h.rows.get("organizers/org1"),
+          ownerUserId: "other", hostUserId: "other"});
+      } else if (kind === "source") {
+        h.updateTimes.set("events/event1", Timestamp.fromMillis(NOW));
+      } else if (kind === "preferences") {
+        await h.save({requestId: "other-request-1"});
+      } else {
+        h.rows.set("organizerEventSetupDefaults/org1", {organizerId: "org1",
+          revision: 2, eventSetup: {currency: "USD"}});
+      }
+      await assert.rejects(h.save(), code(kind === "manager" ?
+        "permission-denied" : "aborted"));
+      await assert.rejects(configureEventOfferPreferences({actorUid: "host1",
+        command: h.command, deps: h.deps, previewOnly: true}),
+      code(kind === "manager" ? "permission-denied" : "aborted"));
+    }
+  });
+
+
+test("settings requests cannot move to a different authenticated account",
+  async () => {
+    const h = await setup();
+    await assert.rejects(h.save({expectedActorUid: "host2"}),
+      code("permission-denied"));
+    await assert.rejects(configureEventOfferPreferences({actorUid: "host1",
+      command: {...h.command, expectedActorUid: "host2"}, deps: h.deps,
+      previewOnly: true}), code("permission-denied"));
+    assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
+  });
+
+test("stale rejection identifies only the exact uncommitted settings request",
+  async () => {
+    const h = await setup();
+    h.rows.set("organizerEventSetupDefaults/org1", {organizerId: "org1",
+      revision: 2, eventSetup: {currency: "USD"}});
+    await assert.rejects(h.save(), (error: unknown) => {
+      assert.ok(error instanceof HttpsError);
+      assert.equal(error.code, "aborted");
+      assert.deepEqual(error.details, {reason: "event-preferences-review-stale",
+        requestId: h.command.requestId, eventId: h.command.eventId,
+        organizerId: h.command.organizerId});
+      return true;
+    });
+    assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
+  });

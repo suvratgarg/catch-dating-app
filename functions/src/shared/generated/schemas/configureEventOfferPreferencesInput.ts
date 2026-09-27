@@ -561,6 +561,11 @@ export const configureEventOfferPreferencesCallablePayloadSchema: Record<string,
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "expectedActorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

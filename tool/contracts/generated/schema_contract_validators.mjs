@@ -20,6 +20,7 @@ import {
   organizerFormAdmissionReceiptDocumentSchema,
   configureEventOfferPreferencesCallablePayloadSchema,
   configureEventOfferPreferencesCallableResponseSchema,
+  previewEventOfferPreferencesCallableResponseSchema,
   eventOfferConfigurationReceiptDocumentSchema,
   listOfferEventTargetsCallablePayloadSchema,
   offerEventTargetListCallableResponseSchema,
@@ -975,6 +976,7 @@ export const validateCommitOrganizerFormAdmissionCallableResponse = ajv.compile(
 export const validateOrganizerFormAdmissionReceiptDocument = ajv.compile(organizerFormAdmissionReceiptDocumentSchema);
 export const validateConfigureEventOfferPreferencesCallablePayload = ajv.compile(configureEventOfferPreferencesCallablePayloadSchema);
 export const validateConfigureEventOfferPreferencesCallableResponse = ajv.compile(configureEventOfferPreferencesCallableResponseSchema);
+export const validatePreviewEventOfferPreferencesCallableResponse = ajv.compile(previewEventOfferPreferencesCallableResponseSchema);
 export const validateEventOfferConfigurationReceiptDocument = ajv.compile(eventOfferConfigurationReceiptDocumentSchema);
 export const validateListOfferEventTargetsCallablePayload = ajv.compile(listOfferEventTargetsCallablePayloadSchema);
 export const validateOfferEventTargetListCallableResponse = ajv.compile(offerEventTargetListCallableResponseSchema);

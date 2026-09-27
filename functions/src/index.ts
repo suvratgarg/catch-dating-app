@@ -741,7 +741,7 @@ export {
   previewEventOffers, commitEventOffers, mutateEventOffer,
   getEventOffer, listEventOffers, prepareEventOfferHandoff,
   getEventOfferConfiguration,
-  configureEventOfferPreferences,
+  configureEventOfferPreferences, previewEventOfferPreferences,
 } from "./organizerEventOffers/callables";
 
 export {commitOrganizerFormAdmission} from

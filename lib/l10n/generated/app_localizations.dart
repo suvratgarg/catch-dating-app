@@ -37392,6 +37392,69 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick a CSV or XLSX manifest to map columns.'**
   String get programsImportEmptyMessage;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get hostsEventPreferenceNotSet;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Review changes'**
+  String get hostsEventPreferenceReviewTitle;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Review current organizer defaults and your edits before applying.'**
+  String get hostsEventPreferenceReviewHint;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued offers and shared payment links keep their original terms. Review those offers separately if their payment instructions are outdated.'**
+  String get hostsEventPreferenceOfferWarning;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'No settings have changed'**
+  String get hostsEventPreferenceNoChanges;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing preview…'**
+  String get hostsEventPreferenceReviewLoading;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview changes and current defaults'**
+  String get hostsEventPreferencePreview;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply reviewed changes'**
+  String get hostsEventPreferenceApply;
+
+  /// Event settings review before applying defaults or edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {before}\nAfter applying: {after}'**
+  String hostsEventPreferenceBeforeAfter({
+    required String before,
+    required String after,
+  });
+
+  /// Currency-formatted amount in the settings change preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected amount'**
+  String get hostsEventPreferenceExpectedAmount;
 }
 
 class _AppLocalizationsDelegate

@@ -5,9 +5,15 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:cloud_functions/cloud_functions.dart';
 
 const eventPreferenceFields = <String>{
-  'usualDurationMinutes', 'preferredVenueId', 'offerValidityMinutes',
-  'collectionPreference', 'currency', 'offerMessageTemplate',
-  'paymentInstructions', 'reusablePaymentPage', 'admissionPreset',
+  'usualDurationMinutes',
+  'preferredVenueId',
+  'offerValidityMinutes',
+  'collectionPreference',
+  'currency',
+  'offerMessageTemplate',
+  'paymentInstructions',
+  'reusablePaymentPage',
+  'admissionPreset',
   'expectedAmountMinor',
 };
 
@@ -18,7 +24,9 @@ final _hashPattern = RegExp(r'^[a-f0-9]{64}$');
 /// Parses a Host-entered override before constructing the full ten-field
 /// command. URL reuse still requires separate, explicit Host attestation.
 Map<String, Object?> privateEventPreferenceSetIntentForInput(
-    String field, String value) {
+  String field,
+  String value,
+) {
   final trimmed = value.trim();
   if (trimmed.isEmpty) throw const FormatException('Empty event preference');
   switch (field) {
@@ -36,9 +44,10 @@ Map<String, Object?> privateEventPreferenceSetIntentForInput(
       if (!isCanonicalPublicPaymentPageUrl(trimmed)) {
         throw const FormatException('Invalid reusable event payment page');
       }
-      return {'mode': 'set', 'value': {
-        'url': trimmed, 'reusableForEvents': true,
-      }};
+      return {
+        'mode': 'set',
+        'value': {'url': trimmed, 'reusableForEvents': true},
+      };
     default:
       return {'mode': 'set', 'value': trimmed};
   }
@@ -72,14 +81,18 @@ class PrivateEventPreferenceIntents {
   final EventSetupValue<int> expectedAmountMinor;
 
   static const _admissionValues = <String>{
-    'openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps',
+    'openCapacity',
+    'inviteOnly',
+    'balancedSingles',
+    'fixedCohortCaps',
   };
 
   bool get isValid {
     final amount = expectedAmountMinor;
     if (amount.mode == EventSetupValueMode.inherit ||
         (amount.mode == EventSetupValueMode.set &&
-            (amount.value == null || amount.value! < 0 ||
+            (amount.value == null ||
+                amount.value! < 0 ||
                 amount.value! > 100000000))) {
       return false;
     }
@@ -117,10 +130,12 @@ class PrivateEventPreferenceIntents {
     'currency': currency.toJson((value) => value),
     'offerMessageTemplate': offerMessageTemplate.toJson((value) => value),
     'paymentInstructions': paymentInstructions.toJson((value) => value),
-    'reusablePaymentPage': reusablePaymentPage.toJson((value) => {
-      'url': value.url,
-      'reusableForEvents': value.reusableForEvents,
-    }),
+    'reusablePaymentPage': reusablePaymentPage.toJson(
+      (value) => {
+        'url': value.url,
+        'reusableForEvents': value.reusableForEvents,
+      },
+    ),
     'admissionPreset': admissionPreset.toJson((value) => value),
     'expectedAmountMinor': expectedAmountMinor.toJson((value) => value),
   };
@@ -140,32 +155,44 @@ class PrivateEventPreferenceIntents {
       if (intent.length == 1 && intent['mode'] == 'clear') {
         return const EventSetupValue.clear();
       }
-      if (intent.length == 2 && intent['mode'] == 'set' &&
+      if (intent.length == 2 &&
+          intent['mode'] == 'set' &&
           intent.containsKey('value')) {
         return EventSetupValue.set(decode(intent['value']));
       }
       throw const FormatException('Invalid preference intent');
     }
+
     int integer(Object? value) {
-      if (value is! int) throw const FormatException('Invalid integer preference');
+      if (value is! int) {
+        throw const FormatException('Invalid integer preference');
+      }
       return value;
     }
+
     String string(Object? value) {
-      if (value is! String) throw const FormatException('Invalid text preference');
+      if (value is! String) {
+        throw const FormatException('Invalid text preference');
+      }
       return value;
     }
+
     EventCollectionPreference collection(Object? value) =>
         EventCollectionPreference.values.byName(string(value));
     ReusableOrganizerPaymentPage page(Object? value) {
       if (value is! Map) throw const FormatException('Invalid reusable page');
       final data = Map<String, Object?>.from(value);
-      if (data.length != 2 || data['url'] is! String ||
+      if (data.length != 2 ||
+          data['url'] is! String ||
           data['reusableForEvents'] != true) {
         throw const FormatException('Invalid reusable page');
       }
-      return ReusableOrganizerPaymentPage(data['url'] as String,
-          reusableForEvents: true);
+      return ReusableOrganizerPaymentPage(
+        data['url'] as String,
+        reusableForEvents: true,
+      );
     }
+
     final intents = PrivateEventPreferenceIntents(
       usualDurationMinutes: read('usualDurationMinutes', integer),
       preferredVenueId: read('preferredVenueId', string),
@@ -178,7 +205,9 @@ class PrivateEventPreferenceIntents {
       admissionPreset: read('admissionPreset', string),
       expectedAmountMinor: read('expectedAmountMinor', integer),
     );
-    if (!intents.isValid) throw const FormatException('Invalid event preferences');
+    if (!intents.isValid) {
+      throw const FormatException('Invalid event preferences');
+    }
     return intents;
   }
 }
@@ -199,19 +228,26 @@ class PrivateEventPreferencesSnapshot {
   final Map<String, Object?> paymentTerms;
 
   factory PrivateEventPreferencesSnapshot.fromResponse(Object? response) {
-    if (response is! Map) throw const FormatException('Invalid event preferences');
+    if (response is! Map) {
+      throw const FormatException('Invalid event preferences');
+    }
     final data = Map<String, Object?>.from(response);
     final revision = data['revision'];
     final rawPreferences = data['preferences'];
     final rawTerms = data['paymentTerms'];
-    if (data.length != 3 || revision is! int || revision < 1 ||
-        rawPreferences is! Map || rawTerms is! Map) {
+    if (data.length != 3 ||
+        revision is! int ||
+        revision < 1 ||
+        rawPreferences is! Map ||
+        rawTerms is! Map) {
       throw const FormatException('Invalid event preferences');
     }
     final preferences = Map<String, Object?>.from(rawPreferences);
     final terms = Map<String, Object?>.from(rawTerms);
     if (preferences.keys.toSet().difference({
-          ...eventPreferenceFields, 'defaultsRevision', 'defaultsHash',
+          ...eventPreferenceFields,
+          'defaultsRevision',
+          'defaultsHash',
         }).isNotEmpty ||
         preferences.length != eventPreferenceFields.length + 2 ||
         preferences['defaultsRevision'] is! int ||
@@ -226,7 +262,9 @@ class PrivateEventPreferencesSnapshot {
     final resolvedValues = <String, Object?>{};
     for (final key in eventPreferenceFields) {
       final rawField = preferences[key];
-      if (rawField is! Map) throw const FormatException('Invalid resolved field');
+      if (rawField is! Map) {
+        throw const FormatException('Invalid resolved field');
+      }
       final field = Map<String, Object?>.from(rawField);
       if (field.length != 2 || !field.containsKey('value')) {
         throw const FormatException('Invalid resolved field');
@@ -262,8 +300,10 @@ class PrivateEventPreferencesUpdateRequest {
     required this.expectedPreferencesRevision,
     required this.reviewedDefaultsHash,
     required this.intents,
+    this.expectedActorUid,
   });
 
+  final String? expectedActorUid;
   final String organizerId;
   final String eventId;
   final String requestId;
@@ -272,14 +312,20 @@ class PrivateEventPreferencesUpdateRequest {
   final String reviewedDefaultsHash;
   final PrivateEventPreferenceIntents intents;
 
-  bool get isValid => _idPattern.hasMatch(organizerId) &&
-      _idPattern.hasMatch(eventId) && _requestPattern.hasMatch(requestId) &&
-      expectedSetupRevision >= 1 && expectedSetupRevision <= 1000000000 &&
+  bool get isValid =>
+      (expectedActorUid == null || _idPattern.hasMatch(expectedActorUid!)) &&
+      _idPattern.hasMatch(organizerId) &&
+      _idPattern.hasMatch(eventId) &&
+      _requestPattern.hasMatch(requestId) &&
+      expectedSetupRevision >= 1 &&
+      expectedSetupRevision <= 1000000000 &&
       expectedPreferencesRevision >= 0 &&
       expectedPreferencesRevision <= 1000000000 &&
-      _hashPattern.hasMatch(reviewedDefaultsHash) && intents.isValid;
+      _hashPattern.hasMatch(reviewedDefaultsHash) &&
+      intents.isValid;
 
   Map<String, Object?> toJson() => {
+    if (expectedActorUid != null) 'expectedActorUid': expectedActorUid,
     'organizerId': organizerId,
     'eventId': eventId,
     'requestId': requestId,
@@ -289,10 +335,15 @@ class PrivateEventPreferencesUpdateRequest {
     'intents': intents.toJson(),
   };
 
-  factory PrivateEventPreferencesUpdateRequest.fromJson(Map<String, dynamic> json) {
+  factory PrivateEventPreferencesUpdateRequest.fromJson(
+    Map<String, dynamic> json,
+  ) {
     final rawIntents = json['intents'];
-    if (rawIntents is! Map) throw const FormatException('Invalid preferences command');
+    if (rawIntents is! Map) {
+      throw const FormatException('Invalid preferences command');
+    }
     final request = PrivateEventPreferencesUpdateRequest(
+      expectedActorUid: json['expectedActorUid'] as String?,
       organizerId: json['organizerId'] as String,
       eventId: json['eventId'] as String,
       requestId: json['requestId'] as String,
@@ -303,7 +354,9 @@ class PrivateEventPreferencesUpdateRequest {
         Map<String, Object?>.from(rawIntents),
       ),
     );
-    if (!request.isValid) throw const FormatException('Invalid preferences command');
+    if (!request.isValid) {
+      throw const FormatException('Invalid preferences command');
+    }
     return request;
   }
 }
@@ -325,7 +378,9 @@ class PrivateEventPreferencesRepository {
         final receipt = PrivateEventCreateReceipt.fromResponse(response.data);
         if (receipt.eventId != request.eventId ||
             receipt.setupRevision <= request.expectedSetupRevision) {
-          throw const FormatException('Preferences receipt changed event identity');
+          throw const FormatException(
+            'Preferences receipt changed event identity',
+          );
         }
         return receipt;
       },

@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/preview_event_offer_preferences_response.schema.json",
+  "title": "PreviewEventOfferPreferencesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "eventId",
+    "requestId",
+    "eventSourceRevision",
+    "current",
+    "candidate",
+    "existingOffersKeepOriginalTerms"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+    },
+    "eventSourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "current": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "preferences",
+            "paymentTerms"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000000
+            },
+            "preferences": {
+              "$ref": "../embedded/resolved_event_preferences.schema.json"
+            },
+            "paymentTerms": {
+              "$ref": "../embedded/event_payment_terms.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "preferences",
+        "paymentTerms"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "preferences": {
+          "$ref": "../embedded/resolved_event_preferences.schema.json"
+        },
+        "paymentTerms": {
+          "$ref": "../embedded/event_payment_terms.schema.json"
+        }
+      }
+    },
+    "existingOffersKeepOriginalTerms": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+}

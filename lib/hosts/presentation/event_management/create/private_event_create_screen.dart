@@ -15,6 +15,7 @@ import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
@@ -451,6 +452,21 @@ class _PrivateEventCreateScreenState
       );
     }
     if (_editingPreferences && _preferencesController != null) {
+      final currentUid = ref.watch(uidProvider);
+      if (currentUid.isLoading || currentUid.hasError ||
+          currentUid.asData?.value != _preferencesController!.userId ||
+          !_preferencesController!.actorAvailable) {
+        _preferencesController!.invalidateActor();
+        return CatchScaffold.stepFlow(
+          body: CatchErrorState(
+            title: context.l10n.hostsEventPreferenceError,
+            message: appErrorMessage(
+              const SignInRequiredException('edit event settings'),
+              l10n: context.l10n, context: AppErrorContext.event),
+            actions: const [CatchErrorBackButton()],
+          ),
+        );
+      }
       return PrivateEventPreferencesScreen(
         controller: _preferencesController!,
         onBack: _PrivateEventCreateBody(this)._closePreferences,

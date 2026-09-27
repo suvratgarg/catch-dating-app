@@ -12,4 +12,5 @@ export interface ConfigureEventOfferPreferencesCallablePayload {
   reviewedDefaultsHash: string;
   intents: EventPreferenceIntents;
   expectedEventSourceRevision: number;
+  expectedActorUid?: string;
 }

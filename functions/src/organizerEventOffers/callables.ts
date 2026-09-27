@@ -1,3 +1,5 @@
+import {validatePreviewEventOfferPreferencesCallableResponse} from
+  "../shared/generated/validators/previewEventOfferPreferencesOutput";
 import {issueOfferRecipientInvitation} from
   "../organizerEventOfferRecipients/recipientGrant";
 import * as admin from "firebase-admin";
@@ -230,3 +232,27 @@ export async function configureEventOfferPreferencesHandler(
 }
 export const configureEventOfferPreferences = onCall(appCheckCallableOptions,
   (request) => configureEventOfferPreferencesHandler(request));
+
+/** Read-only review uses exactly the same resolver and fences as saving. */
+export async function previewEventOfferPreferencesHandler(
+  request: CallableRequest<unknown>, deps = defaultDeps
+) {
+  const actorUid = requireAuth(request);
+  const command = validateCallableWithAjv(request,
+    validateConfigureEventOfferPreferencesCallablePayload);
+  if (!deps.integrationReady()) {
+    throw new HttpsError("failed-precondition",
+      "Event offer integration is not ready.");
+  }
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "previewEventOfferPreferences");
+  const result = await configurePreferences({actorUid, command,
+    previewOnly: true, deps: {db, configurationReady: deps.integrationReady,
+      serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp()}});
+  if (!validatePreviewEventOfferPreferencesCallableResponse(result)) {
+    throw new HttpsError("internal", "Invalid event preference preview.");
+  }
+  return result;
+}
+export const previewEventOfferPreferences = onCall(appCheckCallableOptions,
+  (request) => previewEventOfferPreferencesHandler(request));

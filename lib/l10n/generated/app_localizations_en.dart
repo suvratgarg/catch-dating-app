@@ -23217,4 +23217,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get programsImportEmptyMessage =>
       'Pick a CSV or XLSX manifest to map columns.';
+
+  @override
+  String get hostsEventPreferenceNotSet => 'Not set';
+
+  @override
+  String get hostsEventPreferenceReviewTitle => 'Review changes';
+
+  @override
+  String get hostsEventPreferenceReviewHint =>
+      'Review current organizer defaults and your edits before applying.';
+
+  @override
+  String get hostsEventPreferenceOfferWarning =>
+      'Issued offers and shared payment links keep their original terms. Review those offers separately if their payment instructions are outdated.';
+
+  @override
+  String get hostsEventPreferenceNoChanges => 'No settings have changed';
+
+  @override
+  String get hostsEventPreferenceReviewLoading => 'Preparing preview…';
+
+  @override
+  String get hostsEventPreferencePreview =>
+      'Preview changes and current defaults';
+
+  @override
+  String get hostsEventPreferenceApply => 'Apply reviewed changes';
+
+  @override
+  String hostsEventPreferenceBeforeAfter({
+    required String before,
+    required String after,
+  }) {
+    return 'Current: $before\nAfter applying: $after';
+  }
+
+  @override
+  String get hostsEventPreferenceExpectedAmount => 'Expected amount';
 }

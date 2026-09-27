@@ -22,6 +22,7 @@ export {commitOrganizerFormAdmissionCallableResponseSchema} from "./schemas/comm
 export {organizerFormAdmissionReceiptDocumentSchema} from "./schemas/organizerFormAdmissionReceiptDocument";
 export {configureEventOfferPreferencesCallablePayloadSchema} from "./schemas/configureEventOfferPreferencesInput";
 export {configureEventOfferPreferencesCallableResponseSchema} from "./schemas/configureEventOfferPreferencesOutput";
+export {previewEventOfferPreferencesCallableResponseSchema} from "./schemas/previewEventOfferPreferencesOutput";
 export {eventOfferConfigurationReceiptDocumentSchema} from "./schemas/eventOfferConfigurationReceiptDocument";
 export {listOfferEventTargetsCallablePayloadSchema} from "./schemas/listOfferEventTargetsInput";
 export {offerEventTargetListCallableResponseSchema} from "./schemas/offerEventTargetListOutput";

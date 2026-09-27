@@ -114,6 +114,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         readEvent: eventRepository.get,
         readDefaults: defaultsRepository.get,
         write: preferencesRepository.update,
+        readPreview: EventOfferPreferencesRepository(functions).preview,
+        currentUserId: () => mounted ? ref.read(uidProvider).asData?.value : null,
       );
       controller.addListener(_refresh);
       _mutateScreenState(() {

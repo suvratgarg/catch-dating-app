@@ -1,3 +1,5 @@
+import type {PreviewEventOfferPreferencesCallableResponse} from
+  "../shared/generated/previewEventOfferPreferencesCallableResponse";
 import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventDocument} from
@@ -49,12 +51,23 @@ function digest(value: unknown): string {
   return createHash("sha256").update(canonicalJson(value)).digest("hex");
 }
 
-/** Manager-only snapshot update. Existing offers and the event never change. */
-export async function configureEventOfferPreferences(params: {
+interface ConfigurationParams {
   actorUid: string;
   command: ConfigureEventOfferPreferencesCommand;
   deps: EventOfferConfigurationDependencies;
-}): Promise<EventOfferConfigurationResult> {
+}
+
+/** Uses the same authoritative resolution for review and commit. */
+export function configureEventOfferPreferences(params: ConfigurationParams & {
+  previewOnly: true;
+}): Promise<PreviewEventOfferPreferencesCallableResponse>;
+export function configureEventOfferPreferences(params: ConfigurationParams & {
+  previewOnly?: false;
+}): Promise<EventOfferConfigurationResult>;
+export async function configureEventOfferPreferences(params:
+  ConfigurationParams & {previewOnly?: boolean}
+): Promise<EventOfferConfigurationResult |
+  PreviewEventOfferPreferencesCallableResponse> {
   const {actorUid, command, deps} = params;
   if (!ID.test(actorUid)) {
     throw new HttpsError("unauthenticated", "Sign in first.");
@@ -63,6 +76,9 @@ export async function configureEventOfferPreferences(params: {
   if (deps.configurationReady?.() !== true) {
     throw new HttpsError("failed-precondition",
       "Event offer configuration is not ready.");
+  }
+  if (command.expectedActorUid && command.expectedActorUid !== actorUid) {
+    throw new HttpsError("permission-denied", "The signed-in account changed.");
   }
   const {db} = deps;
   const receiptId = digest(["event-offer-configuration-v1", actorUid,
@@ -95,6 +111,10 @@ export async function configureEventOfferPreferences(params: {
       throw new HttpsError("failed-precondition", "Event is malformed.");
     }
     if (receiptSnap.exists) {
+      if (params.previewOnly) {
+        throw new HttpsError("already-exists",
+          "This settings request is already committed. Reload settings.");
+      }
       const receipt = receiptSnap.data();
       if (!validateEventOfferConfigurationReceiptDocument(receipt) ||
           receipt.actorUid !== actorUid ||
@@ -129,7 +149,10 @@ export async function configureEventOfferPreferences(params: {
     }
     if (currentSourceRevision !== command.expectedEventSourceRevision ||
         revision !== command.expectedPreferencesRevision) {
-      throw new HttpsError("aborted", "Event settings changed. Reload them.");
+      throw new HttpsError("aborted", "Event settings changed. Reload them.",
+        {reason: "event-preferences-review-stale",
+          requestId: command.requestId, eventId: command.eventId,
+          organizerId: command.organizerId});
     }
     const projected = projectManagerEventSetupDefaults(command.organizerId,
       organizer, defaultsSnap.data(), eventSetupDefaultsDependencies(db));
@@ -150,15 +173,26 @@ export async function configureEventOfferPreferences(params: {
     } catch (error) {
       if (error instanceof EventPreferenceError) {
         throw new HttpsError(error.code === "stale" ? "aborted" :
-          "invalid-argument", error.message);
+          "invalid-argument", error.message, error.code === "stale" ?
+          {reason: "event-preferences-review-stale",
+            requestId: command.requestId, eventId: command.eventId,
+            organizerId: command.organizerId} : undefined);
       }
       throw error;
     }
     const paymentTerms = eventPaymentTermsFromPreferences(preferences,
       revision + 1);
-    projectEventPreferences({organizerId: command.organizerId,
+    const candidate = projectEventPreferences({organizerId: command.organizerId,
       eventId: command.eventId, revision: revision + 1,
       preferences, paymentTerms}, command.organizerId, command.eventId);
+    if (!candidate) throw new HttpsError("internal", "Missing candidate.");
+    if (params.previewOnly) {
+      return {organizerId: command.organizerId, eventId: command.eventId,
+        requestId: command.requestId,
+        eventSourceRevision: currentSourceRevision, current: saved,
+        candidate,
+        existingOffersKeepOriginalTerms: true};
+    }
     tx.set(preferencesRef, {organizerId: command.organizerId,
       eventId: command.eventId, revision: revision + 1, preferences,
       paymentTerms, updatedByUid: actorUid, updatedAt: deps.serverTimestamp()});
