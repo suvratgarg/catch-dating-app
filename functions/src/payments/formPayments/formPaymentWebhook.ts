@@ -77,6 +77,7 @@ export async function processFormPaymentWebhook(receiptId: string,
   const receipt = requireDoc<Receipt>(await ref.get(),
     "OrganizerFormPaymentWebhookDocument");
   if (receipt.status !== "pending") return;
+  if (!receipt.connectionId || receipt.platformConfigurationVersion) invalid();
   const connection = requireDoc<Connection>(await deps.db
     .collection("organizerPaymentConnections").doc(receipt.connectionId).get(),
   "OrganizerPaymentConnectionDocument");

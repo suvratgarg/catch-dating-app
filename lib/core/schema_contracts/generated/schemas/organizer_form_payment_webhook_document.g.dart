@@ -26,9 +26,16 @@ const schemaOrganizerFormPaymentWebhookDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'connectionId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'accountId': <String, Object?>{
       'type': 'string',
@@ -153,9 +160,39 @@ const schemaOrganizerFormPaymentWebhookDocumentSchema = <String, Object?>{
         },
       },
     },
+    'platformConfigurationVersion': <String, Object?>{
+      'type': 'string',
+      'pattern': '^projects/[a-z][a-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+      'maxLength': 500,
+    },
   },
   'x-firestore-collection': 'organizerFormPaymentWebhooks',
   'x-firestore-path': 'organizerFormPaymentWebhooks/{receiptId}',
   'x-document-id-field': 'receiptId',
   'x-owner': 'organizer form payment server operations',
+  'allOf': <Object?>[
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'platformConfigurationVersion',
+        ],
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'connectionId': <String, Object?>{
+            'type': 'null',
+          },
+        },
+      },
+      'else': <String, Object?>{
+        'properties': <String, Object?>{
+          'connectionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+        },
+      },
+    },
+  ],
 };

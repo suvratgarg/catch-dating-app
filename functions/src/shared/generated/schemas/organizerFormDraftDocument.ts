@@ -750,9 +750,16 @@ export const organizerFormDraftDocumentSchema: Record<string, unknown> = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",

@@ -32058,7 +32058,7 @@ abstract class AppLocalizations {
   /// Form payment setup: Help.
   ///
   /// In en, this message translates to:
-  /// **'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.'**
+  /// **'Collect a fee before a response is submitted. Payment does not accept an application or book an event.'**
   String get hostFormPaymentHelp;
 
   /// Form payment setup: Unavailable.
@@ -36666,6 +36666,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check admission'**
   String get hostFormAdmissionCheck;
+
+  /// Host form payment setup: hostFormPaymentCatchCollection
+  ///
+  /// In en, this message translates to:
+  /// **'Catch collects payments'**
+  String get hostFormPaymentCatchCollection;
+
+  /// Host form payment setup: hostFormPaymentCatchCollectionHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Catch collects the fee and transfers the organizer share to your linked payout account.'**
+  String get hostFormPaymentCatchCollectionHelp;
+
+  /// Host form payment setup: hostFormPaymentCatchSetupRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Catch collection is selected. Complete your linked payout account setup and ask Catch to verify collection is ready.'**
+  String get hostFormPaymentCatchSetupRequired;
+
+  /// Selected form collection method is disabled or unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected collection method is not ready. Ask Catch to review your payment configuration.'**
+  String get hostFormPaymentCollectionUnavailable;
 }
 
 class _AppLocalizationsDelegate

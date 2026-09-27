@@ -7,6 +7,7 @@ import type {OrganizerFormPaymentDocument as Payment,
   OrganizerFormVersionDocument as Version} from
   "../../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../../shared/validation";
+import {assertPaymentRouteSnapshot} from "../paymentRouting";
 import {organizerFormResponseReceipt} from
   "../../organizers/organizerFormResponses";
 
@@ -44,17 +45,40 @@ export async function projectFormPayment(input: {
       payment.providerOrderId &&
       !payment.reservationReleased &&
       payment.checkoutExpiresAt.toMillis() > (input.now ?? Date.now())) {
-    const connection = requireDoc<Connection>(await db
-      .collection("organizerPaymentConnections").doc(payment.connectionId)
-      .get(), "OrganizerPaymentConnectionDocument");
-    if (connection.status === "ready" && !connection.disconnectedAt &&
-        connection.organizerId === payment.organizerId &&
-        connection.accountId === payment.accountId &&
-        connection.mode === payment.mode && connection.publicToken &&
-        connection.webhookVerifiedAt && !connection.lastErrorCode &&
-        connection.tokenExpiresAt &&
-        connection.tokenExpiresAt.toMillis() > (input.now ?? Date.now())) {
-      checkout = {publicToken: connection.publicToken,
+    let checkoutKey: string | null = null;
+    if (payment.routing) {
+      assertPaymentRouteSnapshot(payment.routing, {
+        organizerId: payment.organizerId, purpose: "formFee",
+        currency: payment.currency, amountMinor: payment.amountPaise});
+      if (payment.routing.merchantAccountId !== payment.accountId ||
+          payment.routing.selection.mode !== payment.mode) {
+        throw new HttpsError("internal", "Payment checkout unavailable.");
+      }
+      if (payment.routing.selection.route === "razorpayRoute" &&
+          payment.connectionId === null) {
+        checkoutKey = payment.routing.checkoutKey;
+      }
+    }
+    if (payment.connectionId && (!payment.routing ||
+        payment.routing.selection.route === "razorpayOAuth")) {
+      const connection = requireDoc<Connection>(await db
+        .collection("organizerPaymentConnections").doc(payment.connectionId)
+        .get(), "OrganizerPaymentConnectionDocument");
+      if (connection.status === "ready" && !connection.disconnectedAt &&
+          connection.organizerId === payment.organizerId &&
+          connection.accountId === payment.accountId &&
+          connection.mode === payment.mode && connection.publicToken &&
+          connection.webhookVerifiedAt && !connection.lastErrorCode &&
+          connection.tokenExpiresAt &&
+          connection.tokenExpiresAt.toMillis() > (input.now ?? Date.now()) &&
+          (!payment.routing ||
+            payment.routing.bindingId === payment.connectionId &&
+            payment.routing.checkoutKey === connection.publicToken)) {
+        checkoutKey = payment.routing?.checkoutKey ?? connection.publicToken;
+      }
+    }
+    if (checkoutKey) {
+      checkout = {publicToken: checkoutKey,
         orderId: payment.providerOrderId, amountPaise: payment.amountPaise,
         currency: "INR", description: payment.description,
         expiresAtMillis: payment.checkoutExpiresAt.toMillis()};

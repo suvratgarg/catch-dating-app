@@ -10,6 +10,7 @@ const transfer = {entity: "transfer", id: "trf_one", source: "order_one",
   on_hold: true, on_hold_until: null};
 function fixture(patch: Record<string, unknown> = {}) {
   const requests: Array<{url: string; init: RequestInit}> = [];
+  let refunded = false;
   const provider = new RazorpayRouteProvider({keyId: "rzp_test_platform",
     keySecret: "platform-secret", mode: "test", terms: {
       paymentAmountMinor: 10000,
@@ -17,12 +18,23 @@ function fixture(patch: Record<string, unknown> = {}) {
       settlementHold: true,
     }}, (async (url, init) => {
       requests.push({url: String(url), init: init!});
+      if (String(url).includes("/refund") && init?.method === "POST") {
+        refunded = true;
+      }
+      const payment = {entity: "payment", id: "pay_one", order_id: "order_one",
+        amount: 10000, currency: "INR", captured: true,
+        status: refunded ? "refunded" : "captured",
+        amount_refunded: refunded ? 10000 : 0};
       const body = String(url).includes("/refund") ? {
         entity: "refund", id: "rfnd_one", payment_id: "pay_one", amount: 10000,
         currency: "INR", status: "processed",
-      } : String(url).includes("expand[]") ? {...order,
-        transfers: {entity: "collection", count: 1,
-          items: [{...transfer, ...patch}]}} : order;
+      } : String(url).endsWith("/orders/order_one/payments") ? {
+        entity: "collection", count: 1, items: [payment],
+      } : String(url).endsWith("/payments/pay_one") ? payment :
+        String(url).includes("expand[]") ? {...order,
+          transfers: {entity: "collection", count: 1,
+            items: [{...transfer, amount_reversed: refunded ? 9500 : 0,
+              ...patch}]}} : order;
       return new Response(JSON.stringify(body), {status: 200});
     }) as typeof fetch);
   return {provider, requests};
@@ -67,8 +79,9 @@ test("Route refund retains idempotency and reverses transfers", async () => {
   assert.equal(requests.length, 0);
   await provider.refundPayment("rzp_test_platform", {paymentId: "pay_one",
     amount: 10000, idempotencyKey: "stable_refund_key"});
-  assert.equal(JSON.parse(String(requests[0].init.body)).reverse_all, true);
-  assert.equal((requests[0].init.headers as Record<string, string>)[
+  const refundRequest = requests.find((item) => item.init.method === "POST")!;
+  assert.equal(JSON.parse(String(refundRequest.init.body)).reverse_all, true);
+  assert.equal((refundRequest.init.headers as Record<string, string>)[
     "X-Refund-Idempotency"], "stable_refund_key");
   const signature = createHmac("sha256", "platform-secret")
     .update("order_one|pay_one").digest("hex");
@@ -76,4 +89,24 @@ test("Route refund retains idempotency and reverses transfers", async () => {
     paymentId: "pay_one", signature}), true);
   assert.equal(provider.verifyCheckout({serverOrderId: "order_other",
     paymentId: "pay_one", signature}), false);
+});
+
+test("every full-refund observation requires the exact transfer reversal",
+  async () => {
+    const {provider} = fixture({amount_reversed: 0});
+    await assert.rejects(provider.refundPayment("rzp_test_platform", {
+      paymentId: "pay_one", amount: 10000, idempotencyKey: "stable_refund_key",
+    }), /Invalid Razorpay response/);
+    await assert.rejects(provider.fetchPayment("rzp_test_platform", "pay_one"));
+    await assert.rejects(provider.fetchOrderPayments("rzp_test_platform",
+      "order_one"));
+    await assert.rejects(provider.fetchRefund("rzp_test_platform", "rfnd_one"));
+  });
+
+test("new orders reject reversed or released transfers", async () => {
+  for (const patch of [{amount_reversed: 1}, {on_hold: false},
+    {on_hold_until: 1000}]) {
+    await assert.rejects(fixture(patch).provider.createOrder(
+      "rzp_test_platform", {amount: 10000, receipt: "frozen_receipt"}));
+  }
 });

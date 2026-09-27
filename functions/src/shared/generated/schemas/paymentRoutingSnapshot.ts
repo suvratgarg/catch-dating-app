@@ -17,11 +17,33 @@ export const paymentRoutingSnapshotSchema: Record<string, unknown> = {
     "merchantAccountId",
     "destinationAccountId",
     "configurationVersion",
-    "checkoutKey"
+    "checkoutKey",
+    "amountMinor",
+    "transferAmountMinor",
+    "settlementHold"
   ],
   "properties": {
     "version": {
       "const": 1
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "transferAmountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "settlementHold": {
+      "type": [
+        "boolean",
+        "null"
+      ]
     },
     "purpose": {
       "enum": [

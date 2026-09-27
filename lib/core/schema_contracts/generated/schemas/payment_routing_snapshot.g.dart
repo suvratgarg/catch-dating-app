@@ -20,10 +20,32 @@ const schemaPaymentRoutingSnapshotSchema = <String, Object?>{
     'destinationAccountId',
     'configurationVersion',
     'checkoutKey',
+    'amountMinor',
+    'transferAmountMinor',
+    'settlementHold',
   ],
   'properties': <String, Object?>{
     'version': <String, Object?>{
       'const': 1,
+    },
+    'amountMinor': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 9007199254740991,
+    },
+    'transferAmountMinor': <String, Object?>{
+      'type': <Object?>[
+        'integer',
+        'null',
+      ],
+      'minimum': 1,
+      'maximum': 9007199254740991,
+    },
+    'settlementHold': <String, Object?>{
+      'type': <Object?>[
+        'boolean',
+        'null',
+      ],
     },
     'purpose': <String, Object?>{
       'enum': <Object?>[

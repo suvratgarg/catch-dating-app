@@ -16,7 +16,7 @@ const organizer: Policy = {scope: "organizer", organizerId: "org", revision: 2,
 const binding: PaymentRouteBinding = {bindingId: "binding1",
   merchantAccountId: "acc_catch", destinationAccountId: "acc_organizer",
   configurationVersion: "projects/test-project/secrets/route/versions/1",
-  checkoutKey: "rzp_test_key"};
+  checkoutKey: "rzp_test_key", transferAmountMinor: 9500, settlementHold: true};
 
 test("per-purpose overrides and null inheritance", () => {
   const fee = selectPaymentRoute({app, organizer, organizerId: "org",
@@ -70,7 +70,7 @@ test("unsupported Stripe does not fall back to Razorpay", async () => {
     merchantCountry: "US"}}, organizer: null, organizerId: "org",
   purpose: "formFee"});
   await assert.rejects(registry.prepare({organizerId: "org", purpose: "formFee",
-    currency: "USD", selected}), /not available yet/);
+    currency: "USD", amountMinor: 10000, selected}), /not available yet/);
   assert.equal(calls, 0);
 });
 
@@ -89,7 +89,7 @@ test("saved payments keep their route after settings switch", async () => {
   const selected = selectPaymentRoute({app, organizer: null, organizerId: "org",
     purpose: "formFee"});
   const {snapshot} = await registry.prepare({organizerId: "org",
-    purpose: "formFee", currency: "INR", selected});
+    purpose: "formFee", currency: "INR", amountMinor: 10000, selected});
   selected.selection.route = "razorpayOAuth";
   const saved = JSON.parse(JSON.stringify(snapshot));
   assert.equal(await registry.resume(saved, {organizerId: "org",
@@ -112,8 +112,10 @@ test("currency and collection accounts must match the route", async () => {
       prepare: async () => invalid, resume: async () => "unused",
     }});
     await assert.rejects(registry.prepare({organizerId: "org",
-      purpose: "formFee", currency: "INR", selected}), /collection account/);
+      purpose: "formFee", currency: "INR", amountMinor: 10000, selected}),
+    /collection account/);
     await assert.rejects(registry.prepare({organizerId: "org",
-      purpose: "formFee", currency: "USD", selected}), /currency/);
+      purpose: "formFee", currency: "USD", amountMinor: 10000, selected}),
+    /currency/);
   }
 });

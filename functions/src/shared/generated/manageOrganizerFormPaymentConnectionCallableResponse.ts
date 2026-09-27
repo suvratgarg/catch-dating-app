@@ -21,4 +21,17 @@ export interface ManageOrganizerFormPaymentConnectionCallableResponse {
     webhookVerified: boolean;
     lastErrorCode: string | null;
   }[];
+  /**
+   * Selected server-owned collection route. Null preserves legacy OAuth account selection.
+   */
+  collection?: null | {
+    route:
+      | "disabled"
+      | "razorpayRoute"
+      | "razorpayOAuth"
+      | "stripeConnectDirect"
+      | "stripeConnectDestination";
+    mode: "test" | "live" | null;
+    ready: boolean;
+  };
 }

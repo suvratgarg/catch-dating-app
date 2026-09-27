@@ -27275,7 +27275,7 @@
   "@hostFormPaymentTitle": {"description": "Form payment setup: Title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormPaymentFree": "No payment required",
   "@hostFormPaymentFree": {"description": "Form payment setup: Free.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostFormPaymentHelp": "Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.",
+  "hostFormPaymentHelp": "Collect a fee before a response is submitted. Payment does not accept an application or book an event.",
   "@hostFormPaymentHelp": {"description": "Form payment setup: Help.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormPaymentUnavailable": "Form payments are not available yet. Catch must finish its Razorpay connection setup. You can continue using free forms.",
   "@hostFormPaymentUnavailable": {"description": "Form payment setup: Unavailable.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
@@ -29736,5 +29736,13 @@
   "hostFormAdmissionConfirm": "Confirm admission",
   "@hostFormAdmissionConfirm": {"description": "Host reviewed form-to-event admission.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostFormAdmissionCheck": "Check admission",
-  "@hostFormAdmissionCheck": {"description": "Host reviewed form-to-event admission.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
+  "@hostFormAdmissionCheck": {"description": "Host reviewed form-to-event admission.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostFormPaymentCatchCollection": "Catch collects payments",
+  "@hostFormPaymentCatchCollection": {"description": "Host form payment setup: hostFormPaymentCatchCollection", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"},
+  "hostFormPaymentCatchCollectionHelp": "Catch collects the fee and transfers the organizer share to your linked payout account.",
+  "@hostFormPaymentCatchCollectionHelp": {"description": "Host form payment setup: hostFormPaymentCatchCollectionHelp", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"},
+  "hostFormPaymentCatchSetupRequired": "Catch collection is selected. Complete your linked payout account setup and ask Catch to verify collection is ready.",
+  "@hostFormPaymentCatchSetupRequired": {"description": "Host form payment setup: hostFormPaymentCatchSetupRequired", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"},
+  "hostFormPaymentCollectionUnavailable": "The selected collection method is not ready. Ask Catch to review your payment configuration.",
+  "@hostFormPaymentCollectionUnavailable": {"description": "Selected form collection method is disabled or unsupported.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms.host_form_payment_section"}
 }

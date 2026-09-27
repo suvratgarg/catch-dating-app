@@ -1,5 +1,6 @@
 import {RazorpayPaymentProvider, assertAmount, assertToken, invalidInput,
-  invalidResponse, providerId, type FormPaymentOrder} from
+  invalidResponse, providerId, type FormPaymentOrder,
+  type FormProviderPayment} from
   "./razorpayPaymentProvider";
 
 export interface RazorpayRouteTerms {
@@ -43,7 +44,7 @@ export class RazorpayRouteProvider extends RazorpayPaymentProvider {
     if (input.amount !== this.terms.paymentAmountMinor) invalidInput();
     const order = await super.createOrder(handle, input);
     // A successful POST does not prove that the intended transfer was attached.
-    return this.verifiedOrder(handle, order.id, true);
+    return this.verifiedOrder(handle, order.id, true, 0);
   }
 
   override async findOrderByReceipt(handle: string, receipt: string):
@@ -63,11 +64,69 @@ export class RazorpayRouteProvider extends RazorpayPaymentProvider {
     // reverse_all is appropriate for full failed-fulfillment refunds. Partial
     // refunds require a separate allocation/reversal plan, not this operation.
     if (input.amount !== this.terms.paymentAmountMinor) invalidInput();
-    return super.refundPayment(handle, input);
+    const payment = await super.fetchPayment(handle, input.paymentId);
+    this.assertRefundPayment(payment);
+    await this.fetchOrder(handle, payment.orderId!);
+    const refund = await super.refundPayment(handle, input);
+    if (refund.status === "processed") {
+      await this.assertReversed(handle, refund.paymentId);
+    }
+    return refund;
+  }
+
+  override async fetchRefund(handle: string, refundId: string) {
+    const refund = await super.fetchRefund(handle, refundId);
+    if (refund.amount !== this.terms.paymentAmountMinor) invalidResponse();
+    if (refund.status === "processed") {
+      await this.assertReversed(handle, refund.paymentId);
+    }
+    return refund;
+  }
+
+  override async fetchPayment(handle: string, paymentId: string) {
+    const payment = await super.fetchPayment(handle, paymentId);
+    await this.verifyRefundObservation(handle, payment);
+    return payment;
+  }
+
+  override async fetchOrderPayments(handle: string, orderId: string) {
+    const payments = await super.fetchOrderPayments(handle, orderId);
+    for (const payment of payments) {
+      await this.verifyRefundObservation(handle, payment);
+    }
+    return payments;
+  }
+
+  private async verifyRefundObservation(handle: string,
+    payment: FormProviderPayment): Promise<void> {
+    // Every observation path, including webhook-triggered reconciliation, must
+    // prove the reversal before the shared processor can mark a full refund.
+    if (payment.amountRefunded === this.terms.paymentAmountMinor) {
+      this.assertRefundPayment(payment);
+      await this.verifiedOrder(handle, payment.orderId!, false,
+        this.terms.transferAmountMinor);
+    }
+  }
+
+  private async assertReversed(handle: string, paymentId: string):
+    Promise<void> {
+    const payment = await super.fetchPayment(handle, paymentId);
+    this.assertRefundPayment(payment);
+    if (payment.amountRefunded !== this.terms.paymentAmountMinor) {
+      invalidResponse();
+    }
+    await this.verifiedOrder(handle, payment.orderId!, false,
+      this.terms.transferAmountMinor);
+  }
+
+  private assertRefundPayment(payment: FormProviderPayment): void {
+    if (!payment.orderId || payment.amount !== this.terms.paymentAmountMinor ||
+        payment.currency !== "INR") invalidResponse();
   }
 
   private async verifiedOrder(handle: string, orderId: string,
-    checkInitialHold: boolean): Promise<FormPaymentOrder> {
+    checkInitialHold: boolean, reversedAmount?: number):
+    Promise<FormPaymentOrder> {
     // Validate the ordinary order and its expanded transfer separately. The
     // unfiltered expansion must include the single intended transfer even after
     // settlement or reversal. A missing/extra transfer requires review.
@@ -100,6 +159,8 @@ export class RazorpayRouteProvider extends RazorpayPaymentProvider {
       invalidResponse();
     }
     providerId(transfer.id, "trf_");
+    if (reversedAmount !== undefined &&
+        transfer.amount_reversed !== reversedAmount) invalidResponse();
     return order;
   }
 

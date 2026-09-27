@@ -60,10 +60,32 @@ const schemaOrganizerFormPaymentDocumentSchema = <String, Object?>{
         'destinationAccountId',
         'configurationVersion',
         'checkoutKey',
+        'amountMinor',
+        'transferAmountMinor',
+        'settlementHold',
       ],
       'properties': <String, Object?>{
         'version': <String, Object?>{
           'const': 1,
+        },
+        'amountMinor': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'transferAmountMinor': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'settlementHold': <String, Object?>{
+          'type': <Object?>[
+            'boolean',
+            'null',
+          ],
         },
         'purpose': <String, Object?>{
           'enum': <Object?>[
@@ -184,9 +206,16 @@ const schemaOrganizerFormPaymentDocumentSchema = <String, Object?>{
       'maxLength': 180,
     },
     'connectionId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
     'accountId': <String, Object?>{
       'type': 'string',

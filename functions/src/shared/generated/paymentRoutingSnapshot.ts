@@ -4,6 +4,9 @@
 
 export interface PaymentRoutingSnapshot {
   version: 1;
+  amountMinor: number;
+  transferAmountMinor: number | null;
+  settlementHold: boolean | null;
   purpose: "formFee" | "eventAdmission";
   organizerId: string;
   selection: {

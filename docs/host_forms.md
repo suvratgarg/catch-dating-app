@@ -306,10 +306,34 @@ reference in the matching GitHub deployment environment; the promotion workflow
 materializes it without copying secret values into dotenv output. Retain pinned
 versions needed by outstanding payments.
 
+Form-fee Route checkout uses Catch's platform profile and the canonical
+organizer owner's activated `hostPaymentAccounts/{uid}_razorpay` record. It
+checks the linked account/product with Razorpay before reservation, then
+rechecks the policy revision and owner/account binding in the transaction.
+The fee definition may have a null OAuth `connectionId`; it never needs a fake
+OAuth connection. Existing attempts resume their saved profile and allocation,
+including after a policy or owner change. New orders still require a ready
+organizer account. Publication checks the selected route and server account;
+checkout additionally verifies the provider and pinned runtime configuration.
+
+Configure the existing `organizerFormPaymentWebhook` endpoint with
+`?platformVersion=N`, where N is the numeric version in the current platform
+profile reference. Use that profile's `webhookSecret` and enable
+`payment.authorized`, `payment.captured`, `payment.failed`, `refund.processed`
+and `refund.failed`. Only the current configured version is accepted from the
+public URL. Coordinate webhook URL/secret changes with profile promotion;
+the background sweep recovers missed callbacks, and already persisted receipts
+retain their pinned profile. Do not delete old profiles needed by receipts or
+payments. Route receipt processing and the sweep do not require OAuth setup.
+
 The Route adapter creates the quoted organizer transfer with its order, verifies
 the expanded beneficiary/amount, and requires the requested initial settlement
 hold. Full failed-fulfillment refunds request `reverse_all`; partial refunds need
-a separate allocation plan. These operations follow Razorpay's
+a separate allocation plan. A customer refund is not marked complete until
+provider reads also prove the exact organizer transfer reversal. Form fees
+currently transfer without a settlement hold; event payments retain their
+separate settlement policy and unfinished offer-checkout integration.
+These operations follow Razorpay's
 [order transfer API](https://razorpay.com/docs/api/payments/route/create-transfers-orders/),
 [transfer lookup](https://razorpay.com/docs/api/payments/route/fetch-transfer-order)
 and [refund/reversal API](https://razorpay.com/docs/api/payments/route/refund-payments-and-reverse-transfer).
@@ -321,8 +345,10 @@ under `functions/src/payments/formPayments/`. Their presence alone does not
 enable paid forms. The full release requires the following end-to-end behavior
 and checks:
 
-- A Host connects their existing Razorpay merchant through Catch's Technology
-  Partner OAuth application. Test and live credentials are isolated. Server
+- The selected collection route uses either Catch's Route account and the
+  organizer owner's linked payout account, or an organizer merchant connected
+  through Catch's Technology Partner OAuth application. Test and live
+  credentials are isolated. Server
   credentials stay in Secret Manager, with pinned versions bound to organizer,
   connection, account, and mode. No merchant secret is collected in a form or
   shown to respondents.
@@ -365,9 +391,10 @@ forms and legacy organizer-only mappings must retain their behavior. This work
 does not authorize sharing private CRM data or implicitly buying event admission.
 
 The Host builder places form payment setup under Settings, after Access, on
-phone and desktop. It distinguishes unavailable partner setup, an unfinished
-connection, a ready test/live merchant, reconnect-required state, and a
-disconnected account. Fee editing requires a ready account and verified-phone
+phone and desktop. It shows Catch collection readiness independently of OAuth
+availability, and otherwise distinguishes unavailable partner setup, an
+unfinished connection, a ready test/live merchant, reconnect-required state,
+and a disconnected account. Fee editing requires a ready account and verified-phone
 identity; the amount is entered as decimal INR and converted exactly to integer
 paise. Description and refund policy are mandatory. Removing a fee changes only
 the draft until publishing. Disconnecting requires confirmation because it stops

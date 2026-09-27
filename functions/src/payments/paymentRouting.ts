@@ -15,7 +15,8 @@ export type PaymentRouteSelection = PaymentRoutingSnapshot["selection"];
 export type PaymentRoute = PaymentRouteSelection["route"];
 export type PaymentRouteBinding = Pick<PaymentRoutingSnapshot,
   "bindingId" | "merchantAccountId" | "destinationAccountId" |
-  "configurationVersion" | "checkoutKey">;
+  "configurationVersion" | "checkoutKey" | "transferAmountMinor" |
+  "settlementHold">;
 export interface SelectedPaymentRoute {
   selection: PaymentRouteSelection;
   policySource: PaymentRoutingSnapshot["policySource"];
@@ -83,7 +84,8 @@ export function selectPaymentRoute(params: {
  */
 export interface PaymentRoutingAdapter<Runtime> {
   prepare(input: {organizerId: string; purpose: PaymentPurpose;
-    selection: PaymentRouteSelection}): Promise<PaymentRouteBinding>;
+    selection: PaymentRouteSelection;
+    amountMinor: number}): Promise<PaymentRouteBinding>;
   resume(snapshot: PaymentRoutingSnapshot): Promise<Runtime>;
 }
 
@@ -93,9 +95,9 @@ export class PaymentRoutingRegistry<Runtime> {
     Partial<Record<PaymentRoute, PaymentRoutingAdapter<Runtime>>>) {}
 
   async prepare(input: {organizerId: string; purpose: PaymentPurpose;
-    currency: string; selected: SelectedPaymentRoute}):
+    currency: string; amountMinor: number; selected: SelectedPaymentRoute}):
     Promise<{snapshot: PaymentRoutingSnapshot; runtime: Runtime}> {
-    const {selected, organizerId, purpose, currency} = input;
+    const {selected, organizerId, purpose, currency, amountMinor} = input;
     assertOrganizerId(organizerId);
     if (selected.selection.currency !== currency) {
       throw new HttpsError("failed-precondition",
@@ -103,9 +105,10 @@ export class PaymentRoutingRegistry<Runtime> {
     }
     const adapter = this.adapter(selected.selection.route);
     const binding = await adapter.prepare({organizerId, purpose,
-      selection: selected.selection});
+      selection: selected.selection, amountMinor});
     const snapshot: PaymentRoutingSnapshot = {version: 1, organizerId,
-      purpose, ...selected, selection: {...selected.selection}, ...binding};
+      purpose, amountMinor, ...selected,
+      selection: {...selected.selection}, ...binding};
     assertPaymentRouteSnapshot(snapshot, {organizerId, purpose, currency});
     return {snapshot, runtime: await adapter.resume(snapshot)};
   }
@@ -130,12 +133,15 @@ export class PaymentRoutingRegistry<Runtime> {
 }
 
 export function assertPaymentRouteSnapshot(snapshot: PaymentRoutingSnapshot,
-  expected: {organizerId: string; purpose: PaymentPurpose; currency: string}):
+  expected: {organizerId: string; purpose: PaymentPurpose; currency: string;
+    amountMinor?: number}):
   void {
   if (!validatePaymentRoutingSnapshot(snapshot) ||
       snapshot.organizerId !== expected.organizerId ||
       snapshot.purpose !== expected.purpose ||
       snapshot.selection.currency !== expected.currency ||
+      expected.amountMinor !== undefined &&
+        snapshot.amountMinor !== expected.amountMinor ||
       !snapshot.bindingId || !snapshot.merchantAccountId ||
       !snapshot.configurationVersion) {
     throw new HttpsError("failed-precondition", "Payment routing mismatch.");
@@ -144,6 +150,10 @@ export function assertPaymentRouteSnapshot(snapshot: PaymentRoutingSnapshot,
   const platform = route === "razorpayRoute" ||
     route === "stripeConnectDestination";
   if (platform !== !!snapshot.destinationAccountId ||
+      platform !== (snapshot.transferAmountMinor !== null) ||
+      platform !== (snapshot.settlementHold !== null) ||
+      snapshot.transferAmountMinor !== null &&
+        snapshot.transferAmountMinor > snapshot.amountMinor ||
       platform &&
         snapshot.destinationAccountId === snapshot.merchantAccountId) {
     throw new HttpsError("failed-precondition",
@@ -161,12 +171,47 @@ export function assertPaymentRouteSnapshot(snapshot: PaymentRoutingSnapshot,
   }
 }
 
+/** Re-read policy in the reservation transaction; checkout preparation is not
+ * permission to charge after the operator changes routing or disables fees. */
+export async function assertPaymentRouteCurrent(params: {
+  db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
+  snapshot: PaymentRoutingSnapshot;
+}): Promise<void> {
+  const {snapshot} = params;
+  const current = await readPaymentRoute({...params,
+    organizerId: snapshot.organizerId, purpose: snapshot.purpose,
+    legacySelection: snapshot.policySource === "legacy" ?
+      snapshot.selection : undefined});
+  const key = (value: SelectedPaymentRoute) => JSON.stringify([
+    value.policySource, value.appRevision, value.organizerRevision,
+    value.selection.route, value.selection.mode, value.selection.currency,
+    value.selection.merchantCountry,
+  ]);
+  if (key(current) !== key(snapshot)) {
+    throw new HttpsError("aborted",
+      "Payment routing changed. Review it again.");
+  }
+}
+
 export function parsePaymentRoutingPolicy(value: unknown): Policy {
   if (!validatePaymentRoutingPolicyDocument(value)) {
     throw new HttpsError("failed-precondition",
       "Invalid payment routing policy.");
   }
   return value as unknown as Policy;
+}
+
+export function paymentRoutingSnapshotsMatch(left: PaymentRoutingSnapshot,
+  right: PaymentRoutingSnapshot): boolean {
+  if (!validatePaymentRoutingSnapshot(left) ||
+      !validatePaymentRoutingSnapshot(right)) return false;
+  for (const field of Object.keys(right) as
+    Array<keyof PaymentRoutingSnapshot>) {
+    if (field === "selection") continue;
+    if (left[field] !== right[field]) return false;
+  }
+  return (["route", "mode", "currency", "merchantCountry"] as const)
+    .every((field) => left.selection[field] === right.selection[field]);
 }
 
 function assertOrganizerId(value: string): void {

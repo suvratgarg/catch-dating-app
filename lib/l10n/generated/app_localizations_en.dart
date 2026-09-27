@@ -20099,7 +20099,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormPaymentHelp =>
-      'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.';
+      'Collect a fee before a response is submitted. Payment does not accept an application or book an event.';
 
   @override
   String get hostFormPaymentUnavailable =>
@@ -22794,4 +22794,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormAdmissionCheck => 'Check admission';
+
+  @override
+  String get hostFormPaymentCatchCollection => 'Catch collects payments';
+
+  @override
+  String get hostFormPaymentCatchCollectionHelp =>
+      'Catch collects the fee and transfers the organizer share to your linked payout account.';
+
+  @override
+  String get hostFormPaymentCatchSetupRequired =>
+      'Catch collection is selected. Complete your linked payout account setup and ask Catch to verify collection is ready.';
+
+  @override
+  String get hostFormPaymentCollectionUnavailable =>
+      'The selected collection method is not ready. Ask Catch to review your payment configuration.';
 }

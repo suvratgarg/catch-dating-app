@@ -1,3 +1,6 @@
+import {readPaymentRoute} from "../payments/paymentRouting";
+import {readReadyRouteAccount} from
+  "../payments/formPayments/razorpayRouteFormAuthority";
 import {createHash, randomBytes} from "crypto";
 import {authorizeFormMutation, requireOrganizerFormEventTarget} from
   "./organizerFormTarget";
@@ -545,13 +548,31 @@ export async function publishOrganizerFormHandler(
       nowMillis: deps.timestamp().toMillis()});
     const payment = current.draft.definition.payment;
     if (payment) {
-      const connectionSnap = await tx.get(
+      const connectionSnap = payment.connectionId ? await tx.get(
         db.collection("organizerPaymentConnections").doc(payment.connectionId)
-      );
-      requireReadyFormPaymentConnection(connectionSnap.exists ?
+      ) : null;
+      const connection = connectionSnap?.exists ?
         requireDoc<OrganizerPaymentConnectionDocument>(connectionSnap,
-          "OrganizerPaymentConnectionDocument") : null,
-      data.organizerId, deps.timestamp().toMillis());
+          "OrganizerPaymentConnectionDocument") : null;
+      const {selection} = await readPaymentRoute({db, tx,
+        organizerId: data.organizerId, purpose: "formFee",
+        legacySelection: connection ? {route: "razorpayOAuth",
+          mode: connection.mode, currency: "INR", merchantCountry: "IN"} :
+          undefined});
+      if (selection.currency !== "INR" || selection.merchantCountry !== "IN") {
+        throw new HttpsError("failed-precondition", "Unsupported fee currency.");
+      }
+      if (selection.route === "razorpayRoute") {
+        await readReadyRouteAccount({db, tx, organizerId: data.organizerId});
+      } else if (selection.route === "razorpayOAuth") {
+        const ready = requireReadyFormPaymentConnection(connection,
+          data.organizerId, deps.timestamp().toMillis());
+        if (ready.mode !== selection.mode) {
+          throw new HttpsError("failed-precondition", "Payment mode mismatch.");
+        }
+      } else {
+        throw new HttpsError("failed-precondition", "Payment route unavailable.");
+      }
     }
     if (current.form.activeVersionId) {
       const activeSnap = await tx.get(

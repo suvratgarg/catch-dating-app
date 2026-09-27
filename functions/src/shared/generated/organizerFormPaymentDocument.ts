@@ -8,6 +8,9 @@
 export interface OrganizerFormPaymentDocument {
   routing?: {
     version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
     purpose: "formFee" | "eventAdmission";
     organizerId: string;
     selection: {
@@ -34,7 +37,7 @@ export interface OrganizerFormPaymentDocument {
   versionId: string;
   draftId: string;
   respondentUid: string;
-  connectionId: string;
+  connectionId: string | null;
   accountId: string;
   mode: "test" | "live";
   draftRevision: number;

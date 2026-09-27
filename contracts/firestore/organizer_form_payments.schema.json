@@ -57,7 +57,7 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
     "connectionId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]
     },
     "accountId": {
       "type": "string",

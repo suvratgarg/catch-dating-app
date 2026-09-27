@@ -63108,7 +63108,7 @@ abstract final class CatchContractConstraints {
     path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.publicToken',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^rzp_(test|live)_oauth_[A-Za-z0-9]+\$',
+    pattern: '^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+\$',
   );
 
   static const findOrganizerFormPaymentCallableResponsePaymentCurrency = CatchContractFieldConstraints(
@@ -78566,6 +78566,25 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const manageOrganizerFormPaymentConnectionCallableResponseCollectionMode = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.collection.mode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseCollectionReady = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.collection.ready',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseCollectionRoute = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.collection.route',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['disabled', 'razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
+  );
+
   static const manageOrganizerFormPaymentConnectionCallableResponseConnectionId = CatchContractFieldConstraints(
     path: 'manageOrganizerFormPaymentConnectionCallableResponse.connectionId',
     maxLength: 180,
@@ -91567,7 +91586,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormDraftDocument.definition.payment.connectionId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -92226,7 +92244,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormPaymentDocument.connectionId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -92410,6 +92427,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormPaymentDocumentRoutingAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerFormPaymentDocumentRoutingAppRevision = CatchContractFieldConstraints(
     path: 'organizerFormPaymentDocument.routing.appRevision',
     required: true,
@@ -92508,6 +92533,18 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
   );
 
+  static const organizerFormPaymentDocumentRoutingSettlementHold = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.settlementHold',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingTransferAmountMinor = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.transferAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const organizerFormPaymentDocumentRoutingVersion = CatchContractFieldConstraints(
     path: 'organizerFormPaymentDocument.routing.version',
     required: true,
@@ -92567,7 +92604,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormPaymentWebhookDocument.connectionId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -92619,6 +92655,13 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormPaymentWebhookDocument.nextAttemptAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentPlatformConfigurationVersion = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.platformConfigurationVersion',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[a-z][a-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
   );
 
   static const organizerFormPaymentWebhookDocumentProcessedAtNanoseconds = CatchContractFieldConstraints(
@@ -93543,7 +93586,6 @@ abstract final class CatchContractConstraints {
     path: 'organizerFormVersionDocument.definition.payment.connectionId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -100786,6 +100828,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const paymentRoutingSnapshotAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.amountMinor',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const paymentRoutingSnapshotAppRevision = CatchContractFieldConstraints(
     path: 'paymentRoutingSnapshot.appRevision',
     required: true,
@@ -100882,6 +100932,18 @@ abstract final class CatchContractConstraints {
     path: 'paymentRoutingSnapshot.selection.route',
     required: true,
     enumValues: <String>['razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
+  );
+
+  static const paymentRoutingSnapshotSettlementHold = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.settlementHold',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const paymentRoutingSnapshotTransferAmountMinor = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.transferAmountMinor',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const paymentRoutingSnapshotVersion = CatchContractFieldConstraints(
@@ -120345,7 +120407,6 @@ abstract final class CatchContractConstraints {
     path: 'updateOrganizerFormDraftCallablePayload.definition.payment.connectionId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -124992,7 +125053,6 @@ abstract final class CatchContractConstraints {
     path: 'validateOrganizerFormDraftCallablePayload.definition.payment.connectionId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -137199,6 +137259,9 @@ abstract final class CatchContractConstraints {
     'manageOrganizerFormPaymentConnectionCallablePayload.organizerId': manageOrganizerFormPaymentConnectionCallablePayloadOrganizerId,
     'manageOrganizerFormPaymentConnectionCallableResponse.authorizationUrl': manageOrganizerFormPaymentConnectionCallableResponseAuthorizationUrl,
     'manageOrganizerFormPaymentConnectionCallableResponse.available': manageOrganizerFormPaymentConnectionCallableResponseAvailable,
+    'manageOrganizerFormPaymentConnectionCallableResponse.collection.mode': manageOrganizerFormPaymentConnectionCallableResponseCollectionMode,
+    'manageOrganizerFormPaymentConnectionCallableResponse.collection.ready': manageOrganizerFormPaymentConnectionCallableResponseCollectionReady,
+    'manageOrganizerFormPaymentConnectionCallableResponse.collection.route': manageOrganizerFormPaymentConnectionCallableResponseCollectionRoute,
     'manageOrganizerFormPaymentConnectionCallableResponse.connectionId': manageOrganizerFormPaymentConnectionCallableResponseConnectionId,
     'manageOrganizerFormPaymentConnectionCallableResponse.connections': manageOrganizerFormPaymentConnectionCallableResponseConnections,
     'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.accountId': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsAccountId,
@@ -139103,6 +139166,7 @@ abstract final class CatchContractConstraints {
     'organizerFormPaymentDocument.reservationReleased': organizerFormPaymentDocumentReservationReleased,
     'organizerFormPaymentDocument.respondentUid': organizerFormPaymentDocumentRespondentUid,
     'organizerFormPaymentDocument.responseId': organizerFormPaymentDocumentResponseId,
+    'organizerFormPaymentDocument.routing.amountMinor': organizerFormPaymentDocumentRoutingAmountMinor,
     'organizerFormPaymentDocument.routing.appRevision': organizerFormPaymentDocumentRoutingAppRevision,
     'organizerFormPaymentDocument.routing.bindingId': organizerFormPaymentDocumentRoutingBindingId,
     'organizerFormPaymentDocument.routing.checkoutKey': organizerFormPaymentDocumentRoutingCheckoutKey,
@@ -139117,6 +139181,8 @@ abstract final class CatchContractConstraints {
     'organizerFormPaymentDocument.routing.selection.merchantCountry': organizerFormPaymentDocumentRoutingSelectionMerchantCountry,
     'organizerFormPaymentDocument.routing.selection.mode': organizerFormPaymentDocumentRoutingSelectionMode,
     'organizerFormPaymentDocument.routing.selection.route': organizerFormPaymentDocumentRoutingSelectionRoute,
+    'organizerFormPaymentDocument.routing.settlementHold': organizerFormPaymentDocumentRoutingSettlementHold,
+    'organizerFormPaymentDocument.routing.transferAmountMinor': organizerFormPaymentDocumentRoutingTransferAmountMinor,
     'organizerFormPaymentDocument.routing.version': organizerFormPaymentDocumentRoutingVersion,
     'organizerFormPaymentDocument.status': organizerFormPaymentDocumentStatus,
     'organizerFormPaymentDocument.submittedAt._nanoseconds': organizerFormPaymentDocumentSubmittedAtNanoseconds,
@@ -139133,6 +139199,7 @@ abstract final class CatchContractConstraints {
     'organizerFormPaymentWebhookDocument.expiresAt._seconds': organizerFormPaymentWebhookDocumentExpiresAtSeconds,
     'organizerFormPaymentWebhookDocument.nextAttemptAt._nanoseconds': organizerFormPaymentWebhookDocumentNextAttemptAtNanoseconds,
     'organizerFormPaymentWebhookDocument.nextAttemptAt._seconds': organizerFormPaymentWebhookDocumentNextAttemptAtSeconds,
+    'organizerFormPaymentWebhookDocument.platformConfigurationVersion': organizerFormPaymentWebhookDocumentPlatformConfigurationVersion,
     'organizerFormPaymentWebhookDocument.processedAt._nanoseconds': organizerFormPaymentWebhookDocumentProcessedAtNanoseconds,
     'organizerFormPaymentWebhookDocument.processedAt._seconds': organizerFormPaymentWebhookDocumentProcessedAtSeconds,
     'organizerFormPaymentWebhookDocument.providerEventId': organizerFormPaymentWebhookDocumentProviderEventId,
@@ -140283,6 +140350,7 @@ abstract final class CatchContractConstraints {
     'paymentRoutingPolicyDocument.scope': paymentRoutingPolicyDocumentScope,
     'paymentRoutingPolicyDocument.updatedAt._nanoseconds': paymentRoutingPolicyDocumentUpdatedAtNanoseconds,
     'paymentRoutingPolicyDocument.updatedAt._seconds': paymentRoutingPolicyDocumentUpdatedAtSeconds,
+    'paymentRoutingSnapshot.amountMinor': paymentRoutingSnapshotAmountMinor,
     'paymentRoutingSnapshot.appRevision': paymentRoutingSnapshotAppRevision,
     'paymentRoutingSnapshot.bindingId': paymentRoutingSnapshotBindingId,
     'paymentRoutingSnapshot.checkoutKey': paymentRoutingSnapshotCheckoutKey,
@@ -140297,6 +140365,8 @@ abstract final class CatchContractConstraints {
     'paymentRoutingSnapshot.selection.merchantCountry': paymentRoutingSnapshotSelectionMerchantCountry,
     'paymentRoutingSnapshot.selection.mode': paymentRoutingSnapshotSelectionMode,
     'paymentRoutingSnapshot.selection.route': paymentRoutingSnapshotSelectionRoute,
+    'paymentRoutingSnapshot.settlementHold': paymentRoutingSnapshotSettlementHold,
+    'paymentRoutingSnapshot.transferAmountMinor': paymentRoutingSnapshotTransferAmountMinor,
     'paymentRoutingSnapshot.version': paymentRoutingSnapshotVersion,
     'photoPromptAnswer.caption': photoPromptAnswerCaption,
     'photoPromptAnswer.photoIndex': photoPromptAnswerPhotoIndex,

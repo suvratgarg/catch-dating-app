@@ -6603,6 +6603,9 @@ export interface PaymentRoutingPolicyDocument {
 export interface OrganizerFormPaymentDocument {
   routing?: {
     version: 1;
+    amountMinor: number;
+    transferAmountMinor: number | null;
+    settlementHold: boolean | null;
     purpose: "formFee" | "eventAdmission";
     organizerId: string;
     selection: {
@@ -6629,7 +6632,7 @@ export interface OrganizerFormPaymentDocument {
   versionId: string;
   draftId: string;
   respondentUid: string;
-  connectionId: string;
+  connectionId: string | null;
   accountId: string;
   mode: "test" | "live";
   draftRevision: number;
@@ -6677,7 +6680,7 @@ export interface OrganizerFormPaymentDocument {
  * Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.
  */
 export interface OrganizerFormPaymentWebhookDocument {
-  connectionId: string;
+  connectionId: string | null;
   accountId: string;
   providerEventId: string;
   event: string;
@@ -6688,6 +6691,7 @@ export interface OrganizerFormPaymentWebhookDocument {
   processedAt: FirebaseFirestore.Timestamp | null;
   expiresAt: FirebaseFirestore.Timestamp;
   nextAttemptAt: FirebaseFirestore.Timestamp;
+  platformConfigurationVersion?: string;
 }
 
 /**
@@ -6877,7 +6881,7 @@ export interface OrganizerFormDraftDocument {
       retentionCopy: string;
     };
     payment?: {
-      connectionId: string;
+      connectionId: string | null;
       amountPaise: number;
       currency: "INR";
       description: string;
@@ -7108,7 +7112,7 @@ export interface OrganizerFormVersionDocument {
       retentionCopy: string;
     };
     payment?: {
-      connectionId: string;
+      connectionId: string | null;
       amountPaise: number;
       currency: "INR";
       description: string;

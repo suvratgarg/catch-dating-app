@@ -16,11 +16,33 @@ export const paymentRoutingSnapshotSchema = {
     "merchantAccountId",
     "destinationAccountId",
     "configurationVersion",
-    "checkoutKey"
+    "checkoutKey",
+    "amountMinor",
+    "transferAmountMinor",
+    "settlementHold"
   ],
   "properties": {
     "version": {
       "const": 1
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "transferAmountMinor": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "settlementHold": {
+      "type": [
+        "boolean",
+        "null"
+      ]
     },
     "purpose": {
       "enum": [
@@ -117563,11 +117585,33 @@ export const organizerFormPaymentDocumentSchema = {
         "merchantAccountId",
         "destinationAccountId",
         "configurationVersion",
-        "checkoutKey"
+        "checkoutKey",
+        "amountMinor",
+        "transferAmountMinor",
+        "settlementHold"
       ],
       "properties": {
         "version": {
           "const": 1
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "transferAmountMinor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "settlementHold": {
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "purpose": {
           "enum": [
@@ -117688,9 +117732,16 @@ export const organizerFormPaymentDocumentSchema = {
       "maxLength": 180
     },
     "connectionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "accountId": {
       "type": "string",
@@ -118018,9 +118069,16 @@ export const organizerFormPaymentWebhookDocumentSchema = {
   ],
   "properties": {
     "connectionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "accountId": {
       "type": "string",
@@ -118144,12 +118202,42 @@ export const organizerFormPaymentWebhookDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "platformConfigurationVersion": {
+      "type": "string",
+      "pattern": "^projects/[a-z][a-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$",
+      "maxLength": 500
     }
   },
   "x-firestore-collection": "organizerFormPaymentWebhooks",
   "x-firestore-path": "organizerFormPaymentWebhooks/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "organizer form payment server operations"
+  "x-owner": "organizer form payment server operations",
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "platformConfigurationVersion"
+        ]
+      },
+      "then": {
+        "properties": {
+          "connectionId": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const organizerFormDraftDocumentSchema = {
@@ -118900,9 +118988,16 @@ export const organizerFormDraftDocumentSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -119850,9 +119945,16 @@ export const organizerFormVersionDocumentSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -224476,9 +224578,16 @@ export const createOrganizerFormCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -225408,9 +225517,16 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -226487,9 +226603,16 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -227631,9 +227754,16 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -228870,9 +229000,16 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
               ],
               "properties": {
                 "connectionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 180
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "amountPaise": {
                   "type": "integer",
@@ -230540,9 +230677,16 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -231723,9 +231867,16 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 180
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "amountPaise": {
                       "type": "integer",
@@ -232823,9 +232974,16 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                       ],
                       "properties": {
                         "connectionId": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 180
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 180
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "amountPaise": {
                           "type": "integer",
@@ -233635,7 +233793,7 @@ export const prepareOrganizerFormPaymentCallableResponseSchema = {
               "properties": {
                 "publicToken": {
                   "type": "string",
-                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                  "pattern": "^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+$"
                 },
                 "orderId": {
                   "type": "string",
@@ -233885,7 +234043,7 @@ export const findOrganizerFormPaymentCallableResponseSchema = {
                   "properties": {
                     "publicToken": {
                       "type": "string",
-                      "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                      "pattern": "^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+$"
                     },
                     "orderId": {
                       "type": "string",
@@ -234159,7 +234317,7 @@ export const getOrganizerFormPaymentCallableResponseSchema = {
               "properties": {
                 "publicToken": {
                   "type": "string",
-                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                  "pattern": "^rzp_(test|live)_(oauth_)?[A-Za-z0-9]+$"
                 },
                 "orderId": {
                   "type": "string",
@@ -234675,6 +234833,49 @@ export const manageOrganizerFormPaymentConnectionCallableResponseSchema = {
           }
         }
       }
+    },
+    "collection": {
+      "description": "Selected server-owned collection route. Null preserves legacy OAuth account selection.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "ready"
+          ],
+          "properties": {
+            "route": {
+              "type": "string",
+              "enum": [
+                "disabled",
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "test",
+                "live",
+                null
+              ]
+            },
+            "ready": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
     }
   }
 };

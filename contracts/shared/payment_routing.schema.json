@@ -23,9 +23,12 @@
     },
     "snapshot": {
       "type": "object", "additionalProperties": false,
-      "required": ["version", "purpose", "organizerId", "selection", "policySource", "appRevision", "organizerRevision", "bindingId", "merchantAccountId", "destinationAccountId", "configurationVersion", "checkoutKey"],
+      "required": ["version", "purpose", "organizerId", "selection", "policySource", "appRevision", "organizerRevision", "bindingId", "merchantAccountId", "destinationAccountId", "configurationVersion", "checkoutKey", "amountMinor", "transferAmountMinor", "settlementHold"],
       "properties": {
         "version": {"const": 1},
+        "amountMinor": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "transferAmountMinor": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+        "settlementHold": {"type": ["boolean", "null"]},
         "purpose": {"enum": ["formFee", "eventAdmission"]},
         "organizerId": {"$ref": "event_common.schema.json#/definitions/documentId"},
         "selection": {"$ref": "#/definitions/enabledSelection"},

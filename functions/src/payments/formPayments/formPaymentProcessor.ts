@@ -5,6 +5,9 @@ import type {OrganizerFormPaymentDocument as Payment,
   OrganizerFormDocument as Form} from
   "../../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../../shared/validation";
+import {paymentRoutingSnapshotsMatch, assertPaymentRouteSnapshot,
+  type PaymentRoutingSnapshot} from
+  "../paymentRouting";
 import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import type {FormPaymentCredentials} from "./formPaymentCredentials";
 import {FormPaymentProviderError, type FormProviderPayment,
@@ -30,6 +33,8 @@ export interface FormPaymentAuthority {
 
 interface ProcessorDeps {
   db: FirebaseFirestore.Firestore;
+  boundPaymentId?: string;
+  expectedRouting?: PaymentRoutingSnapshot;
   provider: Pick<RazorpayPaymentProvider, "createOrder" | "findOrderByReceipt" |
     "fetchOrder" | "fetchOrderPayments" | "fetchPayment" | "capturePayment" |
     "refundPayment" | "fetchRefund" | "verifyCheckout">;
@@ -43,6 +48,9 @@ interface ProcessorDeps {
 export class FormPaymentProcessor {
   private readonly now: () => number;
   constructor(private readonly deps: ProcessorDeps) {
+    if (deps.authority && !deps.boundPaymentId) {
+      throw new Error("A routed processor must be bound to one payment.");
+    }
     this.now = deps.now ?? Date.now;
   }
 
@@ -70,6 +78,9 @@ export class FormPaymentProcessor {
         if (this.deps.authority) {
           await this.deps.authority.assertReady(tx, current, credential);
         } else {
+          if (!current.connectionId) {
+            throw new Error("Merchant OAuth connection is required.");
+          }
           const connectionSnap = await tx.get(this.deps.db
             .collection("organizerPaymentConnections")
             .doc(current.connectionId));
@@ -205,12 +216,33 @@ export class FormPaymentProcessor {
   }
 
   async read(paymentId: string): Promise<Payment> {
+    if (this.deps.boundPaymentId && paymentId !== this.deps.boundPaymentId) {
+      throw new HttpsError("permission-denied", "Payment runtime mismatch.");
+    }
     if (!/^fp_[a-f0-9]{32}$/u.test(paymentId)) {
       throw new HttpsError("invalid-argument", "Invalid form payment id.");
     }
     const snap = await this.ref(paymentId).get();
     if (!snap.exists) throw new HttpsError("not-found", "Payment not found.");
-    return requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+    const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+    if (this.deps.expectedRouting && (!payment.routing ||
+        !paymentRoutingSnapshotsMatch(payment.routing,
+          this.deps.expectedRouting))) {
+      throw new HttpsError("failed-precondition", "Payment routing changed.");
+    }
+    if (payment.routing) {
+      assertPaymentRouteSnapshot(payment.routing, {
+        organizerId: payment.organizerId, purpose: "formFee",
+        currency: payment.currency, amountMinor: payment.amountPaise});
+      const oauth = payment.routing.selection.route === "razorpayOAuth";
+      if (payment.accountId !== payment.routing.merchantAccountId ||
+          payment.mode !== payment.routing.selection.mode ||
+          (oauth ? payment.connectionId !== payment.routing.bindingId :
+            payment.connectionId !== null)) {
+        throw new HttpsError("failed-precondition", "Payment binding changed.");
+      }
+    }
+    return payment;
   }
 
   private async observe(paymentId: string, observation: FormProviderPayment):
@@ -276,7 +308,7 @@ export class FormPaymentProcessor {
     if (this.deps.authority) {
       return {credential: await this.deps.authority.resolve(payment)};
     }
-    if (!this.deps.vault) {
+    if (!this.deps.vault || !payment.connectionId) {
       throw new Error("Form payment authority is unavailable.");
     }
     const snap = await this.deps.db.collection("organizerPaymentConnections")

@@ -2655,15 +2655,17 @@ the policy and existing admin audit log together. Only the most recent exact
 actor/payload retry replays; an intervening edit requires fresh review.
 
 The shared payment routing snapshot freezes the selected adapter, mode,
-currency, merchant country, policy revisions, merchant/destination accounts and
-immutable provider configuration reference. Its contract is provider-neutral;
+currency, merchant country, policy revisions, merchant/destination accounts,
+fee amount, transfer allocation, settlement hold and immutable provider
+configuration reference. Its contract is provider-neutral;
 checkout public keys are optional for providers that do not require them.
 The routing registry resumes only the recorded adapter and never reselects an
 account from current defaults. An absent adapter fails explicitly. Configuration
-alone does not establish provider or country eligibility. The existing form
-ledger can carry this snapshot alongside legacy OAuth fields during runtime
-integration; Route execution and event-offer checkout are not activated by the
-configuration command.
+alone does not establish provider or country eligibility. New form-fee attempts persist this snapshot before provider order creation.
+Legacy OAuth-only ledgers remain recoverable. Route ledgers have a null
+`connectionId` and use the platform account as `accountId`; OAuth ledgers retain
+the merchant connection. The configuration command alone does not activate
+provider setup or the unfinished event-offer checkout.
 
 `organizerPaymentConnections` binds one organizer to one Razorpay merchant,
 mode, verified merchant webhook and pinned Secret Manager credential version.
@@ -2682,8 +2684,14 @@ A late capture after release, or a missing/changed frozen submission, enters
 idempotent refund processing rather than creating an application.
 
 `organizerFormPaymentWebhooks` stores minimal signed-event receipts. Raw bytes
-are verified against the bound merchant secret and account before persistence;
-provider state is then re-read by a retrying worker or recovery sweep. Only a
+are verified against the bound merchant or platform secret and account before
+persistence; provider state is then re-read by a retrying worker or recovery
+sweep. Platform receipts have null `connectionId` and a pinned
+`platformConfigurationVersion`; OAuth receipts retain a connection ID. A
+platform callback can trigger only a matching Route form ledger, whose own
+saved profile governs financial mutations. Public callers cannot select
+arbitrary historic platform secret versions. Receipt retries and payment
+recovery remain independent of current routing defaults and OAuth readiness. Only a
 persisted response yields completion/redirect data. Checkout callbacks, fees,
 CRM conversion, review, event admission and room membership are separate.
 All four collections deny direct client reads and writes. The source and
