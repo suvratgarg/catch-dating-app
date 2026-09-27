@@ -91,7 +91,10 @@ export const privateEventSetupCallableResponseSchema: Record<string, unknown> = 
     },
     "publicationState": {
       "type": "string",
-      "const": "private"
+      "enum": [
+        "private",
+        "published"
+      ]
     },
     "status": {
       "type": "string",
@@ -1395,6 +1398,38 @@ export const privateEventSetupCallableResponseSchema: Record<string, unknown> = 
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "publicationReadiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canPublish",
+        "missing"
+      ],
+      "properties": {
+        "canPublish": {
+          "type": "boolean"
+        },
+        "missing": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 9,
+          "items": {
+            "type": "string",
+            "enum": [
+              "futureActive",
+              "organizerVisibility",
+              "duration",
+              "venue",
+              "format",
+              "description",
+              "admissionTerms",
+              "distancePace",
+              "contract"
+            ]
+          }
         }
       }
     }

@@ -1812,8 +1812,17 @@ The manager read response is a whitelist projection with civil date/time,
 resolved city/timezone, revision and setup provenance. It does not parse a
 minimal event through the rich Event model or invent venue, end time, capacity
 or price. Its event-local preferences are read from manager-only storage. Organizer management and deleted-user
-checks occur in the same transaction as the current event read. Published
-events use the published event editor instead.
+checks occur in the same transaction as the current event read. Valid published
+progressive events can reopen this projection for visibility management; basics
+and detail edits remain unavailable there. The manager projection includes
+publication readiness derived from the same candidate contract used by publish.
+Readiness is advisory: commit rechecks the current schedule, revision and authority.
+Host journals the exact publication request before sending it. An uncertain
+result retries that request; only an exact server rejection proving that the
+request did not commit can discard it. A replayed receipt is followed by a fresh
+read, so an older publish receipt cannot overwrite a later unpublish in the UI.
+Rich edits remain on the published editor; its progressive-event integration is
+still a rollout prerequisite.
 
 The private event picker reads at most 51 event documents for a 50-row page,
 with composite indexes on organizer, private publication state, status,

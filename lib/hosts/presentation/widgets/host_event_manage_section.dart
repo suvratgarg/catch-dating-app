@@ -127,6 +127,7 @@ class HostEventActionsSection extends StatelessWidget {
     required this.actionError,
     required this.privateLinkActionState,
     required this.onEditEvent,
+    this.onManagePublication,
     required this.onCancelEvent,
     required this.onDeleteEvent,
     required this.onSharePrivateLink,
@@ -138,6 +139,7 @@ class HostEventActionsSection extends StatelessWidget {
   final Object? actionError;
   final HostPrivateLinkActionState? privateLinkActionState;
   final VoidCallback onEditEvent;
+  final VoidCallback? onManagePublication;
   final Future<void> Function() onCancelEvent;
   final Future<void> Function() onDeleteEvent;
   final ValueChanged<String> onSharePrivateLink;
@@ -146,6 +148,12 @@ class HostEventActionsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final privateLinkState = privateLinkActionState;
     final hostActions = <Widget>[
+      if (onManagePublication != null)
+        HostActionRow(
+          label: context.l10n.hostsPrivateEventPublicListing,
+          detail: context.l10n.hostsPublicationPublishedBody,
+          onTap: actionState.isMutating ? null : onManagePublication,
+        ),
       if (actionState.showEditAction)
         HostActionRow(
           label: context.l10n.hostsHostEventManageScreenLabelEditEventDetails,

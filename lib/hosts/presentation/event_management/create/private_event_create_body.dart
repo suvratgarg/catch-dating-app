@@ -22,6 +22,60 @@ typedef ReadPrivateEventOrganizerDefaults =
     Future<ManagerEventSetupDefaults> Function(String organizerId);
 
 extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
+  void _openPublication() {
+    final receipt = _receipt;
+    if (receipt == null || _publicationController != null) return;
+    try {
+      final uid = ref.read(uidProvider).asData?.value;
+      if (uid == null || uid.isEmpty) {
+        throw const SignInRequiredException('manage event visibility');
+      }
+      final functions = ref.read(firebaseFunctionsProvider);
+      final controller = EventPublicationController(
+        userId: uid,
+        organizerId: widget.club.id,
+        eventId: receipt.eventId,
+        read: PrivateEventSetupRepository(functions).get,
+        write: EventPublicationRepository(functions).set,
+        currentUserId: () =>
+            mounted ? ref.read(uidProvider).asData?.value : null,
+      );
+      controller.addListener(_refresh);
+      _mutateScreenState(() {
+        _publicationController = controller;
+        _editingPublication = true;
+      });
+      unawaited(controller.load());
+    } catch (error) {
+      if (mounted) showCatchNoticeError(context, error);
+    }
+  }
+
+  void _closePublication() {
+    final controller = _publicationController;
+    if (controller == null) return;
+    final event = controller.event;
+    controller.removeListener(_refresh);
+    controller.dispose();
+    _mutateScreenState(() {
+      if (event != null) {
+        _receipt = PrivateEventCreateReceipt(
+          eventId: event.eventId,
+          setupRevision: event.setupRevision,
+          replayed: true,
+        );
+        _savedPublicationState = event.publicationState;
+        _canEditSavedBasics = event.canEditBasics;
+        _canChangeSavedCity = event.canChangeCity;
+      }
+      _publicationController = null;
+      _editingPublication = false;
+    });
+    if (event == null && _receipt != null) {
+      unawaited(_loadSavedEvent(savedEventId: _receipt!.eventId));
+    }
+  }
+
   void _openDetails() {
     final receipt = _receipt;
     if (receipt == null || _detailsController != null) {
@@ -43,7 +97,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         readEvent: eventRepository.get,
         readDefaults: defaultsRepository.get,
         write: detailsRepository.update,
-        currentUserId: () => mounted ? ref.read(uidProvider).asData?.value : null,
+        currentUserId: () =>
+            mounted ? ref.read(uidProvider).asData?.value : null,
       );
       controller.addListener(_refresh);
       _mutateScreenState(() {
@@ -52,23 +107,33 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       });
       unawaited(controller.load());
     } catch (error, stackTrace) {
-      app_ops.logAppError(error, stackTrace: stackTrace,
+      app_ops.logAppError(
+        error,
+        stackTrace: stackTrace,
         context: const app_ops.AppErrorContext(
           operation: app_ops.AppOperation.ui,
           action: 'open private event details',
           resource: 'private_event_details',
         ),
-        logError: ref.read(errorLoggerProvider));
+        logError: ref.read(errorLoggerProvider),
+      );
       if (!mounted) {
         return;
       }
-      ref.read(catchNoticeControllerProvider.notifier).show(CatchNoticeData(
-        id: 'private-event-details-open-error',
-        title: context.l10n.hostsEventPreferenceError,
-        message: appErrorMessage(error, l10n: context.l10n,
-          context: AppErrorContext.event),
-        tone: CatchNoticeTone.danger,
-      ));
+      ref
+          .read(catchNoticeControllerProvider.notifier)
+          .show(
+            CatchNoticeData(
+              id: 'private-event-details-open-error',
+              title: context.l10n.hostsEventPreferenceError,
+              message: appErrorMessage(
+                error,
+                l10n: context.l10n,
+                context: AppErrorContext.event,
+              ),
+              tone: CatchNoticeTone.danger,
+            ),
+          );
     }
   }
 
@@ -81,7 +146,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     controller.removeListener(_refresh);
     controller.dispose();
     _mutateScreenState(() {
-      if (latestRevision != null && _receipt != null &&
+      if (latestRevision != null &&
+          _receipt != null &&
           latestRevision > _receipt!.setupRevision) {
         _receipt = PrivateEventCreateReceipt(
           eventId: _receipt!.eventId,
@@ -107,7 +173,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       final functions = ref.read(firebaseFunctionsProvider);
       final eventRepository = PrivateEventSetupRepository(functions);
       final defaultsRepository = ManagerEventSetupDefaultsRepository(functions);
-      final preferencesRepository = PrivateEventPreferencesRepository(functions);
+      final preferencesRepository = PrivateEventPreferencesRepository(
+        functions,
+      );
       final controller = PrivateEventPreferencesController(
         userId: uid,
         organizerId: widget.club.id,
@@ -116,7 +184,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         readDefaults: defaultsRepository.get,
         write: preferencesRepository.update,
         readPreview: EventOfferPreferencesRepository(functions).preview,
-        currentUserId: () => mounted ? ref.read(uidProvider).asData?.value : null,
+        currentUserId: () =>
+            mounted ? ref.read(uidProvider).asData?.value : null,
       );
       controller.addListener(_refresh);
       _mutateScreenState(() {
@@ -138,7 +207,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     controller.removeListener(_refresh);
     controller.dispose();
     _mutateScreenState(() {
-      if (latestRevision != null && _receipt != null &&
+      if (latestRevision != null &&
+          _receipt != null &&
           latestRevision > _receipt!.setupRevision) {
         _receipt = PrivateEventCreateReceipt(
           eventId: _receipt!.eventId,
@@ -168,7 +238,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (defaults.organizerId != widget.club.id) {
         throw const FormatException('Organizer defaults identity changed');
       }
-      final startingValues = widget.initialDraft ?? widget.initialPrefill?.values;
+      final startingValues =
+          widget.initialDraft ?? widget.initialPrefill?.values;
       _mutateScreenState(() {
         _managerDefaults = defaults;
         _loadingManagerDefaults = false;
@@ -181,19 +252,26 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         } else {
           _cityInherited = startingValues.eventCityMode == 'inherit';
           _timezoneInherited = startingValues.eventTimezoneMode == 'inherit';
-          _defaultsChanged = (_cityInherited || _timezoneInherited) &&
+          _defaultsChanged =
+              (_cityInherited || _timezoneInherited) &&
               (startingValues.eventReviewedDefaultsHash !=
-                  defaults.basicsReviewedHash ||
+                      defaults.basicsReviewedHash ||
                   (_cityInherited && defaults.cityId == null) ||
                   (_timezoneInherited && defaults.timezone == null));
         }
-        if (_cityInherited && defaults.cityId != null &&
+        if (_cityInherited &&
+            defaults.cityId != null &&
             defaults.marketId != null) {
-          _city = defaultCityOptions.where((option) =>
-              option.effectiveCityId == defaults.cityId &&
-              option.effectiveMarketId == defaults.marketId).firstOrNull;
+          _city = defaultCityOptions
+              .where(
+                (option) =>
+                    option.effectiveCityId == defaults.cityId &&
+                    option.effectiveMarketId == defaults.marketId,
+              )
+              .firstOrNull;
           _savedCity = EventSetupCity(
-            cityId: defaults.cityId!, marketId: defaults.marketId!,
+            cityId: defaults.cityId!,
+            marketId: defaults.marketId!,
           );
         }
         if (_timezoneInherited && defaults.timezone != null) {
@@ -207,12 +285,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _mutateScreenState(() {
         _loadingManagerDefaults = false;
         _managerDefaultsError = appErrorMessage(
-          error, l10n: context.l10n, context: AppErrorContext.event,
+          error,
+          l10n: context.l10n,
+          context: AppErrorContext.event,
         );
       });
     }
   }
-
 
   Future<void> _checkForDrafts() async {
     try {
@@ -248,7 +327,8 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     _requestId = draft.eventCreateRequestId ?? _newRequestId();
     _submittedSignature = draft.eventCreatePayloadSignature;
     _submittedPayloadJson = draft.eventCreatePayloadJson;
-    _receipt = draft.eventCreateReceiptEventId != null &&
+    _receipt =
+        draft.eventCreateReceiptEventId != null &&
             draft.eventCreateReceiptRevision != null
         ? PrivateEventCreateReceipt(
             eventId: draft.eventCreateReceiptEventId!,
@@ -265,19 +345,28 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         break;
       }
     }
-    _city ??= defaultCityOptions.where((option) =>
-        option.effectiveCityId == widget.club.locationCityId &&
-        option.effectiveMarketId == widget.club.locationMarketId).firstOrNull;
-    _timezoneController.text = draft.eventTimezone ??
+    _city ??= defaultCityOptions
+        .where(
+          (option) =>
+              option.effectiveCityId == widget.club.locationCityId &&
+              option.effectiveMarketId == widget.club.locationMarketId,
+        )
+        .firstOrNull;
+    _timezoneController.text =
+        draft.eventTimezone ??
         _managerDefaults?.timezone ??
-        _city?.timeZone ?? '';
+        _city?.timeZone ??
+        '';
     _date = restoredPrivateEventDate(draft, rejectPast: false);
     _start = restoredPrivateEventStart(draft);
-    _cityInherited = _trustedOrganizerDefaultsReadAvailable() &&
+    _cityInherited =
+        _trustedOrganizerDefaultsReadAvailable() &&
         draft.eventCityMode == 'inherit';
-    _timezoneInherited = _trustedOrganizerDefaultsReadAvailable() &&
+    _timezoneInherited =
+        _trustedOrganizerDefaultsReadAvailable() &&
         draft.eventTimezoneMode == 'inherit';
-    _defaultsChanged = (_cityInherited || _timezoneInherited) &&
+    _defaultsChanged =
+        (_cityInherited || _timezoneInherited) &&
         draft.eventReviewedDefaultsHash != _organizerDefaultsHash;
     _savedCity = _city == null
         ? null
@@ -309,10 +398,11 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     });
     try {
       final controller = ref.read(createEventDraftControllerProvider.notifier);
-      final summary = await (widget.readSaved ?? controller.getPrivateEventSetup)(
-        organizerId: widget.club.id,
-        eventId: eventId,
-      );
+      final summary =
+          await (widget.readSaved ?? controller.getPrivateEventSetup)(
+            organizerId: widget.club.id,
+            eventId: eventId,
+          );
       if (!mounted) {
         return;
       }
@@ -330,8 +420,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted) {
         return;
       }
-      _activeDraft = drafts.where((draft) =>
-          draft.eventCreateReceiptEventId == eventId).firstOrNull;
+      _activeDraft = drafts
+          .where((draft) => draft.eventCreateReceiptEventId == eventId)
+          .firstOrNull;
       _localDraftId = _activeDraft?.id ?? 'private-event-$eventId';
       _requestId = _activeDraft?.eventCreateRequestId ?? _requestId;
       _submittedSignature = _activeDraft?.eventCreatePayloadSignature;
@@ -344,7 +435,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           replayed: true,
         );
         _savedBasics = basics;
-        _savedEventActive = summary.status == 'active' &&
+        _savedPublicationState = summary.publicationState;
+        _savedEventActive =
+            summary.status == 'active' &&
             summary.startTimeMillis > DateTime.now().millisecondsSinceEpoch;
         _canEditSavedBasics = _savedEventActive && summary.canEditBasics;
         _canChangeSavedCity = _savedEventActive && summary.canChangeCity;
@@ -355,6 +448,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
         }
       });
       if (_savedEventActive) await _loadPendingUpdate();
+      if (mounted &&
+          widget.initialPublicationReview &&
+          !_openedInitialPublication &&
+          _readError == null) {
+        _openedInitialPublication = true;
+        _openPublication();
+      }
     } catch (error) {
       if (!mounted) {
         return;
@@ -440,7 +540,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
           Map<String, dynamic>.from(jsonDecode(pendingPayload) as Map),
         );
       } catch (_) {
-        _mutateScreenState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
+        _mutateScreenState(
+          () => _error = context.l10n.hostsPrivateEventPendingRequest,
+        );
         return;
       }
     } else {
@@ -452,7 +554,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
     }
     final signature = jsonEncode(basics.toJson());
     if (_submittedSignature != null && _submittedSignature != signature) {
-      _mutateScreenState(() => _error = context.l10n.hostsPrivateEventPendingRequest);
+      _mutateScreenState(
+        () => _error = context.l10n.hostsPrivateEventPendingRequest,
+      );
       return;
     }
     FocusScope.of(context).unfocus();
@@ -468,12 +572,15 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _submittedPayloadJson = signature;
       await _persistDraft();
       requestSent = true;
-      final receipt = await (widget.create ??
-          ref.read(createEventDraftControllerProvider.notifier).createPrivateEvent)(
-        organizerId: widget.club.id,
-        requestId: _requestId,
-        basics: basics,
-      );
+      final receipt =
+          await (widget.create ??
+              ref
+                  .read(createEventDraftControllerProvider.notifier)
+                  .createPrivateEvent)(
+            organizerId: widget.club.id,
+            requestId: _requestId,
+            basics: basics,
+          );
       if (!mounted) {
         return;
       }
@@ -519,13 +626,14 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   Future<void> _saveUpdate() async {
     final receipt = _receipt;
-    if (receipt == null ||
-        (!_canEditSavedBasics && _pendingUpdate == null)) {
+    if (receipt == null || (!_canEditSavedBasics && _pendingUpdate == null)) {
       return;
     }
     final existing = _pendingUpdate;
     if (_defaultsChanged && existing == null) {
-      _mutateScreenState(() => _error = context.l10n.hostsPrivateEventDefaultsChanged);
+      _mutateScreenState(
+        () => _error = context.l10n.hostsPrivateEventDefaultsChanged,
+      );
       return;
     }
     final basics = existing?.basics ?? _basics;
@@ -534,8 +642,9 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (currentCity == null ||
           currentCity.cityId != _savedCity?.cityId ||
           currentCity.marketId != _savedCity?.marketId) {
-        _mutateScreenState(() => _error =
-            context.l10n.hostsPrivateEventSetupUnavailable);
+        _mutateScreenState(
+          () => _error = context.l10n.hostsPrivateEventSetupUnavailable,
+        );
         return;
       }
     }
@@ -548,13 +657,15 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       _mutateScreenState(() => _editingSavedBasics = false);
       return;
     }
-    final request = existing ?? PrivateEventBasicsUpdateRequest(
-      organizerId: widget.club.id,
-      eventId: receipt.eventId,
-      requestId: _newRequestId(),
-      expectedSetupRevision: receipt.setupRevision,
-      basics: basics,
-    );
+    final request =
+        existing ??
+        PrivateEventBasicsUpdateRequest(
+          organizerId: widget.club.id,
+          eventId: receipt.eventId,
+          requestId: _newRequestId(),
+          expectedSetupRevision: receipt.setupRevision,
+          basics: basics,
+        );
     FocusScope.of(context).unfocus();
     _mutateScreenState(() {
       _saving = true;
@@ -570,9 +681,11 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
             .savePendingBasicsUpdate(request);
         _pendingUpdate = request;
       }
-      final updated = await (widget.update ?? ref
-              .read(createEventDraftControllerProvider.notifier)
-              .updatePrivateEventBasics)(request);
+      final updated =
+          await (widget.update ??
+              ref
+                  .read(createEventDraftControllerProvider.notifier)
+                  .updatePrivateEventBasics)(request);
       if (!mounted) {
         return;
       }
@@ -601,11 +714,13 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
       if (!mounted) {
         return;
       }
-      _mutateScreenState(() => _error = appErrorMessage(
-        error,
-        l10n: context.l10n,
-        context: AppErrorContext.event,
-      ));
+      _mutateScreenState(
+        () => _error = appErrorMessage(
+          error,
+          l10n: context.l10n,
+          context: AppErrorContext.event,
+        ),
+      );
       showCatchNoticeError(context, error);
     } finally {
       if (mounted) _mutateScreenState(() => _saving = false);
@@ -685,48 +800,49 @@ extension _PrivateEventCreateBody on _PrivateEventCreateScreenState {
 
   Future<void> _persistDraft({PrivateEventCreateReceipt? receipt}) async {
     final old = _activeDraft;
-    final draft = (old ??
-            EventDraft(
-              id: _localDraftId,
-              clubId: widget.club.id,
+    final draft =
+        (old ??
+                EventDraft(
+                  id: _localDraftId,
+                  clubId: widget.club.id,
+                  savedAt: DateTime.now(),
+                ))
+            .copyWith(
               savedAt: DateTime.now(),
-            ))
-        .copyWith(
-          savedAt: DateTime.now(),
-          name: _nameController.text.trim(),
-          eventCityId: _city?.effectiveCityId ?? _savedCity?.cityId,
-          eventMarketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
-          eventLocalDate: _date == null ? null : _localDate,
-          eventLocalStartTime: _start == null ? null : _localStartTime,
-          eventTimezone: _timezoneController.text.trim(),
-          eventCityMode: _cityInherited ? 'inherit' : 'set',
-          eventTimezoneMode: _timezoneInherited ? 'inherit' : 'set',
-          eventReviewedDefaultsHash: _cityInherited || _timezoneInherited
-              ? _organizerDefaultsHash
-              : null,
-          eventCreateRequestId: _requestId,
-          eventCreatePayloadSignature: _submittedSignature,
-          eventCreatePayloadJson: _submittedPayloadJson,
-          eventCreateReceiptEventId:
-              receipt?.eventId ?? old?.eventCreateReceiptEventId,
-          eventCreateReceiptRevision:
-              receipt?.setupRevision ?? old?.eventCreateReceiptRevision,
-          selectedDateMillis: _date?.millisecondsSinceEpoch,
-          selectedStartHour: _start?.hour,
-          selectedStartMinute: _start?.minute,
-        );
+              name: _nameController.text.trim(),
+              eventCityId: _city?.effectiveCityId ?? _savedCity?.cityId,
+              eventMarketId: _city?.effectiveMarketId ?? _savedCity?.marketId,
+              eventLocalDate: _date == null ? null : _localDate,
+              eventLocalStartTime: _start == null ? null : _localStartTime,
+              eventTimezone: _timezoneController.text.trim(),
+              eventCityMode: _cityInherited ? 'inherit' : 'set',
+              eventTimezoneMode: _timezoneInherited ? 'inherit' : 'set',
+              eventReviewedDefaultsHash: _cityInherited || _timezoneInherited
+                  ? _organizerDefaultsHash
+                  : null,
+              eventCreateRequestId: _requestId,
+              eventCreatePayloadSignature: _submittedSignature,
+              eventCreatePayloadJson: _submittedPayloadJson,
+              eventCreateReceiptEventId:
+                  receipt?.eventId ?? old?.eventCreateReceiptEventId,
+              eventCreateReceiptRevision:
+                  receipt?.setupRevision ?? old?.eventCreateReceiptRevision,
+              selectedDateMillis: _date?.millisecondsSinceEpoch,
+              selectedStartHour: _start?.hour,
+              selectedStartMinute: _start?.minute,
+            );
     await ref
         .read(createEventDraftControllerProvider.notifier)
         .saveDraft(draft);
     _activeDraft = draft;
     ref.invalidate(clubEventDraftsProvider(clubId: widget.club.id));
   }
-
 }
 
 String _newRequestId() {
   final random = Random.secure();
-  return List<int>.generate(24, (_) => random.nextInt(256))
-      .map((value) => value.toRadixString(16).padLeft(2, '0'))
-      .join();
+  return List<int>.generate(
+    24,
+    (_) => random.nextInt(256),
+  ).map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

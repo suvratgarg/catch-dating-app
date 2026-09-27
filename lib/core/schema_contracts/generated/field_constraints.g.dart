@@ -105828,10 +105828,34 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const privateEventSetupCallableResponsePublicationReadinessCanPublish = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.publicationReadiness.canPublish',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const privateEventSetupCallableResponsePublicationReadinessMissing = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.publicationReadiness.missing',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['futureActive', 'organizerVisibility', 'duration', 'venue', 'format', 'description', 'admissionTerms', 'distancePace', 'contract'],
+    maxItems: 9,
+    uniqueItems: true,
+  );
+
+  static const privateEventSetupCallableResponsePublicationReadinessMissingItems = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.publicationReadiness.missing.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['futureActive', 'organizerVisibility', 'duration', 'venue', 'format', 'description', 'admissionTerms', 'distancePace', 'contract'],
+  );
+
   static const privateEventSetupCallableResponsePublicationState = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.publicationState',
     required: true,
     valueTypes: <String>['string'],
+    enumValues: <String>['private', 'published'],
   );
 
   static const privateEventSetupCallableResponseSetupDefaultsCitySource = CatchContractFieldConstraints(
@@ -144775,6 +144799,9 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.localStartTime': privateEventSetupCallableResponseLocalStartTime,
     'privateEventSetupCallableResponse.name': privateEventSetupCallableResponseName,
     'privateEventSetupCallableResponse.organizerId': privateEventSetupCallableResponseOrganizerId,
+    'privateEventSetupCallableResponse.publicationReadiness.canPublish': privateEventSetupCallableResponsePublicationReadinessCanPublish,
+    'privateEventSetupCallableResponse.publicationReadiness.missing': privateEventSetupCallableResponsePublicationReadinessMissing,
+    'privateEventSetupCallableResponse.publicationReadiness.missing.items': privateEventSetupCallableResponsePublicationReadinessMissingItems,
     'privateEventSetupCallableResponse.publicationState': privateEventSetupCallableResponsePublicationState,
     'privateEventSetupCallableResponse.setupDefaults.city.source': privateEventSetupCallableResponseSetupDefaultsCitySource,
     'privateEventSetupCallableResponse.setupDefaults.city.value.cityId': privateEventSetupCallableResponseSetupDefaultsCityValueCityId,

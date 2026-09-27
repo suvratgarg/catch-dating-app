@@ -243,6 +243,7 @@ abstract class Event with _$Event {
     @Default(EventLifecycleStatus.active) EventLifecycleStatus status,
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? cancellationReason,
+    @JsonKey(includeIfNull: false) int? setupRevision,
     @Default(false) bool publicRegistrationEnabled,
     @JsonKey(
       includeIfNull: false,

@@ -19,8 +19,8 @@
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
     ],
-    "imperativePageRouteCount": 17,
-    "imperativePageTargetCount": 11
+    "imperativePageRouteCount": 18,
+    "imperativePageTargetCount": 12
   },
   "routes": [
     {
@@ -1635,6 +1635,15 @@
       "ordinal": 2,
       "presentationExpression": "(_)=>HostFormResponseDetailScreen(organizerId:widget.organizerId,responseId:id,returnToOffer:true)",
       "presentationTarget": "HostFormResponseDetailScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/host_event_manage_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "line": 197,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>PrivateEventCreateScreen(club:club,initialSavedEventId:event.id,initialPublicationReview:true,promptForDraftsOnStart:false)",
+      "presentationTarget": "PrivateEventCreateScreen",
       "fullscreenDialogExpression": null
     },
     {

@@ -22,6 +22,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
     required this.cityLabel,
     this.pendingRosterFileName,
     this.readOnly = false,
+    this.publicationState = 'private',
     required this.onClose,
     this.onReturnToResponses,
     this.onLinkForm,
@@ -42,6 +43,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
   final String cityLabel;
   final String? pendingRosterFileName;
   final bool readOnly;
+  final String publicationState;
   final VoidCallback onClose;
   final VoidCallback? onReturnToResponses;
   final VoidCallback? onLinkForm;
@@ -66,8 +68,9 @@ class PrivateEventSetupScreen extends StatelessWidget {
             title: name,
             subtitle: club.name,
             stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
-            compactStepLabelBuilder:
-                catchStepHeaderCompactLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
             onBack: onClose,
             leadingType: CatchTopBarNavigationMode.back,
           ),
@@ -97,122 +100,184 @@ class PrivateEventSetupScreen extends StatelessWidget {
                             ),
                             CatchField.read(
                               copy: copy,
-                              title: context.l10n.hostsPrivateEventPrivateTitle,
-                              body: context.l10n.hostsPrivateEventPrivateBody,
+                              title: publicationState == 'published'
+                                  ? context
+                                        .l10n
+                                        .hostsEditHostedEventScreenTitlePublishedEvent
+                                  : context.l10n.hostsPrivateEventPrivateTitle,
+                              body: publicationState == 'published'
+                                  ? context.l10n.hostsPublicationPublishedBody
+                                  : context.l10n.hostsPrivateEventPrivateBody,
                               icon: CatchIcons.lockOutline,
                             ),
                           ],
                         ),
                         if (readOnly)
                           CatchSection.fieldRows(
-                            children: [CatchField.read(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventHistoryTitle,
-                              body: context.l10n.hostsPrivateEventHistoryBody,
-                            )],
-                          ),
-                        if (!readOnly) CatchSection.fieldRows(
-                          title: context.l10n.hostsPrivateEventSetupHeading,
-                          children: [
-                            if (pendingRosterFileName != null)
+                            children: [
                               CatchField.read(
                                 copy: copy,
-                                title: context.l10n.hostsPrivateEventPendingRoster,
-                                body: context.l10n.hostsPrivateEventPendingRosterBody(
-                                  fileName: pendingRosterFileName!,
-                                ),
-                                icon: CatchIcons.cloudUploadOutlined,
+                                title:
+                                    context.l10n.hostsPrivateEventHistoryTitle,
+                                body: context.l10n.hostsPrivateEventHistoryBody,
                               ),
-                            if (onReturnToResponses != null)
+                            ],
+                          ),
+                        if (readOnly && publicationState == 'published')
+                          CatchSection.fieldRows(
+                            children: [
                               CatchField.action(
                                 copy: copy,
-                                title: context.l10n.hostsPrivateEventReturnResponses,
-                                body: context.l10n.hostsPrivateEventReturnResponsesBody,
-                                icon: CatchIcons.arrowBackRounded,
-                                onTap: onReturnToResponses,
+                                title:
+                                    context.l10n.hostsPrivateEventPublicListing,
+                                onTap: onSetupPublicListing,
                               ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventLinkForm,
-                              body: onLinkForm == null
-                                  ? context.l10n.hostsPrivateEventLinkFormUnavailable
-                                  : context.l10n.hostsPrivateEventLinkFormBody,
-                              icon: CatchIcons.descriptionOutlined,
-                              onTap: onLinkForm,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventEditBasics,
-                              body: onEditBasics == null
-                                  ? context.l10n.hostsPrivateEventEditBasicsUnavailable
-                                  : context.l10n.hostsPrivateEventEditBasicsBody,
-                              icon: CatchIcons.editNoteRounded,
-                              onTap: onEditBasics,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventDetails,
-                              body: onEditDetails == null
-                                  ? context.l10n.hostsPrivateEventDetailsUnavailable
-                                  : context.l10n.hostsPrivateEventDetailsBody,
-                              icon: CatchIcons.eventAvailableOutlined,
-                              onTap: onEditDetails,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventImportGuests,
-                              body: onImportGuests == null
-                                  ? context.l10n.hostsPrivateEventImportGuestsUnavailable
-                                  : context.l10n.hostsPrivateEventImportGuestsBody,
-                              icon: CatchIcons.cloudUploadOutlined,
-                              onTap: onImportGuests,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventCatchRegistration,
-                              body: onSetupRegistration == null
-                                  ? context.l10n.hostsPrivateEventCatchRegistrationUnavailable
-                                  : context.l10n.hostsPrivateEventCatchRegistrationBody,
-                              icon: CatchIcons.howToRegOutlined,
-                              onTap: onSetupRegistration,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventPayments,
-                              body: onEditPayments == null
-                                  ? context.l10n.hostsPrivateEventPaymentsUnavailable
-                                  : context.l10n.hostsPrivateEventPaymentsBody,
-                              icon: CatchIcons.paymentsOutlined,
-                              onTap: onEditPayments,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventPublicListing,
-                              body: onSetupPublicListing == null
-                                  ? context.l10n.hostsPrivateEventPublicListingUnavailable
-                                  : context.l10n.hostsPrivateEventPublicListingBody,
-                              icon: CatchIcons.languageOutlined,
-                              onTap: onSetupPublicListing,
-                            ),
-                            CatchField.action(
-                              copy: copy,
-                              title: context.l10n.hostsPrivateEventGuide,
-                              body: onSetupGuide == null
-                                  ? context.l10n.hostsPrivateEventGuideUnavailable
-                                  : context.l10n.hostsPrivateEventGuideBody,
-                              icon: CatchIcons.mapOutlined,
-                              onTap: onSetupGuide,
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        if (!readOnly)
+                          CatchSection.fieldRows(
+                            title: context.l10n.hostsPrivateEventSetupHeading,
+                            children: [
+                              if (pendingRosterFileName != null)
+                                CatchField.read(
+                                  copy: copy,
+                                  title: context
+                                      .l10n
+                                      .hostsPrivateEventPendingRoster,
+                                  body: context.l10n
+                                      .hostsPrivateEventPendingRosterBody(
+                                        fileName: pendingRosterFileName!,
+                                      ),
+                                  icon: CatchIcons.cloudUploadOutlined,
+                                ),
+                              if (onReturnToResponses != null)
+                                CatchField.action(
+                                  copy: copy,
+                                  title: context
+                                      .l10n
+                                      .hostsPrivateEventReturnResponses,
+                                  body: context
+                                      .l10n
+                                      .hostsPrivateEventReturnResponsesBody,
+                                  icon: CatchIcons.arrowBackRounded,
+                                  onTap: onReturnToResponses,
+                                ),
+                              CatchField.action(
+                                copy: copy,
+                                title: context.l10n.hostsPrivateEventLinkForm,
+                                body: onLinkForm == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventLinkFormUnavailable
+                                    : context
+                                          .l10n
+                                          .hostsPrivateEventLinkFormBody,
+                                icon: CatchIcons.descriptionOutlined,
+                                onTap: onLinkForm,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title: context.l10n.hostsPrivateEventEditBasics,
+                                body: onEditBasics == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventEditBasicsUnavailable
+                                    : context
+                                          .l10n
+                                          .hostsPrivateEventEditBasicsBody,
+                                icon: CatchIcons.editNoteRounded,
+                                onTap: onEditBasics,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title: context.l10n.hostsPrivateEventDetails,
+                                body: onEditDetails == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventDetailsUnavailable
+                                    : context.l10n.hostsPrivateEventDetailsBody,
+                                icon: CatchIcons.eventAvailableOutlined,
+                                onTap: onEditDetails,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title:
+                                    context.l10n.hostsPrivateEventImportGuests,
+                                body: onImportGuests == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventImportGuestsUnavailable
+                                    : context
+                                          .l10n
+                                          .hostsPrivateEventImportGuestsBody,
+                                icon: CatchIcons.cloudUploadOutlined,
+                                onTap: onImportGuests,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title: context
+                                    .l10n
+                                    .hostsPrivateEventCatchRegistration,
+                                body: onSetupRegistration == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventCatchRegistrationUnavailable
+                                    : context
+                                          .l10n
+                                          .hostsPrivateEventCatchRegistrationBody,
+                                icon: CatchIcons.howToRegOutlined,
+                                onTap: onSetupRegistration,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title: context.l10n.hostsPrivateEventPayments,
+                                body: onEditPayments == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventPaymentsUnavailable
+                                    : context
+                                          .l10n
+                                          .hostsPrivateEventPaymentsBody,
+                                icon: CatchIcons.paymentsOutlined,
+                                onTap: onEditPayments,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title:
+                                    context.l10n.hostsPrivateEventPublicListing,
+                                body: onSetupPublicListing == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventPublicListingUnavailable
+                                    : context
+                                          .l10n
+                                          .hostsPrivateEventPublicListingBody,
+                                icon: CatchIcons.languageOutlined,
+                                onTap: onSetupPublicListing,
+                              ),
+                              CatchField.action(
+                                copy: copy,
+                                title: context.l10n.hostsPrivateEventGuide,
+                                body: onSetupGuide == null
+                                    ? context
+                                          .l10n
+                                          .hostsPrivateEventGuideUnavailable
+                                    : context.l10n.hostsPrivateEventGuideBody,
+                                icon: CatchIcons.mapOutlined,
+                                onTap: onSetupGuide,
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                     if (!readOnly) gapH4,
-                    if (!readOnly) Text(
-                      context.l10n.hostsPrivateEventRosterNote,
-                      style: Theme.of(context)
-                          .textTheme.bodyMedium?.copyWith(color: t.ink2),
-                    ),
+                    if (!readOnly)
+                      Text(
+                        context.l10n.hostsPrivateEventRosterNote,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: t.ink2),
+                      ),
                   ],
                 ),
               ),

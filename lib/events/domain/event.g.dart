@@ -136,6 +136,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
       EventLifecycleStatus.active,
   cancelledAt: const NullableTimestampConverter().fromJson(json['cancelledAt']),
   cancellationReason: json['cancellationReason'] as String?,
+  setupRevision: (json['setupRevision'] as num?)?.toInt(),
   publicRegistrationEnabled:
       json['publicRegistrationEnabled'] as bool? ?? false,
   publicRegistrationMode: $enumDecodeNullable(
@@ -209,6 +210,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
     instance.cancelledAt,
   ),
   'cancellationReason': instance.cancellationReason,
+  'setupRevision': ?instance.setupRevision,
   'publicRegistrationEnabled': instance.publicRegistrationEnabled,
   'publicRegistrationMode':
       ?_$EventPublicRegistrationModeEnumMap[instance.publicRegistrationMode],

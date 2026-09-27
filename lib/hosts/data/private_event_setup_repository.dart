@@ -447,6 +447,44 @@ class PrivateEventDetailsSnapshot {
   }
 }
 
+class EventPublicationReadiness {
+  const EventPublicationReadiness({
+    required this.canPublish,
+    required this.missing,
+  });
+  final bool canPublish;
+  final List<String> missing;
+  static const requirements = {
+    'futureActive',
+    'organizerVisibility',
+    'duration',
+    'venue',
+    'format',
+    'description',
+    'admissionTerms',
+    'distancePace',
+    'contract',
+  };
+  factory EventPublicationReadiness.fromResponse(Object? raw) {
+    if (raw is! Map ||
+        raw.length != 2 ||
+        raw['canPublish'] is! bool ||
+        raw['missing'] is! List) {
+      throw const FormatException('Invalid publication readiness');
+    }
+    final items = raw['missing'] as List;
+    if (items.any((value) => !requirements.contains(value)) ||
+        items.toSet().length != items.length ||
+        (raw['canPublish'] == true && items.isNotEmpty)) {
+      throw const FormatException('Invalid publication requirements');
+    }
+    return EventPublicationReadiness(
+      canPublish: raw['canPublish'] as bool,
+      missing: List<String>.unmodifiable(items.cast<String>()),
+    );
+  }
+}
+
 /// Manager-only projection of an already-saved basic event. It intentionally
 /// has no rich Event defaults; a partial private setup cannot be decoded as a
 /// public event.
@@ -465,6 +503,8 @@ class PrivateEventBasicSummary {
     required this.setupDefaults,
     required this.detailsConfigured,
     required this.eventPreferences,
+    this.publicationState = 'private',
+    this.publicationReadiness,
     this.canEditBasics = false,
     this.canChangeCity = false,
     this.eventDetails = const PrivateEventDetailsSnapshot(),
@@ -480,6 +520,8 @@ class PrivateEventBasicSummary {
   final String timezone;
   final int startTimeMillis;
   final String status;
+  final String publicationState;
+  final EventPublicationReadiness? publicationReadiness;
   final Map<String, Object?> setupDefaults;
   final bool detailsConfigured;
   final PrivateEventPreferencesSnapshot? eventPreferences;
@@ -527,7 +569,9 @@ class PrivateEventBasicSummary {
         timezone is! String ||
         startTimeMillis is! int ||
         (status != 'active' && status != 'cancelled') ||
-        data['publicationState'] != 'private' ||
+        !const {'private', 'published'}.contains(data['publicationState']) ||
+        (data['publicationState'] == 'published' &&
+            (canEditBasics == true || canChangeCity == true)) ||
         setupDefaults is! Map ||
         detailsConfigured is! bool ||
         canEditBasics is! bool ||
@@ -558,6 +602,12 @@ class PrivateEventBasicSummary {
       timezone: timezone,
       startTimeMillis: startTimeMillis,
       status: status as String,
+      publicationState: data['publicationState'] as String,
+      publicationReadiness: data['publicationReadiness'] == null
+          ? null
+          : EventPublicationReadiness.fromResponse(
+              data['publicationReadiness'],
+            ),
       setupDefaults: Map<String, Object?>.from(setupDefaults),
       detailsConfigured: detailsConfigured,
       canEditBasics: canEditBasics,

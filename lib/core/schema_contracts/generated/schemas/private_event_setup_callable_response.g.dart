@@ -93,7 +93,10 @@ const schemaPrivateEventSetupCallableResponseSchema = <String, Object?>{
     },
     'publicationState': <String, Object?>{
       'type': 'string',
-      'const': 'private',
+      'enum': <Object?>[
+        'private',
+        'published',
+      ],
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -1397,6 +1400,38 @@ const schemaPrivateEventSetupCallableResponseSchema = <String, Object?>{
               'type': 'null',
             },
           ],
+        },
+      },
+    },
+    'publicationReadiness': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'canPublish',
+        'missing',
+      ],
+      'properties': <String, Object?>{
+        'canPublish': <String, Object?>{
+          'type': 'boolean',
+        },
+        'missing': <String, Object?>{
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 9,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'futureActive',
+              'organizerVisibility',
+              'duration',
+              'venue',
+              'format',
+              'description',
+              'admissionTerms',
+              'distancePace',
+              'contract',
+            ],
+          },
         },
       },
     },

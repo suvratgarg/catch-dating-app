@@ -1654,6 +1654,59 @@
         }
       ],
       "reason": "The offer continuation opens the existing response owner to complete review and People linkage, then returns to the retained selection."
+    },
+    "PrivateEventCreateScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_create_screen.dart",
+          "symbol": "_PrivateEventCreateScreenState",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_setup_screen.dart",
+          "symbol": "PrivateEventSetupScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
+          "symbol": "PrivateEventDetailsScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart",
+          "symbol": "PrivateEventPreferencesScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/create/event_publication_screen.dart",
+          "symbol": "EventPublicationScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        },
+        {
+          "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart",
+          "symbol": "HostCreateEventRouteLoadingScreen",
+          "family": "step-flow",
+          "expression": "CatchScaffold.stepFlow",
+          "bodyGeometry": "intrinsic",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "Host visibility management reopens the progressive event workspace; its loading, basics, details, preferences and publication branches share the governed step-flow layout."
     }
   },
   "screens": [

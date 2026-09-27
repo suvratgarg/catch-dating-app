@@ -23,6 +23,8 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_entry_field.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_roster_summary.dart';
@@ -186,6 +188,24 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       actionState: actionState,
       actionError: actionError,
       privateLinkActionState: privateLinkActionState,
+      onManagePublication:
+          event.setupRevision != null &&
+              ref.watch(privateEventSetupAvailableProvider)
+          ? () {
+              unawaited(
+                Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => PrivateEventCreateScreen(
+                      club: club,
+                      initialSavedEventId: event.id,
+                      initialPublicationReview: true,
+                      promptForDraftsOnStart: false,
+                    ),
+                  ),
+                ),
+              );
+            }
+          : null,
       onEditEvent: () {
         unawaited(
           _handleHostEventActionIntent(

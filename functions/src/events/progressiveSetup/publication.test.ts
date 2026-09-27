@@ -5,6 +5,7 @@ import {resolve} from "node:path";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Store} from "../../organizerFormAdmission/admissionTestFixture";
+import {getPrivateEventSetup} from "./readModel";
 import {createPrivateEventSetup} from "./service";
 import {updatePrivateEventDetails} from "./details";
 import {getManagerEventSetupDefaults} from
@@ -217,6 +218,27 @@ test("fresh progressive event publishes after details", async () => {
   assert.equal(event.publicRegistrationEnabled, false);
   assert.equal(event.distanceKm, 0);
   assert.equal(event.pace, "easy");
+  const reopened = await getPrivateEventSetup({actorUid: "host1", db,
+    command: {organizerId: "org1", eventId: created.eventId}});
+  assert.equal(reopened.publicationState, "published");
+  assert.equal(reopened.canEditBasics, false);
+  assert.equal(reopened.publicationReadiness?.canPublish, false);
   assert.equal(h.store.get(`eventSeatLedgers/${created.eventId}`)!.state,
     "ready");
+});
+
+
+test("stale marker identifies an uncommitted command", async () => {
+  const h = setup();
+  const stale = {...h.command, expectedSetupRevision: 2};
+  await assert.rejects(h.run(stale), (error) => {
+    assert.ok(error instanceof HttpsError);
+    assert.deepEqual(error.details, {reason: "event-publication-review-stale",
+      requestId: stale.requestId, organizerId: stale.organizerId,
+      eventId: stale.eventId, expectedSetupRevision: 2,
+      publicationState: "published"});
+    return true;
+  });
+  await h.run();
+  assert.equal((await h.run()).replayed, true);
 });

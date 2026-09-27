@@ -76,6 +76,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
   bool get canEdit =>
       actorAvailable &&
       event?.status == 'active' &&
+      event?.publicationState == 'private' &&
       defaults != null &&
       pending == null &&
       !loading &&

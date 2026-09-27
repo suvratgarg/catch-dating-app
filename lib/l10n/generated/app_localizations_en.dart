@@ -23329,4 +23329,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsPrivateEventRefundCutoff({required int hours}) {
     return 'Full refund until $hours hours before; no refund after';
   }
+
+  @override
+  String get hostsPublicationNeedsFuture =>
+      'Choose a future date for an active event';
+
+  @override
+  String get hostsPublicationNeedsOrganizer =>
+      'Make the organizer visible in Catch';
+
+  @override
+  String get hostsPublicationNeedsDistance => 'Set the distance and pace';
+
+  @override
+  String get hostsPublicationNeedsReview =>
+      'Review the event details before publishing';
+
+  @override
+  String get hostsPublicationPublishExplanation =>
+      'Publishing makes this event visible in Catch. Registration stays closed until you enable it separately.';
+
+  @override
+  String get hostsPublicationUnpublishExplanation =>
+      'Make this event private and close new registration. Existing guests, offers and payment records remain. This does not cancel the event.';
+
+  @override
+  String get hostsPublicationPending =>
+      'Visibility change awaiting confirmation';
+
+  @override
+  String get hostsPublicationPendingBody =>
+      'The result has not been confirmed. Retry the same change to recover its result before making another change.';
+
+  @override
+  String get hostsPublicationSaved => 'Visibility change saved';
+
+  @override
+  String get hostsPublicationRegistrationSeparate =>
+      'Registration remains closed after a visibility change. Configure registration separately when you are ready.';
+
+  @override
+  String get hostsPublicationRefresh => 'Refresh readiness';
+
+  @override
+  String get hostsPublicationRetry => 'Recover visibility change';
+
+  @override
+  String get hostsPublicationUnpublish => 'Make event private';
+
+  @override
+  String get hostsPublicationPublish => 'Publish event';
+
+  @override
+  String get hostsPublicationPublishedBody =>
+      'This event is published. Visibility and registration are managed separately.';
 }

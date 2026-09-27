@@ -9,8 +9,8 @@ import {validateSetEventPublicationCallablePayload} from
   "../../shared/generated/validators/setEventPublicationInput";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
-import {requireConfiguredEvent} from "../configuredEvent";
-import {eventDiscoveryProjection} from "../eventDiscoveryProjection";
+import {preparePublishedEventPatch, publicationRegistrationPatch} from
+  "./publicationReadiness";
 import {claimClubScheduleInTransaction} from "../scheduleConflicts";
 import {
   assertPrivacyReady, assertReceipt, authorizeSetupManager, hashRequest,
@@ -64,7 +64,11 @@ export async function setEventPublication(params: {
     }
     const revision = requireRevision(event);
     if (revision !== command.expectedSetupRevision) {
-      throw new HttpsError("aborted", "Event changed. Review it again.");
+      throw new HttpsError("aborted", "Event changed. Review it again.", {
+        reason: "event-publication-review-stale", requestId: command.requestId,
+        organizerId: command.organizerId, eventId: command.eventId,
+        expectedSetupRevision: command.expectedSetupRevision,
+        publicationState: command.publicationState});
     }
     if (event.publicationState !== "private" &&
         event.publicationState !== "published") {
@@ -75,36 +79,17 @@ export async function setEventPublication(params: {
       throw new HttpsError("failed-precondition",
         "This publication change has already been made. Refresh the event.");
     }
-    const registrationRevision = event.publicRegistrationRevision ?? 0;
-    if (!Number.isSafeInteger(registrationRevision) ||
-        registrationRevision < 0 ||
-        registrationRevision >= Number.MAX_SAFE_INTEGER) {
-      throw new HttpsError("failed-precondition",
-        "Event registration needs review.");
-    }
     const patch: Record<string, unknown> = {
       publicationState: command.publicationState,
       setupRevision: revision + 1,
-      // A stale enable command cannot reopen registration after unpublish.
-      publicRegistrationEnabled: false,
-      publicRegistrationMode: "closed",
-      publicRegistrationRevision: registrationRevision + 1,
+      ...publicationRegistrationPatch(event as EventDocument),
       updatedAt: deps.timestampFromMillis((params.nowMillis ?? Date.now)()),
     };
     if (operation === "publish") {
-      const now = (params.nowMillis ?? Date.now)();
-      if (!Number.isSafeInteger(now) || event.status !== "active" ||
-          event.startTime?.toMillis?.() <= now ||
-          organizer.appVisibility !== "discoverable") {
-        throw new HttpsError("failed-precondition",
-          "Publishing needs a future active event and visible organizer.");
-      }
-      const configured = requireConfiguredEvent(event as EventDocument);
-      if (event.firstPublishedAt === undefined) {
-        patch.firstPublishedAt = deps.timestampFromMillis(now);
-      }
-      Object.assign(patch, eventDiscoveryProjection({event: configured,
-        clubLocationMarketId: event.eventMarketId}));
+      Object.assign(patch, preparePublishedEventPatch({
+        event: event as EventDocument, organizer,
+        nowMillis: (params.nowMillis ?? Date.now)(),
+        timestampFromMillis: deps.timestampFromMillis}));
     }
     // Validating the target enforces the complete published schema, and the
     // private schema when unpublishing. It never invents missing terms.

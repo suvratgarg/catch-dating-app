@@ -37581,6 +37581,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Full refund until {hours} hours before; no refund after'**
   String hostsPrivateEventRefundCutoff({required int hours});
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future date for an active event'**
+  String get hostsPublicationNeedsFuture;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Make the organizer visible in Catch'**
+  String get hostsPublicationNeedsOrganizer;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Set the distance and pace'**
+  String get hostsPublicationNeedsDistance;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Review the event details before publishing'**
+  String get hostsPublicationNeedsReview;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing makes this event visible in Catch. Registration stays closed until you enable it separately.'**
+  String get hostsPublicationPublishExplanation;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Make this event private and close new registration. Existing guests, offers and payment records remain. This does not cancel the event.'**
+  String get hostsPublicationUnpublishExplanation;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility change awaiting confirmation'**
+  String get hostsPublicationPending;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'The result has not been confirmed. Retry the same change to recover its result before making another change.'**
+  String get hostsPublicationPendingBody;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility change saved'**
+  String get hostsPublicationSaved;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Registration remains closed after a visibility change. Configure registration separately when you are ready.'**
+  String get hostsPublicationRegistrationSeparate;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh readiness'**
+  String get hostsPublicationRefresh;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Recover visibility change'**
+  String get hostsPublicationRetry;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Make event private'**
+  String get hostsPublicationUnpublish;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'Publish event'**
+  String get hostsPublicationPublish;
+
+  /// Host event publication and readiness copy
+  ///
+  /// In en, this message translates to:
+  /// **'This event is published. Visibility and registration are managed separately.'**
+  String get hostsPublicationPublishedBody;
 }
 
 class _AppLocalizationsDelegate
