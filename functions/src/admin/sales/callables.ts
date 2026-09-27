@@ -1,0 +1,137 @@
+import * as admin from "firebase-admin";
+import {
+  CallableRequest,
+  HttpsError,
+  onCall,
+} from "firebase-functions/v2/https";
+import {adminRolesFromToken, requireAdminRole} from "../adminAuth";
+import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
+import {checkRateLimit} from "../../shared/rateLimit";
+import {
+  executeSalesAction,
+  executeSalesRead,
+  type SalesServiceDeps,
+} from "./service";
+import type {
+  SalesMutationAction,
+  SalesPrincipal,
+  SalesReadAction,
+} from "./types";
+
+const allowedRoles = ["admin", "adminOwner"] as const;
+const options = appCheckCallableOptionsWithLimits({
+  concurrency: 20,
+  maxInstances: 10,
+  memory: "256MiB",
+  timeoutSeconds: 30,
+});
+
+/** Current Auth state is authoritative after the initial token gate. */
+export async function currentSalesEmployee(
+  request: CallableRequest<unknown>,
+  getUser: (uid: string) => Promise<{
+    disabled: boolean;
+    customClaims?: Record<string, unknown>;
+    tokensValidAfterTime?: string;
+  }> = (uid) => admin.auth().getUser(uid),
+): Promise<SalesPrincipal> {
+  const initial = requireAdminRole(request, allowedRoles);
+  const user = await getUser(initial.uid);
+  if (user.disabled) {
+    throw new HttpsError(
+      "permission-denied",
+      "Sales employee account is disabled.",
+    );
+  }
+  const roles = adminRolesFromToken(user.customClaims);
+  if (!roles.includes("admin") && !roles.includes("adminOwner")) {
+    throw new HttpsError(
+      "permission-denied",
+      "Current Sales role is required.",
+    );
+  }
+  const authTime = request.auth?.token.auth_time;
+  const validAfter = user.tokensValidAfterTime ?
+    Date.parse(user.tokensValidAfterTime) :
+    0;
+  if (
+    typeof authTime !== "number" ||
+    !Number.isFinite(authTime) ||
+    !Number.isFinite(validAfter) ||
+    authTime * 1000 < validAfter
+  ) {
+    throw new HttpsError(
+      "permission-denied",
+      "Sales session has been revoked.",
+    );
+  }
+  return {uid: initial.uid, roles};
+}
+
+async function handleRead(
+  action: SalesReadAction,
+  request: CallableRequest<unknown>,
+): Promise<Record<string, unknown>> {
+  const principal = await currentSalesEmployee(request);
+  const db = admin.firestore();
+  await checkRateLimit(db, principal.uid, `sales:${action}`, {
+    maxRequests: 60,
+    windowMs: 60_000,
+  });
+  const deps: SalesServiceDeps = {
+    firestore: () => db,
+    now: () => new Date(),
+    authorizeRead: async () => {
+      await currentSalesEmployee(request);
+    },
+  };
+  return executeSalesRead(principal, action, request.data, deps);
+}
+
+async function handleAction(
+  action: SalesMutationAction,
+  request: CallableRequest<unknown>,
+): Promise<Record<string, unknown>> {
+  const principal = await currentSalesEmployee(request);
+  const db = admin.firestore();
+  await checkRateLimit(db, principal.uid, `sales:${action}`, {
+    maxRequests: 20,
+    windowMs: 60_000,
+  });
+  const deps: SalesServiceDeps = {
+    firestore: () => db,
+    now: () => new Date(),
+    authorizeInTransaction: async () => {
+      await currentSalesEmployee(request);
+    },
+  };
+  return executeSalesAction(principal, action, request.data, deps);
+}
+
+const read = (action: SalesReadAction) =>
+  onCall(options, (request) => handleRead(action, request));
+const write = (action: SalesMutationAction) =>
+  onCall(options, (request) => handleAction(action, request));
+
+export const adminListSalesAccounts = read("hosts.search");
+export const adminGetSalesAccount = read("hosts.get");
+export const adminListSalesTasks = read("tasks.list");
+export const adminListSalesOpportunities = read("opportunities.list");
+export const adminListSalesCustomFields = read("fields.list");
+export const adminGetSalesReceipt = read("receipts.get");
+export const adminListSalesInboundIntents = read("intents.list");
+export const adminPreviewSalesImport = read("imports.preview");
+export const adminListSalesContacts = read("contacts.list");
+export const adminListSalesEvidence = read("evidence.list");
+
+export const adminCreateSalesAccount = write("hosts.create");
+export const adminUpdateSalesAccount = write("hosts.update");
+export const adminUpsertSalesTask = write("tasks.upsert");
+export const adminUpsertSalesOpportunity = write("opportunities.upsert");
+export const adminRecordSalesActivity = write("activities.log");
+export const adminCreateSalesCustomField = write("fields.create");
+export const adminSetSalesCustomFieldValue = write("fields.setValue");
+export const adminLinkSalesInboundIntent = write("intents.link");
+export const adminApplySalesImport = write("imports.apply");
+export const adminUpsertSalesContact = write("contacts.upsert");
+export const adminAddSalesEvidence = write("evidence.add");

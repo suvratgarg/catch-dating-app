@@ -1,17 +1,35 @@
 export type SalesResearchStatus =
-  "new" | "needs_research" | "ready_for_review" | "qualified" |
-  "benchmark_only" | "no_fit" | "archived";
+  | "new"
+  | "needs_research"
+  | "ready_for_review"
+  | "qualified"
+  | "benchmark_only"
+  | "no_fit"
+  | "archived";
 export type SalesTaskStatus = "open" | "completed" | "cancelled";
 export type SalesTaskKind =
-  "research" | "reply" | "follow_up" | "demo" | "pilot" |
-  "duplicate_review" | "opt_out" | "service_commitment";
+  | "research"
+  | "reply"
+  | "follow_up"
+  | "demo"
+  | "pilot"
+  | "duplicate_review"
+  | "opt_out"
+  | "service_commitment";
 export type SalesOpportunityStage =
-  "new_enquiry" | "ready_to_contact" | "contacted" |
-  "in_conversation" | "demo_arranged" | "demo_completed" |
-  "pilot_agreed" | "pilot_running" | "commercial_discussion" |
-  "closed_won" | "closed_lost";
+  | "new_enquiry"
+  | "ready_to_contact"
+  | "contacted"
+  | "in_conversation"
+  | "demo_arranged"
+  | "demo_completed"
+  | "pilot_agreed"
+  | "pilot_running"
+  | "commercial_discussion"
+  | "closed_won"
+  | "closed_lost";
 
-/** Resolved afresh by the caller. A delegated client always has explicit scopes. */
+/** Resolved afresh by the caller; delegated clients have explicit scopes. */
 export interface SalesPrincipal {
   uid: string;
   roles: readonly string[];
@@ -35,6 +53,11 @@ export interface SalesAccount {
   nextAction: string | null;
   suppressionStatus: "clear" | "held" | "suppressed";
   duplicateReviewRequired: boolean;
+  qualificationPolicy: {
+    policyId: string;
+    version: string;
+    policyHash: string;
+  } | null;
   name: string;
   city: string | null;
   market: string | null;
@@ -108,11 +131,28 @@ export interface SalesCustomField {
 }
 
 export type SalesReadAction =
-  "hosts.search" | "hosts.get" | "tasks.list" |
-  "opportunities.list" | "fields.list" | "receipts.get";
+  | "hosts.search"
+  | "hosts.get"
+  | "tasks.list"
+  | "opportunities.list"
+  | "fields.list"
+  | "receipts.get"
+  | "intents.list"
+  | "imports.preview"
+  | "contacts.list"
+  | "evidence.list";
 export type SalesMutationAction =
-  "hosts.create" | "hosts.update" | "tasks.upsert" | "opportunities.upsert" |
-  "activities.log" | "fields.create" | "fields.setValue";
+  | "hosts.create"
+  | "hosts.update"
+  | "tasks.upsert"
+  | "opportunities.upsert"
+  | "activities.log"
+  | "fields.create"
+  | "fields.setValue"
+  | "intents.link"
+  | "imports.apply"
+  | "contacts.upsert"
+  | "evidence.add";
 
 export interface SalesActionReceipt {
   schemaVersion: 1;
