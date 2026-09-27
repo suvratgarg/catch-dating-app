@@ -129,6 +129,11 @@ export const SALES_READ_SCHEMAS: Record<SalesReadAction, Schema> = {
             name: shortText,
             researchStatus,
             summary: nullableText(1200),
+            originalCells: {type: "array", maxItems: 60,
+              items: strict(["column", "value"], {
+                column: {type: "string", maxLength: 160},
+                value: {type: "string", maxLength: 2000},
+              })},
             originalScore: {
               anyOf: [
                 {

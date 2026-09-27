@@ -10,6 +10,7 @@ export interface ImportRow {
   researchStatus: string;
   summary?: string | null;
   originalScore?: Record<string, string | number | boolean | null> | null;
+  originalCells?: Array<{column: string; value: string}>;
 }
 export interface ImportPacket {
   sourceId: string;
@@ -50,6 +51,13 @@ function assertEmployee(principal: SalesPrincipal): void {
       "permission-denied",
       "Reviewed imports require an employee session.",
     );
+  }
+}
+
+function assertPacketSize(packet: ImportPacket): void {
+  if (Buffer.byteLength(JSON.stringify(packet), "utf8") > 500_000) {
+    throw new HttpsError("invalid-argument",
+      "Import batch exceeds 500 KB. Use smaller source rows.");
   }
 }
 
@@ -161,6 +169,7 @@ export async function previewSalesImport(
   packet: ImportPacket,
 ): Promise<Record<string, unknown>> {
   assertEmployee(principal);
+  assertPacketSize(packet);
   const decisions = await evaluateRows(db, packet, (ref) => ref.get());
   return {
     previewHash: previewHash(packet, decisions),
@@ -186,6 +195,7 @@ export async function applySalesImport(
     mappingVersion: input.mappingVersion,
     rows: input.rows,
   };
+  assertPacketSize(packet);
   const decisions = await evaluateRows(db, packet, (ref) => tx.get(ref));
   if (previewHash(packet, decisions) !== input.previewHash) {
     throw new HttpsError(
@@ -234,6 +244,7 @@ export async function applySalesImport(
       originalScore: row.originalScore ?? null,
       originalResearchStatus: row.researchStatus,
       originalSummary: row.summary ?? null,
+      originalCells: row.originalCells ?? null,
       importedAt: now,
       importedBy: principal.uid,
     };

@@ -151,7 +151,8 @@ export interface SalesImportPacket {
   mappingVersion: string;
   rows: Array<{sourceRowId: string; organizerId: string | null;
     name: string; researchStatus: SalesResearchStatus; summary?: string | null;
-    originalScore?: Record<string, string | number | boolean | null> | null}>;
+    originalScore?: Record<string, string | number | boolean | null> | null;
+    originalCells?: Array<{column: string; value: string}>}>;
 }
 
 export interface SalesImportPreview {

@@ -80,13 +80,14 @@ function SalesPeoplePanel({detail, controller}: {
         ]} />
       <SelectField label="Primary contact" value={primary} onChange={setPrimary}
         options={[{value: "false", label: "No"}, {value: "true", label: "Yes"}]} />
-      <SelectField label="Optional endpoint type" value={endpointKind}
+      <SelectField label="Contact method (optional)" value={endpointKind}
         onChange={(value) => setEndpointKind(value as typeof endpointKind)} options={[
           {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
         ]} />
-      <TextField label="Optional endpoint (unverified)" value={endpointValue}
+      <TextField label={endpointKind === "email" ? "Email address (unverified)" :
+        "Phone number (unverified)"} value={endpointValue}
         onChange={setEndpointValue} type={endpointKind === "email" ? "email" : "text"} />
-      <p>Adding an endpoint does not verify contact identity or authorize messages.</p>
+      <p>These contact details still need review before they can be used.</p>
       <AdminButton type="submit" disabled={!name.trim() || !role.trim() ||
         controller.isSaving}>Add contact</AdminButton>
     </AdminForm>
@@ -171,11 +172,11 @@ function SalesEvidencePanel({detail, controller}: {
           ...(controller.contacts.data?.rows ?? []).map((item) => ({
             value: item.contactId, label: item.displayName,
           }))]} />
-      <SelectField label="Claim category" value={claimKey}
+      <SelectField label="What this helps establish" value={claimKey}
         onChange={(next) => setClaimKey(next as typeof claimKey)} options={[
           "identity", "recurrence", "operation", "stack", "other",
         ]} />
-      {claimKey === "operation" ? <TextField label="Distinct operating signal ID"
+      {claimKey === "operation" ? <TextField label="Operating signal (short label)"
         value={signalId} onChange={setSignalId} required /> : null}
       <SelectField label="Source type" value={sourceType}
         onChange={(next) => setSourceType(next as typeof sourceType)} options={[
@@ -192,7 +193,7 @@ function SalesEvidencePanel({detail, controller}: {
         onChange={(next) => setConfidence(next as typeof confidence)} options={[
           "low", "medium", "high",
         ]} />
-      <TextField label="Normalized value (optional)" value={value}
+      <TextField label="What you learned (optional)" value={value}
         onChange={setValue} maxLength={500} />
       <TextareaField label="Short source excerpt (optional)" rows={2}
         value={excerpt} onChange={setExcerpt} maxLength={500} />

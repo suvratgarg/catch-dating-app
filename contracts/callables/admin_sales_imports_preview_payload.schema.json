@@ -116,6 +116,28 @@
                 "type": "null"
               }
             ]
+          },
+          "originalCells": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "column",
+                "value"
+              ],
+              "properties": {
+                "column": {
+                  "type": "string",
+                  "maxLength": 160
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
+            }
           }
         }
       }

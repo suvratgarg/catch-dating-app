@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {ClipboardList, Upload} from "lucide-react";
 import {AdminButton, AdminForm, EmptyState, FilePickerButton, Panel,
   SelectField, StateRow, TextField} from "../../../shared/ui/AdminPrimitives";
@@ -31,10 +31,17 @@ export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceCo
   const [reviewed, setReviewed] = useState(false);
   const [applied, setApplied] = useState<number[]>([]);
   const [error, setError] = useState("");
+  const previewVersion = useRef(0);
+  const busy = controller.isSaving || controller.importPreviewPending;
   const batchCount = Math.ceil(Math.max(0, rows.length - 1) / 25);
-  const clearPreview = () => {setPreview(null); setPacket(null); setReviewed(false);};
+  const clearPreview = () => {
+    previewVersion.current += 1;
+    setPreview(null); setPacket(null); setReviewed(false);
+  };
   const upload = async (file: File | undefined) => {
     clearPreview(); setRows([]); setApplied([]); setError("");
+    setFileName(""); setContentHash("");
+    const version = previewVersion.current;
     if (!file) return;
     if (file.size > 1024 * 1024) {
       setError("CSV must be at most 1 MB. Split this file into smaller uploads."); return;
@@ -45,24 +52,33 @@ export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceCo
       const bytes = await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
       const hash = Array.from(new Uint8Array(bytes), (part) =>
         part.toString(16).padStart(2, "0")).join("");
+      if (version !== previewVersion.current) return;
       setRows(parsed); setFileName(file.name); setContentHash(hash);
       setMapping(guessMapping(parsed[0])); setBatch(0);
       setSourceId(file.name.replace(/\.[^.]+$/u, "").replace(/[^A-Za-z0-9._:-]/gu, "-")
         .replace(/^[^A-Za-z0-9]+/u, "").slice(0, 80) || "sales-import");
-    } catch (cause) {setError(cause instanceof Error ? cause.message : String(cause));}
+    } catch (cause) {
+      if (version === previewVersion.current) {
+        setError(cause instanceof Error ? cause.message : String(cause));
+      }
+    }
   };
   const inspect = async () => {
     clearPreview(); setError("");
+    const version = previewVersion.current;
     try {
       const mapped = salesImportPacket(rows, mapping, sourceId, contentHash, batch);
       const result = await controller.previewImport(mapped);
-      if (result) {setPacket(mapped); setPreview(result);}
+      if (result && version === previewVersion.current) {
+        setPacket(mapped); setPreview(result);
+      }
     } catch (cause) {setError(cause instanceof Error ? cause.message : String(cause));}
   };
   const apply = async () => {
     if (!packet || !preview || !reviewed) return;
+    const version = previewVersion.current;
     const saved = await controller.applyImport(packet, preview.previewHash);
-    if (saved) {
+    if (saved && version === previewVersion.current) {
       setApplied((current) => [...current, batch]); clearPreview();
       if (batch + 1 < batchCount) setBatch(batch + 1);
     }
@@ -79,22 +95,27 @@ export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceCo
     {dataMode() === "sample" ? <EmptyState>Imports require a live employee workspace.
       No sample import is applied.</EmptyState> : <>
       <FilePickerButton inputLabel="Choose Sales CSV" accept=".csv,text/csv"
+        disabled={busy}
         icon={<Upload size={16} />} onChange={(event) =>
           void upload(event.target.files?.[0])}>Choose CSV</FilePickerButton>
       {fileName ? <p role="status">{fileName} · {rows.length - 1} rows ·
         {batchCount} batch{batchCount === 1 ? "" : "es"}</p> : null}
       {rows.length ? <>
-        <TextField label="Import source ID" value={sourceId}
+        <TextField label="Import name" value={sourceId}
+          disabled={busy}
           onChange={(value) => {setSourceId(value); clearPreview();}} />
-        <p>This source ID labels the uploaded file in the private import record.</p>
+        <p>This name keeps batches from the same file together. All columns are
+          preserved privately, including columns you do not map below.</p>
         {(["organizerId", "name", "researchStatus", "summary"] as const).map((key) =>
-          <SelectField key={key} label={{organizerId: "Canonical organizer ID",
-            name: "Host name", researchStatus: "Research status",
-            summary: "Summary"}[key]} value={String(mapping[key])}
+          <SelectField key={key} label={{organizerId: "Existing Catch host ID (optional)",
+            name: "Host name", researchStatus: "Previous research status (optional)",
+            summary: "Summary"}[key]} value={String(mapping[key])} disabled={busy}
           onChange={(value) => mapField(key, value)} options={mappingOptions} />)}
-        <p>Use an existing canonical organizer ID to match a host. Blank IDs remain
-          unresolved for identity review.</p>
+        <p>If the file has Catch host IDs, select that column. Other rows stay in
+          identity review. New hosts begin as Needs research; previous statuses
+          are retained as history and do not grant qualification.</p>
         <SelectField label="Batch to review" value={String(batch)}
+          disabled={busy}
           onChange={(value) => {setBatch(Number(value)); clearPreview();}}
           options={Array.from({length: batchCount}, (_, index) => ({
             value: String(index), label: `Batch ${index + 1} · rows ${index * 25 + 1}–${
@@ -124,6 +145,7 @@ export function SalesImportWorkspace({controller}: {controller: SalesWorkspaceCo
             {row.disposition} · {row.reason}</>} />)}
         <AdminForm onSubmit={(event) => {event.preventDefault(); void apply();}}>
           <SelectField label="Review decision" value={reviewed ? "yes" : "no"}
+            disabled={busy}
             onChange={(value) => setReviewed(value === "yes")} options={[
               {value: "no", label: "Not reviewed"},
               {value: "yes", label: "I reviewed every row above"},
