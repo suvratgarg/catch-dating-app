@@ -30024,5 +30024,11 @@
   "hostResponseChooseBeforeAcceptance": "Acceptance is required before creating the offer.",
   "@hostResponseChooseBeforeAcceptance": {"description": "Explains that selecting an event does not accept the application.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
   "hostsPrivateEventReturnToReviewHint": "Save these basics and return to your selected responses. You can finish event details later.",
-  "@hostsPrivateEventReturnToReviewHint": {"description": "Explains the minimal inline event save and return to response review.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"}
+  "@hostsPrivateEventReturnToReviewHint": {"description": "Explains the minimal inline event save and return to response review.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management"},
+  "hostsPrivateEventDetailPickLocation": "Choose meeting place on map",
+  "hostsPrivateEventDetailLocationNeeded": "A map location is required before publishing. A name alone is fine while planning.",
+  "hostsPrivateEventDetailLocationReady": "Meeting place is ready for directions and the public listing.",
+  "@hostsPrivateEventDetailPickLocation": {"description": "Private event meeting location setup copy."},
+  "@hostsPrivateEventDetailLocationNeeded": {"description": "Private event meeting location setup copy."},
+  "@hostsPrivateEventDetailLocationReady": {"description": "Private event meeting location setup copy."}
 }

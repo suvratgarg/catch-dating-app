@@ -111,18 +111,71 @@ const schemaUpdatePrivateEventDetailsCallablePayloadSchema = <String, Object?>{
                   'type': 'string',
                 },
                 'value': <String, Object?>{
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'required': <Object?>[
-                    'name',
-                  ],
-                  'properties': <String, Object?>{
-                    'name': <String, Object?>{
-                      'type': 'string',
-                      'minLength': 1,
-                      'maxLength': 240,
+                  'oneOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'name',
+                      ],
+                      'properties': <String, Object?>{
+                        'name': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                      },
                     },
-                  },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                      'required': <Object?>[
+                        'name',
+                        'latitude',
+                        'longitude',
+                      ],
+                      'properties': <String, Object?>{
+                        'name': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 240,
+                        },
+                        'address': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 500,
+                        },
+                        'placeId': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'minLength': 1,
+                          'maxLength': 256,
+                        },
+                        'latitude': <String, Object?>{
+                          'type': 'number',
+                          'minimum': -90,
+                          'maximum': 90,
+                        },
+                        'longitude': <String, Object?>{
+                          'type': 'number',
+                          'minimum': -180,
+                          'maximum': 180,
+                        },
+                        'notes': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 1000,
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },

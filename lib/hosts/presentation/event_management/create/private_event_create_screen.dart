@@ -473,6 +473,21 @@ class _PrivateEventCreateScreenState
       );
     }
     if (_editingDetails && _detailsController != null) {
+      final currentUid = ref.watch(uidProvider);
+      if (currentUid.isLoading || currentUid.hasError ||
+          currentUid.asData?.value != _detailsController!.userId ||
+          !_detailsController!.actorAvailable) {
+        _detailsController!.invalidateActor();
+        return CatchScaffold.stepFlow(
+          body: CatchErrorState(
+            title: context.l10n.hostsEventPreferenceError,
+            message: appErrorMessage(
+              const SignInRequiredException('edit event details'),
+              l10n: context.l10n, context: AppErrorContext.event),
+            actions: const [CatchErrorBackButton()],
+          ),
+        );
+      }
       return PrivateEventDetailsScreen(
         controller: _detailsController!,
         onBack: _PrivateEventCreateBody(this)._closeDetails,

@@ -105392,6 +105392,49 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const privateEventSetupCallableResponseEventDetailsMeetingLocationAddress = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsMeetingLocationLatitude = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsMeetingLocationLongitude = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsMeetingLocationName = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsMeetingLocationNotes = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsMeetingLocationPlaceId = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.meetingLocation.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const privateEventSetupCallableResponseEventDetailsSourceVenueId = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.eventDetails.sourceVenueId',
     maxLength: 180,
@@ -124757,11 +124800,46 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueValueAddress = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueValueLatitude = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueValueLongitude = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
   static const updatePrivateEventDetailsCallablePayloadDetailsVenueValueName = CatchContractFieldConstraints(
     path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.name',
     maxLength: 240,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueValueNotes = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsVenueValuePlaceId = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.venue.value.placeId',
+    maxLength: 256,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -144537,6 +144615,12 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.eventDetails.eventFormat.eventSuccessPrimitives.unitOutcome': privateEventSetupCallableResponseEventDetailsEventFormatEventSuccessPrimitivesUnitOutcome,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.interactionModel': privateEventSetupCallableResponseEventDetailsEventFormatInteractionModel,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.version': privateEventSetupCallableResponseEventDetailsEventFormatVersion,
+    'privateEventSetupCallableResponse.eventDetails.meetingLocation.address': privateEventSetupCallableResponseEventDetailsMeetingLocationAddress,
+    'privateEventSetupCallableResponse.eventDetails.meetingLocation.latitude': privateEventSetupCallableResponseEventDetailsMeetingLocationLatitude,
+    'privateEventSetupCallableResponse.eventDetails.meetingLocation.longitude': privateEventSetupCallableResponseEventDetailsMeetingLocationLongitude,
+    'privateEventSetupCallableResponse.eventDetails.meetingLocation.name': privateEventSetupCallableResponseEventDetailsMeetingLocationName,
+    'privateEventSetupCallableResponse.eventDetails.meetingLocation.notes': privateEventSetupCallableResponseEventDetailsMeetingLocationNotes,
+    'privateEventSetupCallableResponse.eventDetails.meetingLocation.placeId': privateEventSetupCallableResponseEventDetailsMeetingLocationPlaceId,
     'privateEventSetupCallableResponse.eventDetails.sourceVenueId': privateEventSetupCallableResponseEventDetailsSourceVenueId,
     'privateEventSetupCallableResponse.eventDetails.venueName': privateEventSetupCallableResponseEventDetailsVenueName,
     'privateEventSetupCallableResponse.eventId': privateEventSetupCallableResponseEventId,
@@ -147183,7 +147267,12 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.interactionModel': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueInteractionModel,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.version': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueVersion,
     'updatePrivateEventDetailsCallablePayload.details.venue.mode': updatePrivateEventDetailsCallablePayloadDetailsVenueMode,
+    'updatePrivateEventDetailsCallablePayload.details.venue.value.address': updatePrivateEventDetailsCallablePayloadDetailsVenueValueAddress,
+    'updatePrivateEventDetailsCallablePayload.details.venue.value.latitude': updatePrivateEventDetailsCallablePayloadDetailsVenueValueLatitude,
+    'updatePrivateEventDetailsCallablePayload.details.venue.value.longitude': updatePrivateEventDetailsCallablePayloadDetailsVenueValueLongitude,
     'updatePrivateEventDetailsCallablePayload.details.venue.value.name': updatePrivateEventDetailsCallablePayloadDetailsVenueValueName,
+    'updatePrivateEventDetailsCallablePayload.details.venue.value.notes': updatePrivateEventDetailsCallablePayloadDetailsVenueValueNotes,
+    'updatePrivateEventDetailsCallablePayload.details.venue.value.placeId': updatePrivateEventDetailsCallablePayloadDetailsVenueValuePlaceId,
     'updatePrivateEventDetailsCallablePayload.eventId': updatePrivateEventDetailsCallablePayloadEventId,
     'updatePrivateEventDetailsCallablePayload.expectedSetupRevision': updatePrivateEventDetailsCallablePayloadExpectedSetupRevision,
     'updatePrivateEventDetailsCallablePayload.organizerId': updatePrivateEventDetailsCallablePayloadOrganizerId,

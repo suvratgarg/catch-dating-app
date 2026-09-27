@@ -19,7 +19,7 @@
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
     ],
-    "imperativePageRouteCount": 16,
+    "imperativePageRouteCount": 17,
     "imperativePageTargetCount": 11
   },
   "routes": [
@@ -1580,6 +1580,15 @@
       "line": 99,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
+      "presentationTarget": "LocationPickerScreen",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/private_event_details_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/event_management/create/private_event_details_screen.dart",
+      "line": 48,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:current?.name??controller.event?.eventDetails.venueName)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },

@@ -56,6 +56,7 @@ export async function getPrivateEventSetup(params: {
       eventDetails: {
         endTimeMillis,
         venueName: event.meetingLocation?.name ?? event.meetingPoint ?? null,
+        meetingLocation: event.meetingLocation ?? null,
         sourceVenueId: event.sourceVenueId ?? null,
         eventFormat: event.eventFormat ?? null,
       },

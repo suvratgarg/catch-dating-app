@@ -6,12 +6,17 @@ import 'package:catch_dating_app/hosts/data/private_event_details_repository.dar
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:flutter/foundation.dart';
 
-typedef ReadPrivateEventForDetails = Future<PrivateEventBasicSummary>
-    Function({required String organizerId, required String eventId});
-typedef ReadDefaultsForPrivateDetails = Future<ManagerEventSetupDefaults>
-    Function(String organizerId);
-typedef WritePrivateEventDetails = Future<PrivateEventCreateReceipt>
-    Function(PrivateEventDetailsUpdateRequest request);
+typedef ReadPrivateEventForDetails =
+    Future<PrivateEventBasicSummary> Function({
+      required String organizerId,
+      required String eventId,
+    });
+typedef ReadDefaultsForPrivateDetails =
+    Future<ManagerEventSetupDefaults> Function(String organizerId);
+typedef WritePrivateEventDetails =
+    Future<PrivateEventCreateReceipt> Function(
+      PrivateEventDetailsUpdateRequest request,
+    );
 
 /// Exact-command journal makes a lost details response safe to retry after
 /// app restart or manager access changes, without creating another mutation.
@@ -24,6 +29,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
     required this.readDefaults,
     required this.write,
     this.journal = const PrivateEventDetailsJournal(),
+    this.currentUserId,
   });
 
   final String userId;
@@ -33,6 +39,18 @@ class PrivateEventDetailsController extends ChangeNotifier {
   final ReadDefaultsForPrivateDetails readDefaults;
   final WritePrivateEventDetails write;
   final PrivateEventDetailsJournal journal;
+  final String? Function()? currentUserId;
+  bool _actorAvailable = true;
+  bool get actorAvailable =>
+      !_disposed &&
+      _actorAvailable &&
+      (currentUserId == null || currentUserId!() == userId);
+
+  void invalidateActor() {
+    _actorAvailable = false;
+    event = null;
+    defaults = null;
+  }
 
   PrivateEventBasicSummary? event;
   ManagerEventSetupDefaults? defaults;
@@ -55,8 +73,13 @@ class PrivateEventDetailsController extends ChangeNotifier {
 
   // Venue and duration can be completed after guests or offers exist. Only
   // a format change remains subject to the basic-event commitment guard.
-  bool get canEdit => !_disposed && event?.status == 'active' && defaults != null &&
-      pending == null && !loading && !saving;
+  bool get canEdit =>
+      actorAvailable &&
+      event?.status == 'active' &&
+      defaults != null &&
+      pending == null &&
+      !loading &&
+      !saving;
   bool get canEditFormat => canEdit && event?.canEditBasics == true;
 
   void reportValidationError(Object cause) {
@@ -65,6 +88,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    if (!actorAvailable || loading || saving) return;
     loading = true;
     error = null;
     event = null;
@@ -72,12 +96,15 @@ class PrivateEventDetailsController extends ChangeNotifier {
     notifyListeners();
     try {
       pending = await journal.load(
-        userId: userId, organizerId: organizerId, eventId: eventId,
+        userId: userId,
+        organizerId: organizerId,
+        eventId: eventId,
       );
       final results = await Future.wait<Object>([
         readEvent(organizerId: organizerId, eventId: eventId),
         readDefaults(organizerId),
       ]);
+      if (!actorAvailable) return;
       final nextEvent = results[0] as PrivateEventBasicSummary;
       final nextDefaults = results[1] as ManagerEventSetupDefaults;
       if (nextEvent.eventId != eventId ||
@@ -98,7 +125,9 @@ class PrivateEventDetailsController extends ChangeNotifier {
   Future<void> save(PrivateEventDetailsPatch details) async {
     if (!canEdit) return;
     if (details.eventFormat != null && !canEditFormat) {
-      reportValidationError(StateError('Event format is locked by commitments.'));
+      reportValidationError(
+        StateError('Event format is locked by commitments.'),
+      );
       return;
     }
     final request = PrivateEventDetailsUpdateRequest(
@@ -121,6 +150,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
       await journal.save(userId: userId, request: request);
       pending = request;
       notifyListeners();
+      if (!actorAvailable) return;
       await _sendPending(request);
     } catch (cause) {
       error = cause;
@@ -132,7 +162,7 @@ class PrivateEventDetailsController extends ChangeNotifier {
   }
 
   Future<void> retryPending() async {
-    if (pending == null || saving) return;
+    if (!actorAvailable || pending == null || saving) return;
     saving = true;
     error = null;
     notifyListeners();
@@ -149,7 +179,9 @@ class PrivateEventDetailsController extends ChangeNotifier {
   }
 
   Future<void> _sendPending(PrivateEventDetailsUpdateRequest request) async {
+    if (!actorAvailable) return;
     final receipt = await write(request);
+    if (!actorAvailable) return;
     if (receipt.eventId != eventId ||
         receipt.setupRevision <= request.expectedSetupRevision) {
       throw const FormatException('Invalid event details receipt');
@@ -158,7 +190,12 @@ class PrivateEventDetailsController extends ChangeNotifier {
     pending = null;
     // The acknowledged event revision is unknown until the authorized reread.
     event = null;
-    final refreshed = await readEvent(organizerId: organizerId, eventId: eventId);
+    if (!actorAvailable) return;
+    final refreshed = await readEvent(
+      organizerId: organizerId,
+      eventId: eventId,
+    );
+    if (!actorAvailable) return;
     if (refreshed.eventId != eventId || refreshed.organizerId != organizerId) {
       throw const FormatException('Private event reread changed identity');
     }
@@ -170,7 +207,8 @@ class PrivateEventDetailsController extends ChangeNotifier {
 
 String _newRequestId() {
   final random = Random.secure();
-  return List<int>.generate(24, (_) => random.nextInt(256))
-      .map((value) => value.toRadixString(16).padLeft(2, '0'))
-      .join();
+  return List<int>.generate(
+    24,
+    (_) => random.nextInt(256),
+  ).map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

@@ -166,6 +166,16 @@
               "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
             }
           ]
+        },
+        "meetingLocation": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
+            }
+          ]
         }
       }
     }

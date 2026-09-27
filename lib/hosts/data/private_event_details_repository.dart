@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -14,27 +15,46 @@ class PrivateEventDetailsPatch {
   const PrivateEventDetailsPatch({
     this.durationMinutes,
     this.venue,
+    this.meetingLocation,
     this.eventFormat,
   });
 
   final EventSetupValue<int>? durationMinutes;
   final EventSetupValue<String>? venue;
+  final EventMeetingLocation? meetingLocation;
   final EventSetupValue<EventFormatSnapshot>? eventFormat;
 
   bool get isValid {
-    if (durationMinutes == null && venue == null && eventFormat == null) {
+    if (durationMinutes == null &&
+        venue == null &&
+        meetingLocation == null &&
+        eventFormat == null) {
       return false;
     }
     final duration = durationMinutes;
     if (duration?.mode == EventSetupValueMode.set &&
-        (duration!.value == null || duration.value! < 15 ||
+        (duration!.value == null ||
+            duration.value! < 15 ||
             duration.value! > 240)) {
+      return false;
+    }
+    final location = meetingLocation;
+    if (location != null &&
+        (venue != null ||
+            location.name.trim().isEmpty ||
+            location.name.length > 240 ||
+            !location.latitude.isFinite ||
+            location.latitude.abs() > 90 ||
+            !location.longitude.isFinite ||
+            location.longitude.abs() > 180)) {
       return false;
     }
     final place = venue;
     if (place?.mode == EventSetupValueMode.set &&
-        (place!.value == null || place.value!.trim() != place.value ||
-            place.value!.isEmpty || place.value!.length > 240)) {
+        (place!.value == null ||
+            place.value!.trim() != place.value ||
+            place.value!.isEmpty ||
+            place.value!.length > 240)) {
       return false;
     }
     final format = eventFormat;
@@ -49,19 +69,26 @@ class PrivateEventDetailsPatch {
   Map<String, Object?> toJson() => {
     if (durationMinutes != null)
       'durationMinutes': durationMinutes!.toJson((value) => value),
-    if (venue != null)
-      'venue': venue!.toJson((value) => {'name': value}),
+    if (venue != null) 'venue': venue!.toJson((value) => {'name': value}),
+    if (meetingLocation != null)
+      'venue': {'mode': 'set', 'value': meetingLocation!.normalized().toJson()},
     if (eventFormat != null)
       'eventFormat': eventFormat!.toJson((value) => value.toJson()),
   };
 
   factory PrivateEventDetailsPatch.fromJson(Map<String, Object?> json) {
-    if (json.keys.toSet().difference({'durationMinutes', 'venue',
-      'eventFormat'}).isNotEmpty) {
+    if (json.keys.toSet().difference({
+      'durationMinutes',
+      'venue',
+      'eventFormat',
+    }).isNotEmpty) {
       throw const FormatException('Unknown private event detail');
     }
-    EventSetupValue<T> parse<T>(Object? raw, T Function(Object?) decode,
-        {bool allowInherit = true}) {
+    EventSetupValue<T> parse<T>(
+      Object? raw,
+      T Function(Object?) decode, {
+      bool allowInherit = true,
+    }) {
       if (raw is! Map) throw const FormatException('Invalid detail intent');
       final intent = Map<String, Object?>.from(raw);
       if (intent.length == 1 && intent['mode'] == 'clear') {
@@ -70,20 +97,46 @@ class PrivateEventDetailsPatch {
       if (allowInherit && intent.length == 1 && intent['mode'] == 'inherit') {
         return const EventSetupValue.inherit();
       }
-      if (intent.length == 2 && intent['mode'] == 'set' &&
+      if (intent.length == 2 &&
+          intent['mode'] == 'set' &&
           intent.containsKey('value')) {
         return EventSetupValue.set(decode(intent['value']));
       }
       throw const FormatException('Invalid detail intent');
     }
+
+    final rawVenue = json['venue'];
+    final rawLocation = rawVenue is Map ? rawVenue['value'] : null;
+    final hasLocation =
+        rawLocation is Map &&
+        (rawLocation.containsKey('latitude') ||
+            rawLocation.containsKey('longitude'));
     final patch = PrivateEventDetailsPatch(
+      meetingLocation: hasLocation
+          ? parse<EventMeetingLocation>(rawVenue, (raw) {
+              if (raw is! Map ||
+                  raw.keys.toSet().difference({
+                    'name',
+                    'address',
+                    'placeId',
+                    'latitude',
+                    'longitude',
+                    'notes',
+                  }).isNotEmpty) {
+                throw const FormatException('Invalid meeting location');
+              }
+              return EventMeetingLocation.fromJson(
+                Map<String, dynamic>.from(raw),
+              );
+            }, allowInherit: false).value
+          : null,
       durationMinutes: json.containsKey('durationMinutes')
           ? parse<int>(json['durationMinutes'], (raw) {
               if (raw is! int) throw const FormatException('Invalid duration');
               return raw;
             })
           : null,
-      venue: json.containsKey('venue')
+      venue: json.containsKey('venue') && !hasLocation
           ? parse<String>(json['venue'], (raw) {
               if (raw is! Map) throw const FormatException('Invalid venue');
               final data = Map<String, Object?>.from(raw);
@@ -98,12 +151,17 @@ class PrivateEventDetailsPatch {
               if (raw is! Map) throw const FormatException('Invalid format');
               final data = Map<String, Object?>.from(raw);
               if (data['version'] != 1 ||
-                  !ActivityKind.values.any((v) => v.name == data['activityKind']) ||
+                  !ActivityKind.values.any(
+                    (v) => v.name == data['activityKind'],
+                  ) ||
                   !EventInteractionModel.values.any(
-                      (v) => v.name == data['interactionModel'])) {
+                    (v) => v.name == data['interactionModel'],
+                  )) {
                 throw const FormatException('Invalid format');
               }
-              return EventFormatSnapshot.fromJson(Map<String, dynamic>.from(data));
+              return EventFormatSnapshot.fromJson(
+                Map<String, dynamic>.from(data),
+              );
             }, allowInherit: false)
           : null,
     );
@@ -129,11 +187,14 @@ class PrivateEventDetailsUpdateRequest {
   final String reviewedDefaultsHash;
   final PrivateEventDetailsPatch details;
 
-  bool get isValid => _detailIdPattern.hasMatch(organizerId) &&
+  bool get isValid =>
+      _detailIdPattern.hasMatch(organizerId) &&
       _detailIdPattern.hasMatch(eventId) &&
       _detailRequestPattern.hasMatch(requestId) &&
-      expectedSetupRevision >= 1 && expectedSetupRevision <= 999999999 &&
-      _detailHashPattern.hasMatch(reviewedDefaultsHash) && details.isValid;
+      expectedSetupRevision >= 1 &&
+      expectedSetupRevision <= 999999999 &&
+      _detailHashPattern.hasMatch(reviewedDefaultsHash) &&
+      details.isValid;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -146,9 +207,15 @@ class PrivateEventDetailsUpdateRequest {
 
   factory PrivateEventDetailsUpdateRequest.fromJson(Map<String, dynamic> json) {
     if (json.keys.toSet().difference({
-      'organizerId', 'eventId', 'requestId', 'expectedSetupRevision',
-      'reviewedDefaultsHash', 'details',
-    }).isNotEmpty || json.length != 6 || json['details'] is! Map) {
+          'organizerId',
+          'eventId',
+          'requestId',
+          'expectedSetupRevision',
+          'reviewedDefaultsHash',
+          'details',
+        }).isNotEmpty ||
+        json.length != 6 ||
+        json['details'] is! Map) {
       throw const FormatException('Invalid details command');
     }
     final request = PrivateEventDetailsUpdateRequest(
@@ -161,7 +228,9 @@ class PrivateEventDetailsUpdateRequest {
         Map<String, Object?>.from(json['details'] as Map),
       ),
     );
-    if (!request.isValid) throw const FormatException('Invalid details command');
+    if (!request.isValid) {
+      throw const FormatException('Invalid details command');
+    }
     return request;
   }
 }
@@ -172,7 +241,8 @@ class PrivateEventDetailsRepository {
   final FirebaseFunctions _functions;
 
   Future<PrivateEventCreateReceipt> update(
-      PrivateEventDetailsUpdateRequest request) {
+    PrivateEventDetailsUpdateRequest request,
+  ) {
     if (!request.isValid) throw ArgumentError.value(request, 'request');
     return withBackendErrorContext(
       () async {

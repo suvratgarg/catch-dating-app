@@ -101,18 +101,25 @@
                   "type": "string"
                 },
                 "value": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "name"
-                  ],
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 240
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
                     }
-                  }
+                  ]
                 }
               }
             },

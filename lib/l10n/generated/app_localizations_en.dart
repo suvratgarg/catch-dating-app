@@ -23302,4 +23302,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPrivateEventReturnToReviewHint =>
       'Save these basics and return to your selected responses. You can finish event details later.';
+
+  @override
+  String get hostsPrivateEventDetailPickLocation =>
+      'Choose meeting place on map';
+
+  @override
+  String get hostsPrivateEventDetailLocationNeeded =>
+      'A map location is required before publishing. A name alone is fine while planning.';
+
+  @override
+  String get hostsPrivateEventDetailLocationReady =>
+      'Meeting place is ready for directions and the public listing.';
 }

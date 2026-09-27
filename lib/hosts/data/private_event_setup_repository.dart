@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
+import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -15,15 +16,24 @@ String organizerEventDefaultsHash({
   required String? timezone,
   required int? revision,
 }) {
-  final city = cityId != null && cityId.isNotEmpty &&
-          marketId != null && marketId.isNotEmpty
+  final city =
+      cityId != null &&
+          cityId.isNotEmpty &&
+          marketId != null &&
+          marketId.isNotEmpty
       ? {'cityId': cityId, 'marketId': marketId}
       : null;
-  return sha256.convert(utf8.encode(jsonEncode({
-    'city': city,
-    'timezone': timezone,
-    'revision': revision,
-  }))).toString();
+  return sha256
+      .convert(
+        utf8.encode(
+          jsonEncode({
+            'city': city,
+            'timezone': timezone,
+            'revision': revision,
+          }),
+        ),
+      )
+      .toString();
 }
 
 /// A field can inherit, be explicitly set, or be explicitly cleared.
@@ -36,8 +46,7 @@ class EventSetupValue<T> {
   const EventSetupValue.inherit()
     : mode = EventSetupValueMode.inherit,
       value = null;
-  const EventSetupValue.set(this.value)
-    : mode = EventSetupValueMode.set;
+  const EventSetupValue.set(this.value) : mode = EventSetupValueMode.set;
   const EventSetupValue.clear()
     : mode = EventSetupValueMode.clear,
       value = null;
@@ -57,10 +66,7 @@ class EventSetupCity {
   final String cityId;
   final String marketId;
 
-  Map<String, Object?> toJson() => {
-    'cityId': cityId,
-    'marketId': marketId,
-  };
+  Map<String, Object?> toJson() => {'cityId': cityId, 'marketId': marketId};
 }
 
 /// The private first-save payload. Venue, end time, capacity and price are
@@ -83,10 +89,7 @@ class PrivateEventBasics {
   final String? reviewedDefaultsHash;
 
   factory PrivateEventBasics.fromJson(Map<String, dynamic> json) {
-    EventSetupValue<T> parseValue<T>(
-      Object? raw,
-      T Function(Object?) parse,
-    ) {
+    EventSetupValue<T> parseValue<T>(Object? raw, T Function(Object?) parse) {
       if (raw is! Map) throw const FormatException('Invalid setup value');
       final value = Map<String, dynamic>.from(raw);
       return switch (value['mode']) {
@@ -153,8 +156,11 @@ class PrivateEventBasics {
     final year = int.tryParse(dateParts[0]);
     final month = int.tryParse(dateParts[1]);
     final day = int.tryParse(dateParts[2]);
-    if (year == null || year < 2000 || year > 2100 ||
-        month == null || day == null) {
+    if (year == null ||
+        year < 2000 ||
+        year > 2100 ||
+        month == null ||
+        day == null) {
       return false;
     }
     final date = DateTime.utc(year, month, day);
@@ -281,46 +287,72 @@ class PrivateEventDetailsSnapshot {
   const PrivateEventDetailsSnapshot({
     this.endTimeMillis,
     this.venueName,
+    this.meetingLocation,
     this.sourceVenueId,
     this.eventFormat,
   });
 
   final int? endTimeMillis;
   final String? venueName;
+  final EventMeetingLocation? meetingLocation;
   final String? sourceVenueId;
   final EventFormatSnapshot? eventFormat;
 
   factory PrivateEventDetailsSnapshot.fromResponse(Object? response) {
     if (response is! Map) throw const FormatException('Invalid event details');
     final data = Map<String, Object?>.from(response);
-    if (data.length != 4 ||
+    if (data.length < 4 ||
+        data.length > 5 ||
         data.keys.toSet().difference({
-          'endTimeMillis', 'venueName', 'sourceVenueId', 'eventFormat',
+          'endTimeMillis',
+          'venueName',
+          'sourceVenueId',
+          'eventFormat',
+          'meetingLocation',
         }).isNotEmpty ||
         (data['endTimeMillis'] != null && data['endTimeMillis'] is! int) ||
         (data['venueName'] != null &&
             (data['venueName'] is! String ||
                 (data['venueName'] as String).trim().isEmpty)) ||
-        (data['sourceVenueId'] != null &&
-            data['sourceVenueId'] is! String)) {
+        (data['sourceVenueId'] != null && data['sourceVenueId'] is! String)) {
       throw const FormatException('Invalid event details');
     }
     final rawFormat = data['eventFormat'];
     EventFormatSnapshot? format;
     if (rawFormat != null) {
-      if (rawFormat is! Map) throw const FormatException('Invalid event format');
+      if (rawFormat is! Map) {
+        throw const FormatException('Invalid event format');
+      }
       final formatData = Map<String, Object?>.from(rawFormat);
       if (formatData['version'] != 1 ||
-          !ActivityKind.values.any((v) => v.name == formatData['activityKind']) ||
+          !ActivityKind.values.any(
+            (v) => v.name == formatData['activityKind'],
+          ) ||
           !EventInteractionModel.values.any(
-              (v) => v.name == formatData['interactionModel'])) {
+            (v) => v.name == formatData['interactionModel'],
+          )) {
         throw const FormatException('Invalid event format');
       }
       format = EventFormatSnapshot.fromJson(
         Map<String, dynamic>.from(formatData),
       );
     }
+    final rawLocation = data['meetingLocation'];
+    final location = rawLocation == null
+        ? null
+        : EventMeetingLocation.fromJson(
+            Map<String, dynamic>.from(rawLocation as Map),
+          );
+    if (location != null &&
+        (location.name.trim().isEmpty ||
+            !location.latitude.isFinite ||
+            location.latitude.abs() > 90 ||
+            !location.longitude.isFinite ||
+            location.longitude.abs() > 180)) {
+      throw const FormatException('Invalid meeting location');
+    }
     return PrivateEventDetailsSnapshot(
+      meetingLocation: location,
       endTimeMillis: data['endTimeMillis'] as int?,
       venueName: data['venueName'] as String?,
       sourceVenueId: data['sourceVenueId'] as String?,
@@ -546,7 +578,8 @@ class PrivateEventSetupRepository {
     String? cursor,
   }) {
     if (!_setupInventoryId.hasMatch(organizerId) ||
-        limit < 1 || limit > 50 ||
+        limit < 1 ||
+        limit > 50 ||
         (cursor != null && !_setupInventoryCursor.hasMatch(cursor))) {
       throw ArgumentError('Invalid private event inventory request');
     }
@@ -607,8 +640,15 @@ class PrivateEventSetupInventoryItem {
     }
     final data = Map<String, Object?>.from(response);
     const keys = {
-      'eventId', 'name', 'city', 'localDate', 'localStartTime',
-      'timezone', 'startTimeMillis', 'setupRevision', 'status',
+      'eventId',
+      'name',
+      'city',
+      'localDate',
+      'localStartTime',
+      'timezone',
+      'startTimeMillis',
+      'setupRevision',
+      'status',
       'detailsConfigured',
     };
     final rawCity = data['city'];
@@ -629,21 +669,31 @@ class PrivateEventSetupInventoryItem {
     if (city.length != 2 ||
         city['cityId'] is! String ||
         city['marketId'] is! String ||
-        eventId is! String || !_setupInventoryId.hasMatch(eventId) ||
-        name is! String || name.trim().isEmpty || name.length > 120 ||
-        localDate is! String || localStartTime is! String ||
-        timezone is! String || timezone.isEmpty || timezone.length > 100 ||
-        startTimeMillis is! int || revision is! int || revision < 1 ||
+        eventId is! String ||
+        !_setupInventoryId.hasMatch(eventId) ||
+        name is! String ||
+        name.trim().isEmpty ||
+        name.length > 120 ||
+        localDate is! String ||
+        localStartTime is! String ||
+        timezone is! String ||
+        timezone.isEmpty ||
+        timezone.length > 100 ||
+        startTimeMillis is! int ||
+        revision is! int ||
+        revision < 1 ||
         !const ['active', 'cancelled'].contains(data['status']) ||
         configured is! bool) {
       throw const FormatException('Invalid private event inventory item');
     }
     final basics = PrivateEventBasics(
       name: name,
-      city: EventSetupValue.set(EventSetupCity(
-        cityId: city['cityId'] as String,
-        marketId: city['marketId'] as String,
-      )),
+      city: EventSetupValue.set(
+        EventSetupCity(
+          cityId: city['cityId'] as String,
+          marketId: city['marketId'] as String,
+        ),
+      ),
       localDate: localDate,
       localStartTime: localStartTime,
       timezone: EventSetupValue.set(timezone),
@@ -684,7 +734,9 @@ class PrivateEventSetupInventoryPage {
     final data = Map<String, Object?>.from(response);
     final rawEvents = data['events'];
     final cursor = data['nextCursor'];
-    if (data.length != 2 || rawEvents is! List || rawEvents.length > 50 ||
+    if (data.length != 2 ||
+        rawEvents is! List ||
+        rawEvents.length > 50 ||
         (cursor != null &&
             (cursor is! String || !_setupInventoryCursor.hasMatch(cursor)))) {
       throw const FormatException('Invalid private event inventory');

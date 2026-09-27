@@ -37539,6 +37539,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save these basics and return to your selected responses. You can finish event details later.'**
   String get hostsPrivateEventReturnToReviewHint;
+
+  /// Private event meeting location setup copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose meeting place on map'**
+  String get hostsPrivateEventDetailPickLocation;
+
+  /// Private event meeting location setup copy.
+  ///
+  /// In en, this message translates to:
+  /// **'A map location is required before publishing. A name alone is fine while planning.'**
+  String get hostsPrivateEventDetailLocationNeeded;
+
+  /// Private event meeting location setup copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting place is ready for directions and the public listing.'**
+  String get hostsPrivateEventDetailLocationReady;
 }
 
 class _AppLocalizationsDelegate

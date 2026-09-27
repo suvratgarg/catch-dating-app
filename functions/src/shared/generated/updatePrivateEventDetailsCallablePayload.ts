@@ -23,9 +23,18 @@ export interface UpdatePrivateEventDetailsCallablePayload {
     venue?:
       | {
           mode: "set";
-          value: {
-            name: string;
-          };
+          value:
+            | {
+                name: string;
+              }
+            | {
+                name: string;
+                address?: string | null;
+                placeId?: string | null;
+                latitude: number;
+                longitude: number;
+                notes?: string | null;
+              };
         }
       | {
           mode: "clear";

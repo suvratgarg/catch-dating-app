@@ -162,5 +162,13 @@ export interface PrivateEventSetupCallableResponse {
         [k: string]: unknown;
       };
     };
+    meetingLocation?: null | {
+      name: string;
+      address?: string | null;
+      placeId?: string | null;
+      latitude: number;
+      longitude: number;
+      notes?: string | null;
+    };
   };
 }

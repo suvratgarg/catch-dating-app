@@ -38,7 +38,6 @@ function duration(value: unknown): number {
 
 function venueName(value: unknown): string {
   if (!value || typeof value !== "object" ||
-      Object.keys(value).join(",") !== "name" ||
       typeof (value as {name?: unknown}).name !== "string") {
     throw new HttpsError("invalid-argument", "Invalid event venue.");
   }
@@ -185,7 +184,15 @@ export async function updatePrivateEventDetails(params: {
         drop(key);
       }
       if (venueDecision.mode === "set") {
-        set("meetingPoint", venueName(venueDecision.value));
+        const location = venueDecision.value;
+        const name = venueName(location);
+        set("meetingPoint", name);
+        if ("latitude" in location && "longitude" in location) {
+          set("meetingLocation", {...location, name});
+          set("startingPointLat", location.latitude);
+          set("startingPointLng", location.longitude);
+          set("locationDetails", location.notes ?? null);
+        }
       } else if (venueDecision.mode === "inherit" && savedVenue) {
         set("meetingPoint", savedVenue.meetingLocation.name);
         set("meetingLocation", savedVenue.meetingLocation);

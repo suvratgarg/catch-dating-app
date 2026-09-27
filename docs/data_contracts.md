@@ -1770,8 +1770,10 @@ History reopens in a read-only Host view and never expands offer eligibility.
 `updatePrivateEventDetails` adds or clears duration, venue and format on the
 same private event, with setup revision, reviewed defaults hash and durable
 request identity. Duration and saved venue can inherit reviewed organizer
-defaults. A named venue does not invent coordinates; replacing a saved venue
-clears stale map fields. Neither save publishes the event nor admits a guest.
+defaults. A named venue does not invent coordinates; hosts can instead use the existing
+map picker to save a canonical named meeting location. Its coordinates and
+legacy mirrors are persisted together; replacing a saved venue clears its
+source-venue reference. Name-only replacement clears stale map fields. Neither save publishes the event nor admits a guest.
 The manager read includes `eventDetails` for reopening those actual values;
 event preferences remain separate recommendations. Hosts can add or edit venue
 and duration after creating offers or importing a roster. Changing format still
