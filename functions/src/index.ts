@@ -14,6 +14,8 @@ export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
 export {razorpayWebhook} from "./payments/razorpayWebhook";
 export {listOrganizerFormPayments} from
   "./payments/formPayments/formPaymentLedger";
+export {managePaymentRoutingPolicy} from
+  "./payments/managePaymentRoutingPolicy";
 export {prepareOrganizerFormPayment, getOrganizerFormPayment,
   findOrganizerFormPayment,
   manageOrganizerFormPaymentConnection} from

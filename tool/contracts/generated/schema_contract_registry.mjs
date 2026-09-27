@@ -1,6 +1,437 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const paymentRoutingSnapshotSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "purpose",
+    "organizerId",
+    "selection",
+    "policySource",
+    "appRevision",
+    "organizerRevision",
+    "bindingId",
+    "merchantAccountId",
+    "destinationAccountId",
+    "configurationVersion",
+    "checkoutKey"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "purpose": {
+      "enum": [
+        "formFee",
+        "eventAdmission"
+      ]
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "mode",
+        "currency",
+        "merchantCountry"
+      ],
+      "properties": {
+        "route": {
+          "enum": [
+            "razorpayRoute",
+            "razorpayOAuth",
+            "stripeConnectDirect",
+            "stripeConnectDestination"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "merchantCountry": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    },
+    "policySource": {
+      "enum": [
+        "app",
+        "organizer",
+        "legacy"
+      ]
+    },
+    "appRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "organizerRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bindingId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "merchantAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "destinationAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "configurationVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "checkoutKey": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "title": "PaymentRoutingSnapshot"
+};
+
+export const managePaymentRoutingPolicyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_payment_routing_policy_payload.schema.json",
+  "title": "ManagePaymentRoutingPolicyCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "organizerId",
+    "expectedRevision",
+    "formFee",
+    "eventAdmission"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "read",
+        "replace"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "formFee": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const managePaymentRoutingPolicyCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_payment_routing_policy_response.schema.json",
+  "title": "ManagePaymentRoutingPolicyCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policyId",
+    "organizerId",
+    "revision",
+    "formFee",
+    "eventAdmission",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "policyId": {
+      "type": "string",
+      "pattern": "^(app|org_[a-f0-9]{64})$"
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "formFee": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  }
+};
+
 export const previewOrganizerFormAdmissionCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/preview_organizer_form_admission_payload.schema.json",
@@ -116869,6 +117300,214 @@ export const organizerPaymentOauthStateDocumentSchema = {
   "x-owner": "organizer form payment server operations"
 };
 
+export const paymentRoutingPolicyDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/payment_routing_policies.schema.json",
+  "title": "PaymentRoutingPolicyDocument",
+  "description": "Operator-owned app defaults and organizer overrides. Null inherits at organizer scope and disables at app scope. An explicit disabled selection never inherits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "organizerId",
+    "revision",
+    "formFee",
+    "eventAdmission",
+    "updatedAt"
+  ],
+  "properties": {
+    "scope": {
+      "enum": [
+        "app",
+        "organizer"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "formFee": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eventAdmission": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route"
+              ],
+              "properties": {
+                "route": {
+                  "const": "disabled"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "route",
+                "mode",
+                "currency",
+                "merchantCountry"
+              ],
+              "properties": {
+                "route": {
+                  "enum": [
+                    "razorpayRoute",
+                    "razorpayOAuth",
+                    "stripeConnectDirect",
+                    "stripeConnectDestination"
+                  ]
+                },
+                "mode": {
+                  "enum": [
+                    "test",
+                    "live"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "merchantCountry": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "lastMutationHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scope": {
+            "const": "app"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "organizerId": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "organizerId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "x-firestore-collection": "paymentRoutingPolicies",
+  "x-firestore-path": "paymentRoutingPolicies/{policyId}",
+  "x-document-id-field": "policyId",
+  "x-owner": "payment routing server operations"
+};
+
 export const organizerFormPaymentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_payments.schema.json",
@@ -116909,6 +117548,120 @@ export const organizerFormPaymentDocumentSchema = {
     "lastErrorCode"
   ],
   "properties": {
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "organizerId",
+        "selection",
+        "policySource",
+        "appRevision",
+        "organizerRevision",
+        "bindingId",
+        "merchantAccountId",
+        "destinationAccountId",
+        "configurationVersion",
+        "checkoutKey"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "enum": [
+            "formFee",
+            "eventAdmission"
+          ]
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route",
+            "mode",
+            "currency",
+            "merchantCountry"
+          ],
+          "properties": {
+            "route": {
+              "enum": [
+                "razorpayRoute",
+                "razorpayOAuth",
+                "stripeConnectDirect",
+                "stripeConnectDestination"
+              ]
+            },
+            "mode": {
+              "enum": [
+                "test",
+                "live"
+              ]
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "merchantCountry": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        },
+        "policySource": {
+          "enum": [
+            "app",
+            "organizer",
+            "legacy"
+          ]
+        },
+        "appRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizerRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bindingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "merchantAccountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "destinationAccountId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "configurationVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "checkoutKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,

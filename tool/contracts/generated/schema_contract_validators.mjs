@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  paymentRoutingSnapshotSchema,
+  managePaymentRoutingPolicyCallablePayloadSchema,
+  managePaymentRoutingPolicyCallableResponseSchema,
   previewOrganizerFormAdmissionCallablePayloadSchema,
   previewOrganizerFormAdmissionCallableResponseSchema,
   organizerFormAdmissionDocumentSchema,
@@ -301,6 +304,7 @@ import {
   organizerFormDomainDocumentSchema,
   organizerPaymentConnectionDocumentSchema,
   organizerPaymentOauthStateDocumentSchema,
+  paymentRoutingPolicyDocumentSchema,
   organizerFormPaymentDocumentSchema,
   organizerFormPaymentWebhookDocumentSchema,
   organizerFormDraftDocumentSchema,
@@ -944,6 +948,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validatePaymentRoutingSnapshot = ajv.compile(paymentRoutingSnapshotSchema);
+export const validateManagePaymentRoutingPolicyCallablePayload = ajv.compile(managePaymentRoutingPolicyCallablePayloadSchema);
+export const validateManagePaymentRoutingPolicyCallableResponse = ajv.compile(managePaymentRoutingPolicyCallableResponseSchema);
 export const validatePreviewOrganizerFormAdmissionCallablePayload = ajv.compile(previewOrganizerFormAdmissionCallablePayloadSchema);
 export const validatePreviewOrganizerFormAdmissionCallableResponse = ajv.compile(previewOrganizerFormAdmissionCallableResponseSchema);
 export const validateOrganizerFormAdmissionDocument = ajv.compile(organizerFormAdmissionDocumentSchema);
@@ -1242,6 +1249,7 @@ export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSc
 export const validateOrganizerFormDomainDocument = ajv.compile(organizerFormDomainDocumentSchema);
 export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
 export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
+export const validatePaymentRoutingPolicyDocument = ajv.compile(paymentRoutingPolicyDocumentSchema);
 export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
 export const validateOrganizerFormPaymentWebhookDocument = ajv.compile(organizerFormPaymentWebhookDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);

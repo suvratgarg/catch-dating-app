@@ -15,6 +15,9 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {name: "PaymentRoutingSnapshot", source: "embedded/payment_routing_snapshot.schema.json", typeOutput: "functions/src/shared/generated/paymentRoutingSnapshot.ts"},
+  {name: "ManagePaymentRoutingPolicyCallablePayload", source: "callables/manage_payment_routing_policy_payload.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts"},
+  {name: "ManagePaymentRoutingPolicyCallableResponse", source: "callable_responses/manage_payment_routing_policy_response.schema.json", typeOutput: "functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts"},
   {"name": "PreviewOrganizerFormAdmissionCallablePayload", "source": "callables/preview_organizer_form_admission_payload.schema.json", "typeOutput": "functions/src/shared/generated/previewOrganizerFormAdmissionCallablePayload.ts"},
   {"name": "PreviewOrganizerFormAdmissionCallableResponse", "source": "callable_responses/preview_organizer_form_admission_response.schema.json", "typeOutput": "functions/src/shared/generated/previewOrganizerFormAdmissionCallableResponse.ts"},
   {"name": "OrganizerFormAdmissionDocument", "source": "firestore/organizer_form_admissions.schema.json", "typeOutput": "functions/src/shared/generated/organizerFormAdmissionDocument.ts"},
@@ -1482,6 +1485,11 @@ const schemaSpecs = [
     name: "OrganizerPaymentOauthStateDocument",
     source: "firestore/organizer_payment_oauth_states.schema.json",
     typeOutput: "functions/src/shared/generated/organizerPaymentOauthStateDocument.ts",
+  },
+  {
+    name: "PaymentRoutingPolicyDocument",
+    source: "firestore/payment_routing_policies.schema.json",
+    typeOutput: "functions/src/shared/generated/paymentRoutingPolicyDocument.ts",
   },
   {
     name: "OrganizerFormPaymentDocument",

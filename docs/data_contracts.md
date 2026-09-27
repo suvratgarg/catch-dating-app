@@ -2644,6 +2644,27 @@ measured before changing batching or the actor/organizer rate ceilings.
 
 ### Organizer-connected form payments
 
+`paymentRoutingPolicies/app` owns application defaults; organizer overrides use
+`org_` plus the SHA-256 of the exact organizer ID. Both purposes (`formFee` and
+`eventAdmission`) are independent. A null organizer choice inherits; a null app
+choice or explicit `disabled` blocks that purpose. Policies cannot contain
+credentials, account IDs or webhook URLs. Direct client access is denied.
+`managePaymentRoutingPolicy` is restricted to Finance/Admin Owner and validates
+the organizer, expected revision and full replacement. The transaction writes
+the policy and existing admin audit log together. Only the most recent exact
+actor/payload retry replays; an intervening edit requires fresh review.
+
+The shared payment routing snapshot freezes the selected adapter, mode,
+currency, merchant country, policy revisions, merchant/destination accounts and
+immutable provider configuration reference. Its contract is provider-neutral;
+checkout public keys are optional for providers that do not require them.
+The routing registry resumes only the recorded adapter and never reselects an
+account from current defaults. An absent adapter fails explicitly. Configuration
+alone does not establish provider or country eligibility. The existing form
+ledger can carry this snapshot alongside legacy OAuth fields during runtime
+integration; Route execution and event-offer checkout are not activated by the
+configuration command.
+
 `organizerPaymentConnections` binds one organizer to one Razorpay merchant,
 mode, verified merchant webhook and pinned Secret Manager credential version.
 `organizerPaymentOauthStates` stores only a hash of one-use, manager-bound,

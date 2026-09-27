@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validatePaymentRoutingSnapshot} from "./validators/paymentRoutingSnapshot";
+export {validateManagePaymentRoutingPolicyCallablePayload} from "./validators/managePaymentRoutingPolicyInput";
+export {validateManagePaymentRoutingPolicyCallableResponse} from "./validators/managePaymentRoutingPolicyOutput";
 export {validatePreviewOrganizerFormAdmissionCallablePayload} from "./validators/previewOrganizerFormAdmissionInput";
 export {validatePreviewOrganizerFormAdmissionCallableResponse} from "./validators/previewOrganizerFormAdmissionOutput";
 export {validateOrganizerFormAdmissionDocument} from "./validators/organizerFormAdmissionDocument";
@@ -303,6 +306,7 @@ export {validateOrganizerFormDocument} from "./validators/organizerFormDocument"
 export {validateOrganizerFormDomainDocument} from "./validators/organizerFormDomainDocument";
 export {validateOrganizerPaymentConnectionDocument} from "./validators/organizerPaymentConnectionDocument";
 export {validateOrganizerPaymentOauthStateDocument} from "./validators/organizerPaymentOauthStateDocument";
+export {validatePaymentRoutingPolicyDocument} from "./validators/paymentRoutingPolicyDocument";
 export {validateOrganizerFormPaymentDocument} from "./validators/organizerFormPaymentDocument";
 export {validateOrganizerFormPaymentWebhookDocument} from "./validators/organizerFormPaymentWebhookDocument";
 export {validateOrganizerFormDraftDocument} from "./validators/organizerFormDraftDocument";

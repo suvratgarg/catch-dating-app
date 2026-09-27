@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `functions/src/shared/generated/paymentRoutingSnapshot.ts` |
+| ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallablePayload.ts` |
+| ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `functions/src/shared/generated/managePaymentRoutingPolicyCallableResponse.ts` |
 | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallablePayload.ts` |
 | PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `functions/src/shared/generated/previewOrganizerFormAdmissionCallableResponse.ts` |
 | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `functions/src/shared/generated/organizerFormAdmissionDocument.ts` |
@@ -310,6 +313,7 @@ Do not edit it by hand.
 | OrganizerFormDomainDocument | `firestore/organizer_form_domains.schema.json` | `functions/src/shared/generated/organizerFormDomainDocument.ts` |
 | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `functions/src/shared/generated/organizerPaymentConnectionDocument.ts` |
 | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `functions/src/shared/generated/organizerPaymentOauthStateDocument.ts` |
+| PaymentRoutingPolicyDocument | `firestore/payment_routing_policies.schema.json` | `functions/src/shared/generated/paymentRoutingPolicyDocument.ts` |
 | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `functions/src/shared/generated/organizerFormPaymentDocument.ts` |
 | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `functions/src/shared/generated/organizerFormPaymentWebhookDocument.ts` |
 | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `functions/src/shared/generated/organizerFormDraftDocument.ts` |
@@ -934,6 +938,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaPaymentRoutingSnapshotSchema` | PaymentRoutingSnapshot | `embedded/payment_routing_snapshot.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_snapshot.g.dart` |
+| `schemaManagePaymentRoutingPolicyCallablePayloadSchema` | ManagePaymentRoutingPolicyCallablePayload | `callables/manage_payment_routing_policy_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_payload.g.dart` |
+| `schemaManagePaymentRoutingPolicyCallableResponseSchema` | ManagePaymentRoutingPolicyCallableResponse | `callable_responses/manage_payment_routing_policy_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_payment_routing_policy_callable_response.g.dart` |
 | `schemaPreviewOrganizerFormAdmissionCallablePayloadSchema` | PreviewOrganizerFormAdmissionCallablePayload | `callables/preview_organizer_form_admission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_payload.g.dart` |
 | `schemaPreviewOrganizerFormAdmissionCallableResponseSchema` | PreviewOrganizerFormAdmissionCallableResponse | `callable_responses/preview_organizer_form_admission_response.schema.json` | `lib/core/schema_contracts/generated/schemas/preview_organizer_form_admission_callable_response.g.dart` |
 | `schemaOrganizerFormAdmissionDocumentSchema` | OrganizerFormAdmissionDocument | `firestore/organizer_form_admissions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_admission_document.g.dart` |
@@ -1232,6 +1239,7 @@ Do not edit it by hand.
 | `schemaOrganizerFormDomainDocumentSchema` | OrganizerFormDomainDocument | `firestore/organizer_form_domains.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_domain_document.g.dart` |
 | `schemaOrganizerPaymentConnectionDocumentSchema` | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_connection_document.g.dart` |
 | `schemaOrganizerPaymentOauthStateDocumentSchema` | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_oauth_state_document.g.dart` |
+| `schemaPaymentRoutingPolicyDocumentSchema` | PaymentRoutingPolicyDocument | `firestore/payment_routing_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_routing_policy_document.g.dart` |
 | `schemaOrganizerFormPaymentDocumentSchema` | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_document.g.dart` |
 | `schemaOrganizerFormPaymentWebhookDocumentSchema` | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_webhook_document.g.dart` |
 | `schemaOrganizerFormDraftDocumentSchema` | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_draft_document.g.dart` |
@@ -2207,6 +2215,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| ManagePaymentRoutingPolicyCallablePayload | cannot map field "action" (no type) |
 | SetEventRcsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceRuntimeConfigCallablePayload | cannot map field "command" (no type) |
 | SetEventAssistanceGroupStaffCallablePayload | cannot map field "decision" (no type) |

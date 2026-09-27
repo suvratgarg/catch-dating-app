@@ -272,6 +272,49 @@ copy is optional and bounded; safe system copy is the fallback.
 
 ### Payment and profile extension acceptance
 
+Payment routing is selected separately for form fees and event admission.
+Finance/Admin Owner uses `managePaymentRoutingPolicy` with `organizerId: null`
+for app defaults, or the exact organizer ID for an override. Read with
+`action: "read"` and null `expectedRevision`, `formFee` and `eventAdmission`.
+Replace with the returned revision and both purpose choices. Each choice is
+null, `{ "route": "disabled" }`, or an object such as
+`{ "route": "razorpayRoute", "mode": "test", "currency": "INR", "merchantCountry": "IN" }`.
+Null inherits at organizer scope and disables at app scope. The other Razorpay
+choice is `razorpayOAuth`. `stripeConnectDirect` and
+`stripeConnectDestination` reserve explicit adapter choices for future supported
+account/country integrations; no Stripe execution adapter is installed by this
+configuration foundation. Configuration does not fall back from an unavailable
+provider to a different merchant. New payments must freeze their chosen binding;
+old payments retain that binding for reconciliation and refunds.
+
+This configuration surface is source support, not activation of Route payments.
+Before activation, verify each selected adapter's credentials, account binding,
+webhook, capture/refund/transfer recovery and applicable provider eligibility.
+Keep existing OAuth credentials available for outstanding OAuth payments when
+changing defaults. Platform Route setup does not require an OAuth partner
+application; merchant OAuth setup below remains a separate route.
+
+The platform adapter uses the separate
+`RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION` deployment variable. Its value must
+pin a numeric Secret Manager version in the deployment project, never `latest`.
+The secret is an object with `schema: "catch.razorpay-platform-payments/v1"`,
+`mode`, `platformAccountId`, `keyId`, `keySecret`, `webhookSecret`, and explicit
+`feeBasisPoints: {formFee, eventAdmission}`. No commission is inferred from a
+missing field. Keys must match the configured test/live mode. Keep this variable
+empty until the profile and selected linked accounts are ready. Configure the
+reference in the matching GitHub deployment environment; the promotion workflow
+materializes it without copying secret values into dotenv output. Retain pinned
+versions needed by outstanding payments.
+
+The Route adapter creates the quoted organizer transfer with its order, verifies
+the expanded beneficiary/amount, and requires the requested initial settlement
+hold. Full failed-fulfillment refunds request `reverse_all`; partial refunds need
+a separate allocation plan. These operations follow Razorpay's
+[order transfer API](https://razorpay.com/docs/api/payments/route/create-transfers-orders/),
+[transfer lookup](https://razorpay.com/docs/api/payments/route/fetch-transfer-order)
+and [refund/reversal API](https://razorpay.com/docs/api/payments/route/refund-payments-and-reverse-transfer).
+Provider transport tests use fixtures; they are not Razorpay test-mode receipts.
+
 The payment/profile/chat extension is in implementation. Merchant connections,
 payment recovery, submission finalization and webhook receipt processing live
 under `functions/src/payments/formPayments/`. Their presence alone does not

@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {paymentRoutingSnapshotSchema} from "./schemas/paymentRoutingSnapshot";
+export {managePaymentRoutingPolicyCallablePayloadSchema} from "./schemas/managePaymentRoutingPolicyInput";
+export {managePaymentRoutingPolicyCallableResponseSchema} from "./schemas/managePaymentRoutingPolicyOutput";
 export {previewOrganizerFormAdmissionCallablePayloadSchema} from "./schemas/previewOrganizerFormAdmissionInput";
 export {previewOrganizerFormAdmissionCallableResponseSchema} from "./schemas/previewOrganizerFormAdmissionOutput";
 export {organizerFormAdmissionDocumentSchema} from "./schemas/organizerFormAdmissionDocument";
@@ -303,6 +306,7 @@ export {organizerFormDocumentSchema} from "./schemas/organizerFormDocument";
 export {organizerFormDomainDocumentSchema} from "./schemas/organizerFormDomainDocument";
 export {organizerPaymentConnectionDocumentSchema} from "./schemas/organizerPaymentConnectionDocument";
 export {organizerPaymentOauthStateDocumentSchema} from "./schemas/organizerPaymentOauthStateDocument";
+export {paymentRoutingPolicyDocumentSchema} from "./schemas/paymentRoutingPolicyDocument";
 export {organizerFormPaymentDocumentSchema} from "./schemas/organizerFormPaymentDocument";
 export {organizerFormPaymentWebhookDocumentSchema} from "./schemas/organizerFormPaymentWebhookDocument";
 export {organizerFormDraftDocumentSchema} from "./schemas/organizerFormDraftDocument";

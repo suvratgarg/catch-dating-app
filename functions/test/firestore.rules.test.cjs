@@ -1240,7 +1240,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps form payment state server-only", async () => {
-      for (const collectionName of ["organizerPaymentConnections",
+      for (const collectionName of ["paymentRoutingPolicies", "organizerPaymentConnections",
         "organizerPaymentOauthStates", "organizerFormPayments",
         "organizerFormPaymentWebhooks"]) {
         await seed([collectionName, "payment-1"], {

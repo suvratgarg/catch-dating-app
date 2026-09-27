@@ -78629,6 +78629,52 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const managePaymentRoutingPolicyCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallablePayload.action',
+    required: true,
+    enumValues: <String>['read', 'replace'],
+  );
+
+  static const managePaymentRoutingPolicyCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const managePaymentRoutingPolicyCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const managePaymentRoutingPolicyCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const managePaymentRoutingPolicyCallableResponsePolicyId = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallableResponse.policyId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(app|org_[a-f0-9]{64})\$',
+  );
+
+  static const managePaymentRoutingPolicyCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const managePaymentRoutingPolicyCallableResponseUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'managePaymentRoutingPolicyCallableResponse.updatedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const markEventAttendanceCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'markEventAttendanceCallablePayload.eventId',
     maxLength: 180,
@@ -92364,6 +92410,109 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormPaymentDocumentRoutingAppRevision = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.appRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormPaymentDocumentRoutingBindingId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingCheckoutKey = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.checkoutKey',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingConfigurationVersion = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.configurationVersion',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingDestinationAccountId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.destinationAccountId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingMerchantAccountId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.merchantAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingOrganizerRevision = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerFormPaymentDocumentRoutingPolicySource = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.policySource',
+    required: true,
+    enumValues: <String>['app', 'organizer', 'legacy'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingPurpose = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.purpose',
+    required: true,
+    enumValues: <String>['formFee', 'eventAdmission'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingSelectionCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.selection.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const organizerFormPaymentDocumentRoutingSelectionMerchantCountry = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.selection.merchantCountry',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{2}\$',
+  );
+
+  static const organizerFormPaymentDocumentRoutingSelectionMode = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.selection.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingSelectionRoute = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.selection.route',
+    required: true,
+    enumValues: <String>['razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
+  );
+
+  static const organizerFormPaymentDocumentRoutingVersion = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.routing.version',
+    required: true,
+  );
+
   static const organizerFormPaymentDocumentStatus = CatchContractFieldConstraints(
     path: 'organizerFormPaymentDocument.status',
     required: true,
@@ -100595,6 +100744,149 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingPolicyDocumentLastMutationHash = CatchContractFieldConstraints(
+    path: 'paymentRoutingPolicyDocument.lastMutationHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const paymentRoutingPolicyDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'paymentRoutingPolicyDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingPolicyDocumentRevision = CatchContractFieldConstraints(
+    path: 'paymentRoutingPolicyDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const paymentRoutingPolicyDocumentScope = CatchContractFieldConstraints(
+    path: 'paymentRoutingPolicyDocument.scope',
+    required: true,
+    enumValues: <String>['app', 'organizer'],
+  );
+
+  static const paymentRoutingPolicyDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'paymentRoutingPolicyDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const paymentRoutingPolicyDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'paymentRoutingPolicyDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const paymentRoutingSnapshotAppRevision = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.appRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const paymentRoutingSnapshotBindingId = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.bindingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotCheckoutKey = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.checkoutKey',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotConfigurationVersion = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.configurationVersion',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotDestinationAccountId = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.destinationAccountId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotMerchantAccountId = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.merchantAccountId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotOrganizerId = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const paymentRoutingSnapshotOrganizerRevision = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.organizerRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const paymentRoutingSnapshotPolicySource = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.policySource',
+    required: true,
+    enumValues: <String>['app', 'organizer', 'legacy'],
+  );
+
+  static const paymentRoutingSnapshotPurpose = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.purpose',
+    required: true,
+    enumValues: <String>['formFee', 'eventAdmission'],
+  );
+
+  static const paymentRoutingSnapshotSelectionCurrency = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.selection.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const paymentRoutingSnapshotSelectionMerchantCountry = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.selection.merchantCountry',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{2}\$',
+  );
+
+  static const paymentRoutingSnapshotSelectionMode = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.selection.mode',
+    required: true,
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const paymentRoutingSnapshotSelectionRoute = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.selection.route',
+    required: true,
+    enumValues: <String>['razorpayRoute', 'razorpayOAuth', 'stripeConnectDirect', 'stripeConnectDestination'],
+  );
+
+  static const paymentRoutingSnapshotVersion = CatchContractFieldConstraints(
+    path: 'paymentRoutingSnapshot.version',
+    required: true,
   );
 
   static const photoPromptAnswerCaption = CatchContractFieldConstraints(
@@ -136916,6 +137208,13 @@ abstract final class CatchContractConstraints {
     'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.status': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsStatus,
     'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.webhookVerified': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsWebhookVerified,
     'manageOrganizerFormPaymentConnectionCallableResponse.expiresAtMillis': manageOrganizerFormPaymentConnectionCallableResponseExpiresAtMillis,
+    'managePaymentRoutingPolicyCallablePayload.action': managePaymentRoutingPolicyCallablePayloadAction,
+    'managePaymentRoutingPolicyCallablePayload.expectedRevision': managePaymentRoutingPolicyCallablePayloadExpectedRevision,
+    'managePaymentRoutingPolicyCallablePayload.organizerId': managePaymentRoutingPolicyCallablePayloadOrganizerId,
+    'managePaymentRoutingPolicyCallableResponse.organizerId': managePaymentRoutingPolicyCallableResponseOrganizerId,
+    'managePaymentRoutingPolicyCallableResponse.policyId': managePaymentRoutingPolicyCallableResponsePolicyId,
+    'managePaymentRoutingPolicyCallableResponse.revision': managePaymentRoutingPolicyCallableResponseRevision,
+    'managePaymentRoutingPolicyCallableResponse.updatedAtMillis': managePaymentRoutingPolicyCallableResponseUpdatedAtMillis,
     'markEventAttendanceCallablePayload.eventId': markEventAttendanceCallablePayloadEventId,
     'markEventAttendanceCallablePayload.userId': markEventAttendanceCallablePayloadUserId,
     'markEventAttendanceCallableResponse.attended': markEventAttendanceCallableResponseAttended,
@@ -138804,6 +139103,21 @@ abstract final class CatchContractConstraints {
     'organizerFormPaymentDocument.reservationReleased': organizerFormPaymentDocumentReservationReleased,
     'organizerFormPaymentDocument.respondentUid': organizerFormPaymentDocumentRespondentUid,
     'organizerFormPaymentDocument.responseId': organizerFormPaymentDocumentResponseId,
+    'organizerFormPaymentDocument.routing.appRevision': organizerFormPaymentDocumentRoutingAppRevision,
+    'organizerFormPaymentDocument.routing.bindingId': organizerFormPaymentDocumentRoutingBindingId,
+    'organizerFormPaymentDocument.routing.checkoutKey': organizerFormPaymentDocumentRoutingCheckoutKey,
+    'organizerFormPaymentDocument.routing.configurationVersion': organizerFormPaymentDocumentRoutingConfigurationVersion,
+    'organizerFormPaymentDocument.routing.destinationAccountId': organizerFormPaymentDocumentRoutingDestinationAccountId,
+    'organizerFormPaymentDocument.routing.merchantAccountId': organizerFormPaymentDocumentRoutingMerchantAccountId,
+    'organizerFormPaymentDocument.routing.organizerId': organizerFormPaymentDocumentRoutingOrganizerId,
+    'organizerFormPaymentDocument.routing.organizerRevision': organizerFormPaymentDocumentRoutingOrganizerRevision,
+    'organizerFormPaymentDocument.routing.policySource': organizerFormPaymentDocumentRoutingPolicySource,
+    'organizerFormPaymentDocument.routing.purpose': organizerFormPaymentDocumentRoutingPurpose,
+    'organizerFormPaymentDocument.routing.selection.currency': organizerFormPaymentDocumentRoutingSelectionCurrency,
+    'organizerFormPaymentDocument.routing.selection.merchantCountry': organizerFormPaymentDocumentRoutingSelectionMerchantCountry,
+    'organizerFormPaymentDocument.routing.selection.mode': organizerFormPaymentDocumentRoutingSelectionMode,
+    'organizerFormPaymentDocument.routing.selection.route': organizerFormPaymentDocumentRoutingSelectionRoute,
+    'organizerFormPaymentDocument.routing.version': organizerFormPaymentDocumentRoutingVersion,
     'organizerFormPaymentDocument.status': organizerFormPaymentDocumentStatus,
     'organizerFormPaymentDocument.submittedAt._nanoseconds': organizerFormPaymentDocumentSubmittedAtNanoseconds,
     'organizerFormPaymentDocument.submittedAt._seconds': organizerFormPaymentDocumentSubmittedAtSeconds,
@@ -139963,6 +140277,27 @@ abstract final class CatchContractConstraints {
     'paymentDocument.stripeAccountId': paymentDocumentStripeAccountId,
     'paymentDocument.synthetic': paymentDocumentSynthetic,
     'paymentDocument.userId': paymentDocumentUserId,
+    'paymentRoutingPolicyDocument.lastMutationHash': paymentRoutingPolicyDocumentLastMutationHash,
+    'paymentRoutingPolicyDocument.organizerId': paymentRoutingPolicyDocumentOrganizerId,
+    'paymentRoutingPolicyDocument.revision': paymentRoutingPolicyDocumentRevision,
+    'paymentRoutingPolicyDocument.scope': paymentRoutingPolicyDocumentScope,
+    'paymentRoutingPolicyDocument.updatedAt._nanoseconds': paymentRoutingPolicyDocumentUpdatedAtNanoseconds,
+    'paymentRoutingPolicyDocument.updatedAt._seconds': paymentRoutingPolicyDocumentUpdatedAtSeconds,
+    'paymentRoutingSnapshot.appRevision': paymentRoutingSnapshotAppRevision,
+    'paymentRoutingSnapshot.bindingId': paymentRoutingSnapshotBindingId,
+    'paymentRoutingSnapshot.checkoutKey': paymentRoutingSnapshotCheckoutKey,
+    'paymentRoutingSnapshot.configurationVersion': paymentRoutingSnapshotConfigurationVersion,
+    'paymentRoutingSnapshot.destinationAccountId': paymentRoutingSnapshotDestinationAccountId,
+    'paymentRoutingSnapshot.merchantAccountId': paymentRoutingSnapshotMerchantAccountId,
+    'paymentRoutingSnapshot.organizerId': paymentRoutingSnapshotOrganizerId,
+    'paymentRoutingSnapshot.organizerRevision': paymentRoutingSnapshotOrganizerRevision,
+    'paymentRoutingSnapshot.policySource': paymentRoutingSnapshotPolicySource,
+    'paymentRoutingSnapshot.purpose': paymentRoutingSnapshotPurpose,
+    'paymentRoutingSnapshot.selection.currency': paymentRoutingSnapshotSelectionCurrency,
+    'paymentRoutingSnapshot.selection.merchantCountry': paymentRoutingSnapshotSelectionMerchantCountry,
+    'paymentRoutingSnapshot.selection.mode': paymentRoutingSnapshotSelectionMode,
+    'paymentRoutingSnapshot.selection.route': paymentRoutingSnapshotSelectionRoute,
+    'paymentRoutingSnapshot.version': paymentRoutingSnapshotVersion,
     'photoPromptAnswer.caption': photoPromptAnswerCaption,
     'photoPromptAnswer.photoIndex': photoPromptAnswerPhotoIndex,
     'photoPromptAnswer.prompt': photoPromptAnswerPrompt,

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/payment_routing_snapshot.schema.json",
+  "title": "PaymentRoutingSnapshot",
+  "$ref": "../shared/payment_routing.schema.json#/definitions/snapshot"
+}

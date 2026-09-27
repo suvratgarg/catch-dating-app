@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'PaymentRoutingSnapshot',
+    source: 'embedded/payment_routing_snapshot.schema.json',
+    schema: schemaPaymentRoutingSnapshotSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManagePaymentRoutingPolicyCallablePayload',
+    source: 'callables/manage_payment_routing_policy_payload.schema.json',
+    schema: schemaManagePaymentRoutingPolicyCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManagePaymentRoutingPolicyCallableResponse',
+    source: 'callable_responses/manage_payment_routing_policy_response.schema.json',
+    schema: schemaManagePaymentRoutingPolicyCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'PreviewOrganizerFormAdmissionCallablePayload',
     source: 'callables/preview_organizer_form_admission_payload.schema.json',
     schema: schemaPreviewOrganizerFormAdmissionCallablePayloadSchema,
@@ -1505,6 +1520,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'OrganizerPaymentOauthStateDocument',
     source: 'firestore/organizer_payment_oauth_states.schema.json',
     schema: schemaOrganizerPaymentOauthStateDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PaymentRoutingPolicyDocument',
+    source: 'firestore/payment_routing_policies.schema.json',
+    schema: schemaPaymentRoutingPolicyDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'OrganizerFormPaymentDocument',
@@ -4604,6 +4624,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'PaymentRoutingSnapshot': schemaPaymentRoutingSnapshotSchema,
+  'ManagePaymentRoutingPolicyCallablePayload': schemaManagePaymentRoutingPolicyCallablePayloadSchema,
+  'ManagePaymentRoutingPolicyCallableResponse': schemaManagePaymentRoutingPolicyCallableResponseSchema,
   'PreviewOrganizerFormAdmissionCallablePayload': schemaPreviewOrganizerFormAdmissionCallablePayloadSchema,
   'PreviewOrganizerFormAdmissionCallableResponse': schemaPreviewOrganizerFormAdmissionCallableResponseSchema,
   'OrganizerFormAdmissionDocument': schemaOrganizerFormAdmissionDocumentSchema,
@@ -4902,6 +4925,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerFormDomainDocument': schemaOrganizerFormDomainDocumentSchema,
   'OrganizerPaymentConnectionDocument': schemaOrganizerPaymentConnectionDocumentSchema,
   'OrganizerPaymentOauthStateDocument': schemaOrganizerPaymentOauthStateDocumentSchema,
+  'PaymentRoutingPolicyDocument': schemaPaymentRoutingPolicyDocumentSchema,
   'OrganizerFormPaymentDocument': schemaOrganizerFormPaymentDocumentSchema,
   'OrganizerFormPaymentWebhookDocument': schemaOrganizerFormPaymentWebhookDocumentSchema,
   'OrganizerFormDraftDocument': schemaOrganizerFormDraftDocumentSchema,
@@ -5524,6 +5548,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'embedded/payment_routing_snapshot.schema.json': schemaPaymentRoutingSnapshotSchema,
+  'callables/manage_payment_routing_policy_payload.schema.json': schemaManagePaymentRoutingPolicyCallablePayloadSchema,
+  'callable_responses/manage_payment_routing_policy_response.schema.json': schemaManagePaymentRoutingPolicyCallableResponseSchema,
   'callables/preview_organizer_form_admission_payload.schema.json': schemaPreviewOrganizerFormAdmissionCallablePayloadSchema,
   'callable_responses/preview_organizer_form_admission_response.schema.json': schemaPreviewOrganizerFormAdmissionCallableResponseSchema,
   'firestore/organizer_form_admissions.schema.json': schemaOrganizerFormAdmissionDocumentSchema,
@@ -5822,6 +5849,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/organizer_form_domains.schema.json': schemaOrganizerFormDomainDocumentSchema,
   'firestore/organizer_payment_connections.schema.json': schemaOrganizerPaymentConnectionDocumentSchema,
   'firestore/organizer_payment_oauth_states.schema.json': schemaOrganizerPaymentOauthStateDocumentSchema,
+  'firestore/payment_routing_policies.schema.json': schemaPaymentRoutingPolicyDocumentSchema,
   'firestore/organizer_form_payments.schema.json': schemaOrganizerFormPaymentDocumentSchema,
   'firestore/organizer_form_payment_webhooks.schema.json': schemaOrganizerFormPaymentWebhookDocumentSchema,
   'firestore/organizer_form_drafts.schema.json': schemaOrganizerFormDraftDocumentSchema,
