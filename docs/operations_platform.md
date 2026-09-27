@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.31.0
-updated: 2026-09-16
+version: 1.32.0
+updated: 2026-09-28
 owner: operations_platform
 status: active
 ---
@@ -954,6 +954,48 @@ approve/hold/reject second, and paused staging only after a current approval.
 The client retains request ids across failed retries, echoes all reviewed hashes
 and revisions, and labels the resulting ceilings as paused. No control on this
 surface activates either ceiling.
+
+## Private sales qualification and outreach drafts
+
+The host-revenue domain provides a read-only normalized-import preflight at
+`npm --prefix operations run revenue:preflight -- --input <private-file> --policy <private-policy>`.
+The caller supplies the versioned policy; repository fixtures contain only
+synthetic examples. Real prospect exports, source documents, score weights,
+commercial playbooks and policy crosswalks remain outside Git. The preflight
+reports source-row identity conflicts, preserved historical scores, evidence
+gaps and complete-factor fit. Missing factors produce a null score with
+coverage, never a zero or a renormalized partial score. It performs no import,
+network request, contact-authority decision or product mutation.
+
+`outreach-drafting` is a separate registered shadow workflow. It reuses the
+platform run, lease, checkpoint, cache, budget and receipt owners. Inputs freeze
+reviewed observations, capability statements, permitted references and CTAs.
+Deterministic rendering copies approved sentences exactly; an optional bounded
+model selects clause IDs only. Source text cannot introduce instructions,
+additional tool calls or new factual claims. Initial output is English only.
+This does not change Supply Intake's publication or copy-generation policy.
+
+Execution requires a trusted current-eligibility projection that rechecks the
+organizer, contact, opportunity, suppression, evidence, capability and reference
+revisions. The default factory has no such adapter and fails closed. A model
+also requires explicit activation, a provider and durable per-run and monthly
+budgets. Before provider I/O, the engine persists its leased reservation and
+the monthly adapter atomically reserves a unique attempt against the current
+balance. An uncertain attempt retains its reservation and cannot automatically
+call the provider again. A cache hit still requires current eligibility.
+Clause expiry is checked again before rendering and approval.
+
+Human approval binds the exact text hash and source revisions, records factual,
+tone and manual-channel review, and grants no sending authority. The trusted
+backend must authenticate the reviewer; a supplied actor ID is not authority.
+Copy/export must revalidate current eligibility at its own boundary. An activity
+marked sent elsewhere is an employee attestation, not provider delivery proof.
+
+The source workflow and its tests do not establish a deployed Sales-to-Operations
+adapter, live model activation, an imported prospect cohort or a connected
+assistant. Those remain explicit integration and acceptance gates. Runtime port
+details are maintained in the
+[outreach workflow README](../operations/src/workflows/outreach-drafting/README.md).
 
 ## Adding Another Workflow
 
