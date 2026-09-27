@@ -357,6 +357,7 @@ export {validateProgramFunctionDocument} from "./validators/programFunctionDocum
 export {validateProgramFunctionGuestDocument} from "./validators/programFunctionGuestDocument";
 export {validateProgramDoorJournalDocument} from "./validators/programDoorJournalDocument";
 export {validateProgramGuestDocument} from "./validators/programGuestDocument";
+export {validateProgramGuestGroupDocument} from "./validators/programGuestGroupDocument";
 export {validateProgramHouseholdDocument} from "./validators/programHouseholdDocument";
 export {validateProgramStaffGrantDocument} from "./validators/programStaffGrantDocument";
 export {validateProgramStaffInviteDocument} from "./validators/programStaffInviteDocument";
@@ -390,6 +391,8 @@ export {validateInviteProgramStaffCallablePayload} from "./validators/inviteProg
 export {validateClaimProgramStaffInviteCallablePayload} from "./validators/claimProgramStaffInviteInput";
 export {validateRevokeProgramStaffInviteCallablePayload} from "./validators/revokeProgramStaffInviteInput";
 export {validateUpsertProgramGuestCallablePayload} from "./validators/upsertProgramGuestInput";
+export {validateUpsertProgramGuestGroupCallablePayload} from "./validators/upsertProgramGuestGroupInput";
+export {validateDeleteProgramGuestGroupCallablePayload} from "./validators/deleteProgramGuestGroupInput";
 export {validateApplyProgramFunctionInvitationsCallablePayload} from "./validators/applyProgramFunctionInvitationsInput";
 export {validateRecordProgramFunctionRsvpCallablePayload} from "./validators/recordProgramFunctionRsvpInput";
 export {validateIssueProgramHouseholdRsvpLinkCallablePayload} from "./validators/issueProgramHouseholdRsvpLinkInput";
@@ -429,6 +432,7 @@ export {validateOrganizerProgramCallableResponse} from "./validators/organizerPr
 export {validateProgramInviteClaimCallableResponse} from "./validators/programInviteClaimOutput";
 export {validateProgramStaffListCallableResponse} from "./validators/programStaffListOutput";
 export {validateProgramGuestListCallableResponse} from "./validators/programGuestListOutput";
+export {validateProgramGuestGroupListCallableResponse} from "./validators/programGuestGroupListOutput";
 export {validateProgramArrivalsRosterCallableResponse} from "./validators/programArrivalsRosterOutput";
 export {validateProgramTransportPlanCallableResponse} from "./validators/programTransportPlanOutput";
 export {validateProgramHotelInboundCallableResponse} from "./validators/programHotelInboundOutput";

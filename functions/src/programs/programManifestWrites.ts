@@ -9,7 +9,8 @@ import {nextFlightRefreshAt} from "../transport/flightRefreshPolicy";
 import {reconcileTravelLegState} from
   "../transport/travelLegState";
 import type {
-  ProgramGuestDocument, ProgramHouseholdDocument, ProgramTravelLegDocument,
+  ProgramGuestDocument, ProgramGuestGroupDocument,
+  ProgramHouseholdDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
@@ -24,11 +25,14 @@ export function buildManifestWrites(
   households: Map<string, ProgramHouseholdDocument>,
   parties: Map<string, ProgramTravelPartyDocument>,
   legs: Map<string, ProgramTravelLegDocument>,
+  groups: Map<string, ProgramGuestGroupDocument>,
   now: FirebaseFirestore.Timestamp,
 ): Array<{path: string; data: object}> {
-  const {plans, newHouseholds, newParties, newLabels} = planned;
+  const {plans, newHouseholds, newParties, newLabels, newGroups,
+    newGroupMeta} = planned;
   const householdChanges: HouseholdMembershipChange[] = [];
   const partyMembers = new Map<string, Set<string>>();
+  const groupAdds = new Map<string, number>();
 
   const writes: Array<{path: string; data: object}> = [];
 
@@ -51,6 +55,8 @@ export function buildManifestWrites(
       email: row.email === undefined ? existing?.email ?? null : row.email,
       externalReference: row.externalReference ||
         existing?.externalReference || null,
+      groupIds: [...new Set([...(existing?.groupIds ?? []),
+        ...plan.groupIds])].sort(),
       invitationStatus: existing?.invitationStatus ?? "notInvited",
       rsvpStatus: existing?.rsvpStatus ?? "pending",
       source: existing?.source ?? "import",
@@ -62,6 +68,11 @@ export function buildManifestWrites(
     householdChanges.push({guestId: plan.guestId,
       previousHouseholdId: existing?.householdId ?? null,
       nextHouseholdId: guestDoc.householdId});
+    // Imports only add memberships; removal goes through upsertProgramGuest.
+    for (const groupId of plan.groupIds) {
+      if ((existing?.groupIds ?? []).includes(groupId)) continue;
+      groupAdds.set(groupId, (groupAdds.get(groupId) ?? 0) + 1);
+    }
     const partyId = plan.partyId ?? plan.existingLeg?.partyId;
     if (partyId) {
       const members = partyMembers.get(partyId) ??
@@ -161,6 +172,29 @@ export function buildManifestWrites(
       data: {...existing, memberGuestIds, updatedAt: now,
         revision: households.has(id) ?
           nextRevision(existing.revision, now) : existing.revision}});
+  }
+  for (const groupId of newGroups.values()) {
+    const meta = newGroupMeta.get(groupId)!;
+    const groupDoc: ProgramGuestGroupDocument = {
+      programId,
+      organizerId,
+      label: meta.label,
+      dimension: meta.dimension,
+      sortOrder: 0,
+      memberCount: groupAdds.get(groupId) ?? 0,
+      createdAt: now,
+      updatedAt: now,
+      revision: 1,
+    };
+    writes.push({path: `programGuestGroups/${groupId}`, data: groupDoc});
+  }
+  for (const [groupId, added] of groupAdds) {
+    if (newGroupMeta.has(groupId)) continue;
+    const existing = groups.get(groupId);
+    if (!existing) continue;
+    writes.push({path: `programGuestGroups/${groupId}`,
+      data: {...existing, memberCount: existing.memberCount + added,
+        updatedAt: now, revision: nextRevision(existing.revision, now)}});
   }
   for (const [normalizedLabel, partyId] of newParties) {
     const label = newLabels.get(partyId) ?? normalizedLabel;

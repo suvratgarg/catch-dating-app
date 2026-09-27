@@ -15838,6 +15838,29 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const deleteProgramGuestGroupCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'deleteProgramGuestGroupCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const deleteProgramGuestGroupCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'deleteProgramGuestGroupCallablePayload.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const deleteProgramGuestGroupCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'deleteProgramGuestGroupCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const deleteSavedEventClientWritePathSavedEventId = CatchContractFieldConstraints(
     path: 'deleteSavedEventClientWrite.path.savedEventId',
     maxLength: 180,
@@ -71790,6 +71813,12 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?\$',
   );
 
+  static const importProgramManifestCallablePayloadRowsItemsGroupLabels = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.groupLabels',
+    maxLength: 600,
+    valueTypes: <String>['string'],
+  );
+
   static const importProgramManifestCallablePayloadRowsItemsHouseholdLabel = CatchContractFieldConstraints(
     path: 'importProgramManifestCallablePayload.rows.items.householdLabel',
     maxLength: 140,
@@ -104596,6 +104625,23 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programGuestDocumentGroupIds = CatchContractFieldConstraints(
+    path: 'programGuestDocument.groupIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const programGuestDocumentGroupIdsItems = CatchContractFieldConstraints(
+    path: 'programGuestDocument.groupIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programGuestDocumentHouseholdId = CatchContractFieldConstraints(
     path: 'programGuestDocument.householdId',
     maxLength: 180,
@@ -104668,6 +104714,152 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programGuestGroupDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programGuestGroupDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programGuestGroupDocumentDimension = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.dimension',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupDocumentLabel = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupDocumentMemberCount = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.memberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100000,
+  );
+
+  static const programGuestGroupDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupDocumentRevision = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programGuestGroupDocumentSortOrder = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const programGuestGroupDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programGuestGroupDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programGuestGroupDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programGuestGroupListCallableResponseGroups = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsDimension = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.dimension',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsMemberCount = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.memberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsRevision = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const programGuestGroupListCallableResponseGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.groups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const programGuestGroupListCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programGuestGroupListCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programGuestListCallableResponseFunctionGuests = CatchContractFieldConstraints(
     path: 'programGuestListCallableResponse.functionGuests',
     required: true,
@@ -104719,6 +104911,60 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
   );
 
+  static const programGuestListCallableResponseGroups = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const programGuestListCallableResponseGroupsItemsDimension = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups.items.dimension',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups.items.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGroupsItemsMemberCount = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups.items.memberCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programGuestListCallableResponseGroupsItemsRevision = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const programGuestListCallableResponseGroupsItemsSortOrder = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.groups.items.sortOrder',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
   static const programGuestListCallableResponseGuests = CatchContractFieldConstraints(
     path: 'programGuestListCallableResponse.guests',
     required: true,
@@ -104744,6 +104990,22 @@ abstract final class CatchContractConstraints {
   static const programGuestListCallableResponseGuestsItemsExternalReference = CatchContractFieldConstraints(
     path: 'programGuestListCallableResponse.guests.items.externalReference',
     maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const programGuestListCallableResponseGuestsItemsGroupIds = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.groupIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const programGuestListCallableResponseGuestsItemsGroupIdsItems = CatchContractFieldConstraints(
+    path: 'programGuestListCallableResponse.guests.items.groupIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -105489,6 +105751,13 @@ abstract final class CatchContractConstraints {
     path: 'programManifestImportCallableResponse.alreadyApplied',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const programManifestImportCallableResponseGroupsCreated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.groupsCreated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const programManifestImportCallableResponseGuestsCreated = CatchContractFieldConstraints(
@@ -122574,6 +122843,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const upsertProgramGuestCallablePayloadGroupIds = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestCallablePayload.groupIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const upsertProgramGuestCallablePayloadGroupIdsItems = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestCallablePayload.groupIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const upsertProgramGuestCallablePayloadGuestId = CatchContractFieldConstraints(
     path: 'upsertProgramGuestCallablePayload.guestId',
     maxLength: 180,
@@ -122607,6 +122892,52 @@ abstract final class CatchContractConstraints {
     path: 'upsertProgramGuestCallablePayload.rsvpStatus',
     valueTypes: <String>['string'],
     enumValues: <String>['pending', 'attending', 'declined', 'maybe'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadDimension = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.dimension',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadLabel = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.label',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const upsertProgramGuestGroupCallablePayloadSortOrder = CatchContractFieldConstraints(
+    path: 'upsertProgramGuestGroupCallablePayload.sortOrder',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
   );
 
   static const upsertProgramHotelCallablePayloadActive = CatchContractFieldConstraints(
@@ -128335,6 +128666,9 @@ abstract final class CatchContractConstraints {
     'deleteOrganizerFormDraftCallableResponse.deleted': deleteOrganizerFormDraftCallableResponseDeleted,
     'deleteOrganizerFormDraftCallableResponse.formId': deleteOrganizerFormDraftCallableResponseFormId,
     'deleteOrganizerFormDraftCallableResponse.organizerId': deleteOrganizerFormDraftCallableResponseOrganizerId,
+    'deleteProgramGuestGroupCallablePayload.expectedRevision': deleteProgramGuestGroupCallablePayloadExpectedRevision,
+    'deleteProgramGuestGroupCallablePayload.groupId': deleteProgramGuestGroupCallablePayloadGroupId,
+    'deleteProgramGuestGroupCallablePayload.programId': deleteProgramGuestGroupCallablePayloadProgramId,
     'deleteSavedEventClientWrite.path.savedEventId': deleteSavedEventClientWritePathSavedEventId,
     'disableEventInviteLinkCallablePayload.eventId': disableEventInviteLinkCallablePayloadEventId,
     'disableEventInviteLinkCallablePayload.inviteLinkId': disableEventInviteLinkCallablePayloadInviteLinkId,
@@ -135829,6 +136163,7 @@ abstract final class CatchContractConstraints {
     'importProgramManifestCallablePayload.rows.items.email': importProgramManifestCallablePayloadRowsItemsEmail,
     'importProgramManifestCallablePayload.rows.items.externalReference': importProgramManifestCallablePayloadRowsItemsExternalReference,
     'importProgramManifestCallablePayload.rows.items.flightNumber': importProgramManifestCallablePayloadRowsItemsFlightNumber,
+    'importProgramManifestCallablePayload.rows.items.groupLabels': importProgramManifestCallablePayloadRowsItemsGroupLabels,
     'importProgramManifestCallablePayload.rows.items.householdLabel': importProgramManifestCallablePayloadRowsItemsHouseholdLabel,
     'importProgramManifestCallablePayload.rows.items.international': importProgramManifestCallablePayloadRowsItemsInternational,
     'importProgramManifestCallablePayload.rows.items.luggageUnits': importProgramManifestCallablePayloadRowsItemsLuggageUnits,
@@ -140365,6 +140700,8 @@ abstract final class CatchContractConstraints {
     'programGuestDocument.displayName': programGuestDocumentDisplayName,
     'programGuestDocument.email': programGuestDocumentEmail,
     'programGuestDocument.externalReference': programGuestDocumentExternalReference,
+    'programGuestDocument.groupIds': programGuestDocumentGroupIds,
+    'programGuestDocument.groupIds.items': programGuestDocumentGroupIdsItems,
     'programGuestDocument.householdId': programGuestDocumentHouseholdId,
     'programGuestDocument.invitationStatus': programGuestDocumentInvitationStatus,
     'programGuestDocument.organizerId': programGuestDocumentOrganizerId,
@@ -140375,6 +140712,25 @@ abstract final class CatchContractConstraints {
     'programGuestDocument.source': programGuestDocumentSource,
     'programGuestDocument.updatedAt._nanoseconds': programGuestDocumentUpdatedAtNanoseconds,
     'programGuestDocument.updatedAt._seconds': programGuestDocumentUpdatedAtSeconds,
+    'programGuestGroupDocument.createdAt._nanoseconds': programGuestGroupDocumentCreatedAtNanoseconds,
+    'programGuestGroupDocument.createdAt._seconds': programGuestGroupDocumentCreatedAtSeconds,
+    'programGuestGroupDocument.dimension': programGuestGroupDocumentDimension,
+    'programGuestGroupDocument.label': programGuestGroupDocumentLabel,
+    'programGuestGroupDocument.memberCount': programGuestGroupDocumentMemberCount,
+    'programGuestGroupDocument.organizerId': programGuestGroupDocumentOrganizerId,
+    'programGuestGroupDocument.programId': programGuestGroupDocumentProgramId,
+    'programGuestGroupDocument.revision': programGuestGroupDocumentRevision,
+    'programGuestGroupDocument.sortOrder': programGuestGroupDocumentSortOrder,
+    'programGuestGroupDocument.updatedAt._nanoseconds': programGuestGroupDocumentUpdatedAtNanoseconds,
+    'programGuestGroupDocument.updatedAt._seconds': programGuestGroupDocumentUpdatedAtSeconds,
+    'programGuestGroupListCallableResponse.groups': programGuestGroupListCallableResponseGroups,
+    'programGuestGroupListCallableResponse.groups.items.dimension': programGuestGroupListCallableResponseGroupsItemsDimension,
+    'programGuestGroupListCallableResponse.groups.items.groupId': programGuestGroupListCallableResponseGroupsItemsGroupId,
+    'programGuestGroupListCallableResponse.groups.items.label': programGuestGroupListCallableResponseGroupsItemsLabel,
+    'programGuestGroupListCallableResponse.groups.items.memberCount': programGuestGroupListCallableResponseGroupsItemsMemberCount,
+    'programGuestGroupListCallableResponse.groups.items.revision': programGuestGroupListCallableResponseGroupsItemsRevision,
+    'programGuestGroupListCallableResponse.groups.items.sortOrder': programGuestGroupListCallableResponseGroupsItemsSortOrder,
+    'programGuestGroupListCallableResponse.programId': programGuestGroupListCallableResponseProgramId,
     'programGuestListCallableResponse.functionGuests': programGuestListCallableResponseFunctionGuests,
     'programGuestListCallableResponse.functionGuests.items.attendanceStatus': programGuestListCallableResponseFunctionGuestsItemsAttendanceStatus,
     'programGuestListCallableResponse.functionGuests.items.functionId': programGuestListCallableResponseFunctionGuestsItemsFunctionId,
@@ -140382,10 +140738,19 @@ abstract final class CatchContractConstraints {
     'programGuestListCallableResponse.functionGuests.items.invited': programGuestListCallableResponseFunctionGuestsItemsInvited,
     'programGuestListCallableResponse.functionGuests.items.partySize': programGuestListCallableResponseFunctionGuestsItemsPartySize,
     'programGuestListCallableResponse.functionGuests.items.rsvpStatus': programGuestListCallableResponseFunctionGuestsItemsRsvpStatus,
+    'programGuestListCallableResponse.groups': programGuestListCallableResponseGroups,
+    'programGuestListCallableResponse.groups.items.dimension': programGuestListCallableResponseGroupsItemsDimension,
+    'programGuestListCallableResponse.groups.items.groupId': programGuestListCallableResponseGroupsItemsGroupId,
+    'programGuestListCallableResponse.groups.items.label': programGuestListCallableResponseGroupsItemsLabel,
+    'programGuestListCallableResponse.groups.items.memberCount': programGuestListCallableResponseGroupsItemsMemberCount,
+    'programGuestListCallableResponse.groups.items.revision': programGuestListCallableResponseGroupsItemsRevision,
+    'programGuestListCallableResponse.groups.items.sortOrder': programGuestListCallableResponseGroupsItemsSortOrder,
     'programGuestListCallableResponse.guests': programGuestListCallableResponseGuests,
     'programGuestListCallableResponse.guests.items.displayName': programGuestListCallableResponseGuestsItemsDisplayName,
     'programGuestListCallableResponse.guests.items.email': programGuestListCallableResponseGuestsItemsEmail,
     'programGuestListCallableResponse.guests.items.externalReference': programGuestListCallableResponseGuestsItemsExternalReference,
+    'programGuestListCallableResponse.guests.items.groupIds': programGuestListCallableResponseGuestsItemsGroupIds,
+    'programGuestListCallableResponse.guests.items.groupIds.items': programGuestListCallableResponseGuestsItemsGroupIdsItems,
     'programGuestListCallableResponse.guests.items.guestId': programGuestListCallableResponseGuestsItemsGuestId,
     'programGuestListCallableResponse.guests.items.householdId': programGuestListCallableResponseGuestsItemsHouseholdId,
     'programGuestListCallableResponse.guests.items.invitationStatus': programGuestListCallableResponseGuestsItemsInvitationStatus,
@@ -140489,6 +140854,7 @@ abstract final class CatchContractConstraints {
     'programInviteClaimCallableResponse.alreadyApplied': programInviteClaimCallableResponseAlreadyApplied,
     'programInviteClaimCallableResponse.programId': programInviteClaimCallableResponseProgramId,
     'programManifestImportCallableResponse.alreadyApplied': programManifestImportCallableResponseAlreadyApplied,
+    'programManifestImportCallableResponse.groupsCreated': programManifestImportCallableResponseGroupsCreated,
     'programManifestImportCallableResponse.guestsCreated': programManifestImportCallableResponseGuestsCreated,
     'programManifestImportCallableResponse.guestsUpdated': programManifestImportCallableResponseGuestsUpdated,
     'programManifestImportCallableResponse.householdsCreated': programManifestImportCallableResponseHouseholdsCreated,
@@ -142824,11 +143190,19 @@ abstract final class CatchContractConstraints {
     'upsertProgramGuestCallablePayload.email': upsertProgramGuestCallablePayloadEmail,
     'upsertProgramGuestCallablePayload.expectedRevision': upsertProgramGuestCallablePayloadExpectedRevision,
     'upsertProgramGuestCallablePayload.externalReference': upsertProgramGuestCallablePayloadExternalReference,
+    'upsertProgramGuestCallablePayload.groupIds': upsertProgramGuestCallablePayloadGroupIds,
+    'upsertProgramGuestCallablePayload.groupIds.items': upsertProgramGuestCallablePayloadGroupIdsItems,
     'upsertProgramGuestCallablePayload.guestId': upsertProgramGuestCallablePayloadGuestId,
     'upsertProgramGuestCallablePayload.householdId': upsertProgramGuestCallablePayloadHouseholdId,
     'upsertProgramGuestCallablePayload.phoneE164': upsertProgramGuestCallablePayloadPhoneE164,
     'upsertProgramGuestCallablePayload.programId': upsertProgramGuestCallablePayloadProgramId,
     'upsertProgramGuestCallablePayload.rsvpStatus': upsertProgramGuestCallablePayloadRsvpStatus,
+    'upsertProgramGuestGroupCallablePayload.dimension': upsertProgramGuestGroupCallablePayloadDimension,
+    'upsertProgramGuestGroupCallablePayload.expectedRevision': upsertProgramGuestGroupCallablePayloadExpectedRevision,
+    'upsertProgramGuestGroupCallablePayload.groupId': upsertProgramGuestGroupCallablePayloadGroupId,
+    'upsertProgramGuestGroupCallablePayload.label': upsertProgramGuestGroupCallablePayloadLabel,
+    'upsertProgramGuestGroupCallablePayload.programId': upsertProgramGuestGroupCallablePayloadProgramId,
+    'upsertProgramGuestGroupCallablePayload.sortOrder': upsertProgramGuestGroupCallablePayloadSortOrder,
     'upsertProgramHotelCallablePayload.active': upsertProgramHotelCallablePayloadActive,
     'upsertProgramHotelCallablePayload.address': upsertProgramHotelCallablePayloadAddress,
     'upsertProgramHotelCallablePayload.expectedRevision': upsertProgramHotelCallablePayloadExpectedRevision,

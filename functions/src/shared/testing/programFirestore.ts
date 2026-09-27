@@ -120,6 +120,9 @@ class FakeTransaction {
   update(ref: FakeDocRef, data: FakeData) {
     this.writes.push(() => this.firestore.updateDoc(ref.path, data));
   }
+  delete(ref: FakeDocRef) {
+    this.writes.push(() => this.firestore.deleteDoc(ref.path));
+  }
   commit() {
     for (const write of this.writes) write();
   }
@@ -165,6 +168,12 @@ export class FakeFirestore {
       applyFieldUpdate(next, key.split("."), value);
     }
     this.docs.set(path, next);
+    this.version++;
+  }
+  deleteDoc(path: string) {
+    if (!this.docs.delete(path)) {
+      throw new Error(`Document missing: ${path}`);
+    }
     this.version++;
   }
   async runQuery(query: FakeQuery) {

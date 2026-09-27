@@ -16,6 +16,7 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
     'guests',
     'households',
     'functionGuests',
+    'groups',
     'nextCursor',
   ],
   'properties': <String, Object?>{
@@ -37,6 +38,7 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
           'phoneE164',
           'email',
           'externalReference',
+          'groupIds',
           'invitationStatus',
           'rsvpStatus',
           'revision',
@@ -79,6 +81,16 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
               'null',
             ],
             'maxLength': 180,
+          },
+          'groupIds': <String, Object?>{
+            'type': 'array',
+            'maxItems': 20,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'description': 'programGuestGroups ids this guest belongs to. Resolve labels via the groups array on this response.',
           },
           'invitationStatus': <String, Object?>{
             'type': 'string',
@@ -198,6 +210,53 @@ const schemaProgramGuestListCallableResponseSchema = <String, Object?>{
             ],
             'minimum': 1,
             'maximum': 20,
+          },
+        },
+      },
+    },
+    'groups': <String, Object?>{
+      'type': 'array',
+      'maxItems': 500,
+      'description': 'programGuestGroups documents referenced by groupIds on the paged guests. Page-scoped like households; a group referenced but absent here is corrupt and surfaces as a reconciliation error.',
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'groupId',
+          'label',
+          'dimension',
+          'sortOrder',
+          'memberCount',
+          'revision',
+        ],
+        'properties': <String, Object?>{
+          'groupId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 140,
+          },
+          'dimension': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 60,
+          },
+          'sortOrder': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 10000,
+          },
+          'memberCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+          },
+          'revision': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
           },
         },
       },

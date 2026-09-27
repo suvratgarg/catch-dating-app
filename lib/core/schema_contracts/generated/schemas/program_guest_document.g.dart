@@ -24,6 +24,7 @@ const schemaProgramGuestDocumentSchema = <String, Object?>{
     'phoneE164',
     'email',
     'externalReference',
+    'groupIds',
     'invitationStatus',
     'rsvpStatus',
     'source',
@@ -86,6 +87,17 @@ const schemaProgramGuestDocumentSchema = <String, Object?>{
       ],
       'maxLength': 180,
       'description': 'Planner-side reference such as a spreadsheet id or invitation code.',
+    },
+    'groupIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+      'description': 'Membership in programGuestGroups for this program. This array is membership truth; group documents keep only denormalized memberCount. Server-maintained — organizers set it through upsertProgramGuest or manifest import.',
     },
     'invitationStatus': <String, Object?>{
       'type': 'string',

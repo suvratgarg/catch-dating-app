@@ -17,6 +17,7 @@
     "legsUpdated",
     "householdsCreated",
     "partiesCreated",
+    "groupsCreated",
     "rowErrors",
     "alreadyApplied"
   ],
@@ -55,6 +56,11 @@
     "partiesCreated": {
       "type": "integer",
       "minimum": 0
+    },
+    "groupsCreated": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "programGuestGroups documents created by label resolution during this import."
     },
     "rowErrors": {
       "type": "array",

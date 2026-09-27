@@ -38,6 +38,17 @@
       "minLength": 1,
       "maxLength": 180
     },
+    "groupIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "When present, replaces the guest's programGuestGroups membership. Every id must belong to the same program and organizer. Omitted preserves existing membership."
+    },
     "phoneE164": {
       "type": [
         "string",

@@ -1,6 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
-  ProgramGuestDocument, ProgramHouseholdDocument, ProgramHotelDocument,
+  ProgramGuestDocument, ProgramGuestGroupDocument,
+  ProgramHouseholdDocument, ProgramHotelDocument,
   ProgramPickupPointDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument, TransportOperationReceiptDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -15,6 +16,7 @@ export interface ManifestState {
   parties: Map<string, ProgramTravelPartyDocument>;
   hotels: Map<string, ProgramHotelDocument>;
   pickupPoints: Map<string, ProgramPickupPointDocument>;
+  groups: Map<string, ProgramGuestGroupDocument>;
 }
 
 /** Keep the old prefix cursor readable; new receipts resolve whole parties. */
@@ -76,11 +78,12 @@ export function buildManifestChunk(args: {
   const state: ManifestState = {...args.state,
     guests: new Map(args.state.guests), legs: new Map(args.state.legs),
     households: new Map(args.state.households),
-    parties: new Map(args.state.parties)};
+    parties: new Map(args.state.parties),
+    groups: new Map(args.state.groups)};
   const planRows = (indices: number[], guestIds: string[]) =>
     buildManifestPlans(indices.map((i) => rows[i]), state.guests, state.legs,
       state.households, state.parties, state.hotels, state.pickupPoints,
-      allocateId, [], guestIds);
+      state.groups, allocateId, [], guestIds);
   // This pass establishes source-order identity conflicts and party boundaries.
   // Capacity, route and related-record validation is repeated per whole party
   // against only accepted writes, so a rejected party consumes no capacity.
@@ -89,7 +92,8 @@ export function buildManifestChunk(args: {
     .map((group) => group.filter((index) => !done.has(index)))
     .filter((group) => group.length > 0);
   const planned: Plan = {plans: [], issues: [], newHouseholds: new Map(),
-    newParties: new Map(), newLabels: new Map(), partyKeysByRow: new Map(),
+    newParties: new Map(), newLabels: new Map(), newGroups: new Map(),
+    newGroupMeta: new Map(), partyKeysByRow: new Map(),
     identityIssues: []};
   const resolvedIndices: number[] = [];
   const importedGuestIds = [...args.importedGuestIds];
@@ -120,7 +124,8 @@ export function buildManifestChunk(args: {
       }
     } else {
       const groupWrites = buildManifestWrites(programId, organizerId,
-        candidate, state.households, state.parties, state.legs, now);
+        candidate, state.households, state.parties, state.legs,
+        state.groups, now);
       for (const write of groupWrites) {
         writes.set(write.path, write.data);
         const [collection, id] = write.path.split("/");
@@ -132,15 +137,21 @@ export function buildManifestChunk(args: {
           state.households.set(id, write.data as ProgramHouseholdDocument);
         } else if (collection === "programTravelParties") {
           state.parties.set(id, write.data as ProgramTravelPartyDocument);
+        } else if (collection === "programGuestGroups") {
+          state.groups.set(id, write.data as ProgramGuestGroupDocument);
         }
       }
       planned.plans.push(...candidate.plans.map((plan) =>
         ({...plan, index: indices[plan.index]})));
-      const groupMaps = ["newHouseholds", "newParties", "newLabels"] as const;
+      const groupMaps = ["newHouseholds", "newParties", "newLabels",
+        "newGroups"] as const;
       for (const name of groupMaps) {
         for (const [key, value] of candidate[name]) {
           planned[name].set(key, value);
         }
+      }
+      for (const [id, meta] of candidate.newGroupMeta) {
+        planned.newGroupMeta.set(id, meta);
       }
       importedGuestIds.push(...candidate.plans.map((plan) => plan.guestId));
       writtenRows += candidate.plans.length;

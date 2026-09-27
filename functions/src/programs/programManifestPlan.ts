@@ -3,7 +3,8 @@ import {normalizeFlightNumber} from "../transport/flightIdentity";
 import type {ImportProgramManifestCallablePayload} from
   "../shared/generated/importProgramManifestCallablePayload";
 import type {
-  ProgramGuestDocument, ProgramHouseholdDocument, ProgramHotelDocument,
+  ProgramGuestDocument, ProgramGuestGroupDocument,
+  ProgramHouseholdDocument, ProgramHotelDocument,
   ProgramPickupPointDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -29,12 +30,41 @@ export interface RowPlan {
   partyId: string | null;
   pickupPointId: string | null;
   hotelId: string | null;
+  groupIds: string[];
 }
 
 function normalizeLabel(value: string | null | undefined): string | null {
   const trimmed = value?.trim().toLowerCase();
   return trimmed ? trimmed : null;
 }
+
+export interface ManifestGroupEntry {
+  dimension: string;
+  label: string;
+}
+
+/**
+ * groupLabels cells are `entry;entry` where each entry is `label` or
+ * `dimension:label` (the first colon splits). Bare labels land on `custom`.
+ */
+export function parseManifestGroupLabels(
+  value: string | null | undefined,
+): ManifestGroupEntry[] {
+  const trimmed = value?.trim();
+  if (!trimmed) return [];
+  return trimmed.split(";").map((entry) => {
+    const text = entry.trim();
+    const colon = text.indexOf(":");
+    if (colon < 0) return {dimension: "custom", label: text};
+    return {
+      dimension: text.slice(0, colon).trim(),
+      label: text.slice(colon + 1).trim(),
+    };
+  });
+}
+
+const groupKey = (dimension: string, label: string) =>
+  `${normalizeLabel(dimension) ?? ""}|${normalizeLabel(label) ?? ""}`;
 
 function arrivalDayBucket(millis: number | null | undefined): string {
   if (millis == null) return "none";
@@ -81,12 +111,14 @@ export function buildManifestPlans(
   parties: Map<string, ProgramTravelPartyDocument>,
   hotels: Map<string, ProgramHotelDocument>,
   pickupPoints: Map<string, ProgramPickupPointDocument>,
+  groups: Map<string, ProgramGuestGroupDocument>,
   allocateId: (collection: string) => string,
   previousRows: ManifestRow[] = [],
   previousGuestIds: string[] = [],
 ): {plans: RowPlan[]; issues: RowIssue[];
     newHouseholds: Map<string, string>; newParties: Map<string, string>;
-    newLabels: Map<string, string>;
+    newLabels: Map<string, string>; newGroups: Map<string, string>;
+    newGroupMeta: Map<string, ManifestGroupEntry>;
     partyKeysByRow: Map<number, string[]>; identityIssues: RowIssue[]} {
   const issues: RowIssue[] = [];
   const identityIssues: RowIssue[] = [];
@@ -101,6 +133,8 @@ export function buildManifestPlans(
   const newHouseholds = new Map<string, string>();
   const newParties = new Map<string, string>();
   const newLabels = new Map<string, string>();
+  const newGroups = new Map<string, string>();
+  const newGroupMeta = new Map<string, ManifestGroupEntry>();
   const indexLabel = (map: Map<string, string | null>,
     label: string | null, id: string) => {
     if (label) map.set(label, map.has(label) ? null : id);
@@ -116,6 +150,10 @@ export function buildManifestPlans(
   }
   for (const [id, doc] of pickupPoints) {
     if (doc.active) indexLabel(pickupByLabel, normalizeLabel(doc.label), id);
+  }
+  const groupByKey = new Map<string, string | null>();
+  for (const [id, doc] of groups) {
+    indexLabel(groupByKey, groupKey(doc.dimension, doc.label), id);
   }
   const householdMembers = new Map([...households].map(([id, doc]) =>
     [id, new Set(doc.memberGuestIds)]));
@@ -160,7 +198,7 @@ export function buildManifestPlans(
       guestId: "", guestAction: "create", existingGuest: null,
       legId: null, legAction: "none", existingLeg: null,
       householdId: null, partyId: null,
-      pickupPointId: null, hotelId: null,
+      pickupPointId: null, hotelId: null, groupIds: [],
     };
     const rowErrors: string[] = [];
 
@@ -267,6 +305,33 @@ export function buildManifestPlans(
         rowErrors.push(`The ${kind} already has 50 members.`);
       }
     }
+    const groupEntries = parseManifestGroupLabels(row.groupLabels);
+    if (groupEntries.length > 10) {
+      rowErrors.push("A row can carry at most 10 group memberships.");
+    }
+    const matchedGroupIds = new Set<string>();
+    const pendingGroupKeys = new Set<string>();
+    for (const entry of groupEntries) {
+      if (!entry.label || !entry.dimension) {
+        rowErrors.push("Group entries need a label, " +
+          "optionally prefixed by a dimension.");
+        continue;
+      }
+      const key = groupKey(entry.dimension, entry.label);
+      const id = groupByKey.get(key);
+      if (id === null) {
+        rowErrors.push(`Ambiguous guest group "${entry.label}".`);
+      } else if (id) {
+        matchedGroupIds.add(id);
+      } else {
+        pendingGroupKeys.add(key);
+      }
+    }
+    const unionGroupIds = new Set([
+      ...(plan.existingGuest?.groupIds ?? []), ...matchedGroupIds]);
+    if (unionGroupIds.size + pendingGroupKeys.size > 20) {
+      rowErrors.push("Guest group membership is limited to 20 groups.");
+    }
     const route = travelPartyRouteKey({kind: "inbound",
       pickupPointId: plan.pickupPointId ??
         plan.existingLeg?.pickupPointId ?? null,
@@ -350,6 +415,17 @@ export function buildManifestPlans(
       }
       plan.partyId = partyId;
     }
+    for (const entry of groupEntries) {
+      const key = groupKey(entry.dimension, entry.label);
+      let groupId = groupByKey.get(key) ?? undefined;
+      if (!groupId) {
+        groupId = newGroups.get(key) ?? allocateId("programGuestGroups");
+        newGroups.set(key, groupId);
+        newGroupMeta.set(groupId, entry);
+        groupByKey.set(key, groupId);
+      }
+      if (!plan.groupIds.includes(groupId)) plan.groupIds.push(groupId);
+    }
 
     if (!plan.guestId) {
       plan.guestId = allocateId("programGuests");
@@ -366,6 +442,6 @@ export function buildManifestPlans(
     plans.push(plan);
   }
   return {plans, issues, newHouseholds, newParties, newLabels,
-    partyKeysByRow, identityIssues};
+    newGroups, newGroupMeta, partyKeysByRow, identityIssues};
 }
 
