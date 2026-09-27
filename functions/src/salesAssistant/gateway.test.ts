@@ -14,7 +14,7 @@ class MemoryDb {
     return {doc: (id: string) => {
       const path = `${name}/${id}`;
       return {
-        path,
+        path, id,
         get: async () => ({exists: this.docs.has(path),
           data: () => this.docs.get(path)}),
         set: async (value: Record<string, unknown>) => {
@@ -34,12 +34,20 @@ class MemoryDb {
     get(ref: {path: string}): Promise<{exists: boolean;
       data(): Record<string, unknown> | undefined}>;
     set(ref: {path: string}, value: Record<string, unknown>): void;
+    create(ref: {path: string}, value: Record<string, unknown>): void;
+    update(ref: {path: string}, value: Record<string, unknown>): void;
   }) => Promise<T>): Promise<T> {
     const pending: Array<[string, Record<string, unknown>]> = [];
     const result = await callback({
       get: async (ref) => ({exists: this.docs.has(ref.path),
         data: () => this.docs.get(ref.path)}),
       set: (ref, value) => pending.push([ref.path, value]),
+      create: (ref, value) => {
+        if (this.docs.has(ref.path)) throw new Error("duplicate");
+        pending.push([ref.path, value]);
+      },
+      update: (ref, value) => pending.push([ref.path,
+        {...this.docs.get(ref.path), ...value}]),
     });
     pending.forEach(([path, value]) => this.docs.set(path, value));
     return result;
@@ -92,6 +100,18 @@ function request(path: string, body: Record<string, unknown>,
     },
     is: () => "application/json",
   } as unknown as Request;
+}
+
+function ownerRequest(path: string, body: Record<string, unknown>): Request {
+  const req = request(path, body,
+    {authorization: `Bearer ${"o".repeat(32)}`});
+  if (path.startsWith("/v1/clients/")) req.method = "PUT";
+  return req;
+}
+
+function auditCount(db: MemoryDb): number {
+  return [...db.docs.keys()].filter((path) =>
+    path.startsWith("adminAuditLogs/assistant_")).length;
 }
 
 async function call(deps: AssistantGatewayDeps, req: Request) {
@@ -317,6 +337,7 @@ test("business errors retain their HTTP meaning", async () => {
 test("only current owner may issue and revoke delegation", async () => {
   const {db, deps, dispatched} = fixture();
   const issue = request("/v1/delegations", {
+    requestId: "request-issue-2", expectedRevision: 0,
     delegationId: "delegation-2", actorUid: "employee-uid",
     clientId: "client-1", organizerIds: ["host-one"],
     allowedActions: ["hosts.get"], expiresAt: "2026-09-29T10:00:00.000Z",
@@ -332,9 +353,127 @@ test("only current owner may issue and revoke delegation", async () => {
     {"x-assistant-delegation-id": "delegation-2"});
   const used = await call(deps, use);
   assert.equal(used.status, 200, JSON.stringify(used.body));
-  const revoke = request("/v1/delegations/delegation-2/revoke", {},
+  const revoke = request("/v1/delegations/delegation-2/revoke",
+    {requestId: "request-revoke-2", expectedRevision: 1},
     {authorization: `Bearer ${"o".repeat(32)}`});
   assert.equal((await call(deps, revoke)).status, 200);
   assert.equal((await call(deps, use)).status, 403);
   assert.equal(dispatched.length, 1);
+});
+
+test("delayed client enable retry cannot undo a later disable", async () => {
+  const {db, deps} = fixture();
+  const enable = ownerRequest("/v1/clients/client-2", {
+    requestId: "request-enable-2", expectedRevision: 0,
+    authUid: "client-uid", active: true,
+  });
+  const first = await call(deps, enable);
+  assert.equal(first.status, 200);
+  const disable = await call(deps,
+    ownerRequest("/v1/clients/client-2", {
+      requestId: "request-disable-2", expectedRevision: 1,
+      authUid: "client-uid", active: false,
+    }));
+  assert.equal(disable.status, 200);
+  const retried = await call(deps, enable);
+  assert.deepEqual(retried.body, first.body);
+  assert.equal(db.docs.get("assistantClients/client-2")?.active, false);
+  assert.equal(db.docs.get("assistantClients/client-2")?.revision, 2);
+  assert.equal(auditCount(db), 2);
+  const stale = await call(deps,
+    ownerRequest("/v1/clients/client-2", {
+      requestId: "request-stale-2", expectedRevision: 1,
+      authUid: "client-uid", active: true,
+    }));
+  assert.equal(stale.status, 409);
+  assert.equal(auditCount(db), 2);
+});
+
+test("uncertain issue replays after revoke without reactivation", async () => {
+  const {db, deps} = fixture();
+  const issue = ownerRequest("/v1/delegations", {
+    requestId: "request-issue-3", expectedRevision: 0,
+    delegationId: "delegation-3", actorUid: "employee-uid",
+    clientId: "client-1", allowedActions: ["hosts.get"],
+    organizerIds: ["host-one"], expiresAt: "2026-09-29T10:00:00.000Z",
+    maxRequestsPerMinute: 2, maxRequestsPerDay: 10,
+  });
+  const first = await call(deps, issue);
+  assert.equal(first.status, 200);
+  const revoke = ownerRequest("/v1/delegations/delegation-3/revoke", {
+    requestId: "request-revoke-3", expectedRevision: 1,
+  });
+  const revoked = await call(deps, revoke);
+  assert.equal(revoked.status, 200);
+  deps.now = () => new Date("2026-10-02T10:00:00.000Z");
+  const replayIssue = await call(deps, issue);
+  assert.deepEqual(replayIssue.body, first.body);
+  assert.equal(db.docs.get("assistantDelegations/delegation-3")?.revoked,
+    true);
+  assert.equal(db.docs.get("assistantDelegations/delegation-3")?.revision,
+    2);
+  const replayRevoke = await call(deps, revoke);
+  assert.deepEqual(replayRevoke.body, revoked.body);
+  assert.equal(db.docs.get("assistantDelegations/delegation-3")?.revokedAt,
+    (revoked.body.result as Record<string, unknown>).revokedAt);
+  assert.equal(auditCount(db), 2);
+});
+
+test("management request id binds target and material", async () => {
+  const {db, deps} = fixture();
+  const first = ownerRequest("/v1/clients/client-3", {
+    requestId: "request-register-3", expectedRevision: 0,
+    authUid: "client-uid", active: true,
+  });
+  assert.equal((await call(deps, first)).status, 200);
+  const changed = ownerRequest("/v1/clients/client-3", {
+    requestId: "request-register-3", expectedRevision: 0,
+    authUid: "client-uid", active: false,
+  });
+  assert.equal((await call(deps, changed)).status, 409);
+  const otherTarget = ownerRequest("/v1/clients/client-4", {
+    requestId: "request-register-3", expectedRevision: 0,
+    authUid: "client-uid", active: true,
+  });
+  assert.equal((await call(deps, otherTarget)).status, 409);
+  assert.equal(db.docs.has("assistantClients/client-4"), false);
+  assert.equal(auditCount(db), 1);
+});
+
+test("owner role loss denies management receipt replay", async () => {
+  const {deps} = fixture();
+  const command = ownerRequest("/v1/clients/client-5", {
+    requestId: "request-register-5", expectedRevision: 0,
+    authUid: "client-uid", active: true,
+  });
+  assert.equal((await call(deps, command)).status, 200);
+  const original = deps.getUser;
+  deps.getUser = async (uid) => uid === "owner-uid" ?
+    {disabled: false, customClaims: {}} : original(uid);
+  assert.equal((await call(deps, command)).status, 403);
+});
+
+test("owner can read exact connection state and own receipt", async () => {
+  const {deps} = fixture();
+  const command = ownerRequest("/v1/clients/client-6", {
+    requestId: "request-register-6", expectedRevision: 0,
+    authUid: "client-uid", active: true,
+  });
+  assert.equal((await call(deps, command)).status, 200);
+  const clientRead = ownerRequest("/v1/clients/client-6", {});
+  clientRead.method = "GET";
+  const client = await call(deps, clientRead);
+  assert.equal(client.status, 200);
+  assert.equal((client.body.result as Record<string, unknown>).revision, 1);
+  const receiptRead = ownerRequest(
+    "/v1/management/receipts/request-register-6", {});
+  receiptRead.method = "GET";
+  const receipt = await call(deps, receiptRead);
+  assert.equal(receipt.status, 200);
+  assert.equal((receipt.body.result as Record<string, unknown>).action,
+    "assistant.clients.set");
+  const other = request("/v1/management/receipts/request-register-6", {},
+    {authorization: `Bearer ${"e".repeat(32)}`});
+  other.method = "GET";
+  assert.equal((await call(deps, other)).status, 403);
 });

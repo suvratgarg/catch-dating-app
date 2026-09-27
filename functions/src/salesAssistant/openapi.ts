@@ -44,7 +44,13 @@ export const SALES_ASSISTANT_OPENAPI = {
     "/v1/openapi.json": {get: {operationId: "describeSalesAssistantApi",
       responses: {"200": {description: "OpenAPI description"}}}},
     ...actionPaths,
-    "/v1/clients/{clientId}": {put: {
+    "/v1/clients/{clientId}": {get: {
+      operationId: "getSalesAssistantClient",
+      security: [{ownerBearer: []}],
+      parameters: [{in: "path", name: "clientId", required: true,
+        schema: {type: "string"}}],
+      responses: {"200": {description: "Exact client state"}},
+    }, put: {
       operationId: "registerSalesAssistantClient",
       security: [{ownerBearer: []}],
       description: "Admin Owner binds an existing non-admin Firebase Auth UID.",
@@ -52,8 +58,10 @@ export const SALES_ASSISTANT_OPENAPI = {
         schema: {type: "string"}}],
       requestBody: {required: true, content: {"application/json": {schema: {
         type: "object", additionalProperties: false,
-        required: ["authUid", "active"],
-        properties: {authUid: {type: "string"}, active: {type: "boolean"}},
+        required: ["requestId", "expectedRevision", "authUid", "active"],
+        properties: {requestId: {type: "string"},
+          expectedRevision: {type: "integer", minimum: 0},
+          authUid: {type: "string"}, active: {type: "boolean"}},
       }}}},
       responses: {"200": {description: "Client registration"}},
     }},
@@ -63,10 +71,13 @@ export const SALES_ASSISTANT_OPENAPI = {
       description: "Admin Owner issues a bounded, expiring delegation.",
       requestBody: {required: true, content: {"application/json": {schema: {
         type: "object", additionalProperties: false,
-        required: ["delegationId", "actorUid", "clientId",
+        required: ["requestId", "expectedRevision", "delegationId",
+          "actorUid", "clientId",
           "allowedActions", "organizerIds", "expiresAt",
           "maxRequestsPerMinute", "maxRequestsPerDay"],
         properties: {
+          requestId: {type: "string"},
+          expectedRevision: {const: 0},
           delegationId: {type: "string"}, actorUid: {type: "string"},
           clientId: {type: "string"},
           allowedActions: {type: "array", uniqueItems: true,
@@ -82,6 +93,13 @@ export const SALES_ASSISTANT_OPENAPI = {
       }}}},
       responses: {"200": {description: "Delegation issued"}},
     }},
+    "/v1/delegations/{delegationId}": {get: {
+      operationId: "getSalesAssistantDelegation",
+      security: [{ownerBearer: []}],
+      parameters: [{in: "path", name: "delegationId", required: true,
+        schema: {type: "string"}}],
+      responses: {"200": {description: "Exact delegation state"}},
+    }},
     "/v1/delegations/{delegationId}/revoke": {post: {
       operationId: "revokeSalesAssistantDelegation",
       security: [{ownerBearer: []}],
@@ -89,8 +107,18 @@ export const SALES_ASSISTANT_OPENAPI = {
         schema: {type: "string"}}],
       requestBody: {required: true, content: {"application/json": {schema: {
         type: "object", additionalProperties: false,
+        required: ["requestId", "expectedRevision"],
+        properties: {requestId: {type: "string"},
+          expectedRevision: {type: "integer", minimum: 1}},
       }}}},
       responses: {"200": {description: "Delegation revoked"}},
+    }},
+    "/v1/management/receipts/{requestId}": {get: {
+      operationId: "getSalesAssistantManagementReceipt",
+      security: [{ownerBearer: []}],
+      parameters: [{in: "path", name: "requestId", required: true,
+        schema: {type: "string"}}],
+      responses: {"200": {description: "Owner's exact management receipt"}},
     }},
   },
   components: {securitySchemes: {

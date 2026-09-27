@@ -151,6 +151,76 @@ function positiveInteger(value: unknown, ceiling: number): number {
   return value;
 }
 
+function requestId(value: unknown): string {
+  if (typeof value !== "string" || !REQUEST_ID.test(value)) {
+    throw new GatewayError(400, "A stable requestId is required.");
+  }
+  return value;
+}
+
+function expectedRevision(value: unknown): number {
+  if (typeof value !== "number" || !Number.isInteger(value) ||
+      value < 0 || value > 1_000_000_000) {
+    throw new GatewayError(400, "A valid expectedRevision is required.");
+  }
+  return value;
+}
+
+function exactKeys(body: Record<string, unknown>, allowed: string[]): void {
+  if (Object.keys(body).some((key) => !allowed.includes(key))) {
+    throw new GatewayError(400, "Unknown management field.");
+  }
+}
+
+interface ManagementChange {
+  result: Record<string, unknown>;
+  beforeRevision: number;
+  afterRevision: number;
+}
+
+async function managementMutation(
+  deps: AssistantGatewayDeps, issuerUid: string,
+  action: string, targetId: string, targetPath: string,
+  stableRequestId: string, material: Record<string, unknown>,
+  apply: (tx: FirebaseFirestore.Transaction) => Promise<ManagementChange>
+): Promise<Record<string, unknown>> {
+  const key = createHash("sha256")
+    .update(`${issuerUid}\u0000${stableRequestId}`).digest("hex");
+  const materialHash = createHash("sha256")
+    .update(JSON.stringify({action, targetId, material})).digest("hex");
+  const receiptRef = deps.db.collection("assistantManagementReceipts").doc(key);
+  const auditRef = deps.db.collection("adminAuditLogs").doc(`assistant_${key}`);
+  return deps.db.runTransaction(async (tx) => {
+    // Auth is checked before a receipt can be replayed; receipts grant no role.
+    const owner = await deps.getUser(issuerUid);
+    if (owner.disabled || owner.customClaims?.adminOwner !== true) {
+      throw new GatewayError(403, "Current admin owner required.");
+    }
+    const oldReceipt = await tx.get(receiptRef);
+    if (oldReceipt.exists) {
+      const stored = oldReceipt.data();
+      if (stored?.issuerUid !== issuerUid || stored?.action !== action ||
+          stored?.targetId !== targetId ||
+          stored?.materialHash !== materialHash) {
+        throw new GatewayError(409, "Request id belongs to other material.");
+      }
+      return stored.result as Record<string, unknown>;
+    }
+    const changed = await apply(tx);
+    const createdAt = deps.now().toISOString();
+    tx.create(receiptRef, {schemaVersion: 1,
+      classification: "sales_private", receiptId: key, issuerUid,
+      requestId: stableRequestId, action, targetId, materialHash,
+      result: changed.result, createdAt});
+    tx.create(auditRef, {actorUid: issuerUid, roles: ["adminOwner"],
+      action, targetPath, requestId: stableRequestId, materialHash,
+      beforeRevision: changed.beforeRevision,
+      afterRevision: changed.afterRevision,
+      createdAt, source: "salesAssistant"});
+    return changed.result;
+  });
+}
+
 async function ownerUid(req: Request, deps: AssistantGatewayDeps):
   Promise<string> {
   const bearer = token(req.headers.authorization, "Bearer ");
@@ -165,49 +235,87 @@ async function ownerUid(req: Request, deps: AssistantGatewayDeps):
 async function manageDelegation(req: Request, deps: AssistantGatewayDeps):
   Promise<unknown> {
   const issuerUid = await ownerUid(req, deps);
-  const body = object(req.body);
-  if (Buffer.byteLength(JSON.stringify(body), "utf8") > MAX_BODY_BYTES) {
-    throw new GatewayError(413, "Payload is too large.");
-  }
-  const now = deps.now();
+  const at = deps.now();
   await chargeBudget(deps.db, {uid: issuerUid, roles: ["adminOwner"],
     clientId: "owner", clientAuthUid: issuerUid,
     delegationId: issuerUid, organizerIds: [],
     allowedActions: [], fieldIds: [], readEndpoints: false},
-  {perMinute: 10, perDay: 100}, now);
-  if (req.method === "PUT" &&
-      /^\/v1\/clients\/[A-Za-z0-9_-]{3,128}$/u.test(req.path)) {
-    const clientId = id(req.path.slice("/v1/clients/".length));
+  {perMinute: 10, perDay: 100}, at);
+  const clientMatch = /^\/v1\/clients\/([A-Za-z0-9_-]{3,128})$/u
+    .exec(req.path);
+  const delegationMatch =
+    /^\/v1\/delegations\/([A-Za-z0-9_-]{3,128})$/u.exec(req.path);
+  const receiptMatch =
+    /^\/v1\/management\/receipts\/([A-Za-z0-9._:-]{8,96})$/u
+      .exec(req.path);
+  if (req.method === "GET") {
+    let ref: FirebaseFirestore.DocumentReference | null = null;
+    if (clientMatch) {
+      ref = deps.db.collection("assistantClients").doc(clientMatch[1]);
+    } else if (delegationMatch) {
+      ref = deps.db.collection("assistantDelegations")
+        .doc(delegationMatch[1]);
+    } else if (receiptMatch) {
+      const key = createHash("sha256")
+        .update(`${issuerUid}\u0000${requestId(receiptMatch[1])}`)
+        .digest("hex");
+      ref = deps.db.collection("assistantManagementReceipts").doc(key);
+    }
+    if (!ref) throw new GatewayError(404, "Unknown endpoint.");
+    const snap = await ref.get();
+    if (!snap.exists) throw new GatewayError(404, "Record not found.");
+    return {id: snap.id, ...snap.data()};
+  }
+  const body = object(req.body);
+  if (Buffer.byteLength(JSON.stringify(body), "utf8") > MAX_BODY_BYTES) {
+    throw new GatewayError(413, "Payload is too large.");
+  }
+  if (req.method === "PUT" && clientMatch) {
+    exactKeys(body, ["requestId", "expectedRevision", "authUid", "active"]);
+    const clientId = clientMatch[1];
+    const stableRequestId = requestId(body.requestId);
+    const expected = expectedRevision(body.expectedRevision);
     const authUid = id(body.authUid);
-    if (Object.keys(body).some((key) =>
-      !["authUid", "active"].includes(key)) ||
-      typeof body.active !== "boolean" || authUid === issuerUid) {
+    if (typeof body.active !== "boolean" || authUid === issuerUid) {
       throw new GatewayError(400, "Invalid client registration.");
     }
-    const user = await deps.getUser(authUid);
-    if (user.disabled || adminRolesFromToken(user.customClaims).length > 0) {
-      throw new GatewayError(403,
-        "Client must be a separate non-admin account.");
-    }
     const ref = deps.db.collection("assistantClients").doc(clientId);
-    await deps.db.runTransaction(async (tx) => {
-      const existing = await tx.get(ref);
-      if (existing.exists && existing.data()?.authUid !== authUid) {
-        throw new GatewayError(409, "Client identity cannot be reassigned.");
-      }
-      tx.set(ref, {authUid, active: body.active,
-        updatedByUid: issuerUid, updatedAt: now.toISOString()});
-    });
-    return {clientId, authUid, active: body.active};
+    return managementMutation(deps, issuerUid, "assistant.clients.set",
+      clientId, ref.path, stableRequestId,
+      {expectedRevision: expected, authUid, active: body.active},
+      async (tx) => {
+        const existing = await tx.get(ref);
+        if (existing.exists && existing.data()?.authUid !== authUid) {
+          throw new GatewayError(409, "Client identity cannot be reassigned.");
+        }
+        const revision = Number(existing.data()?.revision ?? 0);
+        if (revision !== expected) {
+          throw new GatewayError(409, "Client revision changed.");
+        }
+        const user = await deps.getUser(authUid);
+        if (user.disabled ||
+            adminRolesFromToken(user.customClaims).length > 0) {
+          throw new GatewayError(403,
+            "Client must be a separate non-admin account.");
+        }
+        const updatedAt = deps.now().toISOString();
+        const result = {clientId, authUid, active: body.active,
+          revision: revision + 1, updatedAt};
+        tx.set(ref, {schemaVersion: 1, classification: "sales_private",
+          ...result, updatedByUid: issuerUid,
+          createdAt: existing.data()?.createdAt ?? updatedAt});
+        return {result, beforeRevision: revision, afterRevision: revision + 1};
+      });
   }
   if (req.method === "POST" && req.path === "/v1/delegations") {
-    if (Object.keys(body).some((key) => ![
-      "delegationId", "actorUid", "clientId", "allowedActions",
+    exactKeys(body, [
+      "requestId", "expectedRevision", "delegationId", "actorUid",
+      "clientId", "allowedActions",
       "organizerIds", "fieldIds", "expiresAt", "maxRequestsPerMinute",
       "maxRequestsPerDay",
-    ].includes(key))) {
-      throw new GatewayError(400, "Unknown delegation field.");
-    }
+    ]);
+    const stableRequestId = requestId(body.requestId);
+    const expected = expectedRevision(body.expectedRevision);
     const delegationId = id(body.delegationId);
     const actorUid = id(body.actorUid);
     const clientId = id(body.clientId);
@@ -218,49 +326,73 @@ async function manageDelegation(req: Request, deps: AssistantGatewayDeps):
     const maxRequestsPerMinute = positiveInteger(
       body.maxRequestsPerMinute, 60);
     const maxRequestsPerDay = positiveInteger(body.maxRequestsPerDay, 1000);
-    if (!Number.isFinite(expiresAt) || expiresAt <= now.getTime() ||
-        expiresAt > now.getTime() + 7 * 86_400_000) {
+    if (!Number.isFinite(expiresAt) || expected !== 0) {
       throw new GatewayError(400, "Invalid delegation scope or expiry.");
     }
-    const [actor, clientDoc] = await Promise.all([
-      deps.getUser(actorUid),
-      deps.db.collection("assistantClients").doc(clientId).get(),
-    ]);
-    const actorRoles = adminRolesFromToken(actor.customClaims);
-    if (actor.disabled || !actorRoles.some((role) =>
-      role === "admin" || role === "adminOwner") ||
-      clientDoc.data()?.active !== true) {
-      throw new GatewayError(403, "Employee and client must be active.");
-    }
     const ref = deps.db.collection("assistantDelegations").doc(delegationId);
-    try {
-      await ref.create({actorUid, clientId, allowedActions, organizerIds,
-        fieldIds, expiresAt: new Date(expiresAt).toISOString(),
-        maxRequestsPerMinute, maxRequestsPerDay, revoked: false,
-        issuedByUid: issuerUid, issuedAt: now.toISOString()});
-    } catch (error) {
-      if (error && typeof error === "object" && "code" in error &&
-          (error as {code: unknown}).code === 6) {
-        throw new GatewayError(409, "Delegation already exists.");
-      }
-      throw error;
-    }
-    return {delegationId, actorUid, clientId, allowedActions,
-      organizerIds, fieldIds, expiresAt: new Date(expiresAt).toISOString()};
+    return managementMutation(deps, issuerUid, "assistant.delegations.issue",
+      delegationId, ref.path, stableRequestId,
+      {expectedRevision: expected, actorUid, clientId, allowedActions,
+        organizerIds, fieldIds, expiresAt: new Date(expiresAt).toISOString(),
+        maxRequestsPerMinute, maxRequestsPerDay}, async (tx) => {
+        const [existing, clientDoc] = await Promise.all([
+          tx.get(ref),
+          tx.get(deps.db.collection("assistantClients").doc(clientId)),
+        ]);
+        if (existing.exists) {
+          throw new GatewayError(409, "Delegation already exists.");
+        }
+        if (expiresAt <= deps.now().getTime() ||
+          expiresAt > deps.now().getTime() + 7 * 86_400_000) {
+          throw new GatewayError(400,
+            "Delegation expiry must be within 7 days.");
+        }
+        const actor = await deps.getUser(actorUid);
+        const actorRoles = adminRolesFromToken(actor.customClaims);
+        const clientUid = clientDoc.data()?.authUid;
+        const clientUser = typeof clientUid === "string" ?
+          await deps.getUser(clientUid) : null;
+        if (actor.disabled || !actorRoles.some((role) =>
+          role === "admin" || role === "adminOwner") ||
+        clientDoc.data()?.active !== true || !clientUser ||
+        clientUser.disabled ||
+        adminRolesFromToken(clientUser.customClaims).length > 0) {
+          throw new GatewayError(403, "Employee and client must be active.");
+        }
+        const issuedAt = deps.now().toISOString();
+        const result = {delegationId, actorUid, clientId, allowedActions,
+          organizerIds, fieldIds, expiresAt: new Date(expiresAt).toISOString(),
+          revision: 1, revoked: false, issuedAt};
+        tx.create(ref, {schemaVersion: 1, classification: "sales_private",
+          ...result, maxRequestsPerMinute, maxRequestsPerDay,
+          issuedByUid: issuerUid});
+        return {result, beforeRevision: 0, afterRevision: 1};
+      });
   }
   const revoke = /^\/v1\/delegations\/([A-Za-z0-9_-]{3,128})\/revoke$/u
     .exec(req.path);
   if (req.method === "POST" && revoke) {
-    if (Object.keys(body).length !== 0) {
-      throw new GatewayError(400, "Revoke payload must be empty.");
-    }
+    exactKeys(body, ["requestId", "expectedRevision"]);
+    const stableRequestId = requestId(body.requestId);
+    const expected = expectedRevision(body.expectedRevision);
     const ref = deps.db.collection("assistantDelegations").doc(revoke[1]);
-    if (!(await ref.get()).exists) {
-      throw new GatewayError(404, "Delegation not found.");
-    }
-    await ref.update({revoked: true, revokedByUid: issuerUid,
-      revokedAt: now.toISOString()});
-    return {delegationId: revoke[1], revoked: true};
+    return managementMutation(deps, issuerUid, "assistant.delegations.revoke",
+      revoke[1], ref.path, stableRequestId,
+      {expectedRevision: expected}, async (tx) => {
+        const existing = await tx.get(ref);
+        if (!existing.exists) {
+          throw new GatewayError(404, "Delegation not found.");
+        }
+        const revision = Number(existing.data()?.revision);
+        if (revision !== expected || existing.data()?.revoked === true) {
+          throw new GatewayError(409, "Delegation revision changed.");
+        }
+        const revokedAt = deps.now().toISOString();
+        const result = {delegationId: revoke[1], revoked: true,
+          revision: revision + 1, revokedAt, revokedByUid: issuerUid};
+        tx.update(ref, result);
+        return {result, beforeRevision: revision, afterRevision: revision + 1};
+      });
   }
   throw new GatewayError(404, "Unknown endpoint.");
 }
@@ -450,6 +582,8 @@ async function chargeBudget(db: FirebaseFirestore.Firestore,
       throw new GatewayError(429, "Delegation budget reached.");
     }
     refs.forEach((ref, index) => tx.set(ref, {
+      schemaVersion: 1, classification: "sales_private",
+      budgetId: ref.id, windowKind: index === 0 ? "minute" : "day",
       count: (snapshots[index].data()?.count ?? 0) + 1,
       expiresAt: admin.firestore.Timestamp.fromMillis(now.getTime() +
         (index === 0 ? 120_000 : 172_800_000)),
@@ -468,8 +602,9 @@ export function createSalesAssistantGateway(deps: AssistantGatewayDeps) {
         return;
       }
       if (req.path.startsWith("/v1/delegations") ||
-          req.path.startsWith("/v1/clients/")) {
-        if (!req.is("application/json")) {
+          req.path.startsWith("/v1/clients/") ||
+          req.path.startsWith("/v1/management/receipts/")) {
+        if (req.method !== "GET" && !req.is("application/json")) {
           throw new GatewayError(415, "JSON required.");
         }
         res.status(200).json({schemaVersion: 1,
