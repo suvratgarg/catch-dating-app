@@ -148,38 +148,6 @@ class HostResponseDetailSection extends ConsumerWidget {
             ],
           ),
         ],
-        if (value.canReview) ...[
-          gapH24,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final (status, label) in [
-                (
-                  HostApplicationReviewStatus.inReview,
-                  context.l10n.hostApplicationMarkInReview,
-                ),
-                (
-                  HostApplicationReviewStatus.waitlisted,
-                  context.l10n.hostApplicationWaitlist,
-                ),
-                (
-                  HostApplicationReviewStatus.declined,
-                  context.l10n.hostApplicationDecline,
-                ),
-              ])
-                CatchButton(
-                  label: label,
-                  variant: status == HostApplicationReviewStatus.declined
-                      ? CatchButtonVariant.dangerSecondary
-                      : CatchButtonVariant.secondary,
-                  onPressed: busy || application!.reviewStatus == status
-                      ? null
-                      : () => onReview(application, status),
-                ),
-            ],
-          ),
-        ],
         gapH24,
         CatchSection.divided(
           title: context.l10n.hostFormResponseAnswersSection,
@@ -225,6 +193,38 @@ class HostResponseDetailSection extends ConsumerWidget {
             ],
           ),
         ),
+        if (value.canReview) ...[
+          gapH24,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final (status, label) in [
+                (
+                  HostApplicationReviewStatus.inReview,
+                  context.l10n.hostApplicationMarkInReview,
+                ),
+                (
+                  HostApplicationReviewStatus.waitlisted,
+                  context.l10n.hostApplicationWaitlist,
+                ),
+                (
+                  HostApplicationReviewStatus.declined,
+                  context.l10n.hostApplicationDecline,
+                ),
+              ])
+                CatchButton(
+                  label: label,
+                  variant: status == HostApplicationReviewStatus.declined
+                      ? CatchButtonVariant.dangerSecondary
+                      : CatchButtonVariant.secondary,
+                  onPressed: busy || application!.reviewStatus == status
+                      ? null
+                      : () => onReview(application, status),
+                ),
+            ],
+          ),
+        ],
         if (value.canReview) ...[
           gapH24,
           CatchSection.divided(
@@ -480,37 +480,28 @@ class HostResponseContactSection extends StatelessWidget {
           ),
           label: action.label,
           leading: Icon(action.icon),
-          fullWidth: true,
-          variant: CatchButtonVariant.secondary,
+          fullWidth: singleColumn,
+          variant: singleColumn
+              ? CatchButtonVariant.secondary
+              : CatchButtonVariant.ghost,
           onPressed: () => onContact(action.uri),
         ),
     ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (
-          var index = 0;
-          index < buttons.length;
-          index += singleColumn ? 1 : 2
-        ) ...[
-          if (index > 0) gapH12,
-          if (singleColumn)
-            buttons[index]
-          else
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: buttons[index]),
-                gapW12,
-                Expanded(
-                  child: index + 1 < buttons.length
-                      ? buttons[index + 1]
-                      : const SizedBox.shrink(),
-                ),
-              ],
-            ),
+    if (singleColumn) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var index = 0; index < buttons.length; index++) ...[
+            if (index > 0) gapH8,
+            buttons[index],
+          ],
         ],
-      ],
+      );
+    }
+    return Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: buttons,
     );
   }
 }

@@ -183,7 +183,7 @@ void main() {
     expect(find.text('Why do you want to join?'), findsOneWidget);
     final call = find.widgetWithText(CatchButton, 'Call');
     final email = find.widgetWithText(CatchButton, 'Email');
-    expect(tester.getSize(call).width, tester.getSize(email).width);
+    expect(tester.getSize(email).width, greaterThanOrEqualTo(44));
     expect(tester.getSize(call).height, greaterThanOrEqualTo(44));
     await tester.tapAt(tester.getTopLeft(call) + const Offset(6, 6));
     await pumpFeatureUi(tester);
@@ -253,123 +253,126 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Next after review removal loads the next filtered page, then Previous', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(900, 1100));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    const request = HostFormResponseListRequest(
-      organizerId: 'org_1',
-      formId: 'form_1',
-      versionId: 'form_1_v2',
-      includeApplications: true,
-      answerFilters: {'city': {'Mumbai', 'Delhi'}},
-    );
-    final details = {
-      for (final (id, name) in [
-        ('response_a', 'Asha'),
-        ('response_b', 'Bina'),
-        ('response_c', 'Cara'),
-      ])
-        id: _queueDetail(id, name),
-    };
-    final queue = _ReviewQueueController(details);
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: TextButton(
-              onPressed: () => context.pushNamed(
-                Routes.hostFormResponseDetailScreen.name,
-                pathParameters: {'responseId': 'response_b'},
-                queryParameters: {'organizerId': 'org_1'},
-                extra: const HostResponseReviewQueue(
-                  request: request,
-                  entryId: 'response:response_b',
-                  index: 1,
+  testWidgets(
+    'Next after review removal loads the next filtered page, then Previous',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(900, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const request = HostFormResponseListRequest(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        versionId: 'form_1_v2',
+        includeApplications: true,
+        answerFilters: {
+          'city': {'Mumbai', 'Delhi'},
+        },
+      );
+      final details = {
+        for (final (id, name) in [
+          ('response_a', 'Asha'),
+          ('response_b', 'Bina'),
+          ('response_c', 'Cara'),
+        ])
+          id: _queueDetail(id, name),
+      };
+      final queue = _ReviewQueueController(details);
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, _) => Scaffold(
+              body: TextButton(
+                onPressed: () => context.pushNamed(
+                  Routes.hostFormResponseDetailScreen.name,
+                  pathParameters: {'responseId': 'response_b'},
+                  queryParameters: {'organizerId': 'org_1'},
+                  extra: const HostResponseReviewQueue(
+                    request: request,
+                    entryId: 'response:response_b',
+                    index: 1,
+                  ),
                 ),
+                child: const Text('Open review'),
               ),
-              child: const Text('Open review'),
             ),
           ),
-        ),
-        GoRoute(
-          path: '/responses/:responseId',
-          name: Routes.hostFormResponseDetailScreen.name,
-          builder: (_, state) => HostFormResponseDetailScreen(
-            organizerId: 'org_1',
-            responseId: state.pathParameters['responseId']!,
-            queue: state.extra as HostResponseReviewQueue?,
+          GoRoute(
+            path: '/responses/:responseId',
+            name: Routes.hostFormResponseDetailScreen.name,
+            builder: (_, state) => HostFormResponseDetailScreen(
+              organizerId: 'org_1',
+              responseId: state.pathParameters['responseId']!,
+              queue: state.extra as HostResponseReviewQueue?,
+            ),
           ),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-    final container = ProviderContainer(
-      overrides: [
-        hostFormResponsesControllerProvider.overrideWith2((_) => queue),
-        for (final entry in details.entries) ...[
-          hostFormResponseDetailProvider(
-            organizerId: 'org_1',
-            responseId: entry.key,
-          ).overrideWith((_) async => entry.value),
-          hostFormResponseCanApplyProvider(
-            organizerId: 'org_1',
-            responseId: entry.key,
-          ).overrideWith((_) => false),
         ],
-      ],
-    );
-    addTearDown(container.dispose);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp.router(
-          theme: AppTheme.light,
-          builder: (context, child) => RepaintBoundary(
-            key: const ValueKey('response-payment-capture'),
-            child: child!,
+      );
+      addTearDown(router.dispose);
+      final container = ProviderContainer(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2((_) => queue),
+          for (final entry in details.entries) ...[
+            hostFormResponseDetailProvider(
+              organizerId: 'org_1',
+              responseId: entry.key,
+            ).overrideWith((_) async => entry.value),
+            hostFormResponseCanApplyProvider(
+              organizerId: 'org_1',
+              responseId: entry.key,
+            ).overrideWith((_) => false),
+          ],
+        ],
+      );
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            builder: (context, child) => RepaintBoundary(
+              key: const ValueKey('response-payment-capture'),
+              child: child!,
+            ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
           ),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: router,
         ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Open review'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Bina'), findsOneWidget);
-    await _captureDetail(
-      tester,
-      'review-filtered-before',
-      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
-    );
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Open review'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Bina'), findsOneWidget);
+      await _captureDetail(
+        tester,
+        'review-filtered-before',
+        directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+      );
 
-    queue._reviewed = true;
-    container.invalidate(hostFormResponsesControllerProvider(request));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.widgetWithText(CatchButton, 'Next'));
-    await pumpFeatureUi(tester);
-    expect(queue._loadMoreCalls, 1);
-    expect(find.text('Cara'), findsOneWidget);
-    expect(queue._requests.every((value) => value == request), isTrue);
-    await _captureDetail(
-      tester,
-      'review-filtered-next-page',
-      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
-    );
-    await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
-    await pumpFeatureUi(tester);
-    expect(find.text('Asha'), findsOneWidget);
-    await _captureDetail(
-      tester,
-      'review-filtered-previous',
-      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
-    );
-    expect(tester.takeException(), isNull);
-  });
+      queue._reviewed = true;
+      container.invalidate(hostFormResponsesControllerProvider(request));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.widgetWithText(CatchButton, 'Next'));
+      await pumpFeatureUi(tester);
+      expect(queue._loadMoreCalls, 1);
+      expect(find.text('Cara'), findsOneWidget);
+      expect(queue._requests.every((value) => value == request), isTrue);
+      await _captureDetail(
+        tester,
+        'review-filtered-next-page',
+        directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+      );
+      await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Asha'), findsOneWidget);
+      await _captureDetail(
+        tester,
+        'review-filtered-previous',
+        directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 HostFormResponseDetail _queueDetail(String id, String name) {
