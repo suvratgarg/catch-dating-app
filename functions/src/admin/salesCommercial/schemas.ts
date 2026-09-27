@@ -108,7 +108,8 @@ export const COMMERCIAL_ACTION_SCHEMAS: Record<CommercialAction, Schema> = {
   "commercial.finance.attest": object(
     ["organizerId", "opportunityId", "requestId", "expectedQuoteRevision",
       "termVersion", "amountMinor", "currency", "purpose", "receivedAt",
-      "settlementMethod", "servicePeriod", "evidence"],
+      "settlementMethod", "settlementReference", "recipientAccountScope",
+      "servicePeriod", "evidence"],
     {
       organizerId: id, opportunityId: id,
       requestId: {...id, minLength: 8},
@@ -118,6 +119,10 @@ export const COMMERCIAL_ACTION_SCHEMAS: Record<CommercialAction, Schema> = {
       currency: {type: "string", pattern: "^[A-Z]{3}$"},
       purpose: {const: "host_subscription"}, receivedAt: dateTime,
       settlementMethod: {enum: ["bank_transfer", "cash", "other_external"]},
+      settlementReference: {type: "string", minLength: 6, maxLength: 120,
+        pattern: "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"},
+      recipientAccountScope: {type: "string", minLength: 3, maxLength: 96,
+        pattern: "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"},
       servicePeriod: {anyOf: [object(["startsAt", "endsAt"], {
         startsAt: dateTime, endsAt: dateTime,
       }), {type: "null"}]},

@@ -26,6 +26,8 @@ export interface CommercialSettlementAttestation {
   amountMinor: number; currency: string; purpose: "host_subscription";
   receivedAt: string;
   settlementMethod: "bank_transfer" | "cash" | "other_external";
+  settlementReference: string; recipientAccountScope: string;
+  settlementIdentityHash: string;
   servicePeriod: {startsAt: string; endsAt: string} | null;
   evidence: CommercialEvidence;
   status: "manual_attested_collected"; providerConfirmed: false;
@@ -83,6 +85,7 @@ export type CommercialSettlementInput = {
   amountMinor: number; currency: string; purpose: "host_subscription";
   receivedAt: string;
   settlementMethod: CommercialSettlementAttestation["settlementMethod"];
+  settlementReference: string; recipientAccountScope: string;
   servicePeriod: CommercialSettlementAttestation["servicePeriod"];
   evidence: {evidenceId: string};
 };

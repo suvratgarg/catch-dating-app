@@ -88,6 +88,8 @@ it("attests host collection before a separate reviewed close", async () => {
       currency: "INR", purpose: "host_subscription",
       receivedAt: "2026-09-27T12:00:00.000Z",
       settlementMethod: "bank_transfer", providerConfirmed: false,
+      settlementReference: "BANK UTR 123456",
+      recipientAccountScope: "Catch India ledger",
       evidence: {sourceRef: "Bank confirmation"}}};
   mocks.detail.mockResolvedValueOnce({...base, settlementAttestation: null})
     .mockResolvedValue(settled);
@@ -113,12 +115,18 @@ it("attests host collection before a separate reviewed close", async () => {
     {target: {value: "2026-10-27T00:00"}});
   fireEvent.change(screen.getByLabelText("Reviewed settlement evidence"),
     {target: {value: "evidence-1"}});
+  fireEvent.change(screen.getByLabelText("External settlement reference"),
+    {target: {value: "BANK UTR 123456"}});
+  fireEvent.change(screen.getByLabelText("Recipient ledger or account label"),
+    {target: {value: "Catch India ledger"}});
   fireEvent.click(screen.getByRole("button", {
     name: "Record manual host collection"}));
   await waitFor(() => expect(mocks.attest).toHaveBeenCalledOnce());
   expect(mocks.attest.mock.calls[0][0]).toMatchObject({
     expectedQuoteRevision: 3, termVersion: 1, amountMinor: 120000,
     currency: "INR", purpose: "host_subscription",
+    settlementReference: "BANK UTR 123456",
+    recipientAccountScope: "Catch India ledger",
     evidence: {evidenceId: "evidence-1"}});
   fireEvent.click(await screen.findByRole("button", {
     name: "Review current quote and finance proof"}));

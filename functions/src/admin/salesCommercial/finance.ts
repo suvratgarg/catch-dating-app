@@ -8,6 +8,7 @@ import type {CommercialDecision, EvidenceReference,
 
 const attestations = "salesHostSettlementAttestations";
 const evidenceUses = "salesHostSettlementEvidenceUses";
+const settlementIdentities = "salesHostSettlementIdentities";
 const accounts = "organizerSalesAccounts";
 const opportunities = "salesOpportunities";
 const quotes = "salesQuotes";
@@ -31,6 +32,22 @@ function hash(value: unknown): string {
 export function hostSettlementAttestationId(quoteId: string,
   termVersion: number): string {
   return `host-settlement-${quoteId}-v${termVersion}`;
+}
+
+/** Quote/evidence IDs are excluded so copies of one receipt collide. */
+export function settlementIdentityHash(recipientAccountScope: string,
+  settlementReference: string): string {
+  const normalize = (value: string) => value.normalize("NFKC").toUpperCase()
+    .replace(/[ ./_-]/g, "");
+  const scope = normalize(recipientAccountScope);
+  const reference = normalize(settlementReference);
+  if (scope.length < 3 || reference.length < 6 ||
+    !/^[A-Z0-9]+$/.test(scope) || !/^[A-Z0-9]+$/.test(reference)) {
+    throw new HttpsError("invalid-argument",
+      "Enter a recipient ledger scope and a distinct settlement reference.");
+  }
+  return createHash("sha256").update(`${scope}\u0000${reference}`)
+    .digest("hex");
 }
 
 function requireFinanceOwner(principal: SalesPrincipal): void {
@@ -148,15 +165,18 @@ export async function attestHostSettlementInTransaction(
   }
   const attestationId = hostSettlementAttestationId(head.quoteId,
     head.termVersion);
-  const [existing, evidenceUse, evidence] = await Promise.all([
+  const identityHash = settlementIdentityHash(input.recipientAccountScope,
+    input.settlementReference);
+  const [existing, evidenceUse, identityUse, evidence] = await Promise.all([
     tx.get(db.collection(attestations).doc(attestationId)),
     tx.get(db.collection(evidenceUses).doc(input.evidence.evidenceId)),
+    tx.get(db.collection(settlementIdentities).doc(identityHash)),
     settlementEvidence(tx, db, input.organizerId,
       input.evidence.evidenceId, now),
   ]);
-  if (existing.exists || evidenceUse.exists) {
+  if (existing.exists || evidenceUse.exists || identityUse.exists) {
     throw new HttpsError("already-exists",
-      "This accepted quote or payment evidence is already attested.");
+      "Accepted quote, evidence or settlement reference already attested.");
   }
   const attestation: HostSettlementAttestation = {
     schemaVersion: 1, classification: "sales_private", revision: 1,
@@ -167,6 +187,9 @@ export async function attestHostSettlementInTransaction(
     currency: input.currency, purpose: "host_subscription",
     receivedAt: input.receivedAt,
     settlementMethod: input.settlementMethod,
+    settlementReference: input.settlementReference.trim(),
+    recipientAccountScope: input.recipientAccountScope.trim(),
+    settlementIdentityHash: identityHash,
     servicePeriod: input.servicePeriod, evidence,
     status: "manual_attested_collected", providerConfirmed: false,
     actorUid: principal.uid, attestedAt: now,
@@ -175,6 +198,12 @@ export async function attestHostSettlementInTransaction(
   tx.create(db.collection(evidenceUses).doc(evidence.evidenceId), {
     schemaVersion: 1, classification: "sales_private",
     evidenceId: evidence.evidenceId, attestationId,
+    organizerId: input.organizerId, opportunityId: input.opportunityId,
+    createdAt: now,
+  });
+  tx.create(db.collection(settlementIdentities).doc(identityHash), {
+    schemaVersion: 1, classification: "sales_private",
+    settlementIdentityHash: identityHash, attestationId,
     organizerId: input.organizerId, opportunityId: input.opportunityId,
     createdAt: now,
   });
@@ -209,12 +238,25 @@ export async function validateHostFinanceCloseInTransaction(
     attestation.currency !== version.terms.currency ||
     attestation.purpose !== "host_subscription" ||
     attestation.status !== "manual_attested_collected" ||
-    attestation.providerConfirmed !== false) {
+    attestation.providerConfirmed !== false ||
+    typeof attestation.recipientAccountScope !== "string" ||
+    typeof attestation.settlementReference !== "string" ||
+    typeof attestation.settlementIdentityHash !== "string" ||
+    attestation.settlementIdentityHash !== settlementIdentityHash(
+      attestation.recipientAccountScope,
+      attestation.settlementReference)) {
     throw new HttpsError("failed-precondition",
       "Finance attestation does not match accepted host terms.");
   }
   const currentEvidence = await settlementEvidence(tx, db, organizerId,
     attestation.evidence.evidenceId, now);
+  const identitySnap = await tx.get(db.collection(settlementIdentities)
+    .doc(attestation.settlementIdentityHash));
+  if (!identitySnap.exists ||
+    identitySnap.data()?.attestationId !== attestationId) {
+    throw new HttpsError("failed-precondition",
+      "Settlement identity receipt is missing or changed.");
+  }
   if (currentEvidence.contentHash !== attestation.evidence.contentHash) {
     throw new HttpsError("failed-precondition",
       "Settlement evidence changed since attestation.");

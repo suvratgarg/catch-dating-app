@@ -71,6 +71,8 @@ export interface HostSettlementAttestationInput {
   purpose: "host_subscription";
   receivedAt: string;
   settlementMethod: "bank_transfer" | "cash" | "other_external";
+  settlementReference: string;
+  recipientAccountScope: string;
   servicePeriod: {startsAt: string; endsAt: string} | null;
   evidence: EvidenceSelection;
 }
@@ -96,6 +98,9 @@ export interface HostSettlementAttestation {
   purpose: "host_subscription";
   receivedAt: string;
   settlementMethod: HostSettlementAttestationInput["settlementMethod"];
+  settlementReference: string;
+  recipientAccountScope: string;
+  settlementIdentityHash: string;
   servicePeriod: HostSettlementAttestationInput["servicePeriod"];
   evidence: EvidenceReference;
   status: "manual_attested_collected";

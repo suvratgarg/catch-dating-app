@@ -361,6 +361,8 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
   const [proofId, setProofId] = useState("");
+  const [settlementReference, setSettlementReference] = useState("");
+  const [recipientAccountScope, setRecipientAccountScope] = useState("");
   const [reviewedKey, setReviewedKey] = useState("");
   const [localError, setLocalError] = useState("");
   const eligibleEvidence = evidence.filter((row) =>
@@ -375,8 +377,11 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
       startsAt: iso(periodStart), endsAt: iso(periodEnd),
     } : null;
     if (!quote || !terms || !received || !proofId ||
+      settlementReference.trim().length < 6 ||
+      recipientAccountScope.trim().length < 3 ||
       recurring && (!servicePeriod?.startsAt || !servicePeriod.endsAt)) {
-      setLocalError("Choose a payment date and reviewed source evidence" +
+      setLocalError("Enter a payment date, settlement reference, recipient " +
+        "ledger scope and reviewed source evidence" +
         (recurring ? ", plus the service period." : "."));
       return;
     }
@@ -385,6 +390,8 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
       termVersion: quote.termVersion, amountMinor: terms.amountMinor,
       currency: terms.currency, purpose: "host_subscription",
       receivedAt: received, settlementMethod: method,
+      settlementReference: settlementReference.trim(),
+      recipientAccountScope: recipientAccountScope.trim(),
       servicePeriod: servicePeriod as CommercialSettlementInput["servicePeriod"],
       evidence: {evidenceId: proofId},
     };
@@ -420,6 +427,10 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
         `received ${new Date(attestation.receivedAt).toLocaleDateString()} · ` +
         `${attestation.settlementMethod.replaceAll("_", " ")}`} />
       <StateRow label="Reviewed source" value={attestation.evidence.sourceRef} />
+      <StateRow label="Settlement reference" value={
+        attestation.settlementReference} />
+      <StateRow label="Recipient ledger scope" value={
+        attestation.recipientAccountScope} />
       <StateRow label="Provider confirmation" value="Not confirmed" />
     </> : <StateRow label="Host collection" value="Not recorded" />}
     {isAdminOwner && quote?.status === "accepted_reviewed" && terms &&
@@ -438,6 +449,11 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
             {value: "cash", label: "Cash"},
             {value: "other_external", label: "Other external method"},
           ]} />
+        <TextField label="External settlement reference"
+          value={settlementReference} onChange={setSettlementReference} required />
+        <TextField label="Recipient ledger or account label"
+          value={recipientAccountScope} onChange={setRecipientAccountScope}
+          required />
         {recurring ? <>
           <TextField label="Service period start" type="datetime-local"
             value={periodStart} onChange={setPeriodStart} required />

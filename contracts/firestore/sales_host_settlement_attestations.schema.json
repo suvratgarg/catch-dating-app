@@ -23,6 +23,9 @@
     "purpose",
     "receivedAt",
     "settlementMethod",
+    "settlementReference",
+    "recipientAccountScope",
+    "settlementIdentityHash",
     "servicePeriod",
     "evidence",
     "status",
@@ -95,6 +98,17 @@
         "cash",
         "other_external"
       ]
+    },
+    "settlementReference": {
+      "type": "string", "minLength": 6, "maxLength": 120,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "recipientAccountScope": {
+      "type": "string", "minLength": 3, "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "settlementIdentityHash": {
+      "type": "string", "pattern": "^[a-f0-9]{64}$"
     },
     "servicePeriod": {
       "anyOf": [

@@ -16,6 +16,8 @@
     "purpose",
     "receivedAt",
     "settlementMethod",
+    "settlementReference",
+    "recipientAccountScope",
     "servicePeriod",
     "evidence"
   ],
@@ -70,6 +72,14 @@
         "cash",
         "other_external"
       ]
+    },
+    "settlementReference": {
+      "type": "string", "minLength": 6, "maxLength": 120,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
+    },
+    "recipientAccountScope": {
+      "type": "string", "minLength": 3, "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ./_-]*$"
     },
     "servicePeriod": {
       "anyOf": [

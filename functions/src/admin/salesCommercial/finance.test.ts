@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {SalesPrincipal} from "../sales/types";
-import {attestHostSettlementInTransaction, hostSettlementAttestationId,
-  validateHostFinanceCloseInTransaction} from "./finance";
+import {
+  attestHostSettlementInTransaction, hostSettlementAttestationId,
+  settlementIdentityHash, validateHostFinanceCloseInTransaction,
+} from "./finance";
 import {commercialQuoteId} from "./ids";
 import {appendOpportunityStageHistory} from "./service";
 
@@ -48,6 +50,8 @@ const input = {organizerId: "org-1", opportunityId: "opp-1",
   amountMinor: 120000, currency: "INR", purpose: "host_subscription" as const,
   receivedAt: "2026-09-27T12:00:00.000Z",
   settlementMethod: "bank_transfer" as const,
+  settlementReference: "BANK UTR 123456",
+  recipientAccountScope: "Catch India ledger",
   servicePeriod: {startsAt: "2026-09-27T00:00:00.000Z",
     endsAt: "2026-10-27T00:00:00.000Z"},
   evidence: {evidenceId: "bank-proof-1"}};
@@ -105,6 +109,10 @@ test("owner attests host terms without guest payment writes", async () => {
   const use = db.docs.get("salesHostSettlementEvidenceUses/bank-proof-1");
   assert.equal(use?.attestationId,
     id);
+  const identityHash = settlementIdentityHash("Catch India ledger",
+    "BANK UTR 123456");
+  assert.equal(db.docs.get(`salesHostSettlementIdentities/${identityHash}`)
+    ?.attestationId, id);
   assert.equal(db.docs.get("payments/guest-payment-1")?.status, "paid");
   const proof = await close(id);
   assert.equal(proof.attestationId, id);
@@ -166,4 +174,36 @@ test("one source cannot be reused and close rechecks proof", async () => {
   await assert.rejects(close(id),
     (error: unknown) => error instanceof HttpsError &&
       error.code === "failed-precondition");
+});
+
+test("different evidence documents cannot attest one settlement", async () => {
+  const {db, attest} = fixture();
+  await attest(input);
+  const secondQuoteId = commercialQuoteId("opp-2");
+  db.docs.set("salesOpportunities/opp-2", {organizerId: "org-1",
+    opportunityId: "opp-2", stage: "commercial_discussion"});
+  db.docs.set(`salesQuotes/${secondQuoteId}`, {classification: "sales_private",
+    organizerId: "org-1", opportunityId: "opp-2", quoteId: secondQuoteId,
+    revision: 3, termVersion: 1, status: "accepted_reviewed",
+    acceptedDecisionId: "acceptance-2"});
+  db.docs.set(`salesQuoteVersions/${secondQuoteId}-v1`, {
+    classification: "sales_private", organizerId: "org-1",
+    opportunityId: "opp-2", quoteId: secondQuoteId, termVersion: 1,
+    termsHash: "b".repeat(64), terms: {amountMinor: 120000,
+      currency: "INR", billingCadence: "monthly"}});
+  db.docs.set("salesCommercialDecisions/acceptance-2", {
+    classification: "sales_private", kind: "terms_acceptance_reviewed",
+    organizerId: "org-1", opportunityId: "opp-2", quoteId: secondQuoteId,
+    termVersion: 1, termsHash: "b".repeat(64)});
+  db.docs.set("salesEvidence/bank-proof-2", {
+    ...db.docs.get("salesEvidence/bank-proof-1"), evidenceId: "bank-proof-2",
+    sourceRef: "second-copy-of-same-bank-confirmation"});
+  await assert.rejects(attest({...input, opportunityId: "opp-2",
+    requestId: "settlement-2", evidence: {evidenceId: "bank-proof-2"},
+    settlementReference: "bank-utr/123456",
+    recipientAccountScope: "CATCH-INDIA LEDGER"}),
+  (error: unknown) => error instanceof HttpsError &&
+    error.code === "already-exists");
+  assert.equal(db.docs.has(`salesHostSettlementAttestations/${
+    hostSettlementAttestationId(secondQuoteId, 1)}`), false);
 });
